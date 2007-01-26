@@ -1,10 +1,13 @@
 # Preliminary definitions of samples and so on
 
-samples=("TW" "TW_noFullyHadr" 
+samples=( "TW" "TW_noFullyHadr" 
   "TbarW" "TbarW_noFullyHadr" "TW_aMCatNLO" 
-  "TTbar_Powheg" "TTbar_PowhegSemi" "TTbar2L_powheg" "DYJetsToLL_M50_MLM" "DYJetsToLL_M5to50_MLM" "DYJetsToLL_M50_aMCatNLO" "DYJetsToLL_M10to50_aMCatNLO" 
+  "TTbar_Powheg" "TTbar_PowhegSemi" 
+  "TTbar2L_powheg" "DYJetsToLL_M50_MLM" "DYJetsToLL_M5to50_MLM" "DYJetsToLL_M50_aMCatNLO" "DYJetsToLL_M10to50_aMCatNLO" 
   "WJetsToLNu_MLM" "ZZ" "WW" "WZ" "TTWToLNu" "TTZToQQ" "TTZToLLNuNu" "TTWToQQ" "TTGJets" 
-  "MuonEG" "SingleElec" "SingleMuon" "DoubleEG" "DoubleMuon")
+  "MuonEG" "SingleElec" "SingleMuon" "DoubleEG" "DoubleMuon"
+  "TW_noFullyHadr_DS"  "TbarW_noFullyHadr_DS"
+  )
 
 samples_syst=("TTbar_Powheg_ueUp" "TTbar2L_Powheg_ueUp" "TTbar_Powheg_ueDown" "TTbar2L_Powheg_ueDown" 
   "TTbar_Powheg_isrUp" "TTbar_Powheg_isrDown" "TTbar_Powheg_fsrUp" 
@@ -16,20 +19,23 @@ samples_syst=("TTbar_Powheg_ueUp" "TTbar2L_Powheg_ueUp" "TTbar_Powheg_ueDown" "T
   "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" 
   "TbarW_noFullyHadr_PSscaleUp" "TbarW_noFullyHadr_PSscaleDown" "TbarW_noFullyHadr_DS")
 
-samples_unf=("UNF_TW" "UNF_TW_noFullyHadr" #"UNF_TW_noFullyHadr_isrUp" "UNF_TW_noFullyHadr_isrDown" "UNF_TW_noFullyHadr_fsrUp" "UNF_TW_noFullyHadr_fsrDown" "UNF_TW_noFullyHadr_MEscaleUp" "UNF_TW_noFullyHadr_MEscaleDown" "UNF_TW_noFullyHadr_PSscaleUp" "UNF_TW_noFullyHadr_PSscaleDown" 
-  "UNF_TW_noFullyHadr_DS" 
+samples_unf=( "UNF_TW" "UNF_TW_noFullyHadr" #"UNF_TW_noFullyHadr_isrUp" "UNF_TW_noFullyHadr_isrDown" "UNF_TW_noFullyHadr_fsrUp" "UNF_TW_noFullyHadr_fsrDown" "UNF_TW_noFullyHadr_MEscaleUp" "UNF_TW_noFullyHadr_MEscaleDown" "UNF_TW_noFullyHadr_PSscaleUp" "UNF_TW_noFullyHadr_PSscaleDown"
+ "UNF_TW_noFullyHadr_DS" 
   "UNF_TbarW" "UNF_TbarW_noFullyHadr" #"UNF_TbarW_noFullyHadr_isrUp" "UNF_TbarW_noFullyHadr_isrDown" "UNF_TbarW_noFullyHadr_fsrUp" "UNF_TbarW_noFullyHadr_fsrDown" "UNF_TbarW_noFullyHadr_MEscaleUp" "UNF_TbarW_noFullyHadr_MEscaleDown" 
-  #"UNF_TbarW_noFullyHadr_PSscaleUp" "UNF_TbarW_noFullyHadr_PSscaleDown" "UNF_TbarW_noFullyHadr_DS" 
+  #"UNF_TbarW_noFullyHadr_PSscaleUp" "UNF_TbarW_noFullyHadr_PSscaleDown" 
+  "UNF_TbarW_noFullyHadr_DS" 
   "UNF_TW_aMCatNLO"
-  "UNF_TTbar2L" )
+  "UNF_TTbar2L_powheg_0")
   
   
-
-runsamples=("TW_ext" "TW_noFullyHadr & TW_noFullyHadr_ext & TW_noFullyHadr_ext2" 
+runsamples=( "TW_ext" "TW_noFullyHadr & TW_noFullyHadr_ext & TW_noFullyHadr_ext2" 
   "TbarW_ext" "TbarW_noFullyHadr & TbarW_noFullyHadr_ext & TbarW_noFullyHadr_ext2" "TW_aMCatNLO_[0-9]" 
-  "TTbar_Powheg" "TTbar_Powheg" "TTbar2L_powheg" "DYJetsToLL_M50_MLM_ext & DYJetsToLL_M50_MLM_ext2" "DYJetsToLL_M5to50_MLM" "DYJetsToLL_M50_aMCatNLO" "DYJetsToLL_M10to50_aMCatNLO & DYJetsToLL_M10to50_aMCatNLO_ext" 
+  "TTbar_Powheg" "TTbar_Powheg" 
+  "TTbar2L_powheg" "DYJetsToLL_M50_MLM_ext & DYJetsToLL_M50_MLM_ext2" "DYJetsToLL_M5to50_MLM" "DYJetsToLL_M50_aMCatNLO" "DYJetsToLL_M10to50_aMCatNLO & DYJetsToLL_M10to50_aMCatNLO_ext" 
   "WJetsToLNu_MLM & WJetsToLNu_MLM_ext2" "ZZ & ZZ_ext" "WW & WW_ext" "WZ & WZ_ext" "TTWToLNu_ext1 & TTWToLNu_ext2" "TTZToQQ" "TTZToLLNuNu_ext1 & TTZToLLNuNu_ext2" "TTWToQQ" "TTGJets & TTGJets_ext" 
-  "MuonEG" "SingleElec" "SingleMuon" "DoubleEG" "DoubleMuon")
+  "MuonEG" "SingleElec" "SingleMuon" "DoubleEG" "DoubleMuon"
+  "TW_noFullyHadr_DS"  "TbarW_noFullyHadr_DS"
+  )
 
 runsamples_syst=("TTbar_Powheg_ueUp & TTbar_Powheg_ueUp_ext" "TTbar2L_Powheg_ueUp" "TTbar_Powheg_ueDown & TTbar_Powheg_ueDown_ext" "TTbar2L_Powheg_ueDown" 
   "TTbar_Powheg_isrUp_ext & TTbar_Powheg_isrUp_ext2" "TTbar_Powheg_isrDown & TTbar_Powheg_isrDown_ext & TTbar_Powheg_isrDown_ext2"
@@ -41,15 +47,16 @@ runsamples_syst=("TTbar_Powheg_ueUp & TTbar_Powheg_ueUp_ext" "TTbar2L_Powheg_ueU
   "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" 
   "TbarW_noFullyHadr_PSscaleUp" "TbarW_noFullyHadr_PSscaleDown" "TbarW_noFullyHadr_DS")
 
-runsamples_unf=("TW_ext" "TW_noFullyHadr & TW_noFullyHadr_ext & TW_noFullyHadr_ext2" #"TW_noFullyHadr_isrUp" "TW_noFullyHadr_isrDown" "TW_noFullyHadr_fsrUp" "TW_noFullyHadr_fsrDown" "TW_noFullyHadr_MEscaleUp" "TW_noFullyHadr_MEscaleDown" 
+runsamples_unf=( "TW_ext" "TW_noFullyHadr & TW_noFullyHadr_ext & TW_noFullyHadr_ext2" #"TW_noFullyHadr_isrUp" "TW_noFullyHadr_isrDown" "TW_noFullyHadr_fsrUp" "TW_noFullyHadr_fsrDown" "TW_noFullyHadr_MEscaleUp" "TW_noFullyHadr_MEscaleDown" 
   #"TW_noFullyHadr_PSscaleUp" "TW_noFullyHadr_PSscaleDown" 
   "TW_noFullyHadr_DS" 
   "TbarW_ext" "TbarW_noFullyHadr & TbarW_noFullyHadr_ext & TbarW_noFullyHadr_ext2" #"TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" 
   #"TbarW_noFullyHadr_PSscaleUp" "TbarW_noFullyHadr_PSscaleDown" 
-  "TbarW_noFullyHadr_DS" "TW_aMCatNLO"
-"TTbar2L_powheg_0 & TTbar2L_powheg_1 & TTbar2L_powheg_2 & TTbar2L_powheg_3 ") #queda anadir las de TTbar
+  "TbarW_noFullyHadr_DS" 
+  "TW_aMCatNLO"
+  "TTbar2L_powheg_0 & TTbar2L_powheg_1 & TTbar2L_powheg_2 & TTbar2L_powheg_3 ") #queda anadir las de TTbar
 
-uplimit=$((${#runsamples[@]}-1))
+#uplimit=$((${#runsamples[@]}-1))
 #uplimit_syst=$((${#runsamples_syst[@]}-1))
 uplimit_unf=$((${#runsamples_unf[@]}-1))
 
@@ -82,7 +89,7 @@ workingpath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 if [ "$1" == "an" ]; then
     echo ""
-    echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TW ANALYSIS EXECUTION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+    echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TWTTbar ANALYSIS EXECUTION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
     echo ""
     echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Setting up the environment"
     source pre_start.sh
@@ -91,21 +98,23 @@ if [ "$1" == "an" ]; then
     echo ""
     echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Starting analysis"
     cd ../..
-  
+ 
     echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Running general-purpose samples..."
     for ((i=0; i<=$uplimit; i++)); do
-        if [ ${samples[i]} == "TTbar2L_powheg" ] || [ ${samples[i]} == "MuonEG" ] || [ ${samples[i]} == "SingleElec" ] || [ ${samples[i]} == "SingleMuon" ] || [ ${samples[i]} == "DoubleEG" ] || [ ${samples[i]} == "DoubleMuon" ]; then
-        root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, -6, 0, 1.0, \"makeHadd\")"
+        if [ ${samples[i]} == "MuonEG" ] || [ ${samples[i]} == "SingleElec" ] || [ ${samples[i]} == "SingleMuon" ] || [ ${samples[i]} == "DoubleEG" ] || [ ${samples[i]} == "DoubleMuon" ]; then
+          root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, -6, 0, 1.0, \"makeHadd\")"
+        elif [ ${samples[i]} == "TTbar2L_powheg" ]; then
+          root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, -6, 0, 1.0, \"makeHadd\")"
         elif [ ${samples[i]} == "TTbar_PowhegSemi" ]; then
-        root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, 0, 0, 1.0, \"Semi\")"
+          root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, 0, 0, 1.0, \"Semi\")"
         elif [ ${samples[i]} == "TW_aMCatNLO" ]; then
-        unset noskimtmppath
-        noskimtmppath=$noskimpath$init${runsamples[i]}$final
-        root -l -b -q "RunAnalyserPAF.C(\"$noskimtmppath\", \"$sel\", $2, 0, 0, 7.61064238831)"
-        cp TWTTbar_temp/Tree_TW_aMCatNLO_[0-9].root TWTTbar_temp/Tree_TW_aMCatNLO.root
-        rm TWTTbar_temp/Tree_TW_aMCatNLO_[0-9].root
+          unset noskimtmppath
+          noskimtmppath=$noskimpath$init${runsamples[i]}$final
+          root -l -b -q "RunAnalyserPAF.C(\"$noskimtmppath\", \"$sel\", $2, 0, 0, 7.61064238831)"
+          cp TWTTbar_temp/Tree_TW_aMCatNLO_[0-9].root TWTTbar_temp/Tree_TW_aMCatNLO.root
+          rm TWTTbar_temp/Tree_TW_aMCatNLO_[0-9].root
         else
-        root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2)"
+          root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2)"
         fi
         resetpaf -a
     done
@@ -121,24 +130,22 @@ if [ "$1" == "an" ]; then
         unset unftmppath
         unftmppath=$unfpath${runsamples_unf[i]}$final
         if [[ ${samples_unf[i]} == *"noFullyHadr"* ]]; then
-        xsec=19.4674104
+          xsec=19.4674104
+        elif [[ ${samples_unf[i]} == *"TTbar2L"* ]]; then
+          xsec=88.28769753
         else
-        xsec=35.85
+          xsec=35.85
         fi
         if [ ${runsamples_unf[i]} == "TW_aMCatNLO" ]; then
-        root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, 7.61064238831, \"Unfolding\")"
+          root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, 7.61064238831, \"Unfolding\")"
         elif [ ${samples_unf[i]} == "UNF_TW_noFullyHadr" ]; then
-        root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
+          root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
         elif [ ${samples_unf[i]} == "UNF_TbarW_noFullyHadr" ]; then
-        root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
-        elif [ ${samples_unf[i]} == "UNF_TTbar2L" ]; then
-        xsec=88.28769753 #secion eficaz de TTbar2L
-        root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_0 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_1 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_2 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_3\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
-        #elif [ ${samples_unf[i]} == "UNF_TTbar" ]; then
-        #xsec=831.76 #seccion eficaz de TTbar 
-        #root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar_Powheg_\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
+          root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
+        elif [ ${samples_unf[i]} == "UNF_TTbar2L_powheg_0" ]; then
+            root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_0 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_1 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_2 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_3\", \"$sel\", $2, -10, 0, $xsec, \"Unfolding makeHadd xsec:88.28769753\")"
         else
-        root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
+          root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
         fi
         resetpaf -a
     done
@@ -328,9 +335,11 @@ elif [ "$1" == "ch" ]; then
         echo "Reanalysing..."
         echo " "
         if [[ ${samples_unf[i]} == *"noFullyHadr"* ]]; then
-        xsec=19.4674104
+          xsec=19.4674104
+        elif [[ ${samples_unf[i]} == *"TTbar2L"* ]]; then
+          xsec=88.28769753
         else
-        xsec=35.85
+          xsec=35.85
         fi
         if [ ${runsamples_unf[i]} == "TW_aMCatNLO" ]; then
           root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, 7.61064238831, \"Unfolding\")"
@@ -338,10 +347,8 @@ elif [ "$1" == "ch" ]; then
           root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
         elif [ ${samples_unf[i]} == "UNF_TbarW_noFullyHadr" ]; then
           root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
-        elif [ ${samples_unf[i]} == "UNF_TTbar2L" ]; then
-          xsec=88.28769753 #secion eficaz de TTbar2L
-          #xsec=831.76 #seccion eficaz de TTbar
-          root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_0 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_1 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_2 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_3\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
+        elif [ ${samples_unf[i]} == "UNF_TTbar2L_powheg_0" ]; then
+            root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_0 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_1 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_2 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_3\", \"$sel\", $2, -10, 0, $xsec, \"Unfolding makeHadd xsec:88.28769753\")"
         else
           root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
         fi
@@ -362,6 +369,8 @@ elif [ "$1" == "ch" ]; then
           echo " "
           if [[ ${samples_unf[i]} == *"noFullyHadr"* ]]; then
             xsec=19.4674104
+          elif [[ ${samples_unf[i]} == *"TTbar2L"* ]]; then
+            xsec=88.28769753
           else
             xsec=35.85
           fi
@@ -371,10 +380,8 @@ elif [ "$1" == "ch" ]; then
             root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
           elif [ ${samples_unf[i]} == "UNF_TbarW_noFullyHadr" ]; then
             root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
-          elif [ ${samples_unf[i]} == "UNF_TTbar2L" ]; then
-            xsec=88.28769753 #secion eficaz de TTbar2L
-            #xsec=831.76 #seccion eficaz de TTbar
-            root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_0 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_1 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_2 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_3\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
+          elif [ ${samples_unf[i]} == "UNF_TTbar2L_powheg_0" ]; then
+            root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_0 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_1 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_2 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_3\", \"$sel\", $2, -10, 0, $xsec, \"Unfolding makeHadd xsec:88.28769753\")"
           else
             root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
           fi
