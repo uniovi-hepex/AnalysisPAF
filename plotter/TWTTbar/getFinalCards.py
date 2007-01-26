@@ -331,7 +331,7 @@ def GiveMeMyGoodAsimovHistos(var):
     #p.AddSample('TTbar2L_powheg',        "t#bar{t}",    r.itBkg, 633, "", opts)
     #p.SetWeight('TWeight')
 
-    p.AddSample("TTbar_PowhegSemi",      "Non-WorZ", r.itBkg, 413, "", opts)
+    #p.AddSample("TTbar_PowhegSemi",      "Non-WorZ", r.itBkg, 413, "", opts)
     p.AddSample("WJetsToLNu_MLM",        "Non-WorZ", r.itBkg, 413, "", opts)
 
     p.AddSample("WZ",                    "VVttbarV", r.itBkg, 390, "", opts)
