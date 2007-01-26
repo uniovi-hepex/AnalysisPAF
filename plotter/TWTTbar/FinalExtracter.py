@@ -11,7 +11,7 @@ if (len(sys.argv) > 1):
     print "> Chosen variable:", varName, "\n"
 else:
     print "> Default choice of variable\n"
-    varName     = 'LeadingLepEta'
+    varName     = 'LeadingLepPt'
 
 r.gROOT.SetBatch(True)
 #procs = ['ttbar', 'DY', 'Non-WorZ', 'VVttbarV']
@@ -179,7 +179,8 @@ if doSanityCheck:
     if not os.path.isfile('temp/{var}/ClosureTest_recobinning_{var}.root'.format(var = varName)):
         raise RuntimeError('The rootfile with the generated information does not exist')
     tmptfile = r.TFile.Open('temp/{var}/ClosureTest_recobinning_{var}.root'.format(var = varName))
-    tru = copy.deepcopy(tmptfile.Get('tWttbar'))
+    tru = copy.deepcopy(tmptfile.Get('tW'))
+    tru.Add(copy.deepcopy(tmptfile.Get('t#bar{t}')))
     tru.SetLineWidth(2)
     tru.SetLineColor(bp.colorMap[0])
     
@@ -190,28 +191,29 @@ if doSanityCheck:
 #    aMCatNLO.SetLineWidth(2)
 #    aMCatNLO.SetLineColor(r.kAzure)
     
-#    if not os.path.isfile('temp/{var}/ClosureTest_DS_recobinning_{var}.root'.format(var = varName)):
-#        raise RuntimeError('The rootfile with the generated DS variation information does not exist')
-#    tmptfile3 = r.TFile.Open('temp/{var}/ClosureTest_DS_recobinning_{var}.root'.format(var = varName))
-#    hDS = copy.deepcopy(tmptfile3.Get('tW'))
-#    hDS.SetLineWidth(2)
-#    hDS.SetLineColor(r.kGreen)
+    if not os.path.isfile('temp/{var}/ClosureTest_DS_recobinning_{var}.root'.format(var = varName)):
+        raise RuntimeError('The rootfile with the generated DS variation information does not exist')
+    tmptfile3 = r.TFile.Open('temp/{var}/ClosureTest_DS_recobinning_{var}.root'.format(var = varName))
+    hDS = copy.deepcopy(tmptfile3.Get('tW'))
+    hDS.Add(copy.deepcopy(tmptfile3.Get('t#bar{t}')))
+    hDS.SetLineWidth(2)
+    hDS.SetLineColor(r.kGreen)
     
     if nominal_withErrors[0].GetMaximum() <= tru.GetMaximum():      nominal_withErrors[0].SetMaximum(tru.GetMaximum())
 #    if nominal_withErrors[0].GetMaximum() <= aMCatNLO.GetMaximum(): nominal_withErrors[0].SetMaximum(aMCatNLO.GetMaximum())
-#    if nominal_withErrors[0].GetMaximum() <= hDS.GetMaximum():      nominal_withErrors[0].SetMaximum(hDS.GetMaximum())
+    if nominal_withErrors[0].GetMaximum() <= hDS.GetMaximum():      nominal_withErrors[0].SetMaximum(hDS.GetMaximum())
     
-    plot.addHisto(nominal_withErrors, 'hist',     'Total unc.',   'F', 'unc')
-    plot.addHisto(tru,                'L,same',   'tWttbar Powheg',    'L', 'mc')
+    plot.addHisto(nominal_withErrors, 'hist',     'Stat. unc.',   'F', 'unc')
+    plot.addHisto(tru,                'L,same',   't#bar{t} Powheg + tW DR',    'L', 'mc')
 #    plot.addHisto(aMCatNLO,           'L,same',   'tWttbar aMCatNLO',  'L', 'mc')
-#    plot.addHisto(hDS,                'L,same',   'tWttbar DS',        'L', 'mc')
+    plot.addHisto(hDS,                'L,same',   't#bar{t} Powheg + tW DS',        'L', 'mc')
     plot.addHisto(nominal,            'P,E,same', vl.labellegend, 'P', 'data')
     plot.saveCanvas(legloc)
-#    tmptfile3.Close()
+    tmptfile3.Close()
 #    tmptfile2.Close()
     tmptfile.Close()
 else:
-    plot.addHisto(nominal_withErrors, 'hist', 'Total unc.', 'F')
+    plot.addHisto(nominal_withErrors, 'hist', 'Stat. unc.', 'F')
     plot.addHisto(nominal, 'P,same', vl.labellegend, 'P', 'data')
     plot.saveCanvas(legloc)
 del plot
@@ -318,7 +320,8 @@ if not vl.asimov:
         if not os.path.isfile('temp/{var}/ClosureTest_recobinning_{var}.root'.format(var = varName)):
             raise RuntimeError('The rootfile with the generated information does not exist')
         tmptfile = r.TFile.Open('temp/{var}/ClosureTest_recobinning_{var}.root'.format(var = varName))
-        tru = copy.deepcopy(tmptfile.Get('tWttbar'))
+        tru = copy.deepcopy(tmptfile.Get('tW'))
+        tru.Add(copy.deepcopy(tmptfile.Get('t#bar{t}')))
         tru.SetLineWidth(2)
         tru.SetLineColor(bp.colorMap[0])
         
@@ -329,27 +332,29 @@ if not vl.asimov:
 #        aMCatNLO.SetLineWidth(2)
 #        aMCatNLO.SetLineColor(r.kAzure)
         
-#        if not os.path.isfile('temp/{var}/ClosureTest_DS_recobinning_{var}.root'.format(var = varName)):
-#            raise RuntimeError('The rootfile with the generated DS variation information does not exist')
-#        tmptfile3 = r.TFile.Open('temp/{var}/ClosureTest_DS_recobinning_{var}.root'.format(var = varName))
-#        hDS = copy.deepcopy(tmptfile3.Get('tWttbar'))
-#        hDS.SetLineWidth(2)
-#        hDS.SetLineColor(r.kGreen)
+        if not os.path.isfile('temp/{var}/ClosureTest_DS_recobinning_{var}.root'.format(var = varName)):
+            raise RuntimeError('The rootfile with the generated DS variation information does not exist')
+        tmptfile3 = r.TFile.Open('temp/{var}/ClosureTest_DS_recobinning_{var}.root'.format(var = varName))
+        hDS = copy.deepcopy(tmptfile3.Get('tW'))
+        hDS.Add(copy.deepcopy(tmptfile3.Get('t#bar{t}')))
+        hDS.SetLineWidth(2)
+        hDS.SetLineColor(r.kGreen)
       
         if nominal_withErrors[0].GetMaximum() <= tru.GetMaximum():      nominal_withErrors[0].SetMaximum(tru.GetMaximum())
 #        if nominal_withErrors[0].GetMaximum() <= aMCatNLO.GetMaximum(): nominal_withErrors[0].SetMaximum(aMCatNLO.GetMaximum())
-#        if nominal_withErrors[0].GetMaximum() <= hDS.GetMaximum():      nominal_withErrors[0].SetMaximum(hDS.GetMaximum())
+        if nominal_withErrors[0].GetMaximum() <= hDS.GetMaximum():      nominal_withErrors[0].SetMaximum(hDS.GetMaximum())
         
-        plot.addHisto(nominal_withErrors, 'hist',     'Total unc.',   'F', 'unc')
-        plot.addHisto(tru,                'L,same',   'tWttbar Powheg',    'L', 'mc')
+        plot.addHisto(nominal_withErrors, 'hist',     'Stat. unc.',   'F', 'unc')
+        plot.addHisto(tru,                'L,same',   't#bar{t} Powheg + tW DR',    'L', 'mc')
 #        plot.addHisto(aMCatNLO,           'L,same',   'tWttbar aMCatNLO',  'L', 'mc')
-#        plot.addHisto(hDS,                'L,same',   'tWttbar DS',        'L', 'mc')
+        plot.addHisto(hDS,                'L,same',   't#bar{t} Powheg + tW DS',        'L', 'mc')
         plot.addHisto(nominal,            'P,E,same', "Pseudodata",   'P', 'data')
         plot.saveCanvas(legloc_as)
 #        tmptfile2.Close()
         tmptfile.Close()
+        tmptfile3.Close()
     else:
-        plot.addHisto(nominal_withErrors, 'hist', 'Total unc.', 'F')
+        plot.addHisto(nominal_withErrors, 'hist', 'Stat. unc.', 'F')
         plot.addHisto(nominal, 'P,same', "Pseudodata", 'P', 'data')
         plot.saveCanvas(legloc_as)
     del plot
