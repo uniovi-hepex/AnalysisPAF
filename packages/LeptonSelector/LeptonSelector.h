@@ -2,7 +2,7 @@
 
 #include "PAFChainItemSelector.h"
 #include "Lepton.h"
-#include "SusyLeptonSF.h"
+#include "LeptonSF.h"
 #include <iostream>
 #include <vector>
 
