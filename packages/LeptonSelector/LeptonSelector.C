@@ -2,27 +2,25 @@
 
 ClassImp(LeptonSelector);
 
-LeptonSelector::LeptonSelector() : PAFChainItemSelector() {
-}
-
+void LeptonSelector::Summary(){}
 
 void LeptonSelector::Initialise(){
-  GetParameters();
-}
-
-void LeptonSelector::GetParameters(){
+  // Initialise LeptonSelector
   lIsData        = GetParam<Bool_t>("IsData");
-  lSelection     = GetParam<Int_t>("iSelection");
+  gSelection     = GetParam<Int_t>("iSelection");
+  fLeptonSF = new LeptonSF();
 }
-
 
 void LeptonSelector::GetLeptonVariables(Int_t i){
+  // Once per muon, get all the info
 	if(!lIsData){
 		gtP.SetPtEtaPhiM(Get<Float_t>("genLep_pt", i), Get<Float_t>("genLep_eta", i), Get<Float_t>("genLep_phi", i), Get<Float_t>("genLep_mass", i));
 		gpdgId = Get<Int_t>("genLep_pdgId", i);
 	}
 
 	tP.SetPxPyPzE(Get<Float_t>("LepGood_px", i), Get<Float_t>("LepGood_py", i), Get<Float_t>("LepGood_pz", i), Get<Float_t>("LepGood_energy", i));
+  pt = tP.Pt();
+  eta = tP.Eta();
 	charge = Get<Int_t>("LepGood_charge", i); 
 	type = TMath::Abs(Get<Int_t>("LepGood_pdgId",i)) == 11 ? 1 : 0;
 	tightVar = Get<Int_t>("LepGood_isTightId", i); 
@@ -36,34 +34,50 @@ void LeptonSelector::GetLeptonVariables(Int_t i){
   dxy = Get<Float_t>("LepGood_dxy", i);
   dz  = Get<Float_t>("LepGood_dz", i);
   sip = Get<Float_t>("LepGood_sip3d",i);
+  SF = 1;
 }
 
 void LeptonSelector::InsideLoop(){
+  // Clear vectors...
 	selLeptons.clear();
 	genLeptons.clear();
 	vetoLeptons.clear(); 
-	nLep     = Get<Int_t>("nLepGood"); 
 
+  // Loop over the leptons and select
+	nLep     = Get<Int_t>("nLepGood"); 
 	for(Int_t i = 0; i < nLep; i++){
 		GetLeptonVariables(i);
 		tL = Lepton(tP, charge, type);
-		if(isGoodLepton(tL)) selLeptons.push_back(tL);
-		if(isVetoLepton(tL)) vetoLeptons.push_back(tL);
+		if(isGoodLepton(tL)){
+      tL.SetSF(getTotalSF()); // Set SF and error
+      tL.SetSFerr(getTotalSFerr);
+      selLeptons.push_back(tL);
+    }
+		if(isVetoLepton(tL)){
+       tL.SetSf(1); tL.SetSFerr(1); // (no SF for Veto leptons...)
+       vetoLeptons.push_back(tL);
+    }
 	}
 
-	if(!lIsData){  // gen Leptons info...
+  // Loop over the gen leptons and get gen info...
+	if(!lIsData){  
 		ngenLep         = Get<Int_t>("ngenLep");
 		ngenLepFromTau  = Get<Int_t>("ngenLepFromTau");
-		//for(int i = 0; i < ngenLep; i++){
-		//	if(TMath::Abs(Get<Int_t>("genLep_motherId",i)) == 24) 
-		//}
-		// etc...
+		/*for(int i = 0; i < ngenLep; i++){
+			if(TMath::Abs(Get<Int_t>("genLep_motherId",i)) == 24) 
+		}
+		etc...*/
 	}
+  // Set params for the next selectors
   SetParam("selLeptons", selLeptons);
   SetParam("vetoLeptons", vetoLeptons);
   SetParam("genLeptons", genLeptons);
 }
 
+
+//################################################################
+//## Definition of wps...
+//################################################################
 Bool_t LeptonSelector::getSIPcut(Float_t cut){ 
   if(sip > cut) return false;
   return true; 
@@ -128,9 +142,12 @@ Bool_t LeptonSelector::getMultiIso(Int_t wp){
 }
 
 
-Bool_t LeptonSelector::isGoodLepton(Lepton lep){
+//################################################################
+//## Lepton definitions for each analysis
+//################################################################
+Bool_t LeptonSelector::isGoodLepton(Lepton lep){ // SELECTED LEPTONS
 	Bool_t passId; Bool_t passIso;
-	if(lSelection == iStopSelec){
+	if(gSelection == iStopSelec){
 		// Tight cut-based electrons, pT > 20, |eta| < 2.4, RelIso POG, tightIP2D, SIP3D > 4 
 		// Medium Muon ID, RelIso POG, tightIP2D, SIP3D > 4  
 		if(lep.isMuon){
@@ -145,7 +162,7 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
 		if(passId && passIso && getGoodVertex(iTight) && getSIPcut(4)) return true;
 		else return false;
 	}
-	if(lSelection == iOldStopSelec){
+	if(gSelection == iOldStopSelec){
 		// Tight cut-based electrons, pT > 20, |eta| < 2.4, MultiIsoVT, tightIP2D, SIP3D > 4 
 		// Medium Muon ID, MultiIsoVT, tightIP2D, SIP3D > 4
 		if(lep.isMuon){
@@ -160,7 +177,7 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
 		if(passId && passIso && getGoodVertex(iTight) && getSIPcut(4)) return true;
 		else return false;
 	}
-	else if(lSelection == iTopSelec){
+	else if(gSelection == iTopSelec){
 		// Tight cut-based electrons, pT > 20, |eta| < 2.4, RelIso POG, tightIP2D, SIP3D > 4 
 		// Tight Muon ID, RelIso POG, tightIP2D, SIP3D > 4 
 		if(lep.isMuon){
@@ -175,7 +192,7 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
 		if(passId && passIso && getGoodVertex(iTight) && getSIPcut(4)) return true;
 		else return false;
 	}
-	else if(lSelection == iWWSelec){
+	else if(gSelection == iWWSelec){
 		if(lep.isMuon){
 			passId  = getMuonId(iTight);
 			passIso = getRelIso04POG(iTight);
@@ -192,18 +209,18 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
 }
 
 
-Bool_t LeptonSelector::isVetoLepton(Lepton lep){
+Bool_t LeptonSelector::isVetoLepton(Lepton lep){ //VETO LEPTONS
 	Bool_t passId;
-	if(lSelection == iStopSelec){
+	if(gSelection == iStopSelec){
 		return true;
 	}
-	if(lSelection == iOldStopSelec){
+	if(gSelection == iOldStopSelec){
 		return true;
 	}
-	else if(lSelection == iTopSelec){
+	else if(gSelection == iTopSelec){
 		return true;
 	}
-	else if(lSelection == iWWSelec){
+	else if(gSelection == iWWSelec){
 		return true;
 	}
 	return false;
@@ -211,6 +228,19 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
 
 
 
-void LeptonSelector::Summary(){
+//################################################################
+//## SFs for each analysis
+//################################################################
+Float_t LeptonSelector::GetMuonIsoSF(Int_t wp, Int_t sys);
+Float_t LeptonSelector::GetMuonIdSF(Int_t wp, Int_t sys);
+Float_t LeptonSelector::GetMuonIP2DSF(Int_t wp, Int_t sys);
+Float_t LeptonSelector::GetMuonSIP3DSF(Int_t wp, Int_t sys);
+Float_t LeptonSelector::GetMuonTrackerSF(Int_t sys);
 
-}
+Float_t LeptonSelector::GetElectonIdIsoSF(Int_t wp, Int_t sys);
+Float_t LeptonSelector::GetElecIP2DSF(Int_t wp, Int_t sys);
+Float_t LeptonSelector::GetElecSIP3DSF(Int_t wp, Int_t sys);
+Float_t LeptonSelector::GetElecTrackerSF(Int_t sys);
+
+
+

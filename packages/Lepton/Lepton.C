@@ -1,11 +1,17 @@
 #include "Lepton.h"
 
-Float_t Lepton::GetSF(){
-	return 1;
+Float_t Lepton::GetSF(Int_t sys){
+  if      (sys ==  0) return SF;
+  else if (sys == -1) return SF-SFerr;
+  else if (sys ==  1) return SF+SFerr;
+  else return SF;
 }
-Float_t Lepton::GetSFUp(){
-	return 1;
+
+void Lepton::SetSF(Float_t val){
+  SF = val;
 }
-Float_t Lepton::GetSFDown(){
-	return 1;
+
+void Lepton::SetSFerr(Float_t val){
+  SFerr = val;
 }
+

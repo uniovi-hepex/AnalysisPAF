@@ -174,7 +174,7 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", Int_t nSlots = 1,
   // Additional packages
   //----------------------------------------------------------------------------
   myProject->AddPackage("Lepton");
-  //myProject->AddPackage("LeptonSF");
+  myProject->AddPackage("LeptonSF");
   //myProject->AddPackage("Jet");
   //myProject->AddPackage("BTagSFUtil");
   //myProject->AddPackage("PUWeight");

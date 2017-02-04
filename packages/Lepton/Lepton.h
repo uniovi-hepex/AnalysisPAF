@@ -1,7 +1,16 @@
 #ifndef LEPTON_H
-#define LEPTON 1
+#define LEPTON_H 1
 
 #include "TLorentzVector.h"
+
+enum iSFs{
+  iMuonReco, iMuonId, iMuonIso, iMuonIP2D, iMuonSIP3D,
+  iElecReco, iElecId, iElecIso, iElecIP2D, iElecSIP3D,
+  iTrigDoubleMuon, iTrigDoubleElec, iTrigElMu,
+	nfiles
+};
+enum wps{iVeto, iLoose, iMedium, iTight, iVeryTight};
+enum sel{iStopSelec, iOldStopSelec, iTopSelec, iWWSelec, ittDMSelec};
 
 class Lepton{
 	public:
@@ -26,14 +35,13 @@ class Lepton{
 		Int_t type;
     Bool_t isElec;
     Bool_t isMuon;
-		Float_t GetSF();
-		Float_t GetSFUp();
-		Float_t GetSFDown();
+		Float_t GetSF(Int_t sys);
+		void SetSF(Float_t val);
+		void SetSFerr(Float_t val);
 
 	protected:
 		Float_t SF;
-		Float_t SFDown;
-		Float_t SFUp;
+		Float_t SFerr;
 };
 
 #endif
