@@ -1,7 +1,7 @@
 R__LOAD_LIBRARY(DatasetManager/DatasetManager.C+)
 #include "DatasetManager/DatasetManager.h"
 
-void RunAnalysisPAF(TString sampleName  = "TTbar_Madgraph", Int_t nSlots = 1,
+void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", Int_t nSlots = 1,
 			Long64_t nEvents = 0,
 			Int_t stopMass = 0, Int_t lspMass  = 0,  Float_t  SusyWeight = 0.0) {
   
@@ -174,7 +174,7 @@ void RunAnalysisPAF(TString sampleName  = "TTbar_Madgraph", Int_t nSlots = 1,
   // Additional packages
   //----------------------------------------------------------------------------
   myProject->AddPackage("Lepton");
-  myProject->AddPackage("SusyLeptonSF");
+  myProject->AddPackage("LeptonSF");
   myProject->AddPackage("Jet");
   //myProject->AddPackage("BTagSFUtil");
   //myProject->AddPackage("PUWeight");
