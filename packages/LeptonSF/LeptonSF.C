@@ -1,25 +1,24 @@
 #include "LeptonSF.h"
-#include "TFile.h"
 
 #include <iostream>
 
 LeptonSF::LeptonSF():
-  fMuonTrackerSF(0),  // Muon Reco
-  fMuonIdSF(0),       // Muon Id
-  fMuonIsoSF(0),      // Muon Iso
-  fMuonIP2DSF(0),     // Muon IP2d
-  fMuonSIP3DSF(0),    // Muon SIP
+	fMuonTrackerSF(0),  // Muon Reco
+	fMuonIdSF(0),       // Muon Id
+	fMuonIsoSF(0),      // Muon Iso
+	fMuonIP2DSF(0),     // Muon IP2d
+	fMuonSIP3DSF(0),    // Muon SIP
 
-  fElecTrackerSF(0),  // Electron Reco
-  fElecIdSF(0),       // Electron Id (+Iso)
-  fElecIsoSF(0),      // Electron Iso
-  fElecIP2DSF(0),     // Electron IP2D
-  fElecSIP3DSF(0),    // Electron SIP3D
+	fElecTrackerSF(0),  // Electron Reco
+	fElecIdSF(0),       // Electron Id (+Iso)
+	fElecIsoSF(0),      // Electron Iso
+	fElecIP2DSF(0),     // Electron IP2D
+	fElecSIP3DSF(0),    // Electron SIP3D
 
-  fDoubleMuSF(0),     // Trigger Double Muon
-  fDoubleElSF(0),     // Trigger Double Elec
-  fMuEGSF(0){         // Trigger Elec-Muon
-	};
+	fDoubleMuSF(0),     // Trigger Double Muon
+	fDoubleElSF(0),     // Trigger Double Elec
+	fMuEGSF(0){         // Trigger Elec-Muon
+};
 
 
 
@@ -34,51 +33,51 @@ void LeptonSF::loadHisto(Int_t iHisto, Int_t wp){
       if     (wp == iLoose){  filename = "SUS_MuonLooseIdM17"; histoname = "SF";}
       else if(wp == iMedium){ filename = "SUS_MuonMediumIdM17"; histoname = "SF";}
       else if(wp == iTight){  filename = ""; histoname = "";}
-			fMuonIdSF = GetHistogramFromFileD(path + filename, histoname, "fMuonIdSF"); 
+			fMuonIdSF = GetHistogramFromFileD(path_to_SF_histos + filename, histoname, "fMuonIdSF"); 
 		case iMuonIso:
       if     (wp == iLoose){  filename = ""; histoname = "";}
       else if(wp == iMedium){ filename = ""; histoname = "";}
       else if(wp == iTight){  filename = ""; histoname = "";}
       else if(wp == iVeryTight){  filename = "SUS_MuonVTMultiIsovMediumM17"; histoname = "SF";}
-			fMuonIsoSF = GetHistogramFromFileD(path + filename, histoname, "fMuonIsoSF"); 
+			fMuonIsoSF = GetHistogramFromFileD(path_to_SF_histos + filename, histoname, "fMuonIsoSF"); 
 		case iMuonIP2D:
       if     (wp == iLoose){  filename = ""; histoname = "";}
       else if(wp == iTight){  filename = "SUS_MuonTIP2DvMediumM17"; histoname = "SF";}
-			fMuonIP2DSF = GetHistogramFromFileD(path + filename, histoname, "fMuonIP2DSF"); 
+			fMuonIP2DSF = GetHistogramFromFileD(path_to_SF_histos + filename, histoname, "fMuonIP2DSF"); 
 		case iMuonSIP3D:
       filename = "SUS_MuonSIPb4vMediumM17"; histoname = "SF";
-			fMuonSIP3DSF = GetHistogramFromFileD(path + filename, histoname, "fMuonSIP3DSF"); 
+			fMuonSIP3DSF = GetHistogramFromFileD(path_to_SF_histos + filename, histoname, "fMuonSIP3DSF"); 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>> Electrons
 		case iElecReco:
       filename = "ElecRecoM17"; histoname = "EGamma_SF2D";
-			fElecTrackerSF = GetHistogramFromFileD(path + filename, histoname, "fElecTrackerSF"); 
+			fElecTrackerSF = GetHistogramFromFileD(path_to_SF_histos + filename, histoname, "fElecTrackerSF"); 
 		case iElecId:
       if     (wp == iVeto){   filename = "ElecVetoCBidM17";   histoname = "EGamma_SF2D";}
       else if(wp == iLoose){  filename = "ElecLooseCBidM17";  histoname = "EGamma_SF2D";}
       else if(wp == iMedium){ filename = "ElecMediumCBidM17"; histoname = "EGamma_SF2D";}
       else if(wp == iTight){  filename = "ElecTightCBidM17";  histoname = "EGamma_SF2D";}
       filename = ""; histoname = "";
-			fElecIdSF = GetHistogramFromFileD(path + filename, histoname, "fElecIdSF"); 
+			fElecIdSF = GetHistogramFromFileD(path_to_SF_histos + filename, histoname, "fElecIdSF"); 
 		case iElecIso:
       filename = ""; histoname = "";
-			fElecIsoSF = GetHistogramFromFileD(path + filename, histoname, "fElecIsoSF"); 
+			fElecIsoSF = GetHistogramFromFileD(path_to_SF_histos + filename, histoname, "fElecIsoSF"); 
 		case iElecIP2D:
       if     (wp == iLoose){  filename = ""; histoname = "";}
       else if(wp == iTight){  filename = ""; histoname = "";}
-			fElecIP2DSF = GetHistogramFromFileD(path + filename, histoname, "fElecIP2DSF"); 
+			fElecIP2DSF = GetHistogramFromFileD(path_to_SF_histos + filename, histoname, "fElecIP2DSF"); 
 		case iElecSIP3D:
       filename = ""; histoname = "";
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>> Triggers
-			fElecSIP3DSF = GetHistogramFromFileD(path + filename, histoname, "fElecSIP3DSF"); 
+			fElecSIP3DSF = GetHistogramFromFileD(path_to_SF_histos + filename, histoname, "fElecSIP3DSF"); 
 		case iTrigDoubleMuon:
       filename = ""; histoname = "";
-			fDoubleMuSF = GetHistogramFromFileF(path + filename, histoname, "fDoubleMuSF"); 
+			fDoubleMuSF = GetHistogramFromFileF(path_to_SF_histos + filename, histoname, "fDoubleMuSF"); 
 		case iTrigDoubleElec:
       filename = ""; histoname = "";
-			fDoubleElSF = GetHistogramFromFileF(path + filename, histoname, "fDoubleElSF"); 
+			fDoubleElSF = GetHistogramFromFileF(path_to_SF_histos + filename, histoname, "fDoubleElSF"); 
 		case iTrigElMu:
       filename = ""; histoname = "";
-			fMuEGSF = GetHistogramFromFileF(path + filename, histoname, "fMuEGSF"); 
+			fMuEGSF = GetHistogramFromFileF(path_to_SF_histos + filename, histoname, "fMuEGSF"); 
 	}
    
   loadedHistos.push_back(iHisto);

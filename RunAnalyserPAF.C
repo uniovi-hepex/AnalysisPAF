@@ -4,7 +4,8 @@ R__LOAD_LIBRARY(DatasetManager/DatasetManager.C+)
 void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", Int_t nSlots = 1,
 			Long64_t nEvents = 0,
 			Int_t stopMass = 0, Int_t lspMass  = 0,  Float_t  SusyWeight = 0.0) {
-  
+
+	gSystem->Setenv("WDIR", gSystem->WorkingDirectory());  
   // VARIABLES TO BE USED AS PARAMETERS...
   Float_t G_Event_Weight  = 1.0;         
   Bool_t  G_IsData        = false;       
@@ -174,6 +175,8 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", Int_t nSlots = 1,
   // Additional packages
   //----------------------------------------------------------------------------
   myProject->AddPackage("Lepton");
+  myProject->AddPackage("Jet");
+  myProject->AddPackage("Functions");
   myProject->AddPackage("LeptonSF");
   //myProject->AddPackage("Jet");
   //myProject->AddPackage("BTagSFUtil");

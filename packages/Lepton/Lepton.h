@@ -3,14 +3,6 @@
 
 #include "TLorentzVector.h"
 
-enum iSFs{
-  iMuonReco, iMuonId, iMuonIso, iMuonIP2D, iMuonSIP3D,
-  iElecReco, iElecId, iElecIso, iElecIP2D, iElecSIP3D,
-  iTrigDoubleMuon, iTrigDoubleElec, iTrigElMu,
-	nfiles
-};
-enum wps{iVeto, iLoose, iMedium, iTight, iVeryTight};
-enum sel{iStopSelec, iOldStopSelec, iTopSelec, iWWSelec, ittDMSelec};
 
 class Lepton{
 	public:

@@ -1,19 +1,26 @@
 #include "LeptonSelector.h"
 
 ClassImp(LeptonSelector);
-
+LeptonSelector::LeptonSelector() : PAFChainItemSelector() {}
 void LeptonSelector::Summary(){}
 
 void LeptonSelector::Initialise(){
   // Initialise LeptonSelector
-  lIsData        = GetParam<Bool_t>("IsData");
+  gIsData        = GetParam<Bool_t>("IsData");
   gSelection     = GetParam<Int_t>("iSelection");
-  fLeptonSF = new LeptonSF();
+  LepSF = new LeptonSF();
+
+	if(gSelection == iStopSelec){
+    LepSF->loadHisto(iMuonId,   iMedium);
+    LepSF->loadHisto(iMuonIP2D, iTight);
+    LepSF->loadHisto(iElecReco);
+    LepSF->loadHisto(iElecId,   iTight);
+  }
 }
 
 void LeptonSelector::GetLeptonVariables(Int_t i){
   // Once per muon, get all the info
-	if(!lIsData){
+	if(!gIsData){
 		gtP.SetPtEtaPhiM(Get<Float_t>("genLep_pt", i), Get<Float_t>("genLep_eta", i), Get<Float_t>("genLep_phi", i), Get<Float_t>("genLep_mass", i));
 		gpdgId = Get<Int_t>("genLep_pdgId", i);
 	}
@@ -23,7 +30,7 @@ void LeptonSelector::GetLeptonVariables(Int_t i){
   eta = tP.Eta();
 	charge = Get<Int_t>("LepGood_charge", i); 
 	type = TMath::Abs(Get<Int_t>("LepGood_pdgId",i)) == 11 ? 1 : 0;
-	tightVar = Get<Int_t>("LepGood_isTightId", i); 
+	tightVar = Get<Int_t>("LepGood_tightId", i); 
 	mediumMuonId = Get<Int_t>("LepGood_mediumMuonId",i); 
 	etaSC = Get<Float_t>("LepGood_etaSc",i);
 	RelIso03 = Get<Float_t>("LepGood_relIso03",i);
@@ -49,18 +56,18 @@ void LeptonSelector::InsideLoop(){
 		GetLeptonVariables(i);
 		tL = Lepton(tP, charge, type);
 		if(isGoodLepton(tL)){
-      tL.SetSF(getTotalSF()); // Set SF and error
-      tL.SetSFerr(getTotalSFerr);
+      tL.SetSF(   LepSF->GetLeptonSF(     pt, eta) ); // Set SF and error
+      tL.SetSFerr(LepSF->GetLeptonSFerror(pt, eta) );
       selLeptons.push_back(tL);
     }
 		if(isVetoLepton(tL)){
-       tL.SetSf(1); tL.SetSFerr(1); // (no SF for Veto leptons...)
+       tL.SetSF(1); tL.SetSFerr(1); // (no SF for Veto leptons...)
        vetoLeptons.push_back(tL);
     }
 	}
 
   // Loop over the gen leptons and get gen info...
-	if(!lIsData){  
+	if(!gIsData){  
 		ngenLep         = Get<Int_t>("ngenLep");
 		ngenLepFromTau  = Get<Int_t>("ngenLepFromTau");
 		/*for(int i = 0; i < ngenLep; i++){
@@ -68,10 +75,11 @@ void LeptonSelector::InsideLoop(){
 		}
 		etc...*/
 	}
+  if(selLeptons.size() < 2) return;
   // Set params for the next selectors
-  SetParam("selLeptons", selLeptons);
-  SetParam("vetoLeptons", vetoLeptons);
-  SetParam("genLeptons", genLeptons);
+  //SetParam("selLeptons", *v);
+  //SetParam("vetoLeptons", vetoLeptons);
+  //SetParam("genLeptons", genLeptons);
 }
 
 
@@ -225,22 +233,5 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){ //VETO LEPTONS
 	}
 	return false;
 }
-
-
-
-//################################################################
-//## SFs for each analysis
-//################################################################
-Float_t LeptonSelector::GetMuonIsoSF(Int_t wp, Int_t sys);
-Float_t LeptonSelector::GetMuonIdSF(Int_t wp, Int_t sys);
-Float_t LeptonSelector::GetMuonIP2DSF(Int_t wp, Int_t sys);
-Float_t LeptonSelector::GetMuonSIP3DSF(Int_t wp, Int_t sys);
-Float_t LeptonSelector::GetMuonTrackerSF(Int_t sys);
-
-Float_t LeptonSelector::GetElectonIdIsoSF(Int_t wp, Int_t sys);
-Float_t LeptonSelector::GetElecIP2DSF(Int_t wp, Int_t sys);
-Float_t LeptonSelector::GetElecSIP3DSF(Int_t wp, Int_t sys);
-Float_t LeptonSelector::GetElecTrackerSF(Int_t sys);
-
 
 

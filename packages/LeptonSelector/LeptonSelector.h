@@ -3,15 +3,14 @@
 #include "PAFChainItemSelector.h"
 #include "Lepton.h"
 #include "LeptonSF.h"
+#include "Functions.h"
 #include <iostream>
 #include <vector>
 
-:
 class LeptonSelector : public PAFChainItemSelector{
 
 	public:
 
-		LeptonSelector() : PAFChainItemSelector() {}
 		LeptonSelector(); 
 		virtual ~LeptonSelector() {}
 		virtual void InsideLoop();
@@ -22,13 +21,10 @@ class LeptonSelector : public PAFChainItemSelector{
 		std::vector<Lepton> genLeptons;
 		std::vector<Lepton> vetoLeptons;
 
-
-
-
 	protected:
 
-		LeptonSF *fLeptonSF;
-		Bool_t lIsData;
+		LeptonSF *LepSF;
+		Bool_t gIsData;
 		Bool_t gSelection;
 
 		// LepGood
@@ -69,18 +65,5 @@ class LeptonSelector : public PAFChainItemSelector{
 		Bool_t isGoodLepton(Lepton lep);
 		Bool_t isVetoLepton(Lepton lep);
 
-    // SFs...
-		Float_t GetMuonIsoSF(Int_t wp, Int_t sys);
-		Float_t GetMuonIdSF(Int_t wp, Int_t sys);
-		Float_t GetMuonIP2DSF(Int_t wp, Int_t sys);
-		Float_t GetMuonSIP3DSF(Int_t wp, Int_t sys);
-		Float_t GetMuonTrackerSF(Int_t sys);
-
-		Float_t GetElectonIdIsoSF(Int_t wp, Int_t sys);
-		Float_t GetElecIP2DSF(Int_t wp, Int_t sys);
-		Float_t GetElecSIP3DSF(Int_t wp, Int_t sys);
-		Float_t GetElecTrackerSF(Int_t sys);
-
   ClassDef(LeptonSelector, 0);
 };
-

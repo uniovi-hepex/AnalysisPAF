@@ -1,13 +1,15 @@
 #ifndef LEPTONSF_H
 #define LEPTONSF 1
 
+#include <iostream>
+#include "TFile.h"
 #include "TH2F.h"
-#include "../Lepton/Lepton.h"
+#include "Lepton.h"
+#include "Functions.h"
 #include "TMath.h"
 #include "TGraphAsymmErrors.h"
 
-const TString path = "../../SFsHistograms/";
-std::vector<Int_t> loadedHistos;
+const TString path_to_SF_histos = "$WDIR/AnalyserPAF/InputFiles/";
 
 class LeptonSF {
  public:
@@ -51,6 +53,8 @@ class LeptonSF {
     return fMuEGSF->GetBinError(fMuEGSF->FindBin(TMath::Abs(eta1),TMath::Abs(eta2)));
   }
   
+	std::vector<Int_t> loadedHistos;
+
  protected:
   TH2D* GetHistogramFromFileD(const char* file, const char* histo, const char* hname);
   TH2F* GetHistogramFromFileF(const char* file, const char* histo, const char* hname) const;
