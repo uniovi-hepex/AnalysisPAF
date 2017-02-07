@@ -8,11 +8,7 @@
 #include <iostream>
 #include <vector>
 
-enum wps{iVeto, iLoose, iMedium, iTight, iVeryTight};
-enum sel{iStopSelec, iOldStopSelec, iTopSelec, iWWSelec, ittDMSelec};
-enum vdir{inom, iup, idown}
-
-class LeptonSelector : public PAFChainItemSelector{
+class JetSelector : public PAFChainItemSelector{
 
 	public:
 
@@ -31,6 +27,12 @@ class LeptonSelector : public PAFChainItemSelector{
 
 	protected:
 
+		BTagSFUtil *fBTagSFnom ;
+		BTagSFUtil *fBTagSFbUp ;
+		BTagSFUtil *fBTagSFbDo ;
+		BTagSFUtil *fBTagSFlUp ;
+		BTagSFUtil *fBTagSFlDo ;
+
 		Bool_t gIsData;
 		Bool_t gSelection;
 
@@ -40,8 +42,10 @@ class LeptonSelector : public PAFChainItemSelector{
 		TLorentzVector tpJ; 
 		TLorentzVector tmcJ; 
 		Int_t jetId;
-    Int_t mcflav;
+    Int_t flavmc;
 		Int_t csv;
+    Float_t pt; Float_t eta; Float_t rawPt; 
+    Float_t pt_corrUp; Float_t pt_corrDown; 
 		// genJet
     Int_t ngenJet;
 		TLorentzVector gtP;
@@ -50,7 +54,7 @@ class LeptonSelector : public PAFChainItemSelector{
 		void GetJetVariables(Int_t i);
 		Bool_t IsBtag(Jet j); 
     void SetSystematics(Jet j);
-    Bool_t Cleaning(Jet j, vector<Lepton> vLep);
+    Bool_t Cleaning(Jet j, vector<Lepton> vLep, Float_t minDR = 0.4);
 
   ClassDef(JetSelector, 0);
 };

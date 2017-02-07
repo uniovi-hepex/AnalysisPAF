@@ -49,7 +49,6 @@ void LeptonSelector::InsideLoop(){
 	selLeptons.clear();
 	genLeptons.clear();
 	vetoLeptons.clear(); 
-
   // Loop over the leptons and select
 	nLep     = Get<Int_t>("nLepGood"); 
 	for(Int_t i = 0; i < nLep; i++){
@@ -75,9 +74,9 @@ void LeptonSelector::InsideLoop(){
 		}
 		etc...*/
 	}
-  if(selLeptons.size() < 2) return;
+  if(selLeptons.size() < 2) return; // skim: 2 Selected leptons
   // Set params for the next selectors
-  //SetParam("selLeptons", *v);
+  //SetParam("selLeptons", selLeptons);
   //SetParam("vetoLeptons", vetoLeptons);
   //SetParam("genLeptons", genLeptons);
 }

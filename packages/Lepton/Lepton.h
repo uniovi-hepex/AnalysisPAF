@@ -34,6 +34,8 @@ class Lepton{
 	protected:
 		Float_t SF;
 		Float_t SFerr;
+
+    //ClassDef(Lepton, 0);
 };
 
 #endif

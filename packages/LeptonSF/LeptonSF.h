@@ -1,5 +1,5 @@
 #ifndef LEPTONSF_H
-#define LEPTONSF 1
+#define LEPTONSF_H 1
 
 #include <iostream>
 #include "TFile.h"
