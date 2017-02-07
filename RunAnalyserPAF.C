@@ -10,6 +10,7 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", Int_t nSlots = 1,
   Float_t G_Event_Weight  = 1.0;         
   Bool_t  G_IsData        = false;       
   Bool_t  G_IsMCatNLO     = false;
+  Bool_t  G_DoSystematics = false;
 
   // PAF mode
   //----------------------------------------------------------------------------
@@ -164,13 +165,15 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", Int_t nSlots = 1,
   myProject->SetInputParam("lspMass"      , lspMass          );
   myProject->SetInputParam("IsMCatNLO"    , G_IsMCatNLO      );  
   myProject->SetInputParam("iSelection"   , 1); // enum...
+  myProject->SetInputParam("doSyst"       , G_DoSystematics); 
 
   if(nEvents != 0) myProject->SetNEvents(nEvents);
 
   // Name of analysis class
   //----------------------------------------------------------------------------
   myProject->AddSelectorPackage("LeptonSelector");
-  //myProject->AddSelectorPackage("JetSelector");
+  myProject->AddSelectorPackage("JetSelector");
+  myProject->AddSelectorPackage("EventBuilder");
 
   // Additional packages
   //----------------------------------------------------------------------------
@@ -178,9 +181,8 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", Int_t nSlots = 1,
   myProject->AddPackage("Jet");
   myProject->AddPackage("Functions");
   myProject->AddPackage("LeptonSF");
-  //myProject->AddPackage("Jet");
-  //myProject->AddPackage("BTagSFUtil");
-  //myProject->AddPackage("PUWeight");
+  myProject->AddPackage("BTagSFUtil");
+  myProject->AddPackage("PUWeight");
   //myProject->AddPackage("mt2");
 
   // Let's rock!
