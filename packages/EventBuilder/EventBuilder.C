@@ -34,7 +34,7 @@ void EventBuilder::Initialise(){
 	fPUWeightUp   = new PUWeight(18494.9,  Spring2016_25ns_poisson_OOTPU, "2016_ichep"); //  18494.9 
 	fPUWeightDown = new PUWeight(20441.7,  Spring2016_25ns_poisson_OOTPU, "2016_ichep"); //  20441.7 
 
-  Weight = GetParam<float>("weight");
+  Weight = GetParam<Float_t>("weight");
 
   // >>>>>>>>>>>>>> Get selected leptons:
   // SelLeptons = GetParam<vector<Lepton>>("selLeptons");
@@ -70,6 +70,7 @@ void EventBuilder::InsideLoop(){
   PUSF      = fPUWeight    ->GetWeight(nTrueInt);
   PUSF_Up   = fPUWeightUp  ->GetWeight(nTrueInt);
   PUSF_Down = fPUWeightDown->GetWeight(nTrueInt);
+
 
   // >>>>>>>>> Calculate Trigger SF and variations
 	// ### 2 LEPTONS

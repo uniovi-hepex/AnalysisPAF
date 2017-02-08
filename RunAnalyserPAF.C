@@ -168,17 +168,17 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", Int_t nSlots = 1,
   myProject->AddSelectorPackage("LeptonSelector");
   myProject->AddSelectorPackage("JetSelector");
   myProject->AddSelectorPackage("EventBuilder");
-  //myProject->AddSelectorPackage("MiniTreeProducer");
+  myProject->AddSelectorPackage("MiniTreeProducer");
 
   // Additional packages
   //----------------------------------------------------------------------------
   myProject->AddPackage("Lepton");
   myProject->AddPackage("Jet");
+  myProject->AddPackage("mt2");
   myProject->AddPackage("Functions");
   myProject->AddPackage("LeptonSF");
   myProject->AddPackage("BTagSFUtil");
   myProject->AddPackage("PUWeight");
-  //myProject->AddPackage("mt2");
 
   // Let's rock!
   //----------------------------------------------------------------------------

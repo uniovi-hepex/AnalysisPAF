@@ -38,9 +38,9 @@ class MiniTreeProducer : public PAFChainItemSelector{
 
     Int_t TNJets;            // Jets...
     Int_t TNJetsBtag;
-    Float_t TJet_Px[40];
-    Float_t TJet_Py[40];
-    Float_t TJet_Pz[40];
+    Float_t TJet_Pt[40];
+    Float_t TJet_Eta[40];
+    Float_t TJet_Phi[40];
     Float_t TJet_E[40];
     Int_t TJet_isBJet[40];
 

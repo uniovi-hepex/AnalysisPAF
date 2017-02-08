@@ -59,9 +59,9 @@ void MiniTreeProducer::Initialise(){
 	fTree->Branch("TNJets",           &TNJets,         "TNJets/I");
 	fTree->Branch("TNJetsBtag",       &TNJetsBtag,     "TNJetsBtag/I");
 	fTree->Branch("TJet_isBJet",       TJet_isBJet,       "TJet_isBJet[TNJets]/I");
-	fTree->Branch("TJet_Px",           TJet_Px,           "TJet_Px[TNJets]/F");
-	fTree->Branch("TJet_Py",           TJet_Py,           "TJet_Py[TNJets]/F");
-	fTree->Branch("TJet_Pz",           TJet_Pz,           "TJet_Pz[TNJets]/F");
+	fTree->Branch("TJet_Pt",           TJet_Pt,           "TJet_Pt[TNJets]/F");
+	fTree->Branch("TJet_Eta",           TJet_Eta,           "TJet_Eta[TNJets]/F");
+	fTree->Branch("TJet_Phi",           TJet_Phi,           "TJet_Phi[TNJets]/F");
 	fTree->Branch("TJet_E",            TJet_E,            "TJet_E[TNJets]/F");
 
 		if(gDoSyst){
@@ -125,14 +125,12 @@ void MiniTreeProducer::GetDefaultVariables(){
   //TMll = (selLeptons[0].p+selLeptons[1].p).M();
   TMET     = Get<Float_t>("met_pt");
   TMET_Phi = Get<Float_t>("met_phi");
-  Int_t gChan = GetParam<Int_t>("gChan");
-  //TChannel = Int_t(gChan);
+  //Int_t gChan = GetParam<Int_t>("gChan");
+  TChannel = GetParam<Int_t>("gChannel");
  
 	//TWeight = GetParam<Float_t>("EventWeight");
 	TNJets      = GetParam<Int_t>("nSelJets");            // Jets...
 	TNJetsBtag  = GetParam<Int_t>("nSelBJets");
-
-
 
  /* 
     TMll = getMll(selLeptons[0], selLeptons[1]);
@@ -149,12 +147,32 @@ void MiniTreeProducer::GetDefaultVariables(){
   TLep2_E       = selLeptons[1].p.E();
   TLep2_Charge  = selLeptons[1].charge;
 
-    Float_t TJet_Px[40];
-    Float_t TJet_Py[40];
-    Float_t TJet_Pz[40];
-    Float_t TJet_E[40];
-    Int_t TJet_isBJet[40];
+  for(int k = 0; k<40; k++){
+    if(k<TNJets){
+      TJet_Pt[k]           = selJets[k].p.Pt();
+      TJet_Eta[k]           = selJets[k].p.Eta();
+      TJet_Phi[k]           = selJets[k].p.Phi();
+      TJet_E[k]            = selJets[k].p.E();
+      TJet_isBJet[k]       = selJets[k].isbtag;
+    }
+    else{
+      TJet_Pt[k]           = 0;
+      TJet_Eta[k]           = 0;
+      TJet_Phi[k]           = 0;
+      TJet_E[k]            = 0;
+      TJet_isBJet[k]       = 0;
+    }
+  }
+
+
 */
 }
 
-void MiniTreeProducer::GetSystematicVariables(){}
+void MiniTreeProducer::GetSystematicVariables(){
+  GetParam<Float_t>("TriggerSF");
+  GetParam<Float_t>("TriggerSF_Up");
+  GetParam<Float_t>("TriggerSF_Down");
+  GetParam<Float_t>("PUSF");
+  GetParam<Float_t>("PUSF_Up");
+  GetParam<Float_t>("PUSF_Down");
+}
