@@ -1,3 +1,15 @@
+///////////////////////////////////////////////////////////////////////////////////////////
+//
+//  Lepton Selector: create vectors with selected leptons, veto (or fakeable) leptons...
+//  
+//  All SFs and variables are within the Lepton definition
+//
+//  To do: compute gen leptons (include taus) and counters
+//         definition of veto leptons
+//
+///////////////////////////////////////////////////////////////////////////////////////////
+
+
 #include "LeptonSelector.h"
 
 ClassImp(LeptonSelector);
@@ -18,13 +30,7 @@ void LeptonSelector::Initialise(){
   }
 }
 
-void LeptonSelector::GetLeptonVariables(Int_t i){
-  // Once per muon, get all the info
-	if(!gIsData){
-		gtP.SetPtEtaPhiM(Get<Float_t>("genLep_pt", i), Get<Float_t>("genLep_eta", i), Get<Float_t>("genLep_phi", i), Get<Float_t>("genLep_mass", i));
-		gpdgId = Get<Int_t>("genLep_pdgId", i);
-	}
-
+void LeptonSelector::GetLeptonVariables(Int_t i){ // Once per muon, get all the info
 	tP.SetPxPyPzE(Get<Float_t>("LepGood_px", i), Get<Float_t>("LepGood_py", i), Get<Float_t>("LepGood_pz", i), Get<Float_t>("LepGood_energy", i));
   pt = tP.Pt();
   eta = tP.Eta();
@@ -41,44 +47,77 @@ void LeptonSelector::GetLeptonVariables(Int_t i){
   dxy = Get<Float_t>("LepGood_dxy", i);
   dz  = Get<Float_t>("LepGood_dz", i);
   sip = Get<Float_t>("LepGood_sip3d",i);
-  SF = 1;
+	SF = 1;
+}
+
+void LeptonSelector::GetGenLeptonVariables(Int_t i){
+	tP.SetPtEtaPhiM(Get<Float_t>("genLep_pt", i), Get<Float_t>("genLep_eta", i), Get<Float_t>("genLep_phi", i), Get<Float_t>("genLep_mass", i));
+	charge = Get<Int_t>("genLep_charge", i);
+	gpdgMId = TMath::Abs(Get<Int_t>("genLep_motherId", i));
+	type = TMath::Abs(Get<Int_t>("genLep_pdgId",i)) == 11 ? 1 : 0;
+}
+
+void LeptonSelector::GetGenLepFromTauVariables(Int_t i){
+	tP.SetPtEtaPhiM(Get<Float_t>("genLepFromTau_pt", i), Get<Float_t>("genLepFromTau_eta", i), Get<Float_t>("genLepFromTau_phi", i), Get<Float_t>("genLepFromTau_mass", i));
+	charge = Get<Int_t>("genLepFromTau_charge", i);
+	gpdgMId = TMath::Abs(Get<Int_t>("genLepFromTau_grandmotherId", i));
+	type = TMath::Abs(Get<Int_t>("genLepFromTau_pdgId",i)) == 11 ? 1 : 0;
 }
 
 void LeptonSelector::InsideLoop(){
-  // Clear vectors...
+	// Clear vectors...
 	selLeptons.clear();
 	genLeptons.clear();
 	vetoLeptons.clear(); 
-  // Loop over the leptons and select
+	// Loop over the leptons and select
 	nLep     = Get<Int_t>("nLepGood"); 
 	for(Int_t i = 0; i < nLep; i++){
 		GetLeptonVariables(i);
 		tL = Lepton(tP, charge, type);
 		if(isGoodLepton(tL)){
-      tL.SetSF(   LepSF->GetLeptonSF(     pt, eta) ); // Set SF and error
-      tL.SetSFerr(LepSF->GetLeptonSFerror(pt, eta) );
-      selLeptons.push_back(tL);
-    }
+			tL.SetSF(   LepSF->GetLeptonSF(     pt, eta) ); // Set SF and error
+			tL.SetSFerr(LepSF->GetLeptonSFerror(pt, eta) );
+			selLeptons.push_back(tL);
+		}
 		if(isVetoLepton(tL)){
-       tL.SetSF(1); tL.SetSFerr(1); // (no SF for Veto leptons...)
-       vetoLeptons.push_back(tL);
-    }
+			tL.SetSF(1); tL.SetSFerr(1); // (no SF for Veto leptons...)
+			vetoLeptons.push_back(tL);
+		}
 	}
 
-  // Loop over the gen leptons and get gen info...
+	// Loop over the gen leptons and get gen info...
 	if(!gIsData){  
 		ngenLep         = Get<Int_t>("ngenLep");
 		ngenLepFromTau  = Get<Int_t>("ngenLepFromTau");
-		/*for(int i = 0; i < ngenLep; i++){
-			if(TMath::Abs(Get<Int_t>("genLep_motherId",i)) == 24) 
-		}
-		etc...*/
+		for(Int_t i = 0; i < ngenLep; i++){
+			GetGenLeptonVariables(i);
+			if(gpdgMId == 24 || gpdgMId == 25 || gpdgMId == 25){
+        tL = Lepton(tP, charge, type);
+        genLeptons.push_back(tL);
+			} 
+ 		}
+		for(Int_t i = 0; i < ngenLepFromTau; i++){
+			GetGenLepFromTauVariables(i);
+			if(gpdgMId == 24 || gpdgMId == 25 || gpdgMId == 25){
+				tL = Lepton(tP, charge, type);
+        nLeptonsFromTau++;
+				genLeptons.push_back(tL);
+			} 
+		} 
 	}
-  if(selLeptons.size() < 2) return; // skim: 2 Selected leptons
+
+	nSelLeptons = selLeptons.size();
+	nVetoLeptons = vetoLeptons.size();;
+  nGenLeptons  = genLeptons.size();
+   
   // Set params for the next selectors
-  //SetParam("selLeptons", selLeptons);
+  //SetParam("selLeptons",  selLeptons );
   //SetParam("vetoLeptons", vetoLeptons);
-  //SetParam("genLeptons", genLeptons);
+  //SetParam("genLeptons",  genLeptons );
+  SetParam("nLeptonsFromTau", nLeptonsFromTau);
+  SetParam("nGenLeptons", nGenLeptons);
+  SetParam("nSelLeptons", nSelLeptons);
+  SetParam("nVetoLeptons", nVetoLeptons);
 }
 
 

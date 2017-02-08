@@ -1,3 +1,14 @@
+//////////////////////////////////////////////////////////////////////////
+//
+//  Jet Selector
+//  Produce vectors with: genJets, selJets, vetoJets...
+//  also some variables like number of b-jets
+//
+//  All SFs and variables are within the Jet definition
+//
+/////////////////////////////////////////////////////////////////////////
+
+
 #include "JetSelector.h"
 #include <string>
 
@@ -26,11 +37,11 @@ void JetSelector::GetJetVariables(Int_t i){
   tpJ.SetPxPyPzE(Get<Float_t>("Jet_px",i), Get<Float_t>("Jet_py",i), Get<Float_t>("Jet_pz", i), Get<Float_t>("Jet_energy",i));
   eta = tJ.p.Eta();
   pt = tJ.p.Pt();
-  rawPt = Get<Float_t>("Jet_rawPt",i);
+  rawPt       = Get<Float_t>("Jet_rawPt",i);
   pt_corrUp   = Get<Float_t>("Jet_corr_JECUp",i); 
   pt_corrDown = Get<Float_t>("Jet_corr_JECDown",i);
-  jetId = Get<Int_t>("Jet_id",i);;
-  csv = Get<Float_t>("Jet_btagCSV", i);
+  jetId       = Get<Int_t>("Jet_id",i);
+  csv         = Get<Float_t>("Jet_btagCSV", i);
 	if(!gIsData){
 		flavmc = Get<Float_t>("Jet_mcFlavour", i);
 		tmcJ.SetPxPyPzE(Get<Float_t>("Jet_mcPx",i), Get<Float_t>("Jet_mcPy",i), Get<Float_t>("Jet_mcPz",i), Get<Float_t>("Jet_mcEnergy",i));

@@ -36,4 +36,10 @@ bool JetMomentumComparator(Jet i   , Jet    j);
 vector<Lepton> SortLeptonsByPt(vector<Lepton>& Leptons);
 vector<Jet>       SortJetsByPt(vector<Jet>   & Jets);
 
+Float_t JEStoMET(vector<Jet> vjets, Float_t met, Float_t met_phi, Int_t dir = 0);
+Float_t getJetJERpt(Jet jet);
+
+
+
+
 #endif

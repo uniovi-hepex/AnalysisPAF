@@ -185,6 +185,33 @@ Float_t LeptonSF::GetTrackerMuonSF(Float_t eta){
 	return val;
 }
 
-Float_t LeptonSF::p2(Float_t val){
-	return val*val;
+///////////////////////////////////////////////////
+// Trigger SFs
+///////////////////////////////////////////////////
+
+Float_t LeptonSF::GetTrigDoubleMuSF(Float_t eta1, Float_t eta2) const { // binned in eta1, eta2
+	eta1 = TMath::Abs(eta1);
+	eta2 = TMath::Abs(eta2);
+	return fDoubleMuSF->GetBinContent(fDoubleMuSF->FindBin(eta1, eta2));
+}
+Float_t LeptonSF::GetTrigDoubleElSF(Float_t eta1, Float_t eta2) const { // binned in eta1, eta2
+	eta1 = TMath::Abs(eta1);
+	eta2 = TMath::Abs(eta2);
+	return fDoubleElSF->GetBinContent(fDoubleElSF->FindBin(eta1, eta2));
+}
+Float_t LeptonSF::GetTrigElMuGSF(Float_t eta1, Float_t eta2) const { // binned in eta1, eta2
+	eta1 = TMath::Abs(eta1);
+	eta2 = TMath::Abs(eta2);
+	return fMuEGSF->GetBinContent(fMuEGSF->FindBin(eta1, eta2) );
+}
+
+// Trigger SF errors
+Float_t LeptonSF::GetTrigDoubleMuSF_err(Float_t eta1, Float_t eta2) const { // binned in eta1, eta2
+	return fDoubleMuSF->GetBinError(fDoubleMuSF->FindBin(TMath::Abs(eta1),TMath::Abs(eta2)));
+}
+Float_t LeptonSF::GetTrigDoubleElSF_err(Float_t eta1, Float_t eta2) const { // binned in eta1, eta2
+	return fDoubleElSF->GetBinError(fDoubleElSF->FindBin(TMath::Abs(eta1),TMath::Abs(eta2)));
+}
+Float_t LeptonSF::GetTrigElMuSF_err(Float_t eta1, Float_t eta2) const { // binned in eta1, eta2
+	return fMuEGSF->GetBinError(fMuEGSF->FindBin(TMath::Abs(eta1),TMath::Abs(eta2)));
 }

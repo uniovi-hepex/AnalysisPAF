@@ -23,35 +23,13 @@ class LeptonSF {
 	Float_t p2(Float_t var);
   
   // Trigger SFs
-  float GetDoubleMuSF(float eta1, float eta2) const { // binned in eta1, eta2
-    eta1 = TMath::Abs(eta1);
-    eta2 = TMath::Abs(eta2);
-    return fDoubleMuSF->GetBinContent(fDoubleMuSF->FindBin(eta1, eta2));
-    //return fDoubleMuSF->GetBinContent(fDoubleMuSF->FindBin(eta1, eta2)) - fDoubleMuSF->GetBinError(fDoubleMuSF->FindBin(eta1, eta2));
-  }
-  float GetDoubleElSF(float eta1, float eta2) const { // binned in eta1, eta2
-    eta1 = TMath::Abs(eta1);
-    eta2 = TMath::Abs(eta2);
-    return fDoubleElSF->GetBinContent(fDoubleElSF->FindBin(eta1, eta2));
-    //return fDoubleElSF->GetBinContent(fDoubleElSF->FindBin(eta1, eta2)) - fDoubleElSF->GetBinError(fDoubleElSF->FindBin(eta1, eta2));
-  }
-  float GetMuEGSF    (float eta1, float eta2) const { // binned in eta1, eta2
-    eta1 = TMath::Abs(eta1);
-    eta2 = TMath::Abs(eta2);
-    return fMuEGSF->GetBinContent(fMuEGSF->FindBin(eta1, eta2) );
-    //return fMuEGSF->GetBinContent(fMuEGSF->FindBin(eta1, eta2)) - fMuEGSF->GetBinError(fMuEGSF->FindBin(eta1, eta2));
-  }
-  
+  Float_t GetTrigDoubleMuSF(Float_t eta1, Float_t eta2) const;
+  Float_t GetTrigDoubleElSF(Float_t eta1, Float_t eta2) const;
+  Float_t GetTrigElMuGSF   (Float_t eta1, Float_t eta2) const;
   // Trigger SF errors
-  float GetDoubleMuSF_err(float eta1, float eta2) const { // binned in eta1, eta2
-    return fDoubleMuSF->GetBinError(fDoubleMuSF->FindBin(TMath::Abs(eta1),TMath::Abs(eta2)));
-  }
-  float GetDoubleElSF_err(float eta1, float eta2) const { // binned in eta1, eta2
-    return fDoubleElSF->GetBinError(fDoubleElSF->FindBin(TMath::Abs(eta1),TMath::Abs(eta2)));
-  }
-  float GetMuEGSF_err(float eta1, float eta2) const { // binned in eta1, eta2
-    return fMuEGSF->GetBinError(fMuEGSF->FindBin(TMath::Abs(eta1),TMath::Abs(eta2)));
-  }
+  Float_t GetTrigDoubleMuSF_err(Float_t eta1, Float_t eta2) const;
+  Float_t GetTrigDoubleElSF_err(Float_t eta1, Float_t eta2) const;
+  Float_t GetTrigElMuSF_err    (Float_t eta1, Float_t eta2) const;
   
 	std::vector<Int_t> loadedHistos;
 

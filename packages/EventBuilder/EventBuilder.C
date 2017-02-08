@@ -1,3 +1,13 @@
+//////////////////////////////////////////////////////////////////////////////////////
+//
+//  EventBuilder: compute all important variables related with the event
+//  Triggers, PU reweighting, global SFs and systematics...
+//
+//  To do: Add trigger SFs!!
+//
+//////////////////////////////////////////////////////////////////////////////////////
+
+
 #include "EventBuilder.h"
 
 ClassImp(EventBuilder);
@@ -19,81 +29,82 @@ void EventBuilder::Initialise(){
   else if(gSampleName.Contains("SingleMuon")) gIsSingleMuon = true;
   else if(gSampleName.Contains("MuonEG")) gIsMuonEG     = true;
   
-	TriggSF       = new LeptonSF();
 	fPUWeight     = new PUWeight(19664.225, Spring2016_25ns_poisson_OOTPU, "2016_ichep");
 	fPUWeightUp   = new PUWeight(18494.9,  Spring2016_25ns_poisson_OOTPU, "2016_ichep"); //  18494.9 
 	fPUWeightDown = new PUWeight(20441.7,  Spring2016_25ns_poisson_OOTPU, "2016_ichep"); //  20441.7 
 
   NormWeight = GetParam<float>("weight");
 
-  // Get selected leptons:
+  // >>>>>>>>>>>>>> Get selected leptons:
   // SelLeptons = GetParam<vector<Lepton>>("selLeptons");
 
+	TriggSF       = new LeptonSF();
+  // >>>>>>>>>>>>>>> Load histograms for trigger used in analysis
 	// if(gSelection == iStopSelec){
   // Load histograms for trigger SFs here!!!! 
 	// }
+	passTrigger = 1;
+  isSS = 0;
 	
 	nTrueInt = 0;
 
-	TrigSFElec = 0;
-	TrigSFMuon = 0;
-	TrigSFElMu = 0;
-	TrigSFElec_Up = 0;
-	TrigSFElMu_Up = 0;
-	TrigSFMuon_Up = 0;
-	TrigSFElec_Down = 0;
-	TrigSFMuon_Down = 0;
-	TrigSFElMu_Down = 0;
-	PUSF = 0;
-	PUSF_Up = 0;
-	PUSF_Down = 0;
+	TriggerSF      = 1;
+	TriggerSF_err  = 1;
+	TriggerSF_Up   = 1;
+	TriggerSF_Down = 1;
+	PUSF = 1;
+	PUSF_Up = 1;
+	PUSF_Down = 1;
 }
 
 void EventBuilder::InsideLoop(){
-  // Calculate norm weight
+  // >>>>>>>>> Calculate norm weight
+  METfilters = PassesMETfilters();
   if(gIsMCatNLO) genWeight = Get<Float_t>("genWeight");
   else           genWeight = 1;
   EventWeight = NormWeight*genWeight;
 
-  // Calculate PU weight and variations  
+  // >>>>>>>>> Calculate PU weight and variations  
   nTrueInt = Get<Float_t>("nTrueInt");
   PUSF      = fPUWeight    ->GetWeight(nTrueInt);
   PUSF_Up   = fPUWeightUp  ->GetWeight(nTrueInt);
   PUSF_Down = fPUWeightDown->GetWeight(nTrueInt);
 
-  // Calculate Trigger SF and variations
-/*  if(SelLeptons.size() < 2) continue;
-
-  SF_Elec = TrigSF_Elec->GetLeptonSF(SelLeptons[0].p.Pt(),SelLeptons[0].p.Eta(), SelLeptons[1].p.Pt(), SelLeptons[1].p.Eta());  
-  SF_Muon = TrigSF_Muon->GetLeptonSF(SelLeptons[0].p.Pt(),SelLeptons[0].p.Eta(), SelLeptons[1].p.Pt(), SelLeptons[1].p.Eta());  
-  SF_ElMu = TrigSF_ElMu->GetLeptonSF(SelLeptons[0].p.Pt(),SelLeptons[0].p.Eta(), SelLeptons[1].p.Pt(), SelLeptons[1].p.Eta());  
-*/
-
-  // Pass trigger ee/eµ/µµ
-	PassHLT_Elec = PassesDoubleElecTrigger();
-	PassHLT_Muon = PassesDoubleMuonTrigger();
-	PassHLT_ElMu = PassesElMuTrigger();
+  // >>>>>>>>> Calculate Trigger SF and variations
+	// ### 2 LEPTONS
+  /*if(selLeptons.size() < 2) continue; // At least 2 selected leptons
+  isSS = (selLeptons[0].charge*selLeptons[1].charge) > 0;
+  if(selLeptons[0].IsMuon && selLepton[1].IsMuon){  // µµ channel
+    passTrigger = PassDoubleMuonTrigger();
+		TriggerSF      = TrigSF->GetTrigDoubleMuSF(    SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());  
+		TriggerSF_err  = TrigSF->GetTrigDoubleMuSF_err(SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());  
+  }
+  else if(selLeptons[0].IsElec && selLepton[1].IsElec){  // ee channel 
+    passTrigger    = PassDoubleElecTrigger();
+		TriggerSF      = TrigSF->GetTrigDoubleElSF(    SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());  
+		TriggerSF_err  = TrigSF->GetTrigDoubleElSF_err(SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());  
+  }
+  else{  // eµ channel
+    passTrigger = PassElMuTrigger();
+		TriggerSF      = TrigSF->GetTrigElMuSF(    SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());  
+		TriggerSF_err  = TrigSF->GetTrigElMuSF_err(SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());  
+  }
+  TriggerSF_Down = TriggerSF-TriggerSF_err;
+  TriggerSF_Up   = TriggerSF+TriggerSF_err;
+  */
 
   // Set Params to pass all the info...
-  SetParam("PassDoubleElecTrig", PassHLT_Elec);
-  SetParam("PassDoubleMuonTrig", PassHLT_Muon);
-  SetParam("PassDoubleElMuTrig", PassHLT_ElMu);
-
-  SetParam("TrigSFElec",      TrigSFElec);
-  SetParam("TrigSFMuon",      TrigSFMuon);
-  SetParam("TrigSFElMu",      TrigSFElMu);
-  SetParam("TrigSFElec_Up",   TrigSFElec_Up);
-  SetParam("TrigSFMuon_Up",   TrigSFMuon_Up);
-  SetParam("TrigSFElMu_Up",   TrigSFElMu_Up);
-  SetParam("TrigSFElec_Down", TrigSFElec_Down);
-  SetParam("TrigSFMuon_Down", TrigSFMuon_Down);
-  SetParam("TrigSFElMu_Down", TrigSFElMu_Down);
-
+  SetParam("TriggerSF",      TriggerSF);
+  SetParam("TriggerSF_Up",   TriggerSF_Up);
+  SetParam("TriggerSF_Down", TriggerSF_Down);
   SetParam("PUSF",      PUSF);
   SetParam("PUSF_Up",   PUSF_Up);
   SetParam("PUSF_Down", PUSF_Down);
 
-  SetParam("EventWeight", EventWeight);
+  SetParam("EventWeight",     EventWeight);
+  SetParam("passTrigger",     passTrigger);
+  SetParam("isSS",            isSS);
+  SetParam("METfilters",      METfilters);
 }
 
 Bool_t EventBuilder::PassesDoubleElecTrigger(){
@@ -148,3 +159,18 @@ Bool_t EventBuilder::PassesSingleMuonTrigger(){
   return passSingleMuon;
 }
 
+Bool_t EventBuilder::PassesMETfilters(){
+  if(!gIsData) return true; // only for data
+  if (Get<Int_t>("Flag_HBHENoiseFilter") && 
+      Get<Int_t>("Flag_HBHENoiseIsoFilter") && 
+      Get<Int_t>("Flag_EcalDeadCellTriggerPrimitiveFilter") && 
+      Get<Int_t>("Flag_goodVertices") && 
+			Get<Int_t>("Flag_eeBadScFilter") &&
+			Get<Int_t>("Flag_badMuonFilter") && 
+			Get<Int_t>("Flag_badChargedHadronFilter") &&  
+			Get<Int_t>("Flag_globalTightHalo2016Filter")
+		 ){
+    return true;
+  }
+  else return false;
+}

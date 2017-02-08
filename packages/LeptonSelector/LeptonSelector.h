@@ -48,13 +48,18 @@ class LeptonSelector : public PAFChainItemSelector{
 		Float_t sip;
     Float_t SF;
 		// genLeptons
-		std::vector<Lepton> gtL;
     Int_t ngenLep;
 		Int_t ngenLepFromTau;
-		TLorentzVector gtP;
-		Int_t gpdgId;
+		Int_t gpdgMId;
+
+		Int_t nLeptonsFromTau;
+		Int_t nSelLeptons;
+		Int_t nGenLeptons;
+		Int_t nVetoLeptons;
 
 		void GetLeptonVariables(Int_t i);
+		void GetGenLeptonVariables(Int_t i);
+		void GetGenLepFromTauVariables(Int_t i);
 		Bool_t getSIPcut(Float_t cut); 
 		Bool_t getGoodVertex(Int_t wp); 
 		Bool_t getRelIso03POG(Int_t wp); 
