@@ -25,6 +25,11 @@ class JetSelector : public PAFChainItemSelector{
 		std::vector<Jet> mcJets;
 		std::vector<Jet> vetoJets;
 
+    Int_t nSelJets;
+    Int_t nGenJets;
+    Int_t nVetoJets;
+    Int_t nJets15;
+
 	protected:
 
 		BTagSFUtil *fBTagSFnom ;
@@ -48,10 +53,9 @@ class JetSelector : public PAFChainItemSelector{
     Float_t pt_corrUp; Float_t pt_corrDown; 
 		// genJet
     Int_t ngenJet;
-		TLorentzVector gtP;
-		Int_t isgenBtag;
 
 		void GetJetVariables(Int_t i);
+		void GetGenJetVariables(Int_t i);
 		Bool_t IsBtag(Jet j); 
     void SetSystematics(Jet j);
     Bool_t Cleaning(Jet j, vector<Lepton> vLep, Float_t minDR = 0.4);

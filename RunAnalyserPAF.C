@@ -16,31 +16,19 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", Int_t nSlots = 1,
   //----------------------------------------------------------------------------
   cout << endl; 
   PAFIExecutionEnvironment* pafmode = 0;
-  if (nSlots <=1 ) {
-    PAF_INFO("RunTree_ReReco", "Sequential mode chosen");
-    pafmode = new PAFSequentialEnvironment();
-  }
-  else if (nSlots <=64) {
-    PAF_INFO("RunTree_ReReco", "PROOF Lite mode chosen");
-    pafmode = new PAFPROOFLiteEnvironment(nSlots);
-  }
-  else {
-    PAF_INFO("RunTree_ReReco", "PoD mode chosen");
-    pafmode = new PAFPoDEnvironment(nSlots);
-  }
+  if      (nSlots <=1 ) pafmode = new PAFSequentialEnvironment();
+  else if (nSlots <=64) pafmode = new PAFPROOFLiteEnvironment(nSlots);
+  else                  pafmode = new PAFPoDEnvironment(nSlots);
+  PAFProject* myProject = new PAFProject(pafmode); // Create PAF Project whith that environment
 
-  // Create PAF Project whith that environment
-  //----------------------------------------------------------------------------
-  PAFProject* myProject = new PAFProject(pafmode);
-
-  // Base path to input files
-  //----------------------------------------------------------------------------
-  TString dataPath = "/pool/ciencias/";
 
   // INPUT DATA SAMPLE
   //----------------------------------------------------------------------------
+  TString dataPath = "/pool/ciencias/"; // Base path to input files
   TString userhome = "/mnt_pool/fanae105/user/$USER/";
   DatasetManager* dm = DatasetManager::GetInstance();
+
+  // Tab in the spreadsheet https://docs.google.com/spreadsheets/d/1b4qnWfZrimEGYc1z4dHl21-A9qyJgpqNUbhOlvCzjbE
   dm->SetTab("DR80XasymptoticMiniAODv2_v2");
   //dm->SetTab("DR80XasymptoticMiniAODv2");
 
@@ -174,6 +162,7 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", Int_t nSlots = 1,
   myProject->AddSelectorPackage("LeptonSelector");
   myProject->AddSelectorPackage("JetSelector");
   myProject->AddSelectorPackage("EventBuilder");
+  //myProject->AddSelectorPackage("MiniTreeProducer");
 
   // Additional packages
   //----------------------------------------------------------------------------

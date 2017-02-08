@@ -6,6 +6,8 @@
 //
 //  All SFs and variables are within the Jet definition
 //
+//  ToDo: add JER syst (and JER jet variations to selJets)...
+//
 /////////////////////////////////////////////////////////////////////////
 
 
@@ -35,17 +37,24 @@ void JetSelector::Initialise(){
 
 void JetSelector::GetJetVariables(Int_t i){
   tpJ.SetPxPyPzE(Get<Float_t>("Jet_px",i), Get<Float_t>("Jet_py",i), Get<Float_t>("Jet_pz", i), Get<Float_t>("Jet_energy",i));
-  eta = tJ.p.Eta();
-  pt = tJ.p.Pt();
+  eta = tpJ.Eta();;
+  pt = tpJ.Pt();
   rawPt       = Get<Float_t>("Jet_rawPt",i);
   pt_corrUp   = Get<Float_t>("Jet_corr_JECUp",i); 
   pt_corrDown = Get<Float_t>("Jet_corr_JECDown",i);
   jetId       = Get<Int_t>("Jet_id",i);
   csv         = Get<Float_t>("Jet_btagCSV", i);
+  flavmc = 99999;
 	if(!gIsData){
 		flavmc = Get<Float_t>("Jet_mcFlavour", i);
 		tmcJ.SetPxPyPzE(Get<Float_t>("Jet_mcPx",i), Get<Float_t>("Jet_mcPy",i), Get<Float_t>("Jet_mcPz",i), Get<Float_t>("Jet_mcEnergy",i));
 	}
+}
+
+void JetSelector::GetGenJetVariables(Int_t i){
+  tpJ.SetPtEtaPhiM(Get<Float_t>("genJet_pt",i), Get<Float_t>("genJet_eta",i), Get<Float_t>("genJet_phi", i), Get<Float_t>("genJet_mass",i));
+  eta = Get<Float_t>("genJet_eta",i);
+  pt =  Get<Float_t>("genJet_pt",i);
 }
 
 void JetSelector::InsideLoop(){
@@ -72,7 +81,29 @@ void JetSelector::InsideLoop(){
 			if(tJ.isBtag && tJ.p.Pt() > 20) vetoJets.push_back(tJ);
 		}
 	}
-  // Add gen jets...
+	if(!gIsData){  // Add gen jets...
+		ngenJet = Get<Int_t>("ngenJet");
+		for(Int_t i = 0; i < ngenJet; i++){
+			GetGenJetVariables(i);
+			tJ = Jet(tpJ, 0, 0, 0);
+			genJets.push_back(tJ);    
+		}
+	}
+
+  nSelJets  = selJets.size();
+  nJets15   = Jets15.size();
+  nVetoJets = vetoJets.size();
+  nGenJets  = genJets.size();
+
+  // Set params...
+  // SetParam("selJets",  selJets);
+  // SetParam("Jets15",   Jets15);
+  // SetParam("vetoJets", vetoJets);
+  // SetParam("genJets",  genJets);
+  SetParam("nSelJets",  nSelJets);
+  SetParam("nJets15",  nJets15);
+  SetParam("nVetoJets",  nVetoJets);
+  SetParam("nGenJets",  nGenJets);
 }
 
 Bool_t JetSelector::IsBtag(Jet j){
