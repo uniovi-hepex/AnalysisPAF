@@ -8,8 +8,9 @@
 #include "Functions.h"
 #include "TMath.h"
 #include "TGraphAsymmErrors.h"
+#include "TSystem.h"
 
-const TString path_to_SF_histos = "$WDIR/AnalyserPAF/InputFiles/";
+const TString path_to_SF_histos = gSystem->WorkingDirectory() + TString("/InputFiles/");
 
 class LeptonSF {
  public:
@@ -20,7 +21,6 @@ class LeptonSF {
 	Float_t GetLeptonSF(Float_t pt, Float_t ieta);
 	Float_t GetLeptonSFerror(Float_t pt, Float_t ieta);
 	TGraphAsymmErrors* LoadTrackerMuonSF(const char* file, const char* histo);
-	Float_t p2(Float_t var);
   
   // Trigger SFs
   Float_t GetTrigDoubleMuSF(Float_t eta1, Float_t eta2) const;

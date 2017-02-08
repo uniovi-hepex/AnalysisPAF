@@ -28,6 +28,7 @@ void LeptonSelector::Initialise(){
     LepSF->loadHisto(iElecReco);
     LepSF->loadHisto(iElecId,   iTight);
   }
+  else std::cout << ">>>>>>>>>>>> WRONG SELECTION!!!!!!!!" << std::endl;
 }
 
 void LeptonSelector::GetLeptonVariables(Int_t i){ // Once per muon, get all the info
@@ -69,6 +70,7 @@ void LeptonSelector::InsideLoop(){
 	selLeptons.clear();
 	genLeptons.clear();
 	vetoLeptons.clear(); 
+  nLeptonsFromTau = 0;
 	// Loop over the leptons and select
 	nLep     = Get<Int_t>("nLepGood"); 
 	for(Int_t i = 0; i < nLep; i++){

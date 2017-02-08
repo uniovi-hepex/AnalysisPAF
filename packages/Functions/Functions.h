@@ -18,7 +18,7 @@ enum iSFs{
 
 enum wps{iVeto, iLoose, iMedium, iTight, iVeryTight};
 
-enum sel{iStopSelec, iOldStopSelec, iTopSelec, iWWSelec, ittDMSelec};
+enum sel{iStopSelec, iOldStopSelec, iTopSelec, iWWSelec, ittDMSelec, ittHSelec};
 
 enum sys{iNom, 
 	iJesUp, iJesDown, iJERUp, iJERDown, 
@@ -30,6 +30,8 @@ enum sys{iNom,
 	nSys
 };
 
+enum eChannel{iElMu, iElec, iMuon, nChannels};
+
 bool LepMomentumComparator(Lepton i, Lepton j);
 bool JetMomentumComparator(Jet i   , Jet    j);
 
@@ -38,7 +40,7 @@ vector<Jet>       SortJetsByPt(vector<Jet>   & Jets);
 
 Float_t JEStoMET(vector<Jet> vjets, Float_t met, Float_t met_phi, Int_t dir = 0);
 Float_t getJetJERpt(Jet jet);
-
+Float_t p2(Float_t x);
 
 
 

@@ -1,16 +1,18 @@
 R__LOAD_LIBRARY(DatasetManager/DatasetManager.C+)
 #include "DatasetManager/DatasetManager.h"
 
+
 void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", Int_t nSlots = 1,
 			Long64_t nEvents = 0,
 			Int_t stopMass = 0, Int_t lspMass  = 0,  Float_t  SusyWeight = 0.0) {
 
-	gSystem->Setenv("WDIR", gSystem->WorkingDirectory());  
   // VARIABLES TO BE USED AS PARAMETERS...
   Float_t G_Event_Weight  = 1.0;         
   Bool_t  G_IsData        = false;       
   Bool_t  G_IsMCatNLO     = false;
   Bool_t  G_DoSystematics = false;
+  Bool_t  G_IsFastSim = false;
+
 
   // PAF mode
   //----------------------------------------------------------------------------
@@ -76,6 +78,7 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", Int_t nSlots = 1,
       cout << " weightSum(MC@NLO) = " << dm->GetSumWeights()     << endl;
     }
 		else if(sampleName.BeginsWith("T2tt_mStop")){
+      G_IsFastSim = true;
 			TString lp = "/pool/ciencias/HeppyTreesDR80X/v1/";
 			cout << "Analyzing Stop Dilep sample" << endl;
 			G_Event_Weight = SusyWeight;
@@ -92,6 +95,7 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", Int_t nSlots = 1,
 			sampleName = Form("T2ttDilep_mStop%i_mLsp%i",stopMass, lspMass);
 		}
     else if(sampleName.BeginsWith("T2tt")){
+      G_IsFastSim = true;
       TString lp = "/pool/ciencias/HeppyTreesDR80X/v1/";
       cout << "Analyzing Stop sample" << endl;
       G_Event_Weight = SusyWeight;
@@ -144,6 +148,7 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", Int_t nSlots = 1,
     G_IsMCatNLO = true;
   }
 
+	//Int_t iStopSelec = 0; Int_t iOldStopSelec = 1; Int_t iTopSelec = 2; Int_t iWWSelec = 3; Int_t ittDMSelec = 4; Int_t ittHSelec = 5;
   // Parameters for the analysis
   //----------------------------------------------------------------------------
   myProject->SetInputParam("sampleName",    sampleName       );
@@ -152,8 +157,9 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", Int_t nSlots = 1,
   myProject->SetInputParam("stopMass"     , stopMass         );
   myProject->SetInputParam("lspMass"      , lspMass          );
   myProject->SetInputParam("IsMCatNLO"    , G_IsMCatNLO      );  
-  myProject->SetInputParam("iSelection"   , 1); // enum...
+  myProject->SetInputParam("iSelection"   , 0);
   myProject->SetInputParam("doSyst"       , G_DoSystematics); 
+  myProject->SetInputParam("IsFastSim"    , G_IsFastSim);
 
   if(nEvents != 0) myProject->SetNEvents(nEvents);
 

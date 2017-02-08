@@ -29,6 +29,7 @@ class JetSelector : public PAFChainItemSelector{
     Int_t nGenJets;
     Int_t nVetoJets;
     Int_t nJets15;
+    Int_t nBtagJets;
 
 	protected:
 

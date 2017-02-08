@@ -3,7 +3,8 @@
 //  EventBuilder: compute all important variables related with the event
 //  Triggers, PU reweighting, global SFs and systematics...
 //
-//  To do: Add trigger SFs!!
+//  To do: Add trigger SFs when become available
+//         Add LHE weights when become available
 //
 //////////////////////////////////////////////////////////////////////////////////////
 
@@ -16,10 +17,10 @@ void EventBuilder::Summary(){}
 
 void EventBuilder::Initialise(){
 	gIsData = GetParam<Bool_t>("IsData");
-	gIsSelection = GetParam<Int_t>("iSelection");
+	gSelection = GetParam<Int_t>("iSelection");
   gSampleName  = GetParam<TString>("sampleName");
   gIsMCatNLO   = GetParam<Bool_t>("IsMCatNLO");
-  IsFastSim =  gSampleName.BeginsWith("T2tt")? true : false; 
+  gChannel = -1;
   
   gIsDoubleElec = false; gIsDoubleMuon = false; gIsSingleElec = false;
   gIsSingleMuon = false; gIsMuonEG = false;
@@ -33,7 +34,7 @@ void EventBuilder::Initialise(){
 	fPUWeightUp   = new PUWeight(18494.9,  Spring2016_25ns_poisson_OOTPU, "2016_ichep"); //  18494.9 
 	fPUWeightDown = new PUWeight(20441.7,  Spring2016_25ns_poisson_OOTPU, "2016_ichep"); //  20441.7 
 
-  NormWeight = GetParam<float>("weight");
+  Weight = GetParam<float>("weight");
 
   // >>>>>>>>>>>>>> Get selected leptons:
   // SelLeptons = GetParam<vector<Lepton>>("selLeptons");
@@ -62,7 +63,7 @@ void EventBuilder::InsideLoop(){
   METfilters = PassesMETfilters();
   if(gIsMCatNLO) genWeight = Get<Float_t>("genWeight");
   else           genWeight = 1;
-  EventWeight = NormWeight*genWeight;
+  NormWeight = Weight*genWeight;
 
   // >>>>>>>>> Calculate PU weight and variations  
   nTrueInt = Get<Float_t>("nTrueInt");
@@ -74,12 +75,17 @@ void EventBuilder::InsideLoop(){
 	// ### 2 LEPTONS
   /*if(selLeptons.size() < 2) continue; // At least 2 selected leptons
   isSS = (selLeptons[0].charge*selLeptons[1].charge) > 0;
-  if(selLeptons[0].IsMuon && selLepton[1].IsMuon){  // µµ channel
+  
+  if     (selLeptons[0].IsMuon && selLepton[1].IsMuon) gChannel = iMuon
+  else if(selLeptons[0].IsElec && selLepton[1].IsElec) gChannel = iElec;
+  else                                                 gChannel = iElMu;
+
+  if     (gChannel == iMuon){  // µµ channel
     passTrigger = PassDoubleMuonTrigger();
 		TriggerSF      = TrigSF->GetTrigDoubleMuSF(    SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());  
 		TriggerSF_err  = TrigSF->GetTrigDoubleMuSF_err(SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());  
   }
-  else if(selLeptons[0].IsElec && selLepton[1].IsElec){  // ee channel 
+  else if(gChannel == iElec){  // ee channel 
     passTrigger    = PassDoubleElecTrigger();
 		TriggerSF      = TrigSF->GetTrigDoubleElSF(    SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());  
 		TriggerSF_err  = TrigSF->GetTrigDoubleElSF_err(SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());  
@@ -101,7 +107,8 @@ void EventBuilder::InsideLoop(){
   SetParam("PUSF_Up",   PUSF_Up);
   SetParam("PUSF_Down", PUSF_Down);
 
-  SetParam("EventWeight",     EventWeight);
+  SetParam("gChannel",        gChannel);
+  SetParam("NormWeight",     NormWeight);
   SetParam("passTrigger",     passTrigger);
   SetParam("isSS",            isSS);
   SetParam("METfilters",      METfilters);

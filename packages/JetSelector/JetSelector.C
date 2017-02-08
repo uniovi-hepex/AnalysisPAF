@@ -44,7 +44,7 @@ void JetSelector::GetJetVariables(Int_t i){
   pt_corrDown = Get<Float_t>("Jet_corr_JECDown",i);
   jetId       = Get<Int_t>("Jet_id",i);
   csv         = Get<Float_t>("Jet_btagCSV", i);
-  flavmc = 99999;
+  flavmc = -999999;
 	if(!gIsData){
 		flavmc = Get<Float_t>("Jet_mcFlavour", i);
 		tmcJ.SetPxPyPzE(Get<Float_t>("Jet_mcPx",i), Get<Float_t>("Jet_mcPy",i), Get<Float_t>("Jet_mcPz",i), Get<Float_t>("Jet_mcEnergy",i));
@@ -64,20 +64,24 @@ void JetSelector::InsideLoop(){
   genJets.clear();
   vetoJets.clear();
   Jets15.clear();
+  nBtagJets = 0;
 
-  // Loop over the jets
-  nJet = Get<Int_t>("nJet");
-  for(Int_t i = 0; i < nJet; i++){
-    GetJetVariables(i);
-    tJ = Jet(tpJ, csv, jetId, flavmc);
+	// Loop over the jets
+	nJet = Get<Int_t>("nJet");
+	for(Int_t i = 0; i < nJet; i++){
+		GetJetVariables(i);
+		tJ = Jet(tpJ, csv, jetId, flavmc);
 		tJ.isBtag = IsBtag(tJ);
-	SetSystematics(tJ);
-	// Fill the vectors
+		SetSystematics(tJ);
+		// Fill the vectors
 		if(tJ.id > 0 && Cleaning(tJ, Leptons) && TMath::Abs(tJ.p.Eta()) < 2.4){
 			SetSystematics(tJ);
 			tJ.isBtag = IsBtag(tJ);
 			if(tJ.p.Pt() > 15 || tJ.pTJESUp > 15 || tJ.pTJESDown > 15) Jets15.push_back(tJ);
-			if(tJ.p.Pt() > 30 || tJ.pTJESUp > 30 || tJ.pTJESDown > 30) selJets.push_back(tJ);
+			if(tJ.p.Pt() > 30 || tJ.pTJESUp > 30 || tJ.pTJESDown > 30){
+				selJets.push_back(tJ);
+				if(tJ.isBtag) nBtagJets++;
+			} 
 			if(tJ.isBtag && tJ.p.Pt() > 20) vetoJets.push_back(tJ);
 		}
 	}
@@ -104,6 +108,7 @@ void JetSelector::InsideLoop(){
   SetParam("nJets15",  nJets15);
   SetParam("nVetoJets",  nVetoJets);
   SetParam("nGenJets",  nGenJets);
+  SetParam("nSelBJets",  nBtagJets);
 }
 
 Bool_t JetSelector::IsBtag(Jet j){

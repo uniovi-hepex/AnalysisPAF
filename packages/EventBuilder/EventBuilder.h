@@ -27,8 +27,8 @@ class EventBuilder : public PAFChainItemSelector{
     Float_t TriggerSF; Float_t TriggerSF_Up; Float_t TriggerSF_Down; Float_t TriggerSF_err;
 		Float_t PUSF;      Float_t PUSF_Up;  	   Float_t PUSF_Down;
 
-    Float_t EventWeight; // Nominal
-    Float_t NormWeight;  // CrossSection/NumberOfGenEvents
+    Float_t NormWeight; // Nominal
+    Float_t Weight;  // CrossSection/NumberOfGenEvents
     Float_t genWeight;   // For aMCatNLO samples
 
     Float_t nTrueInt;
@@ -53,10 +53,10 @@ class EventBuilder : public PAFChainItemSelector{
     Bool_t gIsDoubleElec;
     Bool_t gIsMuonEG;
     Bool_t  gIsData;
-    Int_t   gIsSelection;
+    Int_t   gSelection;
     TString gSampleName;
     Bool_t  gIsMCatNLO;
-    Bool_t  IsFastSim;
+    Int_t   gChannel;
 
 		ClassDef(EventBuilder, 0);
 };

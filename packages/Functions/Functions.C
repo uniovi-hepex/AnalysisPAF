@@ -1,5 +1,9 @@
 #include "Functions.h"
 
+Float_t p2(Float_t x){
+  return TMath::Sqrt(x*x);
+}
+
 bool LepMomentumComparator(Lepton i, Lepton j){ 
   return (i.p.Pt()>j.p.Pt()); 
 }
