@@ -29,6 +29,7 @@ void LeptonSelector::Initialise(){
     LepSF->loadHisto(iElecId,   iTight);
   }
   else std::cout << ">>>>>>>>>>>> WRONG SELECTION!!!!!!!!" << std::endl;
+  selLeptons = std::vector<Lepton>();
 }
 
 void LeptonSelector::GetLeptonVariables(Int_t i){ // Once per muon, get all the info
@@ -107,15 +108,14 @@ void LeptonSelector::InsideLoop(){
 			} 
 		} 
 	}
-
 	nSelLeptons = selLeptons.size();
 	nVetoLeptons = vetoLeptons.size();;
   nGenLeptons  = genLeptons.size();
-   
+  
   // Set params for the next selectors
-  //SetParam("selLeptons",  selLeptons );
-  //SetParam("vetoLeptons", vetoLeptons);
-  //SetParam("genLeptons",  genLeptons );
+  SetParam("selLeptons",  selLeptons );
+  SetParam("vetoLeptons", vetoLeptons);
+  SetParam("genLeptons",  genLeptons );
   SetParam("nLeptonsFromTau", nLeptonsFromTau);
   SetParam("nGenLeptons", nGenLeptons);
   SetParam("nSelLeptons", nSelLeptons);

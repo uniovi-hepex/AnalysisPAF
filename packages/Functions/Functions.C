@@ -141,3 +141,116 @@ vector<Jet> SortJetsByPt(vector<Jet>& Jets){
   sort (theJet.begin(), theJet.end(), JetMomentumComparator);
   return theJet;
 }
+/*
+void SetLeptonVariables(TTree* fTree){
+	fTree->Branch("TNVetoLeps",     &TNVetoLeps,     "TNVetoLeps/I");
+	fTree->Branch("TNSelLeps",     &TNVetoLeps,     "TNVetoLeps/I");
+	fTree->Branch("TLep_Pt",     TLep_Pt,     "TLep_Pt[TNSelLeps]/F");
+	fTree->Branch("TLep_Eta",     TLep_Eta,     "TLep_Eta[TNSelLeps]/F");
+	fTree->Branch("TLep_Phi",     TLep_Phi,     "TLep_Phi[TNSelLeps]/F");
+	fTree->Branch("TLep_E" ,     TLep_E ,     "TLep_E[TNSelLeps]/F");
+	fTree->Branch("TLep_Charge",  TLep_Charge, "TLep_Charge[TNSelLeps]/F");
+	fTree->Branch("TChannel",      &TChannel,      "TChannel/I");
+}
+
+void SetJetVariables(TTree* fTree){
+	fTree->Branch("TNJets",           &TNJets,         "TNJets/I");
+	fTree->Branch("TNBtags",       &TNBtags,     "TNBtags/I");
+	fTree->Branch("TJet_isBJet",       TJet_isBJet,       "TJet_isBJet[TNJets]/I");
+	fTree->Branch("TJet_Pt",           TJet_Pt,           "TJet_Pt[TNJets]/F");
+	fTree->Branch("TJet_Eta",           TJet_Eta,           "TJet_Eta[TNJets]/F");
+	fTree->Branch("TJet_Phi",           TJet_Phi,           "TJet_Phi[TNJets]/F");
+	fTree->Branch("TJet_E",            TJet_E,            "TJet_E[TNJets]/F");
+
+	fTree->Branch("TNJetsJESUp",           &TNJetsJESUp,         "TNJetsJESUp/I");
+	fTree->Branch("TNJetsJESDown",           &TNJetsJESDown,         "TNJetsJESDown/I");
+	fTree->Branch("TNJetsJER",           &TNJetsJER,         "TNJetsJER/I");
+
+	fTree->Branch("TNBtagsUp",     &TNBtagsUp,   "TNBtagsUp/I");
+	fTree->Branch("TNBtagsDown",   &TNBtagsDown, "TNBtagsDown/I");
+	fTree->Branch("TNBtagsMisTagUp",     &TNBtagsMisTagUp,   "TNBtagsMisTagUp/I");
+	fTree->Branch("TNBtagsMisTagDown",   &TNBtagsMisTagDown, "TNBtagsMisTagDown/I");
+
+	fTree->Branch("TJetJESUp_Pt",      TJetJESUp_Pt,      "TJetJESUp_Pt[TNJetsJESUp]/F");
+	fTree->Branch("TJetJESDown_Pt",    TJetJESDown_Pt,    "TJetJESDown_Pt[TNJetsJESDown]/F");
+	fTree->Branch("TJetJER_Pt",        TJetJER_Pt,        "TJetJER_Pt[TNJetsJER]/F");
+
+	fTree->Branch("THT",          &THT,          "THT/F");
+	fTree->Branch("THTJESUp",     &THTJESUp,     "THTJESUp/F");
+	fTree->Branch("THTJESDown",   &THTJESDown,   "THTJESDown/F");
+}
+
+void SetEventVariables(TTree* fTree){
+	fTree->Branch("TWeight",      &TWeight,      "TWeight/F");
+	fTree->Branch("TWeight_LepEffUp",      &TWeight_LepEffUp,      "TWeight_LepEffUp/F");
+	fTree->Branch("TWeight_LepEffDown",    &TWeight_LepEffDown,    "TWeight_LepEffDown/F");
+	fTree->Branch("TWeight_TrigUp",        &TWeight_TrigUp,        "TWeight_TrigUp/F");
+	fTree->Branch("TWeight_TrigDown",      &TWeight_TrigDown,      "TWeight_TrigDown/F");
+	fTree->Branch("TWeight_PUUp",        &TWeight_PUUp,        "TWeight_PUUp/F");
+	fTree->Branch("TWeight_PUDown",        &TWeight_PUDown,        "TWeight_PUDown/F");
+
+	fTree->Branch("TMET",         &TMET,         "TMET/F");
+	fTree->Branch("TMET_Phi",     &TMET_Phi,     "TMET_Phi/F");
+	fTree->Branch("TMETJESUp",    &TMETJESUp,    "TMETJESUp/F");
+	fTree->Branch("TMETJESDown",  &TMETJESDown,  "TMETJESDown/F");
+}
+
+void GetLeptonVariables(std::vector<Lepton> selLeptons, Int_t nVetoLeptons){
+	TNSelLeps = selLeptons.size();
+	TNVetoLeps = (nVetoLeptons == 0) ? TNSelLeps : nVetoLeptons;
+  for(Int_t i = 0; i < TNSelLeps; i++){
+	  TLep_Pt[i]     = selLeptons.at(i).Pt();    
+	  TLep_Eta[i]    = selLeptons.at(i).Eta();    
+	  TLep_Phi[i]    = selLeptons.at(i).Phi();    
+	  TLep_E[i]      = selLeptons.at(i).E();    
+	  TLep_Charge[i] = selLeptons.at(i).charge;    
+  }
+  if(TNSelLeps < 2) TChannel = -1;
+  else if(selLeptons.at(0).isMuon && selLeptons.at(1).isElec) TChannel = 1;
+  else if(selLeptons.at(0).isElec && selLeptons.at(1).isMuon) TChannel = 1;
+  else if(selLeptons.at(0).isMuon && selLeptons.at(1).isMuon) TChannel = 2;
+  else if(selLeptons.at(0).isElec && selLeptons.at(1).isElec) TChannel = 3;
+}
+
+void GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut){
+	TNJets = selJets.size();
+	TNBtags = 0; TNBtagsUp = 0; TNBtagsDown = 0;
+	TNBtagsMisTagUp = 0;	TNBtagsMisTagDown = 0;
+  for(Int_t i = 0; i < TNJets; i++){
+		TJet_Pt[i]     = selJets.at(i).Pt();
+		TJet_Eta[i]    = selJets.at(i).Eta();
+		TJet_Phi[i]    = selJets.at(i).Phi();
+		TJet_E[i]      = selJets.at(i).E();
+		TJet_isBJet[i] = selJets.at(i).isBtag;
+    if(selJets.at(i).isBtag)            TNBtags++;
+    if(selJets.at(i).isBtag_BtagUp    ) TNBtagsUp++;
+    if(selJets.at(i).isBtag_BtagDown  ) TNBtagsDown++;
+    if(selJets.at(i).isBtag_MisTagUp  ) TNBtagsMisTagUp++;
+    if(selJets.at(i).isBtag_MisTagDown) TNBtagsMisTagDown++;
+  }
+
+	// For systematics...
+	TNJetsJESUp    = 0;
+	TNJetsJESDown  = 0;
+	TNJetsJER      = 0;  
+	TNBtagsUp   = 0;
+	TNBtagsDown = 0;
+	TNBtagsMisTagUp = 0;
+	TNBtagsMisTagDown = 0;
+	for(Int_t i = 0; i < (Int_t) cleanedJets15.size(); i++){
+		if(cleanedJets15.at(i).pTJESUp > ptCut){
+			TNJetsJESUp++;
+			TJetJESUp_Pt[i] = cleanedJets15.at(i).pTJESUp;
+		}
+		if(cleanedJets15.at(i).pTJESDown > ptCut){
+      TNJetsJESDown++;
+			TJetJESDown_Pt[i] = cleanedJets15.at(i).pTJESDown;
+		}
+		if(cleanedJets15.at(i).pTJERUp > ptCut){
+      TNJetsJER++;
+			TJetJER_Pt[i] = cleanedJets15.at(i).pTJERUp;
+		}
+	}
+}
+
+*/

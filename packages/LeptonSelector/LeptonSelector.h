@@ -6,6 +6,7 @@
 #include "Functions.h"
 #include <iostream>
 #include <vector>
+#include "LinkDef.h"
 
 class LeptonSelector : public PAFChainItemSelector{
 

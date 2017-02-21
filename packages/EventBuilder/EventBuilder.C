@@ -5,6 +5,7 @@
 //
 //  To do: Add trigger SFs when become available
 //         Add LHE weights when become available
+//         Update PU weights
 //
 //////////////////////////////////////////////////////////////////////////////////////
 
@@ -21,6 +22,8 @@ void EventBuilder::Initialise(){
   gSampleName  = GetParam<TString>("sampleName");
   gIsMCatNLO   = GetParam<Bool_t>("IsMCatNLO");
   gChannel = -1;
+
+  selLeptons = std::vector<Lepton>();
   
   gIsDoubleElec = false; gIsDoubleMuon = false; gIsSingleElec = false;
   gIsSingleMuon = false; gIsMuonEG = false;
@@ -35,9 +38,6 @@ void EventBuilder::Initialise(){
 	fPUWeightDown = new PUWeight(20441.7,  Spring2016_25ns_poisson_OOTPU, "2016_ichep"); //  20441.7 
 
   Weight = GetParam<Float_t>("weight");
-
-  // >>>>>>>>>>>>>> Get selected leptons:
-  // SelLeptons = GetParam<vector<Lepton>>("selLeptons");
 
 	TriggSF       = new LeptonSF();
   // >>>>>>>>>>>>>>> Load histograms for trigger used in analysis
@@ -59,8 +59,24 @@ void EventBuilder::Initialise(){
 }
 
 void EventBuilder::InsideLoop(){
-  // >>>>>>>>> Calculate norm weight
+  // >>>>>>>>>>>>>> Get selected leptons:
+  selLeptons = GetParam<std::vector<Lepton>>("selLeptons");
+  // Set channel
+  if(selLeptons.size()>=2){
+    if(selLeptons.at(0).isElec && selLeptons.at(1).isMuon) gChannel = 1;
+    else if(selLeptons.at(0).isMuon && selLeptons.at(1).isElec) gChannel = 1;
+    else if(selLeptons.at(0).isMuon && selLeptons.at(1).isMuon) gChannel = 2;
+    else if(selLeptons.at(0).isElec && selLeptons.at(1).isElec) gChannel = 3;
+  isSS = (selLeptons[0].charge*selLeptons[1].charge) > 0;
+  }
+  else{
+ gChannel = -1;
+ isSS = false;
+}
+  
   METfilters = PassesMETfilters();
+
+  // >>>>>>>>> Calculate norm weight
   if(gIsMCatNLO) genWeight = Get<Float_t>("genWeight");
   else           genWeight = 1;
   NormWeight = Weight*genWeight;
@@ -74,8 +90,8 @@ void EventBuilder::InsideLoop(){
 
   // >>>>>>>>> Calculate Trigger SF and variations
 	// ### 2 LEPTONS
+	TriggerSF = 1; TriggerSF_Up = 1; TriggerSF_Down = 1;
   /*if(selLeptons.size() < 2) continue; // At least 2 selected leptons
-  isSS = (selLeptons[0].charge*selLeptons[1].charge) > 0;
   
   if     (selLeptons[0].IsMuon && selLepton[1].IsMuon) gChannel = iMuon
   else if(selLeptons[0].IsElec && selLepton[1].IsElec) gChannel = iElec;

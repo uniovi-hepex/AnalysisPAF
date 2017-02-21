@@ -2,9 +2,9 @@
 #define LEPTON_H 1
 
 #include "TLorentzVector.h"
+#include "TString.h"
 
-
-class Lepton{
+class Lepton : public TObject{
 	public:
 		Lepton(){
       p = TLorentzVector(0,0,0,0);
@@ -27,9 +27,14 @@ class Lepton{
 		Int_t type;
     Bool_t isElec;
     Bool_t isMuon;
-		Float_t GetSF(Int_t sys);
+		Float_t GetSF(Int_t sys = 0);
 		void SetSF(Float_t val);
 		void SetSFerr(Float_t val);
+
+    Float_t Pt(){return p.Pt();}
+    Float_t Eta(){return p.Eta();}
+    Float_t Phi(){return p.Phi();}
+    Float_t E(){return p.E();}
 
 	protected:
 		Float_t SF;

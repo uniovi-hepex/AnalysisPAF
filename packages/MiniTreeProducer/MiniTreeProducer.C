@@ -14,8 +14,8 @@ void MiniTreeProducer::Initialise(){
 	TChannel = -1; TWeight = -1;   
 	TMll = -1; TMET = -1; TMET_Phi = -1;
 	THT = -1;     
-	TLep1_Px = -1; TLep1_Py = -1; TLep1_Pz = -1; TLep1_E = -1; TLep1_Charge = -1;
-	TLep2_Px = -1; TLep2_Py = -1; TLep2_Pz = -1; TLep2_E = -1; TLep2_Charge = -1;
+	TLep1_Pt = -1; TLep1_Eta = -1; TLep1_Phi = -1; TLep1_E = -1; TLep1_Charge = -1;
+	TLep2_Pt = -1; TLep2_Eta = -1; TLep2_Phi = -1; TLep2_E = -1; TLep2_Charge = -1;
 	TNJets = -1; TNJetsBtag = -1;
 
 	TNISRJets = -1; TNJetsJESUp = -1; TNJetsJESDown = -1; TNJetsJER = -1;
@@ -45,14 +45,15 @@ void MiniTreeProducer::Initialise(){
 	fTree->Branch("TMET_Phi",     &TMET_Phi,     "TMET_Phi/F");
 	fTree->Branch("THT",          &THT,          "THT/F");
 
-	fTree->Branch("TLep1_Px",     &TLep1_Px,     "TLep1_Px/F");
-	fTree->Branch("TLep1_Py",     &TLep1_Py,     "TLep1_Py/F");
-	fTree->Branch("TLep1_Pz",     &TLep1_Pz,     "TLep1_Pz/F");
+	fTree->Branch("TNVetoLeps",     &TNVetoLeps,     "TNVetoLeps/I");
+	fTree->Branch("TLep1_Pt",     &TLep1_Pt,     "TLep1_Pt/F");
+	fTree->Branch("TLep1_Eta",     &TLep1_Eta,     "TLep1_Eta/F");
+	fTree->Branch("TLep1_Phi",     &TLep1_Phi,     "TLep1_Phi/F");
 	fTree->Branch("TLep1_E" ,     &TLep1_E ,     "TLep1_E/F");
 	fTree->Branch("TLep1_Charge",  &TLep1_Charge, "TLep1_Charge/F");
-	fTree->Branch("TLep2_Px",     &TLep2_Px,     "TLep2_Px/F");
-	fTree->Branch("TLep2_Py",     &TLep2_Py,     "TLep2_Py/F");
-	fTree->Branch("TLep2_Pz",     &TLep2_Pz,     "TLep2_Pz/F");
+	fTree->Branch("TLep2_Pt",     &TLep2_Pt,     "TLep2_Pt/F");
+	fTree->Branch("TLep2_Eta",     &TLep2_Eta,     "TLep2_Eta/F");
+	fTree->Branch("TLep2_Phi",     &TLep2_Phi,     "TLep2_Phi/F");
 	fTree->Branch("TLep2_E" ,     &TLep2_E ,     "TLep2_E/F");
 	fTree->Branch("TLep2_Charge",  &TLep2_Charge, "TLep2_Charge/F");
 
@@ -122,57 +123,57 @@ void MiniTreeProducer::InsideLoop(){
 }
 
 void MiniTreeProducer::GetDefaultVariables(){
-  //TMll = (selLeptons[0].p+selLeptons[1].p).M();
-  TMET     = Get<Float_t>("met_pt");
-  TMET_Phi = Get<Float_t>("met_phi");
-  //Int_t gChan = GetParam<Int_t>("gChan");
-  TChannel = GetParam<Int_t>("gChannel");
- 
-	//TWeight = GetParam<Float_t>("EventWeight");
+	//TMll = (selLeptons[0].p+selLeptons[1].p).M();
+	TMET     = Get<Float_t>("met_pt");
+	TMET_Phi = Get<Float_t>("met_phi");
+	//Int_t gChan = GetParam<Int_t>("gChan");
+	TChannel = GetParam<Int_t>("gChannel");
+
+	TWeight = GetParam<Float_t>("EventWeight");
 	TNJets      = GetParam<Int_t>("nSelJets");            // Jets...
 	TNJetsBtag  = GetParam<Int_t>("nSelBJets");
 
- /* 
-    TMll = getMll(selLeptons[0], selLeptons[1]);
-    THT  = getHT(selJets);
 
-  TLep1_Px      = selLeptons[0].p.Px();
-  TLep1_Py      = selLeptons[0].p.Py();
-  TLep1_Pz      = selLeptons[0].p.Pz();
-  TLep1_E       = selLeptons[0].p.E();
-  TLep1_Charge  = selLeptons[0].charge;
-  TLep2_Px      = selLeptons[1].p.Px();
-  TLep2_Py      = selLeptons[1].p.Py();
-  TLep2_Pz      = selLeptons[1].p.Pz();
-  TLep2_E       = selLeptons[1].p.E();
-  TLep2_Charge  = selLeptons[1].charge;
+	TMll = getMll(selLeptons[0], selLeptons[1]);
+	THT  = getHT(selJets);
 
-  for(int k = 0; k<40; k++){
-    if(k<TNJets){
-      TJet_Pt[k]           = selJets[k].p.Pt();
-      TJet_Eta[k]           = selJets[k].p.Eta();
-      TJet_Phi[k]           = selJets[k].p.Phi();
-      TJet_E[k]            = selJets[k].p.E();
-      TJet_isBJet[k]       = selJets[k].isbtag;
-    }
-    else{
-      TJet_Pt[k]           = 0;
-      TJet_Eta[k]           = 0;
-      TJet_Phi[k]           = 0;
-      TJet_E[k]            = 0;
-      TJet_isBJet[k]       = 0;
-    }
-  }
+	TLep1_Pt      = selLeptons[0].p.Pt();
+	TLep1_Eta      = selLeptons[0].p.Eta();
+	TLep1_Phi      = selLeptons[0].p.Phi();
+	TLep1_E       = selLeptons[0].p.E();
+	TLep1_Charge  = selLeptons[0].charge;
+	TLep2_Pt      = selLeptons[1].p.Pt();
+	TLep2_Eta      = selLeptons[1].p.Eta();
+	TLep2_Phi      = selLeptons[1].p.Phi();
+	TLep2_E       = selLeptons[1].p.E();
+	TLep2_Charge  = selLeptons[1].charge;
+
+	for(int k = 0; k<40; k++){
+		if(k<TNJets){
+			TJet_Pt[k]           = selJets[k].p.Pt();
+			TJet_Eta[k]           = selJets[k].p.Eta();
+			TJet_Phi[k]           = selJets[k].p.Phi();
+			TJet_E[k]            = selJets[k].p.E();
+			TJet_isBJet[k]       = selJets[k].isbtag;
+		}
+		else{
+			TJet_Pt[k]           = 0;
+			TJet_Eta[k]           = 0;
+			TJet_Phi[k]           = 0;
+			TJet_E[k]            = 0;
+			TJet_isBJet[k]       = 0;
+		}
+	}
 
 
-*/
+
 }
 
 void MiniTreeProducer::GetSystematicVariables(){
-  GetParam<Float_t>("TriggerSF");
-  GetParam<Float_t>("TriggerSF_Up");
-  GetParam<Float_t>("TriggerSF_Down");
-  GetParam<Float_t>("PUSF");
-  GetParam<Float_t>("PUSF_Up");
-  GetParam<Float_t>("PUSF_Down");
+	GetParam<Float_t>("TriggerSF");
+	GetParam<Float_t>("TriggerSF_Up");
+	GetParam<Float_t>("TriggerSF_Down");
+	GetParam<Float_t>("PUSF");
+	GetParam<Float_t>("PUSF_Up");
+	GetParam<Float_t>("PUSF_Down");
 }

@@ -32,6 +32,8 @@ class EventBuilder : public PAFChainItemSelector{
     Float_t genWeight;   // For aMCatNLO samples
 
     Float_t nTrueInt;
+    Int_t   gChannel;
+    std::vector<Lepton> selLeptons;
 
 	protected:
 
@@ -56,7 +58,6 @@ class EventBuilder : public PAFChainItemSelector{
     Int_t   gSelection;
     TString gSampleName;
     Bool_t  gIsMCatNLO;
-    Int_t   gChannel;
 
 		ClassDef(EventBuilder, 0);
 };

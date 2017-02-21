@@ -35,6 +35,10 @@ class Jet{
     Bool_t  isBtag_MisTagDown;
 
     void InitSyst();
+		Float_t Pt(){ return p.Pt();}
+		Float_t Eta(){ return p.Eta();}
+		Float_t Phi(){ return p.Phi();}
+		Float_t E(){ return p.E();}
 
 };
 

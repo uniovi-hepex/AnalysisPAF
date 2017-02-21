@@ -21,7 +21,6 @@ void JetSelector::Summary(){}
 void JetSelector::Initialise(){
   gIsData    = GetParam<Bool_t>("IsData");
   gSelection = GetParam<Bool_t>("iSelection");
-  //Leptons    = GetParam<vector<Lepton>>("selLeptons"); 
 
 	TString stringWP;
 
@@ -33,6 +32,12 @@ void JetSelector::Initialise(){
 	fBTagSFbDo = new BTagSFUtil("mujets", "CSVv2", stringWP, -1);
 	fBTagSFlUp = new BTagSFUtil("mujets", "CSVv2", stringWP,  3);
 	fBTagSFlDo = new BTagSFUtil("mujets", "CSVv2", stringWP, -3);
+ 
+  Leptons = std::vector<Lepton>();
+  selJets = std::vector<Jet>();
+  mcJets = std::vector<Jet>();
+  genJets = std::vector<Jet>();
+  vetoJets = std::vector<Jet>();
 }
 
 void JetSelector::GetJetVariables(Int_t i){
@@ -65,6 +70,8 @@ void JetSelector::InsideLoop(){
   vetoJets.clear();
   Jets15.clear();
   nBtagJets = 0;
+  Leptons.clear();
+  Leptons    = GetParam<vector<Lepton>>("selLeptons"); 
 
 	// Loop over the jets
 	nJet = Get<Int_t>("nJet");
@@ -72,13 +79,13 @@ void JetSelector::InsideLoop(){
 		GetJetVariables(i);
 		tJ = Jet(tpJ, csv, jetId, flavmc);
 		tJ.isBtag = IsBtag(tJ);
-		SetSystematics(tJ);
 		// Fill the vectors
 		if(tJ.id > 0 && Cleaning(tJ, Leptons) && TMath::Abs(tJ.p.Eta()) < 2.4){
-			SetSystematics(tJ);
+		//if(tJ.id > 0 && TMath::Abs(tJ.p.Eta()) < 2.4){
+			SetSystematics(&tJ);
 			tJ.isBtag = IsBtag(tJ);
 			if(tJ.p.Pt() > 15 || tJ.pTJESUp > 15 || tJ.pTJESDown > 15) Jets15.push_back(tJ);
-			if(tJ.p.Pt() > 30 || tJ.pTJESUp > 30 || tJ.pTJESDown > 30){
+			if(tJ.p.Pt() > 30){
 				selJets.push_back(tJ);
 				if(tJ.isBtag) nBtagJets++;
 			} 
@@ -94,46 +101,48 @@ void JetSelector::InsideLoop(){
 		}
 	}
 
-  nSelJets  = selJets.size();
-  nJets15   = Jets15.size();
-  nVetoJets = vetoJets.size();
-  nGenJets  = genJets.size();
 
-  // Set params...
-  // SetParam("selJets",  selJets);
-  // SetParam("Jets15",   Jets15);
-  // SetParam("vetoJets", vetoJets);
-  // SetParam("genJets",  genJets);
-  SetParam("nSelJets",  nSelJets);
-  SetParam("nJets15",  nJets15);
-  SetParam("nVetoJets",  nVetoJets);
-  SetParam("nGenJets",  nGenJets);
-  SetParam("nSelBJets",  nBtagJets);
-}
+	nSelJets  = selJets.size();
+	nJets15   = Jets15.size();
+	nVetoJets = vetoJets.size();
+	nGenJets  = genJets.size();
 
-Bool_t JetSelector::IsBtag(Jet j){
+	// Set params...
+	SetParam("selJets",  selJets);
+	SetParam("Jets15",   Jets15);
+	SetParam("vetoJets", vetoJets);
+	SetParam("genJets",  genJets);
+	SetParam("nSelJets",  nSelJets);
+	SetParam("nJets15",  nJets15);
+	SetParam("nVetoJets",  nVetoJets);
+	SetParam("nGenJets",  nGenJets);
+	SetParam("nSelBJets",  nBtagJets);
+	}
+
+	Bool_t JetSelector::IsBtag(Jet j){
 	Bool_t isbtag;
   if(gIsData) isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta());
   else        isbtag = fBTagSFnom->IsTagged(j.csv,j.flavmc, j.p.Pt(), j.p.Eta());
   return isbtag;
 }
 
-void JetSelector::SetSystematics(Jet j){
-  Float_t _csv = j.csv; Int_t _flavmc = j.flavmc; Float_t _pt = j.p.Pt(); Float_t _eta = j.p.Eta();
+void JetSelector::SetSystematics(Jet *j){
+  Float_t _csv = j->csv; Int_t _flavmc = j->flavmc; Float_t _pt = j->p.Pt(); Float_t _eta = j->p.Eta();
 	if(gIsData) return;
-	j.pTJESUp     = rawPt*pt_corrUp;
-	j.pTJESDown   = rawPt*pt_corrDown;
-	j.pTJERUp     = _pt;
-	j.pTJERDown   = _pt;
-	j.isBtag_BtagUp      = fBTagSFbUp->IsTagged(_csv, _flavmc, _pt, _eta);
-	j.isBtag_BtagDown    = fBTagSFbDo->IsTagged(_csv, _flavmc, _pt, _eta);
-	j.isBtag_MisTagUp    = fBTagSFlUp->IsTagged(_csv, _flavmc, _pt, _eta);
-	j.isBtag_MisTagDown  = fBTagSFlDo->IsTagged(_csv, _flavmc, _pt, _eta);
+	j->pTJESUp     = rawPt*pt_corrUp;
+	j->pTJESDown   = rawPt*pt_corrDown;
+	j->pTJERUp     = _pt;
+	j->pTJERDown   = _pt;
+	j->isBtag_BtagUp      = fBTagSFbUp->IsTagged(_csv, _flavmc, _pt, _eta);
+	j->isBtag_BtagDown    = fBTagSFbDo->IsTagged(_csv, _flavmc, _pt, _eta);
+	j->isBtag_MisTagUp    = fBTagSFlUp->IsTagged(_csv, _flavmc, _pt, _eta);
+	j->isBtag_MisTagDown  = fBTagSFlDo->IsTagged(_csv, _flavmc, _pt, _eta);
 }
 
 Bool_t JetSelector::Cleaning(Jet j, vector<Lepton> vLep, Float_t minDR){
   Int_t nLeps = vLep.size();
   for(Int_t i = 0; i < nLeps; i++){
+   // std::cout <<  "[" << i << "] LepPt = " << vLep[i].p.Pt() << std::endl;
     if(j.p.DeltaR(vLep[i].p) < minDR) return false;
   }
   return true;

@@ -1,9 +1,7 @@
 #pragma once
 
 #include "PAFChainItemSelector.h"
-#include "Functions.h"
-#include "Lepton.h"
-#include "Jet.h"
+#include "../MiniTreeProd.C"
 
 class MiniTreeProducer : public PAFChainItemSelector{
 	public:
@@ -25,14 +23,15 @@ class MiniTreeProducer : public PAFChainItemSelector{
     Float_t TMET;      // MET
     Float_t TMET_Phi;  // MET phi
     Float_t THT;       // HT
-    Float_t TLep1_Px;    // Leptons...
-    Float_t TLep1_Py;
-    Float_t TLep1_Pz;
+    Int_t   TNVetoLeps;
+    Float_t TLep1_Pt;    // Leptons...
+    Float_t TLep1_Eta;
+    Float_t TLep1_Phi;
     Float_t TLep1_E;
     Float_t TLep1_Charge;
-    Float_t TLep2_Px;
-    Float_t TLep2_Py;
-    Float_t TLep2_Pz;
+    Float_t TLep2_Pt;
+    Float_t TLep2_Eta;
+    Float_t TLep2_Phi;
     Float_t TLep2_E;
     Float_t TLep2_Charge;
 
@@ -88,7 +87,6 @@ class MiniTreeProducer : public PAFChainItemSelector{
     Float_t TMinDPhiMetJets;
 
 	protected:
-
     Bool_t  gIsData;
     Bool_t  gDoSyst;
     Int_t   gSelection;
