@@ -19,6 +19,7 @@ class LeptonSelector : public PAFChainItemSelector{
 		virtual void Summary();
 
 		std::vector<Lepton> selLeptons;
+		std::vector<Lepton> looseLeptons;
 		std::vector<Lepton> genLeptons;
 		std::vector<Lepton> vetoLeptons;
 
@@ -26,7 +27,7 @@ class LeptonSelector : public PAFChainItemSelector{
 
 		LeptonSF *LepSF;
 		Bool_t gIsData;
-		Bool_t gSelection;
+		Int_t gSelection;
 
 		// LepGood
 		Lepton tL;
@@ -69,6 +70,7 @@ class LeptonSelector : public PAFChainItemSelector{
 		Bool_t getElecCutBasedId(Int_t wp); 
 		Bool_t getMultiIso(Int_t wp);
 		Bool_t isGoodLepton(Lepton lep);
+		Bool_t isLooseLepton(Lepton lep);
 		Bool_t isVetoLepton(Lepton lep);
 
   ClassDef(LeptonSelector, 0);
