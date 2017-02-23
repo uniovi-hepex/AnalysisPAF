@@ -1,8 +1,8 @@
 R__LOAD_LIBRARY(DatasetManager/DatasetManager.C+)
 #include "DatasetManager/DatasetManager.h"
+#include "TLorentzVector.h"
 
-
-void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", Int_t nSlots = 1,
+void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", TString Selection = "StopDilep", Int_t nSlots = 1,
 			Long64_t nEvents = 0,
 			Int_t stopMass = 0, Int_t lspMass  = 0,  Float_t  SusyWeight = 0.0) {
 
@@ -13,6 +13,14 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", Int_t nSlots = 1,
   Bool_t  G_DoSystematics = false;
   Bool_t  G_IsFastSim = false;
 
+  // Selection
+  Int_t sel = 0;
+  if     (Selection == "StopDilep"                ) sel = 0;
+  else if(Selection == "Top" || Selection == "TOP") sel = 2;
+  else if(Selection == "WW"                       ) sel = 3;
+  else{ cout << "WRONG SELECTION!!!!" << endl; return;}
+
+  cout << " :: Analysis --> " << Selection << endl;
 
   // PAF mode
   //----------------------------------------------------------------------------
@@ -31,7 +39,7 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", Int_t nSlots = 1,
   DatasetManager* dm = DatasetManager::GetInstance();
 
   // Tab in the spreadsheet https://docs.google.com/spreadsheets/d/1b4qnWfZrimEGYc1z4dHl21-A9qyJgpqNUbhOlvCzjbE
-  dm->SetTab("DR80XasymptoticMiniAODv2_v2");
+  dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2");
   //dm->SetTab("DR80XasymptoticMiniAODv2");
 
   // Deal with data samples
@@ -157,9 +165,10 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", Int_t nSlots = 1,
   myProject->SetInputParam("stopMass"     , stopMass         );
   myProject->SetInputParam("lspMass"      , lspMass          );
   myProject->SetInputParam("IsMCatNLO"    , G_IsMCatNLO      );  
-  myProject->SetInputParam("iSelection"   , 0);
+  myProject->SetInputParam("iSelection"   , sel);
   myProject->SetInputParam("doSyst"       , G_DoSystematics); 
   myProject->SetInputParam("IsFastSim"    , G_IsFastSim);
+  
 
   if(nEvents != 0) myProject->SetNEvents(nEvents);
 
@@ -168,7 +177,8 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", Int_t nSlots = 1,
   myProject->AddSelectorPackage("LeptonSelector");
   myProject->AddSelectorPackage("JetSelector");
   myProject->AddSelectorPackage("EventBuilder");
-  myProject->AddSelectorPackage("MiniTreeProducer");
+  myProject->AddSelectorPackage("CreateMiniTree");
+//  myProject->AddSelectorPackage("MiniTreeProducer");
 
   // Additional packages
   //----------------------------------------------------------------------------

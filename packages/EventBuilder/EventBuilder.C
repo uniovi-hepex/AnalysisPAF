@@ -33,9 +33,9 @@ void EventBuilder::Initialise(){
   else if(gSampleName.Contains("SingleMuon")) gIsSingleMuon = true;
   else if(gSampleName.Contains("MuonEG")) gIsMuonEG     = true;
   
-	fPUWeight     = new PUWeight(19664.225, Spring2016_25ns_poisson_OOTPU, "2016_ichep");
-	fPUWeightUp   = new PUWeight(18494.9,  Spring2016_25ns_poisson_OOTPU, "2016_ichep"); //  18494.9 
-	fPUWeightDown = new PUWeight(20441.7,  Spring2016_25ns_poisson_OOTPU, "2016_ichep"); //  20441.7 
+	fPUWeight     = new PUWeight(19664.225, Spring2016_25ns_poisson_OOTPU, "2016_Moriond17");
+	fPUWeightUp   = new PUWeight(18494.9,  Spring2016_25ns_poisson_OOTPU, "2016_Moriond17"); //  18494.9 
+	fPUWeightDown = new PUWeight(20441.7,  Spring2016_25ns_poisson_OOTPU, "2016_Moriond17"); //  20441.7 
 
   Weight = GetParam<Float_t>("weight");
 
