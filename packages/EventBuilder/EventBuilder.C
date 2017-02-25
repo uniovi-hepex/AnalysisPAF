@@ -33,9 +33,9 @@ void EventBuilder::Initialise(){
   else if(gSampleName.Contains("SingleMuon")) gIsSingleMuon = true;
   else if(gSampleName.Contains("MuonEG")) gIsMuonEG     = true;
   
-	fPUWeight     = new PUWeight(19664.225, Spring2016_25ns_poisson_OOTPU, "2016_Moriond17");
-	fPUWeightUp   = new PUWeight(18494.9,  Spring2016_25ns_poisson_OOTPU, "2016_Moriond17"); //  18494.9 
-	fPUWeightDown = new PUWeight(20441.7,  Spring2016_25ns_poisson_OOTPU, "2016_Moriond17"); //  20441.7 
+	fPUWeight     = new PUWeight(19664.225, Moriond17MC_PoissonOOTPU, "2016_Moriond17");
+	fPUWeightUp   = new PUWeight(18494.9,   Moriond17MC_PoissonOOTPU, "2016_Moriond17"); //  18494.9 
+	fPUWeightDown = new PUWeight(20441.7,   Moriond17MC_PoissonOOTPU, "2016_Moriond17"); //  20441.7 
 
   Weight = GetParam<Float_t>("weight");
 
@@ -83,10 +83,12 @@ void EventBuilder::InsideLoop(){
 
   // >>>>>>>>> Calculate PU weight and variations  
   nTrueInt = Get<Float_t>("nTrueInt");
-  PUSF      = fPUWeight    ->GetWeight(nTrueInt);
-  PUSF_Up   = fPUWeightUp  ->GetWeight(nTrueInt);
-  PUSF_Down = fPUWeightDown->GetWeight(nTrueInt);
-
+  //PUSF      = fPUWeight    ->GetWeight(nTrueInt);
+  //PUSF_Up   = fPUWeightUp  ->GetWeight(nTrueInt);
+  //PUSF_Down = fPUWeightDown->GetWeight(nTrueInt);
+  PUSF      = 1;
+  PUSF_Up   = 1;
+  PUSF_Down = 1;
 
   // >>>>>>>>> Calculate Trigger SF and variations
 	// ### 2 LEPTONS

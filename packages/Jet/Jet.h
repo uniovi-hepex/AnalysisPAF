@@ -13,7 +13,7 @@ class Jet{
 			csv = btag_csv;
 			id = Id;
 			flavmc = mcFlavour;
-      InitSyst();
+      //InitSyst();
 		}
 		~Jet(){};
 
@@ -21,7 +21,7 @@ class Jet{
 		Bool_t isBtag;
 		TLorentzVector p;
 		Bool_t id;
-		Float_t flavmc;
+		Int_t flavmc;
 		Float_t csv; 
 
     // For systematics

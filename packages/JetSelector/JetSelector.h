@@ -50,7 +50,7 @@ class JetSelector : public PAFChainItemSelector{
 		TLorentzVector tmcJ; 
 		Int_t jetId;
     Int_t flavmc;
-		Int_t csv;
+		Float_t csv;
     Float_t pt; Float_t eta; Float_t rawPt; 
     Float_t pt_corrUp; Float_t pt_corrDown; 
 		// genJet

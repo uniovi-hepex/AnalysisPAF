@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-LeptonSF::LeptonSF():
+LeptonSF::LeptonSF(TString path):
 	fMuonTrackerSF(0),  // Muon Reco
 	fMuonIdSF(0),       // Muon Id
 	fMuonIsoSF(0),      // Muon Iso
@@ -18,6 +18,7 @@ LeptonSF::LeptonSF():
 	fDoubleMuSF(0),     // Trigger Double Muon
 	fDoubleElSF(0),     // Trigger Double Elec
 	fMuEGSF(0){         // Trigger Elec-Muon
+  path_to_SF_histos = path;
 };
 
 
@@ -27,7 +28,7 @@ void LeptonSF::loadHisto(Int_t iHisto, Int_t wp){
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>> Muons 
 	if(iHisto == iMuonReco){
 		filename = "Tracking_EfficienciesAndSF_BCDEFGH"; histoname = "ratio_eff_eta3_dr030e030_corr";
-		fMuonTrackerSF = LoadTrackerMuonSF(filename, histoname);
+		fMuonTrackerSF = LoadTrackerMuonSF(path_to_SF_histos + filename + ".root", histoname);
 	}
 	else if(iHisto == iMuonId){
 		if     (wp == iLoose){  filename = "SUS_MuonLooseIdM17"; histoname = "SF";}
@@ -96,16 +97,16 @@ void LeptonSF::loadHisto(Int_t iHisto, Int_t wp){
 // Get global Lepton SF
 Float_t LeptonSF::GetLeptonSF(Float_t pt, Float_t ieta){
 	Float_t eta = TMath::Abs(ieta);
-  if(pt < 200) pt = 199;
+	if(pt > 120) pt = 119;
 	Int_t nSFs = loadedHistos.size();
 	Float_t SF = 1; Int_t id;
 	for(Int_t i = 0; i < nSFs; i++){
     id = loadedHistos[i];
 		if     (id == iMuonReco)  SF *= GetTrackerMuonSF(eta); 
-		else if(id == iMuonId)    SF *= fMuonIdSF      ->GetBinContent(fMuonIdSF     ->FindBin(eta,pt));
-		else if(id == iMuonIso)   SF *= fMuonIsoSF     ->GetBinContent(fMuonIsoSF    ->FindBin(eta,pt));
-		else if(id == iMuonIP2D)  SF *= fMuonIP2DSF    ->GetBinContent(fMuonIP2DSF   ->FindBin(eta,pt));
-		else if(id == iMuonSIP3D) SF *= fMuonSIP3DSF   ->GetBinContent(fMuonSIP3DSF  ->FindBin(eta,pt));
+		else if(id == iMuonId)    SF *= fMuonIdSF      ->GetBinContent(fMuonIdSF     ->FindBin(pt,eta));
+		else if(id == iMuonIso)   SF *= fMuonIsoSF     ->GetBinContent(fMuonIsoSF    ->FindBin(pt,eta));
+		else if(id == iMuonIP2D)  SF *= fMuonIP2DSF    ->GetBinContent(fMuonIP2DSF   ->FindBin(pt,eta));
+		else if(id == iMuonSIP3D) SF *= fMuonSIP3DSF   ->GetBinContent(fMuonSIP3DSF  ->FindBin(pt,eta));
 		else if(id == iElecReco)  SF *= fElecTrackerSF ->GetBinContent(fElecTrackerSF->FindBin(eta,50));
 		else if(id == iElecId)    SF *= fElecIdSF      ->GetBinContent(fElecIdSF     ->FindBin(eta,pt));
 		else if(id == iElecIso)   SF *= fElecIsoSF     ->GetBinContent(fElecIsoSF    ->FindBin(eta,pt));
@@ -118,23 +119,22 @@ Float_t LeptonSF::GetLeptonSF(Float_t pt, Float_t ieta){
 // Get global error for Lepton SF
 Float_t LeptonSF::GetLeptonSFerror(Float_t pt, Float_t ieta){
 	Float_t eta = TMath::Abs(ieta);
-	if(pt < 200) pt = 199;
+	if(pt > 120) pt = 119;
   float t = 0;
 	Int_t nSFs = loadedHistos.size();
 	Float_t err = 0; Int_t id;
 	for(Int_t i = 0; i < nSFs; i++){
     id = loadedHistos[i];
 		if     (id == iMuonReco)  err += 0;
-		else if(id == iMuonId)    err += p2(fMuonIdSF      ->GetBinError(fMuonIdSF     ->FindBin(eta,pt)));
-		else if(id == iMuonIso)   err += p2(fMuonIsoSF     ->GetBinError(fMuonIsoSF    ->FindBin(eta,pt)));
-		else if(id == iMuonIP2D)  err += p2(fMuonIP2DSF    ->GetBinError(fMuonIP2DSF   ->FindBin(eta,pt)));
-		else if(id == iMuonSIP3D) err += p2(fMuonSIP3DSF   ->GetBinError(fMuonSIP3DSF  ->FindBin(eta,pt)));
-		else if(id == iElecReco)  err += p2(fElecTrackerSF ->GetBinError(fElecTrackerSF->FindBin(eta,pt)));
+		else if(id == iMuonId)    err += p2(fMuonIdSF      ->GetBinError(fMuonIdSF     ->FindBin(pt,eta)));
+		else if(id == iMuonIso)   err += p2(fMuonIsoSF     ->GetBinError(fMuonIsoSF    ->FindBin(pt,eta)));
+		else if(id == iMuonIP2D)  err += p2(fMuonIP2DSF    ->GetBinError(fMuonIP2DSF   ->FindBin(pt,eta)));
+		else if(id == iMuonSIP3D) err += p2(fMuonSIP3DSF   ->GetBinError(fMuonSIP3DSF  ->FindBin(pt,eta)));
+		else if(id == iElecReco)  err += p2(fElecTrackerSF ->GetBinError(fElecTrackerSF->FindBin(eta,50)));
 		else if(id == iElecId)    err += p2(fElecIdSF      ->GetBinError(fElecIdSF     ->FindBin(eta,pt)));
 		else if(id == iElecIso)   err += p2(fElecIsoSF     ->GetBinError(fElecIsoSF    ->FindBin(eta,pt)));
 		else if(id == iElecIP2D)  err += p2(fElecIP2DSF    ->GetBinError(fElecIP2DSF   ->FindBin(eta,pt)));
 		else if(id == iElecSIP3D) err += p2(fElecSIP3DSF   ->GetBinError(fElecSIP3DSF  ->FindBin(eta,pt)));
-    
 	}
 	return TMath::Sqrt(err);
 }

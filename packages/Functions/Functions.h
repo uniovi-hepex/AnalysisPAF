@@ -17,9 +17,9 @@ enum iSFs{
 	nfiles
 };
 
-enum wps{iVeto, iLoose, iMedium, iTight, iVeryTight};
+enum wps{iVeto, iLoose, iMedium, iTight, iVeryTight, iExtreamlyTight, iWPforStop};
 
-enum sel{iStopPOG, iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec};
+enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec};
 
 enum sys{iNom, 
 	iJesUp, iJesDown, iJERUp, iJERDown, 

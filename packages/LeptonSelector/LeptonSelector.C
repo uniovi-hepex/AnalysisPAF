@@ -20,9 +20,10 @@ void LeptonSelector::Initialise(){
   // Initialise LeptonSelector
   gIsData        = GetParam<Bool_t>("IsData");
   gSelection     = GetParam<Int_t>("iSelection");
-  LepSF = new LeptonSF();
+  localPath      = GetParam<TString>("WorkingDir");
+  LepSF = new LeptonSF(localPath + "/InputFiles/");
 
-	if(gSelection == iStopSelec || gSelection == iStopPOG || gSelection == iTopSelec){
+	if(gSelection == iStopSelec || gSelection == iStopSelec || gSelection == iTopSelec){
     LepSF->loadHisto(iMuonReco);
     LepSF->loadHisto(iElecReco);
     LepSF->loadHisto(iMuonId,   iMedium);
@@ -52,11 +53,11 @@ void LeptonSelector::InsideLoop(){
 			selLeptons.push_back(tL);
 		}
 		if(isVetoLepton(tL)){
-			tL.SetSF(1); tL.SetSFerr(1); // (no SF for Veto leptons...)
+			//tL.SetSF(1); tL.SetSFerr(1); // To be updated if ever needed
 			vetoLeptons.push_back(tL);
 		}
     if(isLooseLepton(tL)){
-      tL.SetSF(1); tL.SetSFerr(1); // To be updated if ever needed
+      //tL.SetSF(1); tL.SetSFerr(1); // To be updated if ever needed
       looseLeptons.push_back(tL); 
     }
 	}
@@ -209,7 +210,7 @@ Bool_t LeptonSelector::getMultiIso(Int_t wp){
 //=============================================================== SELECTED LEPTONS
 Bool_t LeptonSelector::isGoodLepton(Lepton lep){ 
 	Bool_t passId; Bool_t passIso;
-	if(gSelection == iStopPOG){
+	if(gSelection == iStopSelec){
 		// Tight cut-based electrons, pT > 20, |eta| < 2.4, RelIso POG, tightIP2D, SIP3D > 4 
 		// Medium Muon ID, RelIso POG, tightIP2D, SIP3D > 4  
 		if(lep.isMuon){

@@ -10,17 +10,18 @@
 #include "TGraphAsymmErrors.h"
 #include "TSystem.h"
 
-const TString path_to_SF_histos = gSystem->WorkingDirectory() + TString("/InputFiles/");
+//const TString path_to_SF_histos = gSystem->WorkingDirectory() + TString("/InputFiles/");
 
 class LeptonSF {
  public:
-  LeptonSF();
+  LeptonSF(TString path = "~/AnalyserPAF/InputFiles/");
   ~LeptonSF() {}
   void loadHisto(Int_t iHisto, Int_t wp = -1);
   Float_t GetTrackerMuonSF(Float_t eta);
 	Float_t GetLeptonSF(Float_t pt, Float_t ieta);
 	Float_t GetLeptonSFerror(Float_t pt, Float_t ieta);
 	TGraphAsymmErrors* LoadTrackerMuonSF(const char* file, const char* histo);
+  TString path_to_SF_histos;
   
   // Trigger SFs
   Float_t GetTrigDoubleMuSF(Float_t eta1, Float_t eta2) const;
