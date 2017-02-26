@@ -12,14 +12,17 @@
 
 //const TString path_to_SF_histos = gSystem->WorkingDirectory() + TString("/InputFiles/");
 
+const Float_t lumiBCDEF = 19.706;
+const Float_t lumiGH    = 16.1454;
+
 class LeptonSF {
  public:
   LeptonSF(TString path = "~/AnalyserPAF/InputFiles/");
   ~LeptonSF() {}
   void loadHisto(Int_t iHisto, Int_t wp = -1);
   Float_t GetTrackerMuonSF(Float_t eta);
-	Float_t GetLeptonSF(Float_t pt, Float_t ieta);
-	Float_t GetLeptonSFerror(Float_t pt, Float_t ieta);
+	Float_t GetLeptonSF(Float_t pt, Float_t ieta, Int_t type = 0);
+	Float_t GetLeptonSFerror(Float_t pt, Float_t ieta, Int_t type = 0);
 	TGraphAsymmErrors* LoadTrackerMuonSF(const char* file, const char* histo);
   TString path_to_SF_histos;
   
@@ -41,8 +44,12 @@ class LeptonSF {
  private:
   // Muon SFs
   TGraphAsymmErrors*  fMuonTrackerSF;    
-  TH2D*  fMuonIdSF;     
-  TH2D*  fMuonIsoSF;     
+  TH2D*  fMuonIdSFSUSY;     
+  TH2D*  fMuonIdSF_BCDEF;     
+  TH2D*  fMuonIdSF_GH;     
+  TH2D*  fMuonIsoSF_BCDEF;     
+  TH2D*  fMuonIsoSF_GH;     
+  TH2D*  fMuonIsoSFSUSY;     
   TH2D*  fMuonIP2DSF;     
   TH2D*  fMuonSIP3DSF;     
  

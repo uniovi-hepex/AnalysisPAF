@@ -81,14 +81,20 @@ void EventBuilder::InsideLoop(){
   else           genWeight = 1;
   NormWeight = Weight*genWeight;
 
-  // >>>>>>>>> Calculate PU weight and variations  
-  nTrueInt = Get<Float_t>("nTrueInt");
-  //PUSF      = fPUWeight    ->GetWeight(nTrueInt);
-  //PUSF_Up   = fPUWeightUp  ->GetWeight(nTrueInt);
-  //PUSF_Down = fPUWeightDown->GetWeight(nTrueInt);
-  PUSF      = 1;
-  PUSF_Up   = 1;
-  PUSF_Down = 1;
+	// >>>>>>>>> Calculate PU weight and variations  
+	if(!gIsData){
+		nTrueInt = Get<Float_t>("nTrueInt");
+		//PUSF      = fPUWeight    ->GetWeight(nTrueInt);
+		//PUSF_Up   = fPUWeightUp  ->GetWeight(nTrueInt);
+		//PUSF_Down = fPUWeightDown->GetWeight(nTrueInt);
+		PUSF      = 1;
+		PUSF_Up   = 1;
+		PUSF_Down = 1;
+	} else{
+		PUSF      = 1;
+		PUSF_Up   = 1;
+		PUSF_Down = 1;
+  }
 
   // >>>>>>>>> Calculate Trigger SF and variations
 	// ### 2 LEPTONS

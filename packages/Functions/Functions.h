@@ -11,8 +11,8 @@ using namespace std;
 
 // enum 
 enum iSFs{
-	iMuonReco, iMuonId, iMuonIso, iMuonIP2D, iMuonSIP3D,
-	iElecReco, iElecId, iElecIso, iElecIP2D, iElecSIP3D,
+	iMuonReco, iMuonId, iMuonIdSUSY, iMuonIsoTightId, iMuonIsoMediumId, iMuonIsoSUSY, iMuonIP2D, iMuonSIP3D,
+	iElecReco, iElecId, iElecIdSUSY, iElecIso, iElecIsoSUSY, iElecIP2D, iElecSIP3D,
 	iTrigDoubleMuon, iTrigDoubleElec, iTrigElMu,
 	nfiles
 };

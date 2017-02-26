@@ -46,6 +46,13 @@ class LeptonSelector : public PAFChainItemSelector{
 		Float_t ptRel;
 		Float_t ptRatio;
 		Float_t miniIso;
+		Float_t sigmaIEtaIEta;
+		Float_t dEtaSC;
+		Float_t dPhiSC;
+		Float_t HoE;
+		Float_t eImpI;
+		Int_t   lostHits;
+		Int_t   convVeto;
 		Float_t dxy;
 		Float_t dz; 
 		Float_t sip;
