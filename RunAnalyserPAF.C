@@ -111,14 +111,14 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", TString Selection = 
 				myProject->AddDataFiles(dm->GetFiles()); 
 				xsec    = dm->GetCrossSection();
 				sumNorm = IsMCatNLO(theSample) ? dm->GetSumWeights() : dm->GetEventsInTheSample();
-        cout << Form("\033[1;30m=================================================\033[0m\n",theSample.Data(), xsec, sumNorm);
+				cout << "\033[1;30m=================================================\033[0m\n";
         cout << Form("\033[1;32m #### Sample  = %s \033[0m\n", theSample.Data());
         cout << Form("\033[1;32m #### XSec    = %f \033[0m\n", xsec);
         cout << Form("\033[1;32m #### nEvents = %f \033[0m\n", sumNorm);
 				totalNorm += sumNorm*sumNorm;
 				totalXSec += sumNorm*xsec;
 			}
-			cout << Form("\033[1;30m=================================================\033[0m\n",theSample.Data(), xsec, sumNorm);
+			cout << "\033[1;30m=================================================\033[0m\n";
 			if(IsMCatNLO(sampleName)){
 				G_IsMCatNLO = true;
 				cout << " >>>>>>>>>>>>>>>>>>>>> This is a aMCatNLO sample" << endl;
