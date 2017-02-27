@@ -16,6 +16,64 @@ ClassImp(EventBuilder);
 EventBuilder::EventBuilder() : PAFChainItemSelector() {}
 void EventBuilder::Summary(){}
 
+
+// Select your triggers
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+Bool_t EventBuilder::PassesDoubleElecTrigger(){
+	Bool_t pass = false;
+	if(gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec)
+		pass = (
+				Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+				Get<Int_t>("HLT_BIT_HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+				Get<Int_t>("HLT_BIT_HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v") ||
+				Get<Int_t>("HLT_BIT_HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v") );
+	return pass;
+}
+
+Bool_t EventBuilder::PassesDoubleMuonTrigger(){
+	Bool_t pass = false;
+	if(gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec)
+		pass = (
+				Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v") ||
+				Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v") ||
+				Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v") || 
+				Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v") );
+	return pass;
+}
+
+Bool_t EventBuilder::PassesElMuTrigger(){
+	Bool_t pass = false;
+	if(gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec)
+		pass = (
+				Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v") ||
+				Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+				Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v") ||
+				Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v") ||
+				Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+				Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v") ||
+				Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v") ||
+				Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+				Get<Int_t>("HLT_BIT_HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v") );
+  return pass;
+}
+
+Bool_t EventBuilder::PassesSingleElecTrigger(){
+  Bool_t pass = false;
+	if(gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec)
+		pass =  Get<Int_t>("HLT_BIT_HLT_Ele27_WPTight_Gsf_v");
+	return pass;
+}
+
+Bool_t EventBuilder::PassesSingleMuonTrigger(){
+	Bool_t pass = false;
+	if(gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec)
+		pass = (
+				Get<Int_t>("HLT_BIT_HLT_IsoTkMu24_v") ||
+				Get<Int_t>("HLT_BIT_HLT_IsoMu24_v") );
+	return pass;
+}
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 void EventBuilder::Initialise(){
 	gIsData = GetParam<Bool_t>("IsData");
 	gSelection = GetParam<Int_t>("iSelection");
@@ -31,7 +89,7 @@ void EventBuilder::Initialise(){
   else if(gSampleName.Contains("DoubleMuon")) gIsDoubleMuon = true;
   else if(gSampleName.Contains("SingleElec")) gIsSingleElec = true;
   else if(gSampleName.Contains("SingleMuon")) gIsSingleMuon = true;
-  else if(gSampleName.Contains("MuonEG")) gIsMuonEG     = true;
+  else if(gSampleName.Contains("MuonEG"))     gIsMuonEG     = true;
   
 	fPUWeight     = new PUWeight(19664.225, Moriond17MC_PoissonOOTPU, "2016_Moriond17");
 	fPUWeightUp   = new PUWeight(18494.9,   Moriond17MC_PoissonOOTPU, "2016_Moriond17"); //  18494.9 
@@ -40,7 +98,7 @@ void EventBuilder::Initialise(){
   Weight = GetParam<Float_t>("weight");
 
 	TriggSF       = new LeptonSF();
-  // >>>>>>>>>>>>>>> Load histograms for trigger used in analysis
+  // >>>>>>>>>>>>>>> Load histograms for trigger used in analysis  <<<<<<<<<<<<<<<<<<<<<<< Needs to be updated!!!
 	// if(gSelection == iStopSelec){
   // Load histograms for trigger SFs here!!!! 
 	// }
@@ -63,27 +121,31 @@ void EventBuilder::InsideLoop(){
   selLeptons = GetParam<std::vector<Lepton>>("selLeptons");
   // Set channel
   if(selLeptons.size()>=2){
-    if(selLeptons.at(0).isElec && selLeptons.at(1).isMuon) gChannel = 1;
+         if(selLeptons.at(0).isElec && selLeptons.at(1).isMuon) gChannel = 1;
     else if(selLeptons.at(0).isMuon && selLeptons.at(1).isElec) gChannel = 1;
     else if(selLeptons.at(0).isMuon && selLeptons.at(1).isMuon) gChannel = 2;
-    else if(selLeptons.at(0).isElec && selLeptons.at(1).isElec) gChannel = 3;
-  isSS = (selLeptons[0].charge*selLeptons[1].charge) > 0;
-  }
-  else{
- gChannel = -1;
- isSS = false;
-}
-  
-  METfilters = PassesMETfilters();
+		else if(selLeptons.at(0).isElec && selLeptons.at(1).isElec) gChannel = 3;
+		isSS = (selLeptons[0].charge*selLeptons[1].charge) > 0;
+	}
+	else{
+		gChannel = -1;
+		isSS = false;
+	}
+  passTrigger = false;
+       if(gChannel == 1 && TrigElMu()) passTrigger = true;
+  else if(gChannel == 2 && TrigMuMu()) passTrigger = true;
+  else if(gChannel == 3 && TrigElEl()) passTrigger = true;
 
-  // >>>>>>>>> Calculate norm weight
-  if(gIsMCatNLO) genWeight = Get<Float_t>("genWeight");
-  else           genWeight = 1;
-  NormWeight = Weight*genWeight;
+	METfilters = PassesMETfilters();
+
+	// >>>>>>>>> Calculate norm weight
+	if(gIsMCatNLO) genWeight = Get<Float_t>("genWeight");
+	else           genWeight = 1;
+	NormWeight = Weight*genWeight;
 
 	// >>>>>>>>> Calculate PU weight and variations  
 	if(!gIsData){
-		nTrueInt = Get<Float_t>("nTrueInt");
+		nTrueInt = Get<Float_t>("nTrueInt");  // <<<<<<<<<<<<<<<<<<<<<<<< Needs to be updated
 		//PUSF      = fPUWeight    ->GetWeight(nTrueInt);
 		//PUSF_Up   = fPUWeightUp  ->GetWeight(nTrueInt);
 		//PUSF_Down = fPUWeightDown->GetWeight(nTrueInt);
@@ -96,7 +158,7 @@ void EventBuilder::InsideLoop(){
 		PUSF_Down = 1;
   }
 
-  // >>>>>>>>> Calculate Trigger SF and variations
+  // >>>>>>>>> Calculate Trigger SF and variations <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Trigger SFs... needs to be updated!!!!
 	// ### 2 LEPTONS
 	TriggerSF = 1; TriggerSF_Up = 1; TriggerSF_Down = 1;
   /*if(selLeptons.size() < 2) continue; // At least 2 selected leptons
@@ -139,57 +201,41 @@ void EventBuilder::InsideLoop(){
   SetParam("METfilters",      METfilters);
 }
 
-Bool_t EventBuilder::PassesDoubleElecTrigger(){
+//
+
+
+Bool_t EventBuilder::TrigElEl(){
   Bool_t pass = false;
-  Bool_t passEE = Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
-  if(!gIsData){ // for MC: DOUBLE || SINGLE
-    pass = passEE || PassesSingleElecTrigger();
+  if(gIsData){
+    if     (gIsDoubleElec) pass =  PassesDoubleElecTrigger();
+    else if(gIsSingleElec) pass = !PassesDoubleElecTrigger() && PassesSingleElecTrigger();
   }
-  else{ // for Data, avoid double counting
-    if     (gIsDoubleElec) pass =  passEE;
-    else if(gIsSingleElec) pass = !passEE && PassesSingleElecTrigger();
-  }
+  else pass = PassesDoubleElecTrigger() || PassesSingleElecTrigger(); 
   return pass;
 }
 
-Bool_t EventBuilder::PassesDoubleMuonTrigger(){
+Bool_t EventBuilder::TrigMuMu(){
   Bool_t pass = false;
-	Bool_t passMM = (
-			Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v"  ) ||
-			Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v") );
-  if(!gIsData) pass = passMM || PassesSingleMuonTrigger();
-  else{
-    if     (gIsDoubleMuon) pass =  passMM;
-    else if(gIsSingleMuon) pass = !passMM && PassesSingleMuonTrigger();
+  if(gIsData){
+    if     (gIsDoubleMuon) pass =  PassesDoubleMuonTrigger();
+    else if(gIsSingleMuon) pass = !PassesDoubleMuonTrigger() && PassesSingleMuonTrigger();
   }
+  else pass = PassesDoubleMuonTrigger() || PassesSingleMuonTrigger();
   return pass;
 }
 
-Bool_t EventBuilder::PassesElMuTrigger(){
+Bool_t EventBuilder::TrigElMu(){
   Bool_t pass = false;
-  Bool_t passEM = (
-			Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v") ||
-			Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v") );
-  if(!gIsData) pass = passEM || PassesSingleMuonTrigger() || PassesSingleElecTrigger();
-  else{
-    if      (gIsMuonEG)     pass = passEM;
-    else if (gIsSingleMuon) pass = !passEM &&  PassesSingleMuonTrigger();
-    else if (gIsSingleElec) pass = !passEM && !PassesSingleMuonTrigger() && PassesSingleElecTrigger();
+  if(gIsData){
+         if(gIsMuonEG    ) pass =  PassesElMuTrigger();
+    else if(gIsSingleMuon) pass = !PassesElMuTrigger() &&  PassesSingleMuonTrigger(); 
+    else if(gIsSingleElec) pass = !PassesElMuTrigger() && !PassesSingleMuonTrigger() && PassesSingleElecTrigger();
   }
+  else pass = PassesElMuTrigger() || PassesSingleMuonTrigger() || PassesSingleElecTrigger(); 
   return pass;
 }
 
-Bool_t EventBuilder::PassesSingleElecTrigger(){
-  Bool_t passSingleElec = Get<Int_t>("HLT_BIT_HLT_Ele27_WPTight_Gsf_v");
-  return passSingleElec;
-}
 
-Bool_t EventBuilder::PassesSingleMuonTrigger(){
-	Bool_t passSingleMuon = (
-			Get<Int_t>("HLT_BIT_HLT_IsoTkMu24_v") ||
-			Get<Int_t>("HLT_BIT_HLT_IsoMu24_v") );
-  return passSingleMuon;
-}
 
 Bool_t EventBuilder::PassesMETfilters(){
   if(!gIsData) return true; // only for data

@@ -43,6 +43,11 @@ class EventBuilder : public PAFChainItemSelector{
     PUWeight *fPUWeightDown;
 
 		Bool_t PassesMETfilters();
+
+    Bool_t TrigElMu();
+    Bool_t TrigElEl();
+    Bool_t TrigMuMu();
+
 		Bool_t PassesDoubleElecTrigger();
 		Bool_t PassesDoubleMuonTrigger();
 		Bool_t PassesElMuTrigger();

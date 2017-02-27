@@ -23,7 +23,7 @@ void LeptonSelector::Initialise(){
   localPath      = GetParam<TString>("WorkingDir");
   LepSF = new LeptonSF(localPath + "/InputFiles/");
 
-  //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+  //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
   // Select SFs for each analysis !!!!!!
 	if(gSelection == iStopSelec){
     LepSF->loadHisto(iMuonReco);
@@ -33,7 +33,7 @@ void LeptonSelector::Initialise(){
 		LepSF->loadHisto(iElecIdSUSY,   iWPforStop);
 		LepSF->loadHisto(iElecIsoSUSY,   iWPforStop);
 	}
-	if(gSelection == iTopSelec || gSelection == iTWSelec){
+	else if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
 		LepSF->loadHisto(iMuonReco);
 		LepSF->loadHisto(iElecReco);
 		LepSF->loadHisto(iMuonId,   iTight);
@@ -41,12 +41,10 @@ void LeptonSelector::Initialise(){
 		LepSF->loadHisto(iElecId,   iTight);
 	}
   else std::cout << ">>>>>>>>>>>> WRONG SELECTION!!!!!!!!" << std::endl;
-  //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+  //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  
   selLeptons = std::vector<Lepton>();
 }
-
-
 
 //################################################################
 //## Definition of wps...
@@ -195,11 +193,15 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
 Bool_t LeptonSelector::isVetoLepton(Lepton lep){ 
 	Bool_t passId; Bool_t passIso;
 	if(gSelection == iStopSelec){
-    if(lep.isMuon) passId = true;
-    else{
-      passId = getElecCutBasedId(iVeto);
-    } 
-		return true;
+		if(lep.isMuon){ 
+			passId = true;
+			passIso = getRelIso03POG(iWPforStop);
+		}
+		else{
+			passId = getElecCutBasedId(iVeto);
+			passIso = getRelIso03POG(iWPforStop);
+		} 
+		return passId && passIso && getGoodVertex(iTight) && getSIPcut(4);
 	}
 	else if(gSelection == iTopSelec){
 		return true;
@@ -221,9 +223,9 @@ Bool_t LeptonSelector::isLooseLepton(Lepton lep){
 }
 
 
-/////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
 // You do not want to change anything below this point 
-/////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
 
 void LeptonSelector::InsideLoop(){
 	// Clear vectors...

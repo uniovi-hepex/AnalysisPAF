@@ -39,38 +39,39 @@ void StopAnalysis::InsideLoop(){
   PUSF_Down    = GetParam<Float_t>("PUSF_Down");
 
   // Event variables
-  gChannel        = GetParam<Int_t>("gChannel");
-  passMETfilters = GetParam<Bool_t>("METfilters");
-  passTrigger    = GetParam<Bool_t>("passTrigger");
-  isSS           = GetParam<Bool_t>("isSS");
-  
-  // Leptons and Jets
+	gChannel        = GetParam<Int_t>("gChannel");
+	passMETfilters = GetParam<Bool_t>("METfilters");
+	passTrigger    = GetParam<Bool_t>("passTrigger");
+	isSS           = GetParam<Bool_t>("isSS");
+
+	// Leptons and Jets
 	GetLeptonVariables(selLeptons, vetoLeptons);
 	GetJetVariables(selJets, Jets15);
 	GetMET();
 
-	// Skim
-	if(TNSelLeps == 2 && TNVetoLeps == 2){ // 2 sel leptons, veto to 3rd lepton
+	if(TNSelLeps == 2 && passTrigger && passMETfilters && !isSS){ // 2 leptons, OS
+		if(TNVetoLeps < 3){  // Veto to 3rd lepton
 
-		// Deal with weights:
-		Float_t lepSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
-		Float_t lepSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1);
-		Float_t lepSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1);
-		TWeight            = NormWeight*lepSF*TrigSF*PUSF;
-		TWeight_LepEffUp   = NormWeight*lepSFUp*TrigSF*PUSF;
-		TWeight_LepEffDown = NormWeight*lepSFDo*TrigSF*PUSF;
-		TWeight_TrigUp     = NormWeight*lepSF*TrigSF_Up*PUSF;
-		TWeight_TrigDown   = NormWeight*lepSF*TrigSF_Down*PUSF;
-		TWeight_PUDown     = NormWeight*lepSF*TrigSF*PUSF_Up;
-		TWeight_PUUp       = NormWeight*lepSF*TrigSF*PUSF_Down;
+			// Deal with weights:
+			Float_t lepSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
+			Float_t lepSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1);
+			Float_t lepSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1);
+			TWeight            = NormWeight*lepSF*TrigSF*PUSF;
+			TWeight_LepEffUp   = NormWeight*lepSFUp*TrigSF*PUSF;
+			TWeight_LepEffDown = NormWeight*lepSFDo*TrigSF*PUSF;
+			TWeight_TrigUp     = NormWeight*lepSF*TrigSF_Up*PUSF;
+			TWeight_TrigDown   = NormWeight*lepSF*TrigSF_Down*PUSF;
+			TWeight_PUDown     = NormWeight*lepSF*TrigSF*PUSF_Up;
+			TWeight_PUUp       = NormWeight*lepSF*TrigSF*PUSF_Down;
 
-    // Event Selection
-		// ===================================================================================================================
-		if((selLeptons.at(0).p + selLeptons.at(1).p).M() > 20){ // mll > 20 GeV
-			if(gChannel == 1 || (TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15)  ){ //  Z Veto in ee, µµ
-				if(TNJets > 1 || TNJetsJESUp > 1 || TNJetsJESDown > 1 || TNJetsJER > 1){ //At least 2 jets
-					if(TNBtags > 0 || TNBtagsUp > 0 || TNBtagsDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0){ // At least 1 b-tag
-						fTree->Fill();
+			// Event Selection
+			// ===================================================================================================================
+			if((selLeptons.at(0).p + selLeptons.at(1).p).M() > 20){ // mll > 20 GeV
+				if(gChannel == 1 || (TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15)  ){ //  Z Veto in ee, µµ
+					if(TNJets > 1 || TNJetsJESUp > 1 || TNJetsJESDown > 1 || TNJetsJER > 1){ //At least 2 jets
+						if(TNBtags > 0 || TNBtagsUp > 0 || TNBtagsDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0){ // At least 1 b-tag
+							fTree->Fill();
+						}
 					}
 				}
 			}
@@ -84,9 +85,9 @@ void StopAnalysis::InsideLoop(){
 //------------------------------------------------------------------
 
 void StopAnalysis::SetLeptonVariables(){
-  fTree->Branch("TNVetoLeps",     &TNVetoLeps,     "TNVetoLeps/I");
-  fTree->Branch("TNSelLeps",     &TNSelLeps,     "TNSelLeps/I");
-  fTree->Branch("TLep_Pt",     TLep_Pt,     "TLep_Pt[TNSelLeps]/F");
+	fTree->Branch("TNVetoLeps",     &TNVetoLeps,     "TNVetoLeps/I");
+	fTree->Branch("TNSelLeps",     &TNSelLeps,     "TNSelLeps/I");
+	fTree->Branch("TLep_Pt",     TLep_Pt,     "TLep_Pt[TNSelLeps]/F");
   fTree->Branch("TLep_Eta",     TLep_Eta,     "TLep_Eta[TNSelLeps]/F");
   fTree->Branch("TLep_Phi",     TLep_Phi,     "TLep_Phi[TNSelLeps]/F");
   fTree->Branch("TLep_E" ,     TLep_E ,     "TLep_E[TNSelLeps]/F");

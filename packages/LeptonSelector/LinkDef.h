@@ -9,7 +9,7 @@
 // Since we are passing a TLorentzVector as a parameter we need this. 
 // In addition we need to include "TLorentzVector.h" in the header file
 // of the selector
-#pragma link C++ class PAFGenericItemVariableContainer<TLorentzVector>+;
+//#pragma link C++ class PAFGenericItemVariableContainer<TLorentzVector>+;
 #pragma link C++ class PAFGenericItemVariableContainer<Lepton>+;
 
 // Since we are passing a std::vector<TLorentzVector> as a parameter we 
@@ -18,7 +18,7 @@
 // included for the reason described above) and <vector> in the header file
 // of the selector
 #pragma link C++ class PAFGenericItemVariableContainer<std::vector<Lepton>>+;
-#pragma link C++ class PAFGenericItemVariableContainer<*std::vector<Lepton>>+;
+//#pragma link C++ class PAFGenericItemVariableContainer<*std::vector<Lepton>>+;
 
 // Finally we need to manually tell ROOT to generate the dictionary for the 
 // selector class SelA. If LinkDef.h is not present this dictionary is 

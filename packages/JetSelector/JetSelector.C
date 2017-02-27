@@ -18,14 +18,39 @@ ClassImp(JetSelector);
 JetSelector::JetSelector() : PAFChainItemSelector() {}
 void JetSelector::Summary(){}
 
+
+//---- Select your max pt, eta
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+Float_t max_eta
+
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 void JetSelector::Initialise(){
 	gIsData    = GetParam<Bool_t>("IsData");
 	gSelection = GetParam<Bool_t>("iSelection");
 
+//---- Select your wp for b-tagging and pt, eta fot the jets
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	TString stringWP;
 	if      (gSelection == iStopSelec)  stringWP = "Medium";
 	else if (gSelection == iWWSelec)    stringWP = "Loose";
 	else                                stringWP = "Medium";
+  if     (gSelection == iStopSelec){
+		jet_MaxEta = 2.4;
+		jet_MinPt  = 30;
+		vetoJet_minPt = 20;
+  }
+  else if(gSelection == iWWSelec){
+		jet_MaxEta = 4.7;
+		jet_MinPt  = 30;
+		vetoJet_minPt = 20;
+  }
+  else{
+		jet_MaxEta = 2.4;
+		jet_MinPt  = 30;
+		vetoJet_minPt = 20;
+  }
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	fBTagSFnom = new BTagSFUtil("mujets", "CSVv2", stringWP,  0);
 	fBTagSFbUp = new BTagSFUtil("mujets", "CSVv2", stringWP,  1);
@@ -80,12 +105,12 @@ void JetSelector::InsideLoop(){
 		tJ = Jet(tpJ, csv, jetId, flavmc);
 		tJ.isBtag = IsBtag(tJ);
 		// Fill the vectors
-		if(tJ.id > 0 && Cleaning(tJ, Leptons) && TMath::Abs(tJ.p.Eta()) < 2.4){
+		if(tJ.id > 0 && Cleaning(tJ, Leptons) && TMath::Abs(tJ.p.Eta()) < jet_MaxEta){
 			SetSystematics(&tJ);
 			tJ.isBtag = IsBtag(tJ);
 			if(tJ.p.Pt() > 15 || tJ.pTJESUp > 15 || tJ.pTJESDown > 15) Jets15.push_back(tJ);
-			if(tJ.isBtag && tJ.p.Pt() > 20) vetoJets.push_back(tJ);
-			if(tJ.p.Pt() > 30){
+			if(tJ.isBtag && tJ.p.Pt() > vetoJet_minPt) vetoJets.push_back(tJ);
+			if(tJ.p.Pt() > jet_MinPt){
 				selJets.push_back(tJ);
 				if(tJ.isBtag) nBtagJets++; 
 			} 
@@ -99,7 +124,6 @@ void JetSelector::InsideLoop(){
 			genJets.push_back(tJ);    
 		}
 	}
-
 
 	nSelJets  = selJets.size();
 	nJets15   = Jets15.size();

@@ -32,6 +32,10 @@ class JetSelector : public PAFChainItemSelector{
     Int_t nJets15;
     Int_t nBtagJets;
 
+		Float_t jet_MaxEta;
+		Float_t jet_MinPt;
+		Float_t vetoJet_minPt;
+
 	protected:
 
 		BTagSFUtil *fBTagSFnom ;
