@@ -18,13 +18,6 @@ ClassImp(JetSelector);
 JetSelector::JetSelector() : PAFChainItemSelector() {}
 void JetSelector::Summary(){}
 
-
-//---- Select your max pt, eta
-//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-Float_t max_eta
-
-//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
 void JetSelector::Initialise(){
 	gIsData    = GetParam<Bool_t>("IsData");
 	gSelection = GetParam<Bool_t>("iSelection");
