@@ -9,7 +9,6 @@
 // Since we are passing a TLorentzVector as a parameter we need this. 
 // In addition we need to include "TLorentzVector.h" in the header file
 // of the selector
-//#pragma link C++ class PAFGenericItemVariableContainer<TLorentzVector>+;
 #pragma link C++ class PAFGenericItemVariableContainer<Jet>+;
 
 // Since we are passing a std::vector<TLorentzVector> as a parameter we 
