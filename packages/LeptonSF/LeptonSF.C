@@ -1,15 +1,17 @@
 #include "LeptonSF.h"
 
+#include "PAF.h"
+
 #include <iostream>
 
 LeptonSF::LeptonSF(TString path):
 	fMuonTrackerSF(0),  // Muon Reco
-	fMuonIdSF_BCDEF(0),       // Muon Id
-	fMuonIdSF_GH(0),       // Muon Id
-	fMuonIdSFSUSY(0),       // Muon Id
-	fMuonIsoSF_BCDEF(0),      // Muon Iso
-	fMuonIsoSF_GH(0),      // Muon Iso
-	fMuonIsoSFSUSY(0),      // Muon Iso
+	fMuonIdSF_BCDEF(0), // Muon Id
+	fMuonIdSF_GH(0),    // Muon Id
+	fMuonIdSFSUSY(0),   // Muon Id
+	fMuonIsoSF_BCDEF(0),// Muon Iso
+	fMuonIsoSF_GH(0),   // Muon Iso
+	fMuonIsoSFSUSY(0),  // Muon Iso
 	fMuonIP2DSF(0),     // Muon IP2d
 	fMuonSIP3DSF(0),    // Muon SIP
 
@@ -217,14 +219,12 @@ Float_t LeptonSF::GetLeptonSFerror(Float_t pt, Float_t ieta, Int_t type){
 TH2D* LeptonSF::GetHistogramFromFileD(const char* filename, const char* histoname, const char* newhname) {
   TFile* file  = TFile::Open(filename);
   if (!file) {
-    std::cerr << "ERROR[LeptonSF]: Could not load file" << std::endl
-	  << "     " << filename << std::endl;
+    PAF_FATAL("LeptonSF", Form("Could not load file\"%s\"", filename));
     return 0;
   }
   TH2D* h = (TH2D*) file->Get(histoname)->Clone(newhname);
   if (!h) {
-    std::cerr << "ERROR[LeptonSF]: Could not find histogram " 
-	      << histoname << std::endl;
+    PAF_ERROR("LeptonSF", Form("Could not find histogram \"%s\"", histoname));
     return 0;
   }
   h->SetDirectory(0);
@@ -235,14 +235,12 @@ TH2D* LeptonSF::GetHistogramFromFileD(const char* filename, const char* histonam
 TH2F* LeptonSF::GetHistogramFromFileF(const char* filename, const char* histoname, const char* newhname) const {
   TFile* file  = TFile::Open(filename);
   if (!file) {
-      std::cerr << "ERROR[LeptonSF]: Could not load file" << std::endl
-		<< "                 " << filename << std::endl;
-      return 0;
+    PAF_FATAL("LeptonSF", Form("Could not load file\"%s\"", filename));
+    return 0;
   }
   TH2F* h = (TH2F*) file->Get(histoname)->Clone(newhname);
   if (!h) {
-    std::cerr << "ERROR[LeptonSF]: Could not find histogram " 
-	      << histoname << std::endl;
+    PAF_ERROR("LeptonSF", Form("Could not find histogram \"%s\"", histoname));
     return 0;
     }
   h->SetDirectory(0);
