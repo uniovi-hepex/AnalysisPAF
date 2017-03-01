@@ -31,7 +31,7 @@ enum sys{iNom,
 	nSys
 };
 
-enum eChannel{iElMu, iElec, iMuon, nChannels};
+//enum eChannel{iElMu, iElec, iMuon, nChannels};
 
 bool LepMomentumComparator(Lepton i, Lepton j);
 bool JetMomentumComparator(Jet i   , Jet    j);

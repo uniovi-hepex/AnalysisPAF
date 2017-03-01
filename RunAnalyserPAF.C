@@ -11,7 +11,8 @@ R__LOAD_LIBRARY(DatasetManager/DatasetManager.C+)
 #include "TLorentzVector.h"
 
 Bool_t IsMCatNLO(TString sampleName);
-enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec};
+enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec, nSel};
+const TString tagSel[nSel] = {"Stop", "Top", "TW", "WW", "ttDM", "ttH"};
 
 void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", TString Selection = "StopDilep", Int_t nSlots = 1,
 			Long64_t nEvents = 0, Float_t ThisWeight = 1.0,
@@ -35,7 +36,7 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", TString Selection = 
   else if(Selection == "ttH"       || Selection == "TTH"     ) sel = ittHSelec;
   else if(Selection == "WW"                                  ) sel = iWWSelec;
   else{ cout << "WRONG SELECTION!!!!" << endl; return;}
-  cout << " >>>>>>>>>>>>>>>>>>>>> Analysis: " << Selection << endl;
+  cout << " >>>>>>>>>>>>>>>>>>>>> Analysis: " << tagSel[sel] << endl;
 
   // PAF mode
   //----------------------------------------------------------------------------
@@ -130,7 +131,7 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", TString Selection = 
 
 	// Output file name
 	//----------------------------------------------------------------------------
-	TString outputDir = "./temp";
+	TString outputDir = "./" + tagSel[sel] + "_temp";
 	if(sampleName.BeginsWith("T2tt")) outputDir += "/T2tt/";
 	gSystem->mkdir(outputDir, kTRUE);
 	TString outputFile = outputDir + "/Tree_" + sampleName + ".root";
@@ -164,9 +165,9 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", TString Selection = 
 	myProject->AddSelectorPackage("LeptonSelector");
 	myProject->AddSelectorPackage("JetSelector");
 	myProject->AddSelectorPackage("EventBuilder");
-	if      (sel == 0)  myProject->AddSelectorPackage("StopAnalysis");
-	else if (sel == 1)  myProject->AddSelectorPackage("StopAnalysis");
-	else                myProject->AddSelectorPackage("CreateMiniTree");
+	if      (sel == iStopSelec)  myProject->AddSelectorPackage("StopAnalysis");
+	else if (sel == iTopSelec )  myProject->AddSelectorPackage("TopAnalysis");
+	else                         myProject->AddSelectorPackage("CreateMiniTree");
 
 	// Additional packages
 	//----------------------------------------------------------------------------

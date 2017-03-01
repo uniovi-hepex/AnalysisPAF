@@ -37,7 +37,7 @@ void LeptonSelector::Initialise(){
 		LepSF->loadHisto(iMuonReco);
 		LepSF->loadHisto(iElecReco);
 		LepSF->loadHisto(iMuonId,   iTight);
-		LepSF->loadHisto(iMuonIsoTightId,   iTight);
+   	LepSF->loadHisto(iMuonIsoTightId,   iTight);
 		LepSF->loadHisto(iElecId,   iTight);
 	}
   else std::cout << ">>>>>>>>>>>> WRONG SELECTION!!!!!!!!" << std::endl;
@@ -119,8 +119,8 @@ Bool_t LeptonSelector::getElecCutBasedId(Int_t wp){
 			if(TMath::Abs(eImpI) > 0.00999 ) return false;
 			if(lostHits         > 1      ) return false;
 		}
-		if (convVeto  == 0   ) return false;
 	}   
+		if (convVeto  == 0   ) return false;
 	return true;
 }
 
@@ -153,6 +153,7 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
 		if(lep.isElec){
 			passId = getElecCutBasedId(iWPforStop);
 			passIso = getRelIso03POG(iWPforStop);
+			if(TMath::Abs(etaSC) > 1.4442 && TMath::Abs(etaSC) < 1.566) return false;
 		}
 		if(lep.p.Pt() < 20 || TMath::Abs(lep.p.Eta()) > 2.4) return false;
 		if(passId && passIso && getGoodVertex(iTight) && getSIPcut(4)) return true;
@@ -166,11 +167,11 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
 			passIso = getRelIso04POG(iTight);
 		}
 		if(lep.isElec){
-			passId = getElecCutBasedId(iTight);
+			passId = getElecCutBasedId(iTight) && lostHits <= 1;
 			passIso = getRelIso03POG(iTight);
 		}
 		if(lep.p.Pt() < 20 || TMath::Abs(lep.p.Eta()) > 2.4) return false;
-		if(passId && passIso && getGoodVertex(iTight) && getSIPcut(4)) return true;
+		if(passId && passIso && (lep.isElec || getGoodVertex(iMedium))) return true;
 		else return false;
 	}
 	else if(gSelection == iWWSelec){

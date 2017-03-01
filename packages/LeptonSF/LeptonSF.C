@@ -54,9 +54,9 @@ void LeptonSF::loadHisto(Int_t iHisto, Int_t wp){
 			fMuonIdSF_GH    = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fMuonIdSF_GH"); 
     }
     if(wp == iTight){
-			filename = "MuonSFTightId_BCDEF"; histoname = "MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio";
+			filename = "MuonSFId_BCDEF"; histoname = "MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio";
 			fMuonIdSF_BCDEF = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fMuonIdSF_BCDEF"); 
-			filename = "MuonSFTightId_GH"; histoname = "MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio";
+			filename = "MuonSFId_GH"; histoname = "MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio";
 			fMuonIdSF_GH    = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fMuonIdSF_GH"); 
     }
 	}
@@ -164,17 +164,18 @@ Float_t LeptonSF::GetLeptonSF(Float_t pt, Float_t ieta, Int_t type){
 		if(type == 0){
 			if     (id == iMuonReco)    SF *= GetTrackerMuonSF(eta); 
 			else if(id == iMuonIdSUSY)  SF *= fMuonIdSFSUSY      ->GetBinContent(fMuonIdSFSUSY     ->FindBin(pt,eta));
-			else if(id == iMuonId)      SF *= (fMuonIdSF_BCDEF->GetBinContent(pt,eta)*lumiBCDEF + fMuonIdSF_GH->GetBinContent(pt,eta)*lumiGH)/(lumiBCDEF+lumiGH);
+			else if(id == iMuonId)      SF *= (fMuonIdSF_BCDEF->GetBinContent(fMuonIdSF_BCDEF->FindBin(pt,eta))*lumiBCDEF + fMuonIdSF_GH->GetBinContent(fMuonIdSF_GH->FindBin(pt,eta))*lumiGH)/(lumiBCDEF+lumiGH);
 			else if(id == iMuonIsoSUSY) SF *= fMuonIsoSFSUSY     ->GetBinContent(fMuonIsoSFSUSY    ->FindBin(pt,eta));
 			else if(id == iMuonIsoMediumId || id == iMuonIsoTightId)
-				SF *= (fMuonIsoSF_BCDEF->GetBinContent(pt,eta)*lumiBCDEF + fMuonIsoSF_GH->GetBinContent(pt,eta)*lumiGH)/(lumiBCDEF+lumiGH);
+				SF *= (fMuonIsoSF_BCDEF->GetBinContent(fMuonIsoSF_BCDEF->FindBin(pt,eta))*lumiBCDEF + fMuonIsoSF_GH->GetBinContent(fMuonIsoSF_GH->FindBin(pt,eta))*lumiGH)/(lumiBCDEF+lumiGH);
 			else if(id == iMuonIP2D)    SF *= fMuonIP2DSF    ->GetBinContent(fMuonIP2DSF   ->FindBin(pt,eta));
 			else if(id == iMuonSIP3D)   SF *= fMuonSIP3DSF   ->GetBinContent(fMuonSIP3DSF  ->FindBin(pt,eta));
 		}
 		else if(type == 1){ 
 			if(id == iElecReco)    SF *= fElecTrackerSF ->GetBinContent(fElecTrackerSF->FindBin(eta,50));
-			else if(id == iElecId || id == iElecIdSUSY)      SF *= fElecIdSF      ->GetBinContent(fElecIdSF     ->FindBin(pt,eta));
+			else if(id == iElecIdSUSY)      SF *= fElecIdSF      ->GetBinContent(fElecIdSF     ->FindBin(pt,eta));
 			else if(id == iElecIsoSUSY) SF *= fElecIsoSF     ->GetBinContent(fElecIsoSF    ->FindBin(pt,eta));
+			else if(id == iElecId)      SF *= fElecIdSF      ->GetBinContent(fElecIdSF     ->FindBin(eta,pt));
 			else if(id == iElecIP2D)    SF *= fElecIP2DSF    ->GetBinContent(fElecIP2DSF   ->FindBin(eta,pt));
 			else if(id == iElecSIP3D)   SF *= fElecSIP3DSF   ->GetBinContent(fElecSIP3DSF  ->FindBin(eta,pt));
 		}
@@ -194,17 +195,18 @@ Float_t LeptonSF::GetLeptonSFerror(Float_t pt, Float_t ieta, Int_t type){
 		if(type == 0){
 			if     (id == iMuonReco)    err += 0;
 			else if(id == iMuonIdSUSY)  err += p2(fMuonIdSFSUSY      ->GetBinError(fMuonIdSFSUSY     ->FindBin(pt,eta)));
-			else if(id == iMuonId)      err += p2( (fMuonIdSF_BCDEF->GetBinError(pt,eta)*lumiBCDEF + fMuonIdSF_GH->GetBinError(pt,eta)*lumiGH)/(lumiBCDEF+lumiGH) );
+			else if(id == iMuonId)      err += p2( (fMuonIdSF_BCDEF->GetBinError(fMuonIdSF_BCDEF->FindBin(pt,eta))*lumiBCDEF + fMuonIdSF_GH->GetBinError(fMuonIdSF_GH->FindBin(pt,eta))*lumiGH)/(lumiBCDEF+lumiGH) );
 			else if(id == iMuonIsoSUSY) err += p2(fMuonIsoSFSUSY ->GetBinContent(fMuonIsoSFSUSY->FindBin(pt,eta)));
 			else if(id == iMuonIsoMediumId || id == iMuonIsoTightId)
-				err += p2( (fMuonIsoSF_BCDEF->GetBinError(pt,eta)*lumiBCDEF + fMuonIsoSF_GH->GetBinError(pt,eta)*lumiGH)/(lumiBCDEF+lumiGH) );
+				err += p2( (fMuonIsoSF_BCDEF->GetBinError(fMuonIsoSF_BCDEF->FindBin(pt,eta))*lumiBCDEF + fMuonIsoSF_GH->GetBinError(fMuonIsoSF_GH->FindBin(pt,eta))*lumiGH)/(lumiBCDEF+lumiGH) );
 			else if(id == iMuonIP2D)    err += p2(fMuonIP2DSF    ->GetBinError(fMuonIP2DSF   ->FindBin(pt,eta)));
 			else if(id == iMuonSIP3D)   err += p2(fMuonSIP3DSF   ->GetBinError(fMuonSIP3DSF  ->FindBin(pt,eta)));
 		}
 		else if(type == 1){ 
 			if(id == iElecReco)    err += p2(fElecTrackerSF ->GetBinError(fElecTrackerSF->FindBin(eta,50)));
-			else if(id == iElecId || id == iElecIdSUSY)      err += p2(fElecIdSF      ->GetBinError(fElecIdSF     ->FindBin(pt,eta)));
+			else if(id == iElecIdSUSY)      err += p2(fElecIdSF      ->GetBinError(fElecIdSF     ->FindBin(pt,eta)));
 			else if(id == iElecIsoSUSY) err += p2(fElecIsoSF     ->GetBinError(fElecIsoSF    ->FindBin(pt,eta)));
+			else if(id == iElecId)      err += p2(fElecIdSF      ->GetBinError(fElecIdSF     ->FindBin(eta,pt)));
 			else if(id == iElecIP2D)    err += p2(fElecIP2DSF    ->GetBinError(fElecIP2DSF   ->FindBin(eta,pt)));
 			else if(id == iElecSIP3D)   err += p2(fElecSIP3DSF   ->GetBinError(fElecSIP3DSF  ->FindBin(eta,pt)));
 		}

@@ -1,7 +1,38 @@
 #include "StopAnalysis.h"
 
 ClassImp(StopAnalysis);
-StopAnalysis::StopAnalysis() : PAFChainItemSelector() {}
+StopAnalysis::StopAnalysis() : PAFChainItemSelector() {
+	fTree = 0;
+
+	TrigSF = 0; TrigSF_Up = 0; TrigSF_Down = 0; PUSF = 0; PUSF_Up = 0; PUSF_Down = 0;
+	gChannel = 0; passMETfilters = 0; passTrigger = 0; isSS = 0;  NormWeight = 0; TWeight = 0;
+	TMll = 0;  TMET = 0; TMET_Phi = 0; TNJets = 0; TNBtags = 0; THT = 0; 
+	TNVetoLeps = 0; TNSelLeps = 0; TChannel = 0;
+	TNJetsJESUp = 0; TNJetsJESDown = 0; TNJetsJER = 0;
+	TNBtagsUp = 0; TNBtagsDown = 0; TNBtagsMisTagUp = 0; TNBtagsMisTagDown = 0;
+	THTJESUp = 0; THTJESDown = 0; TNISRJets = 0;
+	TMETJESUp = 0; TMETJESDown = 0; TMT2llJESUp = 0; TMT2llJESDown = 0;
+	TWeight_LepEffUp = 0; TWeight_LepEffDown = 0; TWeight_TrigUp = 0; TWeight_TrigDown = 0;
+	TWeight_FSUp = 0; TWeight_FSDown = 0; TWeight_PUDown = 0; TWeight_PUUp = 0;
+	for(Int_t i = 0; i < 10; i++){
+		TLep_Pt[i] = 0;  
+		TLep_Eta[i] = 0;
+		TLep_Phi[i] = 0;
+		TLep_E[i] = 0;
+		TLep_Charge[i] = 0;
+	}
+	for(Int_t i = 0; i < 20; i++){
+		TJet_Pt[i] = 0;
+		TJet_Eta[i] = 0;
+		TJet_Phi[i] = 0;
+		TJet_E[i] = 0;
+		TJet_isBJet[i] = 0;
+		TJetJESUp_Pt[i] = 0;
+		TJetJESDown_Pt[i] = 0;
+		TJetJER_Pt[i] = 0;
+	}
+  std::cout << "PASO POR AQUI" << std::endl;
+}
 void StopAnalysis::Summary(){}
 
 void StopAnalysis::Initialise(){
@@ -10,7 +41,7 @@ void StopAnalysis::Initialise(){
   gSampleName  = GetParam<TString>("sampleName");
   gDoSyst      = GetParam<Bool_t>("doSyst");
 
-	fTree = CreateTree("MiniTree","Created with PAF");
+	fTree = CreateTree("tree","Created with PAF");
 
   SetLeptonVariables();
   SetJetVariables();
@@ -96,20 +127,20 @@ void StopAnalysis::SetLeptonVariables(){
 }
 
 void StopAnalysis::SetJetVariables(){
-  fTree->Branch("TNJets",           &TNJets,         "TNJets/I");
+  fTree->Branch("TNJets",        &TNJets,         "TNJets/I");
   fTree->Branch("TNBtags",       &TNBtags,     "TNBtags/I");
-  fTree->Branch("TJet_isBJet",       TJet_isBJet,       "TJet_isBJet[TNJets]/I");
-  fTree->Branch("TJet_Pt",           TJet_Pt,           "TJet_Pt[TNJets]/F");
-  fTree->Branch("TJet_Eta",           TJet_Eta,           "TJet_Eta[TNJets]/F");
-  fTree->Branch("TJet_Phi",           TJet_Phi,           "TJet_Phi[TNJets]/F");
-  fTree->Branch("TJet_E",            TJet_E,            "TJet_E[TNJets]/F");
+  fTree->Branch("TJet_isBJet",   TJet_isBJet,       "TJet_isBJet[TNJets]/I");
+  fTree->Branch("TJet_Pt",       TJet_Pt,           "TJet_Pt[TNJets]/F");
+  fTree->Branch("TJet_Eta",      TJet_Eta,           "TJet_Eta[TNJets]/F");
+  fTree->Branch("TJet_Phi",      TJet_Phi,           "TJet_Phi[TNJets]/F");
+  fTree->Branch("TJet_E",        TJet_E,            "TJet_E[TNJets]/F");
 
-  fTree->Branch("TNJetsJESUp",           &TNJetsJESUp,         "TNJetsJESUp/I");
-  fTree->Branch("TNJetsJESDown",           &TNJetsJESDown,         "TNJetsJESDown/I");
-  fTree->Branch("TNJetsJER",           &TNJetsJER,         "TNJetsJER/I");
+  fTree->Branch("TNJetsJESUp",      &TNJetsJESUp,         "TNJetsJESUp/I");
+  fTree->Branch("TNJetsJESDown",    &TNJetsJESDown,         "TNJetsJESDown/I");
+  fTree->Branch("TNJetsJER",        &TNJetsJER,         "TNJetsJER/I");
 
-  fTree->Branch("TNBtagsUp",     &TNBtagsUp,   "TNBtagsUp/I");
-  fTree->Branch("TNBtagsDown",   &TNBtagsDown, "TNBtagsDown/I");
+  fTree->Branch("TNBtagsUp",           &TNBtagsUp,   "TNBtagsUp/I");
+  fTree->Branch("TNBtagsDown",         &TNBtagsDown, "TNBtagsDown/I");
   fTree->Branch("TNBtagsMisTagUp",     &TNBtagsMisTagUp,   "TNBtagsMisTagUp/I");
   fTree->Branch("TNBtagsMisTagDown",   &TNBtagsMisTagDown, "TNBtagsMisTagDown/I");
 
@@ -118,8 +149,6 @@ void StopAnalysis::SetJetVariables(){
   fTree->Branch("TJetJER_Pt",        TJetJER_Pt,        "TJetJER_Pt[TNJetsJER]/F");
 
   fTree->Branch("THT",          &THT,          "THT/F");
-  fTree->Branch("THTJESUp",     &THTJESUp,     "THTJESUp/F");
-  fTree->Branch("THTJESDown",   &THTJESDown,   "THTJESDown/F");
 }
 
 void StopAnalysis::SetEventVariables(){
