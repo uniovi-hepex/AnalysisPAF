@@ -5,17 +5,19 @@ R__LOAD_LIBRARY(Plot.C+)
 #include "Plot.h"
 
 //TString path = "/nfs/fanae/user/juanr/stop/TOP13TeV/temp/"; 
-TString path = "~/AnalyserPAF/temp/"; 
+TString path = "/mnt_pool/fanae105/user/juanr/stop/TOP13TeV/temp/";
 void Draw(TString var = "TMET", TString cuts = "TNJets > 1 && TNBtags > 0", TString chan = "ElMu", Int_t nbins = 30, Int_t x0 = 0, Int_t xN = 300, TString xlabel = "GeV", TString tag = "0");
 
 void MakePlots_Stop2L(){
-  Draw("TMET", "TNJets > 1 && TNBtags > 0", "ElMu", 40, 0, 400, "MET [GeV]", "0");
+//  Draw("TMET", "TNJets > 1 && TNBtags > 0", "ElMu", 40, 0, 400, "MET [GeV]", "0");
+  Draw("TMET", "TNJetsBtag > 0 && TNJets > 1", "ElMu", 40, 0, 400, "MET [GeV]", "0");
 }
 
 void Draw(TString var, TString cuts, TString chan, Int_t nbins, Int_t x0, Int_t xN, TString xlabel, TString tag){
 	Plot* p = new Plot(var, cuts, chan, nbins, x0, xN, "Title", xlabel);
 	//p->AddSample("WJetsToLNu_aMCatNLO", "WJets", itBkg, kGreen-3, 0.50);
 	p->SetPath(path);
+	p->SetTreeName("sTopTree");
 	p->AddSample("WW", "VV", itBkg, kYellow-10, 0.50);
 	p->AddSample("WZ", "VV", itBkg, kYellow-10, 0.50);
 	p->AddSample("ZZ", "VV", itBkg, kYellow-10, 0.50);
@@ -34,6 +36,10 @@ void Draw(TString var, TString cuts, TString chan, Int_t nbins, Int_t x0, Int_t 
 //	p->AddSample("DoubleEG", "Data", itData);
 //	p->AddSample("DoubleMuon", "Data", itData);
 
+ //p->AddSystematic("JES");
+ p->AddSystematic("LepEff");
+ p->AddSystematic("JES");
+ p->IncludeBkgSystematics();
   //for(int i = 0; i < (int) p->VBkgs.size(); i++){
   //  p->VBkgs.at(i)->Draw("same");
   //}
@@ -41,5 +47,6 @@ void Draw(TString var, TString cuts, TString chan, Int_t nbins, Int_t x0, Int_t 
   p->DrawStack(tag, 1);
   p->doSetLogy = true;
   p->DrawStack(tag + "_log", 1);
+ p->PrintSystematics();
   delete p;
 }
