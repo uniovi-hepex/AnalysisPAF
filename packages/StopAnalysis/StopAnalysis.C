@@ -41,11 +41,11 @@ void StopAnalysis::Initialise(){
   gSampleName  = GetParam<TString>("sampleName");
   gDoSyst      = GetParam<Bool_t>("doSyst");
 
-	fTree = CreateTree("tree","Created with PAF");
+	//fTree = CreateTree("tree","Created with PAF");
 
-  SetLeptonVariables();
-  SetJetVariables();
-	SetEventVariables();
+  //SetLeptonVariables();
+  //SetJetVariables();
+	//SetEventVariables();
 
   selLeptons  = std::vector<Lepton>();
   vetoLeptons = std::vector<Lepton>();
@@ -98,13 +98,13 @@ void StopAnalysis::InsideLoop(){
 			// Event Selection
 			// ===================================================================================================================
 			if((selLeptons.at(0).p + selLeptons.at(1).p).M() > 20){ // mll > 20 GeV
-				if(gChannel == 1 || (TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15)  ){ //  Z Veto in ee, µµ
-					if(TNJets > 1 || TNJetsJESUp > 1 || TNJetsJESDown > 1 || TNJetsJER > 1){ //At least 2 jets
-						if(TNBtags > 0 || TNBtagsUp > 0 || TNBtagsDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0){ // At least 1 b-tag
-							fTree->Fill();
-						}
-					}
-				}
+				//if(gChannel == 1 || (TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15)  ){ //  Z Veto in ee, µµ
+					//if(TNJets > 1 || TNJetsJESUp > 1 || TNJetsJESDown > 1 || TNJetsJER > 1){ //At least 2 jets
+						//if(TNBtags > 0 || TNBtagsUp > 0 || TNBtagsDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0){ // At least 1 b-tag
+							//fTree->Fill();
+						//}
+					//}
+				//}
 			}
 		}
 	}
@@ -124,6 +124,7 @@ void StopAnalysis::SetLeptonVariables(){
   fTree->Branch("TLep_E" ,     TLep_E ,     "TLep_E[TNSelLeps]/F");
   fTree->Branch("TLep_Charge",  TLep_Charge, "TLep_Charge[TNSelLeps]/F");
   fTree->Branch("TChannel",      &TChannel,      "TChannel/I");
+  fTree->Branch("TMll",      &TMll,      "TMll/F");
 }
 
 void StopAnalysis::SetJetVariables(){
