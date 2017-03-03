@@ -20,11 +20,10 @@ void JetSelector::Summary(){}
 
 void JetSelector::Initialise(){
 	gIsData    = GetParam<Bool_t>("IsData");
-	gSelection = GetParam<Bool_t>("iSelection");
+	gSelection = GetParam<Int_t>("iSelection");
 
 //---- Select your wp for b-tagging and pt, eta fot the jets
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-	TString stringWP;
 	if      (gSelection == iStopSelec || iTopSelec)  stringWP = "Medium";
 	else if (gSelection == iWWSelec)    stringWP = "Loose";
 	else                                stringWP = "Medium";
@@ -81,9 +80,9 @@ void JetSelector::GetGenJetVariables(Int_t i){
 }
 
 void JetSelector::InsideLoop(){
-  // Clear vectors...
-  selJets.clear();
-  mcJets.clear();
+	// Clear vectors...
+	selJets.clear();
+	mcJets.clear();
 	genJets.clear();
 	vetoJets.clear();
 	Jets15.clear();
@@ -138,6 +137,7 @@ void JetSelector::InsideLoop(){
 Bool_t JetSelector::IsBtag(Jet j){
 	Bool_t isbtag;
 	if(gIsData) isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta());
+	else if(stringWP == "Loose") isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta());
 	else        isbtag = fBTagSFnom->IsTagged(j.csv,j.flavmc, j.p.Pt(), j.p.Eta());
 	return isbtag;
 }

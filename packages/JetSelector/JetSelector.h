@@ -12,7 +12,7 @@
 class JetSelector : public PAFChainItemSelector{
 
 	public:
-
+	TString stringWP;
 		JetSelector();
 		virtual ~JetSelector() {}
 		virtual void InsideLoop();
