@@ -42,23 +42,23 @@ void Histo::StackOverflow(Bool_t doStackOverflow){
 }
 
 void Histo::SetStyle(){
-	haveStyle = true;
 	SetStats(0);
 	StackOverflow();
 	yield = Integral();
 	max = GetMaximum();
-	if(type != itData){ // Add MC stats to errors!
-		Int_t nbins = GetNbinsX();
-		if(haveStyle) return; // Only once...
-		vsysu = new Float_t[nbins];
-		vsysd = new Float_t[nbins];
-		Float_t err2 = 1;
-		for(int i = 0; i < nbins; i++){ 
-			err2 = GetBinError(i); err2 = err2*err2;
-			vsysu[i] = err2; vsysd[i] = err2;
-		}
-	}
 	GetXaxis()->SetTitle(xlabel);
+}
+
+void Histo::SetStatUnc(){
+	if(type == itData) return; // Add MC stats to errors!
+	Int_t nbins = GetNbinsX();
+	vsysu = new Float_t[nbins];
+	vsysd = new Float_t[nbins];
+	Float_t err2 = 1;
+	for(int i = 0; i < nbins; i++){
+		err2 = GetBinError(i); err2 = err2*err2;
+		vsysu[i] = err2; vsysd[i] = err2;
+	}
 }
 
 void Histo::SetTag(TString t, TString p, TString x, TString c){
@@ -80,10 +80,6 @@ void Histo::SetTitles(TString x, TString c){
 void Histo::SetColor(Int_t c){
 	color = c;
 	SetMarkerColor(c); SetLineColor(c); SetFillColor(c);
-}
-
-void Histo::SetSyst(Float_t s){
-  syst = s;
 }
 
 void Histo::AddToLegend(TLegend* leg, Bool_t doyi){
@@ -127,9 +123,9 @@ void Histo::AddToSystematics(Histo* hsys, TString dir){
   }
 }
 
-AnalHisto::AnalHisto(TString sample, TCut ct, TString channel, TString p, TString tN, Int_t isyst){
+AnalHisto::AnalHisto(TString sample, TCut ct, TString channel, TString p, TString tN, TString sys){
   sampleName = sample; cut = ct; chan = channel;
-  syst = isyst;
+  SysTag = sys;
   path = p;
   treeName = tN;
   loadTree();  
@@ -137,17 +133,23 @@ AnalHisto::AnalHisto(TString sample, TCut ct, TString channel, TString p, TStrin
 
 void AnalHisto::SetHisto(TString name, Int_t nb, Float_t xi, Float_t xe){
   if(name != "") histoname = name;
-  if(nb != 0)    nbins = nb;
-  if(xi != 0)    x0 = xi;
-  if(xe != 0)    xf = xe;
-  h = new Histo(histoname, histoname, nb, x0, xf);
+  if(nb != 0.)    AnalHistoBins = nb;
+  if(xi != 0.)    AnalHistoX0 = xi;
+  if(xe != 0.)    AnalHistoXf = xe;
+  h = new Histo(TH1F(histoname, histoname, AnalHistoBins, AnalHistoX0, AnalHistoXf));
 }
 
-void AnalHisto::SetHisto(TString name, Int_t nb, Float_t thebins[100]){ // To be completed... use the prevous definition
-  return;
+//void AnalHisto::SetHisto(TString name, Int_t nb, Float_t thebins[100]){ // To be completed... use the prevous definition
+//  return;
+//}
+
+Double_t AnalHisto::GetYield(TString sys){
+  SetHisto("Yield", 1, 0, 2);
+  Fill("", sys);
+  return h->GetBinContent(1); 
 }
 
-void AnalHisto::Fill(TString variable, Int_t isyst){
+void AnalHisto::Fill(TString variable, TString sys){
   if(variable != "") var = variable;
   TCut schan = TCut("1");
   if     (chan == "Elec")  schan = TCut("TChannel == 3");
@@ -157,16 +159,16 @@ void AnalHisto::Fill(TString variable, Int_t isyst){
   else schan = TCut("1");
 
   weight = TString("TWeight");
-       if(isyst == iLepEffUp  ) weight += "_LepEffUp";
-  else if(isyst == iLepEffDown) weight += "_LepEffDown";
-  else if(isyst == iTrigUp    ) weight += "_TrigUp";
-  else if(isyst == iTrigDown  ) weight += "_TrigDown";
-  else if(isyst == iPUUp      ) weight += "_PUUp";
-  else if(isyst == iPUDown    ) weight += "_PUDown";
-  else if(isyst == iFSUp      ) weight += "_FSUp";
-  else if(isyst == iFSDown    ) weight += "_FSDown";
+       if(sys == "LepEffUp"  ) weight += "_LepEffUp";
+  else if(sys == "LepEffDown") weight += "_LepEffDown";
+  else if(sys == "TrigUp"    ) weight += "_TrigUp";
+  else if(sys == "TrigDown"  ) weight += "_TrigDown";
+  else if(sys == "PUUp"      ) weight += "_PUUp";
+  else if(sys == "PUDown"    ) weight += "_PUDown";
+  else if(sys == "FSUp"      ) weight += "_FSUp";
+  else if(sys == "FSDown"    ) weight += "_FSDown";
 
-  else if(isyst == iJESUp){
+  else if(sys == "JESUp"){
     cut = TCut( ((TString) cut).ReplaceAll("TNJets", "TNJetsJESUp"));   
     var = var.ReplaceAll("TNJets", "TNJetsJESUp");
     cut = TCut( ((TString) cut).ReplaceAll("TMET", "TMETJESUp"));   
@@ -178,7 +180,7 @@ void AnalHisto::Fill(TString variable, Int_t isyst){
     cut = TCut( ((TString) cut).ReplaceAll("TJet_Pt", "TJetJESUp_Pt"));   
     var = var.ReplaceAll("TJet_Pt", "TJetJESUp_Pt");
   }
-  else if(isyst == iJESDown){
+  else if(sys == "JESDown"){
     cut = TCut( ((TString) cut).ReplaceAll("TNJets", "TNJetsJESDown"));   
     var = var.ReplaceAll("TNJets", "TNJetsJESDown");
     cut = TCut( ((TString) cut).ReplaceAll("TMET", "TMETJESDown"));   
@@ -190,27 +192,27 @@ void AnalHisto::Fill(TString variable, Int_t isyst){
     cut = TCut( ((TString) cut).ReplaceAll("TJet_Pt", "TJetJESDown_Pt"));   
     var = var.ReplaceAll("TJet_Pt", "TJetJESDown_Pt");
   }
-  else if(isyst == iJER){
-    cut = TCut( ((TString) cut).ReplaceAll("TNJets", "TNJetsJER"));   
-    var = var.ReplaceAll("TNJets", "TNJetsJER");
+  else if(sys == "JER"){
+    cut = TCut( ((TString) cut).ReplaceAll("TNBtags", "TNJetsJER"));   
+    var = var.ReplaceAll("TNBtags", "TNJetsJER");
     cut = TCut( ((TString) cut).ReplaceAll("TJet_Pt", "TJetJER_Pt"));   
     var = var.ReplaceAll("TJet_Pt", "TJetJER_Pt");
   }
-  else if(isyst == iBtagUp){
-    cut = TCut( ((TString) cut).ReplaceAll("TNJets", "TNJetsBtagUp"));   
-    var = var.ReplaceAll("TNJets", "TNJetsBtagUp");
+  else if(sys == "BtagUp"){
+    cut = TCut( ((TString) cut).ReplaceAll("TNBtags", "TNBtagUp"));   
+    var = var.ReplaceAll("TNBtags", "TNBtagUp");
   }
-  else if(isyst == iBtagDown){
-    cut = TCut( ((TString) cut).ReplaceAll("TNJets", "TNJetsBtagDown"));   
-    var = var.ReplaceAll("TNJets", "TNJetsBtagDown");
+  else if(sys == "BtagDown"){
+    cut = TCut( ((TString) cut).ReplaceAll("TNBtags", "TNBtagDown"));   
+    var = var.ReplaceAll("TNBtags", "TNBtagDown");
   }
-  else if(isyst == iMisTagUp){
-    cut = TCut( ((TString) cut).ReplaceAll("TNJets", "TNJetsMisTagUp"));   
-    var = var.ReplaceAll("TNJets", "TNJetsMisTagUp");
+  else if(sys == "MisTagUp"){
+    cut = TCut( ((TString) cut).ReplaceAll("TNBtags", "TNBtagsMisTagUp"));   
+    var = var.ReplaceAll("TNBtags", "TNBtagsMisTagUp");
   }
-  else if(isyst == iMisTagDown){
-    cut = TCut( ((TString) cut).ReplaceAll("TNJets", "TNJetsMisTagDown"));   
-    var = var.ReplaceAll("TNJets", "TNJetsMisTagDown");
+  else if(sys == "MisTagDown"){
+    cut = TCut( ((TString) cut).ReplaceAll("TNBtags", "TNBtagsMisTagDown"));   
+    var = var.ReplaceAll("TNBtags", "TNBtagsMisTagDown");
   }
 
   tree->Project(histoname, var, (cut && schan)*weight); 

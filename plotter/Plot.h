@@ -21,20 +21,18 @@ const TString DefaultPlotfolder = "./Plots/";
 const TString DefaultLimitFolder = "./Datacards/";
 const Float_t DefaultLumi = 35.9; //fb-1
 
+
 class Plot {
 public:
 
+	bool verbose = false;
 	bool doSys       = true;
 	bool doData      = true;
-	bool doYields    = true;
+	bool doYieldsInLeg   = true;
 	bool doSingleLep = false;
 	bool doStackOverflow = true;
 	bool doSignal = true;
 
-	Histo* hData; 
-	Histo* hSignal; 
-  Histo* AllBkg;
-  THStack* hStack;
   std::vector<Histo*> VBkgs;
   std::vector<Histo*> VSignals;
   std::vector<Histo*> VData;
@@ -46,7 +44,7 @@ public:
   Bool_t  doSetLogy   = true;
   Int_t nBkgs = 0;
 	TPad* plot; TPad* pratio;
-	TLegend* leg;
+	//TLegend* leg;
 	TLatex* texlumi;
 	TLatex* texcms;
 	TLatex* texchan;
@@ -80,61 +78,59 @@ public:
 	}
   virtual ~Plot(){};            // Destructor
 
-	void AddSample(TString p = "TTbar_Powheg", TString pr = "ttbar", Int_t type = -1, Int_t color = 0, Float_t S = 1, Int_t iSyst = 0);
+	void AddSample(TString p = "TTbar_Powheg", TString pr = "ttbar", Int_t type = -1, Int_t color = 0, Float_t S = 1, TString tsys = "0");
 	//void AddSample(TString p = "TTbar_Powheg", TString pr = "ttbar", Int_t type = -1, Int_t color = 0, Float_t S = 1, TString Syst);
 
 	// ######### Methods ########
-  Histo* GetH(TString sample, Int_t isyst = 0);
+  Histo* GetH(TString sample = "TTbar_Powheg", TString s = "0");
   TCanvas *SetCanvas();
-  void SetLegend(bool doyi);
-  void SetTexChan(TString cuts);
-  void SetHRatio();
-/*
-	void SetTTbar();
-	void SetDY();
-	void SetWJets();
-	void SetVV();
-	void SettW();
-	void SetttV();
-	void SetAllProcesses();
-	void SetAllBkg();
-  void SetSignal();
-*/
-	void SetData();
-	void SetStack();
+  TLegend* SetLegend();
+  void SetTexChan(TString cuts); // To be updated
+  void SetHRatio(); // To be updated
+
+	Histo* SetData();
+	THStack* GetStack();
+	Histo* GetAllBkg();
 
   void SetPlotStyle();
 
 	void DrawStack(TString tag, bool sav);
+	void DrawComp(TString tag, bool sav);
   void SaveHistograms(TString tag);
   TString GetStatUncDatacard();
 	TString GetShapeUncDatacard();
   void MakeDatacard(TString tag);
   void MakeDatacardAllBins(TString tag);
   void MakeDatacardBin(Int_t bin, TString tag);
+  void PrintYields();
 
-  TString GetVar();
-  TString GetChan();
-  TString GetSignal();
-  void SetVar(TString v);
-  void SetChan(TString c);
-  void SetSignal(TString s);
-  void SetLumi(Float_t lum);
-  void SetPlotFolder(TString f);
-  void SetLimitFolder(TString f);
-	void SetOtherSignal(TString signal2 = "T2tt_mStop250_mLsp75", Int_t ccol = kGreen+4);
-	void SetCut(TString cuts);
-	void SetBins(Int_t nb, Float_t bin0, Float_t binN);
-	void SetTitle(TString tit);
-	void SetTitleX(TString xtitle);
+  TString GetVar(){  return var;}
+  TString GetChan(){ return chan;}
+  TString GetSignal(){ return signal;}
+  Float_t GetLumi(){ return Lumi;}
+  void SetVar(TString variable){ var = variable;}
+  void SetChan(TString ch){chan = ch;}
+  void SetLumi(Float_t lum){Lumi = lum;} 
+  void SetPlotFolder(TString f){plotFolder = f;} 
+  void SetLimitFolder(TString f){limitFolder = f;}   
+	void SetCut(TString cuts){cut = TCut(cuts);}
+	void SetBins(Int_t nbins, Float_t bin0, Float_t binN){
+		nb = nbins; x0 = bin0; xN = binN;
+  }
+	void SetTitle(TString tit){title = tit;}
+	void SetTitleX(TString xtit){xtitle = xtit;}
 
 
   void AddToHistos(Histo* p);
+	void AddVarHistos(TString sys);
 	void AddSystematic(TString s);
-	void AddAllSystematics();
+  void IncludeBkgSystematics();
 
   void SetPath(TString p){ path = p;}
   void SetTreeName(TString p){ treeName = p;}
+  void PrintSamples();
+  void PrintSystematics(); 
+  Histo* AllBkgSyst();
 
 protected: 
   TString path = "";
@@ -151,6 +147,7 @@ protected:
   Float_t Lumi;
   TString plotFolder;
   TString limitFolder;
+  Bool_t ShowSystematics = false;
 };
 
 #endif
