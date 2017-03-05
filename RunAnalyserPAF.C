@@ -11,6 +11,7 @@ R__LOAD_LIBRARY(DatasetManager/DatasetManager.C+)
 #include "TLorentzVector.h"
 
 Bool_t IsMCatNLO(TString sampleName);
+Double_t GetCount(TString path, vector<TString> Files);
 enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec, nSel};
 const TString tagSel[nSel] = {"Stop", "Top", "TW", "WW", "ttDM", "ttH"};
 
@@ -55,9 +56,11 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", TString Selection = 
 
   // Tab in the spreadsheet https://docs.google.com/spreadsheets/d/1b4qnWfZrimEGYc1z4dHl21-A9qyJgpqNUbhOlvCzjbE
   dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2");
-
+  
+  TString pathToFiles = dataPath + dm->FindLocalFolder();
   // Deal with data samples
   if(sampleName == "DoubleEG" || sampleName == "DoubleMuon" || sampleName == "MuonEG" || sampleName.BeginsWith("Single")){
+		cout << " >>>>>>>>>>>>>>>>>>>>> Trees in " << pathToFiles << endl;
     cout << "   + Data..." << endl;
     TString datasuffix[] = { 
       "16B_03Feb2017",
@@ -78,7 +81,7 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", TString Selection = 
     G_Event_Weight = 1.;
     G_IsData = true;
   }
-  else{ // Deal with MC samples
+  else{ // Deal with MC samples           Double_t sumnormFromFiles = GetCount(path, dm->GetRealDataFiles(asample));
     G_IsData = false; 
     TString theSample = "";
 		if(sampleName.BeginsWith("LocalFile:")){ // LocalFile
@@ -97,10 +100,12 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", TString Selection = 
 			G_Event_Weight = ThisWeight;
 		} 
 		else{ // Use dataset manager
-			cout << " >>>>>>>>>>>>>>>>>>>>> Numbers from spreadsheet! "  << endl;
+			cout << " >>>>>>>>>>>>>>>>>>>>> Trees in " << pathToFiles << endl;
+			cout << " >>>>>>>>>>>>>>>>>>>>> Cross sections and normalization from spreadsheet! "  << endl;
 			Float_t xsec = 1; Float_t sumNorm = 1; long double totalXSec = 0; long double totalNorm = 0;
 			TString sampleChain = TString(sampleName);  
 			if(sampleName.Contains("&")) sampleName = TString(sampleName(0, sampleName.First('&'))); // For output file
+      sampleName.ReplaceAll(" ", "");
 			Int_t nFiles = sampleChain.CountChar('&') + 1;
 			for(Int_t k = 0; k < nFiles; k++){
 				if(sampleChain.Contains("&")){
@@ -108,15 +113,16 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", TString Selection = 
 					sampleChain= TString(sampleChain(sampleChain.First('&')+1, sampleChain.Sizeof()));
 				}
 				else theSample  = sampleChain;
+        theSample.ReplaceAll(" ", "");
 				dm->LoadDataset(theSample);
 				myProject->AddDataFiles(dm->GetFiles()); 
 				xsec    = dm->GetCrossSection();
 				sumNorm = IsMCatNLO(theSample) ? dm->GetSumWeights() : dm->GetEventsInTheSample();
 				cout << "\033[1;30m=================================================\033[0m\n";
         cout << Form("\033[1;32m #### Sample  = %s \033[0m\n", theSample.Data());
-        cout << Form("\033[1;32m #### XSec    = %f \033[0m\n", xsec);
-        cout << Form("\033[1;32m #### nEvents = %f \033[0m\n", sumNorm);
-				totalNorm += sumNorm*sumNorm;
+        cout << Form("\033[1;32m #### XSec    = %g \033[0m\n", xsec);
+        cout << Form("\033[1;32m #### nEvents = %g \033[0m\n", sumNorm);
+				totalNorm += sumNorm;
 				totalXSec += sumNorm*xsec;
 			}
 			cout << "\033[1;30m=================================================\033[0m\n";
@@ -124,7 +130,8 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Madgraph", TString Selection = 
 				G_IsMCatNLO = true;
 				cout << " >>>>>>>>>>>>>>>>>>>>> This is a aMCatNLO sample" << endl;
 			}
-			G_Event_Weight = totalXSec/totalNorm;
+			G_Event_Weight = totalXSec/totalNorm/totalNorm;
+      cout << " >>>>>>>>>>>>>>>>>>>>> Weight for norm: " << G_Event_Weight << endl;
 		}
 		if(nEvents == 0) nEvents = dm->GetEventsInTheSample();
 	}
@@ -194,4 +201,20 @@ Bool_t IsMCatNLO(TString sampleName){
 			sampleName.BeginsWith("ZZZ") )
 		return true;
 	else return false;
+}
+
+Double_t GetCount(TString path, std::vector<TString> Files){
+	Int_t nFiles = Files.size();
+  TFile *f;
+	TH1D *hcount; TH1D *hsum;
+	Double_t count = 0; Double_t sumweights = 0;
+	for(Int_t i = 0; i < nFiles; i++){
+		f = TFile::Open(path + Files.at(i));
+		f->GetObject("Count", hcount);
+		f->GetObject("SumGenWeights", hsum);
+		count      += hcount->GetEntries();
+		sumweights += hsum  ->GetBinContent(1);
+		f->Close();    
+	}
+	return sumweights;
 }

@@ -41,11 +41,11 @@ void StopAnalysis::Initialise(){
   gSampleName  = GetParam<TString>("sampleName");
   gDoSyst      = GetParam<Bool_t>("doSyst");
 
-	//fTree = CreateTree("tree","Created with PAF");
+	fTree = CreateTree("tree","Created with PAF");
 
-  //SetLeptonVariables();
-  //SetJetVariables();
-	//SetEventVariables();
+  SetLeptonVariables();
+  SetJetVariables();
+	SetEventVariables();
 
   selLeptons  = std::vector<Lepton>();
   vetoLeptons = std::vector<Lepton>();
@@ -94,14 +94,16 @@ void StopAnalysis::InsideLoop(){
 			TWeight_TrigDown   = NormWeight*lepSF*TrigSF_Down*PUSF;
 			TWeight_PUDown     = NormWeight*lepSF*TrigSF*PUSF_Up;
 			TWeight_PUUp       = NormWeight*lepSF*TrigSF*PUSF_Down;
+      if(gIsData) TWeight = 1;
 
 			// Event Selection
 			// ===================================================================================================================
-			if((selLeptons.at(0).p + selLeptons.at(1).p).M() > 20){ // mll > 20 GeV
+			if((selLeptons.at(0).p + selLeptons.at(1).p).M() > 20 && selLeptons.at(0).p.Pt() > 25){ // mll > 20 GeV
+			//if((selLeptons.at(0).p + selLeptons.at(1).p).M() > 20){ // mll > 20 GeV
 				//if(gChannel == 1 || (TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15)  ){ //  Z Veto in ee, µµ
-					//if(TNJets > 1 || TNJetsJESUp > 1 || TNJetsJESDown > 1 || TNJetsJER > 1){ //At least 2 jets
+				  //if(TNJets > 1 || TNJetsJESUp > 1 || TNJetsJESDown > 1 || TNJetsJER > 1){ //At least 2 jets
 						//if(TNBtags > 0 || TNBtagsUp > 0 || TNBtagsDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0){ // At least 1 b-tag
-							//fTree->Fill();
+							fTree->Fill();
 						//}
 					//}
 				//}

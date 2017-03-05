@@ -106,7 +106,7 @@ class DatasetManager {
   //Returns an empty string if the guess failed
   static TString GuessLocalBasePath();
 
-
+  static TString FindLocalFolder();
 
   
  protected:
@@ -115,7 +115,6 @@ class DatasetManager {
   // Check if the available set of tabs should be downloaded
   bool ShouldDownloadAvailableTabs() const;
   // Tries to guess local folder
-  static TString FindLocalFolder();
 
  protected:
   // Static members

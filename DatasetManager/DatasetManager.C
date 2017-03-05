@@ -707,8 +707,8 @@ TString DatasetManager::FindLocalFolder() {
       int idummy;
       double ddummy;
       is >> idummy >> ddummy >> fLocalFolder;
-      cout << "DEBUG: Found local folder" << endl;
-      cout << fLocalFolder << endl;
+      //cout << "DEBUG: Found local folder" << endl;
+      //cout << fLocalFolder << endl;
       return fLocalFolder;
     }    
   }
