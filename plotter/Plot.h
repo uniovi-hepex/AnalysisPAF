@@ -35,6 +35,7 @@ public:
 
   std::vector<Histo*> VBkgs;
   std::vector<Histo*> VSignals;
+  std::vector<Histo*> VSignalsErr;
   std::vector<Histo*> VData;
   std::vector<Histo*> VSyst;
   std::vector<TString> VSystLabel;
@@ -62,7 +63,7 @@ public:
 		limitFolder = DefaultLimitFolder; 
 		Lumi = DefaultLumi;
 	}
-	Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Int_t bin0 = 0, Int_t binN = 0, TString tit = "My plot", TString xtit = "VAR"){
+	Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Double_t bin0 = 0, Double_t binN = 0, TString tit = "My plot", TString xtit = "VAR"){
 		var    = variable;
 		cut    = TCut(cuts);
 		chan   = channel;
@@ -82,7 +83,7 @@ public:
 	//void AddSample(TString p = "TTbar_Powheg", TString pr = "ttbar", Int_t type = -1, Int_t color = 0, Float_t S = 1, TString Syst);
 
 	// ######### Methods ########
-  Histo* GetH(TString sample = "TTbar_Powheg", TString s = "0");
+  Histo GetH(TString sample = "TTbar_Powheg", TString s = "0", Int_t type = itBkg);
   TCanvas *SetCanvas();
   TLegend* SetLegend();
   void SetTexChan(TString cuts); // To be updated
@@ -114,7 +115,7 @@ public:
   void SetPlotFolder(TString f){plotFolder = f;} 
   void SetLimitFolder(TString f){limitFolder = f;}   
 	void SetCut(TString cuts){cut = TCut(cuts);}
-	void SetBins(Int_t nbins, Float_t bin0, Float_t binN){
+	void SetBins(Int_t nbins, Double_t bin0, Double_t binN){
 		nb = nbins; x0 = bin0; xN = binN;
   }
 	void SetTitle(TString tit){title = tit;}
@@ -129,6 +130,8 @@ public:
   void SetPath(TString p){ path = p; if(pathSignal == "") pathSignal = path;}
   void SetPathSignal(TString p){ pathSignal = p; }
   void SetTreeName(TString p){ treeName = p;}
+  void SetOutputName(TString p){ outputName = p;}
+  TString GetOutputName(){ return outputName;}
   void PrintSamples();
   void PrintSystematics(); 
   Histo* AllBkgSyst();
@@ -137,12 +140,13 @@ protected:
   TString path = "";
   TString pathSignal = "";
   TString treeName = "";
+  TString outputName = "";
 
 	TString var;
   TString chan;
   TString signal;
   TCut cut;
-  Int_t nb; Float_t x0; Float_t xN;
+  Int_t nb; Double_t x0; Double_t xN;
 
   TString SystVar;
   Int_t iS;

@@ -2,14 +2,14 @@
 #include "TSystem.h"
 #include <fstream> 
 
-Histo* Plot::GetH(TString sample, TString sys){ 
-  // Returns a Histo* for sample and systematic variation 
-  AnalHisto* ah = new AnalHisto(sample, cut, chan, path, treeName, sys);
+Histo Plot::GetH(TString sample, TString sys, Int_t type){ 
+  // Returns a Histo for sample and systematic variation 
+  TString pathToMiniTree = path;
+  if(type == itSignal) pathToMiniTree = pathSignal;
+  AnalHisto* ah = new AnalHisto(sample, cut, chan, pathToMiniTree, treeName, sys);
 	ah->SetHisto(sample, nb, x0, xN);
 	ah->Fill(var, sys);
-	Histo* g = ah->GetHisto();
-	g->SetDirectory(0);
-  g->SetName(sample);
+	Histo g = *(ah->GetHisto());
 	delete ah;
 	return g;
 }
@@ -24,7 +24,15 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
   //           -1       for a systematic variation
   //  -> S is the normalization uncertainty of the sample (for datacards)
   //  -> iSyst is the index of the systematic variaton
-  Histo* h = GetH(p, sys);
+  Histo* g = new Histo(GetH(p, sys, type));
+  g->SetDirectory(0);
+  Float_t val; Float_t err;
+  Histo* h = new Histo(p, p, nb, x0, xN);   // If not... problem when mergin histograms
+  for(Int_t i = 0; i <= xN; i++){
+   val = g->GetBinContent(i); err = g->GetBinError(i);
+   h->SetBinContent(i, val); h->SetBinError(i,err); 
+  }
+  h->SetDirectory(0);
   h->SetProcess(pr);
   h->SetName(p);
   TString t = (sys == "0")? pr : pr + "_" + sys;
@@ -40,7 +48,6 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
     VTagProcesses.push_back(pr);
 		for(i = 0; i < n; i++){
 			if(t == VBkgs.at(i)->GetTag()){ // Group backgrounds
-      //  cout << "[" << t << "]Adding histogram with lowx = " << h->GetBinLowEdge(1) << " with father histogram with lowx = " << VBkgs.at(i)->GetBinLowEdge(1) << endl;
 				VBkgs.at(i)->Add((TH1F*) h); 
 				VBkgs.at(i)->SetStyle(); VBkgs.at(i)->SetStatUnc();
 				return;
@@ -51,8 +58,6 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
 		n = VSyst.size();
 		for(i = 0; i < n; i++){ // Group systematics
 			if(t == VSyst.at(i)->GetTag()){
-     //   cout << "[" << t << "]Adding sys histogram with lowx = " << h->GetBinLowEdge(1) << " with father histogram with lowx = " << VSyst.at(i)->GetBinLowEdge(1) << endl;
-        //cout << "Adding histogram with nbins = " << h->GetNbinsX() << " with father histogram with nbins = " << VSyst.at(i)->GetNbinsX() << endl;
 				VSyst.at(i)->Add(h); VSyst.at(i)->SetStyle();
 				return;
 			}
@@ -143,23 +148,16 @@ void Plot::AddSystematic(TString var){
 }
 
 void Plot::IncludeBkgSystematics(){
-  if(ShowSystematics) return;
-  //cout << "Including syst" << endl;
+	if(ShowSystematics) return;
 	TString pr; TString ps; TString dir;
-  Int_t nBkgs = VBkgs.size(); Int_t nSig = VSignals.size();
-  Int_t nSyst = VSyst.size();
+	Int_t nBkgs = VBkgs.size(); Int_t nSig = VSignals.size();
+	Int_t nSyst = VSyst.size();
 	for(int i = 0; i < nBkgs; i++){  // Backgrounds in i
 		pr = VBkgs.at(i)->GetProcess() ;
 		for(int k = 0; k < nSyst; k++){ // Systematics in k
 			ps = VSyst.at(k)->GetTag();
 			dir = (ps.Contains("Down") || ps.Contains("down"))? "Down" : "Up";
-			if(ps.BeginsWith(pr)){
-        //cout << " process = " << pr << ", var = " << ps << endl;
-        //cout << " Bin 1, bkg y var: " << VBkgs.at(i)->GetBinContent(10) << ", " << VSyst.at(k)->GetBinContent(10) << endl;
-        //cout << " Bin 1, sys up y down, antes: " << VBkgs.at(i)->vsysu[9] << ", " << VBkgs.at(i)->vsysd[9] << endl;
-    		VBkgs.at(i)->AddToSystematics(VSyst.at(k), dir);
-        //cout << " Bin 1, sys up y down, luego: " << VBkgs.at(i)->vsysu[9] << ", " << VBkgs.at(i)->vsysd[9] << endl;
-      }
+			if(ps.BeginsWith(pr))	VBkgs.at(i)->AddToSystematics(VSyst.at(k), dir);
 		}
 	}
 	for(int i = 0; i < nSig; i++){ // Signals in i
@@ -170,7 +168,7 @@ void Plot::IncludeBkgSystematics(){
 			if(ps.BeginsWith(pr))   VSignals.at(i)->AddToSystematics(VSyst.at(k), dir);
 		}
 	}
-  ShowSystematics = true;
+	ShowSystematics = true;
 }
 
 Histo* Plot::AllBkgSyst(){
@@ -181,9 +179,7 @@ Histo* Plot::AllBkgSyst(){
   TotalSysUp   = new Float_t[nbins];
 	TotalSysDown = new Float_t[nbins];
 
- // cout << "nbins = " << nbins << endl;
   AllBkg->SetStatUnc();
-  //for(int k = 0; k < nBkgs; k++) VBkgs.at(k)->SetStatUnc();
 
 	for(int i = 0; i < nbins; i++){ // Loop all the bins
 		valu = 0; vald = 0;
@@ -362,20 +358,20 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   hData->Draw("pesame");
   if(doSignal){
 		// Draw systematics signal
-		TH1F* hSignalerr; 
-    for(Int_t  i = 0; i < (Int_t) VSignals.size(); i++){
-      if(VSignals.at(i)->GetType() < 0) continue; // 
-	//		hSignalerr = (Histo*) VSignals.at(i)->Clone(); // Add systematics to signal
-	//	  hSignalerr->SetFillColor(kGreen-10); 
-	//	  hSignalerr->SetMarkerStyle(0);
-	//	  hSignalerr->SetFillStyle(3145);
-  //    hSignalerr->SetType(-10); // Error bands for signals
-  //    VSignals.push_back(hSignalerr);
-      VSignals.at(i)->Draw("lsame");
+		Histo* hSignalerr; 
+    Int_t nSignals = VSignals.size();
+		if(verbose) cout << "Drawing " << nSignals << " signals..." << endl;
+    for(Int_t  i = 0; i < nSignals; i++){
+      if(VSignals.at(i)->GetType() != itSignal) continue; // Consistency
+			hSignalerr = (Histo*) VSignals.at(i)->Clone(); // Add systematics to signal
+		  hSignalerr->SetFillColor(17); 
+		  hSignalerr->SetMarkerStyle(0);
+		  hSignalerr->SetFillStyle(3013);
+      VSignalsErr.push_back(hSignalerr);
     }
-    for(Int_t  i = 0; i < (Int_t) VSignals.size(); i++){
-      if(VSignals.at(i)->GetType() != -10) continue; 
-  //    VSignals.at(i)->Draw("same,e2");
+    for(Int_t  i = 0; i < nSignals; i++){
+      if(doSys) VSignalsErr.at(i)->Draw("same,e2");
+      VSignals.at(i)->Draw("lsame");
     }
   }
 
@@ -410,7 +406,8 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
 
 	if(sav){ // Save the histograms
 		TString dir = plotFolder + "StopPlots/";
-		TString plotname = var + "_" + chan + "_" + tag;
+    TString plotname = (outputName == "")? var + "_" + chan + "_" + tag : outputName;
+	  	
 		gSystem->mkdir(dir, kTRUE);
 		c->Print( dir + plotname + ".pdf", "pdf");
 		c->Print( dir + plotname + ".png", "png");

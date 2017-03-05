@@ -96,8 +96,8 @@ class AnalHisto{
    //AnalHisto(TString sample = "TTbar_Powheg", TString ct="", TString channel = "All", TString path = "", TString treeName = "", Int_t isyst = -1);
    AnalHisto(TString sample = "TTbar_Powheg", TCut    ct="", TString channel = "All", TString path = "", TString treeName = "", TString systag = "0");
    ~AnalHisto(){
+     delete h;
 		 delete tree->GetCurrentFile();
-     //delete h;
    };
 
    void SetCut(TCut t){cut = TCut(t);}
@@ -112,7 +112,7 @@ class AnalHisto{
    void SetSystematic(TString t){SysTag = t;}
    Histo* GetHisto(){return h;}
    void Fill(TString variable = "", TString sys = "0");   
-   void SetHisto(TString name, Int_t nb, Float_t xi, Float_t xe);
+   void SetHisto(TString name, Int_t nb, Double_t xi, Double_t xe);
    //void SetHisto(TString name, Int_t nb, Float_t thebins[100]);
 
    Float_t *xbins;
@@ -131,7 +131,7 @@ class AnalHisto{
    TString weight;
    TString SysTag;
    TString var;
-   Int_t AnalHistoBins; Float_t AnalHistoX0; Float_t AnalHistoXf;
+   Int_t AnalHistoBins; Double_t AnalHistoX0; Double_t AnalHistoXf;
    TString histoname;
 
    void loadTree();

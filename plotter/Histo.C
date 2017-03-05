@@ -83,23 +83,23 @@ void Histo::SetColor(Int_t c){
 }
 
 void Histo::AddToLegend(TLegend* leg, Bool_t doyi){
-  TH1F* h = (TH1F*) Clone();
+  TH1F* h2 = (TH1F*) Clone();
   TString op = "f";
   if      (type == itSignal) op = "l";
   else if (type == itData)   op = "pe";
   else if (type == itCompare)op = "pe";
-  if(doyi) leg->AddEntry(h, Form(process + ": %1.0f", yield), op);
-  else leg->AddEntry(h, process, op);
+  if(doyi) leg->AddEntry(h2, Form(process + ": %1.0f", yield), op);
+  else leg->AddEntry(h2, process, op);
 }
 
 TH1F* Histo::GetVarHistoStatBin(Int_t bin, TString dir){
   Float_t var = GetBinContent(bin);
   Float_t stat = GetBinError(bin);
-  TH1F* h = (TH1F*) Clone();
-  if      (dir == "up" || dir == "Up" || dir == "UP")  h->SetBinContent(bin, var + stat);
-  else if (dir == "down" || dir == "Down" || dir == "DOWN")  h->SetBinContent(bin, var - stat);
+  TH1F* h2 = (TH1F*) Clone();
+  if      (dir == "up" || dir == "Up" || dir == "UP")  h2->SetBinContent(bin, var + stat);
+  else if (dir == "down" || dir == "Down" || dir == "DOWN")  h2->SetBinContent(bin, var - stat);
   else    cout << " ---> ERROR!!!! No valid direction: " << dir << endl;
-  return h;
+  return h2;
 }
 
 void Histo::AddToSystematics(Histo* hsys, TString dir){
@@ -129,14 +129,16 @@ AnalHisto::AnalHisto(TString sample, TCut ct, TString channel, TString p, TStrin
   path = p;
   treeName = tN;
   loadTree();  
+  h = new Histo(TH1F());
 }
 
-void AnalHisto::SetHisto(TString name, Int_t nb, Float_t xi, Float_t xe){
+void AnalHisto::SetHisto(TString name, Int_t nb, Double_t xi, Double_t xe){
   if(name != "") histoname = name;
   if(nb != 0.)    AnalHistoBins = nb;
   if(xi != 0.)    AnalHistoX0 = xi;
   if(xe != 0.)    AnalHistoXf = xe;
-  h = new Histo(TH1F(histoname, histoname, AnalHistoBins, AnalHistoX0, AnalHistoXf));
+  *h = Histo(TH1F(histoname, histoname, AnalHistoBins, AnalHistoX0, AnalHistoXf));
+  for(Int_t i = 0; i <= nb; i++)   h->SetBinContent(i, 0);
 }
 
 //void AnalHisto::SetHisto(TString name, Int_t nb, Float_t thebins[100]){ // To be completed... use the prevous definition
@@ -199,12 +201,12 @@ void AnalHisto::Fill(TString variable, TString sys){
     var = var.ReplaceAll("TJet_Pt", "TJetJER_Pt");
   }
   else if(sys == "BtagUp"){
-    cut = TCut( ((TString) cut).ReplaceAll("TNBtags", "TNBtagUp"));   
-    var = var.ReplaceAll("TNBtags", "TNBtagUp");
+    cut = TCut( ((TString) cut).ReplaceAll("TNBtags", "TNBtagsUp"));   
+    var = var.ReplaceAll("TNBtags", "TNBtagsUp");
   }
   else if(sys == "BtagDown"){
-    cut = TCut( ((TString) cut).ReplaceAll("TNBtags", "TNBtagDown"));   
-    var = var.ReplaceAll("TNBtags", "TNBtagDown");
+    cut = TCut( ((TString) cut).ReplaceAll("TNBtags", "TNBtagsDown"));   
+    var = var.ReplaceAll("TNBtags", "TNBtagsDown");
   }
   else if(sys == "MisTagUp"){
     cut = TCut( ((TString) cut).ReplaceAll("TNBtags", "TNBtagsMisTagUp"));   
@@ -215,7 +217,9 @@ void AnalHisto::Fill(TString variable, TString sys){
     var = var.ReplaceAll("TNBtags", "TNBtagsMisTagDown");
   }
 
+  for(Int_t i = 0; i < AnalHistoBins; i++) h->SetBinContent(1,0.0); // To magically solve some problems
   tree->Project(histoname, var, (cut && schan)*weight); 
+
 }
 
 void AnalHisto::loadTree(){
