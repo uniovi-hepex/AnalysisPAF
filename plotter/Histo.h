@@ -97,6 +97,7 @@ class AnalHisto{
    AnalHisto(TString sample = "TTbar_Powheg", TCut    ct="", TString channel = "All", TString path = "", TString treeName = "", TString systag = "0");
    ~AnalHisto(){
 		 delete tree->GetCurrentFile();
+     //delete h;
    };
 
    void SetCut(TCut t){cut = TCut(t);}

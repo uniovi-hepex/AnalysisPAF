@@ -126,7 +126,8 @@ public:
 	void AddSystematic(TString s);
   void IncludeBkgSystematics();
 
-  void SetPath(TString p){ path = p;}
+  void SetPath(TString p){ path = p; if(pathSignal == "") pathSignal = path;}
+  void SetPathSignal(TString p){ pathSignal = p; }
   void SetTreeName(TString p){ treeName = p;}
   void PrintSamples();
   void PrintSystematics(); 
@@ -134,6 +135,7 @@ public:
 
 protected: 
   TString path = "";
+  TString pathSignal = "";
   TString treeName = "";
 
 	TString var;
