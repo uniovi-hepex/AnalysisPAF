@@ -98,12 +98,12 @@ public:
 	void DrawStack(TString tag, bool sav);
 	void DrawComp(TString tag, bool sav);
   void SaveHistograms(TString tag);
-  TString GetStatUncDatacard();
-	TString GetShapeUncDatacard();
-  void MakeDatacard(TString tag);
-  void MakeDatacardAllBins(TString tag);
-  void MakeDatacardBin(Int_t bin, TString tag);
-  void PrintYields();
+  TString GetStatUncDatacard(Int_t iSignal = 0);
+	TString GetShapeUncDatacard(Int_t iSignal = 0);
+  void MakeDatacard(TString tag, Int_t iSignal);
+
+  void MakeDatacardAllBins(TString tag, Int_t iSignal = 0); // Datacard "bin a bin"
+  void MakeDatacardBin(Int_t bin, TString tag = "b", Int_t iSignal = 0);
 
   TString GetVar(){  return var;}
   TString GetChan(){ return chan;}
@@ -126,15 +126,17 @@ public:
 	void AddVarHistos(TString sys);
 	void AddSystematic(TString s);
   void IncludeBkgSystematics();
+  Histo* AllBkgSyst();
 
   void SetPath(TString p){ path = p; if(pathSignal == "") pathSignal = path;}
   void SetPathSignal(TString p){ pathSignal = p; }
   void SetTreeName(TString p){ treeName = p;}
   void SetOutputName(TString p){ outputName = p;}
   TString GetOutputName(){ return outputName;}
+
   void PrintSamples();
   void PrintSystematics(); 
-  Histo* AllBkgSyst();
+  void PrintYields();
 
 protected: 
   TString path = "";

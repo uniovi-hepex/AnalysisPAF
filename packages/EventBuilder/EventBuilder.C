@@ -85,7 +85,7 @@ void EventBuilder::Initialise(){
   
   gIsDoubleElec = false; gIsDoubleMuon = false; gIsSingleElec = false;
   gIsSingleMuon = false; gIsMuonEG = false;
-       if(gSampleName.Contains("SingleMuon")) gIsDoubleElec = true;
+       if(gSampleName.Contains("DoubleElec")) gIsDoubleElec = true;
   else if(gSampleName.Contains("DoubleMuon")) gIsDoubleMuon = true;
   else if(gSampleName.Contains("SingleElec")) gIsSingleElec = true;
   else if(gSampleName.Contains("SingleMuon")) gIsSingleMuon = true;
