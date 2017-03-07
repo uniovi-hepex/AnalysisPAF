@@ -38,6 +38,9 @@ class StopAnalysis : public PAFChainItemSelector{
 		Bool_t passTrigger;
 		Bool_t isSS;
 		Float_t NormWeight;
+    Bool_t gIsFastSim = false;
+		Int_t gStopMass;
+		Int_t gLspMass;
   
     // Tree Variables
 		Float_t TWeight;   // Total nominal weight
@@ -45,6 +48,8 @@ class StopAnalysis : public PAFChainItemSelector{
 		Float_t TMT2;      // Invariant mass
 		Float_t TMET;      // MET
 		Float_t TMET_Phi;  // MET phi
+		Float_t TgenMET;   // MET_genPt
+    Bool_t  TIsSS;
 
 		Int_t   TNVetoLeps;
 		Int_t   TNSelLeps;

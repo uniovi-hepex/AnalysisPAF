@@ -13,19 +13,21 @@ R__LOAD_LIBRARY(DatasetManager/DatasetManager.C+)
 Bool_t IsMCatNLO(TString sampleName);
 void GetCount(vector<TString> Files, Bool_t IsData = false);
 void RunAnalyserPAF(TString sampleName  = "TTbar_Powheg", TString Selection = "StopDilep", Int_t nSlots = 1, Long64_t nEvents = 0, Long64_t FirstEvent = 0, Float_t ThisWeight = 1.0, Int_t stopMass = 0, Int_t lspMass  = 0);
+Float_t GetSMSnorm(Int_t mStop, Int_t mLsp);
+Double_t GetStopXSec(Int_t StopMass);
 
 vector<TString> Files;
 Double_t SumOfWeights;
 Long64_t Count;
 Long64_t nTrueEntries;
 Float_t xsec;
+Bool_t verbose = true;
 
 enum             sel         {iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec, nSel};
 const TString tagSel[nSel] = {"Stop", "        Top",     "TW",     "WW",     "ttDM",     "ttH"      };
 
 void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_t nEvents, Long64_t FirstEvent, Float_t ThisWeight,	Int_t stopMass, Int_t lspMass) {
 
-	Bool_t verbose = true;
 	Int_t iChunck = Int_t(ThisWeight);
 	if(FirstEvent != 0) verbose = false;
   TString orig_sampleName = sampleName;
@@ -75,15 +77,15 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
     G_IsData = true;
     TString datasuffix[] = { 
       "16B_03Feb2017",
-      "16C_03Feb2017",
+  /*    "16C_03Feb2017",
       "16D_03Feb2017",
       "16E_03Feb2017",
       "16F_03Feb2017",
       "16G_03Feb2017",
       "16H_03Feb2017_v2",
-      "16H_03Feb2017_v3"
+      "16H_03Feb2017_v3"*/
     };
-    const unsigned int nDataSamples = 8;
+    const unsigned int nDataSamples = 1;//8;
     for(unsigned int i = 0; i < nDataSamples; i++) {
       TString asample = Form("Tree_%s_%s",sampleName.Data(), datasuffix[i].Data());
       //myProject->AddDataFiles(dm->GetRealDataFiles(asample));
@@ -114,7 +116,9 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
       GetCount(Files);
 			sampleName = Form("T2tt_mStop%i_mLsp%i",stopMass, lspMass);
 			G_IsFastSim = true;
-      xsec = 1;
+      xsec = GetStopXSec(stopMass);
+      nTrueEntries = GetSMSnorm(stopMass, lspMass);
+			G_Event_Weight = xsec/nTrueEntries;
 		} 
 		else{ // Use dataset manager
 			Float_t sumNorm = 1; long double totalXSec = 0; long double totalNorm = 0;
@@ -144,8 +148,8 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 		}
 	}
 	if(verbose){
-		cout << "\033[1;30m=================================================\033[0m\n";
-		for(Int_t i = 0; i < (Int_t) Files.size(); i++) cout << Form("\033[1;32m >>> Including file: %s \033[0m\n", Files.at(i).Data());
+		//cout << "\033[1;30m=================================================\033[0m\n";
+		//for(Int_t i = 0; i < (Int_t) Files.size(); i++) cout << Form("\033[1;32m >>> Including file: %s \033[0m\n", Files.at(i).Data());
 		cout << "\033[1;30m-------------------------------------------------\033[0m\n";
 		if(!G_IsData)   cout << Form("\033[1;34m #### XSec             = %g \033[0m\n", xsec);
 		cout << Form("\033[1;34m #### Total Entries    = %lld \033[0m\n", nTrueEntries);
@@ -160,7 +164,6 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	TString outputDir = "./" + tagSel[sel] + "_temp";
 	if(sampleName.BeginsWith("T2tt")) outputDir += "/T2tt/";
 	gSystem->mkdir(outputDir, kTRUE);
-	TString outputFile = outputDir + "/Tree_" + sampleName + ".root";
 	if(sampleName.Contains("_ext2")) sampleName.ReplaceAll("_ext2",""); 
 	if(sampleName.Contains("_ext"))  sampleName.ReplaceAll("_ext",""); 
 
@@ -192,6 +195,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
     sampleName += Form("_%i", iChunck);
   }
 
+
   // PAF mode
   //----------------------------------------------------------------------------
   PAFIExecutionEnvironment* pafmode = 0;
@@ -208,6 +212,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 		myProject->SetFirstEvent(FirstEvent);
 	}
 				
+	TString outputFile = outputDir + "/Tree_" + sampleName + ".root";
 	cout << Form("\033[1;33m >>> Output file = %s \n\033[0m", outputFile.Data());
 	cout << "\n" << endl;
 	myProject->SetOutputFile(outputFile);
@@ -269,8 +274,10 @@ Bool_t IsMCatNLO(TString sampleName){
 void GetCount(std::vector<TString> Files, Bool_t IsData){
 	Int_t nFiles = Files.size(); TFile *f;
 	TH1D *hcount; TH1D *hsum; TTree* tree;
+	if(verbose) cout << "\033[1;30m=================================================\033[0m\n";
 	for(Int_t i = 0; i < nFiles; i++){
-    //cout << "Including file: " << Files.at(i) << endl;
+		if(verbose) cout << Form("\033[1;32m >>> Including file: %s \033[0m\n", Files.at(i).Data());
+		//cout << "Including file: " << Files.at(i) << endl;
 		f = TFile::Open(Files.at(i));
     f->GetObject("tree", tree);
 		f->GetObject("Count", hcount);
@@ -281,5 +288,74 @@ void GetCount(std::vector<TString> Files, Bool_t IsData){
 			SumOfWeights += hsum  -> GetBinContent(1);
 		}
 		f->Close();    
+	}
+}
+
+Float_t GetSMSnorm(Int_t mStop, Int_t mLsp){
+  cout << Form("\033[1;36m >>> Searching for normalization factor for stop point with masses [%i, %i]...\033[0m\n", mStop, mLsp);
+	Int_t nFiles = Files.size(); TFile *f;
+	TH3D *hcount; Float_t val = 0; Float_t ms = 0; Float_t mn = 0;
+  Float_t count = 0;
+	for(Int_t k = 0; k < nFiles; k++){
+    f = TFile::Open(Files.at(k));
+    f -> GetObject("CountSMS", hcount);
+		Int_t nx = hcount->GetNbinsX();
+		Int_t ny = hcount->GetNbinsY();
+		for(Int_t i = 0; i < nx; i++){
+			for(Int_t j = 0; j < ny; j++){
+        val = hcount->GetBinContent(i,j,1);
+        if(val != 0){
+          ms = hcount->GetXaxis()->GetBinCenter(i);
+          mn = hcount->GetYaxis()->GetBinCenter(j);
+          if(ms == mStop && mLsp == mn) count += hcount->GetBinContent(hcount->FindBin(ms, mn, 0));
+        } 
+			}
+		}
+	}
+  return count;
+}
+
+Double_t GetStopXSec(Int_t StopMass){
+  if      (StopMass == 125) return 574.981;
+  else if (StopMass == 150) return 249.409;
+  else if (StopMass == 175) return 121.416;
+  else if (StopMass == 200) return 64.5085;
+  else if (StopMass == 225) return 36.3818;
+  else if (StopMass == 250) return 21.5949;
+  else if (StopMass == 275) return 13.3231;
+  else if (StopMass == 300) return 8.51615;
+  else if (StopMass == 325) return 5.60471;
+  else if (StopMass == 350) return 3.78661;
+  else if (StopMass == 375) return 2.61162;
+  else if (StopMass == 400) return 1.83537;
+  else if (StopMass == 425) return 1.31169;
+  else if (StopMass == 450) return 0.948333;
+  else if (StopMass == 475) return 0.697075;
+  else if (StopMass == 500) return 0.51848;
+  else if (StopMass == 525) return 0.390303;
+  else if (StopMass == 550) return 0.296128;
+  else if (StopMass == 575) return 0.226118;
+  else if (StopMass == 600) return 0.174599;
+  else if (StopMass == 625) return 0.136372;
+  else if (StopMass == 650) return 0.107045;
+  else if (StopMass == 675) return 0.0844877;
+  else if (StopMass == 700) return 0.0670476;
+  else if (StopMass == 725) return 0.0536438;
+  else if (StopMass == 750) return 0.0431418;
+  else if (StopMass == 775) return 0.0348796;
+  else if (StopMass == 800) return 0.0283338;
+  else if (StopMass == 825) return 0.0241099;
+  else if (StopMass == 850) return 0.0189612;
+  else if (StopMass == 875) return 0.015625;
+  else if (StopMass == 900) return 0.0128895;
+  else if (StopMass == 925) return 0.0106631;
+	else if (StopMass == 950) return 0.00883465;
+	else if (StopMass == 975) return 0.00735655;
+	else{ 
+		cout << Form(" >>> No Cross Section for that mass!! (mStop = %i) Extrapolating...\n", StopMass);
+		Float_t v0 = GetStopXSec(StopMass - StopMass%25);
+		Float_t vf = GetStopXSec(StopMass - StopMass%25 + 25);
+		Float_t x  = float(StopMass%25)/25;
+		return v0 + (vf-v0)*x;
 	}
 }

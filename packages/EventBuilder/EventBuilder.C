@@ -20,6 +20,7 @@ void EventBuilder::Summary(){}
 // Select your triggers
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 Bool_t EventBuilder::PassesDoubleElecTrigger(){
+  if(gIsFastSim) return true; // no triger in FastSim samples
 	Bool_t pass = false;
 	if(gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec)
 		pass = (
@@ -31,6 +32,7 @@ Bool_t EventBuilder::PassesDoubleElecTrigger(){
 }
 
 Bool_t EventBuilder::PassesDoubleMuonTrigger(){
+  if(gIsFastSim) return true; // no triger in FastSim samples
 	Bool_t pass = false;
 	if(gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec)
 		pass = (
@@ -42,6 +44,7 @@ Bool_t EventBuilder::PassesDoubleMuonTrigger(){
 }
 
 Bool_t EventBuilder::PassesElMuTrigger(){
+  if(gIsFastSim) return true; // no triger in FastSim samples
 	Bool_t pass = false;
 	if(gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec)
 		pass = (
@@ -58,6 +61,7 @@ Bool_t EventBuilder::PassesElMuTrigger(){
 }
 
 Bool_t EventBuilder::PassesSingleElecTrigger(){
+  if(gIsFastSim) return true; // no triger in FastSim samples
   Bool_t pass = false;
 	if(gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec)
 		pass =  Get<Int_t>("HLT_BIT_HLT_Ele27_WPTight_Gsf_v");
@@ -65,6 +69,7 @@ Bool_t EventBuilder::PassesSingleElecTrigger(){
 }
 
 Bool_t EventBuilder::PassesSingleMuonTrigger(){
+  if(gIsFastSim) return true; // no triger in FastSim samples
 	Bool_t pass = false;
 	if(gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec)
 		pass = (
@@ -79,6 +84,7 @@ void EventBuilder::Initialise(){
 	gSelection = GetParam<Int_t>("iSelection");
   gSampleName  = GetParam<TString>("sampleName");
   gIsMCatNLO   = GetParam<Bool_t>("IsMCatNLO");
+  gIsFastSim   = GetParam<Bool_t>("IsFastSim");
   gChannel = -1;
 
   selLeptons = std::vector<Lepton>();
