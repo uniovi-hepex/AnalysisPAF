@@ -5,7 +5,7 @@
 Histo Plot::GetH(TString sample, TString sys, Int_t type){ 
   // Returns a Histo for sample and systematic variation 
   TString pathToMiniTree = path;
-  if(type == itSignal) pathToMiniTree = pathSignal;
+  if(type == itSignal || sample.BeginsWith("T2tt")) pathToMiniTree = pathSignal;
   AnalHisto* ah = new AnalHisto(sample, cut, chan, pathToMiniTree, treeName, sys);
 	ah->SetHisto(sample, nb, x0, xN);
 	ah->Fill(var, sys);
@@ -53,8 +53,9 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
 				return;
 			}
 		}
+    h->SetName(t);
   }
-	else if(type < 0){ // Systematic!!
+	else if(type == itSys){ // Systematic!!
 		n = VSyst.size();
 		for(i = 0; i < n; i++){ // Group systematics
 			if(t == VSyst.at(i)->GetTag()){
@@ -62,6 +63,7 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
 				return;
 			}
 		}
+    h->SetName(t);
   }
   else if(type == itData){
     h->SetLineColor(kBlack); 
@@ -76,7 +78,7 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
 }
 
 THStack* Plot::GetStack(){ // Returns the stack with all Bkg
-	THStack* hStack0 = new THStack(var, "");
+	THStack* hStack0 = new THStack(varname, "");
   Int_t nBkgs = VBkgs.size();
   if(nBkgs < 1) return hStack0;
 	for(Int_t i = 0; i < nBkgs; i++){
@@ -131,7 +133,7 @@ void Plot::AddToHistos(Histo* p){ // Add the histogram to the right vector
   else if(p->GetType() == itData  ) VData.push_back(p);
   else if(p->GetType() == 4 || p->GetType() == -1) VSyst.push_back(p);
   else return;
-  if(verbose) cout << "[Plot::AddToHistos] Added histogram " << p->GetName() << " to " << p->GetTag() << " group" << endl;
+  if(verbose) cout << "[Plot::AddToHistos] Added histogram " << p->GetName() << " to " << p->GetTag() << " group (" << p->GetType() << ")" << endl;
 }
 
 //================================================================================
@@ -140,11 +142,15 @@ void Plot::AddToHistos(Histo* p){ // Add the histogram to the right vector
 
 void Plot::AddSystematic(TString var){
 	for(Int_t i = 0; i < (Int_t) VTagSamples.size(); i++){
-		AddSample(VTagSamples.at(i), VTagProcesses.at(i), -1, 0, 0, var+"Up");
-		AddSample(VTagSamples.at(i), VTagProcesses.at(i), -1, 0, 0, var+"Down");
+		AddSample(VTagSamples.at(i), VTagProcesses.at(i), itSys, 1, 0, var+"Up");
+		AddSample(VTagSamples.at(i), VTagProcesses.at(i), itSys, 1, 0, var+"Down");
 	}
+  for(Int_t i = 0; i < (Int_t) VSignals.size(); i++){
+    AddSample(VSignals.at(i)->GetName(), VSignals.at(i)->GetTag(), itSys, 1, 0, var+"Up");
+    AddSample(VSignals.at(i)->GetName(), VSignals.at(i)->GetTag(), itSys, 1, 0, var+"Down");
+  }
   if(verbose) cout << "[Plot::AddSystematic] Systematic histograms added to the list for variation: " << var << endl;
-	VSystLabel.push_back(var);
+  AddSystematicLabel(var);
 }
 
 void Plot::IncludeBkgSystematics(){
@@ -218,9 +224,57 @@ void Plot::PrintYields(){
     Histo* hData = SetData();
 	  	                               cout << "----------------------------------------------------------" << endl;
                                  		 cout << " " << "Data:      " << hData->GetYield() << endl;
-  }
-                                     cout << "==========================================================" << endl;
+	}
+	                                   cout << "==========================================================" << endl;
 }
+
+void Plot::PrintSystYields(){
+	Int_t nBkgs = VBkgs.size();
+	Int_t nSig  = VSignals.size();
+	Int_t nSys  = VSystLabel.size();
+	TString pr; TString sys;
+  cout << "\033[1;31m      ";
+	for(Int_t gs = 0; gs < nSys; gs++) cout << "    " << VSystLabel.at(gs);
+	cout << "\033[0m\n";
+	for(Int_t i = 0; i < nBkgs; i++){
+		pr = VBkgs.at(i)->GetProcess();
+		cout << Form("\033[1;33m  %s \033[0m ", VBkgs.at(i)->GetProcess().Data());
+    cout << "\033[1;34m";
+		for(Int_t j = 0; j < nSys; j++){
+			sys = VSystLabel.at(j);
+			cout << Form("   %1.2f ", TMath::Abs(GetYield(pr)-GetYield(pr,sys))/GetYield(pr)*100);
+		}
+		cout << "\033[0m\n";
+  }
+}
+
+Float_t Plot::GetYield(TString pr, TString systag){
+	Float_t val = 0; Float_t sys = 0; TString ps; 
+	Int_t nSyst = VSyst.size();
+	Int_t nBkg = VBkgs.size();
+	Int_t nSig = VSignals.size();
+	if(systag == "0"){
+		for(Int_t i = 0; i < nBkg; i++){
+			if(pr == VBkgs.at(i)->GetProcess()) return  VBkgs.at(i)->GetYield();
+		}
+		for(Int_t i = 0; i < nSig; i++){
+			if(pr == VSignals.at(i)->GetProcess()) return  VSignals.at(i)->GetYield();
+		}
+		//cout << " >>> Process not found!!!: " << pr << endl;
+		return 0;
+	}
+	else{
+		for(int k = 0; k < nSyst; k++){ // Systematics in k
+			ps = VSyst.at(k)->GetTag();
+			if(!ps.BeginsWith(pr))   continue;
+			if(!ps.Contains(systag)) continue;
+			return VSyst.at(k)->GetYield();
+		}
+	}
+	//cout << "No systematic " << systag << " for process " << pr << endl;
+	return GetYield(pr);
+}
+
 
 TLegend* Plot::SetLegend(){ // To be executed before using the legend
   TLegend* leg = new TLegend(0.70,0.65,0.93,0.93);
@@ -237,10 +291,7 @@ TLegend* Plot::SetLegend(){ // To be executed before using the legend
     if(VBkgs.at(i)->GetYield() < MinYield) continue;
     else VBkgs.at(i)->AddToLegend(leg,doYieldsInLeg);
   }
-  for(int i = VSignals.size()-1; i >= 0; i--){
-      if(VSignals.at(i)->GetType() < 0) continue;
-			VSignals[i]->AddToLegend(leg, doYieldsInLeg);
-		}
+  for(int i = VSignals.size()-1; i >= 0; i--) VSignals[i]->AddToLegend(leg, doYieldsInLeg);
   if(doData){
 		Histo* hData = SetData(); hData->SetProcess("Data");
 		hData->AddToLegend(leg,doYieldsInLeg);
@@ -306,7 +357,7 @@ void Plot::DrawComp(TString tag = "0", bool sav = 0){
 */
   if(sav){ // Save the histograms
     TString dir = plotFolder + "StopPlots/";
-    TString plotname = var + "_" + chan + "_" + tag + "_compare";
+    TString plotname = varname + "_" + chan + "_" + tag + "_compare";
     gSystem->mkdir(dir, kTRUE);
     c->Print( dir + plotname + ".png", "png");
     delete c;
@@ -406,13 +457,14 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
 
 	if(sav){ // Save the histograms
 		TString dir = plotFolder + "StopPlots/";
-    TString plotname = (outputName == "")? var + "_" + chan + "_" + tag : outputName;
+    TString plotname = (outputName == "")? varname + "_" + chan + "_" + tag : outputName;
 	  	
 		gSystem->mkdir(dir, kTRUE);
 		c->Print( dir + plotname + ".pdf", "pdf");
 		c->Print( dir + plotname + ".png", "png");
 		delete c;
 	}
+	//delete AllBkg; delete hData; delete leg; delete hratioerr; delete hStack; 
 }
 
 
@@ -424,16 +476,18 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
 // MakeDatacardBin(Int_t bin, TString tag = "b")
 // MakeDatacardAllBins(TString tag = "b")
 // MakeDatacard(TString tag = "0")
-// GetShapeUncDatacard()
+// GetShapeUncLines()
 
 
-void Plot::SaveHistograms(TString tag = "0"){
+void Plot::SaveHistograms(){
   // Save all histograms: all bkg processes, signals, data, systematics, statistics
 	if(!doSignal){ std::cout << "No datacards without signal!" << std::endl; return;}
+  SavedHistos = true;
 	TFile *f;
 
-  TString filename =  var + "_" + chan + "_" + tag;
+  TString filename =  varname + "_" + chan;
   if(outputName != "") filename = outputName;
+  gSystem->mkdir(limitFolder, kTRUE);
 	f = new TFile(limitFolder + filename + ".root", "recreate");
 
 	TH1F* statup; TH1F* statdown; Histo* nom;
@@ -444,7 +498,7 @@ void Plot::SaveHistograms(TString tag = "0"){
 		nom = VBkgs.at(i);
 		nbins = nom->GetNbinsX();
 		nom->Write();
-		if(nom->GetType() < 0) continue; // no stat for systematics
+		if(nom->GetType() == itSys) continue; // no stat for systematics
 		for(int j = 1; j <= nbins; j++){
 			statup   = nom->GetVarHistoStatBin(j, "up");
 			statdown = nom->GetVarHistoStatBin(j, "down");
@@ -455,6 +509,7 @@ void Plot::SaveHistograms(TString tag = "0"){
 	}
 	for(int i = 0; i < nSig; i++){
 		nom = VSignals.at(i);
+		nom->SetName(nom->GetProcess());
 		nbins = nom->GetNbinsX();
 		nom->Write();
 		for(int j = 1; j <= nbins; j++){
@@ -473,7 +528,7 @@ void Plot::SaveHistograms(TString tag = "0"){
   hData->SetName("data_obs"); hData->SetTag("data_obs");
 	hData->Write();
 	hStack->Write();  
-	cout << "-------> Root file created: " << limitFolder + filename << endl;
+	cout << "-------> Root file created: " << limitFolder + filename + ".root" << endl;
 	f->Close(); delete f;
 }
 
@@ -483,6 +538,7 @@ TString Plot::GetStatUncDatacard(Int_t iSignal){
 	Histo* nom;
   Histo* hSignal = VSignals.at(iSignal);
 	int nbins = 0;
+  Int_t nBkgs = VBkgs.size();
 	TString lin = TString("");
 	for(int i = 0; i < nBkgs+1; i++){
 		if(i<nBkgs) nom = VBkgs.at(i);
@@ -507,11 +563,13 @@ void Plot::MakeDatacard(TString tag, Int_t iSignal){
   Histo* hSignal = VSignals.at(iSignal);
 	hData->SetTag("data_obs");
 	// if(!doData){ hData = hAllBkg;}
-	SaveHistograms(tag); 
+	if(!SavedHistos) SaveHistograms(); 
 	ofstream outputfile;
-	TString filename = TString("datacard_") + var + TString("_") + chan + "_" + tag + TString(".txt");
+	TString filename = TString("datacard_") + varname + TString("_") + chan + "_" + tag + TString(".txt");
+  gSystem->mkdir(limitFolder, kTRUE);
 	outputfile.open(limitFolder + filename);
 
+  Int_t nBkgs = VBkgs.size();
 	Int_t nChan = 1;
 	Int_t nSyst = nBkgs + 1;
 
@@ -520,7 +578,7 @@ void Plot::MakeDatacard(TString tag, Int_t iSignal){
 	//outputfile << Form("kmax %i\n", nSyst);
 	outputfile << "kmax *\n";
 	outputfile << "##-----------\n";
-  outputfile << TString("shapes * ") + chan + " " + limitFolder + var + "_" + chan + "_" + tag + TString(".root") + TString(" $PROCESS $PROCESS_$SYSTEMATIC \n");
+  outputfile << TString("shapes * ") + chan + " " + varname + "_" + chan + TString(".root") + TString(" $PROCESS $PROCESS_$SYSTEMATIC \n");
 	outputfile << "##-----------\n";
   outputfile << TString("bin ") + chan + "\n";
   outputfile << Form("observation %1.0f \n",hData->GetYield());
@@ -531,9 +589,9 @@ void Plot::MakeDatacard(TString tag, Int_t iSignal){
   TString rate     = TString("rate    ");
 	for(int i = 0; i < nBkgs; i++){ 
 		bin += chan + TString(" ");
-		process1 += VBkgs[i]->GetProcess() + TString(" ");
+		process1 += VBkgs.at(i)->GetProcess() + TString(" ");
 		process2 += Form(" %i ", i+1);
-		rate += Form(" %1.2f ", VBkgs[i]->GetYield());
+		rate += Form(" %1.2f ", VBkgs.at(i)->GetYield());
 	}
 	// Add signal
 	bin += chan + TString(" ");
@@ -564,35 +622,44 @@ void Plot::MakeDatacard(TString tag, Int_t iSignal){
 		out += TString("\n");
 		outputfile << out;
 	}
-  TString stat = GetStatUncDatacard();
+  TString stat = GetStatUncDatacard(iSignal);
   outputfile << stat;
-  TString systshapes = GetShapeUncDatacard();
+  TString systshapes = GetShapeUncLines();
   outputfile << systshapes;
 	outputfile.close();
   cout << "-------> Datacard created: " << limitFolder + filename << endl;
 }
-/*
-TString Plot::GetShapeUncDatacard(){
+
+TString Plot::GetShapeUncLines(){
 	Histo* nom;
   TString sys;
+  Int_t nBkgs = VBkgs.size();
 	TString lin = TString(""); Int_t nsyst = VSystLabel.size();
 	for(Int_t gs = 0; gs < nsyst; gs++){
     sys = VSystLabel.at(gs);
 	  lin += sys + " shape ";
-    if(sys == "FS"){ // FullSim/FastSim -> only signal
+    if(sys == "FS" || sys == "genMET"){ // only for FastSim 
 			for(int k = 0; k < nBkgs+1; k++){
 				if(k < nBkgs) lin += TString(" - ");
 				else          lin += TString(" 1 ");
 			}
 			lin += TString("\n");
 		}
+    else if(sys == "nlo" || sys == "fsr" || sys == "isr" || sys == "ue"){
+			for(int k = 0; k < nBkgs+1; k++){
+        if     (k >= nBkgs)                       lin += TString(" - ");
+				else if(VBkgs.at(k)->GetTag() == "ttbar") lin += TString(" 1 ");
+				else                                      lin += TString(" - ");
+			}
+			lin += TString("\n");
+    }
 		else{
 			for(int k = 0; k < nBkgs+1; k++) lin += TString(" 1 ");
 			lin += TString("\n");
 		}
 	}
   return lin;
-}*/
+}
 
 //================================================================================
 // Extra functions for datacards
@@ -604,7 +671,7 @@ void Plot::MakeDatacardBin(Int_t bin, TString tag, Int_t iSignal){
 	hData->SetTag("data_obs");
 
 	ofstream outputfile;
-	TString filename = TString("datacard_") + var + TString("_") + chan + "_" + tag + Form("%i",bin) + TString(".txt");
+	TString filename = TString("datacard_") + varname + TString("_") + chan + "_" + tag + Form("%i",bin) + TString(".txt");
 	outputfile.open(limitFolder + filename);
 
 	Int_t nChan = 1;
@@ -702,7 +769,7 @@ void Plot::SetHRatio(){
   hratio->GetXaxis()->SetTitleOffset(0.9);
   hratio->GetXaxis()->SetLabelSize(0.13);
   hratio->GetXaxis()->SetTitleSize(0.16);
-  if (var == "NBtagsNJets") {  //change bin labels
+  if (varname == "NBtagsNJets") {  //change bin labels
     hratio->GetXaxis()->SetBinLabel( 1, "(0, 0)");
     hratio->GetXaxis()->SetBinLabel( 2, "(1, 0)");
     hratio->GetXaxis()->SetBinLabel( 3, "(1, 1)");

@@ -106,7 +106,7 @@ void Histo::AddToSystematics(Histo* hsys, TString dir){
   Int_t nbins = hsys->GetNbinsX();
   Float_t diff = 0;
   if(GetNbinsX() != nbins)  std::cout << " [Histo] WARNING: cannot add to systematics" << std::endl; 
-  if(dir == "Down" || dir == "down"){ // It's a "down" systematic
+/*  if(dir == "Down" || dir == "down"){ // It's a "down" systematic
   //if(yield > hsys->yield){ // It's a "down" systematic
   //cout << " ---> [Histo] Adding to systematics DOWN: " << endl;
     for(Int_t k = 0; k < nbins; k++){
@@ -120,7 +120,12 @@ void Histo::AddToSystematics(Histo* hsys, TString dir){
       diff = TMath::Abs(GetBinContent(k+1) - hsys->GetBinContent(k+1));
       vsysu[k] += diff*diff;
     }
-  }
+  }*/
+	for(Int_t k = 0; k < nbins; k++){
+		diff = GetBinContent(k+1) - hsys->GetBinContent(k+1);
+		if(diff >  0) vsysd[k] += diff*diff;
+		else          vsysu[k] += diff*diff;
+	}
 }
 
 AnalHisto::AnalHisto(TString sample, TCut ct, TString channel, TString p, TString tN, TString sys){
@@ -151,7 +156,7 @@ Double_t AnalHisto::GetYield(TString sys){
   return h->GetBinContent(1); 
 }
 
-void AnalHisto::Fill(TString variable, TString sys){
+void AnalHisto::Fill(TString variable, TString sys, Bool_t isFastSim){
   if(variable != "") var = variable;
   TCut schan = TCut("1");
   if     (chan == "Elec")  schan = TCut("TChannel == 3");
@@ -215,6 +220,19 @@ void AnalHisto::Fill(TString variable, TString sys){
   else if(sys == "MisTagDown"){
     cut = TCut( ((TString) cut).ReplaceAll("TNBtags", "TNBtagsMisTagDown"));   
     var = var.ReplaceAll("TNBtags", "TNBtagsMisTagDown");
+  }
+  else if(sys == "genMETUp"){
+    cut = TCut( ((TString) cut).ReplaceAll("TMET", "TMETGenUp"));
+    var = var.ReplaceAll("TMET", "TMETJESUp");
+    cut = TCut( ((TString) cut).ReplaceAll("TMT2ll", "TMT2llJESUp"));
+    var = var.ReplaceAll("TMT2ll", "TMT2llJESUp");
+    cut = TCut( ((TString) cut).ReplaceAll("THT", "THTJESUp"));
+    var = var.ReplaceAll("THT", "THTJESUp");
+    cut = TCut( ((TString) cut).ReplaceAll("TJet_Pt", "TJetJESUp_Pt"));
+    var = var.ReplaceAll("TJet_Pt", "TJetJESUp_Pt");
+  }
+  else if(sys == "genMETDown"){
+
   }
 
   for(Int_t i = 0; i < AnalHistoBins; i++) h->SetBinContent(1,0.0); // To magically solve some problems

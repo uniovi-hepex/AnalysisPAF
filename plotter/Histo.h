@@ -11,7 +11,7 @@
 #include <iostream>
 #include "TCut.h"
 
-enum types{itBkg, itSignal, itData, itCompare, nTypes};
+enum types{itBkg, itSignal, itData, itCompare, itSys, nTypes};
 enum isysts{iJESUp, iJESDown, iJER, iBtagUp, iBtagDown, iMisTagUp, iMisTagDown, iLepEffUp, iLepEffDown, iTrigUp, iTrigDown, iPUUp, iPUDown, iFSUp, iFSDown, iGenMETUp, iGenMETDown, iISRJetsUp, iISRJetsDown, iQ2Up, iQ2Down, iPDFUp, iPDFDown, iHadUp, iHadDown, iNLOUp, iNLODown, nSysts};
 TString SystName[nSysts] = {"JESUp", "JESDown", "JER", "BtagUp", "BtagDown", "MisTagUp", "MisTagDown", "LepEffUp", "LepEffDown", "TrigUp", "TrigDown", "PUUp", "PUDown", "FSUp", "FSDown", "GenMETUp", "GenMETDown", "ISRJetsUp", "ISRJetsDown", "Q2Up", "Q2Down", "PDFUp", "PDFDown", "HadUp", "HadDown", "NLOUp", "NLODown"};
 
@@ -111,7 +111,7 @@ class AnalHisto{
    }
    void SetSystematic(TString t){SysTag = t;}
    Histo* GetHisto(){return h;}
-   void Fill(TString variable = "", TString sys = "0");   
+   void Fill(TString variable = "", TString sys = "0", Bool_t isFastSim = false);   
    void SetHisto(TString name, Int_t nb, Double_t xi, Double_t xe);
    //void SetHisto(TString name, Int_t nb, Float_t thebins[100]);
 
