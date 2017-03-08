@@ -32,7 +32,10 @@ class Histo : public TH1F{
 			SetColor(c);
 			SetStyle();
 		}
-		~Histo(){};
+		~Histo(){
+			if(vsysd) delete vsysd;
+			if(vsysu) delete vsysu;
+		};
 
 		void SetType(Int_t tipo = 0);
 		void SetColor(Int_t c);
@@ -45,6 +48,7 @@ class Histo : public TH1F{
     Float_t GetMax(){return max;}
     TString GetProcess(){return process;}
     Float_t GetSysNorm(){return sysNorm;}
+    Int_t GetColor(){ return color;}
 		void StackOverflow(Bool_t doStackOverflow = 1);
 		void SetTag(TString p, TString t="", TString x = "", TString c = "");
 		void SetProcess(TString p);
@@ -58,8 +62,8 @@ class Histo : public TH1F{
 		TH1F* GetVarHistoStatBin(Int_t bin = 0, TString dir = "Up");
 		void AddToSystematics(Histo* hsys, TString dir = "Down");
 
-		Float_t *vsysu; 
-		Float_t *vsysd;
+		Float_t *vsysu = NULL; 
+		Float_t *vsysd = NULL;
 
 	protected:
 		Int_t type; 
@@ -115,8 +119,8 @@ class AnalHisto{
    void SetHisto(TString name, Int_t nb, Double_t xi, Double_t xe);
    //void SetHisto(TString name, Int_t nb, Float_t thebins[100]);
 
-   Float_t *xbins;
-   TTree* tree;
+   Float_t *xbins = NULL;
+   TTree* tree = NULL;
 	 void SetTreeName(TString t);
 	 void SetPath(TString t);
    Double_t GetYield(TString sys = "0");
@@ -124,7 +128,7 @@ class AnalHisto{
   protected:
    TString path;
    TString treeName;
-   Histo *h;
+   Histo *h = NULL;
    TString sampleName;
    TCut cut;
    TString chan;

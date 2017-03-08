@@ -33,6 +33,7 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
    h->SetBinContent(i, val); h->SetBinError(i,err); 
   }
   h->SetDirectory(0);
+  delete g;
   h->SetProcess(pr);
   h->SetName(p);
   TString t = (sys == "0")? pr : pr + "_" + sys;
@@ -92,34 +93,27 @@ Histo* Plot::GetAllBkg(){ // Return histogram with the sum of all bkg
 	Histo* AllBkg0 = new Histo(*(TH1F*) hStack0->GetStack()->Last(), 3);
 	AllBkg0->SetStyle();
 	AllBkg0->SetTag("TotalBkg");
+  AllBkg0->SetDirectory(0); delete hStack0;
   return AllBkg0;
 }
 
 Histo* Plot::SetData(){  // Returns histogram for Data
-  Histo* hData0 = new Histo(TH1F());
+  Histo* hData0 = new Histo(TH1F("HistoData", "Data", nb, x0, xN));
 	if(VData.size() < 1){
 		doData = false;
-		return hData0;
+		return new Histo(TH1F());
 	}
-  Bool_t HaveDataForChannel = false;
+  //Bool_t HaveDataForChannel = false;
   TString p = "";
 	for(Int_t i = 0; i < (Int_t) VData.size(); i++){
-    p = VData.at(i)->GetName();
-    if     (chan == "ElMu" && (p == "DoubleMuon" || p == "DoubleEG"))   continue;
-    else if(chan == "Muon" && (p != "DoubleMuon" && p!= "SingleMuon"))  continue;
-    else if(chan == "Elec" && (p != "DoubleEG" && p!= "SingleElec"))    continue;
-    else if( (chan == "SF" || chan == "sameF") && (p == "MuonEG"))      continue;
-    if(HaveDataForChannel) hData0->Add(VData.at(i));
-    else{
-      hData0 = new Histo(* (TH1F*) VData.at(i)->Clone());
-      HaveDataForChannel = true;
-    }
-	} 
-  if(!HaveDataForChannel){
-    cout << "[Plot] Data is missing!!" << endl;
-    doData = false;
-    return hData0;
-  }
+		p = VData.at(i)->GetName();
+		if     (chan == "ElMu" && (p == "DoubleMuon" || p == "DoubleEG"))   continue;
+		else if(chan == "Muon" && (p != "DoubleMuon" && p!= "SingleMuon"))  continue;
+		else if(chan == "Elec" && (p != "DoubleEG" && p!= "SingleElec"))    continue;
+		else if( (chan == "SF" || chan == "sameF") && (p == "MuonEG"))      continue;
+		hData0->Add(VData.at(i));
+	}
+	hData0->SetDirectory(0);
 	hData0->SetLineColor(kBlack); 
 	hData0->SetMarkerStyle(20); 
 	hData0->SetMarkerSize(1.1); 
@@ -220,12 +214,14 @@ void Plot::PrintYields(){
 	}
   if(nSig>0)                         cout << "----------------------------------------------------------" << endl;
   for(Int_t i = 0; i < nSig;  i++)   cout << " " << VSignals.at(i)->GetProcess() << ":      " << VSignals.at(i)->GetYield() << endl;
+  Histo* hData = NULL;
   if(doData){
-    Histo* hData = SetData();
+    hData = SetData();
 	  	                               cout << "----------------------------------------------------------" << endl;
                                  		 cout << " " << "Data:      " << hData->GetYield() << endl;
 	}
 	                                   cout << "==========================================================" << endl;
+  if(hData) delete hData;
 }
 
 void Plot::PrintSystYields(){
@@ -292,16 +288,18 @@ TLegend* Plot::SetLegend(){ // To be executed before using the legend
     else VBkgs.at(i)->AddToLegend(leg,doYieldsInLeg);
   }
   for(int i = VSignals.size()-1; i >= 0; i--) VSignals[i]->AddToLegend(leg, doYieldsInLeg);
+  Histo* hData = NULL;
   if(doData){
-		Histo* hData = SetData(); hData->SetProcess("Data");
+		hData = SetData(); hData->SetProcess("Data");
 		hData->AddToLegend(leg,doYieldsInLeg);
 	}
+  if(hData) delete hData;
   return leg;
 }
 
 TCanvas* Plot::SetCanvas(){ // Returns the canvas
-    TCanvas* c= new TCanvas("c","c",10,10,800,600);
-  c->Divide(1,2);
+	TCanvas* c= new TCanvas("c","c",10,10,800,600);
+	c->Divide(1,2);
 
   plot = (TPad*)c->GetPad(1);
   plot->SetPad(0.0, 0.23, 1.0, 1.0);
@@ -331,7 +329,7 @@ TCanvas* Plot::SetCanvas(){ // Returns the canvas
 }
 
 void Plot::DrawComp(TString tag = "0", bool sav = 0){
-  TCanvas* c = SetCanvas();
+  TCanvas* c = SetCanvas();  plot->cd();
   int nsamples = VSignals.size();
 	float themax = 0;
   Histo* signal;
@@ -339,22 +337,31 @@ void Plot::DrawComp(TString tag = "0", bool sav = 0){
   else signal = VSignals.at(0);
 	float max = VSignals.at(0)->GetMaximum();
   signal->Draw("pe");
+
 	for(Int_t  i = 1; i < nsamples; i++){
 		max = VSignals.at(i)->GetMaximum(); 
 		if(max > themax) themax = max;
 		VSignals.at(i)->Draw("pesame");
 	}
+  VSignals.at(0)->SetMaximum(themax*1.1);
 	TLegend* leg = SetLegend();
 	leg->Draw("same");
 
-/*	pratio->cd();
-  hratio = (TH1F*)hData->Clone();
-  hratio->Divide(AllBkg);
+	pratio->cd();
+  vector<TH1F*> ratios;
+  TH1F* htemp = NULL;
+  hratio = (TH1F*)VSignals.at(0)->Clone("hratio_sig");
   SetHRatio();
-  hratio->Draw("same");
-  hratioerr->Draw("same,e2");
-  hratio->Draw("same");
-*/
+  hratio->SetMaximum(1.2);
+  hratio->SetMinimum(0.8);
+	for(Int_t  i = 1; i < nsamples; i++){
+    htemp = (TH1F*)hratio->Clone("htemp");
+    htemp->Divide(VSignals.at(i)); 
+    htemp->SetLineColor(VSignals.at(i)->GetColor());
+    ratios.push_back(htemp);
+    ratios.at(i-1)->Draw("same");
+  }
+
   if(sav){ // Save the histograms
     TString dir = plotFolder + "StopPlots/";
     TString plotname = varname + "_" + chan + "_" + tag + "_compare";
@@ -362,10 +369,12 @@ void Plot::DrawComp(TString tag = "0", bool sav = 0){
     c->Print( dir + plotname + ".png", "png");
     delete c;
   }
+  if(htemp) delete htemp;
+  ratios.clear();
 }
 
 void Plot::DrawStack(TString tag = "0", bool sav = 0){
-	Histo* AllBkg;
+	Histo* AllBkg = NULL;
 	THStack* hStack = GetStack();
 	if(doSys){
 		IncludeBkgSystematics();
@@ -407,14 +416,14 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   if(doSys) AllBkg->Draw("same,e2");
 
   hData->Draw("pesame");
+	Histo* hSignalerr = NULL; 
   if(doSignal){
 		// Draw systematics signal
-		Histo* hSignalerr; 
     Int_t nSignals = VSignals.size();
 		if(verbose) cout << "Drawing " << nSignals << " signals..." << endl;
     for(Int_t  i = 0; i < nSignals; i++){
       if(VSignals.at(i)->GetType() != itSignal) continue; // Consistency
-			hSignalerr = (Histo*) VSignals.at(i)->Clone(); // Add systematics to signal
+			hSignalerr = (Histo*) VSignals.at(i)->Clone("hSignalErr"); // Add systematics to signal
 		  hSignalerr->SetFillColor(17); 
 		  hSignalerr->SetMarkerStyle(0);
 		  hSignalerr->SetFillStyle(3013);
@@ -428,7 +437,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
 
   // Draw systematics ratio
   AllBkg->SetFillStyle(3145);
-  TH1F* hratioerr =  (TH1F*) AllBkg->Clone();
+  TH1F* hratioerr =  (TH1F*) AllBkg->Clone("hratioerr");
   Int_t nbins = AllBkg->GetNbinsX(); Float_t binval = 0; Float_t errbin = 0; Float_t totalerror = 0;
   for(int bin = 1; bin <= nbins; bin++){  // Set bin error
     totalerror = AllBkg->GetBinError(bin); 
@@ -448,7 +457,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
 
   // Set ratio
 	pratio->cd();
-	hratio = (TH1F*)hData->Clone();
+	hratio = (TH1F*)hData->Clone("hratio");
 	hratio->Divide(AllBkg);
 	SetHRatio();
 	hratio->Draw("same");
@@ -464,7 +473,9 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
 		c->Print( dir + plotname + ".png", "png");
 		delete c;
 	}
-	//delete AllBkg; delete hData; delete leg; delete hratioerr; delete hStack; 
+  if(leg) delete leg; if(hData) delete hData;
+	if(AllBkg) delete AllBkg; if(hStack) delete hStack; 
+  if(hratioerr) delete hratioerr; if(hSignalerr) delete hSignalerr;
 }
 
 
@@ -477,8 +488,6 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
 // MakeDatacardAllBins(TString tag = "b")
 // MakeDatacard(TString tag = "0")
 // GetShapeUncLines()
-
-
 void Plot::SaveHistograms(){
   // Save all histograms: all bkg processes, signals, data, systematics, statistics
 	if(!doSignal){ std::cout << "No datacards without signal!" << std::endl; return;}
@@ -529,7 +538,9 @@ void Plot::SaveHistograms(){
 	hData->Write();
 	hStack->Write();  
 	cout << "-------> Root file created: " << limitFolder + filename + ".root" << endl;
-	f->Close(); delete f;
+	delete hData; delete hStack;
+	f->Close(); 
+	delete f;
 }
 
 TString Plot::GetStatUncDatacard(Int_t iSignal){
@@ -553,13 +564,13 @@ TString Plot::GetStatUncDatacard(Int_t iSignal){
 			lin += TString("\n");
 		}
 	}
+  delete hSignal;
   return lin;
 }
 
 void Plot::MakeDatacard(TString tag, Int_t iSignal){
 	if(!doSignal){ std::cout << "No datacards without signal!" << std::endl; return;}
   Histo* hData = SetData(); 
-  THStack* hStack = GetStack();
   Histo* hSignal = VSignals.at(iSignal);
 	hData->SetTag("data_obs");
 	// if(!doData){ hData = hAllBkg;}
@@ -628,6 +639,7 @@ void Plot::MakeDatacard(TString tag, Int_t iSignal){
   outputfile << systshapes;
 	outputfile.close();
   cout << "-------> Datacard created: " << limitFolder + filename << endl;
+  delete hData; 
 }
 
 TString Plot::GetShapeUncLines(){

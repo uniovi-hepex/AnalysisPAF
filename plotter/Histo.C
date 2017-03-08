@@ -83,7 +83,7 @@ void Histo::SetColor(Int_t c){
 }
 
 void Histo::AddToLegend(TLegend* leg, Bool_t doyi){
-  TH1F* h2 = (TH1F*) Clone();
+  TH1F* h2 = (TH1F*) Clone("toLeg");
   TString op = "f";
   if      (type == itSignal) op = "l";
   else if (type == itData)   op = "pe";

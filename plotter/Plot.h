@@ -44,15 +44,14 @@ public:
 
   Bool_t  doSetLogy   = true;
   Int_t nBkgs = 0;
-	TPad* plot; TPad* pratio;
-	//TLegend* leg;
-	TLatex* texlumi;
-	TLatex* texcms;
-	TLatex* texchan;
-	TH1F* hratio;
+	TPad* plot = NULL; TPad* pratio = NULL;
+	TLatex* texlumi = NULL;
+	TLatex* texcms = NULL;
+	TLatex* texchan = NULL;
+	TH1F* hratio = NULL;
+  Float_t* TotalSysUp = NULL;
+  Float_t* TotalSysDown = NULL;
   TString sys = "0";
-  Float_t* TotalSysUp;
-  Float_t* TotalSysDown;
   TString  title;
   TString xtitle;
 
@@ -79,21 +78,22 @@ public:
 		Lumi = DefaultLumi;
 	}
 	virtual ~Plot(){
-//		if(plot) delete plot;
-//		if(hratio) delete hratio;
+		//if(plot) delete plot;
+		//if(pratio) delete pratio;
 //		if(texlumi) delete texlumi;
+//		if(texcms) delete texcms;
 //		if(texchan) delete texchan;
-//		if(TotalSysUp) delete TotalSysUp;
-//		if(TotalSysDown) delete TotalSysDown;
-    //for(Int_t i = 0; i < (Int_t) VBkgs.size(); i++) delete VBkgs.at(i);
+		VData.clear();
 		VBkgs.clear();
 		VSignals.clear();
 		VSignalsErr.clear();
-		VData.clear();
 		VSyst.clear();
 		VSystLabel.clear();
 		VTagSamples.clear();
 		VTagProcesses.clear();
+		if(hratio) delete hratio;
+		if(TotalSysUp) delete TotalSysUp;
+		if(TotalSysDown) delete TotalSysDown;
 };            // Destructor
 
 	void AddSample(TString p = "TTbar_Powheg", TString pr = "ttbar", Int_t type = -1, Int_t color = 0, Float_t S = 1, TString tsys = "0");
