@@ -3,7 +3,7 @@ Download the code
 
 Download all the code from github.
 
-    git clone https://github.com/GonzalezFJR/AnalyserPAF
+    git clone https://github.com/Oviedo-PAF/AnalysisPAF
     cd AnalyserPAF
 
 
