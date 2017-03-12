@@ -6,27 +6,27 @@
 #include "PUWeight.h"
 
 class EventBuilder : public PAFChainItemSelector{
-	public:
+  public:
 
 
-		EventBuilder();
-		virtual ~EventBuilder(){}
-		virtual void InsideLoop();
-		virtual void Initialise();
-		virtual void Summary();
+    EventBuilder();
+    virtual ~EventBuilder(){}
+    virtual void InsideLoop();
+    virtual void Initialise();
+    virtual void Summary();
 
-		//Bool_t PassHLT_Elec; Bool_t PassHLT_Muon; Bool_t PassHLT_ElMu;
-		Bool_t METfilters;
-		Bool_t passTrigger;
+    //Bool_t PassHLT_Elec; Bool_t PassHLT_Muon; Bool_t PassHLT_ElMu;
+    Bool_t METfilters;
+    Bool_t passTrigger;
     Bool_t isSS;
     Bool_t gIsFastSim;
 
-		//Float_t  TrigSFElec;      Float_t  TrigSFMuon;      Float_t  TrigSFElMu;
-	  //Float_t  TrigSFElec_Up;   Float_t  TrigSFElMu_Up;   Float_t  TrigSFMuon_Up;
-		//Float_t  TrigSFElec_Down; Float_t  TrigSFMuon_Down; Float_t  TrigSFElMu_Down;
+    //Float_t  TrigSFElec;      Float_t  TrigSFMuon;      Float_t  TrigSFElMu;
+    //Float_t  TrigSFElec_Up;   Float_t  TrigSFElMu_Up;   Float_t  TrigSFMuon_Up;
+    //Float_t  TrigSFElec_Down; Float_t  TrigSFMuon_Down; Float_t  TrigSFElMu_Down;
 
     Float_t TriggerSF; Float_t TriggerSF_Up; Float_t TriggerSF_Down; Float_t TriggerSF_err;
-		Float_t PUSF;      Float_t PUSF_Up;  	   Float_t PUSF_Down;
+    Float_t PUSF;      Float_t PUSF_Up;      Float_t PUSF_Down;
 
     Float_t NormWeight; // Nominal
     Float_t Weight;  // CrossSection/NumberOfGenEvents
@@ -36,24 +36,24 @@ class EventBuilder : public PAFChainItemSelector{
     Int_t   gChannel;
     std::vector<Lepton> selLeptons;
 
-	protected:
+  protected:
 
     LeptonSF *TriggSF;
     PUWeight *fPUWeight;
     PUWeight *fPUWeightUp;
     PUWeight *fPUWeightDown;
 
-		Bool_t PassesMETfilters();
+    Bool_t PassesMETfilters();
 
     Bool_t TrigElMu();
     Bool_t TrigElEl();
     Bool_t TrigMuMu();
 
-		Bool_t PassesDoubleElecTrigger();
-		Bool_t PassesDoubleMuonTrigger();
-		Bool_t PassesElMuTrigger();
-		Bool_t PassesSingleElecTrigger();
-		Bool_t PassesSingleMuonTrigger();
+    Bool_t PassesDoubleElecTrigger();
+    Bool_t PassesDoubleMuonTrigger();
+    Bool_t PassesElMuTrigger();
+    Bool_t PassesSingleElecTrigger();
+    Bool_t PassesSingleMuonTrigger();
 
     Bool_t gIsSingleMuon;
     Bool_t gIsSingleElec;
@@ -65,5 +65,5 @@ class EventBuilder : public PAFChainItemSelector{
     TString gSampleName;
     Bool_t  gIsMCatNLO;
 
-		ClassDef(EventBuilder, 0);
+    ClassDef(EventBuilder, 0);
 };
