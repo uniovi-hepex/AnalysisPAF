@@ -11,20 +11,20 @@
 
 class JetSelector : public PAFChainItemSelector{
 
-	public:
-	TString stringWP;
-		JetSelector();
-		virtual ~JetSelector() {}
-		virtual void InsideLoop();
-		void Initialise();
-		void Summary();
+  public:
+    TString stringWP;
+    JetSelector();
+    virtual ~JetSelector() {}
+    virtual void InsideLoop();
+    void Initialise();
+    void Summary();
 
     std::vector<Lepton> Leptons;
-		std::vector<Jet> selJets;
-		std::vector<Jet> Jets15;
-		std::vector<Jet> genJets;
-		std::vector<Jet> mcJets;
-		std::vector<Jet> vetoJets;
+    std::vector<Jet> selJets;
+    std::vector<Jet> Jets15;
+    std::vector<Jet> genJets;
+    std::vector<Jet> mcJets;
+    std::vector<Jet> vetoJets;
 
     Int_t nSelJets;
     Int_t nGenJets;
@@ -32,40 +32,40 @@ class JetSelector : public PAFChainItemSelector{
     Int_t nJets15;
     Int_t nBtagJets;
 
-		Float_t jet_MaxEta;
-		Float_t jet_MinPt;
-		Float_t vetoJet_minPt;
+    Float_t jet_MaxEta;
+    Float_t jet_MinPt;
+    Float_t vetoJet_minPt;
 
-	protected:
+  protected:
 
-		BTagSFUtil *fBTagSFnom ;
-		BTagSFUtil *fBTagSFbUp ;
-		BTagSFUtil *fBTagSFbDo ;
-		BTagSFUtil *fBTagSFlUp ;
-		BTagSFUtil *fBTagSFlDo ;
+    BTagSFUtil *fBTagSFnom ;
+    BTagSFUtil *fBTagSFbUp ;
+    BTagSFUtil *fBTagSFbDo ;
+    BTagSFUtil *fBTagSFlUp ;
+    BTagSFUtil *fBTagSFlDo ;
 
-		Bool_t gIsData;
-		Bool_t gSelection;
+    Bool_t gIsData;
+    Bool_t gSelection;
 
-		// Jets
-		Int_t nJet;
-		Jet tJ;
-		TLorentzVector tpJ; 
-		TLorentzVector tmcJ; 
-		Int_t jetId;
+    // Jets
+    Int_t nJet;
+    Jet tJ;
+    TLorentzVector tpJ; 
+    TLorentzVector tmcJ; 
+    Int_t jetId;
     Int_t flavmc;
-		Float_t csv;
+    Float_t csv;
     Float_t pt; Float_t eta; Float_t rawPt; 
     Float_t pt_corrUp; Float_t pt_corrDown; 
-		// genJet
+    // genJet
     Int_t ngenJet;
 
-		void GetJetVariables(Int_t i);
-		void GetGenJetVariables(Int_t i);
-		Bool_t IsBtag(Jet j); 
+    void GetJetVariables(Int_t i);
+    void GetGenJetVariables(Int_t i);
+    Bool_t IsBtag(Jet j); 
     void SetSystematics(Jet *j);
     Bool_t Cleaning(Jet j, vector<Lepton> vLep, Float_t minDR = 0.4);
 
-  ClassDef(JetSelector, 0);
+    ClassDef(JetSelector, 0);
 };
 

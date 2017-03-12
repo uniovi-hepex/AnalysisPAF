@@ -23,19 +23,19 @@ enum EMCDistribution {
   Spring11,       /*Flat10+Tail*/ 
 
   Summer11,       /*PU_S4 averaging the number of interactions in each beam
-		   * crossing
-		   */
+       * crossing
+       */
   Summer113D,     /*Using Flat10 + tail since this is the "true" input for all
-		   * Summer11 samples.
-		   */
+       * Summer11 samples.
+       */
   Summer11InTime, /*PU_S4 obtained by only looking at the in-time crossing*/
   
   Summer11ITSmear,/*PU_S4 obtained by only looking at the in-time crossing.
-		   *This is the "spike+smear" distribution. RECOMENDED!
-		   */
+       *This is the "spike+smear" distribution. RECOMENDED!
+       */
   Summer11True,   /*PU_S4 obtained by averaging the number of interactions in
-		   * each beam crossing to estimate the true mean.
-		   */
+       * each beam crossing to estimate the true mean.
+       */
   
   Fall11,         /*Fall11*/
 
@@ -50,10 +50,10 @@ enum EMCDistribution {
   Summer2015_25ns_poisson,     /* Summer15*/
   
   Fall2015_25ns_matchData_poisson,
-	
+  
   Spring2016_25ns_poisson_OOTPU, /* Spring16 */
-	  
-  Moriond17MC_PoissonOOTPU /* Summer16 */	  
+    
+  Moriond17MC_PoissonOOTPU /* Summer16 */   
 };
 
 class PUWeight {
@@ -74,8 +74,8 @@ class PUWeight {
    * 
    */
   PUWeight(float luminosity, 
-	   EMCDistribution mcdistr = Spring11,
-	   const char* year="2011A");
+     EMCDistribution mcdistr = Spring11,
+     const char* year="2011A");
 
 
   /**************************************
@@ -99,8 +99,8 @@ class PUWeight {
 
   // Returns the weights for a given PU value using 3D algorithm
   float GetWeight3D(unsigned int puminus, 
-		    unsigned int pu0, 
-		    unsigned int puplus) {
+        unsigned int pu0, 
+        unsigned int puplus) {
     if (!fWeight3D)
       CalculateWeight3D();
     return fWeight3D->GetBinContent(puminus+1, pu0+1, puplus+1);

@@ -5,16 +5,16 @@ CreateMiniTree::CreateMiniTree() : PAFChainItemSelector() {}
 void CreateMiniTree::Summary(){}
 
 void CreateMiniTree::Initialise(){
-	gIsData      = GetParam<Bool_t>("IsData");
-	gSelection   = GetParam<Int_t>("iSelection");
+  gIsData      = GetParam<Bool_t>("IsData");
+  gSelection   = GetParam<Int_t>("iSelection");
   gSampleName  = GetParam<TString>("sampleName");
   gDoSyst      = GetParam<Bool_t>("doSyst");
 
-	fTree = CreateTree("MiniTree","Created with PAF");
+  fTree = CreateTree("MiniTree","Created with PAF");
 
   SetLeptonVariables();
   SetJetVariables();
-	SetEventVariables();
+  SetEventVariables();
 
   selLeptons  = std::vector<Lepton>();
   vetoLeptons = std::vector<Lepton>();
@@ -45,27 +45,27 @@ void CreateMiniTree::InsideLoop(){
   isSS           = GetParam<Bool_t>("isSS");
   
   // Leptons and Jets
-	GetLeptonVariables(selLeptons, vetoLeptons.size());
-	GetJetVariables(selJets, Jets15);
-	GetMET();
+  GetLeptonVariables(selLeptons, vetoLeptons.size());
+  GetJetVariables(selJets, Jets15);
+  GetMET();
 
-	// Skim
-	if(TNSelLeps >= 2){
+  // Skim
+  if(TNSelLeps >= 2){
 
-		// Deal with weights:
-		Float_t lepSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
-		Float_t lepSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1);
-		Float_t lepSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1);
-		TWeight            = NormWeight*lepSF*TrigSF*PUSF;
-		TWeight_LepEffUp   = NormWeight*lepSFUp*TrigSF*PUSF;
-		TWeight_LepEffDown = NormWeight*lepSFDo*TrigSF*PUSF;
-		TWeight_TrigUp     = NormWeight*lepSF*TrigSF_Up*PUSF;
-		TWeight_TrigDown   = NormWeight*lepSF*TrigSF_Down*PUSF;
-		TWeight_PUDown     = NormWeight*lepSF*TrigSF*PUSF_Up;
-		TWeight_PUUp       = NormWeight*lepSF*TrigSF*PUSF_Down;
+    // Deal with weights:
+    Float_t lepSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
+    Float_t lepSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1);
+    Float_t lepSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1);
+    TWeight            = NormWeight*lepSF*TrigSF*PUSF;
+    TWeight_LepEffUp   = NormWeight*lepSFUp*TrigSF*PUSF;
+    TWeight_LepEffDown = NormWeight*lepSFDo*TrigSF*PUSF;
+    TWeight_TrigUp     = NormWeight*lepSF*TrigSF_Up*PUSF;
+    TWeight_TrigDown   = NormWeight*lepSF*TrigSF_Down*PUSF;
+    TWeight_PUDown     = NormWeight*lepSF*TrigSF*PUSF_Up;
+    TWeight_PUUp       = NormWeight*lepSF*TrigSF*PUSF_Down;
 
-		fTree->Fill();
-	}
+    fTree->Fill();
+  }
 }
 
 
@@ -189,8 +189,8 @@ void CreateMiniTree::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> 
 }
 
 void CreateMiniTree::GetMET(){
-		TMET        = Get<Float_t>("met_pt");
-		TMET_Phi    = Get<Float_t>("met_phi");  // MET phi
+    TMET        = Get<Float_t>("met_pt");
+    TMET_Phi    = Get<Float_t>("met_phi");  // MET phi
     TMETJESUp   = Get<Float_t>("met_jecUp_pt"  );
     TMETJESDown = Get<Float_t>("met_jecDown_pt");
 }
