@@ -11,10 +11,10 @@ using namespace std;
 
 // enum 
 enum iSFs{
-	iMuonReco, iMuonId, iMuonIdSUSY, iMuonIsoTightId, iMuonIsoMediumId, iMuonIsoSUSY, iMuonIP2D, iMuonSIP3D,
-	iElecReco, iElecId, iElecIdSUSY, iElecIso, iElecIsoSUSY, iElecIP2D, iElecSIP3D,
-	iTrigDoubleMuon, iTrigDoubleElec, iTrigElMu,
-	nfiles
+  iMuonReco, iMuonId, iMuonIdSUSY, iMuonIsoTightId, iMuonIsoMediumId, iMuonIsoSUSY, iMuonIP2D, iMuonSIP3D,
+  iElecReco, iElecId, iElecIdSUSY, iElecIso, iElecIsoSUSY, iElecIP2D, iElecSIP3D,
+  iTrigDoubleMuon, iTrigDoubleElec, iTrigElMu,
+  nfiles
 };
 
 enum wps{iVeto, iLoose, iMedium, iTight, iVeryTight, iExtreamlyTight, iWPforStop};
@@ -22,13 +22,13 @@ enum wps{iVeto, iLoose, iMedium, iTight, iVeryTight, iExtreamlyTight, iWPforStop
 enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec};
 
 enum sys{iNom, 
-	iJesUp, iJesDown, iJERUp, iJERDown, 
-	iBtagUp, iBtagDown, iBtagMisUp, iBtagMisDown, 
-	iLepEffUp, iLepEffDown, 
-	iTrigUp, iTrigDown, 
-	iPUUp, iPUDown, 
-	iFSUp, iFSDown,
-	nSys
+  iJesUp, iJesDown, iJERUp, iJERDown, 
+  iBtagUp, iBtagDown, iBtagMisUp, iBtagMisDown, 
+  iLepEffUp, iLepEffDown, 
+  iTrigUp, iTrigDown, 
+  iPUUp, iPUDown, 
+  iFSUp, iFSDown,
+  nSys
 };
 
 //enum eChannel{iElMu, iElec, iMuon, nChannels};
