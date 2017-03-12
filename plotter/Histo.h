@@ -61,6 +61,7 @@ class Histo : public TH1F{
 		void AddToLegend(TLegend* leg, Bool_t doyi = 1);
 		TH1F* GetVarHistoStatBin(Int_t bin = 0, TString dir = "Up");
 		void AddToSystematics(Histo* hsys, TString dir = "Down");
+    void SetBinsErrorFromSyst();
 
 		Float_t *vsysu = NULL; 
 		Float_t *vsysd = NULL;

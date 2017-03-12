@@ -2,6 +2,7 @@
 #define Plot_h 1
 
 #include "Histo.h"
+#include "Looper.h"
 #include "TH1F.h"
 #include "THStack.h"
 #include "TLegend.h"
@@ -24,25 +25,30 @@ const Float_t DefaultLumi = 35.9; //fb-1
 
 class Plot {
 public:
-
-	bool verbose = false;
-	bool doSys       = true;
-	bool doData      = true;
+	bool verbose         = false;
+	bool doSys           = true;
+	bool doData          = true;
 	bool doYieldsInLeg   = true;
-	bool doSingleLep = false;
+	bool doSingleLep     = false;
 	bool doStackOverflow = true;
-	bool doSignal = true;
+	bool doSignal        = true;
+  bool doSetLogy       = true;
 
   std::vector<Histo*> VBkgs;
   std::vector<Histo*> VSignals;
   std::vector<Histo*> VSignalsErr;
   std::vector<Histo*> VData;
   std::vector<Histo*> VSyst;
+  std::vector<Histo*> VSumHistoSystUp;
+  std::vector<Histo*> VSumHistoSystDown;
   std::vector<TString> VSystLabel;
   std::vector<TString> VTagSamples;
   std::vector<TString> VTagProcesses;
+  Histo* hData = NULL;
+  THStack* hStack = NULL;
+  Histo* hAllBkg = NULL;
+ // Histo* hSignal = NULL; // For a default signal if needed
 
-  Bool_t  doSetLogy   = true;
   Int_t nBkgs = 0;
 	TPad* plot = NULL; TPad* pratio = NULL;
 	TLatex* texlumi = NULL;
@@ -59,24 +65,47 @@ public:
 
 	Plot(){
 		plotFolder = DefaultPlotfolder; 
-		limitFolder = DefaultLimitFolder; 
-		Lumi = DefaultLumi;
-	}
-	Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Double_t bin0 = 0, Double_t binN = 0, TString tit = "My plot", TString xtit = "VAR"){
-		var    = variable;
-		cut    = TCut(cuts);
-		chan   = channel;
-		nb     = nbins;
-		x0     = bin0;
-		xN     = binN;
-		title  = tit;
-		xtitle = xtit;
+    limitFolder = DefaultLimitFolder; 
+    Lumi = DefaultLumi;
+  }
+  Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Double_t bin0 = 0, Double_t binN = 0, TString tit = "My plot", TString xtit = "VAR"){
+    var    = variable;
+    cut    = (cuts);
+    chan   = channel;
+    nb     = nbins;
+    x0     = bin0;
+    xN     = binN;
+    title  = tit;
+    xtitle = xtit;
     varname = variable; if(variable.Contains(" ")) TString(variable(0,variable.First(" ")));
 
-		plotFolder = DefaultPlotfolder; 
-		limitFolder = DefaultLimitFolder; 
-		Lumi = DefaultLumi;
-	}
+    plotFolder = DefaultPlotfolder; 
+    limitFolder = DefaultLimitFolder; 
+    Lumi = DefaultLumi;
+    VBkgs = std::vector<Histo*>();
+    VSignals = std::vector<Histo*>();
+    VSignalsErr = std::vector<Histo*>();
+    VData = std::vector<Histo*>();
+    VSyst = std::vector<Histo*>();
+		VSumHistoSystUp = std::vector<Histo*>();
+		VSumHistoSystDown =  std::vector<Histo*>();
+    VSystLabel = std::vector<TString>();
+    VTagSamples = std::vector<TString>();
+    VTagProcesses = std::vector<TString>();
+    hData = NULL;
+    hStack = NULL;
+    hAllBkg = NULL;
+    //hSignal = NULL; 
+
+    plot = NULL; pratio = NULL;
+    texlumi = NULL;
+    texcms = NULL;
+    texchan = NULL;
+    hratio = NULL;
+    TotalSysUp = NULL;
+    TotalSysDown = NULL;
+
+  }
 	virtual ~Plot(){
 		//if(plot) delete plot;
 		//if(pratio) delete pratio;
@@ -88,27 +117,33 @@ public:
 		VSignals.clear();
 		VSignalsErr.clear();
 		VSyst.clear();
+		VSumHistoSystUp.clear();
+		VSumHistoSystDown.clear();
 		VSystLabel.clear();
 		VTagSamples.clear();
 		VTagProcesses.clear();
 		if(hratio) delete hratio;
 		if(TotalSysUp) delete TotalSysUp;
 		if(TotalSysDown) delete TotalSysDown;
+    if(hData) delete hData;
+    if(hStack) delete hStack;
+    if(hAllBkg) delete hAllBkg;
 };            // Destructor
 
 	void AddSample(TString p = "TTbar_Powheg", TString pr = "ttbar", Int_t type = -1, Int_t color = 0, Float_t S = 1, TString tsys = "0");
 	//void AddSample(TString p = "TTbar_Powheg", TString pr = "ttbar", Int_t type = -1, Int_t color = 0, Float_t S = 1, TString Syst);
 
 	// ######### Methods ########
-  Histo GetH(TString sample = "TTbar_Powheg", TString s = "0", Int_t type = itBkg);
+  Histo* GetH(TString sample = "TTbar_Powheg", TString s = "0", Int_t type = itBkg);
   TCanvas *SetCanvas();
   TLegend* SetLegend();
   void SetTexChan(TString cuts); // To be updated
   void SetHRatio(); // To be updated
 
-	Histo* SetData();
-	THStack* GetStack();
-	Histo* GetAllBkg();
+	void SetData();
+	void GetStack();
+	void GetAllBkg();
+  void AllBkgSyst();
 
   void SetPlotStyle();
 
@@ -133,7 +168,7 @@ public:
   void SetLumi(Float_t lum){Lumi = lum;} 
   void SetPlotFolder(TString f){plotFolder = f;} 
   void SetLimitFolder(TString f){limitFolder = f;}   
-	void SetCut(TString cuts){cut = TCut(cuts);}
+	void SetCut(TString cuts){cut = (cuts);}
 	void SetBins(Int_t nbins, Double_t bin0, Double_t binN){
 		nb = nbins; x0 = bin0; xN = binN;
   }
@@ -144,9 +179,17 @@ public:
   void AddToHistos(Histo* p);
 	void AddVarHistos(TString sys);
 	void AddSystematic(TString s);
-	void AddSystematicLabel(TString lab){ VSystLabel.push_back(lab);}
+  void AddToSystematicLabels(TString sys){
+    sys.ReplaceAll("Up", ""); sys.ReplaceAll("Down", "");
+    for(Int_t i = 0; i < (Int_t) VSystLabel.size(); i++){
+      if(VSystLabel.at(i) == sys) return;
+    }
+    VSystLabel.push_back(sys);
+  }
+  void GroupSystematics();
+  void AddSumHistoSystematicUp(Histo* hsys){VSumHistoSystUp.push_back(hsys);}
+  void AddSumHistoSystematicDown(Histo* hsys){VSumHistoSystDown.push_back(hsys);}
   void IncludeBkgSystematics();
-  Histo* AllBkgSyst();
 
   void SetPath(TString p){ path = p; if(pathSignal == "") pathSignal = path;}
   void SetPathSignal(TString p){ pathSignal = p; }
@@ -170,7 +213,7 @@ protected:
 	TString var;
   TString chan;
   TString signal;
-  TCut cut;
+  TString cut;
   Int_t nb; Double_t x0; Double_t xN;
 
   TString SystVar;
