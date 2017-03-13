@@ -59,12 +59,11 @@ Bool_t LeptonSelector::getGoodVertex(Int_t wp){
     if(wp == iTight){ 
       if(etaSC <= 1.479 && ((dxy >= 0.05) || (dz  >= 0.10))) return false;
       if(etaSC >  1.479 && ((dxy >= 0.10) || (dz  >= 0.20))) return false;
-      }
-    } 
-  }
+    }
+  } 
   else{ // muons
-  if(wp == iMedium && (dxy > 0.2  || dz > 0.5)) return false;
-  if(wp == iTight  && (dxy > 0.05 || dz > 0.1)) return false;
+    if(wp == iMedium && (dxy > 0.2  || dz > 0.5)) return false;
+    if(wp == iTight  && (dxy > 0.05 || dz > 0.1)) return false;
   }
   return true;
 }
