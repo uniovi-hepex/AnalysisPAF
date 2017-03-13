@@ -62,7 +62,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
   // INPUT DATA SAMPLE
   //----------------------------------------------------------------------------
   TString dataPath = "/pool/ciencias/"; // Base path to input files
-  TString userhome = "/mnt_pool/fanae105/user/$USER/";
+  TString userhome = "/mnt_pool/fanae105/user/dani/";
   DatasetManager* dm = DatasetManager::GetInstance();
 
   // Tab in the spreadsheet https://docs.google.com/spreadsheets/d/1b4qnWfZrimEGYc1z4dHl21-A9qyJgpqNUbhOlvCzjbE
@@ -95,7 +95,6 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
     //cout << "Will loop on total number of entries: " << nTrueEntries << endl;  
   }
   else{ // Deal with MC samples           Double_t sumnormFromFiles = GetCount(path, dm->GetRealDataFiles(asample));
-    G_IsData = true; 
     TString theSample = "";
 		if(sampleName.BeginsWith("LocalFile:")){ // LocalFile
 			theSample = sampleName.ReplaceAll("LocalFile:", ""); 
