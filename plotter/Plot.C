@@ -326,7 +326,7 @@ void Plot::DrawComp(TString tag = "0", bool sav = 0){
   }
 
   if(sav){ // Save the histograms
-    TString dir = plotFolder + "StopPlots/";
+    TString dir = plotFolder + "WWplots/";
     TString plotname = varname + "_" + chan + "_" + tag + "_compare";
     gSystem->mkdir(dir, kTRUE);
     c->Print( dir + plotname + ".png", "png");
@@ -423,7 +423,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
 	hratio->Draw("same");
 
 	if(sav){ // Save the histograms
-		TString dir = plotFolder + "StopPlots/";
+		TString dir = plotFolder + "WWplots/";
     TString plotname = (outputName == "")? varname + "_" + chan + "_" + tag : outputName;
 	  	
 		gSystem->mkdir(dir, kTRUE);
