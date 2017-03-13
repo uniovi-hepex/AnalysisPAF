@@ -118,7 +118,10 @@ void Looper::SetFormulas(TString systematic){
 
 void Looper::CreateHisto(TString sys){
   if(Hist) delete Hist;
-  Hist = new Histo(TH1F(sampleName+"_"+sys+"_"+var,sampleName+"_"+sys+"_"+var, nbins, bin0, binN));
+  //Hist = new Histo(TH1F(sampleName+"_"+sys+"_"+var,sampleName+"_"+sys+"_"+var, nbins, bin0, binN));
+  TString name = sampleName;
+  if(sys != "0") name += "_" + sys;
+  Hist = new Histo(TH1F(name,sampleName+"_"+sys+"_"+var, nbins, bin0, binN));
 }
 
 void Looper::Loop(){

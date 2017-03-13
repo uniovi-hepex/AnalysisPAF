@@ -22,42 +22,81 @@ void EventBuilder::Summary(){}
 Bool_t EventBuilder::PassesDoubleElecTrigger(){
   if(gIsFastSim) return true; // no triger in FastSim samples
   Bool_t pass = false;
-  if(gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec)
-    pass = (
-        Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
-        Get<Int_t>("HLT_BIT_HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
-        Get<Int_t>("HLT_BIT_HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v") ||
-        Get<Int_t>("HLT_BIT_HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v") );
-  return pass;
+  gIsData = GetParam<Bool_t>("IsData");
+  if (gIsData)
+    run     = Get<Int_t>("run");
+  if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
+    // Run B-G, same as H
+    pass = (Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"));
+    return pass;
+  }
+  else if (gSelection == iStopSelec){
+    pass = ( Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+	     Get<Int_t>("HLT_BIT_HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+	     Get<Int_t>("HLT_BIT_HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v") ||
+	     Get<Int_t>("HLT_BIT_HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v") );
+    return pass;
+  }
 }
 
 Bool_t EventBuilder::PassesDoubleMuonTrigger(){
   if(gIsFastSim) return true; // no triger in FastSim samples
   Bool_t pass = false;
-  if(gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec)
-    pass = (
-        Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v") ||
-        Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v") ||
-        Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v") || 
-        Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v") );
-  return pass;
+  if (gIsData)
+    run     = Get<Int_t>("run");
+  if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
+    // Run B-G or MC
+    if ( (gIsData && run <= 280385) || (!gIsData)){
+      pass = (Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v")  ||
+	      Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v"));
+      return pass;
+    }
+    else{
+      pass = ( Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v") || 
+	       Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"));
+      return pass;
+    }
+  }
+  else if (gSelection == iStopSelec){
+    pass = (Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v") ||
+	    Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v") ||
+	    Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v") || 
+	    Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v") );
+    return pass;
+  }
 }
 
 Bool_t EventBuilder::PassesElMuTrigger(){
   if(gIsFastSim) return true; // no triger in FastSim samples
   Bool_t pass = false;
-  if(gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec)
+  if (gIsData)
+    run     = Get<Int_t>("run");
+  if( gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
+    // Run B-G or MC
+    if ( (gIsData && run <= 280385) || (!gIsData)){
+      pass = ( Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v")  || 
+	       Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v") ); 
+      return pass;
+    }
+    else{
+      pass = ( Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v")||
+	       Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") );
+      return pass;
+    }
+  }
+  else if (gSelection == iStopSelec){
     pass = (
-        Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v") ||
-        Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
-        Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v") ||
-        Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v") ||
-        Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
-        Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v") ||
-        Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v") ||
-        Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
-        Get<Int_t>("HLT_BIT_HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v") );
-  return pass;
+	    Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v") ||
+	    Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+	    Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v") ||
+	    Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v") ||
+	    Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+	    Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v") ||
+	    Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v") ||
+	    Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+	    Get<Int_t>("HLT_BIT_HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v") );
+    return pass;
+  }
 }
 
 Bool_t EventBuilder::PassesSingleElecTrigger(){
@@ -73,8 +112,8 @@ Bool_t EventBuilder::PassesSingleMuonTrigger(){
   Bool_t pass = false;
   if(gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec)
     pass = (
-        Get<Int_t>("HLT_BIT_HLT_IsoTkMu24_v") ||
-        Get<Int_t>("HLT_BIT_HLT_IsoMu24_v") );
+	    Get<Int_t>("HLT_BIT_HLT_IsoTkMu24_v") ||
+	    Get<Int_t>("HLT_BIT_HLT_IsoMu24_v") );
   return pass;
 }
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -112,7 +151,6 @@ void EventBuilder::Initialise(){
   // }
   passTrigger = 1;
   isSS = 0;
-
   nTrueInt = 0;
 
   TriggerSF      = 1;
@@ -153,28 +191,20 @@ void EventBuilder::InsideLoop(){
 
   // >>>>>>>>> Calculate PU weight and variations  
   if(!gIsData){
-    nTrueInt = Get<Float_t>("nTrueInt");  // <<<<<<<<<<<<<<<<<<<<<<<< Needs to be updated
+    nTrueInt = Get<Float_t>("nTrueInt"); 
     PUSF      = fPUWeight    ->GetWeight(nTrueInt);
     PUSF_Up   = fPUWeightUp  ->GetWeight(nTrueInt);
     PUSF_Down = fPUWeightDown->GetWeight(nTrueInt);
-    //PUSF      = 1;
-    //PUSF_Up   = 1;
-    //PUSF_Down = 1;
   } else{
     PUSF      = 1;
     PUSF_Up   = 1;
     PUSF_Down = 1;
   }
 
-  // >>>>>>>>> Calculate Trigger SF and variations <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Trigger SFs... needs to be updated!!!!
+  // >>>>>>>>> Calculate Trigger SF and variations <<<<<<<<<<<<<<<<<<<<<<<<<< Trigger SFs... needs to be updated!!!!
   // ### 2 LEPTONS
   TriggerSF = 1; TriggerSF_Up = 1; TriggerSF_Down = 1;
-  /*if(selLeptons.size() < 2) continue; // At least 2 selected leptons
-
-    if     (selLeptons[0].IsMuon && selLepton[1].IsMuon) gChannel = iMuon
-    else if(selLeptons[0].IsElec && selLepton[1].IsElec) gChannel = iElec;
-    else                                                 gChannel = iElMu;
-
+/*
     if     (gChannel == iMuon){  // µµ channel
     passTrigger = PassDoubleMuonTrigger();
     TriggerSF      = TrigSF->GetTrigDoubleMuSF(    SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());  
@@ -192,7 +222,7 @@ void EventBuilder::InsideLoop(){
     }
     TriggerSF_Down = TriggerSF-TriggerSF_err;
     TriggerSF_Up   = TriggerSF+TriggerSF_err;
-    */
+  */
 
   // Set Params to pass all the info...
   SetParam("TriggerSF",      TriggerSF);
@@ -208,8 +238,6 @@ void EventBuilder::InsideLoop(){
   SetParam("isSS",            isSS);
   SetParam("METfilters",      METfilters);
 }
-
-//
 
 
 Bool_t EventBuilder::TrigElEl(){
@@ -254,8 +282,7 @@ Bool_t EventBuilder::PassesMETfilters(){
       Get<Int_t>("Flag_eeBadScFilter") &&
       Get<Int_t>("Flag_badMuonFilter") && 
       Get<Int_t>("Flag_badChargedHadronFilter") &&  
-      Get<Int_t>("Flag_globalTightHalo2016Filter")
-     ){
+      Get<Int_t>("Flag_globalTightHalo2016Filter")){
     return true;
   }
   else return false;

@@ -1,0 +1,10 @@
+# Exclude compiled files
+*.so
+*.d
+*.pcm
+
+# Exclude files by emacs
+*~
+
+# Exclude downloaded Datasets
+Datasets/
