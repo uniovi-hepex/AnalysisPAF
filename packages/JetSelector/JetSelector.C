@@ -31,16 +31,19 @@ void JetSelector::Initialise(){
     jet_MaxEta = 2.4;
     jet_MinPt  = 30;
     vetoJet_minPt = 20;
+    minDR = 0.4;
   }
   else if(gSelection == iWWSelec){
     jet_MaxEta = 4.7;
     jet_MinPt  = 30;
     vetoJet_minPt = 20;
+    minDR = 0.4;
   }
   else{
     jet_MaxEta = 2.4;
     jet_MinPt  = 30;
     vetoJet_minPt = 20;
+    minDR = 0.4;
   }
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -97,7 +100,7 @@ void JetSelector::InsideLoop(){
     tJ = Jet(tpJ, csv, jetId, flavmc);
     tJ.isBtag = IsBtag(tJ);
     // Fill the vectors
-    if(tJ.id > 0 && Cleaning(tJ, Leptons) && TMath::Abs(tJ.p.Eta()) < jet_MaxEta){
+    if(tJ.id > 0 && Cleaning(tJ, Leptons, minDR) && TMath::Abs(tJ.p.Eta()) < jet_MaxEta){
       SetSystematics(&tJ);
       tJ.isBtag = IsBtag(tJ);
       if(tJ.p.Pt() > 15 || tJ.pTJESUp > 15 || tJ.pTJESDown > 15) Jets15.push_back(tJ);
