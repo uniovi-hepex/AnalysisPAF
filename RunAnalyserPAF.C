@@ -95,7 +95,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
     //cout << "Will loop on total number of entries: " << nTrueEntries << endl;  
   }
   else{ // Deal with MC samples           Double_t sumnormFromFiles = GetCount(path, dm->GetRealDataFiles(asample));
-    G_IsData = true; 
+    G_IsData = false; 
     TString theSample = "";
 		if(sampleName.BeginsWith("LocalFile:")){ // LocalFile
 			theSample = sampleName.ReplaceAll("LocalFile:", ""); 
