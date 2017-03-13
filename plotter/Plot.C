@@ -2,16 +2,15 @@
 #include "TSystem.h"
 #include <fstream> 
 
-Histo Plot::GetH(TString sample, TString sys, Int_t type){ 
+Histo* Plot::GetH(TString sample, TString sys, Int_t type){ 
   // Returns a Histo for sample and systematic variation 
   TString pathToMiniTree = path;
-  if(type == itSignal || sample.BeginsWith("T2tt")) pathToMiniTree = pathSignal;
-  AnalHisto* ah = new AnalHisto(sample, cut, chan, pathToMiniTree, treeName, sys);
-	ah->SetHisto(sample, nb, x0, xN);
-	ah->Fill(var, sys);
-	Histo g = *(ah->GetHisto());
+  if(sample.BeginsWith("T2tt")) pathToMiniTree = pathSignal;
+  Looper* ah = new Looper(pathToMiniTree, treeName, var, cut, chan, nb, x0, xN);
+  Histo* h = ah->GetHisto(sample, sys);
+  h->SetDirectory(0);
 	delete ah;
-	return g;
+	return h;
 }
 
 void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, TString sys){
@@ -24,23 +23,14 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
   //           -1       for a systematic variation
   //  -> S is the normalization uncertainty of the sample (for datacards)
   //  -> iSyst is the index of the systematic variaton
-  Histo* g = new Histo(GetH(p, sys, type));
-  g->SetDirectory(0);
-  Float_t val; Float_t err;
-  Histo* h = new Histo(p, p, nb, x0, xN);   // If not... problem when mergin histograms
-  for(Int_t i = 0; i <= xN; i++){
-   val = g->GetBinContent(i); err = g->GetBinError(i);
-   h->SetBinContent(i, val); h->SetBinError(i,err); 
-  }
-  h->SetDirectory(0);
-  delete g;
+  Histo* h = GetH(p, sys, type);
   h->SetProcess(pr);
-  h->SetName(p);
   TString t = (sys == "0")? pr : pr + "_" + sys;
   h->SetTag(t); // Tag = process + sys
   h->SetSysTag(sys);
   h->SetStatUnc();
   Int_t n; Int_t i = 0;
+  if(sys != "0") AddToSystematicLabels(sys);
 
   if(type != itData)  h->Scale(Lumi*1000);
   if(type == itBkg){ // Backgrounds
@@ -54,7 +44,6 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
 				return;
 			}
 		}
-    h->SetName(t);
   }
 	else if(type == itSys){ // Systematic!!
 		n = VSyst.size();
@@ -64,46 +53,49 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
 				return;
 			}
 		}
-    h->SetName(t);
   }
   else if(type == itData){
     h->SetLineColor(kBlack); 
     h->SetMarkerStyle(20); 
     h->SetMarkerSize(1.1); 
   }
+  else if(type == itSignal){
+    VTagSamples.push_back(p);    // 
+    VTagProcesses.push_back(pr);
+  }
+  h->SetType(type); h->SetColor(color); 
 
-  h->SetType(type); h->SetColor(color); h->SetStyle(); 
+  h->SetStyle(); 
   h->SetSysNorm(S);
 
   AddToHistos(h);
-}
+} 
 
-THStack* Plot::GetStack(){ // Returns the stack with all Bkg
-	THStack* hStack0 = new THStack(varname, "");
+void Plot::GetStack(){ // Sets the histogram hStack
+  if(hStack) delete hStack;
+	hStack = new THStack(varname, "");
   Int_t nBkgs = VBkgs.size();
-  if(nBkgs < 1) return hStack0;
 	for(Int_t i = 0; i < nBkgs; i++){
-		hStack0->Add((TH1F*) VBkgs.at(i));
+		hStack->Add((TH1F*) VBkgs.at(i));
 	}
-  return hStack0;
+  if(hAllBkg) delete hAllBkg;
+  hAllBkg = new Histo(*(TH1F*) hStack->GetStack()->Last(), 3);
+	hAllBkg->SetStyle();
+	hAllBkg->SetTag("TotalBkg");
+  hAllBkg->SetStatUnc();
+  if(verbose) cout << Form(" Adding %i systematic to sum of bkg...\n", (Int_t) VSumHistoSystUp.size());
+  if(doSys) GroupSystematics();
+  for(Int_t i = 0; i < (Int_t) VSumHistoSystUp.size(); i++){
+    hAllBkg->AddToSystematics(VSumHistoSystUp.at(i));
+    hAllBkg->AddToSystematics(VSumHistoSystDown.at(i));
+  }
+  hAllBkg->SetBinsErrorFromSyst();
 }
 
-Histo* Plot::GetAllBkg(){ // Return histogram with the sum of all bkg
-  THStack* hStack0 = GetStack();
-	Histo* AllBkg0 = new Histo(*(TH1F*) hStack0->GetStack()->Last(), 3);
-	AllBkg0->SetStyle();
-	AllBkg0->SetTag("TotalBkg");
-  AllBkg0->SetDirectory(0); delete hStack0;
-  return AllBkg0;
-}
-
-Histo* Plot::SetData(){  // Returns histogram for Data
-  Histo* hData0 = new Histo(TH1F("HistoData", "Data", nb, x0, xN));
-	if(VData.size() < 1){
-		doData = false;
-		return new Histo(TH1F());
-	}
-  //Bool_t HaveDataForChannel = false;
+void Plot::SetData(){  // Returns histogram for Data
+  if(hData) delete hData;
+  hData = new Histo(TH1F("HistoData", "Data", nb, x0, xN));
+	if(VData.size() < 1) doData = false;
   TString p = "";
 	for(Int_t i = 0; i < (Int_t) VData.size(); i++){
 		p = VData.at(i)->GetName();
@@ -111,14 +103,12 @@ Histo* Plot::SetData(){  // Returns histogram for Data
 		else if(chan == "Muon" && (p != "DoubleMuon" && p!= "SingleMuon"))  continue;
 		else if(chan == "Elec" && (p != "DoubleEG" && p!= "SingleElec"))    continue;
 		else if( (chan == "SF" || chan == "sameF") && (p == "MuonEG"))      continue;
-		hData0->Add(VData.at(i));
+		hData->Add(VData.at(i));
 	}
-	hData0->SetDirectory(0);
-	hData0->SetLineColor(kBlack); 
-	hData0->SetMarkerStyle(20); 
-	hData0->SetMarkerSize(1.1); 
-	hData0->SetStyle(); hData0->SetType(itData); 
-  return hData0;
+	hData->SetLineColor(kBlack); 
+	hData->SetMarkerStyle(20); 
+	hData->SetMarkerSize(1.1); 
+	hData->SetStyle(); hData->SetType(itData); 
 }
 
 void Plot::AddToHistos(Histo* p){ // Add the histogram to the right vector
@@ -135,65 +125,46 @@ void Plot::AddToHistos(Histo* p){ // Add the histogram to the right vector
 //================================================================================
 
 void Plot::AddSystematic(TString var){
+  var.ReplaceAll(" ", "");
+  if(var.Contains(",")){
+    TString OneSyst;
+    TString TheRest;
+    OneSyst = TString(var(0, var.First(",")));
+    TheRest = TString(var(var.First(",")+1, var.Sizeof()));
+    AddSystematic(OneSyst);
+    AddSystematic(TheRest);
+    return;
+  }
 	for(Int_t i = 0; i < (Int_t) VTagSamples.size(); i++){
 		AddSample(VTagSamples.at(i), VTagProcesses.at(i), itSys, 1, 0, var+"Up");
 		AddSample(VTagSamples.at(i), VTagProcesses.at(i), itSys, 1, 0, var+"Down");
 	}
-  for(Int_t i = 0; i < (Int_t) VSignals.size(); i++){
+/*  for(Int_t i = 0; i < (Int_t) VSignals.size(); i++){
     AddSample(VSignals.at(i)->GetName(), VSignals.at(i)->GetTag(), itSys, 1, 0, var+"Up");
     AddSample(VSignals.at(i)->GetName(), VSignals.at(i)->GetTag(), itSys, 1, 0, var+"Down");
-  }
+  }*/
   if(verbose) cout << "[Plot::AddSystematic] Systematic histograms added to the list for variation: " << var << endl;
-  AddSystematicLabel(var);
 }
 
-void Plot::IncludeBkgSystematics(){
-	if(ShowSystematics) return;
-	TString pr; TString ps; TString dir;
-	Int_t nBkgs = VBkgs.size(); Int_t nSig = VSignals.size();
-	Int_t nSyst = VSyst.size();
-	for(int i = 0; i < nBkgs; i++){  // Backgrounds in i
-		pr = VBkgs.at(i)->GetProcess() ;
-		for(int k = 0; k < nSyst; k++){ // Systematics in k
-			ps = VSyst.at(k)->GetTag();
-			dir = (ps.Contains("Down") || ps.Contains("down"))? "Down" : "Up";
-			if(ps.BeginsWith(pr))	VBkgs.at(i)->AddToSystematics(VSyst.at(k), dir);
-		}
-	}
-	for(int i = 0; i < nSig; i++){ // Signals in i
-		pr = VSignals.at(i)->GetProcess();
-		for(int k = 0; k < nSyst; k++){ // Backgrounds in k
-			ps = VSyst.at(k)->GetProcess();
-			dir = (ps.Contains("Down") || ps.Contains("down"))? "Down" : "Up";
-			if(ps.BeginsWith(pr))   VSignals.at(i)->AddToSystematics(VSyst.at(k), dir);
-		}
-	}
-	ShowSystematics = true;
-}
-
-Histo* Plot::AllBkgSyst(){
-  Histo* AllBkg = GetAllBkg(); AllBkg->SetStyle();
-  Int_t nbins = AllBkg->GetNbinsX();
-  Int_t nBkgs = VBkgs.size();
-  Float_t valu = 0; Float_t vald = 0; Float_t maxsyst = 0;
-  TotalSysUp   = new Float_t[nbins];
-	TotalSysDown = new Float_t[nbins];
-
-  AllBkg->SetStatUnc();
-
-	for(int i = 0; i < nbins; i++){ // Loop all the bins
-		valu = 0; vald = 0;
-		for(int k = 0; k < nBkgs; k++){ // Loop all the samples
-			valu += VBkgs.at(k)->vsysu[i];
-			vald += VBkgs.at(k)->vsysd[i];
-		}
-		TotalSysUp[i]   = TMath::Sqrt(valu);
-		TotalSysDown[i] = TMath::Sqrt(vald);
-		maxsyst = TotalSysUp[i] > TotalSysDown[i]? TotalSysUp[i] : TotalSysDown[i];
-		AllBkg->SetBinError(i+1, maxsyst);
-  if(verbose) cout << "Bin " << i+1 << ", val = " << AllBkg->GetBinContent(i+1) << ", syst up = " << TotalSysUp[i] << ", syst down = " << TotalSysDown[i] << endl;
+void Plot::GroupSystematics(){
+  VSumHistoSystUp.clear(); VSumHistoSystDown.clear();
+  TString var = "";
+  for(Int_t i = 0; i < (Int_t) VSystLabel.size(); i++){
+    var = VSystLabel.at(i);
+    TString tag = var; TString name = "";
+    Histo* hsumSysUp = NULL; Histo* hsumSysDown = NULL; 
+    hsumSysUp   = new Histo(TH1F(tag + "_SystSumUp",  tag + "_SystSumUp" ,   nb, x0, xN));
+    hsumSysDown = new Histo(TH1F(tag + "_SystSumDown",tag + "_SystSumDown" , nb, x0, xN));
+    for(Int_t i = 0; i < (Int_t) VSyst.size(); i++){
+      tag =  VSyst.at(i)->GetTag();
+      name = VSyst.at(i)->GetName();
+      if(name.Contains("T2tt")) continue;
+      if(tag.Contains(var+"Up") )   hsumSysUp  ->Add((TH1F*) VSyst.at(i));
+      if(tag.Contains(var+"Down")) hsumSysDown->Add((TH1F*) VSyst.at(i));
+    }
+    AddSumHistoSystematicUp(hsumSysUp);
+    AddSumHistoSystematicDown(hsumSysDown);
   }
-  return AllBkg;
 }
 
 //================================================================================
@@ -209,19 +180,17 @@ void Plot::PrintYields(){
   if(nBkgs > 0){
                                      cout << "----------------------------------------------------------" << endl;
 	  for(Int_t i = 0; i < nBkgs; i++) cout << " " << VBkgs.at(i)->GetProcess() << ":      " << VBkgs.at(i)->GetYield() << endl;
-    Histo* AllBkg = GetAllBkg();
-                                     cout << " " << "Total Bkg: " << AllBkg->GetYield() << endl;
+    GetStack();
+                                     cout << " " << "Total Bkg: " << hAllBkg->GetYield() << endl;
 	}
   if(nSig>0)                         cout << "----------------------------------------------------------" << endl;
   for(Int_t i = 0; i < nSig;  i++)   cout << " " << VSignals.at(i)->GetProcess() << ":      " << VSignals.at(i)->GetYield() << endl;
-  Histo* hData = NULL;
   if(doData){
-    hData = SetData();
+    SetData();
 	  	                               cout << "----------------------------------------------------------" << endl;
                                  		 cout << " " << "Data:      " << hData->GetYield() << endl;
 	}
 	                                   cout << "==========================================================" << endl;
-  if(hData) delete hData;
 }
 
 void Plot::PrintSystYields(){
@@ -271,7 +240,6 @@ Float_t Plot::GetYield(TString pr, TString systag){
 	return GetYield(pr);
 }
 
-
 TLegend* Plot::SetLegend(){ // To be executed before using the legend
   TLegend* leg = new TLegend(0.70,0.65,0.93,0.93);
   leg->SetTextSize(0.035);
@@ -279,21 +247,16 @@ TLegend* Plot::SetLegend(){ // To be executed before using the legend
   leg->SetFillColor(10);
   Float_t MinYield = 0; 
   int nVBkgs = VBkgs.size();
-	if(nVBkgs > 0){
-		Histo* AllBkg = GetAllBkg();
-		MinYield = AllBkg->GetYield()/5000;
-	}
+	if(nVBkgs > 0 && hAllBkg) MinYield = hAllBkg->GetYield()/5000;
   for(int i = nVBkgs-1; i >= 0; i--){
     if(VBkgs.at(i)->GetYield() < MinYield) continue;
     else VBkgs.at(i)->AddToLegend(leg,doYieldsInLeg);
   }
   for(int i = VSignals.size()-1; i >= 0; i--) VSignals[i]->AddToLegend(leg, doYieldsInLeg);
-  Histo* hData = NULL;
-  if(doData){
-		hData = SetData(); hData->SetProcess("Data");
+  if(doData && hData && VData.size() > 0){
+    hData->SetTag("Data");
 		hData->AddToLegend(leg,doYieldsInLeg);
 	}
-  if(hData) delete hData;
   return leg;
 }
 
@@ -374,21 +337,16 @@ void Plot::DrawComp(TString tag = "0", bool sav = 0){
 }
 
 void Plot::DrawStack(TString tag = "0", bool sav = 0){
-	Histo* AllBkg = NULL;
-	THStack* hStack = GetStack();
-	if(doSys){
-		IncludeBkgSystematics();
-		AllBkg =	AllBkgSyst();
-	}
-  else AllBkg = GetAllBkg();
+	GetStack();
+	//if(doSys) IncludeBkgSystematics();
 
   TCanvas* c = SetCanvas(); plot->cd(); 
 
-  Histo* hData = SetData();
-  if(!doData) hData = AllBkg;
+  SetData();
+  if(!doData) hData = hAllBkg;
 
   float maxData = hData->GetMax();
-  float maxMC = AllBkg->GetMax();
+  float maxMC = hAllBkg->GetMax();
   float Max = maxMC > maxData? maxMC : maxData;
   if(doSetLogy){
     hStack->SetMaximum(Max*300);
@@ -408,12 +366,12 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   hStack->GetXaxis()->SetLabelSize(0.0);
 
   // Draw systematics histo
-  AllBkg->SetFillStyle(3145);
-  AllBkg->SetFillColor(kGray+2);
-  AllBkg->SetLineColor(kGray+2);
-  AllBkg->SetLineWidth(0);
-  AllBkg->SetMarkerSize(0);
-  if(doSys) AllBkg->Draw("same,e2");
+  hAllBkg->SetFillStyle(3145);
+  hAllBkg->SetFillColor(kGray+2);
+  hAllBkg->SetLineColor(kGray+2);
+  hAllBkg->SetLineWidth(0);
+  hAllBkg->SetMarkerSize(0);
+  if(doSys) hAllBkg->Draw("same,e2");
 
   hData->Draw("pesame");
 	Histo* hSignalerr = NULL; 
@@ -436,12 +394,12 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   }
 
   // Draw systematics ratio
-  AllBkg->SetFillStyle(3145);
-  TH1F* hratioerr =  (TH1F*) AllBkg->Clone("hratioerr");
-  Int_t nbins = AllBkg->GetNbinsX(); Float_t binval = 0; Float_t errbin = 0; Float_t totalerror = 0;
+  hAllBkg->SetFillStyle(3145);
+  TH1F* hratioerr =  (TH1F*) hAllBkg->Clone("hratioerr");
+  Int_t nbins = hAllBkg->GetNbinsX(); Float_t binval = 0; Float_t errbin = 0; Float_t totalerror = 0;
   for(int bin = 1; bin <= nbins; bin++){  // Set bin error
-    totalerror = AllBkg->GetBinError(bin); 
-    binval = AllBkg->GetBinContent(bin);
+    totalerror = hAllBkg->GetBinError(bin); 
+    binval = hAllBkg->GetBinContent(bin);
     errbin = binval > 0 ? totalerror/binval : 0.0;
     hratioerr->SetBinContent(bin, 1);
     hratioerr->SetBinError(bin, errbin);
@@ -458,7 +416,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   // Set ratio
 	pratio->cd();
 	hratio = (TH1F*)hData->Clone("hratio");
-	hratio->Divide(AllBkg);
+	hratio->Divide(hAllBkg);
 	SetHRatio();
 	hratio->Draw("same");
 	hratioerr->Draw("same,e2");
@@ -473,8 +431,8 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
 		c->Print( dir + plotname + ".png", "png");
 		delete c;
 	}
-  if(leg) delete leg; if(hData) delete hData;
-	if(AllBkg) delete AllBkg; if(hStack) delete hStack; 
+  if(leg) delete leg; //if(hData) delete hData;
+	//if(hAllBkg) delete hAllBkg; if(hStack) delete hStack; 
   if(hratioerr) delete hratioerr; if(hSignalerr) delete hSignalerr;
 }
 
@@ -533,7 +491,7 @@ void Plot::SaveHistograms(){
     nom = VSyst.at(i);
 		nom->Write();
   }
-  Histo* hData = SetData(); THStack* hStack = GetStack();
+  SetData(); GetStack();
   hData->SetName("data_obs"); hData->SetTag("data_obs");
 	hData->Write();
 	hStack->Write();  
@@ -570,7 +528,7 @@ TString Plot::GetStatUncDatacard(Int_t iSignal){
 
 void Plot::MakeDatacard(TString tag, Int_t iSignal){
 	if(!doSignal){ std::cout << "No datacards without signal!" << std::endl; return;}
-  Histo* hData = SetData(); 
+  SetData(); 
   Histo* hSignal = VSignals.at(iSignal);
 	hData->SetTag("data_obs");
 	// if(!doData){ hData = hAllBkg;}
@@ -678,7 +636,7 @@ TString Plot::GetShapeUncLines(){
 //================================================================================
 void Plot::MakeDatacardBin(Int_t bin, TString tag, Int_t iSignal){
   if((Int_t) VSignals.size() < 1){ std::cout << "No datacards without signal!" << std::endl; return;}
-  Histo* hData = SetData(); THStack* hStack = GetStack();
+  SetData(); GetStack();
   Histo* hSignal = VSignals.at(iSignal);
 	hData->SetTag("data_obs");
 

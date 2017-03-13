@@ -14,70 +14,70 @@
 #define SCANSTEP 0.1
 class mt2
 {  
-   public:
+  public:
 
-      mt2();
-      void   mt2_bisect();
-      void   mt2_massless();
-      void   set_momenta(double *pa0, double *pb0, double* pmiss0);
-      void   set_mn(double mn);
-      double get_mt2();
-      void   print();
-      int    nevt;
-   private:  
+    mt2();
+    void   mt2_bisect();
+    void   mt2_massless();
+    void   set_momenta(double *pa0, double *pb0, double* pmiss0);
+    void   set_mn(double mn);
+    double get_mt2();
+    void   print();
+    int    nevt;
+  private:  
 
-      bool   solved;
-      bool   momenta_set;
-      double mt2_b;
+    bool   solved;
+    bool   momenta_set;
+    double mt2_b;
 
-      int    nsols(double Dsq);
-      int    nsols_massless(double Dsq);
-      inline int    signchange_n( long double t1, long double t2, long double t3, long double t4, long double t5);
-      inline int    signchange_p( long double t1, long double t2, long double t3, long double t4, long double t5);
-      int scan_high(double &Deltasq_high);
-      int find_high(double &Deltasq_high);
-      //data members
-      double pax, pay, ma, Ea;
-      double pmissx, pmissy;
-      double pbx, pby, mb, Eb;
-      double mn, mn_unscale;
-     
-      //auxiliary definitions
-      double masq, Easq;
-      double mbsq, Ebsq;
-      double pmissxsq, pmissysq;
-      double mnsq;
+    int    nsols(double Dsq);
+    int    nsols_massless(double Dsq);
+    inline int    signchange_n( long double t1, long double t2, long double t3, long double t4, long double t5);
+    inline int    signchange_p( long double t1, long double t2, long double t3, long double t4, long double t5);
+    int scan_high(double &Deltasq_high);
+    int find_high(double &Deltasq_high);
+    //data members
+    double pax, pay, ma, Ea;
+    double pmissx, pmissy;
+    double pbx, pby, mb, Eb;
+    double mn, mn_unscale;
 
-      //auxiliary coefficients
-      double a1, b1, c1, a2, b2, c2, d1, e1, f1, d2, e2, f2;
-      double d11, e11, f12, f10, d21, d20, e21, e20, f22, f21, f20;
+    //auxiliary definitions
+    double masq, Easq;
+    double mbsq, Ebsq;
+    double pmissxsq, pmissysq;
+    double mnsq;
 
-      double scale;
-      double precision;
+    //auxiliary coefficients
+    double a1, b1, c1, a2, b2, c2, d1, e1, f1, d2, e2, f2;
+    double d11, e11, f12, f10, d21, d20, e21, e20, f22, f21, f20;
 
-  //ClassDef(mt2,0);
+    double scale;
+    double precision;
+
+    //ClassDef(mt2,0);
 };
 
 int mt2::signchange_n( long double t1, long double t2, long double t3, long double t4, long double t5)
 {
-   int nsc;
-   nsc=0;
-   if(t1*t2>0) nsc++;
-   if(t2*t3>0) nsc++;
-   if(t3*t4>0) nsc++;
-   if(t4*t5>0) nsc++;
-   return nsc;
+  int nsc;
+  nsc=0;
+  if(t1*t2>0) nsc++;
+  if(t2*t3>0) nsc++;
+  if(t3*t4>0) nsc++;
+  if(t4*t5>0) nsc++;
+  return nsc;
 }
 
 int mt2::signchange_p( long double t1, long double t2, long double t3, long double t4, long double t5)
 {
-   int nsc;
-   nsc=0;
-   if(t1*t2<0) nsc++;
-   if(t2*t3<0) nsc++;
-   if(t3*t4<0) nsc++;
-   if(t4*t5<0) nsc++;
-   return nsc;
+  int nsc;
+  nsc=0;
+  if(t1*t2<0) nsc++;
+  if(t2*t3<0) nsc++;
+  if(t3*t4<0) nsc++;
+  if(t4*t5<0) nsc++;
+  return nsc;
 }
 
 

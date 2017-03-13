@@ -5,16 +5,16 @@
 // ==================== Kinematic variables ========================
 // ==================================================================
 Float_t getDPhiClosestJet(vector<Jet> vJet, TLorentzVector lep){
-	Float_t minDphi = 9999.;
-	for (unsigned int i=0; i<vJet.size(); i++) {
-		if (minDphi > TMath::Abs(lep.DeltaPhi(vJet[i].p))) minDphi = TMath::Abs(lep.DeltaPhi(vJet[i].p));
-	}
-	return minDphi;
+  Float_t minDphi = 9999.;
+  for (unsigned int i=0; i<vJet.size(); i++) {
+    if (minDphi > TMath::Abs(lep.DeltaPhi(vJet[i].p))) minDphi = TMath::Abs(lep.DeltaPhi(vJet[i].p));
+  }
+  return minDphi;
 }
 
 Float_t getDeltaPhillJet(Lepton lep1, Lepton lep2, Jet jet){
-	TLorentzVector dilep = lep1.p+lep2.p;
-	return TMath::Abs(dilep.DeltaPhi(jet.p));
+  TLorentzVector dilep = lep1.p+lep2.p;
+  return TMath::Abs(dilep.DeltaPhi(jet.p));
 }
 
 Float_t getHT(vector<Jet> jet){
@@ -57,7 +57,7 @@ Float_t getMT2(TLorentzVector plep1, TLorentzVector plep2, TLorentzVector pmet, 
   Float_t MT2 = MT2bisect.get_mt2();
   return MT2;
 }
-    
+
 Float_t getMT2ll(Lepton l1, Lepton l2, Float_t met, Float_t met_phi){
   TLorentzVector pmet;
   pmet.SetPtEtaPhiM(met, 0, met_phi, 0);
@@ -82,18 +82,18 @@ TLorentzVector getPtllb(Lepton l1, Lepton l2, Float_t met, Float_t met_phi){
 // ==================================================================
 Float_t JEStoMET(vector<Jet> vjets, Float_t met, Float_t met_phi, Int_t dir){
   if(dir == 0){
-     std::cout << "[ERROR] Wrong value in JEStoMET" << std::endl;
-     return 0;
+    std::cout << "[ERROR] Wrong value in JEStoMET" << std::endl;
+    return 0;
   }
   TLorentzVector vmet    = TLorentzVector();
   vmet.SetPtEtaPhiM(met, 0, met_phi, 0);
   TLorentzVector nomJets = TLorentzVector(0,0,0,0);
   TLorentzVector varJets = TLorentzVector(0,0,0,0);
   TLorentzVector temp = TLorentzVector(0,0,0,0);
-  
+
   for(Int_t i = 0; i < vjets.size(); i++){
     nomJets += vjets[i].p;
-         if(dir < 0) temp.SetPtEtaPhiM(vjets[i].pTJESDown, vjets[i].p.Eta(), vjets[i].p.Phi(), vjets[i].p.M());
+    if(dir < 0) temp.SetPtEtaPhiM(vjets[i].pTJESDown, vjets[i].p.Eta(), vjets[i].p.Phi(), vjets[i].p.M());
     else if(dir > 0) temp.SetPtEtaPhiM(vjets[i].pTJESUp,   vjets[i].p.Eta(), vjets[i].p.Phi(), vjets[i].p.M());
     varJets += temp;
   }
@@ -102,24 +102,24 @@ Float_t JEStoMET(vector<Jet> vjets, Float_t met, Float_t met_phi, Int_t dir){
 
 /*Float_t getJetJERpt(Jet jet){
 
-			if(flag == 3){
-				Float_t jerScaleUp   = getJERScaleUp(*it);	  
-				Float_t jerScale     = getJERScale(*it);	  
-				Float_t factor1 = 0.;
-				if (genJet.DeltaR(tmp) < 0.5) factor1 = max(0.0, genJet.Pt() + jerScale*(tmp.Pt() - genJet.Pt()) );
-				else                          factor1 = tmp.Pt();
-				Float_t sigmaMC  = getErrPt(JetPt.at(*it), Jet_eta[*it]) / JetPt.at(*it);
-				Float_t factor   = fRand3->Gaus(1., sqrt(jerScale*jerScale -1.) * sigmaMC );
-				JetPt.at(*it) = JetPt.at(*it) * factor;		// smear for flag 3
-			}
-}*/
+  if(flag == 3){
+  Float_t jerScaleUp   = getJERScaleUp(*it);    
+  Float_t jerScale     = getJERScale(*it);    
+  Float_t factor1 = 0.;
+  if (genJet.DeltaR(tmp) < 0.5) factor1 = max(0.0, genJet.Pt() + jerScale*(tmp.Pt() - genJet.Pt()) );
+  else                          factor1 = tmp.Pt();
+  Float_t sigmaMC  = getErrPt(JetPt.at(*it), Jet_eta[*it]) / JetPt.at(*it);
+  Float_t factor   = fRand3->Gaus(1., sqrt(jerScale*jerScale -1.) * sigmaMC );
+  JetPt.at(*it) = JetPt.at(*it) * factor;   // smear for flag 3
+  }
+  }*/
 
 
 // ==================================================================
 // ========================== Other ================================
 // ==================================================================
 Float_t p2(Float_t x){
-  return TMath::Sqrt(x*x);
+  return (x*x);
 }
 
 bool LepMomentumComparator(Lepton i, Lepton j){ 

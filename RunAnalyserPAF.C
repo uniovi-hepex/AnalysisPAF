@@ -1,9 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  RunAnalyserPAF("sampleName", "TheAnalysis", nSlots);
-//  RunAnalyserPAF("sampleName", "TheAnalysis", nSlots, nEvents = 0, weight = 1);
-//
-//  To do: Automatic run on all _ext files
+//  RunAnalyserPAF("sampleName", "TheAnalysis", nSlots, nEvents = 0);
 //
 ////////////////////////////////////////////////////////////////////////////////
 R__LOAD_LIBRARY(DatasetManager/DatasetManager.C+)
@@ -24,7 +22,7 @@ Float_t xsec;
 Bool_t verbose = true;
 
 enum             sel         {iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec, nSel};
-const TString tagSel[nSel] = {"Stop", "        Top",     "TW",     "WW",     "ttDM",     "ttH"      };
+const TString tagSel[nSel] = {"Stop",         "Top",     "TW",     "WW",     "ttDM",     "ttH"      };
 
 void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_t nEvents, Long64_t FirstEvent, Float_t ThisWeight,	Int_t stopMass, Int_t lspMass) {
 
@@ -77,15 +75,15 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
     G_IsData = true;
     TString datasuffix[] = { 
       "16B_03Feb2017",
-  /*    "16C_03Feb2017",
+      "16C_03Feb2017",
       "16D_03Feb2017",
       "16E_03Feb2017",
       "16F_03Feb2017",
       "16G_03Feb2017",
       "16H_03Feb2017_v2",
-      "16H_03Feb2017_v3"*/
+      "16H_03Feb2017_v3"
     };
-    const unsigned int nDataSamples = 1;//8;
+    const unsigned int nDataSamples = 8;
     for(unsigned int i = 0; i < nDataSamples; i++) {
       TString asample = Form("Tree_%s_%s",sampleName.Data(), datasuffix[i].Data());
       //myProject->AddDataFiles(dm->GetRealDataFiles(asample));

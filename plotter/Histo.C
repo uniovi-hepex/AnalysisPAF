@@ -89,7 +89,7 @@ void Histo::AddToLegend(TLegend* leg, Bool_t doyi){
   else if (type == itData)   op = "pe";
   else if (type == itCompare)op = "pe";
   if(doyi) leg->AddEntry(h2, Form(process + ": %1.0f", yield), op);
-  else leg->AddEntry(h2, process, op);
+  else leg->AddEntry(h2, tag, op);
 }
 
 TH1F* Histo::GetVarHistoStatBin(Int_t bin, TString dir){
@@ -106,26 +106,20 @@ void Histo::AddToSystematics(Histo* hsys, TString dir){
   Int_t nbins = hsys->GetNbinsX();
   Float_t diff = 0;
   if(GetNbinsX() != nbins)  std::cout << " [Histo] WARNING: cannot add to systematics" << std::endl; 
-/*  if(dir == "Down" || dir == "down"){ // It's a "down" systematic
-  //if(yield > hsys->yield){ // It's a "down" systematic
-  //cout << " ---> [Histo] Adding to systematics DOWN: " << endl;
-    for(Int_t k = 0; k < nbins; k++){
-      diff = TMath::Abs(GetBinContent(k+1) - hsys->GetBinContent(k+1));
-      vsysd[k] += diff*diff;
-    }
-  }
-  else{ // It's an "up" systematic
-  //cout << " ---> [Histo] Adding to systematics UP: " << endl;
-    for(Int_t k = 0; k < nbins; k++){
-      diff = TMath::Abs(GetBinContent(k+1) - hsys->GetBinContent(k+1));
-      vsysu[k] += diff*diff;
-    }
-  }*/
 	for(Int_t k = 0; k < nbins; k++){
 		diff = GetBinContent(k+1) - hsys->GetBinContent(k+1);
 		if(diff >  0) vsysd[k] += diff*diff;
 		else          vsysu[k] += diff*diff;
 	}
+}
+
+void Histo::SetBinsErrorFromSyst(){
+  Int_t nbins = GetNbinsX();
+  Float_t max = 0;
+  for(Int_t k = 1; k < nbins; k++){
+    max = vsysd[k] > vsysu[k] ? vsysd[k] : vsysu[k];
+    SetBinError(k, TMath::Sqrt(max));
+  }
 }
 
 AnalHisto::AnalHisto(TString sample, TCut ct, TString channel, TString p, TString tN, TString sys){

@@ -75,7 +75,6 @@ Bool_t EventBuilder::PassesElMuTrigger(){
 	       Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") );
       return pass;
     }
-
 }
 
 Bool_t EventBuilder::PassesSingleElecTrigger(){
@@ -106,18 +105,20 @@ void EventBuilder::Initialise(){
   gChannel = -1;
 
   selLeptons = std::vector<Lepton>();
-  
+
   gIsDoubleElec = false; gIsDoubleMuon = false; gIsSingleElec = false;
   gIsSingleMuon = false; gIsMuonEG = false;
-  if(gSampleName.Contains("DoubleElec")) gIsDoubleElec = true;
+  if(gSampleName.Contains("DoubleEG")) gIsDoubleElec = true;
   else if(gSampleName.Contains("DoubleMuon")) gIsDoubleMuon = true;
   else if(gSampleName.Contains("SingleElec")) gIsSingleElec = true;
   else if(gSampleName.Contains("SingleMuon")) gIsSingleMuon = true;
   else if(gSampleName.Contains("MuonEG"))     gIsMuonEG     = true;
-  
-  fPUWeight     = new PUWeight(19664.225, Moriond17MC_PoissonOOTPU, "2016_Moriond17");
-  fPUWeightUp   = new PUWeight(18494.9,   Moriond17MC_PoissonOOTPU, "2016_Moriond17"); //  18494.9 
-  fPUWeightDown = new PUWeight(20441.7,   Moriond17MC_PoissonOOTPU, "2016_Moriond17"); //  20441.7 
+
+  fPUWeight     = new PUWeight(19468.3, Moriond17MC_PoissonOOTPU, "2016_Moriond17");
+  if (!gIsData) {
+    fPUWeightUp   = new PUWeight(18494.9,  Moriond17MC_PoissonOOTPU, "2016_Moriond17"); //  18494.9 
+    fPUWeightDown = new PUWeight(20441.7,  Moriond17MC_PoissonOOTPU, "2016_Moriond17"); //  20441.7 
+  }
 
   Weight = GetParam<Float_t>("weight");
 
@@ -128,7 +129,6 @@ void EventBuilder::Initialise(){
   // }
   passTrigger = 1;
   isSS = 0;
-	
   nTrueInt = 0;
 
   TriggerSF      = 1;
@@ -170,12 +170,12 @@ void EventBuilder::InsideLoop(){
   // >>>>>>>>> Calculate PU weight and variations  
   if(!gIsData){
     nTrueInt = Get<Float_t>("nTrueInt");  // <<<<<<<<<<<<<<<<<<<<<<<< Needs to be updated
-    //PUSF      = fPUWeight    ->GetWeight(nTrueInt);
-    //PUSF_Up   = fPUWeightUp  ->GetWeight(nTrueInt);
-    //PUSF_Down = fPUWeightDown->GetWeight(nTrueInt);
-    PUSF      = 1;
-    PUSF_Up   = 1;
-    PUSF_Down = 1;
+    PUSF      = fPUWeight    ->GetWeight(nTrueInt);
+    PUSF_Up   = fPUWeightUp  ->GetWeight(nTrueInt);
+    PUSF_Down = fPUWeightDown->GetWeight(nTrueInt);
+    //PUSF      = 1;
+    //PUSF_Up   = 1;
+    //PUSF_Down = 1;
   } else{
     PUSF      = 1;
     PUSF_Up   = 1;
@@ -186,11 +186,19 @@ void EventBuilder::InsideLoop(){
   // ### 2 LEPTONS
   TriggerSF = 1; TriggerSF_Up = 1; TriggerSF_Down = 1;
   /*if(selLeptons.size() < 2) continue; // At least 2 selected leptons
+<<<<<<< HEAD
   
     if     (selLeptons[0].IsMuon && selLepton[1].IsMuon) gChannel = iMuon
     else if(selLeptons[0].IsElec && selLepton[1].IsElec) gChannel = iElec;
     else                                                 gChannel = iElMu;
 
+=======
+
+    if     (selLeptons[0].IsMuon && selLepton[1].IsMuon) gChannel = iMuon
+    else if(selLeptons[0].IsElec && selLepton[1].IsElec) gChannel = iElec;
+    else                                                 gChannel = iElMu;
+
+>>>>>>> 7ccb28bb9a26501b69003bdb4d19cc2908b9e96d
     if     (gChannel == iMuon){  // µµ channel
     passTrigger = PassDoubleMuonTrigger();
     TriggerSF      = TrigSF->GetTrigDoubleMuSF(    SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());  
@@ -208,6 +216,7 @@ void EventBuilder::InsideLoop(){
     }
     TriggerSF_Down = TriggerSF-TriggerSF_err;
     TriggerSF_Up   = TriggerSF+TriggerSF_err;
+<<<<<<< HEAD
   */
 
   // Set Params to pass all the info...
@@ -270,8 +279,7 @@ Bool_t EventBuilder::PassesMETfilters(){
       Get<Int_t>("Flag_eeBadScFilter") &&
       Get<Int_t>("Flag_badMuonFilter") && 
       Get<Int_t>("Flag_badChargedHadronFilter") &&  
-      Get<Int_t>("Flag_globalTightHalo2016Filter")
-      ){
+      Get<Int_t>("Flag_globalTightHalo2016Filter")){
     return true;
   }
   else return false;
