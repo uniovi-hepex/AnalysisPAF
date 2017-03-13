@@ -15,7 +15,14 @@
 #include <string>
 
 ClassImp(JetSelector);
-JetSelector::JetSelector() : PAFChainItemSelector() {}
+JetSelector::JetSelector() : PAFChainItemSelector() {
+  fBTagSFnom = 0;
+  fBTagSFbUp = 0;
+  fBTagSFbDo = 0;
+  fBTagSFlUp = 0;
+  fBTagSFlDo = 0;
+
+}
 void JetSelector::Summary(){}
 
 void JetSelector::Initialise(){
@@ -135,6 +142,16 @@ void JetSelector::InsideLoop(){
   SetParam("nVetoJets",  nVetoJets);
   SetParam("nGenJets",  nGenJets);
   SetParam("nSelBJets",  nBtagJets);
+
+  // Propagate JES to MET
+  if(nSelJets > 0){
+    Float_t met_pt  = Get<Float_t>("met_pt");
+    Float_t met_phi = Get<Float_t>("met_phi");
+    MET_JESUp   = JEStoMET(selJets, met_pt, met_phi,  1);
+    MET_JESDown = JEStoMET(selJets, met_pt, met_phi, -1);
+    SetParam("MET_JESUp",   MET_JESUp);
+    SetParam("MET_JESDown", MET_JESDown);
+  }
 }
 
 Bool_t JetSelector::IsBtag(Jet j){
