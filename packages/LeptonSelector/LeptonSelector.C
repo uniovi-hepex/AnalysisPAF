@@ -55,8 +55,17 @@ Bool_t LeptonSelector::getSIPcut(Float_t cut){
 }
 
 Bool_t LeptonSelector::getGoodVertex(Int_t wp){ 
+  if(type == 1){ //electrions
+    if(wp == iTight){ 
+      if(etaSC <= 1.479 && ((dxy >= 0.05) || (dz  >= 0.10))) return false;
+      if(etaSC >  1.479 && ((dxy >= 0.10) || (dz  >= 0.20))) return false;
+      }
+    } 
+  }
+  else{ // muons
   if(wp == iMedium && (dxy > 0.2  || dz > 0.5)) return false;
   if(wp == iTight  && (dxy > 0.05 || dz > 0.1)) return false;
+  }
   return true;
 }
 
@@ -169,6 +178,7 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
     if(lep.isElec){
       passId = getElecCutBasedId(iTight) && lostHits <= 1;
       passIso = getRelIso03POG(iTight);
+      if(TMath::Abs(etaSC) > 1.4442 && TMath::Abs(etaSC) < 1.566) return false;
     }
     if(lep.p.Pt() < 20 || TMath::Abs(lep.p.Eta()) > 2.4) return false;
     if(passId && passIso && (lep.isElec || getGoodVertex(iMedium))) return true;
@@ -182,6 +192,7 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
     if(lep.isElec){
       passId = getElecCutBasedId(iTight);
       passIso = getRelIso03POG(iTight);
+      if(TMath::Abs(etaSC) > 1.4442 && TMath::Abs(etaSC) < 1.566) return false;
     }
     if(lep.p.Pt() < 20 || TMath::Abs(lep.p.Eta()) > 2.4) return false;
     if(passId && passIso && getGoodVertex(iTight) && getSIPcut(4)) return true;
@@ -301,14 +312,14 @@ void LeptonSelector::GetLeptonVariables(Int_t i){ // Once per muon, get all the 
   type = TMath::Abs(Get<Int_t>("LepGood_pdgId",i)) == 11 ? 1 : 0;
   tightVar = Get<Int_t>("LepGood_tightId", i); 
   mediumMuonId = Get<Int_t>("LepGood_mediumMuonId",i); 
-  etaSC = Get<Float_t>("LepGood_etaSc",i);
+  etaSC = TMath::Abs(Get<Float_t>("LepGood_etaSc",i));
   RelIso03 = Get<Float_t>("LepGood_relIso03",i);
   RelIso04 = Get<Float_t>("LepGood_relIso04",i);
   ptRel = Get<Float_t>("LepGood_jetPtRelv2",i);
   ptRatio = Get<Float_t>("LepGood_jetPtRatiov2",i);
   miniIso =Get<Float_t>("LepGood_miniRelIso",i);
-  dxy = Get<Float_t>("LepGood_dxy", i);
-  dz  = Get<Float_t>("LepGood_dz", i);
+  dxy = TMath::Abs(Get<Float_t>("LepGood_dxy", i));
+  dz  = TMath::Abs(Get<Float_t>("LepGood_dz", i));
   sigmaIEtaIEta = Get<Float_t>("LepGood_sigmaIEtaIEta", i);
   dEtaSC =    Get<Float_t>("LepGood_dEtaScTrkIn", i);
   dPhiSC =    Get<Float_t>("LepGood_dPhiScTrkIn", i);
