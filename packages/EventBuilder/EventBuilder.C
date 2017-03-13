@@ -26,15 +26,9 @@ Bool_t EventBuilder::PassesDoubleElecTrigger(){
   if (gIsData)
     run     = Get<Int_t>("run");
   if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
-    // Run B-G or MC
-    if ( (gIsData && run <= 280385) || (!gIsData)){
-      pass = (Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"));
-      return pass;
-    }
-    else{
-      pass = (Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"));
-      return pass;
-    }
+    // Run B-G, same as H
+    pass = (Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"));
+    return pass;
   }
   else if (gSelection == iStopSelec){
     pass = ( Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
@@ -197,36 +191,20 @@ void EventBuilder::InsideLoop(){
 
   // >>>>>>>>> Calculate PU weight and variations  
   if(!gIsData){
-    nTrueInt = Get<Float_t>("nTrueInt");  // <<<<<<<<<<<<<<<<<<<<<<<< Needs to be updated
+    nTrueInt = Get<Float_t>("nTrueInt"); 
     PUSF      = fPUWeight    ->GetWeight(nTrueInt);
     PUSF_Up   = fPUWeightUp  ->GetWeight(nTrueInt);
     PUSF_Down = fPUWeightDown->GetWeight(nTrueInt);
-    //PUSF      = 1;
-    //PUSF_Up   = 1;
-    //PUSF_Down = 1;
   } else{
     PUSF      = 1;
     PUSF_Up   = 1;
     PUSF_Down = 1;
   }
 
-  // >>>>>>>>> Calculate Trigger SF and variations <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Trigger SFs... needs to be updated!!!!
+  // >>>>>>>>> Calculate Trigger SF and variations <<<<<<<<<<<<<<<<<<<<<<<<<< Trigger SFs... needs to be updated!!!!
   // ### 2 LEPTONS
   TriggerSF = 1; TriggerSF_Up = 1; TriggerSF_Down = 1;
-  /*if(selLeptons.size() < 2) continue; // At least 2 selected leptons
-<<<<<<< HEAD
-  
-    if     (selLeptons[0].IsMuon && selLepton[1].IsMuon) gChannel = iMuon
-    else if(selLeptons[0].IsElec && selLepton[1].IsElec) gChannel = iElec;
-    else                                                 gChannel = iElMu;
-
-=======
-
-    if     (selLeptons[0].IsMuon && selLepton[1].IsMuon) gChannel = iMuon
-    else if(selLeptons[0].IsElec && selLepton[1].IsElec) gChannel = iElec;
-    else                                                 gChannel = iElMu;
-
->>>>>>> 7ccb28bb9a26501b69003bdb4d19cc2908b9e96d
+/*
     if     (gChannel == iMuon){  // µµ channel
     passTrigger = PassDoubleMuonTrigger();
     TriggerSF      = TrigSF->GetTrigDoubleMuSF(    SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());  
@@ -244,7 +222,6 @@ void EventBuilder::InsideLoop(){
     }
     TriggerSF_Down = TriggerSF-TriggerSF_err;
     TriggerSF_Up   = TriggerSF+TriggerSF_err;
-<<<<<<< HEAD
   */
 
   // Set Params to pass all the info...
@@ -261,8 +238,6 @@ void EventBuilder::InsideLoop(){
   SetParam("isSS",            isSS);
   SetParam("METfilters",      METfilters);
 }
-
-//
 
 
 Bool_t EventBuilder::TrigElEl(){
