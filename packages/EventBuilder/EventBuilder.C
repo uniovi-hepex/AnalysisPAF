@@ -25,7 +25,7 @@ Bool_t EventBuilder::PassesDoubleElecTrigger(){
   gIsData = GetParam<Bool_t>("IsData");
   if (gIsData)
     run     = Get<Int_t>("run");
-  if(gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
+  if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
     // Run B-G or MC
     if ( (gIsData && run <= 280385) || (!gIsData)){
       pass = (Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"));
@@ -36,6 +36,13 @@ Bool_t EventBuilder::PassesDoubleElecTrigger(){
       return pass;
     }
   }
+  else if (gSelection == iStopSelec){
+    pass = ( Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+	     Get<Int_t>("HLT_BIT_HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+	     Get<Int_t>("HLT_BIT_HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v") ||
+	     Get<Int_t>("HLT_BIT_HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v") );
+    return pass;
+  }
 }
 
 Bool_t EventBuilder::PassesDoubleMuonTrigger(){
@@ -43,7 +50,7 @@ Bool_t EventBuilder::PassesDoubleMuonTrigger(){
   Bool_t pass = false;
   if (gIsData)
     run     = Get<Int_t>("run");
-  if(gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
+  if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
     // Run B-G or MC
     if ( (gIsData && run <= 280385) || (!gIsData)){
       pass = (Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v")  ||
@@ -56,6 +63,13 @@ Bool_t EventBuilder::PassesDoubleMuonTrigger(){
       return pass;
     }
   }
+  else if (gSelection == iStopSelec){
+    pass = (Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v") ||
+	    Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v") ||
+	    Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v") || 
+	    Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v") );
+    return pass;
+  }
 }
 
 Bool_t EventBuilder::PassesElMuTrigger(){
@@ -63,7 +77,7 @@ Bool_t EventBuilder::PassesElMuTrigger(){
   Bool_t pass = false;
   if (gIsData)
     run     = Get<Int_t>("run");
-  if(gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec)
+  if( gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
     // Run B-G or MC
     if ( (gIsData && run <= 280385) || (!gIsData)){
       pass = ( Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v")  || 
@@ -75,6 +89,20 @@ Bool_t EventBuilder::PassesElMuTrigger(){
 	       Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") );
       return pass;
     }
+  }
+  else if (gSelection == iStopSelec){
+    pass = (
+	    Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v") ||
+	    Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+	    Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v") ||
+	    Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v") ||
+	    Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+	    Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v") ||
+	    Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v") ||
+	    Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+	    Get<Int_t>("HLT_BIT_HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v") );
+    return pass;
+  }
 }
 
 Bool_t EventBuilder::PassesSingleElecTrigger(){

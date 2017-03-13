@@ -62,6 +62,7 @@ class EventBuilder : public PAFChainItemSelector{
     Bool_t gIsDoubleElec;
     Bool_t gIsMuonEG;
     Bool_t  gIsData;
+    Int_t run;
     Int_t   gSelection;
     TString gSampleName;
     Bool_t  gIsMCatNLO;
