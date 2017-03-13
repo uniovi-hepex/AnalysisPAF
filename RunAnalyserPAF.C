@@ -95,19 +95,22 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
     //cout << "Will loop on total number of entries: " << nTrueEntries << endl;  
   }
   else{ // Deal with MC samples           Double_t sumnormFromFiles = GetCount(path, dm->GetRealDataFiles(asample));
-    G_IsData = false; 
+    G_IsData = true; 
     TString theSample = "";
 		if(sampleName.BeginsWith("LocalFile:")){ // LocalFile
 			theSample = sampleName.ReplaceAll("LocalFile:", ""); 
 			if(verbose) cout << " >>> Analysing a local sample: " << theSample << endl;
 			sampleName = TString( theSample(theSample.Last('/')+1, theSample.Sizeof())).ReplaceAll(".root", "").ReplaceAll("Tree_", "");
 			//myProject->AddDataFile(theSample);
-			G_Event_Weight = ThisWeight;
+			Files.push_back(theSample);
+      GetCount(Files, G_IsData);
       xsec = 1;
+      if(ThisWeight != 1) G_Event_Weight = ThisWeight;
+      else G_Event_Weight = xsec/Count;
 		}
-		else if(sampleName.BeginsWith("T2tt:")){ // T2tt sample
-			theSample = sampleName.ReplaceAll("T2tt:", "");
-			if(verbose) cout << " >>> Analysing a T2tt sample: " << theSample << endl;
+		else if(sampleName.BeginsWith("Scan:")){ // T2tt sample
+			theSample = sampleName.ReplaceAll("Scan:", "");
+			if(verbose) cout << " >>> Analysing a scan... : " << theSample << endl;
 			//myProject->AddDataFiles(dm->GetRealDataFiles(theSample));
       std::vector<TString> tempFiles = dm->GetRealDataFiles(theSample);
       Files.insert(Files.end(), (tempFiles).begin(), (tempFiles).end());
