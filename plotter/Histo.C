@@ -117,8 +117,8 @@ void Histo::SetBinsErrorFromSyst(){
   Int_t nbins = GetNbinsX();
   Float_t max = 0;
   for(Int_t k = 1; k < nbins; k++){
-    max = vsysd[k] > vsysu[k] ? vsysd[k] : vsysu[k];
-    SetBinError(k, TMath::Sqrt(max));
+    //max = vsysd[k] > vsysu[k] ? vsysd[k] : vsysu[k];
+    SetBinError(k, TMath::Sqrt((vsysu[k]+vsysd[k])/2));
   }
 }
 

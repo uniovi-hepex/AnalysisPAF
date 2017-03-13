@@ -61,7 +61,7 @@ public:
   TString  title;
   TString xtitle;
 
-  Float_t sys_lumi = 0.10;
+  Float_t sys_lumi = 0.026;
 
 	Plot(){
 		plotFolder = DefaultPlotfolder; 
@@ -192,10 +192,14 @@ public:
   void IncludeBkgSystematics();
 
   void SetPath(TString p){ path = p; if(pathSignal == "") pathSignal = path;}
+  void SetPathToHeppyTrees(TString p){ pathToHeppyTrees = p;}
   void SetPathSignal(TString p){ pathSignal = p; }
   void SetTreeName(TString p){ treeName = p;}
   void SetOutputName(TString p){ outputName = p;}
   TString GetOutputName(){ return outputName;}
+  TString GetPathToHeppyTrees(){ return pathToHeppyTrees;}
+
+  Histo* GetHistoNormLHE(TString sampleName);
 
   void PrintSamples();
   void PrintSystematics(); 
@@ -204,6 +208,7 @@ public:
 	Float_t GetYield(TString pr = "ttbar", TString systag = "0");
 
 protected: 
+  TString pathToHeppyTrees = "";
   TString path = "";
   TString pathSignal = "";
   TString treeName = "";
