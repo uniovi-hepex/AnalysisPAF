@@ -49,7 +49,7 @@ class JetSelector : public PAFChainItemSelector{
     BTagSFUtil *fBTagSFlDo ;
 
     Bool_t gIsData;
-    Bool_t gSelection;
+    Int_t gSelection;
 
     // Jets
     Int_t nJet;
@@ -65,6 +65,7 @@ class JetSelector : public PAFChainItemSelector{
     Int_t ngenJet;
 
     void GetJetVariables(Int_t i);
+    void GetJetFwdVariables(Int_t i);
     void GetGenJetVariables(Int_t i);
     Bool_t IsBtag(Jet j); 
     void SetSystematics(Jet *j);
