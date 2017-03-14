@@ -5,10 +5,14 @@
 #include <iostream>
 #include <vector>
 
+
 class StopAnalysis : public PAFChainItemSelector{
   public:
     TTree* fTree;
 
+    Int_t TNLHEWeight;
+    Float_t TLHEWeight[nLHEWeight];
+ 
     StopAnalysis();
     virtual ~StopAnalysis(){}
     virtual void InsideLoop();
@@ -72,6 +76,8 @@ class StopAnalysis : public PAFChainItemSelector{
     // For systematics...
     Int_t   TNJetsJESUp;
     Int_t   TNJetsJESDown;
+    Int_t   TNBtagsJESUp;
+    Int_t   TNBtagsJESDown;
     Int_t   TNJetsJER;
     Int_t   TNBtagsUp;
     Int_t   TNBtagsDown;
