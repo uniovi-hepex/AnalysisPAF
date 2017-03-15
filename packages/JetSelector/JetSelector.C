@@ -83,6 +83,22 @@ void JetSelector::GetJetVariables(Int_t i){
   }
 }
 
+void JetSelector::GetJetFwdVariables(Int_t i){
+  tpJ.SetPxPyPzE(Get<Float_t>("JetFwd_px",i), Get<Float_t>("JetFwd_py",i), Get<Float_t>("JetFwd_pz", i), Get<Float_t>("JetFwd_energy",i));
+  eta = tpJ.Eta();;
+  pt = tpJ.Pt();
+  rawPt       = Get<Float_t>("JetFwd_rawPt",i);
+  pt_corrUp   = Get<Float_t>("JetFwd_corr_JECUp",i); 
+  pt_corrDown = Get<Float_t>("JetFwd_corr_JECDown",i);
+  jetId       = Get<Int_t>("JetFwd_id",i);
+  csv         = Get<Float_t>("JetFwd_btagCSV", i);
+  flavmc = -999999;
+  if(!gIsData){
+    flavmc = Get<Int_t>("JetFwd_hadronFlavour", i);
+    tmcJ.SetPxPyPzE(Get<Float_t>("JetFwd_mcPx",i), Get<Float_t>("JetFwd_mcPy",i), Get<Float_t>("JetFwd_mcPz",i), Get<Float_t>("JetFwd_mcEnergy",i));
+  }
+}
+
 void JetSelector::GetGenJetVariables(Int_t i){
   tpJ.SetPtEtaPhiM(Get<Float_t>("genJet_pt",i), Get<Float_t>("genJet_eta",i), Get<Float_t>("genJet_phi", i), Get<Float_t>("genJet_mass",i));
   eta = Get<Float_t>("genJet_eta",i);
@@ -116,6 +132,24 @@ void JetSelector::InsideLoop(){
         selJets.push_back(tJ);
         if(tJ.isBtag) nBtagJets++; 
       } 
+    }
+  }
+  if(jet_MaxEta > 2.4){ // Add jets from JetFwd collection
+    nJet = Get<Int_t>("nJetFwd");
+    for(Int_t i = 0; i < nJet; i++){
+      GetJetFwdVariables(i);
+      tJ = Jet(tpJ, csv, jetId, flavmc);
+      tJ.isBtag = IsBtag(tJ);
+      if(tJ.id > 0 && Cleaning(tJ, Leptons, minDR) && TMath::Abs(tJ.p.Eta()) < jet_MaxEta){
+        SetSystematics(&tJ);
+        tJ.isBtag = IsBtag(tJ);
+        if(tJ.p.Pt() > 15 || tJ.pTJESUp > 15 || tJ.pTJESDown > 15) Jets15.push_back(tJ);
+        if(tJ.isBtag && tJ.p.Pt() > vetoJet_minPt) vetoJets.push_back(tJ);
+        if(tJ.p.Pt() > jet_MinPt){
+          selJets.push_back(tJ);
+          if(tJ.isBtag) nBtagJets++;
+        }
+      }
     }
   }
   if(!gIsData){  // Add gen jets...
