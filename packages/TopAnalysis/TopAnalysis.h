@@ -86,6 +86,8 @@ class TopAnalysis : public PAFChainItemSelector{
     Int_t   TNBtagsDown;
     Int_t   TNBtagsMisTagUp;
     Int_t   TNBtagsMisTagDown;
+    Int_t   TNBtagsJESUp;
+    Int_t   TNBtagsJESDown;
     Float_t TJetJESUp_Pt[20];
     Float_t TJetJESDown_Pt[20];
     Float_t TJetJER_Pt[20];
@@ -142,6 +144,7 @@ class TopAnalysis : public PAFChainItemSelector{
     Int_t   gSelection;
     TString gSampleName;
     Bool_t  gIsTTbar;
+    Bool_t  gIsTW;
 
     ClassDef(TopAnalysis, 0);
 };

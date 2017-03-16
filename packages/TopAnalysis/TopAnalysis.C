@@ -47,8 +47,10 @@ void TopAnalysis::Initialise(){
   gSampleName  = GetParam<TString>("sampleName");
   gDoSyst      = GetParam<Bool_t>("doSyst");
   gIsTTbar     = false;
-  if(gSampleName.Contains("TTbar") || gSampleName.Contains("TTJets")) gIsTTbar = true;
-  
+  gIsTW        = false;
+  if (gSampleName.Contains("TTbar") || gSampleName.Contains("TTJets")) gIsTTbar = true;
+  if (gSampleName.Contains("TW")    || gSampleName.Contains("TbarW") ) gIsTW    = false;
+
   makeTree = true;
   makeHistos = true;
   if(makeTree){
@@ -100,7 +102,13 @@ void TopAnalysis::InsideLoop(){
   fhDummy->Fill(1);
 
   //if((Int_t) genLeptons.size() >=2 && TNSelLeps >= 2 && passTrigger && passMETfilters){ // dilepton event, 2 leptons // && !isSS
-  if(gIsTTbar && genLeptons.size() < 2) return; // Dilepton selection for ttbar!!!
+  if (gSelection == iTopSelec){
+    if (gIsTTbar && genLeptons.size() < 2) return; // Dilepton selection for ttbar!!!
+  }
+  else if (gSelection == iTWSelec){
+    if (gIsTW && genLeptons.size() < 2) return; // Dilepton selection for tw!!
+  }
+
   if(TNSelLeps >= 2 && passTrigger && passMETfilters){ // dilepton event, 2 leptons // && !isSS
     // Deal with weights:
     Float_t lepSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
@@ -145,7 +153,12 @@ void TopAnalysis::InsideLoop(){
           }
         }
       }
-    }
+      if (gChannel == 1 && (TNJets > 0 || TNJetsJESUp > 0 || TNJetsJESDown > 0)){
+	if (TNBtags > 0 || TNBtagsUp > 0 || TNBtagsDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0){
+	  fTree->Fill();
+	}
+      }
+    }   
   }
 }
 
@@ -182,28 +195,30 @@ void TopAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cle
     TJet_Phi[i]    = selJets.at(i).Phi();
     TJet_E[i]      = selJets.at(i).E();
     TJet_isBJet[i] = selJets.at(i).isBtag;
-    THT += TJet_Pt[i];
     if(selJets.at(i).isBtag)            TNBtags++;
+  }
+  if(gIsData) return;  // For systematics...
+  for(Int_t i = 0; i < TNJets; i++){
     if(selJets.at(i).isBtag_BtagUp    ) TNBtagsUp++;
     if(selJets.at(i).isBtag_BtagDown  ) TNBtagsDown++;
     if(selJets.at(i).isBtag_MisTagUp  ) TNBtagsMisTagUp++;
     if(selJets.at(i).isBtag_MisTagDown) TNBtagsMisTagDown++;
   }
-  // For systematics...
   TNJetsJESUp    = 0;
   TNJetsJESDown  = 0;
+  TNBtagsJESUp    = 0;
+  TNBtagsJESDown  = 0;
   TNJetsJER      = 0;  
-  THTJESUp = 0; THTJESDown = 0;
   for(Int_t i = 0; i < (Int_t) cleanedJets15.size(); i++){
     if(cleanedJets15.at(i).pTJESUp > ptCut){
       TNJetsJESUp++;
+      if(cleanedJets15.at(i).isBtag) TNBtagsJESUp++;
       TJetJESUp_Pt[i] = cleanedJets15.at(i).pTJESUp;
-      THTJESUp += TJetJESUp_Pt[i];
     }
     if(cleanedJets15.at(i).pTJESDown > ptCut){
       TNJetsJESDown++;
+      if(cleanedJets15.at(i).isBtag) TNBtagsJESDown++;
       TJetJESDown_Pt[i] = cleanedJets15.at(i).pTJESDown;
-      THTJESDown += TJetJESUp_Pt[i];
     }
     if(cleanedJets15.at(i).pTJERUp > ptCut){
       TNJetsJER++;
@@ -334,6 +349,9 @@ void TopAnalysis::SetJetVariables(){
   fTree->Branch("TNBtagsDown",   &TNBtagsDown, "TNBtagsDown/I");
   fTree->Branch("TNBtagsMisTagUp",     &TNBtagsMisTagUp,   "TNBtagsMisTagUp/I");
   fTree->Branch("TNBtagsMisTagDown",   &TNBtagsMisTagDown, "TNBtagsMisTagDown/I");
+
+  fTree->Branch("TNBtagsJESUp",   &TNBtagsJESUp, "TNBtagsJESUp/I");
+  fTree->Branch("TNBtagsJESDown",  &TNBtagsJESDown, "TNBtagsJESDown/I");
 
   fTree->Branch("TJetJESUp_Pt",      TJetJESUp_Pt,      "TJetJESUp_Pt[TNJetsJESUp]/F");
   fTree->Branch("TJetJESDown_Pt",    TJetJESDown_Pt,    "TJetJESDown_Pt[TNJetsJESDown]/F");
