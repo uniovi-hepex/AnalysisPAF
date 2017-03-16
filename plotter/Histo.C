@@ -52,10 +52,10 @@ void Histo::SetStyle(){
 void Histo::SetStatUnc(){
 	if(type == itData) return; // Add MC stats to errors!
 	Int_t nbins = GetNbinsX();
-	vsysu = new Float_t[nbins];
-	vsysd = new Float_t[nbins];
+	vsysu = new Float_t[nbins+1];
+	vsysd = new Float_t[nbins+1];
 	Float_t err2 = 1;
-	for(int i = 0; i < nbins; i++){
+	for(int i = 0; i < nbins+1; i++){
 		err2 = GetBinError(i); err2 = err2*err2;
 		vsysu[i] = err2; vsysd[i] = err2;
 	}
@@ -106,8 +106,8 @@ void Histo::AddToSystematics(Histo* hsys, TString dir){
   Int_t nbins = hsys->GetNbinsX();
   Float_t diff = 0;
   if(GetNbinsX() != nbins)  std::cout << " [Histo] WARNING: cannot add to systematics" << std::endl; 
-	for(Int_t k = 0; k < nbins; k++){
-		diff = GetBinContent(k+1) - hsys->GetBinContent(k+1);
+	for(Int_t k = 0; k < nbins+1; k++){
+		diff = GetBinContent(k) - hsys->GetBinContent(k);
 		if(diff >  0) vsysd[k] += diff*diff;
 		else          vsysu[k] += diff*diff;
 	}

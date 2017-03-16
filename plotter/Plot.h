@@ -33,6 +33,7 @@ public:
 	bool doStackOverflow = true;
 	bool doSignal        = true;
   bool doSetLogy       = true;
+  bool doStackSignal   = false;
 
   std::vector<Histo*> VBkgs;
   std::vector<Histo*> VSignals;
@@ -125,7 +126,7 @@ public:
 		if(hratio) delete hratio;
 		if(TotalSysUp) delete TotalSysUp;
 		if(TotalSysDown) delete TotalSysDown;
-    if(hData) delete hData;
+    if(hData && doData) delete hData;
     if(hStack) delete hStack;
     if(hAllBkg) delete hAllBkg;
 };            // Destructor
@@ -148,7 +149,7 @@ public:
   void SetPlotStyle();
 
 	void DrawStack(TString tag, bool sav);
-	void DrawComp(TString tag, bool sav);
+	void DrawComp(TString tag = "0", bool sav = 1, bool doNorm = 0);
   void SaveHistograms();
   TString GetStatUncDatacard(Int_t iSignal = 0);
 	TString GetShapeUncLines();

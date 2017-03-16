@@ -162,7 +162,8 @@ void Plot::GroupSystematics(){
     for(Int_t i = 0; i < (Int_t) VSyst.size(); i++){
       tag =  VSyst.at(i)->GetTag();
       name = VSyst.at(i)->GetName();
-      if(name.Contains("T2tt")) continue;
+      if(name.Contains("T2tt") || name.Contains("FastSim") || name.Contains("FullSim") ) continue;
+      if(name.BeginsWith("S_")) continue;
       if(tag.Contains(var+"Up") )   hsumSysUp  ->Add( VSyst.at(i));
       if(tag.Contains(var+"Down")) hsumSysDown->Add( VSyst.at(i));
     }
@@ -294,17 +295,22 @@ TCanvas* Plot::SetCanvas(){ // Returns the canvas
   return c;
 }
 
-void Plot::DrawComp(TString tag = "0", bool sav = 0){
+void Plot::DrawComp(TString tag, bool sav, bool doNorm){
   TCanvas* c = SetCanvas();  plot->cd();
   int nsamples = VSignals.size();
 	float themax = 0;
+  float yield = 0;
   Histo* signal;
   if(nsamples == 0) return;
   else signal = VSignals.at(0);
-	float max = VSignals.at(0)->GetMaximum();
+  yield = VSignals.at(0)->Integral();
+  if(doNorm) signal->Scale(1/yield);
   signal->Draw("pe");
+	float max = VSignals.at(0)->GetMaximum();
 
 	for(Int_t  i = 1; i < nsamples; i++){
+    yield = VSignals.at(i)->Integral();
+  if(doNorm) VSignals.at(i)->Scale(1/yield);
 		max = VSignals.at(i)->GetMaximum(); 
 		if(max > themax) themax = max;
 		VSignals.at(i)->Draw("pesame");
@@ -318,8 +324,8 @@ void Plot::DrawComp(TString tag = "0", bool sav = 0){
   TH1F* htemp = NULL;
   hratio = (TH1F*)VSignals.at(0)->Clone("hratio_sig");
   SetHRatio();
-  hratio->SetMaximum(1.2);
-  hratio->SetMinimum(0.8);
+  hratio->SetMaximum(1.1);
+  hratio->SetMinimum(0.9);
 	for(Int_t  i = 1; i < nsamples; i++){
     htemp = (TH1F*)hratio->Clone("htemp");
     htemp->Divide(VSignals.at(i)); 
@@ -342,6 +348,7 @@ void Plot::DrawComp(TString tag = "0", bool sav = 0){
 void Plot::DrawStack(TString tag = "0", bool sav = 0){
 	//if(doSys) IncludeBkgSystematics();
 
+  std::vector<Histo*> VStackedSignals;
   TCanvas* c = SetCanvas(); plot->cd(); 
 
 	GetStack();
@@ -382,7 +389,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   if(doSignal){
     // Draw systematics signal
     Int_t nSignals = VSignals.size();
-    if(verbose) cout << "Drawing " << nSignals << " signals..." << endl;
+   /* if(verbose) cout << "Drawing " << nSignals << " signals..." << endl;
     for(Int_t  i = 0; i < nSignals; i++){
       if(VSignals.at(i)->GetType() != itSignal) continue; // Consistency
       hSignalerr = (Histo*) VSignals.at(i)->Clone("hSignalErr"); // Add systematics to signal
@@ -390,10 +397,17 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
       hSignalerr->SetMarkerStyle(0);
       hSignalerr->SetFillStyle(3013);
       VSignalsErr.push_back(hSignalerr);
-    }
+    }*/
+    Histo* htemp;
     for(Int_t  i = 0; i < nSignals; i++){
-      if(doSys) VSignalsErr.at(i)->Draw("same,e2");
-      VSignals.at(i)->Draw("lsame");
+      //if(doSys) VSignalsErr.at(i)->Draw("same,e2");
+      if(doStackSignal){
+         htemp = VSignals.at(i);
+         htemp->Add(hAllBkg);
+         VStackedSignals.push_back(htemp);
+         VStackedSignals.at(i)->Draw("lsame");
+      }
+      else VSignals.at(i)->Draw("lsame");
     }
   }
 
@@ -438,6 +452,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   if(leg) delete leg; //if(hData) delete hData;
 	//if(hAllBkg) delete hAllBkg; if(hStack) delete hStack; 
   if(hratioerr) delete hratioerr; if(hSignalerr) delete hSignalerr;
+  VStackedSignals.clear();
 }
 
 
@@ -479,16 +494,18 @@ void Plot::SaveHistograms(){
 			statup  ->Write(); statdown->Write();
 		}
 	}
+  TString namesignal;
 	for(int i = 0; i < nSig; i++){
 		nom = VSignals.at(i);
-		nom->SetName(nom->GetProcess());
+    namesignal = nom->GetProcess();
+		nom->SetName(namesignal);
 		nbins = nom->GetNbinsX();
 		nom->Write();
 		for(int j = 1; j <= nbins; j++){
 			statup   = nom->GetVarHistoStatBin(j, "up");
 			statdown = nom->GetVarHistoStatBin(j, "down");
-			statup  ->SetName(nom->GetProcess() + "_" + nom->GetProcess() + "_" + chan + Form("_statbin%i", j) + "Up");
-			statdown->SetName(nom->GetProcess() + "_" + nom->GetProcess() + "_" + chan + Form("_statbin%i", j) + "Down");
+			statup  ->SetName(namesignal + "_" + namesignal + "_" + chan + Form("_statbin%i", j) + "Up");
+			statdown->SetName(namesignal + "_" + namesignal + "_" + chan + Form("_statbin%i", j) + "Down");
 			statup  ->Write(); statdown->Write();
 		}
 	}
@@ -580,7 +597,7 @@ void Plot::MakeDatacard(TString tag, Int_t iSignal){
 	outputfile << rate     + TString("\n");
 		outputfile << "##-----------\n";
 	TString out = TString("Lumi  lnN  ");
-	for(int i = 0; i < nBkgs+1; i++){ out += Form(" %1.2f ", 1+sys_lumi);}
+	for(int i = 0; i < nBkgs+1; i++){ out += Form(" %1.3f ", 1+sys_lumi);}
   out += TString("\n");
   outputfile << out;
 
