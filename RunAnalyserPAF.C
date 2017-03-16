@@ -252,6 +252,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	myProject->AddSelectorPackage("EventBuilder");
 	if      (sel == iStopSelec)  myProject->AddSelectorPackage("StopAnalysis");
 	else if (sel == iTopSelec )  myProject->AddSelectorPackage("TopAnalysis");
+	else if (sel == iTWSelec  )  myProject->AddSelectorPackage("TopAnalysis");
 	else if (sel == iWWSelec  )  myProject->AddSelectorPackage("WWAnalysis");
 	else                         myProject->AddSelectorPackage("CreateMiniTree");
 
