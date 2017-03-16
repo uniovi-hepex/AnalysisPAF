@@ -9,11 +9,16 @@ Histo* Plot::GetH(TString sample, TString sys, Int_t type){
   Looper* ah = new Looper(pathToMiniTree, treeName, var, cut, chan, nb, x0, xN);
   Histo* h = ah->GetHisto(sample, sys);
   h->SetDirectory(0);
-	delete ah;
-	return h;
+  delete ah;
+  cout << "Returning h " << h->Integral() << endl;
+  return h;
 }
 
 void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, TString sys){
+#ifdef DEBUGFLAG
+  cout << "Adding sample " << p << endl;
+#endif
+
   // Add a sample to your plot...
   //  -> p  is the name of the sample
   //  -> pr is the name of the process that includes the sample
@@ -71,27 +76,40 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
   h->SetSysNorm(S);
 
   AddToHistos(h);
+
+#ifdef DEBUGFLAG
+  cout << "Added " << p << endl;
+#endif
+
 } 
 
 void Plot::GetStack(){ // Sets the histogram hStack
   if(hStack) delete hStack;
-	hStack = new THStack(varname, "");
+  cout << "Checkpoint 1" << endl;
+  hStack = new THStack(varname, "");
   Int_t nBkgs = VBkgs.size();
-	for(Int_t i = 0; i < nBkgs; i++){
-		hStack->Add((TH1F*) VBkgs.at(i));
-	}
+  for(Int_t i = 0; i < nBkgs; i++){
+    hStack->Add((TH1F*) VBkgs.at(i));
+  }
+  cout << "Checkpoint 2" << endl;
   if(hAllBkg) delete hAllBkg;
   hAllBkg = new Histo(*(TH1F*) hStack->GetStack()->Last(), 3);
-	hAllBkg->SetStyle();
-	hAllBkg->SetTag("TotalBkg");
+  hAllBkg->SetStyle();
+  hAllBkg->SetTag("TotalBkg");
   hAllBkg->SetStatUnc();
   if(verbose) cout << Form(" Adding %i systematic to sum of bkg...\n", (Int_t) VSumHistoSystUp.size());
+  cout << "Checkpoint 3" << endl;
   if(doSys) GroupSystematics();
+  cout << "Checkpoint 4" << endl;
+  
+
   for(Int_t i = 0; i < (Int_t) VSumHistoSystUp.size(); i++){
     hAllBkg->AddToSystematics(VSumHistoSystUp.at(i));
     hAllBkg->AddToSystematics(VSumHistoSystDown.at(i));
   }
+  cout << "Checkpoint 5" << endl;
   hAllBkg->SetBinsErrorFromSyst();
+  cout << "Checkpoint 6" << endl;
 }
 
 void Plot::SetData(){  // Returns histogram for Data
@@ -341,11 +359,16 @@ void Plot::DrawComp(TString tag = "0", bool sav = 0){
 
 void Plot::DrawStack(TString tag = "0", bool sav = 0){
 	//if(doSys) IncludeBkgSystematics();
+  if (verbose)
+    cout << "[Plot::DrawStack] Drawing stack " << hAllBkg <<  endl;
+
 
   TCanvas* c = SetCanvas(); plot->cd(); 
-
-	GetStack();
+  if (verbose) cout << "[Plot::DrawStack] Getting stack" << endl;
+  GetStack();
+  if (verbose) cout << "[Plot::DrawStack] Setting stack" << endl;
   SetData();
+  if (verbose) cout << "[Plot::DrawStack] Stack set" << endl;
   if(!doData) hData = hAllBkg;
 
   float maxData = hData->GetMax();
@@ -360,22 +383,28 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
     hStack->SetMaximum(Max*1.15);
     hStack->SetMinimum(0);
   }
-
+  cout << "Stack is " << hStack << endl;
   hStack->Draw("hist");
+  cout << "Stack drawn " << endl;
+  cout << hStack << endl;
+  cout << hStack->GetYaxis() << endl;
   hStack->GetYaxis()->SetTitle("Number of Events");
+  cout << "hola?1 " << endl;
   hStack->GetYaxis()->SetTitleSize(0.06);
+  cout << "hola?2 " << endl;
   hStack->GetYaxis()->SetTitleOffset(0.5);
   hStack->GetYaxis()->SetNdivisions(505);
   hStack->GetXaxis()->SetLabelSize(0.0);
 
   // Draw systematics histo
+  cout << "Systematics stuff" << endl;
   hAllBkg->SetFillStyle(3145);
   hAllBkg->SetFillColor(kGray+2);
   hAllBkg->SetLineColor(kGray+2);
   hAllBkg->SetLineWidth(0);
   hAllBkg->SetMarkerSize(0);
   if(doSys) hAllBkg->Draw("same,e2");
-
+  cout << "Dando el pesame" << endl;
   hData->Draw("pesame");
   Histo* hSignalerr = NULL; 
   VSignalsErr.clear();

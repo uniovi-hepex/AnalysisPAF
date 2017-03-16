@@ -183,6 +183,7 @@ void TopAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector
   else if(selLeptons.at(0).isMuon && selLeptons.at(1).isMuon) gChannel = 2;
   else if(selLeptons.at(0).isElec && selLeptons.at(1).isElec) gChannel = 3;
   if(TNSelLeps > 1) TMll = (selLeptons.at(0).p + selLeptons.at(1).p).M();      
+  TChannel = gChannel;
 }
 
 void TopAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut){
