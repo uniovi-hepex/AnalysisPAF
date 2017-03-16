@@ -271,14 +271,14 @@ void LeptonSelector::InsideLoop(){
     ngenLepFromTau  = Get<Int_t>("ngenLepFromTau");
     for(Int_t i = 0; i < ngenLep; i++){
       GetGenLeptonVariables(i);
-      if(gpdgMId == 24 || gpdgMId == 25 || gpdgMId == 25){
+      if(gpdgMId == 23 || gpdgMId == 24 || gpdgMId == 25){
         tL = Lepton(tP, charge, type);
         genLeptons.push_back(tL);
       } 
     }
     for(Int_t i = 0; i < ngenLepFromTau; i++){
       GetGenLepFromTauVariables(i);
-      if(gpdgMId == 24 || gpdgMId == 25 || gpdgMId == 25){
+      if(gpdgMId == 23 || gpdgMId == 24 || gpdgMId == 25){
         tL = Lepton(tP, charge, type);
         nLeptonsFromTau++;
         genLeptons.push_back(tL);
