@@ -4,6 +4,10 @@ ClassImp(TopAnalysis);
 TopAnalysis::TopAnalysis() : PAFChainItemSelector() {
   fTree = 0;
   fhDummy = 0;
+  passMETfilters = 0;
+  passTrigger    = 0;
+  isSS           = 0;
+  
   for(Int_t ch = 0; ch < nChannels; ch++){
     for(Int_t cut = 0; cut < nLevels; cut++){
       for(Int_t sys = 1; sys < nSysts; sys++){
@@ -42,8 +46,11 @@ void TopAnalysis::Initialise(){
   gSelection   = GetParam<Int_t>("iSelection");
   gSampleName  = GetParam<TString>("sampleName");
   gDoSyst      = GetParam<Bool_t>("doSyst");
+  gIsTTbar     = false;
+  if(gSampleName.Contains("TTbar") || gSampleName.Contains("TTJets")) gIsTTbar = true;
   
   makeTree = true;
+  makeHistos = true;
   if(makeTree){
     fTree = CreateTree("MiniTree","Created with PAF");
     SetLeptonVariables();
@@ -92,7 +99,10 @@ void TopAnalysis::InsideLoop(){
 
   fhDummy->Fill(1);
 
-  if(genLeptons.size() >=2 && TNSelLeps >= 2 && passTrigger && passMETfilters){ // dilepton event, 2 leptons // && !isSS
+  //if((Int_t) genLeptons.size() >=2 && TNSelLeps >= 2 && passTrigger && passMETfilters){ // dilepton event, 2 leptons // && !isSS
+  cout << "ngenLeptons = " << genLeptons.size() << ", IsTTbar = " << gIsTTbar << endl;
+  if(gIsTTbar && genLeptons.size() < 2) return; // Dilepton selection for ttbar!!!
+  if(TNSelLeps >= 2 && passTrigger && passMETfilters){ // dilepton event, 2 leptons // && !isSS
     // Deal with weights:
     Float_t lepSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
     Float_t lepSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1);
@@ -112,14 +122,23 @@ void TopAnalysis::InsideLoop(){
       else{      fHyields[gChannel][0] -> Fill(idilepton, TWeight);
         FillHistos(gChannel, idilepton);}
       if(gChannel == 1 || (TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15)  ){ //  Z Veto in ee, µµ
-        if(TNJets > 1){ //At least 2 jets
-          if(isSS) fHSSyields[gChannel][0] -> Fill(i2jets, TWeight);
-          else{      fHyields[gChannel][0] -> Fill(i2jets, TWeight);
-            FillHistos(gChannel, i2jets); }
-          if(TNBtags > 0 || TNBtagsUp > 0 || TNBtagsDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0){ // At least 1 b-tag
-            if(isSS) fHSSyields[gChannel][0] -> Fill(i1btag, TWeight);
-            else{      fHyields[gChannel][0] -> Fill(i1btag, TWeight);
-              FillHistos(gChannel, i1btag); }
+        if(isSS) fHSSyields[gChannel][0] -> Fill(iZVeto, TWeight);
+        else{      fHyields[gChannel][0] -> Fill(iZVeto, TWeight);
+        FillHistos(gChannel, iZVeto);}
+          if(gChannel == 1 || TMET > 40){
+            if(isSS) fHSSyields[gChannel][0] -> Fill(iMETcut, TWeight);
+            else{      fHyields[gChannel][0] -> Fill(iMETcut, TWeight);
+              FillHistos(gChannel, iMETcut);}
+            if(TNJets > 1){ //At least 2 jets
+              if(isSS) fHSSyields[gChannel][0] -> Fill(i2jets, TWeight);
+              else{      fHyields[gChannel][0] -> Fill(i2jets, TWeight);
+                FillHistos(gChannel, i2jets); }
+              if(TNBtags > 0 || TNBtagsUp > 0 || TNBtagsDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0){ // At least 1 b-tag
+                if(isSS) fHSSyields[gChannel][0] -> Fill(i1btag, TWeight);
+                else{      fHyields[gChannel][0] -> Fill(i1btag, TWeight);
+                  FillHistos(gChannel, i1btag); }
+              }
+            }
           }
         }
       }
