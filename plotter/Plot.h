@@ -25,13 +25,13 @@ const Float_t DefaultLumi = 35.9; //fb-1
 
 class Plot {
 public:
-	bool verbose         = false;
-	bool doSys           = true;
-	bool doData          = true;
-	bool doYieldsInLeg   = true;
-	bool doSingleLep     = false;
-	bool doStackOverflow = true;
-	bool doSignal        = true;
+  bool verbose         = false;
+  bool doSys           = true;
+  bool doData          = true;
+  bool doYieldsInLeg   = true;
+  bool doSingleLep     = false;
+  bool doStackOverflow = true;
+  bool doSignal        = true;
   bool doSetLogy       = true;
   bool doStackSignal   = false;
 

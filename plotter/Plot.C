@@ -516,6 +516,7 @@ void Plot::SaveHistograms(){
   TString namesignal;
   for(int i = 0; i < nSig; i++){
     nom = VSignals.at(i);
+    cout << "nominal integral for " << nom->GetProcess() << " is " <<nom->Integral() << endl;
     namesignal = nom->GetProcess();
     nom->SetName(namesignal);
     nbins = nom->GetNbinsX();
@@ -530,7 +531,7 @@ void Plot::SaveHistograms(){
   }
   for(int i = 0; i < (Int_t) VSyst.size(); i++){
     nom = VSyst.at(i);
-    //cout << "Saving unc variation " << nom->GetName() << endl;
+    cout << "Saving unc variation " << nom->GetName() << " " << nom->Integral() << endl;
     nom->Write();
   }
   SetData(); GetStack();
@@ -571,6 +572,7 @@ void Plot::MakeDatacard(TString tag, Int_t iSignal){
   if(!doSignal){ std::cout << "No datacards without signal!" << std::endl; return;}
   SetData(); 
   Histo* hSignal = VSignals.at(iSignal);
+  cout << "signal in makedatacard" << hSignal->Integral() << endl;
   hSignal->SetStyle();
   hData->SetTag("data_obs");
   // if(!doData){ hData = hAllBkg;}
