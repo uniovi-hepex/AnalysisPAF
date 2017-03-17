@@ -52,10 +52,10 @@ void Histo::SetStyle(){
 void Histo::SetStatUnc(){
 	if(type == itData) return; // Add MC stats to errors!
 	Int_t nbins = GetNbinsX();
-	vsysu = new Float_t[nbins];
-	vsysd = new Float_t[nbins];
+	vsysu = new Float_t[nbins+1];
+	vsysd = new Float_t[nbins+1];
 	Float_t err2 = 1;
-	for(int i = 0; i < nbins; i++){
+	for(int i = 0; i < nbins+1; i++){
 		err2 = GetBinError(i); err2 = err2*err2;
 		vsysu[i] = err2; vsysd[i] = err2;
 	}
@@ -111,6 +111,7 @@ void Histo::AddToSystematics(Histo* hsys, TString dir){
     if(diff >  0) vsysd[k] += diff*diff;
     else          vsysu[k] += diff*diff;
   }
+
 }
 
 void Histo::SetBinsErrorFromSyst(){

@@ -13,6 +13,7 @@ void GetCount(vector<TString> Files, Bool_t IsData = false);
 void RunAnalyserPAF(TString sampleName  = "TTbar_Powheg", TString Selection = "StopDilep", Int_t nSlots = 1, Long64_t nEvents = 0, Long64_t FirstEvent = 0, Float_t ThisWeight = 1.0, Int_t stopMass = 0, Int_t lspMass  = 0);
 Float_t GetSMSnorm(Int_t mStop, Int_t mLsp);
 Double_t GetStopXSec(Int_t StopMass);
+//Float_t* GetCountLHE(std::vector<TString> Files, Float_t a[]);
 
 vector<TString> Files;
 Double_t SumOfWeights;
@@ -20,6 +21,7 @@ Long64_t Count;
 Long64_t nTrueEntries;
 Float_t xsec;
 Bool_t verbose = true;
+const Int_t nLHEWeight = 248;
 
 enum             sel         {iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec, nSel};
 const TString tagSel[nSel] = {"Stop",         "Top",     "TW",     "WW",     "ttDM",     "ttH"      };
@@ -36,6 +38,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	Count = 0;
 	nTrueEntries = 0;
 	xsec = 0;
+  //Float_t arr[nLHEWeight]; Float_t *CountLHE;
 
 
   TString WorkingDir = gSystem->WorkingDirectory();
@@ -147,6 +150,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 			}
 			else G_Event_Weight = xsec/Count;
 		}
+      if(sampleName.Contains("FastSim")) G_IsFastSim = true;
 	}
 	if(verbose){
 		//cout << "\033[1;30m=================================================\033[0m\n";
@@ -159,6 +163,10 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 		if(G_IsMCatNLO) cout << Form("\033[1;34m #### Sum of weights   = %g \033[0m\n", SumOfWeights);
 		cout << "\033[1;30m=================================================\033[0m\n";
 	}
+
+  // ------->>>>> Termporary solution:
+  //if(sampleName.Contains("PowhegLHE")) CountLHE = GetCountLHE(Files, arr);
+
 
 	// Output dir and tree name
 	//----------------------------------------------------------------------------
@@ -221,12 +229,14 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	// Parameters for the analysis
 	//----------------------------------------------------------------------------
 	// COMMON PARAMETERS
-	myProject->SetInputParam("sampleName",    sampleName       );
-	myProject->SetInputParam("IsData",        G_IsData         );
-	myProject->SetInputParam("weight",        G_Event_Weight   );
-	myProject->SetInputParam("IsMCatNLO",     G_IsMCatNLO      );  
-	myProject->SetInputParam("iSelection",    sel              );
-	myProject->SetInputParam("WorkingDir",    WorkingDir       );
+	myProject->SetInputParam("sampleName",        sampleName       );
+	myProject->SetInputParam("IsData",            G_IsData         );
+	myProject->SetInputParam("weight",            G_Event_Weight   );
+	myProject->SetInputParam("IsMCatNLO",         G_IsMCatNLO      );  
+	myProject->SetInputParam("iSelection",        sel              );
+	myProject->SetInputParam("WorkingDir",        WorkingDir       );
+	myProject->SetInputParam("pathToHeppyTrees",  pathToFiles);
+	//myProject->SetInputParam("CountLHE ",  CountLHE);
 
 	// EXTRA PARAMETERS
 	myProject->SetInputParam("IsFastSim"    , G_IsFastSim);
@@ -293,6 +303,59 @@ void GetCount(std::vector<TString> Files, Bool_t IsData){
 	}
 }
 
+/*
+Float_t* GetCountLHE(std::vector<TString> Files, Float_t CountLHE[]){
+  Int_t nFiles = Files.size(); TFile *f; TH1D* htemp;
+  //Float_t CountLHE[nLHEWeight];
+  Float_t x = 0; Int_t bin = 0;
+  for(Int_t k = 1; k < nLHEWeight+1; k++) CountLHE[k] = 0;
+
+  for(Int_t i = 0; i < nFiles; i++){
+    f = TFile::Open(Files.at(i));
+    f->GetObject("CountLHE", htemp);
+
+    for(Int_t k = 1; k < nLHEWeight+1; k++){
+      if      (k<10 ) bin = k + 1001;   // 1002-1010: muRmuF
+      else if (k<112) bin = k + 1992;   // 2002-2103: NNPDF
+      else if (k<167) bin = k + 2890;   // 3002-3056: CT10
+      else if (k<223) bin = k + 3835;   // 4000-4057: MMHT2014
+      else if (k<250) bin = k + 4779;   // 5002-5028: muRmuF, hdamp 
+      x = htemp->GetBinContent(bin);
+      CountLHE[k-1] += x;
+      //cout << Form("[k = %i, bin = %i, x0 = %g, x = %g]\n", k, bin, x0, x);
+    }
+    f->Close();    
+  }
+  return CountLHE;
+}
+
+
+std::vector<Float_t> *GetCountLHE(std::vector<TString> Files){
+  Int_t nFiles = Files.size(); TFile *f; TH1D* htemp;
+  std::vector<Float_t> *CountLHE = new std::vector<Float_t>();
+  Double_t x = 0; Double_t x0=0; Int_t bin = 0;
+  for(Int_t k = 1; k < nLHEWeight+1; k++) CountLHE->push_back(0.);
+
+  for(Int_t i = 0; i < nFiles; i++){
+    f = TFile::Open(Files.at(i));
+    f->GetObject("CountLHE", htemp);
+
+    for(Int_t k = 1; k < nLHEWeight+1; k++){
+      if      (k<10 ) bin = k + 1001;   // 1002-1010: muRmuF
+      else if (k<112) bin = k + 1992;   // 2002-2103: NNPDF
+      else if (k<167) bin = k + 2890;   // 3002-3056: CT10
+      else if (k<223) bin = k + 3835;   // 4000-4057: MMHT2014
+      else if (k<250) bin = k + 4779;   // 5002-5028: muRmuF, hdamp 
+      x = htemp->GetBinContent(bin);
+      x0 = CountLHE->at(k-1); 
+      CountLHE->at(k-1) = x0+x;
+      //cout << Form("[k = %i, bin = %i, x0 = %g, x = %g]\n", k, bin, x0, x);
+    }
+    f->Close();    
+  }
+  return CountLHE;
+}*/
+
 Float_t GetSMSnorm(Int_t mStop, Int_t mLsp){
   cout << Form("\033[1;36m >>> Searching for normalization factor for stop point with masses [%i, %i]...\033[0m\n", mStop, mLsp);
 	Int_t nFiles = Files.size(); TFile *f;
@@ -316,6 +379,7 @@ Float_t GetSMSnorm(Int_t mStop, Int_t mLsp){
 	}
   return count;
 }
+
 
 Double_t GetStopXSec(Int_t StopMass){
   if      (StopMass == 125) return 574.981;
