@@ -49,6 +49,8 @@ class StopAnalysis : public PAFChainItemSelector{
     // Tree Variables
     Float_t TWeight;   // Total nominal weight
     Float_t TMll;      // Invariant mass
+    Float_t TDeltaPhi; 
+    Float_t TDeltaEta;
     Float_t TMT2;      // Invariant mass
     Float_t TMET;      // MET
     Float_t TMET_Phi;  // MET phi
