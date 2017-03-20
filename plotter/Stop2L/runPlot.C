@@ -11,7 +11,8 @@ TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/StopTrees/Baseline/";
 TString NameOfTree = "tree";
 
 void runPlot(){
-  DrawPlot("TMET", "TMET > 0 && TNJets > 1 && TNBtags > 0", "ElMu", 30, 0, 300, "MET [GeV]");
+  DrawPlot("TMET", "TMET > 0 && TNJets > 1 && TNBtags > 0 && !TIsSS && TNVetoLeps < 3", "ElMu", 40, 0, 400, "MET [GeV]");
+  DrawPlot("TMT2", "TMET > 50 && TNJets > 1 && TNBtags > 0 && !TIsSS && TNVetoLeps < 3", "ElMu", 30, 0, 300, "M_{T2} [GeV]");
 }
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle){
@@ -19,6 +20,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
   p->SetPathSignal(pathToTree + "T2tt/");
   p->verbose = false;
+
+//p->GetHistoNormLHE("TTbar_PowhegLHE");
 
   p->AddSample("WZ", "VV", itBkg, kYellow-10, 0.50);
   p->AddSample("WW", "VV", itBkg);
@@ -42,27 +45,24 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 	p->AddSample("DoubleMuon", "Data", itData);
   p->AddSample("T2tt_mStop175_mLsp1" , "T2tt-175-1" , itSignal, kGreen+0, 0.10);
   p->AddSample("T2tt_mStop250_mLsp75", "T2tt-250-75", itSignal, kGreen+4, 0.10);
-  p->AddSample("TTbar_Powheg_ueUp", "ttbar", itSys, 1, 0, "ueUp"); 
-  p->AddSample("TTbar_Powheg_ueDown", "ttbar", itSys, 1, 0, "ueDown"); 
-  p->AddSample("TTbar_Powheg_isrUp", "ttbar", itSys, 1, 0, "isrUp"); 
-  p->AddSample("TTbar_Powheg_isrDown", "ttbar", itSys, 1, 0, "isrDown"); 
-  p->AddSample("TTbar_Powheg_fsrUp", "ttbar", itSys, 1, 0, "fsrUp"); 
-  p->AddSample("TTbar_Powheg_fsrDown", "ttbar", itSys, 1, 0, "fsrDown"); 
+ // p->AddSample("TTbar_Powheg_ueUp", "ttbar", itSys, 1, 0, "ueUp"); 
+ // p->AddSample("TTbar_Powheg_ueDown", "ttbar", itSys, 1, 0, "ueDown"); 
+ // p->AddSample("TTbar_Powheg_isrUp", "ttbar", itSys, 1, 0, "isrUp"); 
+ // p->AddSample("TTbar_Powheg_isrDown", "ttbar", itSys, 1, 0, "isrDown"); 
+ // p->AddSample("TTbar_Powheg_fsrUp", "ttbar", itSys, 1, 0, "fsrUp"); 
+ // p->AddSample("TTbar_Powheg_fsrDown", "ttbar", itSys, 1, 0, "fsrDown"); 
   //p->AddSample("TTJets_aMCatNLO", "ttbar", itSys, 1, 0, "nlo"); 
 
   p->AddSystematic("JES,Btag,MisTag");
-  //p->AddSystematic("Btag");
-  //p->AddSystematic("MisTag");
-  //p->AddSystematic("LepEff");
-  //p->PrintYields();
-  //p->doSetLogy = false;
-  //p->DrawStack("0", 1);
+  p->PrintYields();
+  p->doSetLogy = false;
+  p->DrawStack("0", 1);
   p->doSetLogy = true;
   p->DrawStack("0_log", 1);
+  p->MakeAllDatacards();
   p->PrintSystematics();
-  //p->PrintSystYields();
+  p->PrintSystYields();
   delete p;
-
 }
 
 
