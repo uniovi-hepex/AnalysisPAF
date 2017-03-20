@@ -170,7 +170,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 
 	// Output dir and tree name
 	//----------------------------------------------------------------------------
-	TString outputDir = "./" + tagSel[sel] + "_temp2";
+	TString outputDir = "./" + tagSel[sel] + "_temp";
 	if(sampleName.BeginsWith("T2tt")) outputDir += "/T2tt/";
 	gSystem->mkdir(outputDir, kTRUE);
 	if(sampleName.Contains("_ext2")) sampleName.ReplaceAll("_ext2",""); 
