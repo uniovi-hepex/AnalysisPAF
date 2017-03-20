@@ -274,6 +274,7 @@ Bool_t EventBuilder::TrigElMu(){
 
 
 Bool_t EventBuilder::PassesMETfilters(){
+// https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2#Moriond_2017 <--- Check and update!!!
   if(!gIsData) return true; // only for data
   if (Get<Int_t>("Flag_HBHENoiseFilter") && 
       Get<Int_t>("Flag_HBHENoiseIsoFilter") && 
@@ -287,3 +288,31 @@ Bool_t EventBuilder::PassesMETfilters(){
   }
   else return false;
 }
+
+/*
+void  EventBuilder::SetCountLHE(){
+  for(Int_t i = 0; i < numberOfSamples; i++){
+    for(Int_t k = 1; k < nLHEWeight+1; k++){
+      if      (k<10  ) bin = i + 1001;   // 1002-1010: muRmuF
+      else if (k<112) bin = i + 1992;   // 2002-2103: NNPDF
+      else if (k<167) bin = i + 2890;   // 3002-3056: CT10
+      else if (k<223) bin = i + 3835;   // 4000-4057: MMHT2014
+      else if (k<250) bin = i + 4779;   // 5002-5028: muRmuF, hdamp 
+      CountLHE->SetBinContent(k, x0+x);
+    }
+  }
+}*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
