@@ -11,8 +11,8 @@ using namespace std;
 
 // enum 
 enum iSFs{
-  iMuonReco, iMuonId, iMuonIdSUSY, iMuonIsoTightId, iMuonIsoMediumId, iMuonIsoSUSY, iMuonIP2D, iMuonSIP3D,
-  iElecReco, iElecId, iElecIdSUSY, iElecIso, iElecIsoSUSY, iElecIP2D, iElecSIP3D,
+  iMuonReco, iMuonId, iMuonIdSUSY, iMuonIsoTightId, iMuonIsoMediumId, iMuonIsoSUSY, iMuonIP2D, iMuonSIP3D, iMuonIdFastSim, iMuonIsoFastSim,
+  iElecReco, iElecId, iElecIdSUSY, iElecIso, iElecIsoSUSY, iElecIP2D, iElecSIP3D, iElecFastSim,
   iTrigDoubleMuon, iTrigDoubleElec, iTrigElMu,
   nfiles
 };
@@ -31,6 +31,7 @@ enum sys{iNom,
   nSys
 };
 
+const Int_t nLHEWeight = 248;
 //enum eChannel{iElMu, iElec, iMuon, nChannels};
 
 bool LepMomentumComparator(Lepton i, Lepton j);

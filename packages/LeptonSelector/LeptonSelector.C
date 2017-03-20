@@ -19,6 +19,7 @@ void LeptonSelector::Summary(){}
 void LeptonSelector::Initialise(){
   // Initialise LeptonSelector
   gIsData        = GetParam<Bool_t>("IsData");
+  gIsFastSim   = GetParam<Bool_t>("IsFastSim");
   gSelection     = GetParam<Int_t>("iSelection");
   localPath      = GetParam<TString>("WorkingDir");
   LepSF = new LeptonSF(localPath + "/InputFiles/");
@@ -32,6 +33,11 @@ void LeptonSelector::Initialise(){
     LepSF->loadHisto(iMuonIsoSUSY,  iWPforStop);
     LepSF->loadHisto(iElecIdSUSY,   iWPforStop);
     LepSF->loadHisto(iElecIsoSUSY,   iWPforStop);
+    if(gIsFastSim){
+      LepSF->loadHisto(iElecFastSim);
+      LepSF->loadHisto(iMuonIdFastSim);
+      LepSF->loadHisto(iMuonIsoFastSim);
+    }
   }
   else if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
     LepSF->loadHisto(iMuonReco);
