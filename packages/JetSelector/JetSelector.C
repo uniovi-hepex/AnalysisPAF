@@ -29,12 +29,12 @@ void JetSelector::Initialise(){
   gIsData    = GetParam<Bool_t>("IsData");
   gSelection = GetParam<Int_t>("iSelection");
 
-  //---- Select your wp for b-tagging and pt, eta fot the jets
+  //---- Select your wp for b-tagging and pt, eta for the jets
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-  if      (gSelection == iStopSelec || iTopSelec)  stringWP = "Medium";
+  if      (gSelection == iStopSelec || gSelection == iTopSelec)  stringWP = "Medium";
   else if (gSelection == iWWSelec)    stringWP = "Loose";
   else                                stringWP = "Medium";
-  if     (gSelection == iStopSelec || iTopSelec){
+  if     (gSelection == iStopSelec || gSelection == iTopSelec){
     jet_MaxEta = 2.4;
     jet_MinPt  = 30;
     vetoJet_minPt = 20;
@@ -118,6 +118,7 @@ void JetSelector::InsideLoop(){
 
   // Loop over the jets
   nJet = Get<Int_t>("nJet");
+  cout << "nJet = " << nJet << endl;
   for(Int_t i = 0; i < nJet; i++){
     GetJetVariables(i);
     tJ = Jet(tpJ, csv, jetId, flavmc);
@@ -140,7 +141,8 @@ void JetSelector::InsideLoop(){
       GetJetFwdVariables(i);
       tJ = Jet(tpJ, csv, jetId, flavmc);
       tJ.isBtag = IsBtag(tJ);
-      if(tJ.id > 0 && Cleaning(tJ, Leptons, minDR) && TMath::Abs(tJ.p.Eta()) < jet_MaxEta){
+      
+      if(tJ.id > 0 && Cleaning(tJ, Leptons, minDR) && (TMath::Abs(tJ.p.Eta()) < jet_MaxEta)){
         SetSystematics(&tJ);
         tJ.isBtag = IsBtag(tJ);
         if(tJ.p.Pt() > 15 || tJ.pTJESUp > 15 || tJ.pTJESDown > 15) Jets15.push_back(tJ);

@@ -38,17 +38,23 @@ class WWAnalysis : public PAFChainItemSelector{
 		Int_t gChannel;
 		Bool_t passMETfilters;
 		Bool_t passTrigger;
-		Bool_t isSS;
+		Bool_t TIsSS;
 		Float_t NormWeight;
   
     // Tree Variables
 		Float_t TWeight;   // Total nominal weight
 		Float_t TMll;      // Invariant mass
+		Float_t TPtdil;      // Dilepton pT
 		Float_t TMET;      // MET
 		Float_t TMET_Phi;  // MET phi
+		Float_t TMT2;     // Invariant mass transverse 2
+		Float_t TMT;
+		Float_t TMTprime;
+		Float_t TDeltaPhi;
 
 		Int_t   TNVetoLeps;
 		Int_t   TNSelLeps;
+		Int_t   TNVetoJets;
 		Int_t TChannel;
 		Float_t TLep_Pt[10];    
 		Float_t TLep_Eta[10];
@@ -84,6 +90,7 @@ class WWAnalysis : public PAFChainItemSelector{
 		Float_t TMETJESDown;
 		Float_t TMT2llJESUp;
 		Float_t TMT2llJESDown;
+
 
 		Float_t  TWeight_LepEffUp;
 		Float_t  TWeight_LepEffDown;
