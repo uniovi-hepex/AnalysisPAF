@@ -251,6 +251,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	myProject->AddSelectorPackage("JetSelector");
 	myProject->AddSelectorPackage("EventBuilder");
 	if      (sel == iStopSelec)  myProject->AddSelectorPackage("StopAnalysis");
+	else if (sel == ittDMSelec)  myProject->AddSelectorPackage("ttDM");
 	else if (sel == iTopSelec )  myProject->AddSelectorPackage("TopAnalysis");
 	else if (sel == iTWSelec  ){
 	  myProject->AddSelectorPackage("TopAnalysis");
