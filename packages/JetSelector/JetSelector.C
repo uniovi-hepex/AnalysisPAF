@@ -21,7 +21,10 @@ JetSelector::JetSelector() : PAFChainItemSelector() {
   fBTagSFbDo = 0;
   fBTagSFlUp = 0;
   fBTagSFlDo = 0;
-
+  minDR = 0;
+  jet_MaxEta = 0;
+  jet_MinPt = 0;
+  vetoJet_minPt = 0;
 }
 void JetSelector::Summary(){}
 
@@ -29,12 +32,12 @@ void JetSelector::Initialise(){
   gIsData    = GetParam<Bool_t>("IsData");
   gSelection = GetParam<Int_t>("iSelection");
 
-  //---- Select your wp for b-tagging and pt, eta fot the jets
+  //---- Select your wp for b-tagging and pt, eta for the jets
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-  if      (gSelection == iStopSelec || gSelection == iTopSelec)  stringWP = "Medium";
+  if      (gSelection == iStopSelec || gSelection == iTopSelec || gSelection == ittDMSelec)  stringWP = "Medium";
   else if (gSelection == iWWSelec)    stringWP = "Loose";
   else                                stringWP = "Medium";
-  if     (gSelection == iStopSelec || iTopSelec){
+  if     (gSelection == iStopSelec || gSelection == iTopSelec || gSelection == ittDMSelec){
     jet_MaxEta = 2.4;
     jet_MinPt  = 30;
     vetoJet_minPt = 20;
@@ -135,7 +138,6 @@ void JetSelector::InsideLoop(){
     }
   }
   if(jet_MaxEta > 2.4){ // Add jets from JetFwd collection
-    cout << "Adding Fwd jet..." << endl;
     nJet = Get<Int_t>("nJetFwd");
     for(Int_t i = 0; i < nJet; i++){
       GetJetFwdVariables(i);
