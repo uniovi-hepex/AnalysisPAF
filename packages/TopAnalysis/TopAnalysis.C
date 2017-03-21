@@ -311,8 +311,8 @@ void TopAnalysis::FillHistos(Int_t ch, Int_t cut){
   Float_t EventWeight = TWeight;
 
   fHMET[ch][cut][sys]         -> Fill(TMET, EventWeight);
-  fHLep0Eta[ch][cut][sys]     -> Fill(TLep_Eta[0], EventWeight);
-  fHLep1Eta[ch][cut][sys]     -> Fill(TLep_Eta[1], EventWeight);
+  fHLep0Eta[ch][cut][sys]     -> Fill(TMath::Abs(TLep_Eta[0]), EventWeight);
+  fHLep1Eta[ch][cut][sys]     -> Fill(TMath::Abs(TLep_Eta[1]), EventWeight);
   fHLep0Pt[ch][cut][sys]      -> Fill(TLep_Pt[0], EventWeight);
   fHLep1Pt[ch][cut][sys]      -> Fill(TLep_Pt[1], EventWeight);
   fHDiLepPt[ch][cut][sys]      -> Fill((selLeptons[0].p + selLeptons[1].p).Pt(), EventWeight);
