@@ -68,10 +68,10 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
     VTagProcesses.push_back(pr);
     n = VSignals.size();
     for(i = 0; i < n; i++){
-      if(t == VSignals.at(i)->GetTag()){ // Group backgrounds
-	VSignals.at(i)->Add((TH1F*) h); 
-	VSignals.at(i)->SetStyle(); VSignals.at(i)->SetStatUnc();
-	return;
+      if(t == VSignals.at(i)->GetTag()){ // Group signals 
+        VSignals.at(i)->Add((TH1F*) h); 
+        VSignals.at(i)->SetStyle(); VSignals.at(i)->SetStatUnc();
+        return;
       }
     }
 
@@ -321,6 +321,9 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm){
   else signal = VSignals.at(0);
   yield = VSignals.at(0)->Integral();
   if(doNorm) signal->Scale(1/yield);
+  signal->SetTitle("");
+  signal->SetLineWidth(2);
+  signal->GetXaxis()->SetLabelSize(0.0);
   signal->Draw("pe");
   float max = VSignals.at(0)->GetMaximum();
 
@@ -332,7 +335,9 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm){
     VSignals.at(i)->Draw("pesame");
   }
   VSignals.at(0)->SetMaximum(themax*1.1);
+  VSignals.at(0)->SetMinimum(0.);
   TLegend* leg = SetLegend();
+  leg->SetTextSize(0.041);
   leg->Draw("same");
 
   pratio->cd();
@@ -504,13 +509,15 @@ void Plot::SaveHistograms(){
     nom->SetName(nom->GetProcess());
     nbins = nom->GetNbinsX();
     nom->Write();
-    if(nom->GetType() == itSys) continue; // no stat for systematics
-    for(int j = 1; j <= nbins; j++){
-      statup   = nom->GetVarHistoStatBin(j, "up");
-      statdown = nom->GetVarHistoStatBin(j, "down");
-      statup  ->SetName(nom->GetProcess() + "_" + nom->GetProcess() + "_" + chan + Form("_statbin%i", j) + "Up");
-      statdown->SetName(nom->GetProcess() + "_" + nom->GetProcess() + "_" + chan + Form("_statbin%i", j) + "Down");
-      statup  ->Write(); statdown->Write();
+    if(doStatUncInDatacard){
+      if(nom->GetType() == itSys) continue; // no stat for systematics
+      for(int j = 1; j <= nbins; j++){
+        statup   = nom->GetVarHistoStatBin(j, "up");
+        statdown = nom->GetVarHistoStatBin(j, "down");
+        statup  ->SetName(nom->GetProcess() + "_" + nom->GetProcess() + "_" + chan + Form("_statbin%i", j) + "Up");
+        statdown->SetName(nom->GetProcess() + "_" + nom->GetProcess() + "_" + chan + Form("_statbin%i", j) + "Down");
+        statup  ->Write(); statdown->Write();
+      }
     }
   }
   TString namesignal;
@@ -521,12 +528,14 @@ void Plot::SaveHistograms(){
     nom->SetName(namesignal);
     nbins = nom->GetNbinsX();
     nom->Write();
-    for(int j = 1; j <= nbins; j++){
-      statup   = nom->GetVarHistoStatBin(j, "up");
-      statdown = nom->GetVarHistoStatBin(j, "down");
-      statup  ->SetName(namesignal + "_" + namesignal + "_" + chan + Form("_statbin%i", j) + "Up");
-      statdown->SetName(namesignal + "_" + namesignal + "_" + chan + Form("_statbin%i", j) + "Down");
-      statup  ->Write(); statdown->Write();
+    if(doStatUncInDatacard){
+      for(int j = 1; j <= nbins; j++){
+        statup   = nom->GetVarHistoStatBin(j, "up");
+        statdown = nom->GetVarHistoStatBin(j, "down");
+        statup  ->SetName(namesignal + "_" + namesignal + "_" + chan + Form("_statbin%i", j) + "Up");
+        statdown->SetName(namesignal + "_" + namesignal + "_" + chan + Form("_statbin%i", j) + "Down");
+        statup  ->Write(); statdown->Write();
+      }
     }
   }
   for(int i = 0; i < (Int_t) VSyst.size(); i++){
@@ -621,10 +630,9 @@ void Plot::MakeDatacard(TString tag, Int_t iSignal){
   for(int i = 0; i < nBkgs+1; i++){ out += Form(" %1.3f ", 1+sys_lumi);}
   out += TString("\n");
   outputfile << out;
-  
+ 
   for(int i = 0; i < nBkgs+1; i++){
-    if(i<nBkgs)
-      out = VBkgs[i]->GetProcess() + " lnN ";
+    if(i<nBkgs)  out = VBkgs[i]->GetProcess() + " lnN ";
 
     else{
       out = hSignal ->GetProcess() + " lnN ";
@@ -638,8 +646,7 @@ void Plot::MakeDatacard(TString tag, Int_t iSignal){
 	else        out += Form(" %1.2f ", 1+hSignal->GetSysNorm()); 
       }
     }
-    if( (i<nBkgs && 	VBkgs[i]->GetSysNorm() < 0) || (i == nBkgs && hSignal ->GetSysNorm() < 0))
-      continue;
+    if( (i<nBkgs && 	VBkgs[i]->GetSysNorm() < 0) || (i == nBkgs && hSignal ->GetSysNorm() < 0))    continue;
 
     out += TString("\n");
     outputfile << out;
@@ -734,12 +741,8 @@ void Plot::MakeDatacardBin(Int_t bin, TString tag, Int_t iSignal){
   outputfile << out;
 
   for(int i = 0; i < nBkgs+1; i++){
-    if(i<nBkgs)
-      out = VBkgs[i]->GetProcess() + " lnN ";
-
-    else
-      out = hSignal ->GetProcess() + " lnN ";
-    
+    if(i<nBkgs)  out = VBkgs[i]->GetProcess() + " lnN ";
+    else  out = hSignal ->GetProcess() + " lnN ";
     for(int j = 0; j < nBkgs+1; j++){
       if(j != i) out += TString(" - ");
       else{
@@ -748,8 +751,7 @@ void Plot::MakeDatacardBin(Int_t bin, TString tag, Int_t iSignal){
       }
     }
 
-    if( (i<nBkgs && 	VBkgs[i]->GetSysNorm() < 0) || (i == nBkgs && hSignal ->GetSysNorm() < 0))
-      continue;
+    if( (i<nBkgs && 	VBkgs[i]->GetSysNorm() < 0) || (i == nBkgs && hSignal ->GetSysNorm() < 0))  continue;
 	  
     out += TString("\n");
     outputfile << out;

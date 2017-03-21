@@ -34,6 +34,7 @@ public:
   bool doSignal        = true;
   bool doSetLogy       = true;
   bool doStackSignal   = false;
+  bool doStatUncInDatacard = true;
 
   std::vector<Histo*> VBkgs;
   std::vector<Histo*> VSignals;
