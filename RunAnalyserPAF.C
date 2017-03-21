@@ -170,7 +170,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 
 	// Output dir and tree name
 	//----------------------------------------------------------------------------
-	TString outputDir = "./" + tagSel[sel] + "_temp";
+	TString outputDir = "./" + tagSel[sel] + "_temp2";
 	if(sampleName.BeginsWith("T2tt")) outputDir += "/T2tt/";
 	gSystem->mkdir(outputDir, kTRUE);
 	if(sampleName.Contains("_ext2")) sampleName.ReplaceAll("_ext2",""); 
@@ -252,7 +252,10 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	myProject->AddSelectorPackage("EventBuilder");
 	if      (sel == iStopSelec)  myProject->AddSelectorPackage("StopAnalysis");
 	else if (sel == iTopSelec )  myProject->AddSelectorPackage("TopAnalysis");
-	else if (sel == iTWSelec  )  myProject->AddSelectorPackage("TopAnalysis");
+	else if (sel == iTWSelec  ){
+	  myProject->AddSelectorPackage("TopAnalysis");
+	  myProject->AddSelectorPackage("TWAnalysis");
+	}
 	else if (sel == iWWSelec  )  myProject->AddSelectorPackage("WWAnalysis");
 	else                         myProject->AddSelectorPackage("CreateMiniTree");
 

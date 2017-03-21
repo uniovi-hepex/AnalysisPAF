@@ -66,6 +66,7 @@ TString CraftFormula(TString cuts, TString chan, TString sys){
 
   else if(sys == "JESUp"){
     cuts = ( ((TString) cuts).ReplaceAll("TNJets", "TNJetsJESUp"));   
+    cuts = ( ((TString) cuts).ReplaceAll("TNBtags", "TNBtagsJESUp"));   
     cuts = ( ((TString) cuts).ReplaceAll("TMET", "TMETJESUp"));   
     cuts = ( ((TString) cuts).ReplaceAll("TMT2ll", "TMT2llJESUp"));   
     cuts = ( ((TString) cuts).ReplaceAll("THT", "THTJESUp"));   
@@ -73,6 +74,7 @@ TString CraftFormula(TString cuts, TString chan, TString sys){
   }
   else if(sys == "JESDown"){
     cuts = ( ((TString) cuts).ReplaceAll("TNJets", "TNJetsJESDown"));   
+    cuts = ( ((TString) cuts).ReplaceAll("TNBtags", "TNBtagsJESDown"));   
     cuts = ( ((TString) cuts).ReplaceAll("TMET", "TMETJESDown"));   
     cuts = ( ((TString) cuts).ReplaceAll("TMT2ll", "TMT2llJESDown"));   
     cuts = ( ((TString) cuts).ReplaceAll("THT", "THTJESDown"));   

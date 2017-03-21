@@ -183,6 +183,15 @@ void TopAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector
   else if(selLeptons.at(0).isMuon && selLeptons.at(1).isMuon) gChannel = 2;
   else if(selLeptons.at(0).isElec && selLeptons.at(1).isElec) gChannel = 3;
   if(TNSelLeps > 1) TMll = (selLeptons.at(0).p + selLeptons.at(1).p).M();      
+  TChannel = gChannel;
+  
+  bool TIsOSDilep = false;
+  if (TNSelLeps >= 2)
+    TIsOSDilep = passTrigger && passMETfilters && (!isSS) && ((selLeptons.at(0).p + selLeptons.at(1).p).M() > 20) && selLeptons.at(0).p.Pt() > 25;
+  else
+    TIsOSDilep = false;
+
+  SetParam("TIsOSDilep",TIsOSDilep);
 }
 
 void TopAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut){
@@ -225,6 +234,9 @@ void TopAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cle
       TJetJER_Pt[i] = cleanedJets15.at(i).pTJERUp;
     }
   }
+  SetParam("TNJets",TNJets);
+  SetParam("TNBtags",TNBtags);
+  
 }
 
 void TopAnalysis::GetMET(){
@@ -360,6 +372,8 @@ void TopAnalysis::SetJetVariables(){
   fTree->Branch("THT",          &THT,          "THT/F");
   fTree->Branch("THTJESUp",     &THTJESUp,     "THTJESUp/F");
   fTree->Branch("THTJESDown",   &THTJESDown,   "THTJESDown/F");
+
+
 }
 
 void TopAnalysis::SetEventVariables(){
@@ -376,3 +390,5 @@ void TopAnalysis::SetEventVariables(){
   fTree->Branch("TMETJESUp",    &TMETJESUp,    "TMETJESUp/F");
   fTree->Branch("TMETJESDown",  &TMETJESDown,  "TMETJESDown/F");
 }
+
+
