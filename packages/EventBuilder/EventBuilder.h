@@ -8,7 +8,9 @@
 class EventBuilder : public PAFChainItemSelector{
 
   public:
-
+    
+    std::vector<Float_t> CountLHE;
+    std::vector<Float_t> LHEWeights;
 
     EventBuilder();
     virtual ~EventBuilder(){}
@@ -65,7 +67,10 @@ class EventBuilder : public PAFChainItemSelector{
     Int_t run;
     Int_t   gSelection;
     TString gSampleName;
+    TString gPathToHeppyTrees;
     Bool_t  gIsMCatNLO;
+    
+    void SetCountLHE();
 
     ClassDef(EventBuilder, 0);
 };

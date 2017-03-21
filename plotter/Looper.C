@@ -8,6 +8,7 @@ TString CraftVar(TString varstring, TString sys){
     var = var.ReplaceAll("TMT2ll", "TMT2llJESUp");
     var = var.ReplaceAll("THT", "THTJESUp");
     var = var.ReplaceAll("TJet_Pt", "TJetJESUp_Pt");
+    var = var.ReplaceAll("TNBtags", "TNBtagsJESUp");
   }
   else if(sys == "JESDown"){
     var = var.ReplaceAll("TNJets", "TNJetsJESDown");
@@ -15,6 +16,7 @@ TString CraftVar(TString varstring, TString sys){
     var = var.ReplaceAll("TMT2ll", "TMT2llJESDown");
     var = var.ReplaceAll("THT", "THTJESDown");
     var = var.ReplaceAll("TJet_Pt", "TJetJESDown_Pt");
+    var = var.ReplaceAll("TNBtags", "TNBtagsJESDown");
   }
   else if(sys == "JER"){
     var = var.ReplaceAll("TNBtags", "TNJetsJER");
@@ -64,6 +66,7 @@ TString CraftFormula(TString cuts, TString chan, TString sys){
 
   else if(sys == "JESUp"){
     cuts = ( ((TString) cuts).ReplaceAll("TNJets", "TNJetsJESUp"));   
+    cuts = ( ((TString) cuts).ReplaceAll("TNBtags", "TNBtagsJESUp"));   
     cuts = ( ((TString) cuts).ReplaceAll("TMET", "TMETJESUp"));   
     cuts = ( ((TString) cuts).ReplaceAll("TMT2ll", "TMT2llJESUp"));   
     cuts = ( ((TString) cuts).ReplaceAll("THT", "THTJESUp"));   
@@ -71,6 +74,7 @@ TString CraftFormula(TString cuts, TString chan, TString sys){
   }
   else if(sys == "JESDown"){
     cuts = ( ((TString) cuts).ReplaceAll("TNJets", "TNJetsJESDown"));   
+    cuts = ( ((TString) cuts).ReplaceAll("TNBtags", "TNBtagsJESDown"));   
     cuts = ( ((TString) cuts).ReplaceAll("TMET", "TMETJESDown"));   
     cuts = ( ((TString) cuts).ReplaceAll("TMT2ll", "TMT2llJESDown"));   
     cuts = ( ((TString) cuts).ReplaceAll("THT", "THTJESDown"));   

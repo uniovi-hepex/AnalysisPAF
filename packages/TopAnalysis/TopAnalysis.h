@@ -6,11 +6,11 @@
 #include <vector>
 
 enum eChannels{iUnkChan, iElMu, iMuon, iElec, nChannels};
-enum eLevels  {idilepton, i2jets, i1btag, nLevels};
+enum eLevels  {idilepton, iZVeto, iMETcut, i2jets, i1btag, nLevels};
 enum eSysts   {inorm, nSysts};
 const int nWeights = 248;
 const TString gChanLabel[nChannels] = {"X", "ElMu", "Muon","Elec"};
-const TString sCut[nLevels] = {"dilepton", "2jets", "1btag"};
+const TString sCut[nLevels] = {"dilepton", "ZVeto", "MET", "2jets", "1btag"};
 const TString gSys[nSysts] = {"0"};
 
 
@@ -86,6 +86,8 @@ class TopAnalysis : public PAFChainItemSelector{
     Int_t   TNBtagsDown;
     Int_t   TNBtagsMisTagUp;
     Int_t   TNBtagsMisTagDown;
+    Int_t   TNBtagsJESUp;
+    Int_t   TNBtagsJESDown;
     Float_t TJetJESUp_Pt[20];
     Float_t TJetJESDown_Pt[20];
     Float_t TJetJER_Pt[20];
@@ -141,6 +143,8 @@ class TopAnalysis : public PAFChainItemSelector{
     Bool_t  gDoSyst;
     Int_t   gSelection;
     TString gSampleName;
+    Bool_t  gIsTTbar;
+    Bool_t  gIsTW;
 
     ClassDef(TopAnalysis, 0);
 };

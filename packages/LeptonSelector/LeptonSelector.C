@@ -19,6 +19,7 @@ void LeptonSelector::Summary(){}
 void LeptonSelector::Initialise(){
   // Initialise LeptonSelector
   gIsData        = GetParam<Bool_t>("IsData");
+  gIsFastSim   = GetParam<Bool_t>("IsFastSim");
   gSelection     = GetParam<Int_t>("iSelection");
   localPath      = GetParam<TString>("WorkingDir");
   LepSF = new LeptonSF(localPath + "/InputFiles/");
@@ -32,6 +33,11 @@ void LeptonSelector::Initialise(){
     LepSF->loadHisto(iMuonIsoSUSY,  iWPforStop);
     LepSF->loadHisto(iElecIdSUSY,   iWPforStop);
     LepSF->loadHisto(iElecIsoSUSY,   iWPforStop);
+    if(gIsFastSim){
+      LepSF->loadHisto(iElecFastSim);
+      LepSF->loadHisto(iMuonIdFastSim);
+      LepSF->loadHisto(iMuonIsoFastSim);
+    }
   }
   else if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
     LepSF->loadHisto(iMuonReco);
@@ -271,14 +277,14 @@ void LeptonSelector::InsideLoop(){
     ngenLepFromTau  = Get<Int_t>("ngenLepFromTau");
     for(Int_t i = 0; i < ngenLep; i++){
       GetGenLeptonVariables(i);
-      if(gpdgMId == 24 || gpdgMId == 25 || gpdgMId == 25){
+      if(gpdgMId == 23 || gpdgMId == 24 || gpdgMId == 25){
         tL = Lepton(tP, charge, type);
         genLeptons.push_back(tL);
       } 
     }
     for(Int_t i = 0; i < ngenLepFromTau; i++){
       GetGenLepFromTauVariables(i);
-      if(gpdgMId == 24 || gpdgMId == 25 || gpdgMId == 25){
+      if(gpdgMId == 23 || gpdgMId == 24 || gpdgMId == 25){
         tL = Lepton(tP, charge, type);
         nLeptonsFromTau++;
         genLeptons.push_back(tL);

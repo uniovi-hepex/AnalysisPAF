@@ -136,6 +136,7 @@ void JetSelector::InsideLoop(){
     }
   }
   if(jet_MaxEta > 2.4){ // Add jets from JetFwd collection
+    cout << "Adding Fwd jet..." << endl;
     nJet = Get<Int_t>("nJetFwd");
     for(Int_t i = 0; i < nJet; i++){
       GetJetFwdVariables(i);
@@ -193,7 +194,7 @@ void JetSelector::InsideLoop(){
 Bool_t JetSelector::IsBtag(Jet j){
   Bool_t isbtag;
   if(gIsData) isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta());
-  else if(stringWP == "Loose") isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta());
+  else if(stringWP == "Loose") isbtag = Get<Float_t>("Jet_csv");//fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta());
   else        isbtag = fBTagSFnom->IsTagged(j.csv,j.flavmc, j.p.Pt(), j.p.Eta());
   return isbtag;
 }
