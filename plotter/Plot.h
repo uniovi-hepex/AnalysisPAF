@@ -11,6 +11,7 @@
 #include "TLatex.h"
 #include "TString.h"
 #include <iostream>
+#include "TResultsTable.h"
 
 //##################################################
 //# Configuration
@@ -45,6 +46,7 @@ public:
   std::vector<Histo*> VSumHistoSystDown;
   std::vector<TString> VSystLabel;
   std::vector<TString> VTagSamples;
+  std::vector<TString> VTagDataSamples;
   std::vector<TString> VTagProcesses;
   Histo* hData = NULL;
   THStack* hStack = NULL;
@@ -60,8 +62,6 @@ public:
   Float_t* TotalSysUp = NULL;
   Float_t* TotalSysDown = NULL;
   TString sys = "0";
-  TString  title;
-  TString xtitle;
 
   Float_t sys_lumi = 0.026;
 
@@ -69,15 +69,16 @@ public:
 		plotFolder = DefaultPlotfolder; 
     limitFolder = DefaultLimitFolder; 
     Lumi = DefaultLumi;
+    nSignalSamples = 0;
   }
-  Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Double_t bin0 = 0, Double_t binN = 0, TString tit = "My plot", TString xtit = "VAR"){
+  Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Double_t bin0 = 0, Double_t binN = 0, TString tit = "title", TString xtit = "VAR"){
     var    = variable;
     cut    = (cuts);
     chan   = channel;
     nb     = nbins;
     x0     = bin0;
     xN     = binN;
-    title  = tit;
+    title = tit;
     xtitle = xtit;
     varname = variable; if(variable.Contains(" ")) TString(variable(0,variable.First(" ")));
 
@@ -93,6 +94,7 @@ public:
 		VSumHistoSystDown =  std::vector<Histo*>();
     VSystLabel = std::vector<TString>();
     VTagSamples = std::vector<TString>();
+    VTagDataSamples = std::vector<TString>();
     VTagProcesses = std::vector<TString>();
     hData = NULL;
     hStack = NULL;
@@ -106,7 +108,7 @@ public:
     hratio = NULL;
     TotalSysUp = NULL;
     TotalSysDown = NULL;
-
+    nSignalSamples = 0;
   }
 	virtual ~Plot(){
 		//if(plot) delete plot;
@@ -123,6 +125,7 @@ public:
 		VSumHistoSystDown.clear();
 		VSystLabel.clear();
 		VTagSamples.clear();
+		VTagDataSamples.clear();
 		VTagProcesses.clear();
 		if(hratio) delete hratio;
 		if(TotalSysUp) delete TotalSysUp;
@@ -208,6 +211,9 @@ public:
   void PrintYields();
 	void PrintSystYields();
 	Float_t GetYield(TString pr = "ttbar", TString systag = "0");
+  Float_t GetTotalSystematic(TString pr);
+  Int_t GetColorOfProcess(TString pr);
+  Plot* NewPlot(TString newVar = "", TString newCut = "", TString newChan = "", Int_t newnbins = -1, Float_t newbin0 = -999, Float_t newbinN = -999, TString newtitle = "", TString newXtitle = "");
 
 protected: 
   TString pathToHeppyTrees = "";
@@ -215,6 +221,7 @@ protected:
   TString pathSignal = "";
   TString treeName = "";
   TString outputName = "";
+  Int_t nSignalSamples;
   
   TString varname = "";
 	TString var;
@@ -222,6 +229,8 @@ protected:
   TString signal;
   TString cut;
   Int_t nb; Double_t x0; Double_t xN;
+  TString  title;
+  TString xtitle;
 
   TString SystVar;
   Int_t iS;
