@@ -220,7 +220,7 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
     } 
     return passId && passIso && getGoodVertex(iTight) && getSIPcut(4);
   }
-  else if(gSelection == iTopSelec){
+  else if(gSelection == iTopSelec || gSelection == iTWSelec){
     return true;
   }
   else if(gSelection == iWWSelec){
