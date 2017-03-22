@@ -37,20 +37,30 @@ void JetSelector::Initialise(){
   if      (gSelection == iStopSelec || gSelection == iTopSelec || gSelection == ittDMSelec || gSelection == iTWSelec)  stringWP = "Medium";
   else if (gSelection == iWWSelec)    stringWP = "Loose";
   else                                stringWP = "Medium";
-  if     (gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iTWSelec || gSelection == ittDMSelec){
+  if     (gSelection == iStopSelec || gSelection == iTopSelec || gSelection == ittDMSelec){
     jet_MaxEta = 2.4;
     jet_MinPt  = 30;
     vetoJet_minPt = 20;
+    vetoJet_maxEta = 2.4;
+    minDR = 0.4;
+  }
+  else if (gSelection == iTWSelec){
+    jet_MaxEta = 4.7;
+    jet_MinPt  = 30;
+    vetoJet_minPt = 20;
+    vetoJet_maxEta = 2.4;
     minDR = 0.4;
   }
   else if(gSelection == iWWSelec){
     jet_MaxEta = 4.7;
     jet_MinPt  = 30;
     vetoJet_minPt = 20;
+    vetoJet_maxEta = 2.4;
     minDR = 0.4;
   }
   else{
     jet_MaxEta = 2.4;
+    vetoJet_maxEta = 2.4;
     jet_MinPt  = 30;
     vetoJet_minPt = 20;
     minDR = 0.4;
@@ -126,32 +136,44 @@ void JetSelector::InsideLoop(){
     tJ = Jet(tpJ, csv, jetId, flavmc);
     tJ.isBtag = IsBtag(tJ);
     // Fill the vectors
-    if(tJ.id > 0 && Cleaning(tJ, Leptons, minDR) && TMath::Abs(tJ.p.Eta()) < jet_MaxEta){
+    if(tJ.id > 0 && Cleaning(tJ, Leptons, minDR)){
       SetSystematics(&tJ);
       tJ.isBtag = IsBtag(tJ);
-      if(tJ.p.Pt() > 15 || tJ.pTJESUp > 15 || tJ.pTJESDown > 15) Jets15.push_back(tJ);
-      if(tJ.isBtag && tJ.p.Pt() > vetoJet_minPt) vetoJets.push_back(tJ);
-      if(tJ.p.Pt() > jet_MinPt){
-        selJets.push_back(tJ);
-        if(tJ.isBtag) nBtagJets++; 
-      } 
+      if (TMath::Abs(tJ.p.Eta()) < jet_MaxEta){
+	if(tJ.p.Pt() > 15 || tJ.pTJESUp > 15 || tJ.pTJESDown > 15 ) Jets15.push_back(tJ);
+	if(tJ.p.Pt() > jet_MinPt){
+	  selJets.push_back(tJ);
+	  if(tJ.isBtag) nBtagJets++; 
+	} 
+      }
+      if (tJ.p.Pt() > vetoJet_minPt && tJ.p.Eta() < vetoJet_maxEta){
+	if (gSelection == iWWSelec && tJ.isBtag) vetoJets.push_back(tJ);
+	else if (gSelection == iTWSelec)          vetoJets.push_back(tJ);
+	else                                      vetoJets.push_back(tJ);
+      }
     }
   }
-  if(jet_MaxEta > 2.4){ // Add jets from JetFwd collection
+  if(jet_MaxEta > 2.4 || vetoJet_maxEta > 2.4){ // Add jets from JetFwd collection
     nJet = Get<Int_t>("nJetFwd");
     for(Int_t i = 0; i < nJet; i++){
       GetJetFwdVariables(i);
       tJ = Jet(tpJ, csv, jetId, flavmc);
       tJ.isBtag = IsBtag(tJ);
-      if(tJ.id > 0 && Cleaning(tJ, Leptons, minDR) && TMath::Abs(tJ.p.Eta()) < jet_MaxEta){
+      if(tJ.id > 0 && Cleaning(tJ, Leptons, minDR)){
         SetSystematics(&tJ);
         tJ.isBtag = IsBtag(tJ);
-        if(tJ.p.Pt() > 15 || tJ.pTJESUp > 15 || tJ.pTJESDown > 15) Jets15.push_back(tJ);
-        if(tJ.isBtag && tJ.p.Pt() > vetoJet_minPt) vetoJets.push_back(tJ);
-        if(tJ.p.Pt() > jet_MinPt){
-          selJets.push_back(tJ);
-          if(tJ.isBtag) nBtagJets++;
+	if (TMath::Abs(tJ.p.Eta()) < jet_MaxEta){
+	  if(tJ.p.Pt() > 15 || tJ.pTJESUp > 15 || tJ.pTJESDown > 15) Jets15.push_back(tJ);
+	  if(tJ.p.Pt() > jet_MinPt){
+	    selJets.push_back(tJ);
+	    if(tJ.isBtag) nBtagJets++;
+	  }
         }
+	if (tJ.p.Pt() > vetoJet_minPt && tJ.p.Eta() < vetoJet_maxEta){
+	  if (gSelection == iWWSelec && tJ.isBtag) vetoJets.push_back(tJ);
+	  else if (gSelection == iTWSelec)          vetoJets.push_back(tJ);
+	  else                                      vetoJets.push_back(tJ);
+	}
       }
     }
   }

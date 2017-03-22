@@ -17,6 +17,7 @@ class TWAnalysis : public PAFChainItemSelector{
     std::vector<Lepton> selLeptons  ;
     std::vector<Jet> selJets ;
     std::vector<Jet> Jets15  ;
+    std::vector<Jet> vetoJets;
 
     TTree* fTW1j1b;
     void SetTWVariables(); 
