@@ -274,18 +274,18 @@ Bool_t EventBuilder::TrigElMu(){
 
 
 Bool_t EventBuilder::PassesMETfilters(){
-// https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2#Moriond_2017 <--- Check and update!!!
-  if(!gIsData) return true; // only for data
-  if (Get<Int_t>("Flag_HBHENoiseFilter") && 
-      Get<Int_t>("Flag_HBHENoiseIsoFilter") && 
-      Get<Int_t>("Flag_EcalDeadCellTriggerPrimitiveFilter") && 
-      Get<Int_t>("Flag_goodVertices") && 
-      Get<Int_t>("Flag_eeBadScFilter") &&
-      Get<Int_t>("Flag_badMuonFilter") && 
-      Get<Int_t>("Flag_badChargedHadronFilter") &&  
-      Get<Int_t>("Flag_globalTightHalo2016Filter")){
-    return true;
-  }
+  // https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2#Moriond_2017  
+  if( (Get<Int_t>("Flag_HBHENoiseFilter") &&        // MET filters for data and MC
+        Get<Int_t>("Flag_HBHENoiseIsoFilter") && 
+        Get<Int_t>("Flag_EcalDeadCellTriggerPrimitiveFilter") && 
+        Get<Int_t>("Flag_goodVertices") && 
+        Get<Int_t>("Flag_badMuonFilter") && 
+        Get<Int_t>("Flag_badChargedHadronFilter"))
+      && (
+        gIsFastSim || // no more MET filters for Fast Sim
+        (!gIsData && Get<Int_t>("Flag_globalTightHalo2016Filter")) || // for MC
+        ( gIsData && Get<Int_t>("Flag_globalTightHalo2016Filter") && Get<Int_t>("Flag_eeBadScFilter")) ) // for Data
+    ) return true;
   else return false;
 }
 

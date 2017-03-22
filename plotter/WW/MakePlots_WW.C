@@ -7,49 +7,87 @@ R__LOAD_LIBRARY(Plot.C+)
 #include "Plot.h"
 
 
-TString path = "/nfs/fanae/user/dani/CERN/AnalysisPAF/WW_temp/"; 
+const Int_t nVar = 10;
+const Int_t nChan = 4;
+Int_t NBins;
+Int_t X0;
+Int_t XN;
 
-//selección de eventos ne las mismas funciones que plotean
+TString path = "/nfs/fanae/user/dani/CERN/AnalysisPAF/WW_temp/"; 
+TString Var[nVar] = {"TMET", "TMll", "TMT", "TPtdil", "TLep_Pt[0]", "TJet_Pt[0]", "TLep_Pt[1]", "TJet_Pt[1]", "TNJets", "TNBtags"}; //TDeltaPhi está quitado no está en las leaves
+TString Chan[nChan] = {"ElMu", "Muon", "Elec", "All"};
+TString CR;
+TString Cuts;
+
+//ttbar control region
+TString ttbarCut = "TNJets >= 2 && TNVetoJets >= 1 && !TIsSS";
+//Same sign control region
+TString SSCut = "TMET > 20 && TPtdil > 30 && TNVetoJets == 0 && TIsSS"; //dividirla en 0 jets y 1 jets
+//WW signal control region
+TString WWCut = "TMET > 20 && TPtdil > 30 && TNVetoJets == 0 && !TIsSS"; //dividirla en 0 jets y 1 jets 
+//DY control region
+TString DYCut = "TMET > 20 && TPtdil > 30 && TNVetoJets == 0 && !TIsSS"; //dividirla en 0 jets, 1 jets e inclusiva
+
+
+
+
+
+
+void Draw(TString var, TString cuts, TString chan, Int_t nbins, Int_t x0, Int_t xN, TString xlabel, TString tag, TString plotFolder = "");
+void LoopDrawCR(TString CR);
+
+//selección en CR de control región en la función LoopDrawCR( ) que plotea regiones de control
+//=======================================================================================================================
+
+
+void LoopDrawCR(TString CR){
+	
+	if(CR == "SS") Cuts = SSCut;
+	if(CR == "ttbar") Cuts = ttbarCut;
+	if(CR == "OS") Cuts = OSCut;
+	if(CR == "WW") Cuts = WWCut;
+				
+	for(Int_t i=0 ; i < nVar ; i++){
+		if( i >= 0 && i <= 5){
+			NBins = 40;
+			X0 = 0;
+			XN = 400;
+		}
+		else NBins = 4 , X0 = 0 , XN = 4;
+			
+		for(Int_t j=0; j < nChan ; j++){
+			Draw(Var[i], Cuts + "&& TNJets == 0", Chan[j], NBins, X0, XN, Var[i], "0jets", CR+"/"+Chan[j]);
+			if((CR == "SS") || (CR == "WW")){
+				Draw(Var[i], Cuts + "&& TNJets == 1", Chan[j], NBins, X0, XN, Var[i], "1jets", CR+"/"+Chan[j]);
+			}; 
+		};		
+	};	
+};
+
+
+//selección de eventos en la función MakePlots_WW() que plotea
 //=======================================================================================
 
-void Draw(TString var, TString cuts, TString chan, Int_t nbins, Int_t x0, Int_t xN, TString xlabel, TString tag );
 
 void MakePlots_WW(){
   
-   Draw("TMT", "TMll > 20 && TNJets == 0 && TNVetoJets == 0 && TPtdil > 30 && !TIsSS && TMET > 20", "ElMu", 30, 0, 300, "M_T [GeV]", "0jets");
-   Draw("TMll", "TMll > 20 && TNJets == 0 && TNVetoJets == 0 && TPtdil > 30 && !TIsSS && TMET > 20", "ElMu", 40, 0, 400, "InvMass [GeV]", "0jets");
-   Draw("TMET", "TMll > 20 && TNJets == 0 && TNVetoJets == 0 && TPtdil > 30 &&  !TIsSS && TMET > 20", "ElMu", 40, 0, 400, "MET [GeV]", "0jets");
-   Draw("TPtdil", "TMll > 20 && TNJets == 0 && TNVetoJets == 0 && TPtdil > 30 &&  !TIsSS && TMET > 20", "ElMu", 40, 0, 400, "Ptll [GeV]", "0jets");
-   Draw("TJet_Eta[0]", "TMll > 20 && TNJets == 0  && TNVetoJets == 0 && TPtdil > 30 &&  !TIsSS && TMET > 20", "ElMu", 25, -5, 5, "Jet_Eta", "0jets");
-    
-   //Draw("TMT", "TMll > 20 && TNJets == 0 && TNVetoJets == 0 && TPtdil > 30 &&  !TIsSS && TMET > 20", "ElMu", 30, 0, 300, "M_T [GeV]", "0jets");
-   //Draw("TMT", "TMll > 20 && TNJets == 1 && TNVetoJets == 0 && TPtdil > 30 &&  !TIsSS && TMET > 20", "ElMu", 30, 0, 300, "M_T [GeV]", "1jet");
-   //Draw("TMT", "TMll > 20 && TNJets >= 2 && TNBtags >= 1 && TPtdil > 30 &&  !TIsSS && TMET > 20", "ElMu", 30, 0, 300, "M_T [GeV]", ">2jets");
+   //LoopDrawCR("SS");
+   //LoopDrawCR("ttbar");
+   //LoopDrawCR("OS");
+   LoopDrawCR("WW");
    
-   //Draw("TLep_Pt[0]", "TMll > 20 && TNJets == 0 && TNVetoJets == 0 && TPtdil > 30 &&  !TIsSS && TMET > 20", "ElMu", 30, 0, 300, "Lep_Pt [GeV]", "0jets");
-   //Draw("TLep_Pt[0]", "TMll > 20 && TNJets >= 2 && TNVetoJets == 0 && TPtdil > 30 &&  !TIsSS && TMET > 20", "ElMu", 30, 0, 300, "Lep_Pt [GeV]", "1jets");
-   //Draw("TLep_Pt[0]", "TMll > 20 && TNJets >= 2 && TNBtags >= 1 && TPtdil > 30 &&  !TIsSS && TMET > 20", "ElMu", 30, 0, 300, "Lep_Pt [GeV]", ">2jets");
-  
-   //Draw("TLep_Eta[0]", "TMll > 20 && TNJets == 0 && TNVetoJets == 0 && TPtdil > 30 &&  !TIsSS && TMET > 20", "ElMu", 25, -3, 3, "Lep_Eta", "0jets");
-   //Draw("TJet_Phi[0]", "TMll > 20 && TNJets == 0 && TNVetoJets == 0 && TPtdil > 30 &&  !TIsSS && TMET > 20", "ElMu", 20, -4, 4, "Jet_Phi", "0jets");
-   //Draw("TJet_Phi[0]", "TMll > 20 && TNJets == 1 && TNVetoJets == 0 && TPtdil > 30 &&  !TIsSS && TMET > 20", "ElMu", 20, -4, 4, "Jet_Phi", "1jets");
-	
-   //Draw("TNJets", "TMll > 20 && TNJets == 0 && TNVetoJets == 0 && TPtdil > 30 &&  !TIsSS && TMET > 20", "ElMu", 5, 0, 5, "MET [GeV]", "0jets");
-   //Draw("TNJets", "TNJets == 0 && TNBtags == 0 && TMET > 20 && TPtdil > 30", "ElMu", 40, 0, 400, "NJets", "0");
-   //Draw("TNBtags", "TNJets == 0 && TNBtags == 0 && TMET > 20 && TPtdil > 30", "ElMu", 40, 0, 400, "NbJets", "0");
-   //Draw("TLep_Pt[0]", "TNJets == 0 && TNBtags == 0 && TMET > 20 && TPtdil > 50", "ElMu", 40, 0, 400, "Ptll [GeV]", "0");
-   
-  
-   //Draw("TMT2", "TNJets == 0 && TNBtags == 0 && TMET > 20 && TPtdil > 30 && TMT2 > 10", "ElMu", 40, 0, 400, "MT2 [GeV]", "0");
-   //Draw("TMT", "TNJets == 0 && TNBtags == 0 && TMET > 20 && TPtdil > 30", "ElMu", 40, 0, 400, "MT [GeV]", "0");
-   //Draw("TMTprime", "TNJets == 0 && TNBtags == 0 && TMET > 20 && TPtdil > 30", "ElMu", 40, 0, 400, "MT [GeV]", "0");
+   //Draw("TMT", "TMll > 20 && TNJets == 0 && TNVetoJets == 0 && TPtdil > 30 && !TIsSS && TMET > 20", "ElMu", 30, 0, 300, "M_T [GeV]", "0jets");
+   //Draw("TMll", "TMll > 20 && TNJets == 0 && TNVetoJets == 0 && TPtdil > 30 && !TIsSS && TMET > 20", "ElMu", 40, 0, 400, "InvMass [GeV]", "0jets");
+   //Draw("TMET", "TMll > 20 && TNJets == 0 && TNVetoJets == 0 && TPtdil > 30 &&  !TIsSS && TMET > 20", "ElMu", 40, 0, 400, "MET [GeV]", "0jets");
+   //Draw("TPtdil", "TMll > 20 && TNJets == 0 && TNVetoJets == 0 && TPtdil > 30 &&  !TIsSS && TMET > 20", "ElMu", 40, 0, 400, "Ptll [GeV]", "0jets");
+   //Draw("TChannel", "TMll > 20 && TNJets == 0  && TNVetoJets == 0 && TPtdil > 30 &&  !TIsSS && TMET > 20", "ElMu", 4, 0, 4, "TChannel", "0jets");
 }
 
 
-void Draw(TString var, TString cuts, TString chan, Int_t nbins, Int_t x0, Int_t xN, TString xlabel, TString tag){
+void Draw(TString var, TString cuts, TString chan, Int_t nbins, Int_t x0, Int_t xN, TString xlabel, TString tag, TString plotFolder){
 	
 	Plot* p = new Plot(var, cuts, chan, nbins, x0, xN, "Title", xlabel);
-
+    p->SetPlotFolder(plotFolder);
 	p->SetPath(path);
 	p->verbose = true;
 	p->SetTreeName("tree");

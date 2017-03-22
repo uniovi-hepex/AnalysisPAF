@@ -86,10 +86,9 @@ void TopAnalysis::InsideLoop(){
   PUSF_Up      = GetParam<Float_t>("PUSF_Up");
   PUSF_Down    = GetParam<Float_t>("PUSF_Down");
   TrigSF = 1; TrigSF_Up = 1; TrigSF_Down = 1;
-  PUSF = 1; PUSF_Up = 1; PUSF_Down = 1;
 
   // Event variables
-  gChannel        = GetParam<Int_t>("gChannel");
+  gChannel       = GetParam<Int_t>("gChannel");
   passMETfilters = GetParam<Bool_t>("METfilters");
   passTrigger    = GetParam<Bool_t>("passTrigger");
   isSS           = GetParam<Bool_t>("isSS");
@@ -121,6 +120,7 @@ void TopAnalysis::InsideLoop(){
     TWeight_TrigDown   = NormWeight*lepSF*TrigSF_Down*PUSF;
     TWeight_PUDown     = NormWeight*lepSF*TrigSF*PUSF_Up;
     TWeight_PUUp       = NormWeight*lepSF*TrigSF*PUSF_Down;
+    if(gIsData) TWeight = 1;
 
     // Event Selection
     // ===================================================================================================================
@@ -311,16 +311,16 @@ void TopAnalysis::FillHistos(Int_t ch, Int_t cut){
   Float_t EventWeight = TWeight;
 
   fHMET[ch][cut][sys]         -> Fill(TMET, EventWeight);
-  fHLep0Eta[ch][cut][sys]     -> Fill(TLep_Eta[0], EventWeight);
-  fHLep1Eta[ch][cut][sys]     -> Fill(TLep_Eta[1], EventWeight);
+  fHLep0Eta[ch][cut][sys]     -> Fill(TMath::Abs(TLep_Eta[0]), EventWeight);
+  fHLep1Eta[ch][cut][sys]     -> Fill(TMath::Abs(TLep_Eta[1]), EventWeight);
   fHLep0Pt[ch][cut][sys]      -> Fill(TLep_Pt[0], EventWeight);
   fHLep1Pt[ch][cut][sys]      -> Fill(TLep_Pt[1], EventWeight);
   fHDiLepPt[ch][cut][sys]      -> Fill((selLeptons[0].p + selLeptons[1].p).Pt(), EventWeight);
   fHDelLepPhi[ch][cut][sys]   -> Fill(selLeptons[0].p.DeltaPhi(selLeptons[1].p), EventWeight);
   fHHT[ch][cut][sys]          -> Fill(THT, EventWeight);
-  if(TNJets > 0) fHJet0Eta[ch][cut][sys]     -> Fill(TJet_Eta[0], EventWeight);
+  if(TNJets > 0) fHJet0Eta[ch][cut][sys]     -> Fill(TMath::Abs(TJet_Eta[0]), EventWeight);
   if(TNJets > 0) fHJet0Pt [ch][cut][sys]     -> Fill(TJet_Pt[0], EventWeight);
-  if(TNJets > 1) fHJet1Eta[ch][cut][sys]     -> Fill(TJet_Eta[1], EventWeight);
+  if(TNJets > 1) fHJet1Eta[ch][cut][sys]     -> Fill(TMath::Abs(TJet_Eta[1]), EventWeight);
   if(TNJets > 1) fHJet1Pt [ch][cut][sys]     -> Fill(TJet_Pt[1], EventWeight);
   fHInvMass[ch][cut][sys]       -> Fill(TMll, EventWeight);
   fHInvMass2[ch][cut][sys]      -> Fill(TMll, EventWeight);
