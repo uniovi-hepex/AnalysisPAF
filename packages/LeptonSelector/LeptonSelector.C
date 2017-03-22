@@ -39,6 +39,9 @@ void LeptonSelector::Initialise(){
       LepSF->loadHisto(iMuonIsoFastSim);
     }
   }
+  else if(gSelection == ittHSelec){
+  
+  }
   else if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
     LepSF->loadHisto(iMuonReco);
     LepSF->loadHisto(iElecReco);
@@ -61,7 +64,7 @@ Bool_t LeptonSelector::getSIPcut(Float_t cut){
 }
 
 Bool_t LeptonSelector::getGoodVertex(Int_t wp){ 
-  if(type == 1){ //electrions
+  if(type == 1){ //electrons
     if(wp == iTight){ 
       if(etaSC <= 1.479 && ((dxy >= 0.05) || (dz  >= 0.10))) return false;
       if(etaSC >  1.479 && ((dxy >= 0.10) || (dz  >= 0.20))) return false;
@@ -105,9 +108,68 @@ Bool_t LeptonSelector::getRelIso04POG(Int_t wp){ // wps for muons
   return true;
 }
 
+Bool_t LeptonSelector::getminiRelIso(Int_t wp) {  
+  if (wp == iTight) {
+  	
+  }
+  return true;
+}
+
 Bool_t LeptonSelector::getMuonId(Int_t wp){ 
   if(wp == iTight   && !tightVar)     return false;
   if(wp == iMedium  && !mediumMuonId) return false;
+  return true;
+}
+
+Bool_t LeptonSelector::getElecMVAId(Int_t wp) {
+  if (wp == iTight) {
+    Float_t	 A = -0.86+(-0.85 + 0.86)*(abs(eta) > 0.8)+(-0.81 + 0.86)*(abs(eta) > 1.479);
+	Float_t  B = -0.96+(-0.96 + 0.96)*(abs(eta) > 0.8)+(-0.95 + 0.96)*(abs(eta) > 1.479);
+    if (pt > 10) {
+	  if (!(MVAID > min( A , max( B , A+(B-A)/10*(pt-15))) )) return false;
+	}
+  	if (abs(eta) < 0.8) {
+	  if (LepGood_pt > 30) {
+		if (LepGood_sigmaIEtaIEta > 0.011) 	return false;
+        if (LepGood_hadronicOverEm > 0.10) 	return false;
+        if (LepGood_dEtaScTrkIn > 0.01) 		return false;
+        if (LepGood_dPhiScTrkIn > 0.04) 		return false;
+        if (LepGood_eInvMinusPInv < -0.05 ||
+			LepGood_eInvMinusPInv > 0.0010) 	return false;
+	  }
+	}
+	else if ((abs(LepGood_eta) < 1.479) && (abs(LepGood_eta) >= 0.8)){
+	  if (LepGood_pt > 30) {
+		if (LepGood_sigmaIEtaIEta > 0.011) 	return false;
+        if (LepGood_hadronicOverEm > 0.10) 	return false;
+        if (LepGood_dEtaScTrkIn > 0.01) 		return false;
+        if (LepGood_dPhiScTrkIn > 0.04) 		return false;
+        if (LepGood_eInvMinusPInv < -0.05 ||
+			LepGood_eInvMinusPInv > 0.0010) 	return false;
+	  }
+	}
+	else if (abs(LepGood_eta) >= 1.479) {
+	  if (LepGood_pt > 30) {
+		if (LepGood_sigmaIEtaIEta > 0.030) 	return false;
+        if (LepGood_hadronicOverEm > 0.07)	return false;
+        if (LepGood_dEtaScTrkIn > 0.008) 	return false;
+        if (LepGood_dPhiScTrkIn > 0.07) 		return false;
+        if (LepGood_eInvMinusPInv < -0.05 ||
+			LepGood_eInvMinusPInv > 0.005) 	return false;
+	  }
+    }
+  	
+  	
+  	
+  	
+  	
+  }
+  if (wp == iMedium) {
+    
+  }
+  if (wp == iLoose) {
+    
+  }
   return true;
 }
 
@@ -203,6 +265,34 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
     if(passId && passIso && getGoodVertex(iTight) && getSIPcut(4)) return true;
     else return false;
     return false;
+  }
+  else if (gSelection == ittHSelec) {
+  	// 	Tight muons for multilepton ttH Analysis:
+  	// abs(eta)<0.4, Pt>15, abs(dxy)<0.05cm, abs(dz)<0.1cm, SIP3D<8, Imini<0.4,
+  	// isLooseMuon==1,jetCSV<0.8484,isMediumMuon==1,tight-charge,lepMVA>0.90.
+  	//
+  	// 	Tight electrons for multilepton ttH Analysis:
+  	// abs(eta)<0.5, Pt>15, abs(dxy)<0.05cm, abs(dz)<0.1cm, SIP3D<8, Imini<0.4,
+  	// jetCSV<0.8484,tight-charge,lepMVA>0.90,missinghits==0,conversion rej..
+  	// Furthermore, 3 regions in eta-phi space are defined: 0-0.8-1.479-2.5,
+  	// where: MVA ID>(0,0,0.7), sigmaietaieta<(0.011,0.011,0.031),
+  	// HoverE<(0.10,0.10,0.07), Deltaetain<(0.01,0.01,0.008),
+  	// Deltaphiin<(0.04,0.04,0.07),-0.05<1/E-1/p<(0.01,0.01,0.005)
+  	//
+  	Bool_t passVertex; Bool_t passEta; Bool_t passPt; Bool_t passSIP;
+  	Bool_t passCSV; Bool_t passTightCharge; Bool_t passLepMVA;
+  	Bool_t passElecCutBasedId; Bool_t passPtRatio;
+  	if (lep.isMuon) {
+  	  
+  	}
+  	if (lep.isElec) {
+  	  
+  	}
+  	if ( || ) {
+  	  return true;
+  	else {
+  	  return false;
+  	}
   }
 }
 
@@ -311,29 +401,33 @@ void LeptonSelector::InsideLoop(){
 //################################################################
 void LeptonSelector::GetLeptonVariables(Int_t i){ // Once per muon, get all the info
   tP.SetPxPyPzE(Get<Float_t>("LepGood_px", i), Get<Float_t>("LepGood_py", i), Get<Float_t>("LepGood_pz", i), Get<Float_t>("LepGood_energy", i));
-  pt = tP.Pt();
-  eta = tP.Eta();
-  charge = Get<Int_t>("LepGood_charge", i); 
-  type = TMath::Abs(Get<Int_t>("LepGood_pdgId",i)) == 11 ? 1 : 0;
-  tightVar = Get<Int_t>("LepGood_tightId", i); 
-  mediumMuonId = Get<Int_t>("LepGood_mediumMuonId",i); 
-  etaSC = TMath::Abs(Get<Float_t>("LepGood_etaSc",i));
-  RelIso03 = Get<Float_t>("LepGood_relIso03",i);
-  RelIso04 = Get<Float_t>("LepGood_relIso04",i);
-  ptRel = Get<Float_t>("LepGood_jetPtRelv2",i);
-  ptRatio = Get<Float_t>("LepGood_jetPtRatiov2",i);
-  miniIso =Get<Float_t>("LepGood_miniRelIso",i);
-  dxy = TMath::Abs(Get<Float_t>("LepGood_dxy", i));
-  dz  = TMath::Abs(Get<Float_t>("LepGood_dz", i));
+  pt 			= tP.Pt();
+  eta 			= tP.Eta();
+  charge 		= Get<Int_t>("LepGood_charge", i); 
+  type 			= TMath::Abs(Get<Int_t>("LepGood_pdgId",i)) == 11 ? 1 : 0;
+  tightVar 		= Get<Int_t>("LepGood_tightId", i); 
+  mediumMuonId 	= Get<Int_t>("LepGood_mediumMuonId",i); 
+  etaSC 		= TMath::Abs(Get<Float_t>("LepGood_etaSc",i));
+  RelIso03 		= Get<Float_t>("LepGood_relIso03",i);
+  RelIso04 		= Get<Float_t>("LepGood_relIso04",i);
+  ptRel 		= Get<Float_t>("LepGood_jetPtRelv2",i);
+  ptRatio 		= Get<Float_t>("LepGood_jetPtRatiov2",i);
+  miniIso 		= Get<Float_t>("LepGood_miniRelIso",i);
+  dxy 			= TMath::Abs(Get<Float_t>("LepGood_dxy", i));
+  dz  			= TMath::Abs(Get<Float_t>("LepGood_dz", i));
   sigmaIEtaIEta = Get<Float_t>("LepGood_sigmaIEtaIEta", i);
-  dEtaSC =    Get<Float_t>("LepGood_dEtaScTrkIn", i);
-  dPhiSC =    Get<Float_t>("LepGood_dPhiScTrkIn", i);
-  HoE    =    Get<Float_t>("LepGood_hadronicOverEm", i);
-  eImpI  =    Get<Float_t>("LepGood_eInvMinusPInv", i);
-  lostHits =  Get<Int_t>("LepGood_lostHits", i);
-  convVeto =  Get<Int_t>("LepGood_convVeto", i);
-
-  sip = Get<Float_t>("LepGood_sip3d",i);
+  dEtaSC 		= Get<Float_t>("LepGood_dEtaScTrkIn", i);
+  dPhiSC 		= Get<Float_t>("LepGood_dPhiScTrkIn", i);
+  HoE    		= Get<Float_t>("LepGood_hadronicOverEm", i);
+  eImpI  		= Get<Float_t>("LepGood_eInvMinusPInv", i);
+  lostHits 		= Get<Int_t>("LepGood_lostHits", i);
+  convVeto 		= Get<Int_t>("LepGood_convVeto", i);
+  sip 			= Get<Float_t>("LepGood_sip3d",i);
+  MVATTH		= Get<Float_t>("LepGood_mvaTTH",i); 			//*
+  tightcharge	= Get<Int_t>("LepGood_tightCharge",i);			//*
+  MVAID			= Get<Float_t>("LepGood_mvaIdSpring16GP",i); 	//*
+  
+  
   SF = 1;
 }
 
