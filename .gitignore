@@ -2,7 +2,7 @@
 *.so
 *.d
 *.pcm
-
+.paf/
 # Exclude files by emacs
 *~
 
