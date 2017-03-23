@@ -52,8 +52,8 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
     n = VSyst.size();
     for(i = 0; i < n; i++){ // Group systematics
       if(t == VSyst.at(i)->GetTag()){
-	VSyst.at(i)->Add(h); VSyst.at(i)->SetStyle();
-	return;
+        VSyst.at(i)->Add(h); VSyst.at(i)->SetStyle();
+        return;
       }
     }
     h->SetName(t);
@@ -101,7 +101,6 @@ void Plot::GetStack(){ // Sets the histogram hStack
   if(verbose) cout << Form(" Adding %i systematic to sum of bkg...\n", (Int_t) VSumHistoSystUp.size());
   if(doSys) GroupSystematics();
   
-
   for(Int_t i = 0; i < (Int_t) VSumHistoSystUp.size(); i++){
     hAllBkg->AddToSystematics(VSumHistoSystUp.at(i));
     hAllBkg->AddToSystematics(VSumHistoSystDown.at(i));
@@ -871,40 +870,83 @@ Float_t Plot::GetTotalSystematic(TString pr){
   return TMath::Sqrt(sys2);
 }
 
-void Plot::PrintYields(){
+void Plot::PrintYields(TString cuts, TString labels, TString channels, TString options){
+  if(cuts == "") cuts = cut;
+  //cuts.ReplaceAll(" ", ""); 
+  std::vector<TString> VCuts = std::vector<TString>();
+  std::vector<TString> VLCut = std::vector<TString>();
+  std::vector<TString> VChan = std::vector<TString>();
+  TString thisCut = ""; TString thisLabel = ""; TString thisChan;
   Int_t nBkgs = VBkgs.size();
   Int_t nSignals = VSignals.size();
   Int_t nrows = nBkgs + nSignals; 
   if(nBkgs > 0) nrows++; if(doData) nrows++;
-  Int_t ncolumns = 1;
-
-  cout << Form("Creating table with [rows, columns] = [%i, %i]\n", nrows, ncolumns);
-  TResultsTable t(nrows, ncolumns, true);
-  t.SetColumnTitle(0, "Yield");
+  Int_t ncolumns = 1 + cuts.CountChar(','); 
+  channels.ReplaceAll(" ", "");
+  Bool_t doChannels = false; if(cuts.CountChar(',') == channels.CountChar(',')) doChannels = true;
+  TResultsTable t(nrows, ncolumns, true); //cout << Form("Creating table with [rows, columns] = [%i, %i]\n", nrows, ncolumns);
   t.SetRowTitleHeader("Process");
-  cout << "Filling yields for bkgs...\n";
-  for(Int_t i = 0; i < nBkgs; i++){
-    t.SetRowTitle(i, VBkgs.at(i)->GetProcess());
-    t[i][0] = VBkgs.at(i)->GetYield();
-    t[i][0].SetError(GetTotalSystematic(VBkgs.at(i)->GetProcess()));
+  Plot* np = NULL;
+  for(Int_t k = 0; k < ncolumns; k++){
+    if(cuts.Contains(",")){
+      thisCut = cuts(0, cuts.First(','));
+      thisLabel = labels(0, labels.First(','));
+      thisChan = channels(0, channels.First(','));
+      VCuts.push_back(thisCut);
+      VLCut.push_back(thisLabel);
+      if(doChannels) VChan.push_back(thisChan);
+      else VChan.push_back(chan);
+      cuts = cuts(cuts.First(',')+1, cuts.Sizeof());
+      labels = labels(labels.First(',')+1, labels.Sizeof());
+      channels = channels(channels.First(',')+1, channels.Sizeof());
+    }
+    else{
+      VCuts.push_back(cuts);
+      VLCut.push_back(labels);
+      if(doChannels) VChan.push_back(channels);
+      else VChan.push_back(chan);
+    }
   }
-  GetStack();
+
+  // Set row titles
+  for(Int_t i = 0; i < nBkgs; i++) t.SetRowTitle(i, VBkgs.at(i)->GetProcess());
   t.SetRowTitle(nBkgs, "Total Background");
-  t[nBkgs][0] = hAllBkg->GetYield();
-  cout << "Filling yields for signals...\n";
-  for(Int_t i = nBkgs+1; i < nSignals+nBkgs+1; i++){
-    t.SetRowTitle(i, VSignals.at(i-(nBkgs+1))->GetProcess());
-    t[i][0] = VSignals.at(i-(nBkgs+1))->GetYield();
-    t[i][0].SetError(GetTotalSystematic(VSignals.at(i-(nBkgs+1))->GetProcess()));
+  for(Int_t i = nBkgs+1; i < nSignals+nBkgs+1; i++) t.SetRowTitle(i, VSignals.at(i-(nBkgs+1))->GetProcess());
+  t.SetRowTitle(nBkgs+1+nSignals, "Data");
+
+  // Set column titles
+  for(Int_t k = 0; k < ncolumns; k++) t.SetColumnTitle(k, VLCut.at(k));
+
+  // Fill the table with the yields
+  for(Int_t k = 0; k < ncolumns; k++){
+    if(VCuts.at(k) == cut) np = this;
+    else{
+      np = NewPlot(var, VCuts.at(k), VChan.at(k));
+      for(Int_t i = 0; i < (Int_t) VSystLabel.size(); i++) np->AddSystematic(VSystLabel.at(i));
+    }
+
+    Float_t TotalBkgSystematic = 0;
+    for(Int_t i = 0; i < nBkgs; i++){
+      t[i][k] = np->VBkgs.at(i)->GetYield();
+      t[i][k].SetError(np->GetTotalSystematic(np->VBkgs.at(i)->GetProcess()));
+      TotalBkgSystematic += (np->GetTotalSystematic(np->VBkgs.at(i)->GetProcess()))*(np->GetTotalSystematic(np->VBkgs.at(i)->GetProcess()));
+    }
+    TotalBkgSystematic = TMath::Sqrt(TotalBkgSystematic);
+    np->GetStack();
+    t[nBkgs][k] = np->hAllBkg->GetYield();
+    t[nBkgs][k].SetError(TotalBkgSystematic); 
+    for(Int_t i = nBkgs+1; i < nSignals+nBkgs+1; i++){
+      t[i][k] = np->VSignals.at(i-(nBkgs+1))->GetYield();
+      t[i][k].SetError(np->GetTotalSystematic(np->VSignals.at(i-(nBkgs+1))->GetProcess()));
+    }
+    if(doData){
+      np->SetData();
+      t[nBkgs+1+nSignals][k] = np->hData->GetYield();
+      t[nBkgs+1+nSignals][k].SetError(TMath::Sqrt(np->hData->GetYield()));
+    }
   }
-  if(doData){
-  cout << "Filling yields for data...\n";
-    SetData();
-    t.SetRowTitle(nBkgs+1+nSignals, "Data");
-    t[nBkgs+1+nSignals][0] = hData->GetYield();
-    t[nBkgs+1+nSignals][0].SetError(TMath::Sqrt(hData->GetYield()));
-  }
-  t.SetDrawHLines(true);
-  t.SetDrawVLines(true);
-  t.Print();
+  t.SetDrawHLines(true); t.SetDrawVLines(true); t.Print();
+  if(options.Contains("tex"))  t.SaveAs("yields.tex");
+  if(options.Contains("html")) t.SaveAs("yields.html");
+  if(options.Contains("txt"))  t.SaveAs("yields.txt");
 }
