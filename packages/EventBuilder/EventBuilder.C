@@ -31,10 +31,17 @@ Bool_t EventBuilder::PassesDoubleElecTrigger(){
     return pass;
   }
   else if (gSelection == iStopSelec){
-    pass = ( Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
-	     Get<Int_t>("HLT_BIT_HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
-	     Get<Int_t>("HLT_BIT_HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v") ||
-	     Get<Int_t>("HLT_BIT_HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v") );
+    pass = (Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+	     	Get<Int_t>("HLT_BIT_HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+	     	Get<Int_t>("HLT_BIT_HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v") ||
+	     	Get<Int_t>("HLT_BIT_HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v") );
+    return pass;
+  }
+  else if (gSelection == ittHSelec) {
+    pass = (Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+            Get<Int_t>("HLT_BIT_HLT_Ele27_WPTight_Gsf_v") ||
+            Get<Int_t>("HLT_BIT_HLT_Ele25_eta2p1_WPTight_Gsf_v") ||
+            Get<Int_t>("HLT_BIT_HLT_Ele27_eta2p1_WPLoose_Gsf_v"));
     return pass;
   }
 }
@@ -63,6 +70,15 @@ Bool_t EventBuilder::PassesDoubleMuonTrigger(){
 	    Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v") || 
 	    Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v") );
     return pass;
+  }
+  else if (gSelection == ittHSelec) {
+    pass =  (Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v") ||
+             Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v") ||
+             Get<Int_t>("HLT_BIT_HLT_IsoMu22_v")   ||
+             Get<Int_t>("HLT_BIT_HLT_IsoTkMu22_v") ||
+             Get<Int_t>("HLT_BIT_HLT_IsoMu24_v") ||
+             Get<Int_t>("HLT_BIT_HLT_IsoTkMu24_v"));
+    return pass;  
   }
 }
 
@@ -97,6 +113,20 @@ Bool_t EventBuilder::PassesElMuTrigger(){
 	    Get<Int_t>("HLT_BIT_HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v") );
     return pass;
   }
+  else if (gSelection == ittHSelec) {
+    pass =  (Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v") ||
+	    	 Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+			 Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v") ||
+			 Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+         	 Get<Int_t>("HLT_BIT_HLT_IsoMu22_v")   ||
+         	 Get<Int_t>("HLT_BIT_HLT_IsoTkMu22_v") ||
+         	 Get<Int_t>("HLT_BIT_HLT_IsoMu24_v") ||
+         	 Get<Int_t>("HLT_BIT_HLT_IsoTkMu24_v") ||
+             Get<Int_t>("HLT_BIT_HLT_Ele27_WPTight_Gsf_v") ||
+             Get<Int_t>("HLT_BIT_HLT_Ele25_eta2p1_WPTight_Gsf_v") ||
+             Get<Int_t>("HLT_BIT_HLT_Ele27_eta2p1_WPLoose_Gsf_v"));
+	return pass;  
+  }
 }
 
 Bool_t EventBuilder::PassesSingleElecTrigger(){
@@ -116,6 +146,35 @@ Bool_t EventBuilder::PassesSingleMuonTrigger(){
 	    Get<Int_t>("HLT_BIT_HLT_IsoMu24_v") );
   return pass;
 }
+
+
+Bool_t EventBuilder::PassesThreelFourlTrigger() {
+  if(gIsFastSim) return true; // no triger in FastSim samples
+  Bool_t pass = false;
+  
+  if (gSelection == ittHSelec) {
+    pass = (Get<Int_t>("HLT_BIT_HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v") ||
+    		Get<Int_t>("HLT_BIT_HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v") ||
+    		Get<Int_t>("HLT_BIT_HLT_TripleMu_12_10_5_v") ||
+    		Get<Int_t>("HLT_BIT_HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v") ||
+    		Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v") ||
+	    	Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+			Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v") ||
+			Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+    		Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+            Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v") ||
+            Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v") ||
+         	Get<Int_t>("HLT_BIT_HLT_IsoMu22_v")   ||
+         	Get<Int_t>("HLT_BIT_HLT_IsoTkMu22_v") ||
+         	Get<Int_t>("HLT_BIT_HLT_IsoMu24_v") ||
+         	Get<Int_t>("HLT_BIT_HLT_IsoTkMu24_v") ||
+            Get<Int_t>("HLT_BIT_HLT_Ele27_WPTight_Gsf_v") ||
+            Get<Int_t>("HLT_BIT_HLT_Ele25_eta2p1_WPTight_Gsf_v") ||
+            Get<Int_t>("HLT_BIT_HLT_Ele27_eta2p1_WPLoose_Gsf_v"));
+    return pass;
+  }
+}
+
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 void EventBuilder::Initialise(){
@@ -271,6 +330,11 @@ Bool_t EventBuilder::TrigElMu(){
   return pass;
 }
 
+Bool_t EventBuilder::Trig3l4l() {
+  Bool_t pass = false;
+  pass = PassesThreelFourlTrigger(); 
+  return pass;
+}
 
 
 Bool_t EventBuilder::PassesMETfilters(){

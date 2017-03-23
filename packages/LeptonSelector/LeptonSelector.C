@@ -19,7 +19,7 @@ void LeptonSelector::Summary(){}
 void LeptonSelector::Initialise(){
   // Initialise LeptonSelector
   gIsData        = GetParam<Bool_t>("IsData");
-  gIsFastSim   = GetParam<Bool_t>("IsFastSim");
+  gIsFastSim     = GetParam<Bool_t>("IsFastSim");
   gSelection     = GetParam<Int_t>("iSelection");
   localPath      = GetParam<TString>("WorkingDir");
   LepSF = new LeptonSF(localPath + "/InputFiles/");
@@ -64,15 +64,21 @@ Bool_t LeptonSelector::getSIPcut(Float_t cut){
 }
 
 Bool_t LeptonSelector::getGoodVertex(Int_t wp){ 
-  if(type == 1){ //electrons
-    if(wp == iTight){ 
-      if(etaSC <= 1.479 && ((dxy >= 0.05) || (dz  >= 0.10))) return false;
-      if(etaSC >  1.479 && ((dxy >= 0.10) || (dz  >= 0.20))) return false;
+  if (gSelection == ittHSelec) {
+    if (wp == iTight || wp == iMedium || wp == iLoose){
+      if (dxy >= 0.05 || dz >= 0.1) return false;
     }
-  } 
-  else{ // muons
-    if(wp == iMedium && (dxy > 0.2  || dz > 0.5)) return false;
-    if(wp == iTight  && (dxy > 0.05 || dz > 0.1)) return false;
+  } else {
+    if(type == 1){ //electrons
+	  if(wp == iTight){ 
+	    if(etaSC <= 1.479 && ((dxy >= 0.05) || (dz  >= 0.10))) return false;
+	    if(etaSC >  1.479 && ((dxy >= 0.10) || (dz  >= 0.20))) return false;
+	  }
+    } 
+    else{ // muons
+	  if(wp == iMedium && (dxy > 0.2  || dz > 0.5)) return false;
+	  if(wp == iTight  && (dxy > 0.05 || dz > 0.1)) return false;
+    }
   }
   return true;
 }
@@ -109,8 +115,8 @@ Bool_t LeptonSelector::getRelIso04POG(Int_t wp){ // wps for muons
 }
 
 Bool_t LeptonSelector::getminiRelIso(Int_t wp) {  
-  if (wp == iTight) {
-  	
+  if (wp == iTight || wp == iMedium || wp == iLoose) {
+  	if (miniIso < 0.4) return false;
   }
   return true;
 }
@@ -121,7 +127,7 @@ Bool_t LeptonSelector::getMuonId(Int_t wp){
   return true;
 }
 
-Bool_t LeptonSelector::getElecMVAId(Int_t wp) {
+Bool_t LeptonSelector::getElecMVAId(Int_t wp, Lepton lep) {
   if (wp == iTight) {
     Float_t	 A = -0.86+(-0.85 + 0.86)*(abs(eta) > 0.8)+(-0.81 + 0.86)*(abs(eta) > 1.479);
 	Float_t  B = -0.96+(-0.96 + 0.96)*(abs(eta) > 0.8)+(-0.95 + 0.96)*(abs(eta) > 1.479);
@@ -129,47 +135,80 @@ Bool_t LeptonSelector::getElecMVAId(Int_t wp) {
 	  if (!(MVAID > min( A , max( B , A+(B-A)/10*(pt-15))) )) return false;
 	}
   	if (abs(eta) < 0.8) {
-	  if (LepGood_pt > 30) {
-		if (LepGood_sigmaIEtaIEta > 0.011) 	return false;
-        if (LepGood_hadronicOverEm > 0.10) 	return false;
-        if (LepGood_dEtaScTrkIn > 0.01) 		return false;
-        if (LepGood_dPhiScTrkIn > 0.04) 		return false;
-        if (LepGood_eInvMinusPInv < -0.05 ||
-			LepGood_eInvMinusPInv > 0.0010) 	return false;
-	  }
+	  if (sigmaIEtaIEta > 0.011) 			return false;
+	  if (HoE > 0.10) 						return false;
+	  if (dEtaSC > 0.01) 					return false;
+	  if (dPhiSC > 0.04) 					return false;
+	  if (eImpI < -0.05 || eImpI > 0.0010) 	return false;
 	}
-	else if ((abs(LepGood_eta) < 1.479) && (abs(LepGood_eta) >= 0.8)){
-	  if (LepGood_pt > 30) {
-		if (LepGood_sigmaIEtaIEta > 0.011) 	return false;
-        if (LepGood_hadronicOverEm > 0.10) 	return false;
-        if (LepGood_dEtaScTrkIn > 0.01) 		return false;
-        if (LepGood_dPhiScTrkIn > 0.04) 		return false;
-        if (LepGood_eInvMinusPInv < -0.05 ||
-			LepGood_eInvMinusPInv > 0.0010) 	return false;
-	  }
+	else if ((abs(eta) < 1.479) && (abs(eta) >= 0.8)){
+	  if (sigmaIEtaIEta > 0.011) 			return false;
+      if (HoE > 0.10) 						return false;
+      if (dEtaSC > 0.01) 					return false;
+      if (dPhiSC > 0.04) 					return false;
+      if (eImpI < -0.05 || eImpI > 0.0010) 	return false;
 	}
-	else if (abs(LepGood_eta) >= 1.479) {
-	  if (LepGood_pt > 30) {
-		if (LepGood_sigmaIEtaIEta > 0.030) 	return false;
-        if (LepGood_hadronicOverEm > 0.07)	return false;
-        if (LepGood_dEtaScTrkIn > 0.008) 	return false;
-        if (LepGood_dPhiScTrkIn > 0.07) 		return false;
-        if (LepGood_eInvMinusPInv < -0.05 ||
-			LepGood_eInvMinusPInv > 0.005) 	return false;
-	  }
+	else if (abs(eta) >= 1.479) {
+	  if (sigmaIEtaIEta > 0.030) 			return false;
+      if (HoE > 0.07)						return false;
+      if (dEtaSC > 0.008) 					return false;
+      if (dPhiSC > 0.07) 					return false;
+      if (eImpI < -0.05 || eImpI > 0.005) 	return false;
     }
-  	
-  	
-  	
-  	
-  	
+    if (convVeto == 0)     return false;
+	if (lostHits != 0)     return false;
   }
+  
   if (wp == iMedium) {
-    
+    if (isGoodLepton(lep)) {
+      Float_t	 A = -0.86+(-0.85 + 0.86)*(abs(eta) > 0.8)+(-0.81 + 0.86)*(abs(eta) > 1.479);
+	  Float_t  B = -0.96+(-0.96 + 0.96)*(abs(eta) > 0.8)+(-0.95 + 0.96)*(abs(eta) > 1.479);
+      if (pt > 10) {
+	    if (!(MVAID > min( A , max( B , A+(B-A)/10*(pt-15))) )) return false;
+	  }
+	}
+  	if (abs(eta) < 0.8) {
+	  if (!isGoodLepton(lep)) {
+	    if (MVAID < 0) 					  	  return false;
+	  }
+	  if (sigmaIEtaIEta > 0.011) 			return false;
+	  if (HoE > 0.10) 						return false;
+	  if (dEtaSC > 0.01) 					return false;
+	  if (dPhiSC > 0.04) 					return false;
+	  if (eImpI < -0.05 || eImpI > 0.0010) 	return false;
+	}
+	else if ((abs(eta) < 1.479) && (abs(eta) >= 0.8)){
+	  if (!isGoodLepton(lep)) {
+	    if (MVAID < 0) 					  	  return false;
+	  }
+	  if (sigmaIEtaIEta > 0.011) 			return false;
+      if (HoE > 0.10) 						return false;
+      if (dEtaSC > 0.01) 					return false;
+      if (dPhiSC > 0.04) 					return false;
+      if (eImpI < -0.05 || eImpI > 0.0010) 	return false;
+	}
+	else if (abs(eta) >= 1.479) {
+	  if (!isGoodLepton(lep)) {
+	    if (MVAID < 0.7) 					  return false;
+	  }
+	  if (sigmaIEtaIEta > 0.030) 			return false;
+      if (HoE > 0.07)						return false;
+      if (dEtaSC > 0.008) 					return false;
+      if (dPhiSC > 0.07) 					return false;
+      if (eImpI < -0.05 || eImpI > 0.005) 	return false;
+    }
+	if (lostHits != 0)     return false;
   }
+  
   if (wp == iLoose) {
-    
+  	Float_t	 A = -0.86+(-0.85 + 0.86)*(abs(eta) > 0.8)+(-0.81 + 0.86)*(abs(eta) > 1.479);
+	Float_t  B = -0.96+(-0.96 + 0.96)*(abs(eta) > 0.8)+(-0.95 + 0.96)*(abs(eta) > 1.479);
+    if (pt > 10) {
+	  if (!(MVAID > min( A , max( B , A+(B-A)/10*(pt-15))) )) return false;
+	}
+	if (lostHits > 2)     return false;
   }
+  
   return true;
 }
 
@@ -281,18 +320,37 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
   	//
   	Bool_t passVertex; Bool_t passEta; Bool_t passPt; Bool_t passSIP;
   	Bool_t passCSV; Bool_t passTightCharge; Bool_t passLepMVA;
-  	Bool_t passElecCutBasedId; Bool_t passPtRatio;
+  	Bool_t passElecCutBasedId; Bool_t passptRatio;
   	if (lep.isMuon) {
+  	  passEta 			= (abs(eta) < 2.4);
+  	  passPt	 		= (pt > 15);
+  	  passVertex		= getGoodVertex(iTight);
+  	  passSIP			= getSIPcut(8);
+  	  passIso			= getminiRelIso(iTight);
+  	  passCSV			= (jetBTagCSV < 0.8484);
+  	  passId			= mediumMuonId;
+  	  passTightCharge	= (TightCharge != 0);
+  	  passLepMVA		= (MVATTH > 0.90);
   	  
+  	  passptRatio		= 1;
+  	  passElecCutBasedId= 1;
   	}
   	if (lep.isElec) {
+  	  passEta 			= (abs(eta) < 2.5);
+  	  passPt	 		= (pt > 15);
+  	  passVertex		= getGoodVertex(iTight);
+  	  passSIP			= getSIPcut(8);
+  	  passIso			= getminiRelIso(iTight);
+  	  passElecCutBasedId= getElecMVAId(iTight,lep);
+  	  passptRatio		= 1;
+  	  passCSV			= (jetBTagCSV < 0.8484);
+  	  passTightCharge	= (TightCharge != 0);
+  	  passLepMVA		= (MVATTH > 0.90);
   	  
+  	  passId			= 1;
   	}
-  	if ( || ) {
-  	  return true;
-  	else {
-  	  return false;
-  	}
+  	if (!passEta || !passPt || !passVertex || !passSIP || !passIso || !passCSV || !passId || !passTightCharge || !passLepMVA || !passptRatio || !passElecCutBasedId) return false;
+	return true;
   }
 }
 
@@ -316,7 +374,61 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
   else if(gSelection == iWWSelec){
     return true;
   }
-  else if(gSelection == ittHSelec){ //FO
+  else if(gSelection == ittHSelec){
+  	// 	Fakeable muons for multilepton ttH Analysis:
+  	// Tight muons without medium muon ID, tight charge and lepton MVA cuts.
+  	//
+  	// 	Fakeable electrons for multilepton ttH Analysis:
+  	// Tight electrons without tight charge, conv. rej., lepton MVA cuts and
+  	// with ptratio > 0.5, if the electron fails tight selection (otherwise
+  	// w/o cut in ptratio) and, in this case too, with <0.3 jet CSV.
+  	//
+  	Bool_t passVertex; Bool_t passEta; Bool_t passPt; Bool_t passSIP;
+  	Bool_t passCSV; Bool_t passTightCharge; Bool_t passLepMVA;
+  	Bool_t passElecCutBasedId; Bool_t passptRatio; Bool_t passSegComp;
+  	if (lep.isMuon) {
+  	  passEta 			= (abs(eta) < 2.4);
+  	  passPt	 		= (pt > 15);
+  	  passVertex		= getGoodVertex(iMedium);
+  	  passSIP			= getSIPcut(8);
+  	  passIso			= getminiRelIso(iLoose);
+  	  if (!isGoodLepton(lep)) {
+  	  	passCSV			  = (jetBTagCSV < 0.3);
+  	    passptRatio		  = (ptRatio > 0.5);
+  	    passSegComp		  = (SegComp > 0.3);
+  	  	
+  	  } else {
+  	  	passCSV			  = (jetBTagCSV < 0.8484);
+  	    passptRatio		  = 1;
+  	    passSegComp		  = 1;
+  	    
+  	  }
+  	  passId			= 1;
+  	  passTightCharge	= 1;
+  	  passLepMVA		= 1;
+  	  passElecCutBasedId= 1;
+  	}
+  	if (lep.isElec) {
+  	  passEta 			= (abs(eta) < 2.5);
+  	  passPt	 		= (pt > 15);
+  	  passVertex		= getGoodVertex(iMedium);
+  	  passSIP			= getSIPcut(8);
+  	  passIso			= getminiRelIso(iLoose);
+  	  passElecCutBasedId= getElecMVAId(iLoose,lep);
+  	  if (!isGoodLepton(lep)) {
+  	    passptRatio			= (ptRatio > 0.5);
+  	  	passCSV				= (jetBTagCSV < 0.3);
+  	  } else {
+  	  	passptRatio			= 1;
+  	  	passCSV				= (jetBTagCSV < 0.8484);
+  	  }
+  	  
+  	  passTightCharge	= 1;
+  	  passLepMVA		= 1;
+  	  passId			= 1;
+      passSegComp		= 1;
+  	}
+  	if (!passEta || !passPt || !passVertex || !passSIP || !passIso || !passCSV || !passId || !passTightCharge || !passLepMVA || !passptRatio || !passElecCutBasedId || !passSegComp) return false;
     return true;
   }
   return false;
@@ -324,7 +436,47 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
 
 //============================================== Loose leptons (or other)
 Bool_t LeptonSelector::isLooseLepton(Lepton lep){
+  Bool_t passId; Bool_t passIso;
   if(gSelection == ittHSelec){
+  	// 	Loose muons for multilepton ttH Analysis:
+  	// Fakeable muons without jetCSV cut and with pt>5.
+  	//
+  	// 	Loose electrons for multilepton ttH Analysis:
+  	// Fakeable electrons with Nmissinghits<2 and pt>7 and without jetCSV,
+  	// ptratio, 1/E-1/p, deltaPhiin, deltaEtain, H/E, sigmaietaieta cuts
+  	//
+  	Bool_t passVertex; Bool_t passEta; Bool_t passPt; Bool_t passSIP;
+  	Bool_t passCSV; Bool_t passTightCharge; Bool_t passLepMVA;
+  	Bool_t passElecCutBasedId; Bool_t passptRatio;
+  	if (lep.isMuon) {
+  	  passEta 			= (abs(eta) < 2.4);
+  	  passPt	 		= (pt > 15);
+  	  passVertex		= getGoodVertex(iLoose);
+  	  passSIP			= getSIPcut(8);
+  	  passIso			= getminiRelIso(iLoose);
+  	  
+  	  passCSV			= 1;  	  
+  	  passId			= 1;
+  	  passTightCharge	= 1;
+  	  passLepMVA		= 1;
+  	  passptRatio		= 1;
+  	  passElecCutBasedId= 1;
+  	}
+  	if (lep.isElec) {
+  	  passEta 			= (abs(eta) < 2.5);
+  	  passPt	 		= (pt > 7);
+  	  passVertex		= getGoodVertex(iLoose);
+  	  passSIP			= getSIPcut(8);
+  	  passIso			= getminiRelIso(iLoose);
+  	  passElecCutBasedId= getElecMVAId(iLoose,lep);
+  	  
+  	  passptRatio		= 1;
+  	  passCSV			= 1;
+  	  passTightCharge	= 1;
+  	  passLepMVA		= 1;
+  	  passId			= 1;
+  	}
+  	if (!passEta || !passPt || !passVertex || !passSIP || !passIso || !passCSV || !passId || !passTightCharge || !passLepMVA || !passptRatio || !passElecCutBasedId) return false;    
     return true;
   }
 }
@@ -424,8 +576,10 @@ void LeptonSelector::GetLeptonVariables(Int_t i){ // Once per muon, get all the 
   convVeto 		= Get<Int_t>("LepGood_convVeto", i);
   sip 			= Get<Float_t>("LepGood_sip3d",i);
   MVATTH		= Get<Float_t>("LepGood_mvaTTH",i); 			//*
-  tightcharge	= Get<Int_t>("LepGood_tightCharge",i);			//*
+  TightCharge	= Get<Int_t>("LepGood_tightCharge",i);			//*
   MVAID			= Get<Float_t>("LepGood_mvaIdSpring16GP",i); 	//*
+  jetBTagCSV	= Get<Float_t>("LepGood_jetBTagCSV",i); 	//*
+  SegComp		= Get<Float_t>("LepGood_segmentCompatibility",i); 	//*
   
   
   SF = 1;

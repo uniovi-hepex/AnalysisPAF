@@ -59,8 +59,10 @@ class LeptonSelector : public PAFChainItemSelector{
     Float_t sip;
     Float_t SF;
     Float_t MVATTH;
-    Int_t	tightcharge;
+    Int_t	TightCharge;
     Float_t MVAID;
+    Float_t jetBTagCSV;
+    Float_t SegComp;
     
     // genLeptons
     Int_t ngenLep;
@@ -81,7 +83,7 @@ class LeptonSelector : public PAFChainItemSelector{
     Bool_t getRelIso04POG(Int_t wp);
     Bool_t getminiRelIso(Int_t wp);
     Bool_t getMuonId(Int_t wp);
-    Bool_t getElecMVAId(Int_t wp); 
+    Bool_t getElecMVAId(Int_t wp, Lepton lep); 
     Bool_t getElecCutBasedId(Int_t wp); 
     Bool_t getMultiIso(Int_t wp);
     Bool_t isGoodLepton(Lepton lep);
