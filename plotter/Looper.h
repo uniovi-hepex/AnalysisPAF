@@ -12,10 +12,12 @@
 #include "TCut.h"
 #include "TTreeFormula.h"
 #include "Histo.h"
+#include "TSystem.h"
 
 
 TString CraftFormula(TString var, TString cut, TString chan, TString sys);
 TString CraftVar(TString varstring, TString sys);
+TH1D* loadSumOfLHEweights(TString pathToHeppyTrees = "/pool/ciencias/HeppyTreesSummer16/v2/", TString sampleName = "TTbar_PowhegLHE");
 
 class Looper{
   public:
@@ -23,6 +25,7 @@ class Looper{
    Hist = NULL; 
    FormulasCuts = NULL;
    FormulasVars = NULL;
+   FormulasLHE  = NULL;
    tree = NULL;
    path = pathToTree;
    treeName = NameOfTree;
@@ -33,12 +36,15 @@ class Looper{
    var = _var;
    cut = _cut;
    chan = _chan;
+
+   pathToHeppyTrees = "/pool/ciencias/HeppyTreesSummer16/v2/";
   }  
 
    ~Looper(){
 		 delete tree->GetCurrentFile();
      if(FormulasCuts) delete FormulasCuts;
      if(FormulasVars) delete FormulasVars;
+     if(FormulasLHE)  delete FormulasLHE;
      //if(Hist) delete Hist;
    };
 
@@ -52,20 +58,26 @@ class Looper{
      else if(i == 4) chan = "SF";
      else chan = "All";
    }
+   Bool_t doSysPDF = false;
+   Bool_t doSysScale = false;
+   Int_t numberInstance;
    void SetSampleName(TString t){sampleName   = t;}
 	 void SetTreeName(  TString t){treeName     = t;}
 	 void SetPath(      TString t){path         = t;}
 
+   Float_t GetPDFweight(TString sys = "PDF");
+   Float_t GetScaleWeight(TString sys = "Scale");
    Histo* GetHisto(TString sampleName, TString sys = "0");
 
 	 void SetFormulas(TString sys = "0"); 
 	 void CreateHisto(TString sys = "0"); 
-   void Loop();
+   void Loop(TString sys = "");
 
  // protected:
    Histo* Hist;
    TTreeFormula* FormulasCuts;
    TTreeFormula* FormulasVars;
+   TTreeFormula* FormulasLHE;
    Int_t   nbins;
    Float_t bin0;
    Float_t binN;
@@ -77,6 +89,8 @@ class Looper{
 
    Bool_t HistosCreated;
 
+   TH1D* hLHEweights;
+   TString pathToHeppyTrees;
    TString path;
    TString treeName;
    TString cut; TString chan; TString var;

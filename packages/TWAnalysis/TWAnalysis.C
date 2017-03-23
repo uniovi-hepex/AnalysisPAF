@@ -29,8 +29,9 @@ void TWAnalysis::Initialise(){
 
   genLeptons  = std::vector<Lepton>();
   selLeptons  = std::vector<Lepton>();
-  selJets = std::vector<Jet>();
-  Jets15  = std::vector<Jet>();
+  selJets     = std::vector<Jet>();
+  Jets15      = std::vector<Jet>();
+  vetoJets    = std::vector<Jet>();
   fTW1j1b = CreateTree("1j1b","Created with PAF");
   SetTWVariables();
   SetHistos();
@@ -57,9 +58,8 @@ void TWAnalysis::InsideLoop(){
   selLeptons  = GetParam<vector<Lepton>>("selLeptons");
   selJets     = GetParam<vector<Jet>>("selJets");
   Jets15      = GetParam<vector<Jet>>("Jets15");
-
+  vetoJets    = GetParam<vector<Jet>>("vetoJets");
   GetVarsFromTop();
-
   for (unsigned int k = 0; k < selJets.size(); ++k){
     fHNCSV->Fill( selJets[k].csv );
   }
@@ -82,7 +82,7 @@ void TWAnalysis::InsideLoop(){
   
     
   // for the 1b1j
-  if (TNJets != 1) return;
+  if (TNJets  != 1) return;
   if (TNBtags != 1) return;
   
   CalculateTWVariables();
@@ -488,16 +488,17 @@ void TWAnalysis::get20Jets()
   nBLooseFwd     = 0.;
   TJet2csv       = 0.;
   
-  for (unsigned int j = 0; j < Jets15.size(); ++j){
-    if (Jets15[0].p.Pt() < 20.) continue;
-    if (TMath::Abs(Jets15[0].p.Eta()) < 2.3) nLooseCentral++;
+  for (unsigned int j = 0; j < vetoJets.size(); ++j){
+    if (vetoJets[j].p.Pt() < 20.) continue;
+    if (TMath::Abs(vetoJets[j].p.Eta()) < 2.4) nLooseCentral++;
     else nLooseFwd++;
-    if (!Jets15[0].isBtag) continue;
-    if (TMath::Abs(Jets15[0].p.Eta()) < 2.3) nBLooseCentral++;
+    if (!vetoJets[j].isBtag) continue;
+    if (TMath::Abs(vetoJets[j].p.Eta()) < 2.4) nBLooseCentral++;
     else nBLooseFwd++;
   }
   if (nLooseFwd + nLooseCentral > 1){
-    TJet2csv = TMath::Max( Jets15[1].csv, 0.);
+    TJet2csv = TMath::Max( vetoJets[1].csv, 0.);
   }
+  cout << nLooseFwd<< " " << nLooseCentral << endl;
   return;
 }

@@ -52,13 +52,14 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
     n = VSyst.size();
     for(i = 0; i < n; i++){ // Group systematics
       if(t == VSyst.at(i)->GetTag()){
-	VSyst.at(i)->Add(h); VSyst.at(i)->SetStyle();
-	return;
+        VSyst.at(i)->Add(h); VSyst.at(i)->SetStyle();
+        return;
       }
     }
     h->SetName(t);
   }
   else if(type == itData){
+    VTagDataSamples.push_back(p);
     h->SetLineColor(kBlack); 
     h->SetMarkerStyle(20); 
     h->SetMarkerSize(1.1); 
@@ -66,6 +67,7 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
   else if(type == itSignal){
     VTagSamples.push_back(p);    // 
     VTagProcesses.push_back(pr);
+    nSignalSamples++;
     n = VSignals.size();
     for(i = 0; i < n; i++){
       if(t == VSignals.at(i)->GetTag()){ // Group signals 
@@ -82,9 +84,6 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
   h->SetSysNorm(S);
 
   AddToHistos(h);
-
-
-
 } 
 
 void Plot::GetStack(){ // Sets the histogram hStack
@@ -102,7 +101,6 @@ void Plot::GetStack(){ // Sets the histogram hStack
   if(verbose) cout << Form(" Adding %i systematic to sum of bkg...\n", (Int_t) VSumHistoSystUp.size());
   if(doSys) GroupSystematics();
   
-
   for(Int_t i = 0; i < (Int_t) VSumHistoSystUp.size(); i++){
     hAllBkg->AddToSystematics(VSumHistoSystUp.at(i));
     hAllBkg->AddToSystematics(VSumHistoSystDown.at(i));
@@ -157,10 +155,6 @@ void Plot::AddSystematic(TString var){
     AddSample(VTagSamples.at(i), VTagProcesses.at(i), itSys, 1, 0, var+"Up");
     AddSample(VTagSamples.at(i), VTagProcesses.at(i), itSys, 1, 0, var+"Down");
   }
-  /*  for(Int_t i = 0; i < (Int_t) VSignals.size(); i++){
-      AddSample(VSignals.at(i)->GetName(), VSignals.at(i)->GetTag(), itSys, 1, 0, var+"Up");
-      AddSample(VSignals.at(i)->GetName(), VSignals.at(i)->GetTag(), itSys, 1, 0, var+"Down");
-      }*/
   if(verbose) cout << "[Plot::AddSystematic] Systematic histograms added to the list for variation: " << var << endl;
 }
 
@@ -194,46 +188,6 @@ void Plot::GroupSystematics(){
 // SetLegend()
 // TCanvas* SetCanvas()
 // void DrawStack(TString tag = "0", bool sav = 0)
-void Plot::PrintYields(){
-  Int_t nBkgs = VBkgs.size();
-  Int_t nSig  = VSignals.size();
-  cout << " ························ Yields ························ " << endl;
-  if(nBkgs > 0){
-    cout << "----------------------------------------------------------" << endl;
-    for(Int_t i = 0; i < nBkgs; i++) cout << " " << VBkgs.at(i)->GetProcess() << ":      " << VBkgs.at(i)->GetYield() << endl;
-    GetStack();
-    cout << " " << "Total Bkg: " << hAllBkg->GetYield() << endl;
-  }
-  if(nSig>0)                         cout << "----------------------------------------------------------" << endl;
-  for(Int_t i = 0; i < nSig;  i++)   cout << " " << VSignals.at(i)->GetProcess() << ":      " << VSignals.at(i)->GetYield() << endl;
-  if(doData){
-    SetData();
-    cout << "----------------------------------------------------------" << endl;
-    cout << " " << "Data:      " << hData->GetYield() << endl;
-  }
-  cout << "==========================================================" << endl;
-}
-
-void Plot::PrintSystYields(){
-  Int_t nBkgs = VBkgs.size();
-  Int_t nSig  = VSignals.size();
-  Int_t nSys  = VSystLabel.size();
-  TString pr; TString sys;
-  cout << "\033[1;31m      ";
-  for(Int_t gs = 0; gs < nSys; gs++) cout << "    " << VSystLabel.at(gs);
-  cout << "\033[0m\n";
-  for(Int_t i = 0; i < nBkgs; i++){
-    pr = VBkgs.at(i)->GetProcess();
-    cout << Form("\033[1;33m  %s \033[0m ", VBkgs.at(i)->GetProcess().Data());
-    cout << "\033[1;34m";
-    for(Int_t j = 0; j < nSys; j++){
-      sys = VSystLabel.at(j);
-      cout << Form("   %1.2f ", TMath::Abs(GetYield(pr)-GetYield(pr,sys))/GetYield(pr)*100);
-    }
-    cout << "\033[0m\n";
-  }
-}
-
 Float_t Plot::GetYield(TString pr, TString systag){
   Float_t val = 0; Float_t sys = 0; TString ps; 
   Int_t nSyst = VSyst.size();
@@ -823,14 +777,22 @@ void Plot::SetHRatio(){
     hratio->GetXaxis()->SetLabelOffset(0.02);
   }
   hratio->GetXaxis()->SetTitle(xtitle);
-  hratio->SetMinimum(0.5);
-  hratio->SetMaximum(1.5);
+  hratio->SetMinimum(0.8);
+  hratio->SetMaximum(1.2);
+}
+
+Int_t Plot::GetColorOfProcess(TString pr){
+  for(Int_t i = 0; i < (Int_t) VBkgs.size(); i++) if(VBkgs.at(i)->GetProcess() == (pr)) return VBkgs.at(i)->GetFillColor();
+  for(Int_t i = 0; i < (Int_t) VSignals.size(); i++) if(VSignals.at(i)->GetProcess() == (pr)) return VSignals.at(i)->GetLineColor();
+  return 0;
 }
 
 void Plot::PrintSamples(){
   std::cout << "All the samples included in the plot: " << std::endl;
   for(Int_t i = 0; i < (Int_t) VTagSamples.size(); i++)
     cout << " >>> Sample " << VTagSamples.at(i) << " in process " << VTagProcesses.at(i) << std::endl;
+  for(Int_t i = 0; i < (Int_t) VTagDataSamples.size(); i++)
+    cout << " >>> Data sample " << VTagDataSamples.at(i) << std::endl;    
 }
 
 void Plot::PrintSystematics(){
@@ -840,8 +802,151 @@ void Plot::PrintSystematics(){
   std::cout << std::endl;
 }
 
-Histo* Plot::GetHistoNormLHE(TString sampleName){
-  Int_t nFiles = (gSystem->GetFromPipe("ls " + pathToHeppyTrees + "/Tree_" + sampleName +"_[0-9].root | wc -l")).Atoi();
-  cout << "Number of files = " << nFiles << endl;
-  Histo* h; return h;
+Plot* Plot::NewPlot(TString newVar, TString newCut, TString newChan, Int_t newnbins, Float_t newbin0, Float_t newbinN, TString newtitle, TString newXtitle){
+  if(newVar  == "") newVar  = var;
+  if(newCut  == "") newCut  = cut;
+  if(newChan == "") newChan = chan;
+  if(newnbins == -1  ) newnbins = nb;
+  if(newbin0  == -999) newbin0  = x0;
+  if(newbinN  == -999) newbinN  = xN;
+  if(newtitle == "" ) newtitle = title;
+  if(newXtitle == "" ) newXtitle = xtitle;
+
+  Plot* p = new Plot(newVar, newCut, newChan, newnbins, newbin0, newbinN, newtitle, newXtitle);
+  p->SetPath(path); p->SetTreeName(treeName);
+  p->SetOutputName(outputName);
+  p->SetPathSignal(pathSignal);
+
+  p->verbose         = verbose;        
+  p->doSys           = doSys;          
+  p->doData          = doData;         
+  p->doYieldsInLeg   = doYieldsInLeg;  
+  p->doSingleLep     = doSingleLep;    
+  p->doStackOverflow = doStackOverflow;
+  p->doSignal        = doSignal;       
+  p->doSetLogy       = doSetLogy;      
+  p->doStackSignal   = doStackSignal;  
+  p->doStatUncInDatacard = doStatUncInDatacard;
+
+  Int_t nMCSamples   = VTagSamples.size();
+  Int_t nDataSamples = VTagDataSamples.size();
+  Int_t type;
+
+  for(Int_t i = 0; i < nMCSamples; i++){
+    type = i < (nMCSamples-nSignalSamples) ? itBkg : itSignal;
+    p->AddSample(VTagSamples.at(i), VTagProcesses.at(i), type, GetColorOfProcess(VTagProcesses.at(i)));
+  }
+  for(Int_t i = 0; i < nDataSamples; i++)
+    p->AddSample(VTagDataSamples.at(i), "Data", itData, 1);
+
+  return p;
+}
+
+void Plot::PrintSystYields(){
+  Int_t nBkgs = VBkgs.size();
+  Int_t nSig  = VSignals.size();
+  Int_t nSys  = VSystLabel.size();
+  TString pr; TString sys;
+  cout << "\033[1;31m      ";
+  for(Int_t gs = 0; gs < nSys; gs++) cout << "    " << VSystLabel.at(gs);
+  cout << "\033[0m\n";
+  for(Int_t i = 0; i < nBkgs; i++){
+    pr = VBkgs.at(i)->GetProcess();
+    cout << Form("\033[1;33m  %s \033[0m ", VBkgs.at(i)->GetProcess().Data());
+    cout << "\033[1;34m";
+    for(Int_t j = 0; j < nSys; j++){
+      sys = VSystLabel.at(j);
+      cout << Form("   %1.2f ", TMath::Abs(GetYield(pr)-GetYield(pr,sys))/GetYield(pr)*100);
+    }
+    cout << "\033[0m\n";
+  }
+}
+
+Float_t Plot::GetTotalSystematic(TString pr){
+  Float_t sys2 = 0;
+  Int_t nSys  = VSystLabel.size();
+  Float_t nom = GetYield(pr);
+  for(Int_t j = 0; j < nSys; j++) sys2 += fabs((GetYield(pr,VSystLabel.at(j))-nom) * (GetYield(pr,VSystLabel.at(j))-nom));
+  return TMath::Sqrt(sys2);
+}
+
+void Plot::PrintYields(TString cuts, TString labels, TString channels, TString options){
+  if(cuts == "") cuts = cut;
+  //cuts.ReplaceAll(" ", ""); 
+  std::vector<TString> VCuts = std::vector<TString>();
+  std::vector<TString> VLCut = std::vector<TString>();
+  std::vector<TString> VChan = std::vector<TString>();
+  TString thisCut = ""; TString thisLabel = ""; TString thisChan;
+  Int_t nBkgs = VBkgs.size();
+  Int_t nSignals = VSignals.size();
+  Int_t nrows = nBkgs + nSignals; 
+  if(nBkgs > 0) nrows++; if(doData) nrows++;
+  Int_t ncolumns = 1 + cuts.CountChar(','); 
+  channels.ReplaceAll(" ", "");
+  Bool_t doChannels = false; if(cuts.CountChar(',') == channels.CountChar(',')) doChannels = true;
+  TResultsTable t(nrows, ncolumns, true); //cout << Form("Creating table with [rows, columns] = [%i, %i]\n", nrows, ncolumns);
+  t.SetRowTitleHeader("Process");
+  Plot* np = NULL;
+  for(Int_t k = 0; k < ncolumns; k++){
+    if(cuts.Contains(",")){
+      thisCut = cuts(0, cuts.First(','));
+      thisLabel = labels(0, labels.First(','));
+      thisChan = channels(0, channels.First(','));
+      VCuts.push_back(thisCut);
+      VLCut.push_back(thisLabel);
+      if(doChannels) VChan.push_back(thisChan);
+      else VChan.push_back(chan);
+      cuts = cuts(cuts.First(',')+1, cuts.Sizeof());
+      labels = labels(labels.First(',')+1, labels.Sizeof());
+      channels = channels(channels.First(',')+1, channels.Sizeof());
+    }
+    else{
+      VCuts.push_back(cuts);
+      VLCut.push_back(labels);
+      if(doChannels) VChan.push_back(channels);
+      else VChan.push_back(chan);
+    }
+  }
+
+  // Set row titles
+  for(Int_t i = 0; i < nBkgs; i++) t.SetRowTitle(i, VBkgs.at(i)->GetProcess());
+  t.SetRowTitle(nBkgs, "Total Background");
+  for(Int_t i = nBkgs+1; i < nSignals+nBkgs+1; i++) t.SetRowTitle(i, VSignals.at(i-(nBkgs+1))->GetProcess());
+  t.SetRowTitle(nBkgs+1+nSignals, "Data");
+
+  // Set column titles
+  for(Int_t k = 0; k < ncolumns; k++) t.SetColumnTitle(k, VLCut.at(k));
+
+  // Fill the table with the yields
+  for(Int_t k = 0; k < ncolumns; k++){
+    if(VCuts.at(k) == cut) np = this;
+    else{
+      np = NewPlot(var, VCuts.at(k), VChan.at(k));
+      for(Int_t i = 0; i < (Int_t) VSystLabel.size(); i++) np->AddSystematic(VSystLabel.at(i));
+    }
+
+    Float_t TotalBkgSystematic = 0;
+    for(Int_t i = 0; i < nBkgs; i++){
+      t[i][k] = np->VBkgs.at(i)->GetYield();
+      t[i][k].SetError(np->GetTotalSystematic(np->VBkgs.at(i)->GetProcess()));
+      TotalBkgSystematic += (np->GetTotalSystematic(np->VBkgs.at(i)->GetProcess()))*(np->GetTotalSystematic(np->VBkgs.at(i)->GetProcess()));
+    }
+    TotalBkgSystematic = TMath::Sqrt(TotalBkgSystematic);
+    np->GetStack();
+    t[nBkgs][k] = np->hAllBkg->GetYield();
+    t[nBkgs][k].SetError(TotalBkgSystematic); 
+    for(Int_t i = nBkgs+1; i < nSignals+nBkgs+1; i++){
+      t[i][k] = np->VSignals.at(i-(nBkgs+1))->GetYield();
+      t[i][k].SetError(np->GetTotalSystematic(np->VSignals.at(i-(nBkgs+1))->GetProcess()));
+    }
+    if(doData){
+      np->SetData();
+      t[nBkgs+1+nSignals][k] = np->hData->GetYield();
+      t[nBkgs+1+nSignals][k].SetError(TMath::Sqrt(np->hData->GetYield()));
+    }
+  }
+  t.SetDrawHLines(true); t.SetDrawVLines(true); t.Print();
+  if(options.Contains("tex"))  t.SaveAs("yields.tex");
+  if(options.Contains("html")) t.SaveAs("yields.html");
+  if(options.Contains("txt"))  t.SaveAs("yields.txt");
 }
