@@ -192,8 +192,8 @@ public:
     VSystLabel.push_back(sys);
   }
   void GroupSystematics();
-  void AddSumHistoSystematicUp(Histo* hsys){VSumHistoSystUp.push_back(hsys);}
-  void AddSumHistoSystematicDown(Histo* hsys){VSumHistoSystDown.push_back(hsys);}
+  void AddSumHistoSystematicUp(Histo* hsys){hsys->SetStyle(); VSumHistoSystUp.push_back(hsys);}
+  void AddSumHistoSystematicDown(Histo* hsys){hsys->SetStyle(); VSumHistoSystDown.push_back(hsys);}
   void IncludeBkgSystematics();
 
   void SetPath(TString p){ path = p; if(pathSignal == "") pathSignal = path;}
@@ -208,7 +208,7 @@ public:
 
   void PrintSamples();
   void PrintSystematics(); 
-  void PrintYields();
+  void PrintYields(TString cuts = "", TString labels = "", TString channels = "", TString options = "");
 	void PrintSystYields();
 	Float_t GetYield(TString pr = "ttbar", TString systag = "0");
   Float_t GetTotalSystematic(TString pr);
