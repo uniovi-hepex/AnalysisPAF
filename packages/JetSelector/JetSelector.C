@@ -45,10 +45,10 @@ void JetSelector::Initialise(){
     minDR = 0.4;
   }
   else if (gSelection == iTWSelec){
-    jet_MaxEta = 4.7;
+    jet_MaxEta = 2.4;
     jet_MinPt  = 30;
     vetoJet_minPt = 20;
-    vetoJet_maxEta = 2.4;
+    vetoJet_maxEta = 4.7;
     minDR = 0.4;
   }
   else if(gSelection == iWWSelec){

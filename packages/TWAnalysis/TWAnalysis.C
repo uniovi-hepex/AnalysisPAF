@@ -60,7 +60,6 @@ void TWAnalysis::InsideLoop(){
   Jets15      = GetParam<vector<Jet>>("Jets15");
   vetoJets    = GetParam<vector<Jet>>("vetoJets");
   GetVarsFromTop();
-
   for (unsigned int k = 0; k < selJets.size(); ++k){
     fHNCSV->Fill( selJets[k].csv );
   }
@@ -490,15 +489,16 @@ void TWAnalysis::get20Jets()
   TJet2csv       = 0.;
   
   for (unsigned int j = 0; j < vetoJets.size(); ++j){
-    if (vetoJets[0].p.Pt() < 20.) continue;
-    if (TMath::Abs(vetoJets[0].p.Eta()) < 2.4) nLooseCentral++;
+    if (vetoJets[j].p.Pt() < 20.) continue;
+    if (TMath::Abs(vetoJets[j].p.Eta()) < 2.4) nLooseCentral++;
     else nLooseFwd++;
-    if (!vetoJets[0].isBtag) continue;
-    if (TMath::Abs(vetoJets[0].p.Eta()) < 2.4) nBLooseCentral++;
+    if (!vetoJets[j].isBtag) continue;
+    if (TMath::Abs(vetoJets[j].p.Eta()) < 2.4) nBLooseCentral++;
     else nBLooseFwd++;
   }
   if (nLooseFwd + nLooseCentral > 1){
     TJet2csv = TMath::Max( vetoJets[1].csv, 0.);
   }
+  cout << nLooseFwd<< " " << nLooseCentral << endl;
   return;
 }
