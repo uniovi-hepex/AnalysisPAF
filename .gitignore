@@ -3,6 +3,7 @@
 *.d
 *.pcm
 .paf/
+.DS_Store
 # Exclude files by emacs
 *~
 
