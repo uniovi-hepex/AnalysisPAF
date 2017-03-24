@@ -248,6 +248,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	// Name of analysis class
 	//----------------------------------------------------------------------------
 	myProject->AddSelectorPackage("LeptonSelector");
+	myProject->AddSelectorPackage("TauSelector");
 	myProject->AddSelectorPackage("JetSelector");
 	myProject->AddSelectorPackage("EventBuilder");
 	if      (sel == iStopSelec)  myProject->AddSelectorPackage("StopAnalysis");
