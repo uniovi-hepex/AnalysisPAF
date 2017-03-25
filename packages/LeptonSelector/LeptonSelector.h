@@ -73,6 +73,7 @@ class LeptonSelector : public PAFChainItemSelector{
     Int_t nSelLeptons;
     Int_t nGenLeptons;
     Int_t nVetoLeptons;
+    Int_t nLooseLeptons;
 
     void GetLeptonVariables(Int_t i);
     void GetGenLeptonVariables(Int_t i);

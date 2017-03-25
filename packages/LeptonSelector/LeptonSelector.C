@@ -52,7 +52,9 @@ void LeptonSelector::Initialise(){
   else std::cout << ">>>>>>>>>>>> WRONG SELECTION!!!!!!!!" << std::endl;
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  
-  selLeptons = std::vector<Lepton>();
+  selLeptons 	= std::vector<Lepton>();
+  vetoLeptons 	= std::vector<Lepton>();
+  looseLeptons 	= std::vector<Lepton>();
 }
 
 //################################################################
@@ -533,9 +535,10 @@ void LeptonSelector::InsideLoop(){
       } 
     } 
   }
-  nSelLeptons = selLeptons.size();
-  nVetoLeptons = vetoLeptons.size();;
-  nGenLeptons  = genLeptons.size();
+  nSelLeptons 	= selLeptons.size();
+  nVetoLeptons 	= vetoLeptons.size();
+  nLooseLeptons = genLeptons.size();
+  nGenLeptons  	= looseLeptons.size();
   
   // Set params for the next selectors
   SetParam("selLeptons",  selLeptons );
@@ -546,6 +549,7 @@ void LeptonSelector::InsideLoop(){
   SetParam("nGenLeptons", nGenLeptons);
   SetParam("nSelLeptons", nSelLeptons);
   SetParam("nVetoLeptons", nVetoLeptons);
+  SetParam("nLooseLeptons", nVetoLeptons);
 }
 
 //################################################################
