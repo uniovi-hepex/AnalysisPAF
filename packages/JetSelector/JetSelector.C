@@ -174,7 +174,7 @@ void JetSelector::InsideLoop(){
 				if (gSelection == iWWSelec && tJ.isBtag) 						vetoJets.push_back(tJ);
 				else if (gSelection == iTWSelec)          					vetoJets.push_back(tJ);
 				else if (gSelection == ittHSelec && tJ.isLooseBtag) {
-					nLooseBtagJets++
+					nLooseBtagJets++;
 					vetoJets.push_back(tJ);
 				}
 				else                                      					vetoJets.push_back(tJ);
