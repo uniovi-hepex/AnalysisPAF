@@ -252,7 +252,9 @@ Bool_t JetSelector::IsBtag(Jet j){
 
 Bool_t JetSelector::IsBtag2(Jet j){
   Bool_t isbtag;
-  if(gIsData) isbtag = fBTagSFnom2->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta());
+  //  NOTE: because of the abscence of btagger efficiencies for the loose wp, we
+  // use the "trick" of assuming that everything is data ==> TODO.
+  if(1)       isbtag = fBTagSFnom2->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta());
   else        isbtag = fBTagSFnom2->IsTagged(j.csv,j.flavmc, j.p.Pt(), j.p.Eta());
   return isbtag;
 }
