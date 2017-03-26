@@ -220,15 +220,16 @@ void JetSelector::InsideLoop(){
   nGenJets  = genJets.size();
 
   // Set params...
-  SetParam("selJets",  	selJets);
-  SetParam("Jets15",   	Jets15);
-  SetParam("vetoJets", 	vetoJets);
-  SetParam("genJets",  	genJets);
-  SetParam("nSelJets",  nSelJets);
-  SetParam("nJets15",  	nJets15);
-  SetParam("nVetoJets", nVetoJets);
-  SetParam("nGenJets",  nGenJets);
-  SetParam("nSelBJets", nBtagJets);
+  SetParam("selJets",  		selJets);
+  SetParam("Jets15",   		Jets15);
+  SetParam("vetoJets", 		vetoJets);
+  SetParam("genJets",  		genJets);
+  SetParam("nSelJets",  	nSelJets);
+  SetParam("nJets15",  		nJets15);
+  SetParam("nVetoJets", 	nVetoJets);
+  SetParam("nGenJets",  	nGenJets);
+  SetParam("nSelBJets", 	nBtagJets);
+  SetParam("nVetoBJets",	nLooseBtagJets);
 
   // Propagate JES to MET
   if(nSelJets > 0){
