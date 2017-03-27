@@ -90,7 +90,7 @@ void ttHAnalysis::InsideLoop() {
   if (!passTrigger)     return;
   if (!PassesPreCuts()) return;
   cout<<"WOLOLO"<<endl;
-  
+
 	// Fill histograms
 	FillEventHistos();
 	FillYieldHistos();
@@ -127,18 +127,18 @@ void ttHAnalysis::GetTreeVariables() {
 	MHT	 = Get<Float_t>("mhtJet25");
 }
 
-void TopAnalysis::SetLeptonVariables() {
+void ttHAnalysis::SetLeptonVariables() {
   /*fTree->Branch("TNVetoLeps",     &TNVetoLeps,     "TNVetoLeps/I");
   fTree->Branch("TNSelLeps",     &TNSelLeps,     "TNSelLeps/I");
-  fTree->Branch("TLep_Pt",     TLep_Pt,     "TLep_Pt[TNSelLeps]/F");
   fTree->Branch("TLep_Eta",     TLep_Eta,     "TLep_Eta[TNSelLeps]/F");
   fTree->Branch("TLep_Phi",     TLep_Phi,     "TLep_Phi[TNSelLeps]/F");
   fTree->Branch("TLep_E" ,     TLep_E ,     "TLep_E[TNSelLeps]/F");
+  fTree->Branch("TLep_Pt",     TLep_Pt,     "TLep_Pt[TNSelLeps]/F");
   fTree->Branch("TLep_Charge",  TLep_Charge, "TLep_Charge[TNSelLeps]/F");
   fTree->Branch("TChannel",      &TChannel,      "TChannel/I");*/
 }
 
-void TopAnalysis::SetJetVariables() {
+void ttHAnalysis::SetJetVariables() {
   /*fTree->Branch("TNJets",           &TNJets,         "TNJets/I");
   fTree->Branch("TNBtags",       &TNBtags,     "TNBtags/I");
   fTree->Branch("TJet_isBJet",       TJet_isBJet,       "TJet_isBJet[TNJets]/I");
