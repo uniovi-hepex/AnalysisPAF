@@ -92,9 +92,9 @@ void ttHAnalysis::InsideLoop() {
 
   if (passTrigger) cout<<"PASA EL TRIGGER"<<endl;
   if (PassesPreCuts()) cout<<"PASA LOS PRECORTES"<<endl;
-  cout<<"nTightLepton"<<nTightLepton<<endl;
-  cout<<"nLooseLepton"<<nLooseLepton<<endl;
-  cout<<"nFakeableLepton"<<nLooseLepton<<endl;
+  // cout<<"nTightLepton"<<nTightLepton<<endl;
+  // cout<<"nLooseLepton"<<nLooseLepton<<endl;
+  // cout<<"nFakeableLepton"<<nLooseLepton<<endl;
 
 
 
