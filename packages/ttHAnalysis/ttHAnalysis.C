@@ -168,7 +168,7 @@ void ttHAnalysis::SetJetVariables() {
   fTree->Branch("THTJESDown",   &THTJESDown,   "THTJESDown/F");*/
 }
 
-void TopAnalysis::SetEventVariables() {
+void ttHAnalysis::SetEventVariables() {
   /*fTree->Branch("TWeight",      &TWeight,      "TWeight/F");
   fTree->Branch("TWeight_LepEffUp",      &TWeight_LepEffUp,      "TWeight_LepEffUp/F");
   fTree->Branch("TWeight_LepEffDown",    &TWeight_LepEffDown,    "TWeight_LepEffDown/F");
