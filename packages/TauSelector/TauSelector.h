@@ -12,7 +12,7 @@ class TauSelector : public PAFChainItemSelector{
 
   public:
 
-    TauSelector(); 
+    TauSelector();
     virtual ~TauSelector() {}
     virtual void InsideLoop();
     virtual void Initialise();
@@ -21,7 +21,7 @@ class TauSelector : public PAFChainItemSelector{
     std::vector<Lepton> selTaus;
     std::vector<Lepton> looseTaus;
     std::vector<Lepton> vetoTaus;
-    
+
     std::vector<Lepton> looseLeptons;
 
   protected:
@@ -35,19 +35,21 @@ class TauSelector : public PAFChainItemSelector{
     // TauGood
     Lepton tL;
     Int_t nLep;
-    TLorentzVector tP; 
+    TLorentzVector tP;
     Float_t pt;
     Float_t eta;
-    Int_t 	charge; 
+    Int_t 	charge;
     Int_t 	type;
-	Int_t 	idDecayMode;
-	Float_t	idMVA;
+	  Int_t 	idDecayMode;
+    Int_t	  idMVA;
+    Int_t	  idAntiE;
+    Int_t	  idAntiMu;
 
-	Int_t nTau;
-	
-    Int_t nSelTaus;
-    Int_t nVetoTaus;
-    Int_t nLooseTaus;
+	  Int_t   nTau;
+
+    Int_t   nSelTaus;
+    Int_t   nVetoTaus;
+    Int_t   nLooseTaus;
 
     void GetTauVariables(Int_t i);
 

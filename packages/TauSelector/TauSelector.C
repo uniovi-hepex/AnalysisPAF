@@ -52,19 +52,21 @@ Bool_t TauSelector::isGoodTau(Lepton tau){
   	// overlap within dR = 0.4 with loose electrons or muons.
 
   	Bool_t passDecayMode; Bool_t passPt; Bool_t passEta; Bool_t passID;
-  	Bool_t passOverlap;
+  	Bool_t passOverlap; Bool_t passAntiE; Bool_t passAntiMu;
 
 	  passDecayMode	= (idDecayMode == 1);
 	  passPt			= (pt > 20);
     passEta			= (abs(eta) < 2.3);
 	  passID			= (idMVA >= 3);
+	  passAntiE		= (idAntiE >= 4);
+	  passAntiMu	= (idAntiMu >= 4);
 
   	passOverlap		= 1;
   	for (Int_t i = 0; i < looseLeptons.size(); i++) {
   	  if (tau.p.DeltaR(looseLeptons[i].p) < 0.4) passOverlap = 0;
   	}
 
-  	if (!passDecayMode || !passPt || !passEta || !passID || !passOverlap) return false;
+  	if (!passDecayMode || !passPt || !passEta || !passID || !passOverlap || !passAntiE || !passAntiMu) return false;
 	  return true;
   } else {
     return false;
@@ -135,5 +137,7 @@ void TauSelector::GetTauVariables(Int_t i) { // Once per tau, get all the info
   type 	  = 2;
 
   idDecayMode	= Get<Int_t>("TauGood_idDecayMode",i);
-  idMVA			  = Get<Float_t>("TauGood_idMVA",i);
+  idMVA			  = Get<Int_t>("TauGood_idMVA",i);
+  idAntiE		  = Get<Int_t>("TauGood_idAntiE",i);
+  idAntiMu	  = Get<Int_t>("TauGood_idAntiMu",i);
 }
