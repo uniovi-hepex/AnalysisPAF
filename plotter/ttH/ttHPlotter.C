@@ -182,8 +182,8 @@ void ttHPlotter() {
 	//cout << "WOLOLOOOOO" << endl; // HASTA AQUÍ BIEN
 
 	for (UInt_t isample = 0; isample < nmcSamples; isample++) {
-    if(isample.Contains("_ext2")) isample.ReplaceAll("_ext2","");
-    if(isample.Contains("_ext"))  isample.ReplaceAll("_ext","");
+    if(mcsample[isample].Contains("_ext2")) mcsample[isample].ReplaceAll("_ext2","");
+    if(mcsample[isample].Contains("_ext"))  mcsample[isample].ReplaceAll("_ext","");
 		TFile* f = TFile::Open(codepath + "/ttH_temp/" + "Tree_" + mcsample[isample] + ".root");
 		for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 			for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
