@@ -451,18 +451,18 @@ Bool_t LeptonSelector::isLooseLepton(Lepton lep){
   	Bool_t passCSV; Bool_t passTightCharge; Bool_t passLepMVA;
   	Bool_t passElecCutBasedId; Bool_t passptRatio;
   	if (lep.isMuon) {
-  	  passEta 			= (abs(eta) < 2.4);
-  	  passPt	 		= (pt > 15);
-  	  passVertex		= getGoodVertex(iLoose);
-  	  passSIP			= getSIPcut(8);
-  	  passIso			= getminiRelIso(iLoose);
+  	  passEta 		       = (abs(eta) < 2.4);
+  	  passPt	 		       = (pt > 15);
+  	  passVertex		     = getGoodVertex(iLoose);
+  	  passSIP			       = getSIPcut(8);
+  	  passIso			       = getminiRelIso(iLoose);
 
-  	  passCSV			= 1;
-  	  passId			= 1;
-  	  passTightCharge	= 1;
-  	  passLepMVA		= 1;
-  	  passptRatio		= 1;
-  	  passElecCutBasedId= 1;
+  	  passCSV		         = 1;
+  	  passId			       = 1;
+  	  passTightCharge	   = 1;
+  	  passLepMVA		     = 1;
+  	  passptRatio		     = 1;
+  	  passElecCutBasedId = 1;
   	}
   	if (lep.isElec) {
   	  passEta 			= (abs(eta) < 2.5);
