@@ -16,9 +16,26 @@ const TString DiTriCuatrimc[12] = {"WGToLNuG", "ZGTo2LG", "WpWpJJ", "ZZZ", "WWZ"
 const TString Data[5]           = {"MuonEG", "SingleMuon", "SingleElec", "DoubleEG", "DoubleMuon"}; // Data samples
 
 const TString path              = "../../ttH_temp";
+const TString outputpath        = "/nfs/fanae/user/vrbouza/www/Results";
 
 void DrawPlots(TString chan = "ElMu"){
-  DrawPlot("nTightLepton","", chan, 6, 0, 6, "nTightLep (#)", "nTightLepton");
+  for (UInt_t icutcat = 0; icutcat < nCat; i++) {
+    DrawPlot("nTightLepton",, chan, 6, 0, 6, "nTightLep (#)", "nTightLepton");
+    DrawPlot("nTightLepton","", chan, 6, 0, 6, "nTightLep (#)", "nTightLepton");
+    DrawPlot("nTightLepton","", chan, 6, 0, 6, "nTightLep (#)", "nTightLepton");
+    DrawPlot("nTightLepton","", chan, 6, 0, 6, "nTightLep (#)", "nTightLepton");
+    DrawPlot("nTightLepton","", chan, 6, 0, 6, "nTightLep (#)", "nTightLepton");
+    DrawPlot("nTightLepton","", chan, 6, 0, 6, "nTightLep (#)", "nTightLepton");
+    DrawPlot("nTightLepton","", chan, 6, 0, 6, "nTightLep (#)", "nTightLepton");
+    DrawPlot("nTightLepton","", chan, 6, 0, 6, "nTightLep (#)", "nTightLepton");
+    DrawPlot("nTightLepton","", chan, 6, 0, 6, "nTightLep (#)", "nTightLepton");
+    DrawPlot("nTightLepton","", chan, 6, 0, 6, "nTightLep (#)", "nTightLepton");
+    DrawPlot("nTightLepton","", chan, 6, 0, 6, "nTightLep (#)", "nTightLepton");
+    DrawPlot("nTightLepton","", chan, 6, 0, 6, "nTightLep (#)", "nTightLepton");
+    DrawPlot("nTightLepton","", chan, 6, 0, 6, "nTightLep (#)", "nTightLepton");
+    DrawPlot("nTightLepton","", chan, 6, 0, 6, "nTightLep (#)", "nTightLepton");
+    DrawPlot("nTightLepton","", chan, 6, 0, 6, "nTightLep (#)", "nTightLepton");
+    DrawPlot("nTightLepton","", chan, 6, 0, 6, "nTightLep (#)", "nTightLepton");
 }
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name){
@@ -55,7 +72,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   for (UInt_t isample = 0; isample < sizeof(Data)/sizeof(*Data); i++) {
 	  p->AddSample(Data[isample], "Data", itData);
   }
- 
+
 
   p->doSetLogy = false;
   p->DrawStack("0", 1);
@@ -64,4 +81,3 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->PrintYields();
   delete p;
 }
-
