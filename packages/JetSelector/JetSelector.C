@@ -167,16 +167,13 @@ void JetSelector::InsideLoop(){
 				if(tJ.p.Pt() > 15 || tJ.pTJESUp > 15 || tJ.pTJESDown > 15 ) Jets15.push_back(tJ);
 				if(tJ.p.Pt() > jet_MinPt){
 				  selJets.push_back(tJ);
-				  if(tJ.isBtag) nBtagJets++;
+				  if (tJ.isBtag) nBtagJets++;
+					if (tJ.isLooseBtag) nLooseBtagJets++;
 				}
       }
       if (tJ.p.Pt() > vetoJet_minPt && tJ.p.Eta() < vetoJet_maxEta){
 				if (gSelection == iWWSelec && tJ.isBtag) 						vetoJets.push_back(tJ);
 				else if (gSelection == iTWSelec)          					vetoJets.push_back(tJ);
-				else if (gSelection == ittHSelec && tJ.isLooseBtag) {
-					nLooseBtagJets++;
-					vetoJets.push_back(tJ);
-				}
 				else                                      					vetoJets.push_back(tJ);
       }
     }
@@ -229,7 +226,7 @@ void JetSelector::InsideLoop(){
   SetParam("nVetoJets", 	nVetoJets);
   SetParam("nGenJets",  	nGenJets);
   SetParam("nSelBJets", 	nBtagJets);
-  SetParam("nVetoBJets",	nLooseBtagJets);
+  SetParam("nLooseBJets",	nLooseBtagJets);
 
   // Propagate JES to MET
   if(nSelJets > 0){
