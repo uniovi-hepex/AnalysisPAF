@@ -113,7 +113,6 @@ class ttHAnalysis : public PAFChainItemSelector {
 		//	   Get methods
 		////////////////////////////////////////////////////////////////////////
 		Float_t getMET();
-		Float_t getMHT();
 		Float_t getMETLD();
 		Int_t 	getCS();
 
@@ -166,7 +165,7 @@ class ttHAnalysis : public PAFChainItemSelector {
 		std::vector<Lepton> FakeableLepton;
 		std::vector<Lepton> TightLepton;
 		std::vector<Lepton> Tau;
-		std::vector<Jet>    Jet;
+		std::vector<Jet>    Jets;
 
 		Float_t MET;
 		Float_t MHT;

@@ -132,7 +132,7 @@ void ttHAnalysis::GetEventVariables() {
   FakeableLepton.clear();
   LooseLepton.clear();
   Tau.clear();
-  Jet.clear();
+  Jets.clear();
   nTaus         = 0;
   nJets         = 0;
   nMediumBTags  = 0;
@@ -146,7 +146,7 @@ void ttHAnalysis::GetEventVariables() {
   FakeableLepton  = GetParam<vector<Lepton>>("vetoLeptons");
   LooseLepton     = GetParam<vector<Lepton>>("looseLeptons");
   Tau             = GetParam<vector<Lepton>>("Tau");
-  Jet             = GetParam<vector<Jet>>("selJets");
+  Jets             = GetParam<vector<Jet>>("selJets");
 
   nTaus           = GetParam<Int_t>("nSelTaus");
   nJets           = GetParam<Int_t>("nSelJets");
@@ -468,13 +468,7 @@ Bool_t ttHAnalysis::PassesPreCuts(){
 ////////////////////////////////////////////////////////////////////////////////
 //	   Get methods
 ////////////////////////////////////////////////////////////////////////////////
-Float_t ttHAnalysis::getMHT() {
-	Float_t mht;
-	mht = 0;
-	for (UInt_t i = 0; i < Jet.size(); i++) mht += Jet[i].p.Pt();
-	for (UInt_t i = 0; i < Lepton.size(); i++) mht += Lepton[i].p.Pt();
-	return mht;
-}
+
 
 Float_t ttHAnalysis::getMETLD() {
 	Float_t metld;
