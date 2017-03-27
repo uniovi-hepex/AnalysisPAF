@@ -145,7 +145,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 			GetCount(Files);
 			if(IsMCatNLO(sampleName)){
 				G_IsMCatNLO = true;
-				if(verbose) cout << " >>> This is a aMCatNLO sample!!" << endl;
+				if(verbose) cout << " >>> This is an aMCatNLO sample!!" << endl;
 				G_Event_Weight = xsec/SumOfWeights;
 			}
 			else G_Event_Weight = xsec/Count;
