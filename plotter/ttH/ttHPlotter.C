@@ -21,7 +21,7 @@ using namespace std;
 
 void ttHPlotter() {
 	const Float_t lumi			=	35870;
-	const UInt_t nmcSamples 	= 	27;
+	const UInt_t nmcSamples 	= 	28;
 	const UInt_t ndataSamples 	= 	5;
 	enum gCategories {
 	    categories_begin,
@@ -50,7 +50,7 @@ void ttHPlotter() {
 		"WJetsToLNu_MLM",														// W+
 		"ZZ_ext",																// ZZ
 		"DYJetsToLL_M50_aMCatNLO", "DYJetsToLL_M10to50_aMCatNLO_ext", 			// DY
-	  	"TTHNonbb"																// Signal
+	  "TTHNonbb"																// Signal
 	};
 	Int_t mcsampleColors	[nmcSamples] 	= {
 		kGreen-5, kGreen-5,
@@ -392,7 +392,7 @@ void ttHPlotter() {
 			TCanvas *c = new TCanvas("c", "c", 800, 600);
 			//if (icat != threel) c -> SetLogy();
 			fHDEvents    		[icat][ichan]	-> 	SetMinimum(0);
-			fHDEvents    			[icat][ichan]	->	SetMarkerStyle(20);
+			fHDEvents    		[icat][ichan]	->	SetMarkerStyle(20);
 			fHDEvents    		[icat][ichan]	-> 	Draw("pe");
 			fHSEvents    		[icat][ichan]	-> 	Draw("histsame"); // Events
 
