@@ -2,8 +2,11 @@
 *.so
 *.d
 *.pcm
+# Exclude misc files or folders
 .paf/
 .DS_Store
+*_temp/
+inputdata.root
 # Exclude files by emacs
 *~
 
