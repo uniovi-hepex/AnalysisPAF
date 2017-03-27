@@ -87,22 +87,8 @@ void ttHAnalysis::InsideLoop() {
 	GetTreeVariables();
   GetEventVariables();
 
-
-
-
-  if (passTrigger) cout<<"PASA EL TRIGGER"<<endl;
-  if (PassesPreCuts()) cout<<"PASA LOS PRECORTES"<<endl;
-  // cout<<"nTightLepton"<<nTightLepton<<endl;
-  // cout<<"nLooseLepton"<<nLooseLepton<<endl;
-  // cout<<"nFakeableLepton"<<nLooseLepton<<endl;
-
-
-
-
-
   if (!passTrigger)     return;
   if (!PassesPreCuts()) return;
-  cout<<"WOLOLO"<<endl;
 
 	// Fill histograms
 	FillEventHistos();
@@ -141,59 +127,22 @@ void ttHAnalysis::GetTreeVariables() {
 }
 
 void ttHAnalysis::SetLeptonVariables() {
-  /*fTree->Branch("TNVetoLeps",     &TNVetoLeps,     "TNVetoLeps/I");
-  fTree->Branch("TNSelLeps",     &TNSelLeps,     "TNSelLeps/I");
-  fTree->Branch("TLep_Eta",     TLep_Eta,     "TLep_Eta[TNSelLeps]/F");
-  fTree->Branch("TLep_Phi",     TLep_Phi,     "TLep_Phi[TNSelLeps]/F");
-  fTree->Branch("TLep_E" ,     TLep_E ,     "TLep_E[TNSelLeps]/F");
-  fTree->Branch("TLep_Pt",     TLep_Pt,     "TLep_Pt[TNSelLeps]/F");
-  fTree->Branch("TLep_Charge",  TLep_Charge, "TLep_Charge[TNSelLeps]/F");
-  fTree->Branch("TChannel",      &TChannel,      "TChannel/I");*/
+  fTree->Branch("nTightLepton",     &nTightLepton,     "nTightLepton/I");
+  fTree->Branch("nFakeableLepton",  &nFakeableLepton,  "nFakeableLepton/I");
+  fTree->Branch("nLooseLepton",     &nLooseLepton,     "nLooseLepton/I");
+  fTree->Branch("nTaus",            &nTaus,            "nTaus/I");
 }
 
 void ttHAnalysis::SetJetVariables() {
-  /*fTree->Branch("TNJets",           &TNJets,         "TNJets/I");
-  fTree->Branch("TNBtags",       &TNBtags,     "TNBtags/I");
-  fTree->Branch("TJet_isBJet",       TJet_isBJet,       "TJet_isBJet[TNJets]/I");
-  fTree->Branch("TJet_Pt",           TJet_Pt,           "TJet_Pt[TNJets]/F");
-  fTree->Branch("TJet_Eta",           TJet_Eta,           "TJet_Eta[TNJets]/F");
-  fTree->Branch("TJet_Phi",           TJet_Phi,           "TJet_Phi[TNJets]/F");
-  fTree->Branch("TJet_E",            TJet_E,            "TJet_E[TNJets]/F");
-
-  fTree->Branch("TNJetsJESUp",           &TNJetsJESUp,         "TNJetsJESUp/I");
-  fTree->Branch("TNJetsJESDown",           &TNJetsJESDown,         "TNJetsJESDown/I");
-  fTree->Branch("TNJetsJER",           &TNJetsJER,         "TNJetsJER/I");
-
-  fTree->Branch("TNBtagsUp",     &TNBtagsUp,   "TNBtagsUp/I");
-  fTree->Branch("TNBtagsDown",   &TNBtagsDown, "TNBtagsDown/I");
-  fTree->Branch("TNBtagsMisTagUp",     &TNBtagsMisTagUp,   "TNBtagsMisTagUp/I");
-  fTree->Branch("TNBtagsMisTagDown",   &TNBtagsMisTagDown, "TNBtagsMisTagDown/I");
-
-  fTree->Branch("TNBtagsJESUp",   &TNBtagsJESUp, "TNBtagsJESUp/I");
-  fTree->Branch("TNBtagsJESDown",  &TNBtagsJESDown, "TNBtagsJESDown/I");
-
-  fTree->Branch("TJetJESUp_Pt",      TJetJESUp_Pt,      "TJetJESUp_Pt[TNJetsJESUp]/F");
-  fTree->Branch("TJetJESDown_Pt",    TJetJESDown_Pt,    "TJetJESDown_Pt[TNJetsJESDown]/F");
-  fTree->Branch("TJetJER_Pt",        TJetJER_Pt,        "TJetJER_Pt[TNJetsJER]/F");
-
-  fTree->Branch("THT",          &THT,          "THT/F");
-  fTree->Branch("THTJESUp",     &THTJESUp,     "THTJESUp/F");
-  fTree->Branch("THTJESDown",   &THTJESDown,   "THTJESDown/F");*/
+  fTree->Branch("nMediumBTags" ,    &nMediumBTags,     "nMediumBTags/I");
+  fTree->Branch("nLooseBTags",      &nLooseBTags,      "nLooseBTags/I");
+  fTree->Branch("nJets",            &nJets,            "nJets/I");
 }
 
 void ttHAnalysis::SetEventVariables() {
-  /*fTree->Branch("TWeight",      &TWeight,      "TWeight/F");
-  fTree->Branch("TWeight_LepEffUp",      &TWeight_LepEffUp,      "TWeight_LepEffUp/F");
-  fTree->Branch("TWeight_LepEffDown",    &TWeight_LepEffDown,    "TWeight_LepEffDown/F");
-  fTree->Branch("TWeight_TrigUp",        &TWeight_TrigUp,        "TWeight_TrigUp/F");
-  fTree->Branch("TWeight_TrigDown",      &TWeight_TrigDown,      "TWeight_TrigDown/F");
-  fTree->Branch("TWeight_PUUp",        &TWeight_PUUp,        "TWeight_PUUp/F");
-  fTree->Branch("TWeight_PUDown",        &TWeight_PUDown,        "TWeight_PUDown/F");
-
-  fTree->Branch("TMET",         &TMET,         "TMET/F");
-  fTree->Branch("TMET_Phi",     &TMET_Phi,     "TMET_Phi/F");
-  fTree->Branch("TMETJESUp",    &TMETJESUp,    "TMETJESUp/F");
-  fTree->Branch("TMETJESDown",  &TMETJESDown,  "TMETJESDown/F");*/
+  fTree->Branch("gChannel",      &gChannel,      "gChannel/I");
+  fTree->Branch("passTrigger",   &passTrigger,   "passTrigger/B");
+  fTree->Branch("isSS",          &isSS,          "isSS/B");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
