@@ -87,6 +87,7 @@ void ttHAnalysis::InsideLoop() {
   GetEventVariables();
 	GetTreeVariables();
 
+  if (passTrigger) cout<<"PASA EL TRIGGER"<<endl;
   if (PassesPreCuts()) cout<<"PASA LOS PRECORTES"<<endl;
   if (!passTrigger)     return;
   if (!PassesPreCuts()) return;
@@ -534,6 +535,9 @@ void ttHAnalysis::GetEventVariables() {
   Tau             = GetParam<vector<Lepton>>("selTaus");
   Jets            = GetParam<vector<Jet>>("selJets");
 
+  nTightLepton    = GetParam<Int_t>("nSelLeptons");
+  nFakeableLepton = GetParam<Int_t>("nVetoLeptons");
+  nLooseLepton    = GetParam<Int_t>("nLooseLeptons");
   nTaus           = GetParam<Int_t>("nSelTaus");
   nJets           = GetParam<Int_t>("nSelJets");
   nMediumBTags    = GetParam<Int_t>("nSelBJets");
