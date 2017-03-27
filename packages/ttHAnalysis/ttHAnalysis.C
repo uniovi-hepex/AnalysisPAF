@@ -87,6 +87,7 @@ void ttHAnalysis::InsideLoop() {
   GetEventVariables();
 	GetTreeVariables();
 
+  cout<<PassesPreCuts()<<endl;
   if (!passTrigger)     return;
   if (!PassesPreCuts()) return;
   cout<<"WOLOLO"<<endl;
