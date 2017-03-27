@@ -45,7 +45,7 @@ void ttHPlotter() {
 		"TTZToLLNuNu_ext", "TTZToQQ",											// TTZ
 		"TTGJets_ext", "TTJets_aMCatNLO",										// TT+
 		"TW_ext", "TbarW_ext", "T_tch", "Tbar_tch", "TToLeptons_sch_amcatnlo",	// T+
-	  "WGToLNuG", "ZGTo2LG", "TGJets_ext", "ZZZ", "WWZ", "tZq_ll", "TTTT", "WZTo3LNu",// Rares
+	  "WGToLNuG", "ZGTo2LG", "TGJets_ext", "ZZZ", "WWZ", "WZZ", "tZq_ll", "TTTT", "WZTo3LNu",// Rares
 		"WW_ext", "WpWpJJ", "WWTo2L2Nu",										// WW/WW+
 		"WJetsToLNu_MLM",														// W+
 		"ZZ_ext",																// ZZ
@@ -57,7 +57,7 @@ void ttHPlotter() {
 		kSpring+2, kSpring+2,
 		kSpring+10, kSpring+10,
 		kViolet-6, kViolet-6, kViolet-6, kViolet-6, kViolet-6,
-	  	kAzure-9, kAzure-9, kAzure-9,  kAzure-9, kAzure-9, kAzure-9, kAzure-9, kAzure-9,
+	  	kAzure-9, kAzure-9, kAzure-9,  kAzure-9, kAzure-9, kAzure-9, kAzure-9, kAzure-9, kAzure-9,
 		kBlue, kBlue, kBlue,
 	  	kCyan+1,
 		kYellow,
@@ -67,7 +67,7 @@ void ttHPlotter() {
 	const TString datasample		[ndataSamples] 	= {
 		"MuonEG", "DoubleMuon", "DoubleEG", "SingleMuon", "SingleElec"			// Data samples
 	};
-	TString codepath 	= 	"/nfs/fanae/user/vrbouza/Documents/TFG/ttHAnalysis";
+	TString codepath 	= 	"/nfs/fanae/user/vrbouza/Documents/TFG/AnalysisPAF";
 	TString outputpath 	= 	"/nfs/fanae/user/vrbouza/www/Results";
 	//TString filename	=	"Results.pdf";
 
@@ -182,7 +182,7 @@ void ttHPlotter() {
 	//cout << "WOLOLOOOOO" << endl; // HASTA AQUÍ BIEN
 
 	for (UInt_t isample = 0; isample < nmcSamples; isample++) {
-		TFile* f = TFile::Open(codepath + "/temp/" + "Tree_" + mcsample[isample] + ".root");
+		TFile* f = TFile::Open(codepath + "/ttH_temp/" + "Tree_" + mcsample[isample] + ".root");
 		for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 			for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 				if (icat == threel 	&& ichan != All) 	continue;
@@ -289,7 +289,7 @@ void ttHPlotter() {
 	//cout<< "jojojojojojo" << endl;
 
 	for (UInt_t isample = 0; isample < ndataSamples; isample++) {
-		TFile* f = TFile::Open(codepath + "/temp/" + "Tree_" + datasample[isample] + ".root");
+		TFile* f = TFile::Open(codepath + "/ttH_temp/" + "Tree_" + datasample[isample] + ".root");
 		for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 			for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 				if (icat == threel 		&& ichan != All) 	continue;
