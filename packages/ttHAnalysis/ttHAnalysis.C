@@ -42,6 +42,7 @@ ttHAnalysis::ttHAnalysis() : PAFChainItemSelector() {
 			fHMass				    [icat][ichan]	=	0;
 		}
 	}
+  fTree = 0;
 }
 
 //	Core PAF-analysis methods
@@ -61,6 +62,12 @@ void ttHAnalysis::Initialise() {
 	InitialiseKinematicHistos();
 	InitialiseMETHistos();
 	InitialiseMiscHistos();
+
+  // Minitree
+  fTree = CreateTree("MiniTree","Created with PAF");
+  SetLeptonVariables();
+  SetJetVariables();
+  SetEventVariables();
 
   cout << endl;
 	PAF_INFO("ttHAnalysis", "+ Initialization DONE");
@@ -89,6 +96,7 @@ void ttHAnalysis::InsideLoop() {
 	FillKinematicHistos();
 	FillMETHistos();
 	FillMiscHistos();
+  fTree->Fill();
 
 	#ifdef DEBUGC
 		cout << "DEBUGC - End of InsideLoop" << endl;
@@ -118,44 +126,60 @@ void ttHAnalysis::GetTreeVariables() {
 	MHT	 = Get<Float_t>("mhtJet25");
 }
 
-void ttHAnalysis::GetParameters() {
-  // Import essential and global variables of the execution
-  gSampleName	    =	GetParam<TString>("sampleName");
-  gIsData         =	GetParam<Bool_t>("IsData");
-  gWeight         =	GetParam<Float_t>("weight"); // cross section / events in the sample
-	gIsMCatNLO      =	GetParam<Bool_t>("IsMCatNLO");
+void TopAnalysis::SetLeptonVariables() {
+  /*fTree->Branch("TNVetoLeps",     &TNVetoLeps,     "TNVetoLeps/I");
+  fTree->Branch("TNSelLeps",     &TNSelLeps,     "TNSelLeps/I");
+  fTree->Branch("TLep_Pt",     TLep_Pt,     "TLep_Pt[TNSelLeps]/F");
+  fTree->Branch("TLep_Eta",     TLep_Eta,     "TLep_Eta[TNSelLeps]/F");
+  fTree->Branch("TLep_Phi",     TLep_Phi,     "TLep_Phi[TNSelLeps]/F");
+  fTree->Branch("TLep_E" ,     TLep_E ,     "TLep_E[TNSelLeps]/F");
+  fTree->Branch("TLep_Charge",  TLep_Charge, "TLep_Charge[TNSelLeps]/F");
+  fTree->Branch("TChannel",      &TChannel,      "TChannel/I");*/
 }
 
-void ttHAnalysis::GetEventVariables() {
-  // Clean
-  TightLepton.clear();
-  FakeableLepton.clear();
-  LooseLepton.clear();
-  Tau.clear();
-  Jets.clear();
-  nTaus         = 0;
-  nJets         = 0;
-  nMediumBTags  = 0;
-  nLooseBTags   = 0;
-  gChannel      = 0;
-  passTrigger   = 0;
-  isSS          = 0;
+void TopAnalysis::SetJetVariables() {
+  /*fTree->Branch("TNJets",           &TNJets,         "TNJets/I");
+  fTree->Branch("TNBtags",       &TNBtags,     "TNBtags/I");
+  fTree->Branch("TJet_isBJet",       TJet_isBJet,       "TJet_isBJet[TNJets]/I");
+  fTree->Branch("TJet_Pt",           TJet_Pt,           "TJet_Pt[TNJets]/F");
+  fTree->Branch("TJet_Eta",           TJet_Eta,           "TJet_Eta[TNJets]/F");
+  fTree->Branch("TJet_Phi",           TJet_Phi,           "TJet_Phi[TNJets]/F");
+  fTree->Branch("TJet_E",            TJet_E,            "TJet_E[TNJets]/F");
 
-  // Import event-dependent variables
-  TightLepton     = GetParam<vector<Lepton>>("selLeptons");
-  FakeableLepton  = GetParam<vector<Lepton>>("vetoLeptons");
-  LooseLepton     = GetParam<vector<Lepton>>("looseLeptons");
-  Tau             = GetParam<vector<Lepton>>("selTaus");
-  Jets            = GetParam<vector<Jet>>("selJets");
+  fTree->Branch("TNJetsJESUp",           &TNJetsJESUp,         "TNJetsJESUp/I");
+  fTree->Branch("TNJetsJESDown",           &TNJetsJESDown,         "TNJetsJESDown/I");
+  fTree->Branch("TNJetsJER",           &TNJetsJER,         "TNJetsJER/I");
 
-  nTaus           = GetParam<Int_t>("nSelTaus");
-  nJets           = GetParam<Int_t>("nSelJets");
-  nMediumBTags    = GetParam<Int_t>("nSelBJets");
-  nLooseBTags     = GetParam<Int_t>("nLooseBJets");
+  fTree->Branch("TNBtagsUp",     &TNBtagsUp,   "TNBtagsUp/I");
+  fTree->Branch("TNBtagsDown",   &TNBtagsDown, "TNBtagsDown/I");
+  fTree->Branch("TNBtagsMisTagUp",     &TNBtagsMisTagUp,   "TNBtagsMisTagUp/I");
+  fTree->Branch("TNBtagsMisTagDown",   &TNBtagsMisTagDown, "TNBtagsMisTagDown/I");
 
-  gChannel        = GetParam<Int_t>("gChannel");
-  passTrigger     = GetParam<Bool_t>("passTrigger");
-  isSS            = GetParam<Bool_t>("isSS");
+  fTree->Branch("TNBtagsJESUp",   &TNBtagsJESUp, "TNBtagsJESUp/I");
+  fTree->Branch("TNBtagsJESDown",  &TNBtagsJESDown, "TNBtagsJESDown/I");
+
+  fTree->Branch("TJetJESUp_Pt",      TJetJESUp_Pt,      "TJetJESUp_Pt[TNJetsJESUp]/F");
+  fTree->Branch("TJetJESDown_Pt",    TJetJESDown_Pt,    "TJetJESDown_Pt[TNJetsJESDown]/F");
+  fTree->Branch("TJetJER_Pt",        TJetJER_Pt,        "TJetJER_Pt[TNJetsJER]/F");
+
+  fTree->Branch("THT",          &THT,          "THT/F");
+  fTree->Branch("THTJESUp",     &THTJESUp,     "THTJESUp/F");
+  fTree->Branch("THTJESDown",   &THTJESDown,   "THTJESDown/F");*/
+}
+
+void TopAnalysis::SetEventVariables() {
+  /*fTree->Branch("TWeight",      &TWeight,      "TWeight/F");
+  fTree->Branch("TWeight_LepEffUp",      &TWeight_LepEffUp,      "TWeight_LepEffUp/F");
+  fTree->Branch("TWeight_LepEffDown",    &TWeight_LepEffDown,    "TWeight_LepEffDown/F");
+  fTree->Branch("TWeight_TrigUp",        &TWeight_TrigUp,        "TWeight_TrigUp/F");
+  fTree->Branch("TWeight_TrigDown",      &TWeight_TrigDown,      "TWeight_TrigDown/F");
+  fTree->Branch("TWeight_PUUp",        &TWeight_PUUp,        "TWeight_PUUp/F");
+  fTree->Branch("TWeight_PUDown",        &TWeight_PUDown,        "TWeight_PUDown/F");
+
+  fTree->Branch("TMET",         &TMET,         "TMET/F");
+  fTree->Branch("TMET_Phi",     &TMET_Phi,     "TMET_Phi/F");
+  fTree->Branch("TMETJESUp",    &TMETJESUp,    "TMETJESUp/F");
+  fTree->Branch("TMETJESDown",  &TMETJESDown,  "TMETJESDown/F");*/
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -167,6 +191,7 @@ void ttHAnalysis::InitialiseEventHistos() {
 	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
+			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
 			fHEvents     [icat][ichan] = CreateH1F("H_Events_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""						, 1, 0, 1);
 		}
@@ -177,6 +202,7 @@ void ttHAnalysis::InitialiseYieldHistos() {
 	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
+			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
 			fHTightLep	[icat][ichan] = CreateH1F("H_TightLep_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""				, 6, 0, 6);
 			fHFakeLep	  [icat][ichan] = CreateH1F("H_FakeLep_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""					, 5, 0, 5);
@@ -193,6 +219,7 @@ void ttHAnalysis::InitialiseKinematicHistos() {
 	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
+			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
 			fHPtLeading			  [icat][ichan] = CreateH1F("H_PtLeading_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""		, 10, 0, 200);
 			fHPtSubLeading		[icat][ichan] = CreateH1F("H_PtSubLeading_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""	, 10, 0, 200);
@@ -205,6 +232,7 @@ void ttHAnalysis::InitialiseMETHistos() {
 	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
+			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
 			fHMET				[icat][ichan] = CreateH1F("H_MET_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""				, 10, 0, 400);
 			fHMHT				[icat][ichan] = CreateH1F("H_MHT_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""				, 10, 0, 1000);
@@ -218,6 +246,7 @@ void ttHAnalysis::InitialiseMiscHistos() {
 		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == twolSS 		&& ichan != All) 	continue;
 			if (icat == threel 		&& ichan != All) 	continue;
+			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
 			fHChargeSum		[icat][ichan] = CreateH1F("H_ChargeSum_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""		, 7, -3.5, 3.5);
 			fHMass				[icat][ichan] = CreateH1F("H_Mass_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""			, 10, 0, 400);
@@ -235,6 +264,7 @@ void ttHAnalysis::FillEventHistos() {
 			if (ichan == ElEl 		&& (gChannel != 3)) 					       continue;
 			if (ichan == ElMu 		&& (gChannel != 1)) 			           continue;
 			if (icat 	== threel 	&& (!Is3lEvent() || ichan != All)) 	 continue;
+			if (icat 	== fourl 	  && (!Is4lEvent() || ichan != All)) 	 continue;
 			if (icat 	== Total 		&& ichan != All ) 	                 continue;
 			if (icat 	== Total 		&& (!Is2lSSEvent() || (gChannel != 2)) && (!Is2lSSEvent() || (gChannel != 3)) && (!Is2lSSEvent() || (gChannel != 1)) && !Is3lEvent()) 	continue;
 
@@ -251,6 +281,7 @@ void ttHAnalysis::FillYieldHistos() {
 			if (ichan == ElEl 		&& (gChannel != 3)) 					       continue;
 			if (ichan == ElMu 		&& (gChannel != 1)) 			           continue;
 			if (icat 	== threel 	&& (!Is3lEvent() || ichan != All)) 	 continue;
+			if (icat 	== fourl 	  && (!Is4lEvent() || ichan != All)) 	 continue;
 			if (icat 	== Total 		&& ichan != All ) 	                 continue;
 			if (icat 	== Total 		&& (!Is2lSSEvent() || (gChannel != 2)) && (!Is2lSSEvent() || (gChannel != 3)) && (!Is2lSSEvent() || (gChannel != 1)) && !Is3lEvent()) 	continue;
 			fHTightLep	 [icat][ichan]->Fill(nTightLepton,EventWeight);
@@ -272,6 +303,7 @@ void ttHAnalysis::FillKinematicHistos() {
 			if (ichan == ElEl 		&& (gChannel != 3)) 					       continue;
 			if (ichan == ElMu 		&& (gChannel != 1)) 			           continue;
 			if (icat 	== threel 	&& (!Is3lEvent() || ichan != All)) 	 continue;
+			if (icat 	== fourl 	  && (!Is4lEvent() || ichan != All)) 	 continue;
 			if (icat 	== Total 		&& ichan != All ) 	                 continue;
 			if (icat 	== Total 		&& (!Is2lSSEvent() || (gChannel != 2)) && (!Is2lSSEvent() || (gChannel != 3)) && (!Is2lSSEvent() || (gChannel != 1)) && !Is3lEvent()) 	continue;
 			fHPtLeading			  [icat][ichan]->Fill(TightLepton[0].p.Pt(),EventWeight);
@@ -289,6 +321,7 @@ void ttHAnalysis::FillMETHistos() {
 			if (ichan == ElEl 		&& (gChannel != 3)) 					       continue;
 			if (ichan == ElMu 		&& (gChannel != 1)) 			           continue;
 			if (icat 	== threel 	&& (!Is3lEvent() || ichan != All)) 	 continue;
+			if (icat 	== fourl 	  && (!Is4lEvent() || ichan != All)) 	 continue;
 			if (icat 	== Total 		&& ichan != All ) 	                 continue;
 			if (icat 	== Total 		&& (!Is2lSSEvent() || (gChannel != 2)) && (!Is2lSSEvent() || (gChannel != 3)) && (!Is2lSSEvent() || (gChannel != 1)) && !Is3lEvent()) 	continue;
 			fHMET	  [icat][ichan]->Fill(MET,EventWeight);
@@ -306,6 +339,7 @@ void ttHAnalysis::FillMiscHistos() {
 			if (ichan == ElEl 		&& (gChannel != 3)) 					        continue;
 			if (ichan == ElMu 		&& (gChannel != 1)) 					        continue;
 			if (icat 	== threel 	&& (!Is3lEvent() || ichan != All)) 	  continue;
+			if (icat 	== fourl 	  && (!Is4lEvent() || ichan != All)) 	  continue;
 			if (icat 	== Total 		&& ichan != All) 	                    continue;
 			if (icat 	== Total 		&& (!Is2lSSEvent() || (gChannel != 2)) && (!Is2lSSEvent() || (gChannel != 3)) && (!Is2lSSEvent() || (gChannel != 1)) && !Is3lEvent()) 	continue;
 			fHChargeSum	[icat][ichan]->Fill(getCS(),EventWeight);
@@ -468,7 +502,45 @@ Bool_t ttHAnalysis::PassesPreCuts(){
 ////////////////////////////////////////////////////////////////////////////////
 //	   Get methods
 ////////////////////////////////////////////////////////////////////////////////
+void ttHAnalysis::GetParameters() {
+  // Import essential and global variables of the execution
+  gSampleName	    =	GetParam<TString>("sampleName");
+  gIsData         =	GetParam<Bool_t>("IsData");
+  gWeight         =	GetParam<Float_t>("weight"); // cross section / events in the sample
+	gIsMCatNLO      =	GetParam<Bool_t>("IsMCatNLO");
+}
 
+void ttHAnalysis::GetEventVariables() {
+  // Clean
+  TightLepton.clear();
+  FakeableLepton.clear();
+  LooseLepton.clear();
+  Tau.clear();
+  Jets.clear();
+  nTaus         = 0;
+  nJets         = 0;
+  nMediumBTags  = 0;
+  nLooseBTags   = 0;
+  gChannel      = 0;
+  passTrigger   = 0;
+  isSS          = 0;
+
+  // Import event-dependent variables
+  TightLepton     = GetParam<vector<Lepton>>("selLeptons");
+  FakeableLepton  = GetParam<vector<Lepton>>("vetoLeptons");
+  LooseLepton     = GetParam<vector<Lepton>>("looseLeptons");
+  Tau             = GetParam<vector<Lepton>>("selTaus");
+  Jets            = GetParam<vector<Jet>>("selJets");
+
+  nTaus           = GetParam<Int_t>("nSelTaus");
+  nJets           = GetParam<Int_t>("nSelJets");
+  nMediumBTags    = GetParam<Int_t>("nSelBJets");
+  nLooseBTags     = GetParam<Int_t>("nLooseBJets");
+
+  gChannel        = GetParam<Int_t>("gChannel");
+  passTrigger     = GetParam<Bool_t>("passTrigger");
+  isSS            = GetParam<Bool_t>("isSS");
+}
 
 Float_t ttHAnalysis::getMETLD() {
 	Float_t metld;

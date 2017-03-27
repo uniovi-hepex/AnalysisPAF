@@ -33,6 +33,7 @@ enum gCategories {
     categories_begin,
     twolSS = categories_begin,
     threel,
+    fourl,
     Total,
     gNCATEGORIES,
 };
@@ -46,7 +47,7 @@ enum gChannel {
     gNCHANNELS,
 };
 
-const TString gCatLabel	[gNCATEGORIES] 	= {"2lSS","3l","Total"};
+const TString gCatLabel	[gNCATEGORIES] 	= {"2lSS","3l","4l","Total"};
 const TString gChanLabel[gNCHANNELS] 	  = {"MuMu","ElEl","ElMu","All"};
 
 //------------------------------------------------------------------------------
@@ -67,7 +68,6 @@ class ttHAnalysis : public PAFChainItemSelector {
 		virtual void InsideLoop();
 		virtual void Summary();
 
-
 		////////////////////////////////////////////////////////////////////////
 		//		Trees-related declarations
 		////////////////////////////////////////////////////////////////////////
@@ -76,10 +76,17 @@ class ttHAnalysis : public PAFChainItemSelector {
 		void 	GetTreeVariables();
 		void 	GetParameters();
     void  GetEventVariables();
+    void  SetLeptonVariables();
+    void  SetJetVariables();
+    void  SetEventVariables();
     //	Tree variables
 		//----------------------------------------------------------------------
     Long_t  evt;
 		Int_t   run;
+
+    // Minitree things
+    //----------------------------------------------------------------------
+    TTree* fTree;
 
     ////////////////////////////////////////////////////////////////////////
 		//		Histogram-related methods declarations
