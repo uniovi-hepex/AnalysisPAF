@@ -41,15 +41,15 @@ void ttHPlotter() {
 	const TString gCatLabel			[gNCATEGORIES] 	= {"2lSS","3l","Total"};
 	const TString gChanLabel		[gNCHANNELS] 	= {"MuMu","ElEl","ElMu","All"};
 	const TString mcsample			[nmcSamples] 	= {
-		"TTWToLNu_ext2", "TTWToQQ",												// TTW
-		"TTZToLLNuNu_ext", "TTZToQQ",											// TTZ
-		"TTGJets_ext", "TTJets_aMCatNLO",										// TT+
-		"TW_ext", "TbarW_ext", "T_tch", "Tbar_tch", "TToLeptons_sch_amcatnlo",	// T+
-	  "WGToLNuG", "ZGTo2LG", "TGJets_ext", "ZZZ", "WWZ", "WZZ", "tZq_ll", "TTTT", "WZTo3LNu",// Rares
-		"WW_ext", "WpWpJJ", "WWTo2L2Nu",										// WW/WW+
+		"TTWToLNu", "TTWToQQ",												// TTW
+		"TTZToLLNuNu", "TTZToQQ",											// TTZ
+		"TTGJets", "TTJets_aMCatNLO",										// TT+
+		"TW", "TbarW", "T_tch", "Tbar_tch", "TToLeptons_sch_amcatnlo",	// T+
+	  "WGToLNuG", "ZGTo2LG", "TGJets", "ZZZ", "WWZ", "WZZ", "tZq_ll", "TTTT", "WZTo3LNu",// Rares
+		"WW", "WpWpJJ", "WWTo2L2Nu",										// WW/WW+
 		"WJetsToLNu_MLM",														// W+
-		"ZZ_ext",																// ZZ
-		"DYJetsToLL_M50_aMCatNLO", "DYJetsToLL_M10to50_aMCatNLO_ext", 			// DY
+		"ZZ",																// ZZ
+		"DYJetsToLL_M50_aMCatNLO", "DYJetsToLL_M10to50_aMCatNLO", 			// DY
 	  "TTHNonbb"																// Signal
 	};
 	Int_t mcsampleColors	[nmcSamples] 	= {
@@ -182,8 +182,6 @@ void ttHPlotter() {
 	//cout << "WOLOLOOOOO" << endl; // HASTA AQUÍ BIEN
 
 	for (UInt_t isample = 0; isample < nmcSamples; isample++) {
-    if(mcsample[isample].Contains("_ext2")) mcsample[isample].ReplaceAll("_ext2","");
-    if(mcsample[isample].Contains("_ext"))  mcsample[isample].ReplaceAll("_ext","");
 		TFile* f = TFile::Open(codepath + "/ttH_temp/" + "Tree_" + mcsample[isample] + ".root");
 		for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 			for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
@@ -856,19 +854,3 @@ void ttHPlotter() {
 		}
 	}
 }
-
-
-//------------------------------------------------------------------------------
-/*void ttHPlotter(TString samplename = "ZZ_ext") {
-  TString codepath = "/nfs/fanae/user/vrbouza/Documents/TFG/ttHAnalysis";
-  TString outputpath = "/nfs/fanae/user/vrbouza/Documents/TFG/Results";
-  TString filename = "plot_" + samplename + ".pdf";
-  TFile* f = TFile::Open(codepath + "/temp/" + "Tree_" + samplename + ".root");
-  TH1F* h1;
-  f->GetObject("fHDummy", h1);
-  h1->SetTitle("Wololooooo");
-  TCanvas* c = new TCanvas("c","c",800,600);
-  h1->Draw("hist");
-  c->Print(filename);
-}
-*/
