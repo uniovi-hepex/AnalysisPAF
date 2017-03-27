@@ -84,11 +84,22 @@ void ttHAnalysis::InsideLoop() {
 	//if ((gIsData) && ((run < 254227) || (run > 254914 && run < 256630) || (run > 260627))) return; 	// Comment this for running with ALL the data
 
 	// Get and set data members
-  GetEventVariables();
 	GetTreeVariables();
+  GetEventVariables();
+
+
+
 
   if (passTrigger) cout<<"PASA EL TRIGGER"<<endl;
   if (PassesPreCuts()) cout<<"PASA LOS PRECORTES"<<endl;
+  cout<<"nTightLepton"<<nTightLeptons<<endl;
+  cout<<"nLooseLepton"<<nLooseLeptons<<endl;
+  cout<<"nFakeableLepton"<<nLooseLeptons<<endl;
+
+
+
+
+
   if (!passTrigger)     return;
   if (!PassesPreCuts()) return;
   cout<<"WOLOLO"<<endl;
@@ -520,13 +531,16 @@ void ttHAnalysis::GetEventVariables() {
   LooseLepton.clear();
   Tau.clear();
   Jets.clear();
-  nTaus         = 0;
-  nJets         = 0;
-  nMediumBTags  = 0;
-  nLooseBTags   = 0;
-  gChannel      = 0;
-  passTrigger   = 0;
-  isSS          = 0;
+  nTightLepton    = 0;
+  nFakeableLepton = 0;
+  nLooseLepton    = 0;
+  nTaus           = 0;
+  nJets           = 0;
+  nMediumBTags    = 0;
+  nLooseBTags     = 0;
+  gChannel        = 0;
+  passTrigger     = 0;
+  isSS            = 0;
 
   // Import event-dependent variables
   TightLepton     = GetParam<vector<Lepton>>("selLeptons");
@@ -546,6 +560,12 @@ void ttHAnalysis::GetEventVariables() {
   gChannel        = GetParam<Int_t>("gChannel");
   passTrigger     = GetParam<Bool_t>("passTrigger");
   isSS            = GetParam<Bool_t>("isSS");
+
+  EventWeight 	= 1.;
+  if (!gIsData) {
+    EventWeight = gWeight;
+    if (gIsMCatNLO) EventWeight *= genWeight;
+  }
 }
 
 Float_t ttHAnalysis::getMETLD() {
