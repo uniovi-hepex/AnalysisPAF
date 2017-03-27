@@ -96,6 +96,7 @@ void ttHAnalysis::InsideLoop() {
 	FillKinematicHistos();
 	FillMETHistos();
 	FillMiscHistos();
+
   fTree->Fill();
 
 	#ifdef DEBUGC
@@ -122,7 +123,7 @@ void ttHAnalysis::GetTreeVariables() {
 	}
   MET  = 0.;
   MHT  = 0.;
-  MET  = Get<Float_t>("met_pt"); //met
+  MET  = Get<Float_t>("met_pt");
 	MHT	 = Get<Float_t>("mhtJet25");
 }
 
@@ -140,9 +141,16 @@ void ttHAnalysis::SetJetVariables() {
 }
 
 void ttHAnalysis::SetEventVariables() {
-  fTree->Branch("gChannel",      &gChannel,      "gChannel/I");
+  fTree->Branch("TEvent",        &TEvent,        "TEvent/B");
+  fTree->Branch("TChannel",      &gChannel,      "gChannel/I");
+  fTree->Branch("TCat",          &TCat,          "TCat/I");
   fTree->Branch("passTrigger",   &passTrigger,   "passTrigger/B");
   fTree->Branch("isSS",          &isSS,          "isSS/B");
+  fTree->Branch("MET",           &MET,           "MET/F");
+  fTree->Branch("MHT",           &MHT,           "MHT/F");
+  fTree->Branch("METLD",         &METLD,         "METLD/F");
+  fTree->Branch("TCS",           &TCS,           "TCS/I");
+  fTree->Branch("TMass",         &TMass,         "TMass/F");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -491,6 +499,14 @@ void ttHAnalysis::GetEventVariables() {
   passTrigger     = 0;
   isSS            = 0;
 
+  TCat            = 0;
+  TEvent          = 0;
+  TPtLeading      = 0;
+  TSubPtLeading   = 0;
+  TSubSubPtLeading= 0;
+  TCS             = 0;
+  TMass           = 0;
+
   // Import event-dependent variables
   TightLepton     = GetParam<vector<Lepton>>("selLeptons");
   FakeableLepton  = GetParam<vector<Lepton>>("vetoLeptons");
@@ -515,6 +531,18 @@ void ttHAnalysis::GetEventVariables() {
     EventWeight = gWeight;
     if (gIsMCatNLO) EventWeight *= genWeight;
   }
+}
+
+void SetMiniTreeVariables(){
+  if (Is2lSSEvent())    TCat  = 2;
+  else if (Is3lEvent()) TCat  = 3;
+  else if (Is4lEvent()) TCat  = 4;
+  TEvent          = (Is2lSSEvent() || Is3lEvent() || Is4lEvent())
+  TPtLeading      = TightLepton[0].p.Pt();
+  TSubPtLeading   = TightLepton[1].p.Pt();
+  if (TightLepton.size() > 2) TSubSubPtLeading = TightLepton[2].p.Pt();
+  TCS             = getCS();
+  TMass           = (TightLepton[0].p+TightLepton[1].p).M();
 }
 
 Float_t ttHAnalysis::getMETLD() {

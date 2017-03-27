@@ -79,6 +79,7 @@ class ttHAnalysis : public PAFChainItemSelector {
     void  SetLeptonVariables();
     void  SetJetVariables();
     void  SetEventVariables();
+    void  SetMiniTreeVariables();
     //	Tree variables
 		//----------------------------------------------------------------------
     Long_t  evt;
@@ -157,6 +158,14 @@ class ttHAnalysis : public PAFChainItemSelector {
 		TH1F*   fHMETLD				    [gNCATEGORIES][gNCHANNELS];
 		TH1F*   fHChargeSum			  [gNCATEGORIES][gNCHANNELS]; // Misc
 		TH1F*   fHMass				    [gNCATEGORIES][gNCHANNELS];
+
+    Int_t   TCat;
+    Bool_t  TEvent;
+    Float_t TPtLeading;
+    Float_t TSubPtLeading;
+    Float_t TSubSubPtLeading;
+    Int_t   TCS;
+    Float_t TMass;
 
 		//	Input variables and vectors
 		//----------------------------------------------------------------------
