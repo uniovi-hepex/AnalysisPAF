@@ -92,9 +92,9 @@ void ttHAnalysis::InsideLoop() {
 
   if (passTrigger) cout<<"PASA EL TRIGGER"<<endl;
   if (PassesPreCuts()) cout<<"PASA LOS PRECORTES"<<endl;
-  cout<<"nTightLepton"<<nTightLeptons<<endl;
-  cout<<"nLooseLepton"<<nLooseLeptons<<endl;
-  cout<<"nFakeableLepton"<<nLooseLeptons<<endl;
+  cout<<"nTightLepton"<<nTightLepton<<endl;
+  cout<<"nLooseLepton"<<nLooseLepton<<endl;
+  cout<<"nFakeableLepton"<<nLooseLepton<<endl;
 
 
 
@@ -388,7 +388,7 @@ Bool_t ttHAnalysis::Is3lEvent() {
 	if (TightLepton[2].p.Pt() < 15) return false;
 
 	for (UInt_t i = 0; i < nLooseLepton; i++) {
-		for (UInt_t j = i; j < nLooseLepton; j++) {
+		for (UInt_t j = i+1; j < nLooseLepton; j++) {
 			if (LooseLepton[i].type != LooseLepton[j].type) continue;
 			if (LooseLepton[i].charge*LooseLepton[j].charge > 0) continue;
 			if (abs((LooseLepton[i].p+LooseLepton[j].p).M() - Zm) < 10) return false;
@@ -397,7 +397,7 @@ Bool_t ttHAnalysis::Is3lEvent() {
 
 	UInt_t twolds = 0;
 	for (UInt_t i = 0; i < nTightLepton; i++) {
-		for (UInt_t j = i; j < nTightLepton; j++) {
+		for (UInt_t j = i+1; j < nTightLepton; j++) {
 			if (TightLepton[i].type != TightLepton[j].type) continue;
 			if (TightLepton[i].charge*TightLepton[j].charge < 0) twolds = 1;
 		}
@@ -418,7 +418,7 @@ Bool_t ttHAnalysis::Is3lEvent() {
 
   UInt_t OSSF = 0;
   for (UInt_t i = 0; i < nLooseLepton; i++) {
-		for (UInt_t j = i; j < nLooseLepton; j++) {
+		for (UInt_t j = i+1; j < nLooseLepton; j++) {
 			if (LooseLepton[i].type != LooseLepton[j].type)      continue;
 			if (LooseLepton[i].charge*LooseLepton[j].charge > 0) continue;
       OSSF++;
@@ -446,7 +446,7 @@ Bool_t ttHAnalysis::Is4lEvent() {
 	if (TightLepton[3].p.Pt() < 10) return false;
 
 	for (UInt_t i = 0; i < nLooseLepton; i++) {
-		for (UInt_t j = i; j < nLooseLepton; j++) {
+		for (UInt_t j = i+1; j < nLooseLepton; j++) {
 			if (LooseLepton[i].type != LooseLepton[j].type) continue;
 			if (LooseLepton[i].charge*LooseLepton[j].charge > 0) continue;
 			if (abs((LooseLepton[i].p+LooseLepton[j].p).M() - Zm) < 10) return false;
@@ -455,7 +455,7 @@ Bool_t ttHAnalysis::Is4lEvent() {
 
 	UInt_t twolds = 0;
 	for (UInt_t i = 0; i < nTightLepton; i++) {
-		for (UInt_t j = i; j < nTightLepton; j++) {
+		for (UInt_t j = i+1; j < nTightLepton; j++) {
 			if (TightLepton[i].type != TightLepton[j].type) continue;
 			if (TightLepton[i].charge*TightLepton[j].charge < 0) twolds = 1;
 		}
@@ -476,7 +476,7 @@ Bool_t ttHAnalysis::Is4lEvent() {
 
   UInt_t OSSF = 0;
   for (UInt_t i = 0; i < nLooseLepton; i++) {
-		for (UInt_t j = i; j < nLooseLepton; j++) {
+		for (UInt_t j = i+1; j < nLooseLepton; j++) {
 			if (LooseLepton[i].type != LooseLepton[j].type)      continue;
 			if (LooseLepton[i].charge*LooseLepton[j].charge > 0) continue;
       OSSF++;
@@ -500,7 +500,7 @@ Bool_t ttHAnalysis::PassesPreCuts(){
 	if (nTightLepton < 2) return false;
 
 	for (UInt_t i = 0; i < nLooseLepton; i++) {
-		for (UInt_t j = i; j < nLooseLepton; j++) {
+		for (UInt_t j = i+1; j < nLooseLepton; j++) {
 		  if ((LooseLepton[i].p + LooseLepton[j].p).M() < 12) return false;
 	  }
   }
