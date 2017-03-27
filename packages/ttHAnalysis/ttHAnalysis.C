@@ -89,7 +89,8 @@ void ttHAnalysis::InsideLoop() {
 
   if (!passTrigger)     return;
   if (!PassesPreCuts()) return;
-
+  cout<<"WOLOLO"<<endl;
+  
 	// Fill histograms
 	FillEventHistos();
 	FillYieldHistos();
