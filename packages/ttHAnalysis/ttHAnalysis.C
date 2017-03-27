@@ -146,7 +146,7 @@ void ttHAnalysis::GetEventVariables() {
   FakeableLepton  = GetParam<vector<Lepton>>("vetoLeptons");
   LooseLepton     = GetParam<vector<Lepton>>("looseLeptons");
   Tau             = GetParam<vector<Lepton>>("selTaus");
-  Jets             = GetParam<vector<Jet>>("selJets");
+  Jets            = GetParam<vector<Jet>>("selJets");
 
   nTaus           = GetParam<Int_t>("nSelTaus");
   nJets           = GetParam<Int_t>("nSelJets");
