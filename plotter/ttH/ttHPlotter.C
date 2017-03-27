@@ -20,13 +20,14 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 void ttHPlotter() {
-	const Float_t lumi			=	35870;
-	const UInt_t nmcSamples 	= 	28;
-	const UInt_t ndataSamples 	= 	5;
+	const Float_t lumi			  =	35870;
+	const UInt_t nmcSamples 	= 28;
+	const UInt_t ndataSamples = 5;
 	enum gCategories {
 	    categories_begin,
 	    twolSS = categories_begin,
 	    threel,
+	    fourl,
 	    Total,
 	    gNCATEGORIES,
 	};
@@ -38,7 +39,7 @@ void ttHPlotter() {
 	    All,
 	    gNCHANNELS,
 	};
-	const TString gCatLabel			[gNCATEGORIES] 	= {"2lSS","3l","Total"};
+	const TString gCatLabel			[gNCATEGORIES] 	= {"2lSS","3l","4l","Total"};
 	const TString gChanLabel		[gNCHANNELS] 	= {"MuMu","ElEl","ElMu","All"};
 	const TString mcsample			[nmcSamples] 	= {
 		"TTWToLNu", "TTWToQQ",												// TTW
@@ -109,6 +110,7 @@ void ttHPlotter() {
 	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
+			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
 			fHSEvents    		[icat][ichan]	=	new THStack("HS_Events_"+gCatLabel[icat]+"_"+gChanLabel[ichan], "NEvents_"+gCatLabel[icat]+"_"+gChanLabel[ichan]); // Events
 			fHSTightLep			[icat][ichan]	=	new THStack("HS_TightLep_"+gCatLabel[icat]+"_"+gChanLabel[ichan], "NTightLep_"+gCatLabel[icat]+"_"+gChanLabel[ichan]); // Yields
@@ -186,6 +188,7 @@ void ttHPlotter() {
 		for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 			for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 				if (icat == threel 	&& ichan != All) 	continue;
+			  if (icat == fourl 	&& ichan != All) 	continue;
 				if (icat == Total 	&& ichan != All) 	continue;
 				f	->	GetObject("H_Events_"+gCatLabel[icat]+"_"+gChanLabel[ichan],histEvents); // Events
 				f	->	GetObject("H_TightLep_"+gCatLabel[icat]+"_"+gChanLabel[ichan],histTightLep); // Yields
@@ -293,6 +296,7 @@ void ttHPlotter() {
 		for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 			for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 				if (icat == threel 		&& ichan != All) 	continue;
+			  if (icat == fourl 		&& ichan != All) 	continue;
 				if (icat == Total 		&& ichan != All) 	continue;
 				f	->	GetObject("H_Events_"+gCatLabel[icat]+"_"+gChanLabel[ichan],histDEvents); // Events
 				f	->	GetObject("H_TightLep_"+gCatLabel[icat]+"_"+gChanLabel[ichan],histDTightLep); // Yields
@@ -388,6 +392,7 @@ void ttHPlotter() {
 	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
+			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
 			TCanvas *c = new TCanvas("c", "c", 800, 600);
 			//if (icat != threel) c -> SetLogy();
@@ -395,6 +400,7 @@ void ttHPlotter() {
 			fHDEvents    		[icat][ichan]	->	SetMarkerStyle(20);
 			fHDEvents    		[icat][ichan]	-> 	Draw("pe");
 			fHSEvents    		[icat][ichan]	-> 	Draw("histsame"); // Events
+			fHDEvents    		[icat][ichan]	-> 	Draw("pesame");
 
 			TList* EventsList;
 			EventsList = fHSEvents    		[icat][ichan]	-> 	GetHists(); // Events
@@ -417,6 +423,7 @@ void ttHPlotter() {
 	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
+			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
 			TCanvas *c = new TCanvas("c", "c", 800, 600);
 			//if (icat != threel) c -> SetLogy();
@@ -424,6 +431,7 @@ void ttHPlotter() {
 			fHDTightLep    		[icat][ichan]	->	SetMarkerStyle(20);
 			fHDTightLep    		[icat][ichan]	-> Draw("pe");
 			fHSTightLep			[icat][ichan]	-> Draw("histsame");
+			fHDTightLep    		[icat][ichan]	-> Draw("pesame");
 
 			TList* TightLepList;
 			TightLepList = fHSTightLep    		[icat][ichan]	-> 	GetHists(); // Events
@@ -446,6 +454,7 @@ void ttHPlotter() {
 	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
+			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
 			TCanvas *c = new TCanvas("c", "c", 800, 600);
 			//if (icat != threel) c -> SetLogy();
@@ -453,6 +462,7 @@ void ttHPlotter() {
 			fHDFakeLep    		[icat][ichan]	->	SetMarkerStyle(20);
 			fHDFakeLep    		[icat][ichan]	-> 	Draw("pe");
 			fHSFakeLep			[icat][ichan]	-> Draw("histsame");
+			fHDFakeLep    		[icat][ichan]	-> 	Draw("pesame");
 
 			TList* FakeLepList;
 			FakeLepList = fHSFakeLep    		[icat][ichan]	-> 	GetHists(); // Events
@@ -476,6 +486,7 @@ void ttHPlotter() {
 	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
+			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
 			TCanvas *c = new TCanvas("c", "c", 800, 600);
 			//if (icat != threel) c -> SetLogy();
@@ -483,6 +494,7 @@ void ttHPlotter() {
 			fHDLooseLep    		[icat][ichan]	->	SetMarkerStyle(20);
 			fHDLooseLep    		[icat][ichan]	-> 	Draw("pe");
 			fHSLooseLep			[icat][ichan]	-> Draw("histsame");
+			fHDLooseLep    		[icat][ichan]	-> 	Draw("pesame");
 
 			TList* LooseLepList;
 			LooseLepList = fHSLooseLep    		[icat][ichan]	-> 	GetHists(); // Events
@@ -506,6 +518,7 @@ void ttHPlotter() {
 	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
+			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
 			TCanvas *c = new TCanvas("c", "c", 800, 600);
 			//if (icat != threel) c -> SetLogy();
@@ -513,6 +526,7 @@ void ttHPlotter() {
 			fHDTau    		[icat][ichan]	->	SetMarkerStyle(20);
 			fHDTau    		[icat][ichan]	-> 	Draw("pe");
 			fHSTau			[icat][ichan]	-> Draw("histsame");
+			fHDTau    		[icat][ichan]	-> 	Draw("pesame");
 
 			TList* TauList;
 			TauList = fHSTau    		[icat][ichan]	-> 	GetHists(); // Events
@@ -535,6 +549,7 @@ void ttHPlotter() {
 	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
+			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
 			TCanvas *c = new TCanvas("c", "c", 800, 600);
 			//if (icat != threel) c -> SetLogy();
@@ -542,6 +557,7 @@ void ttHPlotter() {
 			fHDJet    			[icat][ichan]	->	SetMarkerStyle(20);
 			fHDJet    		[icat][ichan]	-> 	Draw("pe");
 			fHSJet				[icat][ichan]	-> Draw("histsame");
+			fHDJet    		[icat][ichan]	-> 	Draw("pesame");
 
 			TList* JetList;
 			JetList = fHSJet    		[icat][ichan]	-> 	GetHists(); // Events
@@ -564,6 +580,7 @@ void ttHPlotter() {
 	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
+			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
 			TCanvas *c = new TCanvas("c", "c", 800, 600);
 			//if (icat != threel) c -> SetLogy();
@@ -571,6 +588,7 @@ void ttHPlotter() {
 			fHDMedBTagJet    			[icat][ichan]	->	SetMarkerStyle(20);
 			fHDMedBTagJet    	[icat][ichan]	-> 	Draw("pe");
 			fHSMedBTagJet		[icat][ichan]	-> Draw("histsame");
+			fHDMedBTagJet    	[icat][ichan]	-> 	Draw("pesame");
 
 			TList* MedBTagJetList;
 			MedBTagJetList = fHSMedBTagJet    		[icat][ichan]	-> 	GetHists(); // Events
@@ -593,6 +611,7 @@ void ttHPlotter() {
 	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
+			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
 			TCanvas *c = new TCanvas("c", "c", 800, 600);
 			//if (icat != threel) c -> SetLogy();
@@ -600,6 +619,7 @@ void ttHPlotter() {
 			fHDLosBTagJet    	[icat][ichan]	->	SetMarkerStyle(20);
 			fHDLosBTagJet    	[icat][ichan]	-> 	Draw("pe");
 			fHSLosBTagJet		[icat][ichan]	-> Draw("histsame");
+			fHDLosBTagJet    	[icat][ichan]	-> 	Draw("pesame");
 
 			TList* LosBTagJetList;
 			LosBTagJetList = fHSLosBTagJet    		[icat][ichan]	-> 	GetHists(); // Events
@@ -622,6 +642,7 @@ void ttHPlotter() {
 	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
+			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
 			TCanvas *c = new TCanvas("c", "c", 800, 600);
 			//if (icat != threel) c -> SetLogy();
@@ -629,6 +650,7 @@ void ttHPlotter() {
 			fHDPtLeading    			[icat][ichan]	->	SetMarkerStyle(20);
 			fHDPtLeading    	[icat][ichan]	-> 	Draw("pe");
 			fHSPtLeading		[icat][ichan]	-> Draw("histsame");
+			fHDPtLeading    	[icat][ichan]	-> 	Draw("pesame");
 
 			TList* PtLeadingList;
 			PtLeadingList = fHSPtLeading    		[icat][ichan]	-> 	GetHists(); // Events
@@ -651,6 +673,7 @@ void ttHPlotter() {
 	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
+			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
 			TCanvas *c = new TCanvas("c", "c", 800, 600);
 			//if (icat != threel) c -> SetLogy();
@@ -658,6 +681,7 @@ void ttHPlotter() {
 			fHDPtSubLeading    			[icat][ichan]	->	SetMarkerStyle(20);
 			fHDPtSubLeading    	[icat][ichan]	-> 	Draw("pe");
 			fHSPtSubLeading		[icat][ichan]	-> Draw("histsame");
+			fHDPtSubLeading    	[icat][ichan]	-> 	Draw("pesame");
 
 			TList* PtSubLeadingList;
 			PtSubLeadingList = fHSPtSubLeading    		[icat][ichan]	-> 	GetHists(); // Events
@@ -680,6 +704,7 @@ void ttHPlotter() {
 	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
+			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
 			TCanvas *c = new TCanvas("c", "c", 800, 600);
 			//if (icat != threel) c -> SetLogy();
@@ -687,6 +712,7 @@ void ttHPlotter() {
 			fHDPtSubSubLeading    			[icat][ichan]	->	SetMarkerStyle(20);
 			fHDPtSubSubLeading    	[icat][ichan]	-> 	Draw("pe");
 			fHSPtSubSubLeading	[icat][ichan]	-> Draw("histsame");
+			fHDPtSubSubLeading    	[icat][ichan]	-> 	Draw("pesame");
 
 			TList* PtSubSubLeadingList;
 			PtSubSubLeadingList = fHSPtSubSubLeading    		[icat][ichan]	-> 	GetHists(); // Events
@@ -709,6 +735,7 @@ void ttHPlotter() {
 	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
+			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
 			TCanvas *c = new TCanvas("c", "c", 800, 600);
 			//if (icat != threel) c -> SetLogy();
@@ -716,6 +743,7 @@ void ttHPlotter() {
 			fHDMET    			[icat][ichan]	->	SetMarkerStyle(20);
 			fHDMET    			[icat][ichan]	-> 	Draw("pe");
 			fHSMET				[icat][ichan]	-> Draw("histsame");
+			fHDMET    			[icat][ichan]	-> 	Draw("pesame");
 
 			TList* METList;
 			METList = fHSMET    		[icat][ichan]	-> 	GetHists(); // Events
@@ -738,6 +766,7 @@ void ttHPlotter() {
 	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
+			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
 			TCanvas *c = new TCanvas("c", "c", 800, 600);
 			//if (icat != threel) c -> SetLogy();
@@ -745,6 +774,7 @@ void ttHPlotter() {
 			fHDMHT    			[icat][ichan]	->	SetMarkerStyle(20);
 			fHDMHT		    	[icat][ichan]	-> 	Draw("pe");
 			fHSMHT				[icat][ichan]	-> 	Draw("histsame");
+			fHDMHT		    	[icat][ichan]	-> 	Draw("pesame");
 
 			TList* MHTList;
 			MHTList = fHSMHT    		[icat][ichan]	-> 	GetHists(); // Events
@@ -767,6 +797,7 @@ void ttHPlotter() {
 	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
+			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
 			TCanvas *c = new TCanvas("c", "c", 800, 600);
 			//if (icat != threel) c -> SetLogy();
@@ -774,6 +805,7 @@ void ttHPlotter() {
 			fHDMETLD    			[icat][ichan]	->	SetMarkerStyle(20);
 			fHDMETLD	    	[icat][ichan]	-> 	Draw("pe");
 			fHSMETLD			[icat][ichan]	-> Draw("histsame");
+			fHDMETLD	    	[icat][ichan]	-> 	Draw("pesame");
 
 			TList* METLDList;
 			METLDList = fHSMETLD    		[icat][ichan]	-> 	GetHists(); // Events
@@ -796,6 +828,7 @@ void ttHPlotter() {
 	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
+			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
 			if (icat == twolSS 		&& ichan != All) 	continue;
 			TCanvas *c = new TCanvas("c", "c", 800, 600);
@@ -804,6 +837,7 @@ void ttHPlotter() {
 			fHDChargeSum    		[icat][ichan]	->	SetMarkerStyle(20);
 			fHDChargeSum    	[icat][ichan]	-> 	Draw("pe");
 			fHSChargeSum		[icat][ichan]	-> Draw("histsame");
+			fHDChargeSum    	[icat][ichan]	-> 	Draw("pesame");
 
 			TList* ChargeSumList ;
 			ChargeSumList  = fHSChargeSum     		[icat][ichan]	-> 	GetHists(); // Events
@@ -826,6 +860,7 @@ void ttHPlotter() {
 	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
+			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
 			if (icat == twolSS 		&& ichan != All) 	continue;
 			TCanvas *c = new TCanvas("c", "c", 800, 600);
@@ -834,6 +869,7 @@ void ttHPlotter() {
 			fHDMass    			[icat][ichan]	->	SetMarkerStyle(20);
 			fHDMass		    	[icat][ichan]	-> 	Draw("pe");
 			fHSMass				[icat][ichan]	-> Draw("histsame");
+			fHDMass		    	[icat][ichan]	-> 	Draw("pesame");
 
 			TList* MassList;
 			MassList = fHSMass    		[icat][ichan]	-> 	GetHists(); // Events
