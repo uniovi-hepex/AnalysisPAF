@@ -118,7 +118,7 @@ Bool_t LeptonSelector::getRelIso04POG(Int_t wp){ // wps for muons
 
 Bool_t LeptonSelector::getminiRelIso(Int_t wp) {
   if (wp == iTight || wp == iMedium || wp == iLoose) {
-  	if (miniIso < 0.4) return false;
+  	if (miniIso > 0.4) return false;
   }
   return true;
 }
