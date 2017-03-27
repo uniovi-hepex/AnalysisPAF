@@ -57,9 +57,9 @@ void ttHPlotter() {
 		kSpring+2, kSpring+2,
 		kSpring+10, kSpring+10,
 		kViolet-6, kViolet-6, kViolet-6, kViolet-6, kViolet-6,
-	  	kAzure-9, kAzure-9, kAzure-9,  kAzure-9, kAzure-9, kAzure-9, kAzure-9, kAzure-9, kAzure-9,
+	  kAzure-9, kAzure-9, kAzure-9,  kAzure-9, kAzure-9, kAzure-9, kAzure-9, kAzure-9, kAzure-9,
 		kBlue, kBlue, kBlue,
-	  	kCyan+1,
+	  kCyan+1,
 		kYellow,
 		kOrange, kOrange,
 		kRed
@@ -182,6 +182,8 @@ void ttHPlotter() {
 	//cout << "WOLOLOOOOO" << endl; // HASTA AQUÍ BIEN
 
 	for (UInt_t isample = 0; isample < nmcSamples; isample++) {
+    if(isample.Contains("_ext2")) isample.ReplaceAll("_ext2","");
+    if(isample.Contains("_ext"))  isample.ReplaceAll("_ext","");
 		TFile* f = TFile::Open(codepath + "/ttH_temp/" + "Tree_" + mcsample[isample] + ".root");
 		for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 			for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
