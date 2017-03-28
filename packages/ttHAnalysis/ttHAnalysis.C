@@ -148,7 +148,7 @@ void ttHAnalysis::SetEventVariables() {
   fTree->Branch("isSS",          &isSS,          "isSS/B");
   fTree->Branch("MET",           &MET,           "MET/F");
   fTree->Branch("MHT",           &MHT,           "MHT/F");
-  fTree->Branch("METLD",         &METLD,         "METLD/F");
+  fTree->Branch("TMETLD",        &TMETLD,        "TMETLD/F");
   fTree->Branch("TCS",           &TCS,           "TCS/I");
   fTree->Branch("TMass",         &TMass,         "TMass/F");
 }
@@ -506,6 +506,7 @@ void ttHAnalysis::GetEventVariables() {
   TSubSubPtLeading= 0;
   TCS             = 0;
   TMass           = 0;
+  TMETLD          = 0;
 
   // Import event-dependent variables
   TightLepton     = GetParam<vector<Lepton>>("selLeptons");
@@ -537,12 +538,13 @@ void ttHAnalysis::SetMiniTreeVariables(){
   if (Is2lSSEvent())    TCat  = 2;
   else if (Is3lEvent()) TCat  = 3;
   else if (Is4lEvent()) TCat  = 4;
-  TEvent          = (Is2lSSEvent() || Is3lEvent() || Is4lEvent())
+  TEvent          = (Is2lSSEvent() || Is3lEvent() || Is4lEvent());
   TPtLeading      = TightLepton[0].p.Pt();
   TSubPtLeading   = TightLepton[1].p.Pt();
   if (TightLepton.size() > 2) TSubSubPtLeading = TightLepton[2].p.Pt();
   TCS             = getCS();
   TMass           = (TightLepton[0].p+TightLepton[1].p).M();
+  TMETLD          = getMETLD();
 }
 
 Float_t ttHAnalysis::getMETLD() {
