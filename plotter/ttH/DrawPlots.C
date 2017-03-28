@@ -26,9 +26,9 @@ void DrawPlots(TString chan = "ElMu"){
   TString cut = "";
   if (chan == "2lSS") {
     chan  = "";
-    cut   = "(TChannel == 1 || TChannel == 2 || TChannel == 3)";
+    cut   = "((TChannel == 1) || (TChannel == 2) || (TChannel == 3))";
   }
-  
+
   DrawPlot("TEvent",          cut, chan, 1, 1, 2,     " ", "Events");
   DrawPlot("nTightLepton",    cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton");
   DrawPlot("nFakeableLepton", cut, chan, 5, 0, 5,     "nFakeLep (#)", "nFakeLepton");
@@ -83,7 +83,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 	  p->AddSample(Data[isample], "Data", itData);
   }
 
-
+  cout<<"wololo"<<endl;
   p->doSetLogy = false;
   p->DrawStack("0", 1);
   //p->doSetLogy = true;
