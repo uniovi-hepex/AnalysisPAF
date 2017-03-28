@@ -97,6 +97,7 @@ void ttHAnalysis::InsideLoop() {
 	FillMETHistos();
 	FillMiscHistos();
 
+	SetMiniTreeVariables();
   fTree->Fill();
 
 	#ifdef DEBUGC
@@ -132,6 +133,9 @@ void ttHAnalysis::SetLeptonVariables() {
   fTree->Branch("nFakeableLepton",  &nFakeableLepton,  "nFakeableLepton/I");
   fTree->Branch("nLooseLepton",     &nLooseLepton,     "nLooseLepton/I");
   fTree->Branch("nTaus",            &nTaus,            "nTaus/I");
+  fTree->Branch("TPtLeading",       &TPtLeading,       "TPtLeading/F");
+  fTree->Branch("TPtSubLeading",    &TPtSubLeading,    "TPtSubLeading/F");
+  fTree->Branch("TPtSubSubLeading", &TPtSubSubLeading, "TPtSubSubLeading/F");
 }
 
 void ttHAnalysis::SetJetVariables() {
@@ -141,16 +145,17 @@ void ttHAnalysis::SetJetVariables() {
 }
 
 void ttHAnalysis::SetEventVariables() {
-  fTree->Branch("TEvent",        &TEvent,        "TEvent/B");
+  fTree->Branch("TEvent",        &TEvent,        "TEvent/I");
   fTree->Branch("TChannel",      &gChannel,      "gChannel/I");
   fTree->Branch("TCat",          &TCat,          "TCat/I");
-  fTree->Branch("passTrigger",   &passTrigger,   "passTrigger/B");
-  fTree->Branch("isSS",          &isSS,          "isSS/B");
+  fTree->Branch("TpassTrigger",  &TpassTrigger,  "TpassTrigger/I");
+  fTree->Branch("TisSS",         &TisSS,         "TisSS/I");
   fTree->Branch("MET",           &MET,           "MET/F");
   fTree->Branch("MHT",           &MHT,           "MHT/F");
   fTree->Branch("TMETLD",        &TMETLD,        "TMETLD/F");
   fTree->Branch("TCS",           &TCS,           "TCS/I");
   fTree->Branch("TMass",         &TMass,         "TMass/F");
+  fTree->Branch("TWeight",       &TWeight,       "TWeight/F");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -500,13 +505,16 @@ void ttHAnalysis::GetEventVariables() {
   isSS            = 0;
 
   TCat            = 0;
+  TisSS           = 0;
   TEvent          = 0;
   TPtLeading      = 0;
-  TSubPtLeading   = 0;
-  TSubSubPtLeading= 0;
+  TPtSubLeading   = 0;
+  TPtSubSubLeading= 0;
   TCS             = 0;
   TMass           = 0;
   TMETLD          = 0;
+  TWeight         = 0;
+  TpassTrigger    = 0;
 
   // Import event-dependent variables
   TightLepton     = GetParam<vector<Lepton>>("selLeptons");
@@ -538,13 +546,16 @@ void ttHAnalysis::SetMiniTreeVariables(){
   if (Is2lSSEvent())    TCat  = 2;
   else if (Is3lEvent()) TCat  = 3;
   else if (Is4lEvent()) TCat  = 4;
-  TEvent          = (Is2lSSEvent() || Is3lEvent() || Is4lEvent());
+  if (Is2lSSEvent() || Is3lEvent() || Is4lEvent()) TEvent = 1;
   TPtLeading      = TightLepton[0].p.Pt();
-  TSubPtLeading   = TightLepton[1].p.Pt();
-  if (TightLepton.size() > 2) TSubSubPtLeading = TightLepton[2].p.Pt();
+  TPtSubLeading   = TightLepton[1].p.Pt();
+  if (TightLepton.size() > 2) TPtSubSubLeading = TightLepton[2].p.Pt();
   TCS             = getCS();
   TMass           = (TightLepton[0].p+TightLepton[1].p).M();
   TMETLD          = getMETLD();
+  TWeight         = EventWeight;
+  TisSS           = isSS;
+  TpassTrigger    = passTrigger;
 }
 
 Float_t ttHAnalysis::getMETLD() {

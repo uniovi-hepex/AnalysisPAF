@@ -160,13 +160,16 @@ class ttHAnalysis : public PAFChainItemSelector {
 		TH1F*   fHMass				    [gNCATEGORIES][gNCHANNELS];
 
     Int_t   TCat;
-    Bool_t  TEvent;
+    Int_t   TisSS;
+    Int_t   TEvent;
     Float_t TPtLeading;
-    Float_t TSubPtLeading;
-    Float_t TSubSubPtLeading;
+    Float_t TPtSubLeading;
+    Float_t TPtSubSubLeading;
     Int_t   TCS;
     Float_t TMass;
     Float_t TMETLD;
+    Float_t TWeight;
+    Float_t TpassTrigger;
 
 		//	Input variables and vectors
 		//----------------------------------------------------------------------
