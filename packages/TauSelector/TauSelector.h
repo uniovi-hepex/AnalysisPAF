@@ -28,13 +28,12 @@ class TauSelector : public PAFChainItemSelector{
 
     LeptonSF  *TauSF;
     Bool_t 	  gIsData;
-    Bool_t 	  gIsFastSim;
     Int_t 	  gSelection;
     TString   localPath;
 
     // TauGood
     Lepton tL;
-    Int_t nLep;
+    Int_t   nLep;
     TLorentzVector tP;
     Float_t pt;
     Float_t eta;

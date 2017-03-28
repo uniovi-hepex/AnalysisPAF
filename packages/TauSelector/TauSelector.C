@@ -9,7 +9,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-
 #include "TauSelector.h"
 
 ClassImp(TauSelector);
@@ -19,7 +18,6 @@ void TauSelector::Summary() {}
 void TauSelector::Initialise() {
   // Initialise TauSelector
   gIsData       = GetParam<Bool_t>("IsData");
-  gIsFastSim    = GetParam<Bool_t>("IsFastSim");
   gSelection    = GetParam<Int_t>("iSelection");
   localPath     = GetParam<TString>("WorkingDir");
 
@@ -97,7 +95,7 @@ void TauSelector::InsideLoop(){
   looseTaus.clear();
 
   // Loop over the Taus and select
-  nTau     = Get<Int_t>("nTauGood");
+  nTau = Get<Int_t>("nTauGood");
   for(Int_t i = 0; i < nTau; i++) {
     GetTauVariables(i);
     tL = Lepton(tP, charge, type);
