@@ -29,7 +29,7 @@ if [ "$1" == "an" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"TGJets & TGJets_ext\"							   , \"ttH\", 55)" # 45 - 34s, 55 - 23s
         root -l -b -q "RunAnalyserPAF.C(\"TTGJets_ext\"							 , \"ttH\", 30)" # 25 - 35s 30 - 35s
         #root -l -b -q "RunAnalyserPAF.C(\"TTGJets & TTGJets_ext\"							 , \"ttH\", 25)"
-        root -l -b -q "RunAnalyserPAF.C(\"WpWpJJ\"								             , \"ttH\", 35)" 
+        root -l -b -q "RunAnalyserPAF.C(\"WpWpJJ\"								             , \"ttH\", 35)"
         root -l -b -q "RunAnalyserPAF.C(\"ZZZ\"									               , \"ttH\", 25)"
         root -l -b -q "RunAnalyserPAF.C(\"WZZ\"									               , \"ttH\", 25)"
         root -l -b -q "RunAnalyserPAF.C(\"WWZ\"									               , \"ttH\", 25)"
@@ -49,7 +49,7 @@ if [ "$1" == "an" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"T_tch\"								               , \"ttH\", 64)" # 40 - 35s, 50 - 36s
         root -l -b -q "RunAnalyserPAF.C(\"Tbar_tch\"							             , \"ttH\", 45)" # 25 - 27s, 35 - 26s
         root -l -b -q "RunAnalyserPAF.C(\"TToLeptons_sch_amcatnlo\"				     , \"ttH\", 25)"
-        root -l -b -q "RunAnalyserPAF.C(\"WZTo3LNu\"							             , \"ttH\", 20)" # 25 - 24s, 30 - 25s
+        root -l -b -q "RunAnalyserPAF.C(\"WZTo3LNu_amcatnlo\"			             , \"ttH\", 20)" # 25 - 24s, 30 - 25s
         root -l -b -q "RunAnalyserPAF.C(\"WWTo2L2Nu\"							             , \"ttH\", 20)" # 25 - 22s, 20 - 24s
         root -l -b -q "RunAnalyserPAF.C(\"ZZ_ext\"								         , \"ttH\", 25)"
         #root -l -b -q "RunAnalyserPAF.C(\"ZZ & ZZ_ext\"								         , \"ttH\", 25)"
@@ -91,7 +91,7 @@ if [ "$1" == "an" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"T_tch\"								               , \"ttH\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"Tbar_tch\"							             , \"ttH\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"TToLeptons_sch_amcatnlo\"				     , \"ttH\", $2)"
-        root -l -b -q "RunAnalyserPAF.C(\"WZTo3LNu\"							             , \"ttH\", $2)"
+        root -l -b -q "RunAnalyserPAF.C(\"WZTo3LNu_amcatnlo\"				           , \"ttH\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"WWTo2L2Nu\"							             , \"ttH\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"ZZ & ZZ_ext\"								         , \"ttH\", $2)"
 
