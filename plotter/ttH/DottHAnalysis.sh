@@ -22,25 +22,25 @@ if [ "$1" == "an" ]; then
     elif [ "$2" == "opt" ]; then
     	echo "%%%%%> MC SAMPLES FOR COMPARISON WITH DATA"
         root -l -b -q "RunAnalyserPAF.C(\"TTWToQQ\"								             , \"ttH\", 25)"
-        root -l -b -q "RunAnalyserPAF.C(\"TTZToLLNuNu_ext & TTZToLLNuNu_ext2\" , \"ttH\", 64)" #25 - 60s, 40 - 57s
+        root -l -b -q "RunAnalyserPAF.C(\"TTZToLLNuNu_ext & TTZToLLNuNu_ext2\" , \"ttH\", 64)" #25 - 60s, 40 - 57s, 64 - 62s
         root -l -b -q "RunAnalyserPAF.C(\"TTZToQQ\"								             , \"ttH\", 25)"
         root -l -b -q "RunAnalyserPAF.C(\"WGToLNuG\"							             , \"ttH\", 25)"
-        root -l -b -q "RunAnalyserPAF.C(\"ZGTo2LG\"								             , \"ttH\", 64)" #25 - 80s, 50 - 65
-        root -l -b -q "RunAnalyserPAF.C(\"TGJets & TGJets_ext\"							   , \"ttH\", 55)" # 45 - 34s
-        root -l -b -q "RunAnalyserPAF.C(\"TTGJets_ext\"							 , \"ttH\", 30)" # 25 - 35s
+        root -l -b -q "RunAnalyserPAF.C(\"ZGTo2LG\"								             , \"ttH\", 64)" #25 - 80s, 50 - 65s, 64 - 66s
+        root -l -b -q "RunAnalyserPAF.C(\"TGJets & TGJets_ext\"							   , \"ttH\", 55)" # 45 - 34s, 55 - 23s
+        root -l -b -q "RunAnalyserPAF.C(\"TTGJets_ext\"							 , \"ttH\", 30)" # 25 - 35s 30 - 35s
         #root -l -b -q "RunAnalyserPAF.C(\"TTGJets & TTGJets_ext\"							 , \"ttH\", 25)"
-        root -l -b -q "RunAnalyserPAF.C(\"WpWpJJ\"								             , \"ttH\", 35)" # petó
+        root -l -b -q "RunAnalyserPAF.C(\"WpWpJJ\"								             , \"ttH\", 35)" 
         root -l -b -q "RunAnalyserPAF.C(\"ZZZ\"									               , \"ttH\", 25)"
         root -l -b -q "RunAnalyserPAF.C(\"WZZ\"									               , \"ttH\", 25)"
         root -l -b -q "RunAnalyserPAF.C(\"WWZ\"									               , \"ttH\", 25)"
         root -l -b -q "RunAnalyserPAF.C(\"WWW\"									               , \"ttH\", 25)"
         root -l -b -q "RunAnalyserPAF.C(\"WW_ext\"								         , \"ttH\", 25)"
         #root -l -b -q "RunAnalyserPAF.C(\"WW & WW_ext\"								         , \"ttH\", 25)"
-        root -l -b -q "RunAnalyserPAF.C(\"tZq_ll\"								             , \"ttH\", 64)" # 55 - 122s
-        root -l -b -q "RunAnalyserPAF.C(\"TTTT\"								               , \"ttH\", 30)" # 35 - 38s, 45 - 40s
+        root -l -b -q "RunAnalyserPAF.C(\"tZq_ll\"								             , \"ttH\", 64)" # 55 - 122s, 64 - 132s
+        root -l -b -q "RunAnalyserPAF.C(\"TTTT\"								               , \"ttH\", 30)" # 35 - 38s, 45 - 40s, 30 - 41s
 
 		echo "%%%%%> MC SAMPLES FOR CONTROL REGIONS"
-        root -l -b -q "RunAnalyserPAF.C(\"TTJets_aMCatNLO\"						         , \"ttH\", 40)" # 50 - 69s, 64 - 74s
+        root -l -b -q "RunAnalyserPAF.C(\"TTJets_aMCatNLO\"						         , \"ttH\", 40)" # 50 - 69s, 64 - 74s, 64 - 74s
         root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M50_aMCatNLO\"				     , \"ttH\", 64)" # 64 - 312s
         root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M10to50_aMCatNLO & DYJetsToLL_M10to50_aMCatNLO_ext\" , \"ttH\", 20)" # 25 - 21s, 30 - 22s
         root -l -b -q "RunAnalyserPAF.C(\"WJetsToLNu_aMCatNLO\"						     , \"ttH\", 25)"
@@ -107,11 +107,17 @@ if [ "$1" == "an" ]; then
     fi
     cd plotter/ttH
 elif [ "$1" == "pl" ]; then
-  root -l -b -q "DrawPlots.C(\"Muon\")"
-  root -l -b -q "DrawPlots.C(\"Elec\")"
-  root -l -b -q "DrawPlots.C(\"ElMu\")"
-  root -l -b -q "DrawPlots.C(\"3l\")"
-  root -l -b -q "DrawPlots.C(\"4l\")"
+  cd ..
+  root -l -b -q "ttH/DrawPlots.C(\"Muon\")"
+  root -l -b -q "ttH/DrawPlots.C(\"Elec\")"
+  root -l -b -q "ttH/DrawPlots.C(\"ElMu\")"
+  root -l -b -q "ttH/DrawPlots.C(\"2lSS\")"
+  root -l -b -q "ttH/DrawPlots.C(\"3l\")"
+  root -l -b -q "ttH/DrawPlots.C(\"4l\")"
+  #rm Looper_C.d Looper_C.so Looper_C_ACLiC_dict_rdict.pcm
+  #rm Histo_C.d Histo_C.so Histo_C_ACLiC_dict_rdict.pcm
+  #rm Plot_C.d Plot_C.so Plot_C_ACLiC_dict_rdict.pcm
+  cd ttH
 else
     echo "ERROR - No valid arguments given"
     echo "Please, execute this script with a valid argument"
