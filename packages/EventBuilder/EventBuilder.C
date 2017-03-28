@@ -73,11 +73,11 @@ Bool_t EventBuilder::PassesDoubleMuonTrigger(){
   }
   else if (gSelection == ittHSelec) {
     pass =  (Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v") ||
-             Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v") ||
-             Get<Int_t>("HLT_BIT_HLT_IsoMu22_v")   ||
-             Get<Int_t>("HLT_BIT_HLT_IsoTkMu22_v") ||
-             Get<Int_t>("HLT_BIT_HLT_IsoMu24_v") ||
-             Get<Int_t>("HLT_BIT_HLT_IsoTkMu24_v"));
+            Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v") ||
+            Get<Int_t>("HLT_BIT_HLT_IsoMu22_v")   ||
+            Get<Int_t>("HLT_BIT_HLT_IsoTkMu22_v") ||
+            Get<Int_t>("HLT_BIT_HLT_IsoMu24_v") ||
+            Get<Int_t>("HLT_BIT_HLT_IsoTkMu24_v"));
     return pass;
   }
 }
@@ -115,16 +115,16 @@ Bool_t EventBuilder::PassesElMuTrigger(){
   }
   else if (gSelection == ittHSelec) {
     pass =  (Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v") ||
-	    	 Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
-			 Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v") ||
-			 Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
-         	 Get<Int_t>("HLT_BIT_HLT_IsoMu22_v")   ||
-         	 Get<Int_t>("HLT_BIT_HLT_IsoTkMu22_v") ||
-         	 Get<Int_t>("HLT_BIT_HLT_IsoMu24_v") ||
-         	 Get<Int_t>("HLT_BIT_HLT_IsoTkMu24_v") ||
-             Get<Int_t>("HLT_BIT_HLT_Ele27_WPTight_Gsf_v") ||
-             Get<Int_t>("HLT_BIT_HLT_Ele25_eta2p1_WPTight_Gsf_v") ||
-             Get<Int_t>("HLT_BIT_HLT_Ele27_eta2p1_WPLoose_Gsf_v"));
+	    	    Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+			      Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v") ||
+			      Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+         	  Get<Int_t>("HLT_BIT_HLT_IsoMu22_v")   ||
+         	  Get<Int_t>("HLT_BIT_HLT_IsoTkMu22_v") ||
+         	  Get<Int_t>("HLT_BIT_HLT_IsoMu24_v") ||
+         	  Get<Int_t>("HLT_BIT_HLT_IsoTkMu24_v") ||
+            Get<Int_t>("HLT_BIT_HLT_Ele27_WPTight_Gsf_v") ||
+            Get<Int_t>("HLT_BIT_HLT_Ele25_eta2p1_WPTight_Gsf_v") ||
+            Get<Int_t>("HLT_BIT_HLT_Ele27_eta2p1_WPLoose_Gsf_v"));
 	return pass;
   }
 }
@@ -153,21 +153,21 @@ Bool_t EventBuilder::PassesThreelFourlTrigger() {
   Bool_t pass = false;
 
   if (gSelection == ittHSelec) {
-    pass = (Get<Int_t>("HLT_BIT_HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v") ||
-    		Get<Int_t>("HLT_BIT_HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v") ||
-    		Get<Int_t>("HLT_BIT_HLT_TripleMu_12_10_5_v") ||
-    		Get<Int_t>("HLT_BIT_HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v") ||
-    		Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v") ||
-	    	Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
-			Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v") ||
-			Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
-    		Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+    pass =  (Get<Int_t>("HLT_BIT_HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v") ||
+    		    Get<Int_t>("HLT_BIT_HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v") ||
+            Get<Int_t>("HLT_BIT_HLT_TripleMu_12_10_5_v") ||
+            Get<Int_t>("HLT_BIT_HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v") ||
+            Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v") ||
+            Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+            Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v") ||
+            Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+            Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
             Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v") ||
             Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v") ||
-         	Get<Int_t>("HLT_BIT_HLT_IsoMu22_v")   ||
-         	Get<Int_t>("HLT_BIT_HLT_IsoTkMu22_v") ||
-         	Get<Int_t>("HLT_BIT_HLT_IsoMu24_v") ||
-         	Get<Int_t>("HLT_BIT_HLT_IsoTkMu24_v") ||
+            Get<Int_t>("HLT_BIT_HLT_IsoMu22_v")   ||
+            Get<Int_t>("HLT_BIT_HLT_IsoTkMu22_v") ||
+            Get<Int_t>("HLT_BIT_HLT_IsoMu24_v") ||
+            Get<Int_t>("HLT_BIT_HLT_IsoTkMu24_v") ||
             Get<Int_t>("HLT_BIT_HLT_Ele27_WPTight_Gsf_v") ||
             Get<Int_t>("HLT_BIT_HLT_Ele25_eta2p1_WPTight_Gsf_v") ||
             Get<Int_t>("HLT_BIT_HLT_Ele27_eta2p1_WPLoose_Gsf_v"));
