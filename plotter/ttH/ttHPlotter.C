@@ -21,7 +21,7 @@ using namespace std;
 
 void ttHPlotter() {
 	const Float_t lumi			  =	35870;
-	const UInt_t nmcSamples 	= 28;
+	const UInt_t nmcSamples 	= 29;
 	const UInt_t ndataSamples = 5;
 	enum gCategories {
 	    categories_begin,
@@ -46,7 +46,7 @@ void ttHPlotter() {
 		"TTZToLLNuNu", "TTZToQQ",											// TTZ
 		"TTGJets", "TTJets_aMCatNLO",										// TT+
 		"TW", "TbarW", "T_tch", "Tbar_tch", "TToLeptons_sch_amcatnlo",	// T+
-	  "WGToLNuG", "ZGTo2LG", "TGJets", "ZZZ", "WWZ", "WZZ", "tZq_ll", "TTTT", "WZTo3LNu",// Rares
+	  "WGToLNuG", "ZGTo2LG", "TGJets", "ZZZ", "WWZ", "WZZ", "WWW", "tZq_ll", "TTTT", "WZTo3LNu",// Rares
 		"WW", "WpWpJJ", "WWTo2L2Nu",										// WW/WW+
 		"WJetsToLNu_MLM",														// W+
 		"ZZ",																// ZZ
@@ -58,7 +58,7 @@ void ttHPlotter() {
 		kSpring+2, kSpring+2,
 		kSpring+10, kSpring+10,
 		kViolet-6, kViolet-6, kViolet-6, kViolet-6, kViolet-6,
-	  kAzure-9, kAzure-9, kAzure-9,  kAzure-9, kAzure-9, kAzure-9, kAzure-9, kAzure-9, kAzure-9,
+	  kAzure-9, kAzure-9, kAzure-9,  kAzure-9, kAzure-9, kAzure-9, kAzure-9, kAzure-9, kAzure-9, kAzure-9,
 		kBlue, kBlue, kBlue,
 	  kCyan+1,
 		kYellow,
