@@ -18,7 +18,6 @@
 using namespace std;
 
 //------------------------------------------------------------------------------
-
 void ttHPlotter() {
 	const Float_t lumi			  =	35870;
 	const UInt_t nmcSamples 	= 29;
@@ -68,44 +67,44 @@ void ttHPlotter() {
 	const TString datasample		[ndataSamples] 	= {
 		"MuonEG", "DoubleMuon", "DoubleEG", "SingleMuon", "SingleElec"			// Data samples
 	};
-	TString codepath 	= 	"/nfs/fanae/user/vrbouza/Documents/TFG/AnalysisPAF";
+	TString codepath 	  = 	"/nfs/fanae/user/vrbouza/Documents/TFG/AnalysisPAF";
 	TString outputpath 	= 	"/nfs/fanae/user/vrbouza/www/Results";
 	//TString filename	=	"Results.pdf";
 
 	// Initializing THStacks of all the histograms.
 	//------------------------------------------------------------------------------
-	THStack*   	fHSEvents    		[gNCATEGORIES][gNCHANNELS]; // Events
-	THStack*   	fHSTightLep			[gNCATEGORIES][gNCHANNELS]; // Yields
-	THStack*   	fHSFakeLep			[gNCATEGORIES][gNCHANNELS];
-	THStack*   	fHSLooseLep			[gNCATEGORIES][gNCHANNELS];
-	THStack*   	fHSTau				[gNCATEGORIES][gNCHANNELS];
-	THStack*   	fHSJet				[gNCATEGORIES][gNCHANNELS];
-	THStack*   	fHSMedBTagJet		[gNCATEGORIES][gNCHANNELS];
-	THStack*   	fHSLosBTagJet		[gNCATEGORIES][gNCHANNELS];
-	THStack*   	fHSPtLeading		[gNCATEGORIES][gNCHANNELS]; // Kinematic
-	THStack*   	fHSPtSubLeading		[gNCATEGORIES][gNCHANNELS];
+	THStack*   	fHSEvents    		    [gNCATEGORIES][gNCHANNELS]; // Events
+	THStack*   	fHSTightLep			    [gNCATEGORIES][gNCHANNELS]; // Yields
+	THStack*   	fHSFakeLep			    [gNCATEGORIES][gNCHANNELS];
+	THStack*   	fHSLooseLep		    	[gNCATEGORIES][gNCHANNELS];
+	THStack*   	fHSTau				      [gNCATEGORIES][gNCHANNELS];
+	THStack*   	fHSJet				      [gNCATEGORIES][gNCHANNELS];
+	THStack*   	fHSMedBTagJet		    [gNCATEGORIES][gNCHANNELS];
+	THStack*   	fHSLosBTagJet		    [gNCATEGORIES][gNCHANNELS];
+	THStack*   	fHSPtLeading		    [gNCATEGORIES][gNCHANNELS]; // Kinematic
+	THStack*   	fHSPtSubLeading		  [gNCATEGORIES][gNCHANNELS];
 	THStack*   	fHSPtSubSubLeading	[gNCATEGORIES][gNCHANNELS];
-	THStack*   	fHSMET				[gNCATEGORIES][gNCHANNELS]; // MET
-	THStack*   	fHSMHT				[gNCATEGORIES][gNCHANNELS];
-	THStack*   	fHSMETLD			[gNCATEGORIES][gNCHANNELS];
-	THStack*   	fHSChargeSum		[gNCATEGORIES][gNCHANNELS]; // Misc
-	THStack*   	fHSMass				[gNCATEGORIES][gNCHANNELS];
-	TH1F*   	fHDEvents    		[gNCATEGORIES][gNCHANNELS]; // Events
-	TH1F*   	fHDTightLep			[gNCATEGORIES][gNCHANNELS]; // Yields
-	TH1F*   	fHDFakeLep			[gNCATEGORIES][gNCHANNELS];
-	TH1F*   	fHDLooseLep			[gNCATEGORIES][gNCHANNELS];
-	TH1F*   	fHDTau				[gNCATEGORIES][gNCHANNELS];
-	TH1F*   	fHDJet				[gNCATEGORIES][gNCHANNELS];
-	TH1F*   	fHDMedBTagJet		[gNCATEGORIES][gNCHANNELS];
-	TH1F*   	fHDLosBTagJet		[gNCATEGORIES][gNCHANNELS];
-	TH1F*   	fHDPtLeading		[gNCATEGORIES][gNCHANNELS]; // Kinematic
-	TH1F*   	fHDPtSubLeading		[gNCATEGORIES][gNCHANNELS];
-	TH1F*   	fHDPtSubSubLeading	[gNCATEGORIES][gNCHANNELS];
-	TH1F*   	fHDMET				[gNCATEGORIES][gNCHANNELS]; // MET
-	TH1F*   	fHDMHT				[gNCATEGORIES][gNCHANNELS];
-	TH1F*   	fHDMETLD			[gNCATEGORIES][gNCHANNELS];
-	TH1F*   	fHDChargeSum		[gNCATEGORIES][gNCHANNELS]; // Misc
-	TH1F*   	fHDMass				[gNCATEGORIES][gNCHANNELS];
+	THStack*   	fHSMET				      [gNCATEGORIES][gNCHANNELS]; // MET
+	THStack*   	fHSMHT				      [gNCATEGORIES][gNCHANNELS];
+	THStack*   	fHSMETLD			      [gNCATEGORIES][gNCHANNELS];
+	THStack*   	fHSChargeSum		    [gNCATEGORIES][gNCHANNELS]; // Misc
+	THStack*   	fHSMass				      [gNCATEGORIES][gNCHANNELS];
+	TH1F*   	fHDEvents    		      [gNCATEGORIES][gNCHANNELS]; // Events
+	TH1F*   	fHDTightLep			      [gNCATEGORIES][gNCHANNELS]; // Yields
+	TH1F*   	fHDFakeLep			      [gNCATEGORIES][gNCHANNELS];
+	TH1F*   	fHDLooseLep			      [gNCATEGORIES][gNCHANNELS];
+	TH1F*   	fHDTau				        [gNCATEGORIES][gNCHANNELS];
+	TH1F*   	fHDJet				        [gNCATEGORIES][gNCHANNELS];
+	TH1F*   	fHDMedBTagJet		      [gNCATEGORIES][gNCHANNELS];
+	TH1F*   	fHDLosBTagJet		      [gNCATEGORIES][gNCHANNELS];
+	TH1F*   	fHDPtLeading	        [gNCATEGORIES][gNCHANNELS]; // Kinematic
+	TH1F*   	fHDPtSubLeading		    [gNCATEGORIES][gNCHANNELS];
+	TH1F*   	fHDPtSubSubLeading	  [gNCATEGORIES][gNCHANNELS];
+	TH1F*   	fHDMET				        [gNCATEGORIES][gNCHANNELS]; // MET
+	TH1F*   	fHDMHT				        [gNCATEGORIES][gNCHANNELS];
+	TH1F*   	fHDMETLD			        [gNCATEGORIES][gNCHANNELS];
+	TH1F*   	fHDChargeSum		      [gNCATEGORIES][gNCHANNELS]; // Misc
+	TH1F*   	fHDMass				        [gNCATEGORIES][gNCHANNELS];
 
 	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {

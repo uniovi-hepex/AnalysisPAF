@@ -26,7 +26,7 @@ void DrawPlots(TString chan = "ElMu"){
   TString cut = "TEvent != -50";
   if (chan == "2lSS") {
     chan  = " ";
-    cut   = "((TChannel == 1) || (TChannel == 2) || (TChannel == 3))";
+    cut   = "(TCat == 2)";
   }
 
   DrawPlot("TEvent",          cut, chan, 1, 1, 2,     " ", "Events");
@@ -83,8 +83,6 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 	  p->AddSample(Data[isample], "Data", itData);
   }
 
-  cout<<"wololo"<<endl;
-  cout<<sizeof(DYmc)/sizeof(*DYmc)<<endl;
   p->doSetLogy = false;
   p->DrawStack("0", 1);
   //p->doSetLogy = true;
