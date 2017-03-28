@@ -23,9 +23,9 @@ const TString outputpath      = "/nfs/fanae/user/vrbouza/www/Results/";
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name = "");
 
 void DrawPlots(TString chan = "ElMu"){
-  TString cut = "";
+  TString cut = "TEvent != -50";
   if (chan == "2lSS") {
-    chan  = "";
+    chan  = " ";
     cut   = "((TChannel == 1) || (TChannel == 2) || (TChannel == 3))";
   }
 
@@ -84,6 +84,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   }
 
   cout<<"wololo"<<endl;
+  cout<<sizeof(DYmc)/sizeof(*DYmc)<<endl;
   p->doSetLogy = false;
   p->DrawStack("0", 1);
   //p->doSetLogy = true;
