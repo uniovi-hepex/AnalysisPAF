@@ -80,10 +80,6 @@ class ttHAnalysis : public PAFChainItemSelector {
     void  SetJetVariables();
     void  SetEventVariables();
     void  SetMiniTreeVariables();
-    //	Tree variables
-		//----------------------------------------------------------------------
-    Long_t  evt;
-		Int_t   run;
 
     // Minitree things
     //----------------------------------------------------------------------

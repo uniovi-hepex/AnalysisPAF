@@ -64,6 +64,7 @@ void ttHAnalysis::Initialise() {
 	InitialiseMiscHistos();
 
   // Minitree
+	PAF_INFO("ttHAnalysis", "+ Initializing minitrees");
   fTree = CreateTree("MiniTree","Created with PAF");
   SetLeptonVariables();
   SetJetVariables();
@@ -79,9 +80,6 @@ void ttHAnalysis::InsideLoop() {
 	#ifdef DEBUGC
 		cout << "DEBUGC - Beginning of InsideLoop" << endl;
 	#endif
-	// SPECIAL ----- for running with 2015 data (03-03-16 draft note)
-	//run	= Get<Int_t>("run");
-	//if ((gIsData) && ((run < 254227) || (run > 254914 && run < 256630) || (run > 260627))) return; 	// Comment this for running with ALL the data
 
 	// Get and set data members
 	GetTreeVariables();
@@ -117,11 +115,11 @@ void ttHAnalysis::GetTreeVariables() {
 	#ifdef DEBUGC
 		cout << "DEBUGC - Beginning of GetTreeVariables"<< endl;
 	#endif
-  evt  = Get<Long_t>("evt");
 
   if (!gIsData){
 		genWeight   = Get<Float_t>("genWeight");
 	}
+
   MET  = 0.;
   MHT  = 0.;
   MET  = Get<Float_t>("met_pt");
@@ -487,7 +485,7 @@ void ttHAnalysis::GetParameters() {
 }
 
 void ttHAnalysis::GetEventVariables() {
-  // Clean
+  // Clean all event variables (also the minitree ones)
   TightLepton.clear();
   FakeableLepton.clear();
   LooseLepton.clear();
