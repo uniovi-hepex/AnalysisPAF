@@ -533,7 +533,7 @@ void ttHAnalysis::GetEventVariables() {
   }
 }
 
-void SetMiniTreeVariables(){
+void ttHAnalysis::SetMiniTreeVariables(){
   if (Is2lSSEvent())    TCat  = 2;
   else if (Is3lEvent()) TCat  = 3;
   else if (Is4lEvent()) TCat  = 4;
