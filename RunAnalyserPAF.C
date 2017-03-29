@@ -213,6 +213,8 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
   else                  pafmode = new PAFPoDEnvironment(nSlots);
   PAFProject* myProject = new PAFProject(pafmode); // Create PAF Project whith that environment
 
+  myProject->AddLibrary("/nfs/fanae/root6/lib/libTMVA.so");
+  
 	myProject->AddDataFiles(Files); 
 
 	if     (nEvents > 0 && FirstEvent == 0) myProject->SetNEvents(nEvents);

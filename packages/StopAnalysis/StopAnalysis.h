@@ -30,6 +30,7 @@ class StopAnalysis : public PAFChainItemSelector{
     void GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> VetoLeptons);
     void GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut = 30);
     void GetMET();
+    void GetGenInfo();
 
     Float_t TrigSF;
     Float_t TrigSF_Up;
@@ -106,6 +107,16 @@ class StopAnalysis : public PAFChainItemSelector{
     Float_t  TWeight_PUUp;
     Float_t  TWeight_FSDown;
 
+    Float_t TgenTop1Pt ;
+    Float_t TgenTop1Eta;
+    Float_t TgenTop1Phi;
+    Float_t TgenTop1M  ;
+    Float_t TgenTop2Pt ;
+    Float_t TgenTop2Eta;
+    Float_t TgenTop2Phi;
+    Float_t TgenTop2M  ;
+
+    Float_t TgenMETPhi;
   protected:
     Bool_t  gIsData;
     Bool_t  gDoSyst;

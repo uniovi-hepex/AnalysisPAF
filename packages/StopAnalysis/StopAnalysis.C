@@ -90,6 +90,8 @@ void StopAnalysis::InsideLoop(){
   GetJetVariables(selJets, Jets15);
   GetMET();
 
+  GetGenInfo();
+
   if(TNSelLeps == 2 && passTrigger && passMETfilters){ // 2 leptons, OS
 //  if(TNSelLeps == 2){ // 2 leptons, OS
 //  if(TNSelLeps == 2 && passTrigger && passMETfilters && !isSS){ // 2 leptons, OS
@@ -193,6 +195,17 @@ void StopAnalysis::SetEventVariables(){
   fTree->Branch("TMETJESDown",  &TMETJESDown,  "TMETJESDown/F");
   fTree->Branch("TMT2llJESUp",    &TMT2llJESUp,    "TMT2llJESUp/F");
   fTree->Branch("TMT2llJESDown",  &TMT2llJESDown,  "TMT2llJESDown/F");
+
+  fTree->Branch("TgenMETPhi"  , &TgenMETPhi , "TgenMETPhi/F" ); 
+  fTree->Branch("TgenTop1Pt"  , &TgenTop1Pt , "TgenTop1Pt/F" );
+  fTree->Branch("TgenTop1Eta" , &TgenTop1Eta, "TgenTop1Eta/F"); 
+  fTree->Branch("TgenTop1Phi" , &TgenTop1Phi, "TgenTop1Phi/F"); 
+  fTree->Branch("TgenTop1M"   , &TgenTop1M  , "TgenTop1M/F"  ); 
+  fTree->Branch("TgenTop2Pt"  , &TgenTop2Pt , "TgenTop2Pt/F" ); 
+  fTree->Branch("TgenTop2Eta" , &TgenTop2Eta, "TgenTop2Eta/F"); 
+  fTree->Branch("TgenTop2Phi" , &TgenTop2Phi, "TgenTop2Phi/F"); 
+  fTree->Branch("TgenTop2M"   , &TgenTop2M  , "TgenTop2M/F"  ); 
+
 }
 
 void StopAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> VetoLeptons){
@@ -298,3 +311,24 @@ void StopAnalysis::GetMET(){
     for(Int_t i = 0; i < TNLHEWeight; i++) TLHEWeight[i] = 0;
 }
 
+
+void StopAnalysis::GetGenInfo(){
+
+  TgenMETPhi = Get<Float_t>("met_genPhi");
+
+  TgenTop1Pt  = -1;   TgenTop2Pt  = -1;
+  TgenTop1Eta = -1;   TgenTop2Eta = -1;
+  TgenTop1Phi = -1;   TgenTop2Phi = -1;
+  TgenTop1M   = -1;   TgenTop2M   = -1;
+  
+  if (Get<Int_t>("nGenTop") > 1){
+    TgenTop1Pt  = Get<Float_t>("GenTop_pt"  , 0);   TgenTop2Pt  = Get<Float_t>("GenTop_pt"  , 1);
+    TgenTop1Eta = Get<Float_t>("GenTop_eta" , 0);   TgenTop2Eta = Get<Float_t>("GenTop_eta" , 1);
+    TgenTop1Phi = Get<Float_t>("GenTop_phi" , 0);   TgenTop2Phi = Get<Float_t>("GenTop_phi" , 1);
+    TgenTop1M   = Get<Float_t>("GenTop_mass", 0);   TgenTop2M   = Get<Float_t>("GenTop_mass", 1);
+  }
+
+  return; 
+  
+
+}

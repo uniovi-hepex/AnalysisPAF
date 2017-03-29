@@ -35,6 +35,7 @@ void TWAnalysis::Initialise(){
   fTW1j1b = CreateTree("1j1b","Created with PAF");
   SetTWVariables();
   SetHistos();
+  setBDT();
 }
 
 void TWAnalysis::SetHistos()
@@ -48,6 +49,30 @@ void TWAnalysis::SetHistos()
   fHGenB_eta_pt  = CreateH2F("HGenB_pt_eta" ,"", 20, -5., 5.,20, 0., 600.);
 
   fHNCSV  = CreateH1F("fHCSV", "",  100, -12.,1.4);
+
+}
+
+void TWAnalysis::setBDT()
+{
+  Float_t nb = float(nBLooseCentral + nBLooseFwd);
+  Float_t pz = TMath::Abs(DilepMETJet1Pz);
+  Float_t nlooseCentral = nLooseCentral;   // tmva doesnt like integers
+  Float_t nlooseFwd     = nLooseFwd;
+
+  BDT = new TMVA::Reader();
+  BDT->AddVariable( "MSys"                       , &MSys            );
+  BDT->AddVariable( "DilepMETJetPt"              , &DilepMETJetPt   );
+  BDT->AddVariable( "Lep1METJetPt"               , &Lep1METJetPt    );           
+  BDT->AddVariable( "DPtDilep_JetMET"            , &DPtDilep_JetMET );
+  BDT->AddVariable( "DPtDilep_MET"               , &DPtDilep_MET    );         
+  BDT->AddVariable( "DPtLep1_MET"                , &DPtLep1_MET     );           
+  BDT->AddVariable( "TMath::Abs(DilepMETJet1Pz)" , &pz	      );
+  BDT->AddVariable( "nLooseCentral"              , &nlooseCentral   );
+  BDT->AddVariable( "nLooseFwd"                  , &nlooseFwd       );        
+  BDT->AddVariable( "TJet2csv"                   , &TJet2csv        );           
+  BDT->AddVariable( "nBLooseCentral + nBLooseFwd", &nb              );   
+  
+  BDT->BookMVA("BDTG","/mnt_pool/fanae105/user/sscruz/TW/AnalysisPAF/plotter/TW/dark-matter/weights/TMVAClassification_BDTG.weights.xml");
 
 }
 
@@ -393,20 +418,21 @@ void TWAnalysis::SetTWVariables()
   fTW1j1b->Branch("MSys"            , &MSys           , "MSys/F"           );
   
   // for DNN
-  fTW1j1b->Branch("TJet1_pt"        , &TJet1_pt       , "TJet1_pt/F"       );
+  fTW1j1b->Branch("TJet1_pt"        , &TJet1_pt       , "TJet1_pt/F"      );
   fTW1j1b->Branch("TJet1_Dphi"      , &TJet1_Dphi     , "TJet1_Dphi/F"    );    
-  fTW1j1b->Branch("TJet1_pz"        , &TJet1_pz       , "TJet1_pz/F"     );
-  fTW1j1b->Branch("TJet1_E"         , &TJet1_E        , "TJet1_E/F"      );
-  fTW1j1b->Branch("TLep1_pt"        , &TLep1_pt       , "TLep1_pt/F"     );
-  fTW1j1b->Branch("TLep1_Dphi"       , &TLep1_Dphi      , "TLep1_Dphi/F"    );
-  fTW1j1b->Branch("TLep1_pz"        , &TLep1_pz       , "TLep1_pz/F"     );
-  fTW1j1b->Branch("TLep1_E"         , &TLep1_E        , "TLep1_E/F"      );
-  fTW1j1b->Branch("TLep2_pt"        , &TLep2_pt       , "TLep2_pt/F"     );
-  fTW1j1b->Branch("TLep2_Dphi"       , &TLep2_Dphi      , "TLep2_Dphi/F"    );
-  fTW1j1b->Branch("TLep2_pz"        , &TLep2_pz       , "TLep2_pz/F"     );
-  fTW1j1b->Branch("TLep2_E"         , &TLep2_E        , "TLep2_E/F"      );
-  fTW1j1b->Branch("TMET"            , &TMET           , "TMET/F"         );
-
+  fTW1j1b->Branch("TJet1_pz"        , &TJet1_pz       , "TJet1_pz/F"      );
+  fTW1j1b->Branch("TJet1_E"         , &TJet1_E        , "TJet1_E/F"       );
+  fTW1j1b->Branch("TLep1_pt"        , &TLep1_pt       , "TLep1_pt/F"      );
+  fTW1j1b->Branch("TLep1_Dphi"       , &TLep1_Dphi      , "TLep1_Dphi/F"  );
+  fTW1j1b->Branch("TLep1_pz"        , &TLep1_pz       , "TLep1_pz/F"      );
+  fTW1j1b->Branch("TLep1_E"         , &TLep1_E        , "TLep1_E/F"       );
+  fTW1j1b->Branch("TLep2_pt"        , &TLep2_pt       , "TLep2_pt/F"      );
+  fTW1j1b->Branch("TLep2_Dphi"       , &TLep2_Dphi      , "TLep2_Dphi/F"  );
+  fTW1j1b->Branch("TLep2_pz"        , &TLep2_pz       , "TLep2_pz/F"      );
+  fTW1j1b->Branch("TLep2_E"         , &TLep2_E        , "TLep2_E/F"       );
+  fTW1j1b->Branch("TMET"            , &TMET           , "TMET/F"          );
+  fTW1j1b->Branch("C_jll"           , &C_jll          , "C_jll/F"         );
+  fTW1j1b->Branch("TBDT"            , &TBDT           , "TBDT/F"          );
 }
 
 
@@ -437,6 +463,9 @@ void TWAnalysis::CalculateTWVariables()
   TLep2_pz  = selLeptons[0].p.Pz();
   TLep2_E   = selLeptons[0].p.E();
 
+  C_jll = (selJets[0].p + selLeptons[0].p + selLeptons[1].p).Et() / (selJets[0].p + selLeptons[0].p + selLeptons[1].p).E();
+
+  TBDT = BDT->EvaluateMVA("BDTG");
   return;
 
 
@@ -499,6 +528,6 @@ void TWAnalysis::get20Jets()
   if (nLooseFwd + nLooseCentral > 1){
     TJet2csv = TMath::Max( vetoJets[1].csv, 0.);
   }
-  cout << nLooseFwd<< " " << nLooseCentral << endl;
+
   return;
 }

@@ -4,7 +4,8 @@
 #include "Functions.h"
 #include <iostream>
 #include <vector>
-
+#include "TMVA/Factory.h"
+#include "TMVA/Reader.h"
 
 class TWAnalysis : public PAFChainItemSelector{
   public:
@@ -35,6 +36,8 @@ class TWAnalysis : public PAFChainItemSelector{
     TString gSampleName;
     Bool_t  gIsTTbar;
     Bool_t  gIsTW;
+    TMVA::Reader* BDT;
+
 
     Bool_t  TIsOSDilep;
     Int_t   TNJets;
@@ -52,8 +55,8 @@ class TWAnalysis : public PAFChainItemSelector{
     void     get20Jets();
     Double_t getSysM();
     Double_t getM(vector<TLorentzVector>);
+    void     setBDT();
 
-    
     Float_t TWeight        ;
     Float_t DilepMETJetPt  ;
     Float_t Lep1METJetPt   ;
@@ -65,6 +68,7 @@ class TWAnalysis : public PAFChainItemSelector{
     Float_t TMET_Phi       ;
     Float_t TJet2csv       ;
     Float_t MSys           ; 
+    Float_t TBDT           ;
 
     Int_t nLooseCentral  ;
     Int_t nLooseFwd      ;
@@ -72,19 +76,18 @@ class TWAnalysis : public PAFChainItemSelector{
     Int_t nBLooseFwd     ;
     
     Float_t   TJet1_pt   ;
-    Float_t   TJet1_Dphi  ;
+    Float_t   TJet1_Dphi ;
     Float_t   TJet1_pz   ;
     Float_t   TJet1_E    ;
     Float_t   TLep1_pt   ;
-    Float_t   TLep1_Dphi  ;
+    Float_t   TLep1_Dphi ;
     Float_t   TLep1_pz   ;
     Float_t   TLep1_E    ;
     Float_t   TLep2_pt   ;
-    Float_t   TLep2_Dphi  ;
+    Float_t   TLep2_Dphi ;
     Float_t   TLep2_pz   ;
     Float_t   TLep2_E    ;
-    
-    
+    Float_t   C_jll      ;
     
     TH1F*   fHGenB_eta;
     TH1F*   fHGenB_pt;
