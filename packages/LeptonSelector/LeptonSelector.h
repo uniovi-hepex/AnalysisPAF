@@ -37,10 +37,10 @@ class LeptonSelector : public PAFChainItemSelector{
     TLorentzVector tP; 
     Float_t pt;
     Float_t eta;
-    Int_t charge; 
-    Int_t type;
-    Int_t tightVar;
-    Int_t mediumMuonId;
+    Int_t 	charge; 
+    Int_t 	type;
+    Int_t 	tightVar;
+    Int_t 	mediumMuonId;
     Float_t etaSC;
     Float_t RelIso03;
     Float_t RelIso04;
@@ -58,6 +58,12 @@ class LeptonSelector : public PAFChainItemSelector{
     Float_t dz; 
     Float_t sip;
     Float_t SF;
+    Float_t MVATTH;
+    Int_t	TightCharge;
+    Float_t MVAID;
+    Float_t jetBTagCSV;
+    Float_t SegComp;
+    
     // genLeptons
     Int_t ngenLep;
     Int_t ngenLepFromTau;
@@ -67,6 +73,7 @@ class LeptonSelector : public PAFChainItemSelector{
     Int_t nSelLeptons;
     Int_t nGenLeptons;
     Int_t nVetoLeptons;
+    Int_t nLooseLeptons;
 
     void GetLeptonVariables(Int_t i);
     void GetGenLeptonVariables(Int_t i);
@@ -75,7 +82,9 @@ class LeptonSelector : public PAFChainItemSelector{
     Bool_t getGoodVertex(Int_t wp); 
     Bool_t getRelIso03POG(Int_t wp); 
     Bool_t getRelIso04POG(Int_t wp);
+    Bool_t getminiRelIso(Int_t wp);
     Bool_t getMuonId(Int_t wp);
+    Bool_t getElecMVAId(Int_t wp, Lepton lep); 
     Bool_t getElecCutBasedId(Int_t wp); 
     Bool_t getMultiIso(Int_t wp);
     Bool_t isGoodLepton(Lepton lep);

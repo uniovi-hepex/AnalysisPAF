@@ -44,8 +44,8 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
   TString WorkingDir = gSystem->WorkingDirectory();
 
   // VARIABLES TO BE USED AS PARAMETERS...
-  Float_t G_Event_Weight  = 1.0;         
-  Bool_t  G_IsData        = false;       
+  Float_t G_Event_Weight  = 1.0;
+  Bool_t  G_IsData        = false;
   Bool_t  G_IsMCatNLO     = false;
   Bool_t  G_DoSystematics = false;
   Bool_t  G_IsFastSim     = false;
@@ -70,13 +70,13 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 
   // Tab in the spreadsheet https://docs.google.com/spreadsheets/d/1b4qnWfZrimEGYc1z4dHl21-A9qyJgpqNUbhOlvCzjbE
   dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2");
-  
+
   TString pathToFiles = dataPath + dm->FindLocalFolder();
   // Deal with data samples
   if(sampleName == "DoubleEG" || sampleName == "DoubleMuon" || sampleName == "MuonEG" || sampleName.BeginsWith("Single")){
     G_Event_Weight = 1.;
     G_IsData = true;
-    TString datasuffix[] = { 
+    TString datasuffix[] = {
       "16B_03Feb2017",
       "16C_03Feb2017",
       "16D_03Feb2017",
@@ -95,13 +95,13 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
     }
     GetCount(Files, G_IsData);
     //cout << "Total events in the dataset: " << Count << endl;
-    //cout << "Will loop on total number of entries: " << nTrueEntries << endl;  
+    //cout << "Will loop on total number of entries: " << nTrueEntries << endl;
   }
   else{ // Deal with MC samples           Double_t sumnormFromFiles = GetCount(path, dm->GetRealDataFiles(asample));
-    G_IsData = false; 
+    G_IsData = false;
     TString theSample = "";
 		if(sampleName.BeginsWith("LocalFile:")){ // LocalFile
-			theSample = sampleName.ReplaceAll("LocalFile:", ""); 
+			theSample = sampleName.ReplaceAll("LocalFile:", "");
 			if(verbose) cout << " >>> Analysing a local sample: " << theSample << endl;
 			sampleName = TString( theSample(theSample.Last('/')+1, theSample.Sizeof())).ReplaceAll(".root", "").ReplaceAll("Tree_", "");
 			//myProject->AddDataFile(theSample);
@@ -123,10 +123,10 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
       xsec = GetStopXSec(stopMass);
       nTrueEntries = GetSMSnorm(stopMass, lspMass);
 			G_Event_Weight = xsec/nTrueEntries;
-		} 
+		}
 		else{ // Use dataset manager
 			Float_t sumNorm = 1; long double totalXSec = 0; long double totalNorm = 0;
-			TString sampleChain = TString(sampleName);  
+			TString sampleChain = TString(sampleName);
 			if(sampleName.Contains("&")) sampleName = TString(sampleName(0, sampleName.First('&'))); // For output file
       sampleName.ReplaceAll(" ", "");
 			Int_t nFiles = sampleChain.CountChar('&') + 1;
@@ -138,14 +138,14 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 				else theSample  = sampleChain;
 				theSample.ReplaceAll(" ", "");
 				dm->LoadDataset(theSample);
-				//myProject->AddDataFiles(dm->GetFiles()); 
+				//myProject->AddDataFiles(dm->GetFiles());
 				Files.insert(Files.end(), (dm->GetFiles()).begin(), (dm->GetFiles()).end());
 				xsec    = dm->GetCrossSection();
 			}
 			GetCount(Files);
 			if(IsMCatNLO(sampleName)){
 				G_IsMCatNLO = true;
-				if(verbose) cout << " >>> This is a aMCatNLO sample!!" << endl;
+				if(verbose) cout << " >>> This is an aMCatNLO sample!!" << endl;
 				G_Event_Weight = xsec/SumOfWeights;
 			}
 			else G_Event_Weight = xsec/Count;
@@ -173,8 +173,8 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	TString outputDir = "./" + tagSel[sel] + "_temp";
 	if(sampleName.BeginsWith("T2tt")) outputDir += "/T2tt/";
 	gSystem->mkdir(outputDir, kTRUE);
-	if(sampleName.Contains("_ext2")) sampleName.ReplaceAll("_ext2",""); 
-	if(sampleName.Contains("_ext"))  sampleName.ReplaceAll("_ext",""); 
+	if(sampleName.Contains("_ext2")) sampleName.ReplaceAll("_ext2","");
+	if(sampleName.Contains("_ext"))  sampleName.ReplaceAll("_ext","");
 
 	//if     (nEvents > 0 && FirstEvent == 0) myProject->SetNEvents(nEvents);
   if(nEvents < 0 && FirstEvent == 0){ // Divide the sample
@@ -213,14 +213,14 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
   else                  pafmode = new PAFPoDEnvironment(nSlots);
   PAFProject* myProject = new PAFProject(pafmode); // Create PAF Project whith that environment
 
-	myProject->AddDataFiles(Files); 
+	myProject->AddDataFiles(Files);
 
 	if     (nEvents > 0 && FirstEvent == 0) myProject->SetNEvents(nEvents);
 	else if(FirstEvent != 0){
 		myProject->SetNEvents(nEvents);
 		myProject->SetFirstEvent(FirstEvent);
 	}
-				
+
 	TString outputFile = outputDir + "/Tree_" + sampleName + ".root";
 	cout << Form("\033[1;33m >>> Output file = %s \n\033[0m", outputFile.Data());
 	cout << "\n" << endl;
@@ -232,7 +232,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	myProject->SetInputParam("sampleName",        sampleName       );
 	myProject->SetInputParam("IsData",            G_IsData         );
 	myProject->SetInputParam("weight",            G_Event_Weight   );
-	myProject->SetInputParam("IsMCatNLO",         G_IsMCatNLO      );  
+	myProject->SetInputParam("IsMCatNLO",         G_IsMCatNLO      );
 	myProject->SetInputParam("iSelection",        sel              );
 	myProject->SetInputParam("WorkingDir",        WorkingDir       );
 	myProject->SetInputParam("pathToHeppyTrees",  pathToFiles);
@@ -242,12 +242,13 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	myProject->SetInputParam("IsFastSim"    , G_IsFastSim);
 	myProject->SetInputParam("stopMass"     , stopMass         );
 	myProject->SetInputParam("lspMass"      , lspMass          );
-	myProject->SetInputParam("doSyst"       , G_DoSystematics  ); 
+	myProject->SetInputParam("doSyst"       , G_DoSystematics  );
 
 
 	// Name of analysis class
 	//----------------------------------------------------------------------------
 	myProject->AddSelectorPackage("LeptonSelector");
+	myProject->AddSelectorPackage("TauSelector");
 	myProject->AddSelectorPackage("JetSelector");
 	myProject->AddSelectorPackage("EventBuilder");
 	if      (sel == iStopSelec)  myProject->AddSelectorPackage("StopAnalysis");
@@ -258,6 +259,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	  myProject->AddSelectorPackage("TWAnalysis");
 	}
 	else if (sel == iWWSelec  )  myProject->AddSelectorPackage("WWAnalysis");
+	else if (sel == ittHSelec )  myProject->AddSelectorPackage("ttHAnalysis");
 	else                         myProject->AddSelectorPackage("CreateMiniTree");
 
 	// Additional packages
@@ -277,11 +279,11 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 
 Bool_t IsMCatNLO(TString sampleName){
 	if(	sampleName.Contains("amcatnlo")  ||
-			sampleName.Contains("aMCatNLO")  || 
-			sampleName.BeginsWith("TTW") || 
-			sampleName.BeginsWith("TTZ") ||  
-			sampleName.BeginsWith("WWZ") || 
-			sampleName.BeginsWith("WZZ") || 
+			sampleName.Contains("aMCatNLO")  ||
+			sampleName.BeginsWith("TTW") ||
+			sampleName.BeginsWith("TTZ") ||
+			sampleName.BeginsWith("WWZ") ||
+			sampleName.BeginsWith("WZZ") ||
 			sampleName.BeginsWith("ZZZ") )
 		return true;
 	else return false;
@@ -299,11 +301,11 @@ void GetCount(std::vector<TString> Files, Bool_t IsData){
 		f->GetObject("Count", hcount);
 		Count        += hcount-> GetEntries();
     nTrueEntries += tree  -> GetEntries();
-		if(!IsData){ 
+		if(!IsData){
 			f->GetObject("SumGenWeights", hsum);
 			SumOfWeights += hsum  -> GetBinContent(1);
 		}
-		f->Close();    
+		f->Close();
 	}
 }
 
@@ -323,12 +325,12 @@ Float_t* GetCountLHE(std::vector<TString> Files, Float_t CountLHE[]){
       else if (k<112) bin = k + 1992;   // 2002-2103: NNPDF
       else if (k<167) bin = k + 2890;   // 3002-3056: CT10
       else if (k<223) bin = k + 3835;   // 4000-4057: MMHT2014
-      else if (k<250) bin = k + 4779;   // 5002-5028: muRmuF, hdamp 
+      else if (k<250) bin = k + 4779;   // 5002-5028: muRmuF, hdamp
       x = htemp->GetBinContent(bin);
       CountLHE[k-1] += x;
       //cout << Form("[k = %i, bin = %i, x0 = %g, x = %g]\n", k, bin, x0, x);
     }
-    f->Close();    
+    f->Close();
   }
   return CountLHE;
 }
@@ -349,13 +351,13 @@ std::vector<Float_t> *GetCountLHE(std::vector<TString> Files){
       else if (k<112) bin = k + 1992;   // 2002-2103: NNPDF
       else if (k<167) bin = k + 2890;   // 3002-3056: CT10
       else if (k<223) bin = k + 3835;   // 4000-4057: MMHT2014
-      else if (k<250) bin = k + 4779;   // 5002-5028: muRmuF, hdamp 
+      else if (k<250) bin = k + 4779;   // 5002-5028: muRmuF, hdamp
       x = htemp->GetBinContent(bin);
-      x0 = CountLHE->at(k-1); 
+      x0 = CountLHE->at(k-1);
       CountLHE->at(k-1) = x0+x;
       //cout << Form("[k = %i, bin = %i, x0 = %g, x = %g]\n", k, bin, x0, x);
     }
-    f->Close();    
+    f->Close();
   }
   return CountLHE;
 }*/
@@ -377,7 +379,7 @@ Float_t GetSMSnorm(Int_t mStop, Int_t mLsp){
           ms = hcount->GetXaxis()->GetBinCenter(i);
           mn = hcount->GetYaxis()->GetBinCenter(j);
           if(ms == mStop && mLsp == mn) count += hcount->GetBinContent(hcount->FindBin(ms, mn, 0));
-        } 
+        }
 			}
 		}
 	}
@@ -421,7 +423,7 @@ Double_t GetStopXSec(Int_t StopMass){
   else if (StopMass == 925) return 0.0106631;
 	else if (StopMass == 950) return 0.00883465;
 	else if (StopMass == 975) return 0.00735655;
-	else{ 
+	else{
 		cout << Form(" >>> No Cross Section for that mass!! (mStop = %i) Extrapolating...\n", StopMass);
 		Float_t v0 = GetStopXSec(StopMass - StopMass%25);
 		Float_t vf = GetStopXSec(StopMass - StopMass%25 + 25);

@@ -13,6 +13,7 @@ class JetSelector : public PAFChainItemSelector{
 
   public:
     TString stringWP;
+    TString stringWP2;
     JetSelector();
     virtual ~JetSelector() {}
     virtual void InsideLoop();
@@ -31,6 +32,7 @@ class JetSelector : public PAFChainItemSelector{
     Int_t nVetoJets;
     Int_t nJets15;
     Int_t nBtagJets;
+    Int_t nLooseBtagJets;
 
     Float_t minDR;
     Float_t jet_MaxEta;
@@ -38,12 +40,13 @@ class JetSelector : public PAFChainItemSelector{
     Float_t vetoJet_minPt;
     Float_t vetoJet_maxEta;
 
-    Float_t MET_JESUp; 
+    Float_t MET_JESUp;
     Float_t MET_JESDown;
 
   protected:
 
     BTagSFUtil *fBTagSFnom ;
+    BTagSFUtil *fBTagSFnom2;
     BTagSFUtil *fBTagSFbUp ;
     BTagSFUtil *fBTagSFbDo ;
     BTagSFUtil *fBTagSFlUp ;
@@ -55,23 +58,23 @@ class JetSelector : public PAFChainItemSelector{
     // Jets
     Int_t nJet;
     Jet tJ;
-    TLorentzVector tpJ; 
-    TLorentzVector tmcJ; 
+    TLorentzVector tpJ;
+    TLorentzVector tmcJ;
     Int_t jetId;
     Int_t flavmc;
     Float_t csv;
-    Float_t pt; Float_t eta; Float_t rawPt; 
-    Float_t pt_corrUp; Float_t pt_corrDown; 
+    Float_t pt; Float_t eta; Float_t rawPt;
+    Float_t pt_corrUp; Float_t pt_corrDown;
     // genJet
     Int_t ngenJet;
 
     void GetJetVariables(Int_t i);
     void GetJetFwdVariables(Int_t i);
     void GetGenJetVariables(Int_t i);
-    Bool_t IsBtag(Jet j); 
+    Bool_t IsBtag(Jet j);
+    Bool_t IsBtag2(Jet j);
     void SetSystematics(Jet *j);
     Bool_t Cleaning(Jet j, vector<Lepton> vLep, Float_t minDR = 0.4);
 
     ClassDef(JetSelector, 0);
 };
-

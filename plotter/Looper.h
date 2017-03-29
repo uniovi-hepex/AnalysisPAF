@@ -1,4 +1,4 @@
-#ifndef Looper_h 
+#ifndef Looper_h
 #define Looper_h 1
 
 #include <TROOT.h>
@@ -22,7 +22,7 @@ TH1D* loadSumOfLHEweights(TString pathToHeppyTrees = "/pool/ciencias/HeppyTreesS
 class Looper{
   public:
     Looper(TString pathToTree, TString NameOfTree, TString _var = "TMET", TString _cut = "1", TString _chan = "ElMu", Int_t nb = 30, Float_t b0 = 0, Float_t bN = 300){
-   Hist = NULL; 
+   Hist = NULL;
    FormulasCuts = NULL;
    FormulasVars = NULL;
    FormulasLHE  = NULL;
@@ -38,7 +38,7 @@ class Looper{
    chan = _chan;
 
    pathToHeppyTrees = "/pool/ciencias/HeppyTreesSummer16/v2/";
-  }  
+  }
 
    ~Looper(){
 		 delete tree->GetCurrentFile();
@@ -56,6 +56,8 @@ class Looper{
      else if(i == 2) chan = "Muon";
      else if(i == 3) chan = "Elec";
      else if(i == 4) chan = "SF";
+     else if(i == 33) chan = "3l";
+     else if(i == 44) chan = "4l";
      else chan = "All";
    }
    Bool_t doSysPDF = false;
@@ -69,8 +71,8 @@ class Looper{
    Float_t GetScaleWeight(TString sys = "Scale");
    Histo* GetHisto(TString sampleName, TString sys = "0");
 
-	 void SetFormulas(TString sys = "0"); 
-	 void CreateHisto(TString sys = "0"); 
+	 void SetFormulas(TString sys = "0");
+	 void CreateHisto(TString sys = "0");
    void Loop(TString sys = "");
 
  // protected:
@@ -85,7 +87,7 @@ class Looper{
    TString xtit;
    TString stringcut; TString stringvar;
 
-   TString sys; // This has another dim!!!! 
+   TString sys; // This has another dim!!!!
 
    Bool_t HistosCreated;
 

@@ -1,4 +1,4 @@
-#ifndef JET 
+#ifndef JET
 #define JET 1
 
 #include <iostream>
@@ -19,10 +19,11 @@ class Jet{
 
 
     Bool_t isBtag;
+    Bool_t isLooseBtag;
     TLorentzVector p;
     Bool_t id;
     Int_t flavmc;
-    Float_t csv; 
+    Float_t csv;
 
     // For systematics
     Float_t pTJESUp;
