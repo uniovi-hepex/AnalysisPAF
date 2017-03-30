@@ -310,7 +310,7 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm){
   }
 
   if(sav){ // Save the histograms
-    TString dir = plotFolder + "StopPlots/";
+    TString dir = plotFolder;
     TString plotname = varname + "_" + chan + "_" + tag + "_compare";
     gSystem->mkdir(dir, kTRUE);
     c->Print( dir + plotname + ".png", "png");

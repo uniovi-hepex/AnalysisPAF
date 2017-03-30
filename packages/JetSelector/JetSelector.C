@@ -34,7 +34,7 @@ void JetSelector::Initialise(){
 
   //---- Select your wp for b-tagging and pt, eta for the jets
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-  if      (gSelection == iStopSelec || gSelection == iTopSelec || gSelection == ittDMSelec || gSelection == iTWSelec)  stringWP = "Medium";
+  if      (gSelection == iStopSelec || gSelection == iTopSelec || gSelection == ittDMSelec || gSelection == iTWSelec || gSelection == ittHSelec)  stringWP = "Medium";
   else if (gSelection == iWWSelec)    stringWP = "Loose";
   else                                stringWP = "Medium";
   if     (gSelection == iStopSelec || gSelection == iTopSelec || gSelection == ittDMSelec){
@@ -58,6 +58,13 @@ void JetSelector::Initialise(){
     vetoJet_maxEta = 2.4;
     minDR = 0.4;
   }
+  else if (gSelection == ittHSelec) {
+		jet_MaxEta 			= 2.4;
+    jet_MinPt  			= 25;
+    vetoJet_maxEta 	= 2.4;
+    vetoJet_minPt 	= 25;
+    minDR 					= 0.4;
+	}
   else{
     jet_MaxEta = 2.4;
     vetoJet_maxEta = 2.4;
