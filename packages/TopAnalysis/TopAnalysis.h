@@ -123,6 +123,8 @@ class TopAnalysis : public PAFChainItemSelector{
   TH1F* fHDiLepPt[nChannels][nLevels][nSysts];
   TH1F* fHLep0Pt[nChannels][nLevels][nSysts];
   TH1F* fHLep1Pt[nChannels][nLevels][nSysts];
+  TH1F* fHLep0Iso[nChannels][nLevels][nSysts];
+  TH1F* fHLep1Iso[nChannels][nLevels][nSysts];
   TH1F* fHJet0Pt[nChannels][nLevels][nSysts];
   TH1F* fHJet1Pt[nChannels][nLevels][nSysts];
   TH1F* fHNJets[nChannels][nLevels][nSysts];
@@ -132,6 +134,8 @@ class TopAnalysis : public PAFChainItemSelector{
   TH1F* fHInvMass2[nChannels][nLevels][nSysts];
   TH1F* fHNBtagsNJets[nChannels][nLevels][nSysts];
   TH1F* fHJetCSV[nChannels][nLevels][nSysts];
+  TH1F* fHJet0CSV[nChannels][nLevels][nSysts];
+  TH1F* fHJet1CSV[nChannels][nLevels][nSysts];
   TH1F* fHvertices[nChannels][nLevels][nSysts]; 
 
   TH1F* fhDummy;

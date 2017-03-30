@@ -102,9 +102,10 @@ Bool_t LeptonSelector::getRelIso03POG(Int_t wp){
     }
   }
   else{ // muons
-    if(wp == iLoose  && RelIso03 > 0.10) return false;
-    if(wp == iTight  && RelIso03 > 0.05) return false;
-    if(wp == iWPforStop && RelIso03 > 0.12) return false;
+    if(wp == iLoose  && RelIso03 > 0.10) return false; 
+    if(wp == iTight  && RelIso03 > 0.05) return false; 
+    if(wp == iWPforStop && RelIso03 > 0.12) return false; 
+    if(wp == iLooseWPforStop && RelIso03 > 0.4) return false; 
   }
   return true;
 }
@@ -361,12 +362,12 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
   if(gSelection == iStopSelec){
     if(lep.isMuon){
       passId = true;
-      passIso = getRelIso03POG(iWPforStop);
+      passIso = getRelIso03POG(iLooseWPforStop);
     }
     else{
       passId = getElecCutBasedId(iVeto);
-      passIso = getRelIso03POG(iWPforStop);
-    }
+      passIso = getRelIso03POG(iLooseWPforStop);
+    } 
     return passId && passIso && getGoodVertex(iTight) && getSIPcut(4);
   }
   else if(gSelection == iTopSelec || gSelection == iTWSelec){
