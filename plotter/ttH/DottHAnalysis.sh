@@ -23,10 +23,10 @@ if [ "$1" == "an" ]; then
     	echo "%%%%%> MC SAMPLES FOR COMPARISON WITH DATA"
         root -l -b -q "RunAnalyserPAF.C(\"TTWToLNu_ext1 & TTWToLNu_ext2\"      , \"ttH\", 25)"
         root -l -b -q "RunAnalyserPAF.C(\"TTWToQQ\"								             , \"ttH\", 25)"
-        root -l -b -q "RunAnalyserPAF.C(\"TTZToLLNuNu_ext & TTZToLLNuNu_ext2\" , \"ttH\", 60)" #25 - 60s, 40 - 57s, 64 - 62s
+        root -l -b -q "RunAnalyserPAF.C(\"TTZToLLNuNu_ext & TTZToLLNuNu_ext2\" , \"ttH\", 60)" # 25 - 60s, 40 - 57s, 64 - 62s
         root -l -b -q "RunAnalyserPAF.C(\"TTZToQQ\"								             , \"ttH\", 25)"
         root -l -b -q "RunAnalyserPAF.C(\"WGToLNuG\"							             , \"ttH\", 25)"
-        root -l -b -q "RunAnalyserPAF.C(\"ZGTo2LG\"								             , \"ttH\", 60)" #25 - 80s, 50 - 65s, 64 - 66s
+        root -l -b -q "RunAnalyserPAF.C(\"ZGTo2LG\"								             , \"ttH\", 60)" # 25 - 80s, 50 - 65s, 64 - 66s
         root -l -b -q "RunAnalyserPAF.C(\"TGJets & TGJets_ext\"							   , \"ttH\", 55)" # 45 - 34s, 55 - 23s
         root -l -b -q "RunAnalyserPAF.C(\"TTGJets & TTGJets_ext\"							 , \"ttH\", 25)" # 25 - 35s 30 - 35s
         root -l -b -q "RunAnalyserPAF.C(\"WpWpJJ\"								             , \"ttH\", 35)"
