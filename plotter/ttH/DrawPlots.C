@@ -7,10 +7,10 @@ R__LOAD_LIBRARY(Plot.C+)
 #include "Plot.h"
 
 const TString Signalmc[1]      = {"TTHNonbb"};                   // ttH
-const TString TTWmc[2] 	       = {"TTWToLNu", "TTWToQQ"};			  // TTW
-const TString TTZmc[2] 	       = {"TTZToLLNuNu", "TTZToQQ"};	    // TTZ
+const TString TTWmc[2] 	       = {"TTWToLNu1", "TTWToQQ"};			 // TTW
+const TString TTZmc[2] 	       = {"TTZToLLNuNu", "TTZToQQ"};	   // TTZ
 const TString TTbarmc[2] 	     = {"TTGJets", "TTJets_aMCatNLO"}; // TTbar
-const TString WJetsmc[1]       = {"WJetsToLNu_MLM"};             // WJets
+const TString WJetsmc[1]       = {"WJetsToLNu_aMCatNLO"};        // WJets
 const TString STmc[6]    	     = {"TW", "TbarW", "T_tch", "Tbar_tch", "TToLeptons_sch_amcatnlo","TGJets"}; // ST
 const TString DYmc[2]          = {"DYJetsToLL_M50_aMCatNLO", "DYJetsToLL_M10to50_aMCatNLO"};               // DY
 const TString DiTriCuatrimc[13]= {"WGToLNuG", "ZGTo2LG", "WpWpJJ", "WWW", "WWZ", "WZZ", "ZZZ", "WW", "tZq_ll", "TTTT", "WZTo3LNu", "WWTo2L2Nu", "ZZ"}; // Di&Tri&Cuatriboson
@@ -24,12 +24,18 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 
 void DrawPlots(TString chan = "ElMu"){
   TString cut = "TIsEvent == 1";
-  if (chan == "2lSS") {
+  if (chan == "2lSS" || chan == "Elec" || chan == "Muon" || chan == "ElMu") {
     cut   = "(TCat == 2 && TIsEvent == 1)";
+  }
+  else if (chan == "3l") {
+    cut   = "(TCat == 3 && TIsEvent == 1)";
+  }
+  else if (chan == "4l") {
+    cut   = "(TCat == 4 && TIsEvent == 1)";
   }
 
   DrawPlot("TIsEvent",         cut, chan, 1, 1, 2,     " ", "Events");
-  DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton");
+  DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "exnTightLep (#)", "nTightLepton");
   DrawPlot("TnFakeableLepton", cut, chan, 5, 0, 5,     "nFakeLep (#)", "nFakeLepton");
   DrawPlot("TnLooseLepton",    cut, chan, 5, 0, 5,     "nLooseLep (#)", "nLooseLepton");
   DrawPlot("TnTaus",           cut, chan, 3, 0, 3,     "nTaus (#)", "nTaus");
