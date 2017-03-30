@@ -20,7 +20,7 @@ const TString path             = "/nfs/fanae/user/vrbouza/Documents/TFG/Analysis
 const TString outputpath       = "/nfs/fanae/user/vrbouza/www/Results/";
 
 
-void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name = "");
+void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name = "", TString tag = "0");
 
 void DrawPlots(TString chan = "ElMu", TString tag = "0"){
   TString cut = "TIsEvent == 1";
