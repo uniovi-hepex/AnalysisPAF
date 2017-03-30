@@ -17,9 +17,11 @@ enum iSFs{
   nfiles
 };
 
-enum wps{iVeto, iLoose, iMedium, iTight, iVeryTight, iExtreamlyTight, iWPforStop};
+enum wps{iVeto, iLoose, iMedium, iTight, iVeryTight, iExtreamlyTight, iWPforStop, iLooseWPforStop};
 
 enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec};
+
+enum eChannel{iNoChannel, iElMu, iMuon, iElec, iTriLep, iFourLep, nTotalDefinedChannels};
 
 enum sys{iNom, 
   iJesUp, iJesDown, iJERUp, iJERDown, 
@@ -31,7 +33,7 @@ enum sys{iNom,
   nSys
 };
 
-const Int_t nLHEWeight = 248;
+const Int_t nLHEWeight = 254;
 //enum eChannel{iElMu, iElec, iMuon, nChannels};
 
 bool LepMomentumComparator(Lepton i, Lepton j);
