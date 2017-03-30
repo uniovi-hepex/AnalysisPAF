@@ -22,7 +22,7 @@ const TString outputpath       = "/nfs/fanae/user/vrbouza/www/Results/";
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name = "");
 
-void DrawPlots(TString chan = "ElMu"){
+void DrawPlots(TString chan = "ElMu", TString tag = "0"){
   TString cut = "TIsEvent == 1";
   if (chan == "2lSS" || chan == "Elec" || chan == "Muon" || chan == "ElMu") {
     cut   = "(TCat == 2 && TIsEvent == 1)";
@@ -34,25 +34,25 @@ void DrawPlots(TString chan = "ElMu"){
     cut   = "(TCat == 4 && TIsEvent == 1)";
   }
 
-  DrawPlot("TIsEvent",         cut, chan, 1, 1, 2,     " ", "Events");
-  DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "exnTightLep (#)", "nTightLepton");
-  DrawPlot("TnFakeableLepton", cut, chan, 5, 0, 5,     "nFakeLep (#)", "nFakeLepton");
-  DrawPlot("TnLooseLepton",    cut, chan, 5, 0, 5,     "nLooseLep (#)", "nLooseLepton");
-  DrawPlot("TnTaus",           cut, chan, 3, 0, 3,     "nTaus (#)", "nTaus");
-  DrawPlot("TnJets",           cut, chan, 10, 0, 10,   "nJets (#)", "nJets");
-  DrawPlot("TnMediumBTags",    cut, chan, 6, 0, 6,     "nMediumBTags (#)", "nMediumBTags");
-  DrawPlot("TnLooseBTags",     cut, chan, 6, 0, 6,     "nLooseBTags (#)", "nLooseBTags");
-  DrawPlot("TPtLeading",       cut, chan, 10, 0, 200,  "Pt (GeV)", "PtLeading");
-  DrawPlot("TPtSubLeading",    cut, chan, 10, 0, 200,  "Pt (GeV)", "PtSubLeading");
-  DrawPlot("TPtSubSubLeading", cut, chan, 10, 0, 200,  "Pt (GeV)", "PtSubSubLeading");
-  DrawPlot("TMET",             cut, chan, 10, 0, 400,  "MET (GeV)", "MET");
-  DrawPlot("TMHT",             cut, chan, 10, 0, 1000, "MHT (GeV)", "MHT");
-  DrawPlot("TMETLD",           cut, chan, 10, 0, 2,    "METLD (GeV)", "METLD");
-  DrawPlot("TCS",              cut, chan, 7, -3.5, 3.5,"Sum of charges", "CS");
-  DrawPlot("TMass",            cut, chan, 10, 0, 400,  "Invariant mass (GeV)", "Mass");
+  DrawPlot("TIsEvent",         cut, chan, 1, 1, 2,     " ", "Events", tag);
+  DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "exnTightLep (#)", "nTightLepton", tag);
+  DrawPlot("TnFakeableLepton", cut, chan, 5, 0, 5,     "nFakeLep (#)", "nFakeLepton", tag);
+  DrawPlot("TnLooseLepton",    cut, chan, 5, 0, 5,     "nLooseLep (#)", "nLooseLepton", tag);
+  DrawPlot("TnTaus",           cut, chan, 3, 0, 3,     "nTaus (#)", "nTaus", tag);
+  DrawPlot("TnJets",           cut, chan, 10, 0, 10,   "nJets (#)", "nJets", tag);
+  DrawPlot("TnMediumBTags",    cut, chan, 6, 0, 6,     "nMediumBTags (#)", "nMediumBTags", tag);
+  DrawPlot("TnLooseBTags",     cut, chan, 6, 0, 6,     "nLooseBTags (#)", "nLooseBTags", tag);
+  DrawPlot("TPtLeading",       cut, chan, 10, 0, 200,  "Pt (GeV)", "PtLeading", tag);
+  DrawPlot("TPtSubLeading",    cut, chan, 10, 0, 200,  "Pt (GeV)", "PtSubLeading", tag);
+  DrawPlot("TPtSubSubLeading", cut, chan, 10, 0, 200,  "Pt (GeV)", "PtSubSubLeading", tag);
+  DrawPlot("TMET",             cut, chan, 10, 0, 400,  "MET (GeV)", "MET", tag);
+  DrawPlot("TMHT",             cut, chan, 10, 0, 1000, "MHT (GeV)", "MHT", tag);
+  DrawPlot("TMETLD",           cut, chan, 10, 0, 2,    "METLD (GeV)", "METLD", tag);
+  DrawPlot("TCS",              cut, chan, 7, -3.5, 3.5,"Sum of charges", "CS", tag);
+  DrawPlot("TMass",            cut, chan, 10, 0, 400,  "Invariant mass (GeV)", "Mass", tag);
 }
 
-void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name){
+void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name, TString tag = "0"){
   Plot* p = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
   p->SetPath(path+"ttH_temp/"); p->SetTreeName("MiniTree");
   p->SetPathSignal(path+"ttH_temp/");
@@ -61,14 +61,15 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->SetPlotFolder(outputpath);
   p->doStackSignal   = true;
 
-  for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
+  /*for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
 	  p->AddSample(Signalmc[isample], "ttH", itSignal, kRed);
+  }*/
+  
+  p->AddSample(Signalmc[0], "ttH", itBkg, kRed);
+  
+  for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
+    p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5);
   }
-  //for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
-  //  p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5);
-	  p->AddSample(TTWmc[0], "TTW", itBkg, kGreen-5);
-    p->AddSample(TTWmc[1], "TTW", itBkg);
-  //}
   for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
 	  p->AddSample(TTZmc[isample], "TTZ", itBkg, kSpring+2);
   }
@@ -92,7 +93,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   }
 
   p->doSetLogy = false;
-  p->DrawStack("0", 1);
+  p->DrawStack(tag, 1);
   //p->doSetLogy = true;
   //p->DrawStack("0_log", 1);
   p->PrintYields();
