@@ -64,7 +64,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
 	  p->AddSample(Signalmc[isample], "ttH", itSignal, kRed);
   }
-  for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
+  //for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
+  for (UInt_t isample = 0; isample < 2; isample++) {
 	  p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5);
   }
   for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
