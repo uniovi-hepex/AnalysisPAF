@@ -15,8 +15,8 @@ if [ "$1" == "an" ]; then
     echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Starting analysis"
     cd ../..
     sel="ttH"
-    if [ "$3" != "ttH" ]; then
-      sel="ttH_"$3
+    if [ "$3" != "" ]; then
+      sel=$3
     fi
     if [ "$2" == "test" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"TestHeppy\"						               , \"$sel\", 1)"
