@@ -213,6 +213,7 @@ void TopAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cle
     TJet_Phi[i]    = selJets.at(i).Phi();
     TJet_E[i]      = selJets.at(i).E();
     TJet_isBJet[i] = selJets.at(i).isBtag;
+    THT += TJet_Pt[i];
     if(selJets.at(i).isBtag)            TNBtags++;
   }
   if(gIsData) return;  // For systematics...
@@ -221,7 +222,6 @@ void TopAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cle
     if(selJets.at(i).isBtag_BtagDown  ) TNBtagsDown++;
     if(selJets.at(i).isBtag_MisTagUp  ) TNBtagsMisTagUp++;
     if(selJets.at(i).isBtag_MisTagDown) TNBtagsMisTagDown++;
-    THT += selJets.at(i).p.Pt();
   }
   TNJetsJESUp    = 0;
   TNJetsJESDown  = 0;
