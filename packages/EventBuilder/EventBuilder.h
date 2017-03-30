@@ -8,7 +8,7 @@
 class EventBuilder : public PAFChainItemSelector{
 
   public:
-    
+
     std::vector<Float_t> CountLHE;
     std::vector<Float_t> LHEWeights;
 
@@ -51,12 +51,14 @@ class EventBuilder : public PAFChainItemSelector{
     Bool_t TrigElMu();
     Bool_t TrigElEl();
     Bool_t TrigMuMu();
+    Bool_t Trig3l4l();
 
     Bool_t PassesDoubleElecTrigger();
     Bool_t PassesDoubleMuonTrigger();
     Bool_t PassesElMuTrigger();
     Bool_t PassesSingleElecTrigger();
     Bool_t PassesSingleMuonTrigger();
+    Bool_t PassesThreelFourlTrigger();
 
     Bool_t gIsSingleMuon;
     Bool_t gIsSingleElec;
@@ -69,7 +71,7 @@ class EventBuilder : public PAFChainItemSelector{
     TString gSampleName;
     TString gPathToHeppyTrees;
     Bool_t  gIsMCatNLO;
-    
+
     void SetCountLHE();
 
     ClassDef(EventBuilder, 0);

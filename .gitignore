@@ -2,9 +2,15 @@
 *.so
 *.d
 *.pcm
+.paf/
 
 # Exclude files by emacs
 *~
 
 # Exclude downloaded Datasets
 Datasets/
+
+# Others
+.DS_Store
+*_temp/
+inputdata.root
