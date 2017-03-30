@@ -14,13 +14,13 @@ if [ "$1" == "an" ]; then
     echo ""
     echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Starting analysis"
     cd ../..
-    sel = "ttH"
+    sel="ttH"
     if [ "$3" != "ttH"]; then
-      sel = "ttH_"$3
+      sel="ttH_"$3
     fi
     if [ "$2" == "test" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"TestHeppy\"						               , \"$sel\", 1)"
-    elif [ "$2" == "opt" ]; then
+      elif [ "$2" == "opt" ]; then
     	echo "%%%%%> MC SAMPLES FOR COMPARISON WITH DATA"
         root -l -b -q "RunAnalyserPAF.C(\"TTWToLNu_ext1 & TTWToLNu_ext2\"      , \"$sel\", 40)" 
         # 25 - 50s
