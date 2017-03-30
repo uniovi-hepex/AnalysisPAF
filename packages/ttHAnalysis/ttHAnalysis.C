@@ -22,8 +22,8 @@ ClassImp(ttHAnalysis); // PAF definition as class
 ////////////////////////////////////////////////////////////////////////////////
 ttHAnalysis::ttHAnalysis() : PAFChainItemSelector() {
 	// Defining to zero the aim of the histogram pointers
-	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
-		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
+	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
+		for (Int_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			fHEvents    		  [icat][ichan]	=	0; // Events
 			fHTightLep		   	[icat][ichan]	=	0; // Yields
 			fHFakeLep			    [icat][ichan]	=	0;
@@ -164,8 +164,8 @@ void ttHAnalysis::SetEventBranches() {
 // Initialising
 //------------------------------------------------------------------------------
 void ttHAnalysis::InitialiseEventHistos() {
-	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
-		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
+	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
+		for (Int_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
 			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
@@ -175,8 +175,8 @@ void ttHAnalysis::InitialiseEventHistos() {
 }
 
 void ttHAnalysis::InitialiseYieldHistos() {
-	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
-		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
+	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
+		for (Int_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
 			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
@@ -192,8 +192,8 @@ void ttHAnalysis::InitialiseYieldHistos() {
 }
 
 void ttHAnalysis::InitialiseKinematicHistos() {
-	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
-		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
+	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
+		for (Int_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
 			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
@@ -205,8 +205,8 @@ void ttHAnalysis::InitialiseKinematicHistos() {
 }
 
 void ttHAnalysis::InitialiseMETHistos() {
-	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
-		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
+	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
+		for (Int_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == threel 		&& ichan != All) 	continue;
 			if (icat == fourl 		&& ichan != All) 	continue;
 			if (icat == Total 		&& ichan != All) 	continue;
@@ -218,8 +218,8 @@ void ttHAnalysis::InitialiseMETHistos() {
 }
 
 void ttHAnalysis::InitialiseMiscHistos() {
-	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
-		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
+	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
+		for (Int_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat == twolSS 		&& ichan != All) 	continue;
 			if (icat == threel 		&& ichan != All) 	continue;
 			if (icat == fourl 		&& ichan != All) 	continue;
@@ -233,8 +233,8 @@ void ttHAnalysis::InitialiseMiscHistos() {
 // Filling methods
 //------------------------------------------------------------------------------
 void ttHAnalysis::FillEventHistos() {
-	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
-		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
+	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
+		for (Int_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat 	== twolSS 	&& !Is2lSSEvent()) 						       continue;
 			if (ichan == MuMu 		&& (gChannel != iMuon)) 					   continue;
 			if (ichan == ElEl 		&& (gChannel != iElec)) 					   continue;
@@ -250,8 +250,8 @@ void ttHAnalysis::FillEventHistos() {
 }
 
 void ttHAnalysis::FillYieldHistos() {
-	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
-		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
+	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
+		for (Int_t ichan = 0; ichan < gNCHANNELS; ichan++) {
       if (icat 	== twolSS 	&& !Is2lSSEvent()) 						       continue;
 			if (ichan == MuMu 		&& (gChannel != iMuon)) 					       continue;
 			if (ichan == ElEl 		&& (gChannel != iElec)) 					       continue;
@@ -272,8 +272,8 @@ void ttHAnalysis::FillYieldHistos() {
 }
 
 void ttHAnalysis::FillKinematicHistos() {
-	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
-		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
+	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
+		for (Int_t ichan = 0; ichan < gNCHANNELS; ichan++) {
       if (icat 	== twolSS 	&& !Is2lSSEvent()) 						       continue;
 			if (ichan == MuMu 		&& (gChannel != iMuon)) 					       continue;
 			if (ichan == ElEl 		&& (gChannel != iElec)) 					       continue;
@@ -290,8 +290,8 @@ void ttHAnalysis::FillKinematicHistos() {
 }
 
 void ttHAnalysis::FillMETHistos() {
-	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
-		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
+	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
+		for (Int_t ichan = 0; ichan < gNCHANNELS; ichan++) {
       if (icat 	== twolSS 	&& !Is2lSSEvent()) 						       continue;
 			if (ichan == MuMu 		&& (gChannel != iMuon)) 					       continue;
 			if (ichan == ElEl 		&& (gChannel != iElec)) 					       continue;
@@ -308,8 +308,8 @@ void ttHAnalysis::FillMETHistos() {
 }
 
 void ttHAnalysis::FillMiscHistos() {
-	for (UInt_t icat = 0; icat < gNCATEGORIES; icat++) {
-		for (UInt_t ichan = 0; ichan < gNCHANNELS; ichan++) {
+	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
+		for (Int_t ichan = 0; ichan < gNCHANNELS; ichan++) {
 			if (icat 	== twolSS 	&& (!Is2lSSEvent()	|| ichan != All))	continue;
 			if (ichan == MuMu 		&& (gChannel != iMuon)) 					        continue;
 			if (ichan == ElEl 		&& (gChannel != iElec)) 					        continue;
@@ -349,17 +349,17 @@ Bool_t ttHAnalysis::Is3lEvent() {
 	if (TightLepton[1].p.Pt() < 15) return false;
 	if (TightLepton[2].p.Pt() < 15) return false;
 
-	for (UInt_t i = 0; i < nLooseLepton; i++) {
-		for (UInt_t j = i+1; j < nLooseLepton; j++) {
+	for (Int_t i = 0; i < nLooseLepton; i++) {
+		for (Int_t j = i+1; j < nLooseLepton; j++) {
 			if (LooseLepton[i].type != LooseLepton[j].type) continue;
 			if (LooseLepton[i].charge*LooseLepton[j].charge > 0) continue;
 			if (abs((LooseLepton[i].p+LooseLepton[j].p).M() - Zm) < 10) return false;
 		}
 	}
 
-	UInt_t twolds = 0;
-	for (UInt_t i = 0; i < nTightLepton; i++) {
-		for (UInt_t j = i+1; j < nTightLepton; j++) {
+	Int_t twolds = 0;
+	for (Int_t i = 0; i < nTightLepton; i++) {
+		for (Int_t j = i+1; j < nTightLepton; j++) {
 			if (TightLepton[i].type != TightLepton[j].type) continue;
 			if (TightLepton[i].charge*TightLepton[j].charge < 0) twolds = 1;
 		}
@@ -378,9 +378,9 @@ Bool_t ttHAnalysis::Is3lEvent() {
   Lepton tmp_L3;
   Lepton tmp_L4;
 
-  UInt_t OSSF = 0;
-  for (UInt_t i = 0; i < nLooseLepton; i++) {
-		for (UInt_t j = i+1; j < nLooseLepton; j++) {
+  Int_t OSSF = 0;
+  for (Int_t i = 0; i < nLooseLepton; i++) {
+		for (Int_t j = i+1; j < nLooseLepton; j++) {
 			if (LooseLepton[i].type != LooseLepton[j].type)      continue;
 			if (LooseLepton[i].charge*LooseLepton[j].charge > 0) continue;
       OSSF++;
@@ -407,17 +407,17 @@ Bool_t ttHAnalysis::Is4lEvent() {
 	if (TightLepton[2].p.Pt() < 15) return false;
 	if (TightLepton[3].p.Pt() < 10) return false;
 
-	for (UInt_t i = 0; i < nLooseLepton; i++) {
-		for (UInt_t j = i+1; j < nLooseLepton; j++) {
+	for (Int_t i = 0; i < nLooseLepton; i++) {
+		for (Int_t j = i+1; j < nLooseLepton; j++) {
 			if (LooseLepton[i].type != LooseLepton[j].type) continue;
 			if (LooseLepton[i].charge*LooseLepton[j].charge > 0) continue;
 			if (abs((LooseLepton[i].p+LooseLepton[j].p).M() - Zm) < 10) return false;
 		}
 	}
 
-	UInt_t twolds = 0;
-	for (UInt_t i = 0; i < nTightLepton; i++) {
-		for (UInt_t j = i+1; j < nTightLepton; j++) {
+	Int_t twolds = 0;
+	for (Int_t i = 0; i < nTightLepton; i++) {
+		for (Int_t j = i+1; j < nTightLepton; j++) {
 			if (TightLepton[i].type != TightLepton[j].type) continue;
 			if (TightLepton[i].charge*TightLepton[j].charge < 0) twolds = 1;
 		}
@@ -436,9 +436,9 @@ Bool_t ttHAnalysis::Is4lEvent() {
   Lepton tmp_L3;
   Lepton tmp_L4;
 
-  UInt_t OSSF = 0;
-  for (UInt_t i = 0; i < nLooseLepton; i++) {
-		for (UInt_t j = i+1; j < nLooseLepton; j++) {
+  Int_t OSSF = 0;
+  for (Int_t i = 0; i < nLooseLepton; i++) {
+		for (Int_t j = i+1; j < nLooseLepton; j++) {
 			if (LooseLepton[i].type != LooseLepton[j].type)      continue;
 			if (LooseLepton[i].charge*LooseLepton[j].charge > 0) continue;
       OSSF++;
@@ -461,8 +461,8 @@ Bool_t ttHAnalysis::Is4lEvent() {
 Bool_t ttHAnalysis::PassesPreCuts(){
 	if (nTightLepton < 2) return false;
 
-	for (UInt_t i = 0; i < nLooseLepton; i++) {
-		for (UInt_t j = i+1; j < nLooseLepton; j++) {
+	for (Int_t i = 0; i < nLooseLepton; i++) {
+		for (Int_t j = i+1; j < nLooseLepton; j++) {
 		  if ((LooseLepton[i].p + LooseLepton[j].p).M() < 12) return false;
 	  }
   }
@@ -576,14 +576,14 @@ Float_t ttHAnalysis::getMET(){ return MET; }
 
 Int_t ttHAnalysis::getCS(){
 	Int_t cs = 0;
-	for (UInt_t i = 0; i < TightLepton.size(); i++) {
+	for (Int_t i = 0; i < TightLepton.size(); i++) {
 		cs += TightLepton[i].charge;
 	}
 	return cs;
 }
 
 Int_t ttHAnalysis::GetnLooseBTags(){
-  UInt_t nloosebtag = 0;
+  Int_t nloosebtag = 0;
   for(Int_t i = 0; i < Jets.size(); i++) {
     if (Jets[i].csv > 0.5426) nloosebtag++;
   }

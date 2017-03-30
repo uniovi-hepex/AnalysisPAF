@@ -172,13 +172,13 @@ class ttHAnalysis : public PAFChainItemSelector {
 
 		//	Input variables and vectors
 		//----------------------------------------------------------------------
-		UInt_t 	nTightLepton;
-		UInt_t 	nFakeableLepton;
-		UInt_t 	nLooseLepton;
-		UInt_t 	nTaus;
-		UInt_t 	nJets;
-		UInt_t 	nMediumBTags;
-		UInt_t 	nLooseBTags;
+		Int_t 	nTightLepton;
+		Int_t 	nFakeableLepton;
+		Int_t 	nLooseLepton;
+		Int_t 	nTaus;
+		Int_t 	nJets;
+		Int_t 	nMediumBTags;
+		Int_t 	nLooseBTags;
 
     std::vector<Lepton> LooseLepton;
 		std::vector<Lepton> FakeableLepton;
