@@ -66,7 +66,6 @@ Float_t getMT2ll(Lepton l1, Lepton l2, Float_t met, Float_t met_phi){
 }
 
 Float_t getMeff(Lepton l1, Lepton l2, vector<Jet> vjets, Float_t met){
-  Float_t ht = getHT(vjets);
   return l1.p.Pt() + l2.p.Pt() + met;
 } 
 
@@ -91,7 +90,7 @@ Float_t JEStoMET(vector<Jet> vjets, Float_t met, Float_t met_phi, Int_t dir){
   TLorentzVector varJets = TLorentzVector(0,0,0,0);
   TLorentzVector temp = TLorentzVector(0,0,0,0);
 
-  for(Int_t i = 0; i < vjets.size(); i++){
+  for(Int_t i = 0; i < (Int_t) vjets.size(); i++){
     nomJets += vjets[i].p;
     if(dir < 0) temp.SetPtEtaPhiM(vjets[i].pTJESDown, vjets[i].p.Eta(), vjets[i].p.Phi(), vjets[i].p.M());
     else if(dir > 0) temp.SetPtEtaPhiM(vjets[i].pTJESUp,   vjets[i].p.Eta(), vjets[i].p.Phi(), vjets[i].p.M());

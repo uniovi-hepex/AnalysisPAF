@@ -5,11 +5,12 @@
 #include <iostream>
 #include <vector>
 
-enum eChannels{iUnkChan, iElMu, iMuon, iElec, nChannels};
+//enum eChannels{iUnkChan, iElMu, iMuon, iElec, nChannels};
+const Int_t nChannels = 3;
 enum eLevels  {idilepton, iZVeto, iMETcut, i2jets, i1btag, nLevels};
 enum eSysts   {inorm, nSysts};
 const int nWeights = 248;
-const TString gChanLabel[nChannels] = {"X", "ElMu", "Muon","Elec"};
+const TString gChanLabel[nChannels] = {"ElMu", "Muon","Elec"};
 const TString sCut[nLevels] = {"dilepton", "ZVeto", "MET", "2jets", "1btag"};
 const TString gSys[nSysts] = {"0"};
 
@@ -52,6 +53,7 @@ class TopAnalysis : public PAFChainItemSelector{
     Float_t NormWeight;
 
     void InitHistos();
+    void FillDYHistos(Int_t ch);
     void FillHistos(Int_t ch, Int_t cut);
   
     //Variables
@@ -130,6 +132,7 @@ class TopAnalysis : public PAFChainItemSelector{
   TH1F* fHNJets[nChannels][nLevels][nSysts];
   TH1F* fHNBtagJets[nChannels][nLevels][nSysts];
 
+  TH1F* fHDYInvMass[nChannels][nLevels][nSysts];
   TH1F* fHInvMass[nChannels][nLevels][nSysts];
   TH1F* fHInvMass2[nChannels][nLevels][nSysts];
   TH1F* fHNBtagsNJets[nChannels][nLevels][nSysts];

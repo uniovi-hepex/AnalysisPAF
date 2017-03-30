@@ -225,31 +225,29 @@ void EventBuilder::InsideLoop(){
   // >>>>>>>>>>>>>> Get selected leptons:
   selLeptons = GetParam<std::vector<Lepton>>("selLeptons");
   // Set channel
-  if(selLeptons.size()>=2){
-    if(selLeptons.at(0).isElec && selLeptons.at(1).isMuon) gChannel = 1;
-    else if(selLeptons.at(0).isMuon && selLeptons.at(1).isElec) gChannel = 1;
-    else if(selLeptons.at(0).isMuon && selLeptons.at(1).isMuon) gChannel = 2;
-    else if(selLeptons.at(0).isElec && selLeptons.at(1).isElec) gChannel = 3;
+  if(selLeptons.size() >= 2){ // Dilepton Channels
+    if     (selLeptons.at(0).isElec && selLeptons.at(1).isMuon) gChannel = iElMu;
+    else if(selLeptons.at(0).isMuon && selLeptons.at(1).isElec) gChannel = iElMu;
+    else if(selLeptons.at(0).isMuon && selLeptons.at(1).isMuon) gChannel = iMuon;
+    else if(selLeptons.at(0).isElec && selLeptons.at(1).isElec) gChannel = iElec;
     isSS = (selLeptons[0].charge*selLeptons[1].charge) > 0;
   }
-  else if (selLeptons.size() == 3) {
-    gChannel == 33;
-  }
-  else if (selLeptons.size() >= 4) {
-    gChannel == 44;
+  else if(selLeptons.size() > 2){ // MultiLepton Channels
+    if      (selLeptons.size() == 3) gChannel == iTriLep;
+    else if (selLeptons.size() >= 4) gChannel == iFourLep;
   }
   else{
-    gChannel = -1;
     isSS = false;
+    gChannel = -1;
   }
 
 
 
   passTrigger = false;
-  if (gChannel == 1 && TrigElMu()) passTrigger = true;
+  if      (gChannel == 1 && TrigElMu()) passTrigger = true;
   else if (gChannel == 2 && TrigMuMu()) passTrigger = true;
   else if (gChannel == 3 && TrigElEl()) passTrigger = true;
-  else if ((gChannel == 33 || gChannel == 44) && Trig3l4l()) passTrigger = true;
+  else if ((gChannel == iTriLep || gChannel == iFourLep) && Trig3l4l()) passTrigger = true;
 
   METfilters = PassesMETfilters();
 
