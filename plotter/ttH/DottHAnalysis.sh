@@ -21,6 +21,7 @@ if [ "$1" == "an" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"TestHeppy\"						               , \"ttH\", 1)"
     elif [ "$2" == "opt" ]; then
     	echo "%%%%%> MC SAMPLES FOR COMPARISON WITH DATA"
+        root -l -b -q "RunAnalyserPAF.C(\"TTWToLNu_ext1 & TTWToLNu_ext2\"      , \"ttH\", 25)"
         root -l -b -q "RunAnalyserPAF.C(\"TTWToQQ\"								             , \"ttH\", 25)"
         root -l -b -q "RunAnalyserPAF.C(\"TTZToLLNuNu_ext & TTZToLLNuNu_ext2\" , \"ttH\", 60)" #25 - 60s, 40 - 57s, 64 - 62s
         root -l -b -q "RunAnalyserPAF.C(\"TTZToQQ\"								             , \"ttH\", 25)"
@@ -63,6 +64,7 @@ if [ "$1" == "an" ]; then
 
     else
       echo "%%%%%> MC SAMPLES FOR COMPARISON WITH DATA"
+        root -l -b -q "RunAnalyserPAF.C(\"TTWToLNu_ext1 & TTWToLNu_ext2\"      , \"ttH\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"TTWToQQ\"								             , \"ttH\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"TTZToLLNuNu_ext & TTZToLLNuNu_ext2\" , \"ttH\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"TTZToQQ\"								             , \"ttH\", $2)"
