@@ -232,13 +232,14 @@ void EventBuilder::InsideLoop(){
     else if(selLeptons.at(0).isElec && selLeptons.at(1).isElec) gChannel = iElec;
     isSS = (selLeptons[0].charge*selLeptons[1].charge) > 0;
   }
-  else if(selLeptons.size() > 2){ // MultiLepton Channels
-    if      (selLeptons.size() == 3) gChannel == iTriLep;
-    else if (selLeptons.size() >= 4) gChannel == iFourLep;
-  }
   else{
     isSS = false;
     gChannel = -1;
+  }
+  
+  if(gSelection == ittHSelec && selLeptons.size() > 2){
+    if      (selLeptons.size() == 3) gChannel == iTriLep;
+    else if (selLeptons.size() >= 4) gChannel == iFourLep;
   }
 
 
