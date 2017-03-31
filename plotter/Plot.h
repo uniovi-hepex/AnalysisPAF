@@ -215,6 +215,12 @@ public:
   Int_t GetColorOfProcess(TString pr);
   Plot* NewPlot(TString newVar = "", TString newCut = "", TString newChan = "", Int_t newnbins = -1, Float_t newbin0 = -999, Float_t newbinN = -999, TString newtitle = "", TString newXtitle = "");
 
+  void SetRatioMin(Float_t r){ RatioMin = r;}
+  void SetRatioMax(Float_t r){ RatioMax = r;}
+  void SetScaleMax(Float_t s){ ScaleMax = s;}
+  void SetScaleLog(Float_t s){ ScaleLog = s;}
+  void SetPlotMinimum(Float_t p){ PlotMinimum = p;}
+
 protected: 
   TString pathToHeppyTrees = "";
   TString path = "";
@@ -223,6 +229,15 @@ protected:
   TString outputName = "";
   Int_t nSignalSamples;
   
+  // Maximum and minimum value of the ratio plot
+  Float_t RatioMin = 0.8;
+  Float_t RatioMax = 1.2;
+  
+  // Factor to multiply the maximum of the plot to set the maximum
+  Float_t ScaleMax = 1.2;
+  Float_t ScaleLog = 500;
+  Float_t PlotMinimum = 0.;
+
   TString varname = "";
 	TString var;
   TString chan;
