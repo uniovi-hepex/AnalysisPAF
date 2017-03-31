@@ -244,9 +244,9 @@ void EventBuilder::InsideLoop(){
 
 
   passTrigger = false;
-  if      (gChannel == 1 && TrigElMu()) passTrigger = true;
-  else if (gChannel == 2 && TrigMuMu()) passTrigger = true;
-  else if (gChannel == 3 && TrigElEl()) passTrigger = true;
+  if      (gChannel == iElMu && TrigElMu()) passTrigger = true;
+  else if (gChannel == iMuon && TrigMuMu()) passTrigger = true;
+  else if (gChannel == iElec && TrigElEl()) passTrigger = true;
   else if ((gChannel == iTriLep || gChannel == iFourLep) && Trig3l4l()) passTrigger = true;
 
   METfilters = PassesMETfilters();
