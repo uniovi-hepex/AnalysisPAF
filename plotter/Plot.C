@@ -288,8 +288,8 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm){
     if(max > themax) themax = max;
     VSignals.at(i)->Draw("pesame");
   }
-  VSignals.at(0)->SetMaximum(themax*1.1);
-  VSignals.at(0)->SetMinimum(0.);
+  VSignals.at(0)->SetMaximum(themax*ScaleMax);
+  VSignals.at(0)->SetMinimum(PlotMinimum);
   TLegend* leg = SetLegend();
   leg->SetTextSize(0.041);
   leg->Draw("same");
@@ -299,8 +299,8 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm){
   TH1F* htemp = NULL;
   hratio = (TH1F*)VSignals.at(0)->Clone("hratio_sig");
   SetHRatio();
-  hratio->SetMaximum(1.1);
-  hratio->SetMinimum(0.9);
+  hratio->SetMaximum(RatioMax);
+  hratio->SetMinimum(RatioMin);
   for(Int_t  i = 1; i < nsamples; i++){
     htemp = (TH1F*)hratio->Clone("htemp");
     htemp->Divide(VSignals.at(i)); 
@@ -339,13 +339,13 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   float maxMC = hAllBkg->GetMax();
   float Max = maxMC > maxData? maxMC : maxData;
   if(doSetLogy){
-    hStack->SetMaximum(Max*300);
-    hStack->SetMinimum(0.1);
+    hStack->SetMaximum(Max*ScaleLog);
+    hStack->SetMinimum(PlotMinimum + 0.1*(PlotMinimum + 1));
     plot->SetLogy();
   }
   else{
-    hStack->SetMaximum(Max*1.15);
-    hStack->SetMinimum(0);
+    hStack->SetMaximum(Max*ScaleMax);
+    hStack->SetMinimum(PlotMinimum);
   }
   hStack->Draw("hist");
   hStack->GetYaxis()->SetTitle("Number of Events");
@@ -419,7 +419,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   hratio->Draw("same");
 
   if(sav){ // Save the histograms
-    TString dir = plotFolder + "StopPlots/";
+    TString dir = plotFolder;
     TString plotname = (outputName == "")? varname + "_" + chan + "_" + tag : outputName;
 	  	
     gSystem->mkdir(dir, kTRUE);
@@ -777,8 +777,8 @@ void Plot::SetHRatio(){
     hratio->GetXaxis()->SetLabelOffset(0.02);
   }
   hratio->GetXaxis()->SetTitle(xtitle);
-  hratio->SetMinimum(0.8);
-  hratio->SetMaximum(1.2);
+  hratio->SetMinimum(RatioMin);
+  hratio->SetMaximum(RatioMax);
 }
 
 Int_t Plot::GetColorOfProcess(TString pr){
@@ -787,20 +787,9 @@ Int_t Plot::GetColorOfProcess(TString pr){
   return 0;
 }
 
-void Plot::PrintSamples(){
-  std::cout << "All the samples included in the plot: " << std::endl;
-  for(Int_t i = 0; i < (Int_t) VTagSamples.size(); i++)
-    cout << " >>> Sample " << VTagSamples.at(i) << " in process " << VTagProcesses.at(i) << std::endl;
-  for(Int_t i = 0; i < (Int_t) VTagDataSamples.size(); i++)
-    cout << " >>> Data sample " << VTagDataSamples.at(i) << std::endl;    
-}
-
-void Plot::PrintSystematics(){
-  std::cout << "Systematics included: \n";
-  for(Int_t i = 0; i < (Int_t) VSystLabel.size(); i++)
-    std::cout << " " << VSystLabel.at(i) << " ";
-  std::cout << std::endl;
-}
+//================================================================================
+// Printing tables, yields, systematics...
+//================================================================================
 
 Plot* Plot::NewPlot(TString newVar, TString newCut, TString newChan, Int_t newnbins, Float_t newbin0, Float_t newbinN, TString newtitle, TString newXtitle){
   if(newVar  == "") newVar  = var;
@@ -840,6 +829,21 @@ Plot* Plot::NewPlot(TString newVar, TString newCut, TString newChan, Int_t newnb
     p->AddSample(VTagDataSamples.at(i), "Data", itData, 1);
 
   return p;
+}
+
+void Plot::PrintSamples(){
+  std::cout << "All the samples included in the plot: " << std::endl;
+  for(Int_t i = 0; i < (Int_t) VTagSamples.size(); i++)
+    cout << " >>> Sample " << VTagSamples.at(i) << " in process " << VTagProcesses.at(i) << std::endl;
+  for(Int_t i = 0; i < (Int_t) VTagDataSamples.size(); i++)
+    cout << " >>> Data sample " << VTagDataSamples.at(i) << std::endl;    
+}
+
+void Plot::PrintSystematics(){
+  std::cout << "Systematics included: \n";
+  for(Int_t i = 0; i < (Int_t) VSystLabel.size(); i++)
+    std::cout << " " << VSystLabel.at(i) << " ";
+  std::cout << std::endl;
 }
 
 void Plot::PrintSystYields(){
