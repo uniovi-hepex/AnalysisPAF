@@ -34,8 +34,7 @@ void DrawPlots(TString chan = "ElMu", TString tag = "0"){
     cut   = "(TCat == 4)";
   }
 
-  DrawPlot("TIsEvent",         cut, chan, 1, 1, 2,     " ", "Events", tag);
-  DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "exnTightLep (#)", "nTightLepton", tag);
+  DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag);
   DrawPlot("TnFakeableLepton", cut, chan, 5, 0, 5,     "nFakeLep (#)", "nFakeLepton", tag);
   DrawPlot("TnLooseLepton",    cut, chan, 5, 0, 5,     "nLooseLep (#)", "nLooseLepton", tag);
   DrawPlot("TnTaus",           cut, chan, 3, 0, 3,     "nTaus (#)", "nTaus", tag);
