@@ -147,12 +147,12 @@ void ttHAnalysis::SetEventBranches() {
 }
 
 void ttHAnalysis::SetMiniTreeVariables() {
-  if      (gChannel == iElMu)   TChannel = 1;
-  else if (gChannel == iMuon)   TChannel = 2;
-  else if (gChannel == iElec)   TChannel = 3;
-  else if (gChannel == iTriLep) TChannel = 33;
-  else if (gChannel == iFourLep)TChannel = 44;
-  
+  //if      (gChannel == iElMu)   TChannel = 1;
+  //else if (gChannel == iMuon)   TChannel = 2;
+  //else if (gChannel == iElec)   TChannel = 3;
+  //else if (gChannel == iTriLep) TChannel = 4;
+  //else if (gChannel == iFourLep)TChannel = 5;
+  TChannel = gChannel;
   if      (Is2lSSEvent())       TCat  = 2;
   else if (Is3lEvent())         TCat  = 3;
   else if (Is4lEvent())         TCat  = 4;
