@@ -450,7 +450,7 @@ Bool_t LeptonSelector::isLooseLepton(Lepton lep){
   	Bool_t passElecCutBasedId; Bool_t passptRatio;
   	if (lep.isMuon) {
   	  passEta 		       = (abs(eta) < 2.4);
-  	  passPt	 		       = (pt > 15);
+  	  passPt	 		       = (pt > 5);
   	  passVertex		     = getGoodVertex(iLoose);
   	  passSIP			       = getSIPcut(8);
   	  passIso			       = getminiRelIso(iLoose);
