@@ -52,8 +52,8 @@ TString CraftFormula(TString cuts, TString chan, TString sys){
   else if(chan == "Muon")  schan = ("(TChannel == 2)");
   else if(chan == "ElMu")  schan = ("(TChannel == 1)");
   else if(chan == "SF" || chan == "sameF") schan = ("(TChannel != 1)");
-  else if(chan == "3l") schan = ("(TChannel == 33)");
-  else if(chan == "4l") schan = ("(TChannel == 44)");
+  else if(chan == "3l") schan = ("(TChannel == 4)");
+  else if(chan == "4l") schan = ("(TChannel == 5)");
   else schan = ("1");
 
   TString weight = TString("TWeight");
@@ -258,5 +258,3 @@ TH1D* loadSumOfLHEweights(TString pathToHeppyTrees, TString sampleName){
   hSumOfLHEweights->SetDirectory(0);
   return hSumOfLHEweights;
 }
-
-
