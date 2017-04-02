@@ -23,7 +23,7 @@ const TString outputpath       = "/nfs/fanae/user/vrbouza/www/Results/";
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name = "", TString tag = "0");
 
 void DrawPlots(TString chan = "ElMu", TString tag = "0"){
-  TString cut = "((TCat == 2 && (TChannel == 1 || TChannel == 2 || TChannel == 3)) || (TCat == 3 && TChannel == 3) || (TCat == 4 && TChannel == 4))";
+  TString cut = "((TCat == 2 && (TChannel == 1 || TChannel == 2 || TChannel == 3)) || (TCat == 3 && TChannel == 4) || (TCat == 4 && TChannel == 5))";
   if (chan == "2lSS") {
     cut   = "(TCat == 2 && (TChannel == 1 || TChannel == 2 || TChannel == 3))";
   }
@@ -37,10 +37,10 @@ void DrawPlots(TString chan = "ElMu", TString tag = "0"){
     cut   = "(TCat == 2 && TChannel == 1)";
   }
   else if (chan == "3l") {
-    cut   = "(TCat == 3)";
+    cut   = "(TCat == 3 && TChannel == 4)";
   }
   else if (chan == "4l") {
-    cut   = "(TCat == 4)";
+    cut   = "(TCat == 4 && TChannel == 5)";
   }
 
   DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag);
