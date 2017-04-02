@@ -93,9 +93,9 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample(Signalmc[0], "ttH", itBkg, kRed);
 
   p->doSetLogy = false;
+  if (var == "TnTightLepton") p->PrintYields("","","","textxt");
   p->DrawStack(tag, 1);
   //p->doSetLogy = true;
   //p->DrawStack("0_log", 1);
-  if (var == "TnTightLepton") p->PrintYields("","","","textxt");
   delete p;
 }
