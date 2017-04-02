@@ -325,7 +325,7 @@ void ttHAnalysis::FillMiscHistos() {
 ////////////////////////////////////////////////////////////////////////////////
 //	   Events selection
 ////////////////////////////////////////////////////////////////////////////////
-Bool_t ttHAnalysis::PassesPreCuts(){
+Bool_t ttHAnalysis::PassesPreCuts() {
 	if (nTightLepton < 2)          return false;
   if (nTaus != 0)								 return false;
   
