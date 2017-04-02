@@ -238,8 +238,8 @@ void EventBuilder::InsideLoop(){
   }
   
   if(gSelection == ittHSelec && selLeptons.size() > 2){
-    if      (selLeptons.size() == 3) gChannel == iTriLep;
-    else if (selLeptons.size() >= 4) gChannel == iFourLep;
+    if      (selLeptons.size() == 3) gChannel = iTriLep;
+    else if (selLeptons.size() >= 4) gChannel = iFourLep;
   }
 
 
