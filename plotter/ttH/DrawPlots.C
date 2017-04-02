@@ -72,7 +72,9 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->doStackSignal  = true;
 
   p->SetScaleMax(1.7);
-
+  p->SetRatioMin(0);
+  p->SetRatioMax(2);
+  
   for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
     p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5);
   }
@@ -100,10 +102,10 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   /*for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
 	  p->AddSample(Signalmc[isample], "ttH", itSignal, kRed);
   }*/
-  
   p->AddSample(Signalmc[0], "ttH", itBkg, kRed);
 
   p->doSetLogy = false;
+  p->SetYieldsTableName("Yields_"+chan);
   if (var == "TnTightLepton") p->PrintYields("","","","txt");
   p->DrawStack(tag, 1);
   //p->doSetLogy = true;
