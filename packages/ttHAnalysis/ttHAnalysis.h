@@ -158,9 +158,6 @@ class ttHAnalysis : public PAFChainItemSelector {
     Int_t   TCS;
     Float_t TMass;
     Float_t TMETLD;
-    Float_t TWeight;
-    Int_t   TpassTrigger;
-    Int_t   TChannel;
 
 		//	Input variables and vectors
 		//----------------------------------------------------------------------

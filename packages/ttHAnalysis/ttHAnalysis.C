@@ -133,7 +133,7 @@ void ttHAnalysis::SetJetBranches() {
 }
 
 void ttHAnalysis::SetEventBranches() {
-  fTree->Branch("TChannel",      &TChannel,      "TChannel/I");
+  fTree->Branch("TChannel",      &gChannel,      "gChannel/I");
   fTree->Branch("TCat",          &TCat,          "TCat/I");
   fTree->Branch("TpassTrigger",  &passTrigger,   "passTrigger/B");
   fTree->Branch("TisSS",         &isSS,          "isSS/B");
@@ -143,16 +143,10 @@ void ttHAnalysis::SetEventBranches() {
   fTree->Branch("TMETLD",        &TMETLD,        "TMETLD/F");
   fTree->Branch("TCS",           &TCS,           "TCS/I");
   fTree->Branch("TMass",         &TMass,         "TMass/F");
-  fTree->Branch("TWeight",       &TWeight,       "TWeight/F");
+  fTree->Branch("TWeight",       &EventWeight,   "EventWeight/F");
 }
 
 void ttHAnalysis::SetMiniTreeVariables() {
-  //if      (gChannel == iElMu)   TChannel = 1;
-  //else if (gChannel == iMuon)   TChannel = 2;
-  //else if (gChannel == iElec)   TChannel = 3;
-  //else if (gChannel == iTriLep) TChannel = 4;
-  //else if (gChannel == iFourLep)TChannel = 5;
-  TChannel = gChannel;
   if      (Is2lSSEvent())       TCat  = 2;
   else if (Is3lEvent())         TCat  = 3;
   else if (Is4lEvent())         TCat  = 4;
@@ -164,8 +158,6 @@ void ttHAnalysis::SetMiniTreeVariables() {
   TCS             = getCS();
   TMass           = (TightLepton[0].p+TightLepton[1].p).M();
   TMETLD          = getMETLD();
-  TWeight         = EventWeight;
-  TpassTrigger    = passTrigger;
 }
 
 
