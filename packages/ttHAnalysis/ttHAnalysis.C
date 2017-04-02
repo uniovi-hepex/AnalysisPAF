@@ -496,7 +496,6 @@ void ttHAnalysis::InitialiseVariables() {
   HT              = 0;
 
   TCat            = 0;
-  TWeight         = 0;
   TPtLeading      = 0;
   TPtSubLeading   = 0;
   TPtSubSubLeading= 0;
@@ -539,8 +538,6 @@ void ttHAnalysis::GetEventVariables() {
   TPtSubSubLeading= 0;
   TCS             = 0;
   TMass           = 0;
-  TWeight         = 0;
-  TpassTrigger    = 0;
 
   // Import event-dependent variables
   TightLepton     = GetParam<vector<Lepton>>("selLeptons");
@@ -581,7 +578,7 @@ Float_t ttHAnalysis::GetMETLD() {
 
 Float_t ttHAnalysis::GetHT() {
 	Float_t ht = 0;
-  for (Int_t i = 0; i < Jets.size(); i++){
+  for (UInt_t i = 0; i < Jets.size(); i++){
     ht += Jets[i].Pt();
   } 
 	return ht;
@@ -589,10 +586,10 @@ Float_t ttHAnalysis::GetHT() {
 
 Float_t ttHAnalysis::GetMHT() {
 	Float_t mht = 0;
-  for (Int_t i = 0; i < Jets.size(); i++){
+  for (UInt_t i = 0; i < Jets.size(); i++){
     mht += Jets[i].Pt();
   }
-  for (Int_t i = 0; i < TightLepton.size(); i++){
+  for (UInt_t i = 0; i < TightLepton.size(); i++){
     mht += TightLepton[i].Pt();
   }
 	return mht;
@@ -600,7 +597,7 @@ Float_t ttHAnalysis::GetMHT() {
 
 Int_t ttHAnalysis::GetCS() {
 	Int_t cs = 0;
-	for (Int_t i = 0; i < TightLepton.size(); i++) {
+	for (UInt_t i = 0; i < TightLepton.size(); i++) {
 		cs += TightLepton[i].charge;
 	}
 	return cs;
@@ -608,7 +605,7 @@ Int_t ttHAnalysis::GetCS() {
 
 Int_t ttHAnalysis::GetnLooseBTags(){
   Int_t nloosebtag = 0;
-  for(Int_t i = 0; i < Jets.size(); i++) {
+  for(UInt_t i = 0; i < Jets.size(); i++) {
     if (Jets[i].csv > 0.5426) nloosebtag++;
   }
   return nloosebtag;
