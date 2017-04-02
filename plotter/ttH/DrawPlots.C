@@ -56,7 +56,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   Plot* p = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
   p->SetPath(path+"ttH_temp/"); p->SetTreeName("MiniTree");
   p->SetPathSignal(path+"ttH_temp/");
-  p->verbose = true;
+  p->verbose = false;
   p->SetVarName(name);
   p->SetPlotFolder(outputpath);
   p->doStackSignal   = true;
@@ -96,6 +96,6 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->DrawStack(tag, 1);
   //p->doSetLogy = true;
   //p->DrawStack("0_log", 1);
-  p->PrintYields();
+  if (var == "TnTightLepton") p->PrintYields("","","","textxt");
   delete p;
 }
