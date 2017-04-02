@@ -327,7 +327,8 @@ void ttHAnalysis::FillMiscHistos() {
 ////////////////////////////////////////////////////////////////////////////////
 Bool_t ttHAnalysis::PassesPreCuts(){
 	if (nTightLepton < 2)          return false;
-
+  if (nTaus != 0)								 return false;
+  
 	for (Int_t i = 0; i < nLooseLepton; i++) {
 		for (Int_t j = i+1; j < nLooseLepton; j++) {
 		  if ((LooseLepton[i].p + LooseLepton[j].p).M() < 12) return false;
