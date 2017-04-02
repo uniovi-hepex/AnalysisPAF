@@ -33,6 +33,9 @@ void DrawPlots(TString chan = "ElMu", TString tag = "0"){
   else if (chan == "4l") {
     cut   = "(TCat == 4)";
   }
+  else if (chan == "All") {
+    cut   = "((TCat == 2 && (TChannel == 1 || TChannel == 2 || TChannel == 3)) || (TCat == 3 && TChannel == 3) || (TCat == 4 && TChannel == 4))"
+  }
 
   DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag);
   DrawPlot("TnFakeableLepton", cut, chan, 5, 0, 5,     "nFakeLep (#)", "nFakeLepton", tag);
