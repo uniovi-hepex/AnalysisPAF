@@ -5,7 +5,12 @@
 Histo* Plot::GetH(TString sample, TString sys, Int_t type){ 
   // Returns a Histo for sample and systematic variation 
   TString pathToMiniTree = path;
-  if(sample.BeginsWith("T2tt")) pathToMiniTree = pathSignal;
+  if     (type == itSignal) pathToMiniTree = pathSignal;
+  else if(type == itData  ) pathToMiniTree = pathData;
+  else if(sample.Contains("/")){
+    pathToMiniTree = sample(0, sample.Last('/')+1);
+    sample = sample(sample.Last('/')+1, sample.Sizeof());
+  }
   Looper* ah = new Looper(pathToMiniTree, treeName, var, cut, chan, nb, x0, xN);
   Histo* h = ah->GetHisto(sample, sys);
   h->SetDirectory(0);
@@ -42,9 +47,10 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
     VTagProcesses.push_back(pr);
     for(i = 0; i < n; i++){
       if(t == VBkgs.at(i)->GetTag()){ // Group backgrounds
-	VBkgs.at(i)->Add((TH1F*) h); 
-	VBkgs.at(i)->SetStyle(); VBkgs.at(i)->SetStatUnc();
-	return;
+        VBkgs.at(i)->Add((TH1F*) h); 
+        VBkgs.at(i)->SetStyle(); VBkgs.at(i)->SetStatUnc();
+        if(verbose) cout << "[Plot::AddToHistos] Added histogram " << p << " to " << pr << " group (" << type << ")" << endl;
+        return;
       }
     }
   }
@@ -53,6 +59,7 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
     for(i = 0; i < n; i++){ // Group systematics
       if(t == VSyst.at(i)->GetTag()){
         VSyst.at(i)->Add(h); VSyst.at(i)->SetStyle();
+        if(verbose) cout << "[Plot::AddToHistos] Added histogram " << p << " to " << pr << " group (" << type << ")" << endl;
         return;
       }
     }
@@ -73,6 +80,7 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
       if(t == VSignals.at(i)->GetTag()){ // Group signals 
         VSignals.at(i)->Add((TH1F*) h); 
         VSignals.at(i)->SetStyle(); VSignals.at(i)->SetStatUnc();
+        if(verbose) cout << "[Plot::AddToHistos] Added histogram " << p << " to " << pr << " group (" << type << ")" << endl;
         return;
       }
     }
@@ -110,6 +118,8 @@ void Plot::GetStack(){ // Sets the histogram hStack
 
 void Plot::SetData(){  // Returns histogram for Data
   if(hData) delete hData;
+  if(gROOT->FindObject("HistoData")) delete gROOT->FindObject("HistoData");
+  
   hData = new Histo(TH1F("HistoData", "Data", nb, x0, xN));
   if(VData.size() < 1) doData = false;
   TString p = "";
@@ -322,17 +332,11 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm){
 
 void Plot::DrawStack(TString tag = "0", bool sav = 0){
   //if(doSys) IncludeBkgSystematics();
-  if (verbose)
-    cout << "[Plot::DrawStack] Drawing stack " << hAllBkg <<  endl;
-
   std::vector<Histo*> VStackedSignals;
 
   TCanvas* c = SetCanvas(); plot->cd(); 
-  if (verbose) cout << "[Plot::DrawStack] Getting stack" << endl;
   GetStack();
-  if (verbose) cout << "[Plot::DrawStack] Setting stack" << endl;
   SetData();
-  if (verbose) cout << "[Plot::DrawStack] Stack set" << endl;
   if(!doData) hData = hAllBkg;
 
   float maxData = hData->GetMax();
@@ -433,6 +437,22 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   VStackedSignals.clear();
 }
 
+void Plot::ScaleProcess(TString pr, Float_t SF){
+  for(Int_t i = 0; i < (Int_t) VBkgs.size(); i++) if(VBkgs.at(i)->GetProcess() == (pr)){
+    VBkgs.at(i)->Scale(SF);
+    VBkgs.at(i)->SetStyle();
+  }
+  for(Int_t i = 0; i < (Int_t) VSignals.size(); i++) if(VSignals.at(i)->GetProcess() == (pr)){
+    VSignals.at(i)->Scale(SF);
+    VSignals.at(i)->SetStyle();
+  }
+  for(Int_t i = 0; i < (Int_t) VSyst.size(); i++) if(VSyst.at(i)->GetProcess().BeginsWith(pr+"_")){
+    VSyst.at(i)->Scale(SF);
+    VSyst.at(i)->SetStyle();
+  }
+    
+
+}
 
 //================================================================================
 // Datacards
@@ -806,7 +826,7 @@ Plot* Plot::NewPlot(TString newVar, TString newCut, TString newChan, Int_t newnb
   p->SetOutputName(outputName);
   p->SetPathSignal(pathSignal);
 
-  p->verbose         = verbose;        
+  p->verbose         = false;        
   p->doSys           = doSys;          
   p->doData          = doData;         
   p->doYieldsInLeg   = doYieldsInLeg;  
@@ -950,7 +970,7 @@ void Plot::PrintYields(TString cuts, TString labels, TString channels, TString o
     }
   }
   t.SetDrawHLines(true); t.SetDrawVLines(true); t.Print();
-  if(options.Contains("tex"))  t.SaveAs("yields.tex");
-  if(options.Contains("html")) t.SaveAs("yields.html");
-  if(options.Contains("txt"))  t.SaveAs("yields.txt");
+  if(options.Contains("tex"))  t.SaveAs(plotFolder + "/" + YieldsTableName + ".tex");
+  if(options.Contains("html")) t.SaveAs(plotFolder + "/" + YieldsTableName + ".html");
+  if(options.Contains("txt"))  t.SaveAs(plotFolder + "/" + YieldsTableName + ".txt");
 }

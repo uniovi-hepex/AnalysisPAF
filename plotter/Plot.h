@@ -196,11 +196,13 @@ public:
   void AddSumHistoSystematicDown(Histo* hsys){hsys->SetStyle(); VSumHistoSystDown.push_back(hsys);}
   void IncludeBkgSystematics();
 
-  void SetPath(TString p){ path = p; if(pathSignal == "") pathSignal = path;}
+  void SetPath(TString p){ path = p; if(pathSignal == "") pathSignal = path; if(pathData == "") pathData = path;}
   void SetPathToHeppyTrees(TString p){ pathToHeppyTrees = p;}
   void SetPathSignal(TString p){ pathSignal = p; }
+  void SetPathData(TString p){ pathData = p; }
   void SetTreeName(TString p){ treeName = p;}
   void SetOutputName(TString p){ outputName = p;}
+  void SetYieldsTalbeName(TString p){ YieldsTableName = p;}
   TString GetOutputName(){ return outputName;}
   TString GetPathToHeppyTrees(){ return pathToHeppyTrees;}
 
@@ -220,13 +222,16 @@ public:
   void SetScaleMax(Float_t s){ ScaleMax = s;}
   void SetScaleLog(Float_t s){ ScaleLog = s;}
   void SetPlotMinimum(Float_t p){ PlotMinimum = p;}
+  void ScaleProcess(TString process, Float_t factor = 1);
 
 protected: 
   TString pathToHeppyTrees = "";
   TString path = "";
   TString pathSignal = "";
+  TString pathData = "";
   TString treeName = "";
   TString outputName = "";
+  TString YieldsTableName = "yields";
   Int_t nSignalSamples;
   
   // Maximum and minimum value of the ratio plot
