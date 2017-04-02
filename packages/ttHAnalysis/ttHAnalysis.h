@@ -64,11 +64,11 @@ class ttHAnalysis : public PAFChainItemSelector {
 		////////////////////////////////////////////////////////////////////////
 		//	Methods
 		//----------------------------------------------------------------------
-		void 	GetTreeVariables();
-    void  SetLeptonBranches();
-    void  SetJetBranches();
-    void  SetEventBranches();
-    void  SetMiniTreeVariables();
+		void 	  GetTreeVariables();
+    void    SetLeptonBranches();
+    void    SetJetBranches();
+    void    SetEventBranches();
+    void    SetMiniTreeVariables();
 
     // Minitree things
     //----------------------------------------------------------------------
@@ -87,11 +87,11 @@ class ttHAnalysis : public PAFChainItemSelector {
 
     //	Filling methods
 		//----------------------------------------------------------------------
-		void 	FillEventHistos();
-		void 	FillYieldHistos();
-		void 	FillKinematicHistos();
-		void 	FillMETHistos();
-		void 	FillMiscHistos();
+		void 	  FillEventHistos();
+		void 	  FillYieldHistos();
+		void 	  FillKinematicHistos();
+		void 	  FillMETHistos();
+		void 	  FillMiscHistos();
 
 		////////////////////////////////////////////////////////////////////////
 		//	   Events selection
@@ -110,8 +110,10 @@ class ttHAnalysis : public PAFChainItemSelector {
     void    GetEventVariables();
     void    InitialiseVariables();
     
-		Float_t getMETLD();
-		Int_t 	getCS();
+		Float_t GetMETLD();
+    Float_t GetHT();
+    Float_t GetMHT();
+		Int_t 	GetCS();
     Int_t   GetnLooseBTags();
 
 	protected:
@@ -157,7 +159,6 @@ class ttHAnalysis : public PAFChainItemSelector {
     Float_t TPtSubSubLeading;
     Int_t   TCS;
     Float_t TMass;
-    Float_t TMETLD;
 
 		//	Input variables and vectors
 		//----------------------------------------------------------------------
@@ -176,6 +177,7 @@ class ttHAnalysis : public PAFChainItemSelector {
 		std::vector<Jet>    Jets;
 
 		Float_t MET;
+    Float_t METLD;
 		Float_t MHT;
 		Float_t HT;
 
