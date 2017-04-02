@@ -134,7 +134,8 @@ void JetSelector::InsideLoop(){
   Jets15.clear();
   nBtagJets = 0;
   Leptons.clear();
-  Leptons    = GetParam<vector<Lepton>>("selLeptons"); 
+  if (gSelection == ittHSelec) Leptons = GetParam<vector<Lepton>>("vetoLeptons");
+  else                         Leptons = GetParam<vector<Lepton>>("selLeptons"); 
 
   // Loop over the jets
   nJet = Get<Int_t>("nJet");
