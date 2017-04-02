@@ -56,15 +56,14 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   Plot* p = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
   p->SetPath(path+"ttH_temp/"); p->SetTreeName("MiniTree");
   p->SetPathSignal(path+"ttH_temp/");
-  p->verbose = false;
+  p->verbose        = false;
+  if (chan == "Elec" || chan == "Muon" || chan == "ElMu") name = name+"_2lSS";
   p->SetVarName(name);
   p->SetPlotFolder(outputpath);
-  p->doStackSignal   = true;
+  p->doStackSignal  = true;
 
-  /*for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
-	  p->AddSample(Signalmc[isample], "ttH", itSignal, kRed);
-  }*/
-  
+  p->SetScaleMax(1.7);
+
   for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
     p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5);
   }
@@ -89,11 +88,14 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   for (UInt_t isample = 0; isample < sizeof(Data)/sizeof(*Data); isample++) {
 	  p->AddSample(Data[isample], "Data", itData);
   }
-
+  /*for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
+	  p->AddSample(Signalmc[isample], "ttH", itSignal, kRed);
+  }*/
+  
   p->AddSample(Signalmc[0], "ttH", itBkg, kRed);
 
   p->doSetLogy = false;
-  if (var == "TnTightLepton") p->PrintYields("","","","textxt");
+  if (var == "TnTightLepton") p->PrintYields("","","","txt");
   p->DrawStack(tag, 1);
   //p->doSetLogy = true;
   //p->DrawStack("0_log", 1);
