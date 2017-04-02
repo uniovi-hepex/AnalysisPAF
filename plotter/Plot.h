@@ -202,7 +202,7 @@ public:
   void SetPathData(TString p){ pathData = p; }
   void SetTreeName(TString p){ treeName = p;}
   void SetOutputName(TString p){ outputName = p;}
-  void SetYieldsTalbeName(TString p){ YieldsTableName = p;}
+  void SetYieldsTableName(TString p){ YieldsTableName = p;}
   TString GetOutputName(){ return outputName;}
   TString GetPathToHeppyTrees(){ return pathToHeppyTrees;}
 
