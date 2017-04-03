@@ -548,9 +548,9 @@ void ttHAnalysis::GetEventVariables() {
   isSS            = GetParam<Bool_t>("isSS");
   
   nLooseBTags     = GetnLooseBTags();
-  METLD           = GetMETLD();
   MHT             = GetMHT();
   HT              = GetHT();
+  METLD           = GetMETLD();
   
   // Set the weight of the event (for MC samples)
   EventWeight 	= 1.;
