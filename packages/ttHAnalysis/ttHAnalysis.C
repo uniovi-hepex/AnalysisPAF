@@ -398,9 +398,11 @@ Bool_t ttHAnalysis::Is3lEvent() {
 		}
 	}
 	
-	for (UInt_t i = 0; i < OSSFpair.size(); i++) {
-		for (UInt_t j = i+1; j < OSSFpair.size(); j++) {
-			if ((OSSFpair[i]+OSSFpair[j]).M() < 140) return false;
+	if (OSSFpair.size() > 1) {
+		for (UInt_t i = 0; i < OSSFpair.size(); i++) {
+			for (UInt_t j = i+1; j < OSSFpair.size(); j++) {
+				if ((OSSFpair[i]+OSSFpair[j]).M() < 140) return false;
+			}
 		}
 	}
 	
@@ -447,10 +449,11 @@ Bool_t ttHAnalysis::Is4lEvent() {
       OSSFpair.push_back(LooseLepton[i].p+LooseLepton[j].p);
 		}
 	}
-	
-	for (UInt_t i = 0; i < OSSFpair.size(); i++) {
-		for (UInt_t j = i+1; j < OSSFpair.size(); j++) {
-			if ((OSSFpair[i]+OSSFpair[j]).M() < 140) return false;
+	if (OSSFpair.size() > 1) {
+		for (UInt_t i = 0; i < OSSFpair.size(); i++) {
+			for (UInt_t j = i+1; j < OSSFpair.size(); j++) {
+				if ((OSSFpair[i]+OSSFpair[j]).M() < 140) return false;
+			}
 		}
 	}
 		
