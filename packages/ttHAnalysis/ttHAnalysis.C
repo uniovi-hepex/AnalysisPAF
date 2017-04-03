@@ -388,29 +388,21 @@ Bool_t ttHAnalysis::Is3lEvent() {
 
 	if (abs(TightLepton[0].charge + TightLepton[1].charge + TightLepton[2].charge) != 1) return false;
 
-  Lepton tmp_L1;
-  Lepton tmp_L2;
-  Lepton tmp_L3;
-  Lepton tmp_L4;
-  OSSF = 0;
+  OSSFpair	  = std::vector<Lepton>();
   for (Int_t i = 0; i < nLooseLepton; i++) {
 		for (Int_t j = i+1; j < nLooseLepton; j++) {
 			if (LooseLepton[i].type != LooseLepton[j].type)      continue;
 			if (LooseLepton[i].charge*LooseLepton[j].charge > 0) continue;
-      OSSF++;
-      if (OSSF == 0) {
-        tmp_L1 = LooseLepton[i];
-        tmp_L2 = LooseLepton[j];
-      }
-      else if (OSSF == 1) {
-        tmp_L3 = LooseLepton[i];
-        tmp_L4 = LooseLepton[j];
-      }
+      OSSFpair.push_back(LooseLepton[i].p+LooseLepton[j].p);
 		}
 	}
-  if (OSSF == 1) {
-    if ((tmp_L1.p+tmp_L2.p+tmp_L3.p+tmp_L4.p).M() < 140) return false;
-  }
+	
+	for (UInt_t i = 0; i < OSSFpair.size(); i++) {
+		for (UInt_t j = i+1; j < OSSFpair.size(); j++) {
+			if ((OSSFpair[i]+OSSFpair[j]).M() < 140) return false;
+		}
+	}
+	
 	return true;
 }
 
@@ -445,29 +437,21 @@ Bool_t ttHAnalysis::Is4lEvent() {
 
 	if (abs(TightLepton[0].charge + TightLepton[1].charge + TightLepton[2].charge) != 1) return false;
 
-  Lepton tmp_L1;
-  Lepton tmp_L2;
-  Lepton tmp_L3;
-  Lepton tmp_L4;
-  OSSF = 0;
+  OSSFpair	  = std::vector<Lepton>();
   for (Int_t i = 0; i < nLooseLepton; i++) {
 		for (Int_t j = i+1; j < nLooseLepton; j++) {
 			if (LooseLepton[i].type != LooseLepton[j].type)      continue;
 			if (LooseLepton[i].charge*LooseLepton[j].charge > 0) continue;
-      OSSF++;
-      if (OSSF == 0) {
-        tmp_L1 = LooseLepton[i];
-        tmp_L2 = LooseLepton[j];
-      }
-      else if (OSSF == 1) {
-        tmp_L3 = LooseLepton[i];
-        tmp_L4 = LooseLepton[j];
-      }
+      OSSFpair.push_back(LooseLepton[i].p+LooseLepton[j].p);
 		}
 	}
-  if (OSSF == 1){
-    if ((tmp_L1.p+tmp_L2.p+tmp_L3.p+tmp_L4.p).M() < 140) return false;
-  }
+	
+	for (UInt_t i = 0; i < OSSFpair.size(); i++) {
+		for (UInt_t j = i+1; j < OSSFpair.size(); j++) {
+			if ((OSSFpair[i]+OSSFpair[j]).M() < 140) return false;
+		}
+	}
+		
 	return true;
 }
 
