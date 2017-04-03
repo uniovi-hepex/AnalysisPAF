@@ -388,8 +388,8 @@ Bool_t ttHAnalysis::Is3lEvent() {
 
 	if (abs(TightLepton[0].charge + TightLepton[1].charge + TightLepton[2].charge) != 1) return false;
   
-	std::vector<Lepton> OSSFpair;
-  OSSFpair	  = std::vector<Lepton>();
+	std::vector<TLorentzVector> OSSFpair;
+  OSSFpair	  = std::vector<TLorentzVector>();
   for (Int_t i = 0; i < nLooseLepton; i++) {
 		for (Int_t j = i+1; j < nLooseLepton; j++) {
 			if (LooseLepton[i].type != LooseLepton[j].type)      continue;
@@ -438,8 +438,8 @@ Bool_t ttHAnalysis::Is4lEvent() {
 
 	if (abs(TightLepton[0].charge + TightLepton[1].charge + TightLepton[2].charge) != 1) return false;
 
-	std::vector<Lepton> OSSFpair;
-	OSSFpair	  = std::vector<Lepton>();
+	std::vector<TLorentzVector> OSSFpair;
+	OSSFpair	  = std::vector<TLorentzVector>();
   for (Int_t i = 0; i < nLooseLepton; i++) {
 		for (Int_t j = i+1; j < nLooseLepton; j++) {
 			if (LooseLepton[i].type != LooseLepton[j].type)      continue;
