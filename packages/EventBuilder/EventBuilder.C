@@ -341,13 +341,13 @@ Bool_t EventBuilder::TrigElMu(){
 
 Bool_t EventBuilder::Trig3l4l() {
   Bool_t pass = false;
-  if(gIsData) {
-    if (gIsSingleMuon) ;
-    else if (gIsSingleElec) ;
-    else if (gIsDoubleMuon) ;
-    else if (gIsDoubleEG) ;
-    else if (gIsMuonEG) ;
-  }
+  //if(gIsData) {
+  //  if (gIsSingleMuon) ;
+  //  else if (gIsSingleElec) ;
+  //  else if (gIsDoubleMuon) ;
+  //  else if (gIsDoubleEG) ;
+  //  else if (gIsMuonEG) ;
+  //}
   pass = PassesThreelFourlTrigger();
   return pass;
 }
