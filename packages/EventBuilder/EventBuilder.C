@@ -171,8 +171,8 @@ Bool_t EventBuilder::PassesThreelFourlTrigger() {
             Get<Int_t>("HLT_BIT_HLT_Ele27_WPTight_Gsf_v") ||
             Get<Int_t>("HLT_BIT_HLT_Ele25_eta2p1_WPTight_Gsf_v") ||
             Get<Int_t>("HLT_BIT_HLT_Ele27_eta2p1_WPLoose_Gsf_v"));
-    return pass;
   }
+  return pass;
 }
 
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -341,6 +341,13 @@ Bool_t EventBuilder::TrigElMu(){
 
 Bool_t EventBuilder::Trig3l4l() {
   Bool_t pass = false;
+  if(gIsData) {
+    if (gIsSingleMuon) ;
+    else if (gIsSingleElec) ;
+    else if (gIsDoubleMuon) ;
+    else if (gIsDoubleEG) ;
+    else if (gIsMuonEG) ;
+  }
   pass = PassesThreelFourlTrigger();
   return pass;
 }
