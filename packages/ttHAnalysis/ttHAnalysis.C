@@ -387,7 +387,8 @@ Bool_t ttHAnalysis::Is3lEvent() {
 	}
 
 	if (abs(TightLepton[0].charge + TightLepton[1].charge + TightLepton[2].charge) != 1) return false;
-
+  
+	std::vector<Lepton> OSSFpair;
   OSSFpair	  = std::vector<Lepton>();
   for (Int_t i = 0; i < nLooseLepton; i++) {
 		for (Int_t j = i+1; j < nLooseLepton; j++) {
