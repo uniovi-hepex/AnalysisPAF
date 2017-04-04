@@ -5,6 +5,8 @@ R__LOAD_LIBRARY(Plot.C+)
 #include "Histo.h"
 #include "Looper.h"
 #include "Plot.h"
+#include <iostream>
+#include <fstream>
 
 const TString Signalmc[1]      = {"TTHNonbb"};                   // ttH
 const TString TTWmc[2] 	       = {"TTWToLNu1", "TTWToQQ"};			 // TTW
@@ -16,11 +18,9 @@ const TString DYmc[2]          = {"DYJetsToLL_M50_aMCatNLO", "DYJetsToLL_M10to50
 const TString DiTriCuatrimc[13]= {"WGToLNuG", "ZGTo2LG", "WpWpJJ", "WWW", "WWZ", "WZZ", "ZZZ", "WW", "tZq_ll", "TTTT", "WZTo3LNu_amcatnlo", "WWTo2L2Nu", "ZZ"}; // Di&Tri&Cuatriboson
 const TString Data[5]          = {"MuonEG", "SingleMuon", "SingleElec", "DoubleEG", "DoubleMuon"}; // Data samples
 
-const TString path             = "/nfs/fanae/user/vrbouza/Documents/TFG/AnalysisPAF/";
-const TString outputpath       = "/nfs/fanae/user/vrbouza/www/Results/";
-
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name = "", TString tag = "0");
+
 
 void DrawPlots(TString chan = "ElMu", TString tag = "0"){
   TString cut = "((TCat == 2 && (TChannel == 1 || TChannel == 2 || TChannel == 3)) || (TCat == 3 && TChannel == 4) || (TCat == 4 && TChannel == 5))";
@@ -42,7 +42,9 @@ void DrawPlots(TString chan = "ElMu", TString tag = "0"){
   else if (chan == "4l") {
     cut   = "(TCat == 4 && TChannel == 5)";
   }
-
+  
+ 
+  
   DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag);
   DrawPlot("TnFakeableLepton", cut, chan, 5, 0, 5,     "nFakeLep (#)", "nFakeLepton", tag);
   DrawPlot("TnLooseLepton",    cut, chan, 5, 0, 5,     "nLooseLep (#)", "nLooseLepton", tag);
@@ -63,12 +65,40 @@ void DrawPlots(TString chan = "ElMu", TString tag = "0"){
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name, TString tag = "0"){
   Plot* p = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
-  p->SetPath(path+"ttH_temp/"); p->SetTreeName("MiniTree");
-  p->SetPathSignal(path+"ttH_temp/");
+  // TString path                     = "/nfs/fanae/user/vrbouza/Documents/TFG/AnalysisPAF/";
+  TString   outputpath             = "/nfs/fanae/user/vrbouza/www/Results/";
+  string    cline;
+  ifstream  gitinfo("../.git/HEAD");
+  getline(gitinfo,cline);
+  TString   githead(cline);
+  string    cpath = __FILE__ ;
+  TString   path(cpath);
+  path            = path(0,path.Index("AnalysisPAF/")+12);
+  
+  path += "ttH_temp/";
+  p->SetTreeName("MiniTree");
+  
+  if (githead.Contains("lepidcomparison")) {
+    cout << "Branch LEPIDCOMPARISON chosen" << endl;
+    outputpath  += "lepidcomparison/";
+    path        += "lepidcomparison/";
+    if (tag == "top")       path += "top/";
+    else if (tag == "Stop") path += "Stop/";
+    else if (tag == "ttH")  path += "ttH/";
+  }
+  else if (githead.Contains("random")) {
+    cout << "Branch RANDOM chosen" << endl;
+    path        += "random/";
+    outputpath  += "random/";
+  }
+  else cout << "Branch MASTER chosen" << endl;
+  
+  p->SetPlotFolder(outputpath);
+  p->SetPath(path);
+  p->SetPathSignal(path);
   p->verbose        = false;
   if (chan == "Elec" || chan == "Muon" || chan == "ElMu") name = name+"_2lSS";
   p->SetVarName(name);
-  p->SetPlotFolder(outputpath);
   p->doStackSignal  = true;
 
   p->SetScaleMax(1.7);
