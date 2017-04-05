@@ -49,9 +49,13 @@ if [ "$1" == "an" ]; then
 		echo "%%%%%> MC SAMPLES FOR CONTROL REGIONS"
         root -l -b -q "RunAnalyserPAF.C(\"TTJets_aMCatNLO\"						         , \"$sel\", 45)" 
         # 50 - 69s, 64 - 74s, 64 - 74s, 40 - 76s
+        root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M50_MLM_ext & DYJetsToLL_M50_MLM_ext2\"				     , \"$sel\", 60)" 
+        root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M5to50_MLM\"              , \"$sel\", 25)" 
+        # 25 - 21s, 30 - 22s, 20 - 22s 
         root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M50_aMCatNLO\"				     , \"$sel\", 60)" 
         # 64 - 312s, 60 - 318s 
-        root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M10to50_aMCatNLO & DYJetsToLL_M10to50_aMCatNLO_ext\" , \"$sel\", 25)" # 25 - 21s, 30 - 22s, 20 - 22s 
+        root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M10to50_aMCatNLO & DYJetsToLL_M10to50_aMCatNLO_ext\" , \"$sel\", 25)" 
+        # 25 - 21s, 30 - 22s, 20 - 22s 
         root -l -b -q "RunAnalyserPAF.C(\"WJetsToLNu_aMCatNLO\"						     , \"$sel\", 25)"
         root -l -b -q "RunAnalyserPAF.C(\"TW & TW_ext\"								         , \"$sel\", 25)" 
         # 25 - 24s, 30 - 26s, 20 - 25s 
@@ -105,6 +109,8 @@ if [ "$1" == "an" ]; then
 
 		echo "%%%%%> MC SAMPLES FOR CONTROL REGIONS"
         root -l -b -q "RunAnalyserPAF.C(\"TTJets_aMCatNLO\"						         , \"$sel\", $2)"
+        root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M50_MLM_ext & DYJetsToLL_M50_MLM_ext2\"				      , \"$sel\", $2)" 
+        root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M5to50_MLM\"              , \"$sel\", $2)" 
         root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M50_aMCatNLO\"				     , \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M10to50_aMCatNLO & DYJetsToLL_M10to50_aMCatNLO_ext\" , \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"WJetsToLNu_aMCatNLO\"						     , \"$sel\", $2)"
