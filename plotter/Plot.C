@@ -49,7 +49,7 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
       if(t == VBkgs.at(i)->GetTag()){ // Group backgrounds
         VBkgs.at(i)->Add((TH1F*) h); 
         VBkgs.at(i)->SetStyle(); VBkgs.at(i)->SetStatUnc();
-        if(verbose) cout << "[Plot::AddToHistos] Added histogram " << p << " to " << pr << " group (" << type << ")" << endl;
+        if(verbose) cout << "[Plot::AddToHistos] Added histogram " << h->GetName() << " to " << h->GetTag() << " group (" << type << ")" << endl;
         return;
       }
     }
@@ -59,7 +59,7 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
     for(i = 0; i < n; i++){ // Group systematics
       if(t == VSyst.at(i)->GetTag()){
         VSyst.at(i)->Add(h); VSyst.at(i)->SetStyle();
-        if(verbose) cout << "[Plot::AddToHistos] Added histogram " << p << " to " << pr << " group (" << type << ")" << endl;
+        if(verbose) cout << "[Plot::AddToHistos] Added histogram " << h->GetName() << " to " << h->GetTag() << " group (" << type << ")" << endl;
         return;
       }
     }
@@ -80,7 +80,7 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
       if(t == VSignals.at(i)->GetTag()){ // Group signals 
         VSignals.at(i)->Add((TH1F*) h); 
         VSignals.at(i)->SetStyle(); VSignals.at(i)->SetStatUnc();
-        if(verbose) cout << "[Plot::AddToHistos] Added histogram " << p << " to " << pr << " group (" << type << ")" << endl;
+        if(verbose) cout << "[Plot::AddToHistos] Added histogram " << h->GetName() << " to " << h->GetTag() << " group (" << type << ")" << endl;
         return;
       }
     }
@@ -198,7 +198,14 @@ void Plot::GroupSystematics(){
 // SetLegend()
 // TCanvas* SetCanvas()
 // void DrawStack(TString tag = "0", bool sav = 0)
+Float_t Plot::GetData(){
+  if(!hData) SetData();
+  return hData->GetYield();
+}
+
+
 Float_t Plot::GetYield(TString pr, TString systag){
+  if(pr == "Data") return GetData();
   Float_t val = 0; Float_t sys = 0; TString ps; 
   Int_t nSyst = VSyst.size();
   Int_t nBkg = VBkgs.size();
@@ -212,7 +219,8 @@ Float_t Plot::GetYield(TString pr, TString systag){
     }
     return 0;
   }
-  else{
+  else{  // ATENTOOOOOO --> Comparar variación con nominal y coger la mayor!
+    Float_t nom = GetYield(pr, "0");
     for(int k = 0; k < nSyst; k++){ // Systematics in k
       ps = VSyst.at(k)->GetTag();
       if(!ps.BeginsWith(pr))   continue;

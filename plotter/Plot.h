@@ -167,10 +167,12 @@ public:
   TString GetChan(){ return chan;}
   TString GetSignal(){ return signal;}
   Float_t GetLumi(){ return Lumi;}
+  Float_t GetLumiUnc(){ return sys_lumi;}
   void SetVar(TString variable){ var = variable; if(varname == "") varname = variable;}
   void SetVarName(TString variable){ varname = variable;}
   void SetChan(TString ch){chan = ch;}
   void SetLumi(Float_t lum){Lumi = lum;} 
+  void SetLumiUnc(Float_t lum){sys_lumi = lum;} 
   void SetPlotFolder(TString f){plotFolder = f;} 
   void SetLimitFolder(TString f){limitFolder = f;}   
 	void SetCut(TString cuts){cut = (cuts);}
@@ -213,6 +215,7 @@ public:
   void PrintYields(TString cuts = "", TString labels = "", TString channels = "", TString options = "");
 	void PrintSystYields();
 	Float_t GetYield(TString pr = "ttbar", TString systag = "0");
+  Float_t GetData();
   Float_t GetTotalSystematic(TString pr);
   Int_t GetColorOfProcess(TString pr);
   Plot* NewPlot(TString newVar = "", TString newCut = "", TString newChan = "", Int_t newnbins = -1, Float_t newbin0 = -999, Float_t newbinN = -999, TString newtitle = "", TString newXtitle = "");
