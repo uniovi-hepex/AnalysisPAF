@@ -161,11 +161,12 @@ void TopAnalysis::InsideLoop(){
           }
         }
       }
-      if (gChannel == 1 && (TNJets > 0 || TNJetsJESUp > 0 || TNJetsJESDown > 0)){
-	if (TNBtags > 0 || TNBtagsUp > 0 || TNBtagsDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0){
-	  fTree->Fill();
-	}
+      if(gChannel == 1){
+      // if (gChannel == 1 && (TNJets > 0 || TNJetsJESUp > 0 || TNJetsJESDown > 0)){
+      //if (TNBtags > 0 || TNBtagsUp > 0 || TNBtagsDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0){
+      fTree->Fill();
       }
+      //  }
     }   
   }
 }
@@ -192,6 +193,7 @@ void TopAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector
   else if(selLeptons.at(0).isElec && selLeptons.at(1).isElec) gChannel = iElec;
   if(TNSelLeps > 1) TMll = (selLeptons.at(0).p + selLeptons.at(1).p).M();      
   TChannel = gChannel;
+  TIsSS = isSS;
   gChannel = gChannel -1;
   
   bool TIsOSDilep = false;
@@ -398,6 +400,7 @@ void TopAnalysis::SetLeptonVariables(){
   fTree->Branch("TLep_E" ,     TLep_E ,     "TLep_E[TNSelLeps]/F");
   fTree->Branch("TLep_Charge",  TLep_Charge, "TLep_Charge[TNSelLeps]/F");
   fTree->Branch("TChannel",      &TChannel,      "TChannel/I");
+  fTree->Branch("TIsSS",      &TIsSS,      "TIsSS/B");
 }
 
 void TopAnalysis::SetJetVariables(){

@@ -48,12 +48,12 @@ TString CraftVar(TString varstring, TString sys){
 
 TString CraftFormula(TString cuts, TString chan, TString sys){
   TString schan = ("1");
-  if     (chan == "Elec")  schan = ("(TChannel == 3)");
-  else if(chan == "Muon")  schan = ("(TChannel == 2)");
-  else if(chan == "ElMu")  schan = ("(TChannel == 1)");
-  else if(chan == "SF" || chan == "sameF") schan = ("(TChannel != 1)");
-  else if(chan == "3l") schan = ("(TChannel == 4)");
-  else if(chan == "4l") schan = ("(TChannel == 5)");
+  if     (chan == "Elec")  schan = (Form("(TChannel == %i)", iElec));
+  else if(chan == "Muon")  schan = (Form("(TChannel == %i)", iMuon));
+  else if(chan == "ElMu")  schan = (Form("(TChannel == %i)", iElMu));
+  else if(chan == "SF" || chan == "sameF") schan = (Form("(TChannel != %i)", iElMu));
+  else if(chan == "3l") schan = (Form("(TChannel == %i)", iTriLep));
+  else if(chan == "4l") schan = (Form("(TChannel == %i)", iFourLep));
   else schan = ("1");
 
   TString weight = TString("TWeight");
