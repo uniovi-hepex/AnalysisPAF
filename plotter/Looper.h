@@ -14,6 +14,7 @@
 #include "Histo.h"
 #include "TSystem.h"
 
+enum eChannel{iNoChannel, iElMu, iMuon, iElec, iTriLep, iFourLep, nTotalDefinedChannels};
 
 TString CraftFormula(TString var, TString cut, TString chan, TString sys);
 TString CraftVar(TString varstring, TString sys);
