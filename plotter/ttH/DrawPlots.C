@@ -13,10 +13,11 @@ const TString TTWmc[2] 	       = {"TTWToLNu1", "TTWToQQ"};			 // TTW
 const TString TTZmc[2] 	       = {"TTZToLLNuNu", "TTZToQQ"};	   // TTZ
 const TString TTbarmc[2] 	     = {"TTGJets", "TTJets_aMCatNLO"}; // TTbar
 const TString WJetsmc[1]       = {"WJetsToLNu_aMCatNLO"};        // WJets
-const TString STmc[6]    	     = {"TW", "TbarW", "T_tch", "Tbar_tch", "TToLeptons_sch_amcatnlo","TGJets"}; // ST
-const TString DYmc[2]          = {"DYJetsToLL_M50_aMCatNLO", "DYJetsToLL_M10to50_aMCatNLO"};               // DY
+const TString STmc[6]    	     = {"TW", "TbarW", "T_tch", "Tbar_tch", "TToLeptons_sch_amcatnlo","TGJets"};// ST
+const TString DYmc[2]          = {"DYJetsToLL_M50_MLM", "DYJetsToLL_M5to50_MLM"};                         // DY at LO (comment/uncomment as desired)
+const TString DYmc[2]          = {"DYJetsToLL_M50_aMCatNLO", "DYJetsToLL_M10to50_aMCatNLO"};              // DY at NLO (comment/uncomment as desired)
 const TString DiTriCuatrimc[13]= {"WGToLNuG", "ZGTo2LG", "WpWpJJ", "WWW", "WWZ", "WZZ", "ZZZ", "WW", "tZq_ll", "TTTT", "WZTo3LNu_amcatnlo", "WWTo2L2Nu", "ZZ"}; // Di&Tri&Cuatriboson
-const TString Data[5]          = {"MuonEG", "SingleMuon", "SingleElec", "DoubleEG", "DoubleMuon"}; // Data samples
+const TString Data[5]          = {"MuonEG", "SingleMuon", "SingleElec", "DoubleEG", "DoubleMuon"};        // Data samples
 UInt_t counter = 0;
 
 
@@ -25,24 +26,24 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 
 
 void DrawPlots(TString chan = "ElMu", TString tag = "0"){
-  TString cut = "((TCat == 2 && (TChannel == 1 || TChannel == 2 || TChannel == 3)) || (TCat == 3 && TChannel == 4) || (TCat == 4 && TChannel == 5))";
+  TString cut = "((TCat == 2 && (TChannel == iElec || TChannel == iMuon || TChannel == iElMu)) || (TCat == 3 && TChannel == iTriLep) || (TCat == 4 && TChannel == iFourLep))";
   if (chan == "2lSS") {
-    cut   = "(TCat == 2 && (TChannel == 1 || TChannel == 2 || TChannel == 3))";
+    cut   = "(TCat == 2 && (TChannel == iElec || TChannel == iMuon || TChannel == iElMu))";
   }
   if (chan == "Elec") {
-    cut   = "(TCat == 2 && TChannel == 3)";
+    cut   = "(TCat == 2 && TChannel == iElMu)";
   }
   if (chan == "Muon") {
-    cut   = "(TCat == 2 && TChannel == 2)";
+    cut   = "(TCat == 2 && TChannel == iMuon)";
   }
   if (chan == "ElMu") {
-    cut   = "(TCat == 2 && TChannel == 1)";
+    cut   = "(TCat == 2 && TChannel == iElec)";
   }
   else if (chan == "3l") {
-    cut   = "(TCat == 3 && TChannel == 4)";
+    cut   = "(TCat == 3 && TChannel == iTriLep)";
   }
   else if (chan == "4l") {
-    cut   = "(TCat == 4 && TChannel == 5)";
+    cut   = "(TCat == 4 && TChannel == iFourLep)";
   }
   
  
