@@ -17,6 +17,8 @@ const TString STmc[6]    	     = {"TW", "TbarW", "T_tch", "Tbar_tch", "TToLepton
 const TString DYmc[2]          = {"DYJetsToLL_M50_aMCatNLO", "DYJetsToLL_M10to50_aMCatNLO"};               // DY
 const TString DiTriCuatrimc[13]= {"WGToLNuG", "ZGTo2LG", "WpWpJJ", "WWW", "WWZ", "WZZ", "ZZZ", "WW", "tZq_ll", "TTTT", "WZTo3LNu_amcatnlo", "WWTo2L2Nu", "ZZ"}; // Di&Tri&Cuatriboson
 const TString Data[5]          = {"MuonEG", "SingleMuon", "SingleElec", "DoubleEG", "DoubleMuon"}; // Data samples
+UInt_t counter = 0;
+
 
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name = "", TString tag = "0");
@@ -78,7 +80,10 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   path += "ttH_temp/";
   
   if (githead.Contains("lepidcomparison")) {
-    cout << "Branch LEPIDCOMPARISON chosen" << endl;
+    if (counter == 0){
+      cout << "Branch LEPIDCOMPARISON chosen" << endl;
+      counter = 1;
+    }
     outputpath  += "lepidcomparison/";
     path        += "lepidcomparison/";
     if (tag == "top")       path += "top/";
@@ -86,11 +91,19 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     else if (tag == "ttH")  path += "ttH/";
   }
   else if (githead.Contains("random")) {
-    cout << "Branch RANDOM chosen" << endl;
+    if (counter == 0) {
+      cout << "Branch RANDOM chosen" << endl;
+      conter = 1;
+    }
     path        += "random/";
     outputpath  += "random/";
   }
-  else cout << "Branch MASTER chosen" << endl;
+  else {
+    if (counter == 0) {
+      cout << "Branch MASTER chosen" << endl;
+      counter = 1;
+    }
+  }
   
   p->SetPlotFolder(outputpath);
   p->SetPath(path);
@@ -135,7 +148,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample(Signalmc[0], "ttH", itBkg, kRed);
 
   p->doSetLogy = false;
-  p->SetYieldsTableName("Yields_"+chan);
+  p->SetYieldsTableName("Yields_"+chan+"_"+tag);
   if (var == "TnTightLepton") p->PrintYields("","","","txt");
   p->DrawStack(tag, 1);
   //p->doSetLogy = true;
