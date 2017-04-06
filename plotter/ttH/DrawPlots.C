@@ -19,6 +19,7 @@ const TString DYmc[2]          = {"DYJetsToLL_M50_aMCatNLO", "DYJetsToLL_M10to50
 const TString DiTriCuatrimc[13]= {"WGToLNuG", "ZGTo2LG", "WpWpJJ", "WWW", "WWZ", "WZZ", "ZZZ", "WW", "tZq_ll", "TTTT", "WZTo3LNu_amcatnlo", "WWTo2L2Nu", "ZZ"}; // Di&Tri&Cuatriboson
 const TString Data[5]          = {"MuonEG", "SingleMuon", "SingleElec", "DoubleEG", "DoubleMuon"};        // Data samples
 UInt_t counter = 0;
+enum eChannel{iNoChannel, iElMu, iMuon, iElec, iTriLep, iFourLep, nTotalDefinedChannels};
 
 
 
@@ -94,7 +95,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   else if (githead.Contains("random")) {
     if (counter == 0) {
       cout << "Branch RANDOM chosen" << endl;
-      conter = 1;
+      counter = 1;
     }
     path        += "random/";
     outputpath  += "random/";
