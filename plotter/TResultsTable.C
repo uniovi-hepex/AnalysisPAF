@@ -123,8 +123,8 @@ void TResultsTable::Print(ETResultsTableOutputFormat format, ostream& os) const 
     if (fDrawHLines) {
       singleline = TString().Prepend('-',firstcolw); 
       for (unsigned int i = 0; i < fNColumns; i++) {
-	singleline += "+-";
-	singleline += TString().Prepend('-',fColumnWidth);
+        singleline += "+-";
+        singleline += TString().Prepend('-',fColumnWidth);
       }
     }
     singleline += "+\n";
@@ -194,11 +194,16 @@ void TResultsTable::Print(ETResultsTableOutputFormat format, ostream& os) const 
     for (unsigned int j = 0; j < GetNColumns(); j++) {
       os << cellstart;
       os.width(colwidth);
-      os << fRows[i][j];
+      if     (formatNum.Contains("fix") ) os << KeepAllErrorDecimals(fRows[i][j], fRows[i][j].Error());
+      else if(formatNum.Contains("auto")) os << KeepOneDecimal(      fRows[i][j], fRows[i][j].Error());
+      else    os << Form(formatNum,fRows[i][j]);
 
       if (fWithErrors) {
-	os.width(colwidth);
-	os << plusminus << fRows[i][j].Error();
+        os.width(colwidth);
+        os << plusminus; 
+        if     (formatNum.Contains("fix") ) os << KeepAllErrorDecimals(fRows[i][j].Error(), 0);
+        else if(formatNum.Contains("auto")) os << KeepOneDecimal(      fRows[i][j].Error(), 0);
+        else os << Form(formatNum, fRows[i][j].Error());
       }
       
       if (format != kLaTeX || j != GetNColumns()-1)
@@ -230,5 +235,37 @@ void TResultsTable::SaveAs(const TString& filename) const {
     std::cerr << "         Saving as plain text." << std::endl;
     Print(kPlain, os);
   }  
+}
+
+TString KeepAllErrorDecimals(Float_t number, Float_t error){
+  Int_t d = 6;
+  TString f;
+  if(error == 0) f = Form("%1.6f", number);
+  else           f = Form("%1.6f", error);
+  for(Int_t i = f.Sizeof()-2; i > f.First('.'); i--){
+    if(f[i] == '0') d--;
+    else break;
+  }
+  TString format = TString("%1.") + TString(Form("%i", d)) + TString("f");
+  return Form(format, number);
+}
+
+TString KeepOneDecimal(Float_t number, Float_t error){
+  if(number < 0.000001) return TString(Form("%g", number));
+  Int_t d = 1;
+  TString f;
+  if     (error == 0){
+    if(number > 0) return(Form("%1.0f", number));
+    else f = Form("%1.6f", number);
+  }
+  else if(error > 0.) return(Form("%1.0f", number));
+  else                f = Form("%1.6f", error);
+  for(Int_t i = f.First('.') +1; i < f.Sizeof(); i++){
+    if(f[i] == '0') d++;
+    else break;
+  }
+  if(d == 7) d = 0;
+  TString format = TString("%1.") + TString(Form("%i", d)) + TString("f");
+  return Form(format, number);
 }
 

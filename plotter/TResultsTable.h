@@ -6,6 +6,9 @@
 
 enum ETResultsTableOutputFormat {kPlain, kLaTeX, kHTML, kCSV};
 
+TString KeepAllErrorDecimals(Float_t number, Float_t error = 0);
+TString KeepOneDecimal(Float_t number, Float_t error = 0);
+
 class TResultsTableContent {
  public:
   TResultsTableContent(double content = 0) {fContent = content;}
@@ -108,12 +111,12 @@ class TResultsTable {
   TString GetRowTitleHeader() const { return fRowTitleHeader;}
   //
   ////////////////////////////////////////////////////////////////////////////
-
+  void SetFormatNum(TString k){ formatNum = k;}
 
  protected:
   TString FixWidth(const TString& s, unsigned int width=11, bool prepend = true) const;
 
-
+  TString formatNum = TString("%1.2f");
   unsigned int fNColumns; //Number of columns
   unsigned int fNRows;    //Number of rows
 
