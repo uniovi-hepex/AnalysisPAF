@@ -19,7 +19,6 @@ const TString DYmc[2]          = {"DYJetsToLL_M50_MLM", "DYJetsToLL_M5to50_MLM"}
 const TString DiTriCuatrimc[13]= {"WGToLNuG", "ZGTo2LG", "WpWpJJ", "WWW", "WWZ", "WZZ", "ZZZ", "WW", "tZq_ll", "TTTT", "WZTo3LNu_amcatnlo", "WWTo2L2Nu", "ZZ"}; // Di&Tri&Cuatriboson
 const TString Data[5]          = {"MuonEG", "SingleMuon", "SingleElec", "DoubleEG", "DoubleMuon"};        // Data samples
 UInt_t counter = 0;
-//enum eChannel{iNoChannel, iElMu, iMuon, iElec, iTriLep, iFourLep, nTotalDefinedChannels};
 
 
 
@@ -27,24 +26,24 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 
 
 void DrawPlots(TString chan = "ElMu", TString tag = "0"){
-  TString cut = "((TCat == 2 && (TChannel == iElec || TChannel == iMuon || TChannel == iElMu)) || (TCat == 3 && TChannel == iTriLep) || (TCat == 4 && TChannel == iFourLep))";
+  TString cut = "((TCat == 2 && (TChannel == 1 || TChannel == 2 || TChannel == 3)) || (TCat == 3 && TChannel == 4) || (TCat == 4 && TChannel == 5))";
   if (chan == "2lSS") {
-    cut   = "(TCat == 2 && (TChannel == iElec || TChannel == iMuon || TChannel == iElMu))";
+    cut   = "(TCat == 2 && (TChannel == 1 || TChannel == 2 || TChannel == 3))";
   }
   if (chan == "Elec") {
-    cut   = "(TCat == 2 && TChannel == iElMu)";
+    cut   = "(TCat == 2 && TChannel == 3)";
   }
   if (chan == "Muon") {
-    cut   = "(TCat == 2 && TChannel == iMuon)";
+    cut   = "(TCat == 2 && TChannel == 2)";
   }
   if (chan == "ElMu") {
-    cut   = "(TCat == 2 && TChannel == iElec)";
+    cut   = "(TCat == 2 && TChannel == 1)";
   }
   else if (chan == "3l") {
-    cut   = "(TCat == 3 && TChannel == iTriLep)";
+    cut   = "(TCat == 3 && TChannel == 4)";
   }
   else if (chan == "4l") {
-    cut   = "(TCat == 4 && TChannel == iFourLep)";
+    cut   = "(TCat == 4 && TChannel == 5)";
   }
   
  
