@@ -82,7 +82,9 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   
   if (githead.Contains("lepidcomparison")) {
     if (counter == 0){
+      cout << endl;
       cout << "Branch LEPIDCOMPARISON chosen" << endl;
+      cout << endl;
       counter = 1;
     }
     outputpath  += "lepidcomparison/";
@@ -93,7 +95,9 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   }
   else if (githead.Contains("random")) {
     if (counter == 0) {
+      cout << endl;
       cout << "Branch RANDOM chosen" << endl;
+      cout << endl;
       counter = 1;
     }
     path        += "random/";
@@ -101,7 +105,9 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   }
   else {
     if (counter == 0) {
+      cout << endl;
       cout << "Branch MASTER chosen" << endl;
+      cout << endl;
       counter = 1;
     }
   }
