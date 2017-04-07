@@ -537,12 +537,12 @@ void ttHAnalysis::GetEventVariables() {
   nLooseLepton    = GetParam<Int_t>("nLooseLeptons");
   nTaus           = GetParam<Int_t>("nSelTaus");
   nJets           = GetParam<Int_t>("nSelJets");
-  nMediumBTags    = GetParam<Int_t>("nSelBJets");
 
   gChannel        = GetParam<Int_t>("gChannel");
   passTrigger     = GetParam<Bool_t>("passTrigger");
   isSS            = GetParam<Bool_t>("isSS");
   
+  nMediumBTags    = GetnMediumBTags();
   nLooseBTags     = GetnLooseBTags();
   MHT             = GetMHT();
   HT              = GetHT();
@@ -587,6 +587,14 @@ Int_t ttHAnalysis::GetCS() {
 		cs += TightLepton[i].charge;
 	}
 	return cs;
+}
+
+Int_t ttHAnalysis::GetnMediumBTags(){
+  Int_t nmediumbtag = 0;
+  for(UInt_t i = 0; i < Jets.size(); i++) {
+    if (Jets[i].csv > 0.8484) nmediumbtag++;
+  }
+  return nmediumbtag;
 }
 
 Int_t ttHAnalysis::GetnLooseBTags(){
