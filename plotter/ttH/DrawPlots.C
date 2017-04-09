@@ -147,7 +147,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 	  p->AddSample(DiTriCuatrimc[isample], "Di&Tri&Cuatriboson", itBkg, kAzure-9,1,"stat");
   }
   for (UInt_t isample = 0; isample < sizeof(Data)/sizeof(*Data); isample++) {
-	  p->AddSample(Data[isample], "Data", itData,1,"stat");
+	  p->AddSample(Data[isample], "Data", itData,kBlack,1,"stat");
   }
   /*for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
 	  p->AddSample(Signalmc[isample], "ttH", itSignal, kRed);
