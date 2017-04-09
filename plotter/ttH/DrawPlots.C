@@ -126,33 +126,33 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->SetRatioMax(2);
   
   for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
-    p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5);
+    p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5,1,"stat");
   }
   for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
-	  p->AddSample(TTZmc[isample], "TTZ", itBkg, kSpring+2);
+	  p->AddSample(TTZmc[isample], "TTZ", itBkg, kSpring+2,1,"stat");
   }
   for (UInt_t isample = 0; isample < sizeof(TTbarmc)/sizeof(*TTbarmc); isample++) {
-	  p->AddSample(TTbarmc[isample], "TTbar", itBkg, kSpring+10);
+	  p->AddSample(TTbarmc[isample], "TTbar", itBkg, kSpring+10,1,"stat");
   }
   for (UInt_t isample = 0; isample < sizeof(WJetsmc)/sizeof(*WJetsmc); isample++) {
-	  p->AddSample(WJetsmc[isample], "WJets", itBkg, kViolet+10);
+	  p->AddSample(WJetsmc[isample], "WJets", itBkg, kViolet+10,1,"stat");
   }
   for (UInt_t isample = 0; isample < sizeof(STmc)/sizeof(*STmc); isample++) {
-	  p->AddSample(STmc[isample], "ST", itBkg, kYellow);
+	  p->AddSample(STmc[isample], "ST", itBkg, kYellow,1,"stat");
   }
   for (UInt_t isample = 0; isample < sizeof(DYmc)/sizeof(*DYmc); isample++) {
-	  p->AddSample(DYmc[isample], "DY", itBkg, kOrange);
+	  p->AddSample(DYmc[isample], "DY", itBkg, kOrange,1,"stat");
   }
   for (UInt_t isample = 0; isample < sizeof(DiTriCuatrimc)/sizeof(*DiTriCuatrimc); isample++) {
-	  p->AddSample(DiTriCuatrimc[isample], "Di&Tri&Cuatriboson", itBkg, kAzure-9);
+	  p->AddSample(DiTriCuatrimc[isample], "Di&Tri&Cuatriboson", itBkg, kAzure-9,1,"stat");
   }
   for (UInt_t isample = 0; isample < sizeof(Data)/sizeof(*Data); isample++) {
-	  p->AddSample(Data[isample], "Data", itData);
+	  p->AddSample(Data[isample], "Data", itData,1,"stat");
   }
   /*for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
 	  p->AddSample(Signalmc[isample], "ttH", itSignal, kRed);
   }*/
-  p->AddSample(Signalmc[0], "ttH", itBkg, kRed);
+  p->AddSample(Signalmc[0], "ttH", itBkg, kRed,1,"stat");
 
   p->doSetLogy = false;
   p->SetYieldsTableName("Yields_"+chan+"_"+tag);
