@@ -5,6 +5,7 @@
 //#include "BTagEfficienciesTTbarSummer12.C" // Change this to your sample efficiency
 #include "BTagEfficienciesTTbarSummer15.C" // Change this to your sample efficiency
 #include "FastSimCorrectionFactorsSummer12.C" // Change this to your sample efficiency
+#include "TSystem.h"
 
 using namespace std;
 
@@ -12,7 +13,7 @@ BTagSFUtil::BTagSFUtil(string MeasurementType, string BTagAlgorithm, TString Ope
 
   rand_ = new TRandom3(Seed);
 
-  string CSVFileName = "./packages/BTagSFUtil/" + BTagAlgorithm + ".csv";
+  string CSVFileName = (string)gSystem->ExpandPathName("$PWD") + "/packages/BTagSFUtil/" + BTagAlgorithm + ".csv";
   const BTagCalibration calib(BTagAlgorithm, CSVFileName);
 
   SystematicFlagBC = "central";
@@ -143,7 +144,7 @@ float BTagSFUtil::GetJetSF(float JetDiscriminant, int JetFlavor, float JetPt, fl
 
   float Btag_SF;
 
-  if (JetPt < 20. && abs(JetEta) < 2.4 && abs(JetDiscriminant) < 1.)  
+  if (JetPt < 20. && abs(JetEta) < 2.4 && JetDiscriminant > 0. && JetDiscriminant < 1.)  
     cout << "WARNING: BTagSFUtil: Found jet with pT " << JetPt << " GeV, smaller than 20 GeV. From BTagRecommendation80XReReco: do NOT go lower than 20 GeV." << endl << "Please check your jet pT thresholds. BTagSF for 20 GeV with double uncertainty has been applied." << endl;
 
   if (abs(JetFlavor)==5) 
