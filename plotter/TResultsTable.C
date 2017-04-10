@@ -63,7 +63,7 @@ TString TResultsTable::FixWidth(const TString& s, unsigned int width, bool prepe
     return val;
 }
 
-void TResultsTable::Print(ETResultsTableOutputFormat format, ostream& os) const {
+void TResultsTable::Print(ETResultsTableOutputFormat format, ostream& os) const{
 
   if (format == kCSV) {
     std::cerr << "WARNING: The CSV format is not yet supported by TResultsTable!" << std::endl;
@@ -140,9 +140,9 @@ void TResultsTable::Print(ETResultsTableOutputFormat format, ostream& os) const 
     rowend          = "</tr>";
     cellstart       = "<td>";
     cellend         = "</td>";
-    cellcoltitstart = "<th bgcolor=\"lightblue\">";
+    cellcoltitstart = "<th bgcolor=\"lightcoral\">";
     cellcoltitend   = "</th>";
-    cellrowtitstart = "<th align=\"right\" bgcolor=\"lightblue\">";
+    cellrowtitstart = "<th align=\"right\" bgcolor=\"blue\">";
     cellrowtitend   = "</th>";
     plusminus       = "&plusmn;";
   }
@@ -171,6 +171,7 @@ void TResultsTable::Print(ETResultsTableOutputFormat format, ostream& os) const 
 
 
   //Start table
+  iColor = 0;
   os << tablestart << std::endl;
 
 
@@ -190,8 +191,10 @@ void TResultsTable::Print(ETResultsTableOutputFormat format, ostream& os) const 
 
   //Content
   for (unsigned int i = 0; i < GetNRows(); i++) {
+    if(format == kHTML) cellrowtitstart = getCellColor(-1);
     os << rowstart << cellrowtitstart << FixWidth(fRowTitle[i],firstcolw) << cellrowtitend;
     for (unsigned int j = 0; j < GetNColumns(); j++) {
+    if(format == kHTML) cellstart = getCellColor(j);
       os << cellstart;
       os.width(colwidth);
       if     (formatNum.Contains("fix") ) os << KeepAllErrorDecimals(fRows[i][j], fRows[i][j].Error());
@@ -205,13 +208,12 @@ void TResultsTable::Print(ETResultsTableOutputFormat format, ostream& os) const 
         else if(formatNum.Contains("auto")) os << KeepOneDecimal(      fRows[i][j].Error(), 0);
         else os << Form(formatNum, fRows[i][j].Error());
       }
-      
-      if (format != kLaTeX || j != GetNColumns()-1)
-	os<< cellend;
+
+      if (format != kLaTeX || j != GetNColumns()-1) os << cellend;
     }
     os << rowend << std::endl;
-    if (fDrawHLines && i != GetNRows()-1)
-      os << singleline;
+    if(VSeparations.Contains(TString(Form("%i", i)))){ os << doubleline; iColor++;}
+    else if (fDrawHLines && i != GetNRows()-1) os << singleline;
   }
 
   os << doubleline;
@@ -235,6 +237,17 @@ void TResultsTable::SaveAs(const TString& filename) const {
     std::cerr << "         Saving as plain text." << std::endl;
     Print(kPlain, os);
   }  
+}
+
+TString TResultsTable::getCellColor(Int_t col) const{
+  TString out = "";
+  if(col < 0){ // title
+    out = TString("<th align=\"right\" bgcolor=\"") + colorRow[iColor] + TString("\">");
+  }
+  else{ // normal
+    out = TString("<td bgcolor=\"") + color[iColor] + TString("\">");
+  }
+  return out;
 }
 
 TString KeepAllErrorDecimals(Float_t number, Float_t error){
