@@ -14,6 +14,10 @@ Histo* Plot::GetH(TString sample, TString sys, Int_t type){
   Looper* ah = new Looper(pathToMiniTree, treeName, var, cut, chan, nb, x0, xN);
   Histo* h = ah->GetHisto(sample, sys);
   h->SetDirectory(0);
+  if(sys.Contains("stat")){
+    if(sys.Contains("Up")) for(Int_t i = 0; i <= nb; i++) h->SetBinContent(i, h->GetBinContent(i) + h->GetBinError(i));
+    else for(Int_t i = 0; i <= nb; i++) h->SetBinContent(i, h->GetBinContent(i) - h->GetBinError(i));
+  }
   delete ah;
   return h;
 }
@@ -359,23 +363,11 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
     hStack->SetMaximum(Max*ScaleMax);
     hStack->SetMinimum(PlotMinimum);
   }
-  hStack->Draw("hist");
   hStack->GetYaxis()->SetTitle("Number of Events");
   hStack->GetYaxis()->SetTitleSize(0.06);
   hStack->GetYaxis()->SetTitleOffset(0.5);
   hStack->GetYaxis()->SetNdivisions(505);
   hStack->GetXaxis()->SetLabelSize(0.0);
-
-  // Draw systematics histo
-  hAllBkg->SetFillStyle(3145);
-  hAllBkg->SetFillColor(kGray+2);
-  hAllBkg->SetLineColor(kGray+2);
-  hAllBkg->SetLineWidth(0);
-  hAllBkg->SetMarkerSize(0);
-  if(doSys) hAllBkg->Draw("same,e2");
-  hData->Draw("pesame");
-  Histo* hSignalerr = NULL; 
-  VSignalsErr.clear();
   if(doSignal){
     // Draw systematics signal
     Int_t nSignals = VSignals.size();
@@ -389,17 +381,35 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
        VSignalsErr.push_back(hSignalerr);
        }*/
     Histo* htemp;
+    THStack* hstemp;
     for(Int_t  i = 0; i < nSignals; i++){
       //if(doSys) VSignalsErr.at(i)->Draw("same,e2");
       if(doStackSignal){
-	htemp = VSignals.at(i);
-	htemp->Add(hAllBkg);
-	VStackedSignals.push_back(htemp);
-	VStackedSignals.at(i)->Draw("lsame");
+        htemp = VSignals.at(i);
+        //htemp->Add(hAllBkg);
+        htemp->SetFillColor(0);
+        VStackedSignals.push_back(htemp);
+        //VStackedSignals.at(i)->Draw("fsame");
+        hstemp = (THStack*) hStack->Clone("tempStack");
+        hstemp->Add(htemp);
+      //  hstemp->Draw("hist,same");
       }
       else VSignals.at(i)->Draw("lsame");
     }
-  }
+  } 
+  hStack->Draw("hist");
+
+  // Draw systematics histo
+  hAllBkg->SetFillStyle(3145);
+  hAllBkg->SetFillColor(kGray+2);
+  hAllBkg->SetLineColor(kGray+2);
+  hAllBkg->SetLineWidth(0);
+  hAllBkg->SetMarkerSize(0);
+  if(doSys) hAllBkg->Draw("same,e2");
+  hData->Draw("pesame");
+  Histo* hSignalerr = NULL; 
+  VSignalsErr.clear();
+
 
   // Draw systematics ratio
   hAllBkg->SetFillStyle(3145);
@@ -918,6 +928,7 @@ void Plot::PrintYields(TString cuts, TString labels, TString channels, TString o
   Bool_t doChannels = false; if(cuts.CountChar(',') == channels.CountChar(',')) doChannels = true;
   TResultsTable t(nrows, ncolumns, true); //cout << Form("Creating table with [rows, columns] = [%i, %i]\n", nrows, ncolumns);
   t.SetRowTitleHeader("Process");
+  t.SetFormatNum(tableFormats);
   Plot* np = NULL;
   for(Int_t k = 0; k < ncolumns; k++){
     if(cuts.Contains(",")){
