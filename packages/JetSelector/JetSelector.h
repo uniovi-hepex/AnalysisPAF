@@ -48,6 +48,7 @@ class JetSelector : public PAFChainItemSelector{
     BTagSFUtil *fBTagSFbDo ;
     BTagSFUtil *fBTagSFlUp ;
     BTagSFUtil *fBTagSFlDo ;
+    string MeasType;
 
     Bool_t gIsData;
     Int_t gSelection;
