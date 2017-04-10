@@ -12,7 +12,7 @@ BTagSFUtil::BTagSFUtil(string MeasurementType, string BTagAlgorithm, TString Ope
 
   rand_ = new TRandom3(Seed);
 
-  string CSVFileName = "/nfs/fanae/user/palencia/testHeppy/TOP/packages/BTagSFUtil/" + BTagAlgorithm + ".csv";
+  string CSVFileName = "./packages/BTagSFUtil/" + BTagAlgorithm + ".csv";
   const BTagCalibration calib(BTagAlgorithm, CSVFileName);
 
   SystematicFlagBC = "central";
