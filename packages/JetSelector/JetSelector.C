@@ -21,6 +21,7 @@ JetSelector::JetSelector() : PAFChainItemSelector() {
   fBTagSFbDo = 0;
   fBTagSFlUp = 0;
   fBTagSFlDo = 0;
+  MeasType = "comb";
   minDR = 0;
   jet_MaxEta = 0;
   jet_MinPt = 0;
@@ -82,11 +83,12 @@ void JetSelector::Initialise(){
   }
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-  fBTagSFnom = new BTagSFUtil("mujets", "CSVv2", stringWP,  0);
-  fBTagSFbUp = new BTagSFUtil("mujets", "CSVv2", stringWP,  1);
-  fBTagSFbDo = new BTagSFUtil("mujets", "CSVv2", stringWP, -1);
-  fBTagSFlUp = new BTagSFUtil("mujets", "CSVv2", stringWP,  3);
-  fBTagSFlDo = new BTagSFUtil("mujets", "CSVv2", stringWP, -3);
+  if (gSelection == iTopSelec) MeasType = "mujets";
+  fBTagSFnom = new BTagSFUtil(MeasType, "CSVv2", stringWP,  0);
+  fBTagSFbUp = new BTagSFUtil(MeasType, "CSVv2", stringWP,  1);
+  fBTagSFbDo = new BTagSFUtil(MeasType, "CSVv2", stringWP, -1);
+  fBTagSFlUp = new BTagSFUtil(MeasType, "CSVv2", stringWP,  3);
+  fBTagSFlDo = new BTagSFUtil(MeasType, "CSVv2", stringWP, -3);
 
   Leptons  = std::vector<Lepton>();
   selJets  = std::vector<Jet>();
