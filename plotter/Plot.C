@@ -368,6 +368,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   hStack->GetYaxis()->SetTitleOffset(0.5);
   hStack->GetYaxis()->SetNdivisions(505);
   hStack->GetXaxis()->SetLabelSize(0.0);
+  hStack->Draw("hist");
   if(doSignal){
     // Draw systematics signal
     Int_t nSignals = VSignals.size();
@@ -397,7 +398,6 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
       else VSignals.at(i)->Draw("lsame");
     }
   } 
-  hStack->Draw("hist");
 
   // Draw systematics histo
   hAllBkg->SetFillStyle(3145);
