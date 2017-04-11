@@ -19,7 +19,7 @@ enum iSFs{
 
 enum wps{iVeto, iLoose, iMedium, iTight, iVeryTight, iExtreamlyTight, iWPforStop, iLooseWPforStop};
 
-enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec};
+enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec, iWZSelec};
 
 enum eChannel{iNoChannel, iElMu, iMuon, iElec, iTriLep, iFourLep, nTotalDefinedChannels};
 

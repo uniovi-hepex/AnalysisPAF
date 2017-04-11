@@ -25,7 +25,7 @@ Bool_t EventBuilder::PassesDoubleElecTrigger(){
   gIsData = GetParam<Bool_t>("IsData");
   if (gIsData)
     run     = Get<Int_t>("run");
-  if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
+  if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec){
     // Run B-G, same as H
     pass = (Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"));
     return pass;
@@ -51,7 +51,7 @@ Bool_t EventBuilder::PassesDoubleMuonTrigger(){
   Bool_t pass = false;
   if (gIsData)
     run     = Get<Int_t>("run");
-  if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
+  if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec){
     // Run B-G or MC
     if ( (gIsData && run <= 280385) || (!gIsData)){
       pass = (Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v")  ||
@@ -87,7 +87,7 @@ Bool_t EventBuilder::PassesElMuTrigger(){
   Bool_t pass = false;
   if (gIsData)
     run     = Get<Int_t>("run");
-  if( gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
+  if( gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec){
     // Run B-G or MC
     if ( (gIsData && run <= 280385) || (!gIsData)){
       pass = ( Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v")  ||
@@ -132,7 +132,7 @@ Bool_t EventBuilder::PassesElMuTrigger(){
 Bool_t EventBuilder::PassesSingleElecTrigger(){
   if(gIsFastSim) return true; // no triger in FastSim samples
   Bool_t pass = false;
-  if(gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec)
+  if(gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec)
     pass =  Get<Int_t>("HLT_BIT_HLT_Ele27_WPTight_Gsf_v");
   return pass;
 }
@@ -140,7 +140,7 @@ Bool_t EventBuilder::PassesSingleElecTrigger(){
 Bool_t EventBuilder::PassesSingleMuonTrigger(){
   if(gIsFastSim) return true; // no triger in FastSim samples
   Bool_t pass = false;
-  if(gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec)
+  if(gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec)
     pass = (
 	    Get<Int_t>("HLT_BIT_HLT_IsoTkMu24_v") ||
 	    Get<Int_t>("HLT_BIT_HLT_IsoMu24_v") );
