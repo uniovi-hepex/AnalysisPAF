@@ -21,6 +21,7 @@ JetSelector::JetSelector() : PAFChainItemSelector() {
   fBTagSFbDo = 0;
   fBTagSFlUp = 0;
   fBTagSFlDo = 0;
+  MeasType = "comb";
   minDR = 0;
   jet_MaxEta = 0;
   jet_MinPt = 0;
@@ -36,6 +37,7 @@ void JetSelector::Initialise(){
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
   if      (gSelection == iStopSelec || gSelection == iTopSelec || gSelection == ittDMSelec || gSelection == iTWSelec || gSelection == ittHSelec)  stringWP = "Medium";
   else if (gSelection == iWWSelec)    stringWP = "Loose";
+  else if (gSelection == iWZSelec)    stringWP = "Loose";
   else                                stringWP = "Medium";
   if     (gSelection == iStopSelec || gSelection == iTopSelec || gSelection == ittDMSelec){
     jet_MaxEta = 2.4;
@@ -58,6 +60,13 @@ void JetSelector::Initialise(){
     vetoJet_maxEta = 2.4;
     minDR = 0.4;
   }
+  else if(gSelection == iWZSelec){
+    jet_MaxEta = 2.4;
+    jet_MinPt  = 30;
+    vetoJet_minPt = 20;
+    vetoJet_maxEta = 2.4;
+    minDR = 0.4;
+  }
   else if (gSelection == ittHSelec) {
 		jet_MaxEta 			= 2.4;
     jet_MinPt  			= 25;
@@ -74,11 +83,12 @@ void JetSelector::Initialise(){
   }
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-  fBTagSFnom = new BTagSFUtil("mujets", "CSVv2", stringWP,  0);
-  fBTagSFbUp = new BTagSFUtil("mujets", "CSVv2", stringWP,  1);
-  fBTagSFbDo = new BTagSFUtil("mujets", "CSVv2", stringWP, -1);
-  fBTagSFlUp = new BTagSFUtil("mujets", "CSVv2", stringWP,  3);
-  fBTagSFlDo = new BTagSFUtil("mujets", "CSVv2", stringWP, -3);
+  if (gSelection == iTopSelec) MeasType = "mujets";
+  fBTagSFnom = new BTagSFUtil(MeasType, "CSVv2", stringWP,  0);
+  fBTagSFbUp = new BTagSFUtil(MeasType, "CSVv2", stringWP,  1);
+  fBTagSFbDo = new BTagSFUtil(MeasType, "CSVv2", stringWP, -1);
+  fBTagSFlUp = new BTagSFUtil(MeasType, "CSVv2", stringWP,  3);
+  fBTagSFlDo = new BTagSFUtil(MeasType, "CSVv2", stringWP, -3);
 
   Leptons  = std::vector<Lepton>();
   selJets  = std::vector<Jet>();
@@ -155,7 +165,8 @@ void JetSelector::InsideLoop(){
 	} 
       }
       if (tJ.p.Pt() > vetoJet_minPt && tJ.p.Eta() < vetoJet_maxEta){
-	if (gSelection == iWWSelec && tJ.isBtag) vetoJets.push_back(tJ);
+	if      (gSelection == iWWSelec && tJ.isBtag) vetoJets.push_back(tJ);
+	else if (gSelection == iWZSelec && tJ.isBtag) vetoJets.push_back(tJ);
 	else if (gSelection == iTWSelec)          vetoJets.push_back(tJ);
 	else                                      vetoJets.push_back(tJ);
       }
@@ -178,7 +189,8 @@ void JetSelector::InsideLoop(){
 	  }
         }
 	if (tJ.p.Pt() > vetoJet_minPt && tJ.p.Eta() < vetoJet_maxEta){
-	  if (gSelection == iWWSelec && tJ.isBtag) vetoJets.push_back(tJ);
+	  if      (gSelection == iWWSelec && tJ.isBtag) vetoJets.push_back(tJ);
+	  else if (gSelection == iWZSelec && tJ.isBtag) vetoJets.push_back(tJ);
 	  else if (gSelection == iTWSelec)          vetoJets.push_back(tJ);
 	  else                                      vetoJets.push_back(tJ);
 	}

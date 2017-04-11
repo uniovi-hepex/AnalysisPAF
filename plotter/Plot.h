@@ -21,7 +21,7 @@
 // Defaul cases and paths
 const TString DefaultPlotfolder = "./Plots/";
 const TString DefaultLimitFolder = "./Datacards/";
-const Float_t DefaultLumi = 35.9; //fb-1
+const Float_t DefaultLumi = 35.85; //fb-1
 
 
 class Plot {
@@ -226,6 +226,7 @@ public:
   void SetScaleLog(Float_t s){ ScaleLog = s;}
   void SetPlotMinimum(Float_t p){ PlotMinimum = p;}
   void ScaleProcess(TString process, Float_t factor = 1);
+  void SetTableFormats(TString t){ tableFormats = t;}
 
 protected: 
   TString pathToHeppyTrees = "";
@@ -235,6 +236,7 @@ protected:
   TString treeName = "";
   TString outputName = "";
   TString YieldsTableName = "yields";
+  TString tableFormats = "%1.2f";
   Int_t nSignalSamples;
   
   // Maximum and minimum value of the ratio plot

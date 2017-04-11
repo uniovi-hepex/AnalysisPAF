@@ -76,6 +76,7 @@ class CrossSection{
     Float_t GetXSec(Float_t data, Float_t bkg, Float_t y){ return (data-bkg)/y*thxsec;}
     void PrintSystematicTable(TString options = "");
     void PrintCrossSection(TString options = "");
+    void SwitchLabel(TString oldLabel, TString newLabel);
 
   protected:
 
@@ -92,6 +93,7 @@ class CrossSection{
     Float_t Lumi = 0; // luminosity
     Float_t LumiUnc = 0; // (relative)
     Float_t thxsec = 0;
+    Bool_t notSet = true;
 
     // Optional inputs...
     Float_t nSimulatedSignal = 0; // or sum of weights...

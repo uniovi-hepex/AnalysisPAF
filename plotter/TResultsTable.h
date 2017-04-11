@@ -5,6 +5,7 @@
 #include "TString.h"
 
 enum ETResultsTableOutputFormat {kPlain, kLaTeX, kHTML, kCSV};
+Int_t iColor = 0;
 
 TString KeepAllErrorDecimals(Float_t number, Float_t error = 0);
 TString KeepOneDecimal(Float_t number, Float_t error = 0);
@@ -112,6 +113,9 @@ class TResultsTable {
   //
   ////////////////////////////////////////////////////////////////////////////
   void SetFormatNum(TString k){ formatNum = k;}
+  void AddVSeparation(TString t){VSeparations += TString(", ") + t;}
+  void AddVSeparation(Int_t g){ VSeparations += TString(Form(", %i", g));}
+  TString getCellColor(Int_t col) const;
 
  protected:
   TString FixWidth(const TString& s, unsigned int width=11, bool prepend = true) const;
@@ -120,8 +124,11 @@ class TResultsTable {
   unsigned int fNColumns; //Number of columns
   unsigned int fNRows;    //Number of rows
 
+  TString colorRow[20] = {"#0099cc", "#ff9966", "#99ff99", "#ff66ff", "#99cc00", "#0099cc", "#ff9966", "#99ff99", "#ff66ff", "#99cc00", "#0099cc", "#ff9966", "#99ff99", "#ff66ff", "#99cc00", "#0099cc", "#ff9966", "#99ff99", "#ff66ff", "#99cc00"};
+  TString color[20]    = {"#ccffff", "#ffffcc", "#ccffcc", "#ffccff", "#ccff99", "#ccffff", "#ffffcc", "#ccffcc", "#ffccff", "#ccff99", "#ccffff", "#ffffcc", "#ccffcc", "#ffccff", "#ccff99", "#ccffff", "#ffffcc", "#ccffcc", "#ffccff", "#ccff99"};
   bool fWithErrors;
   bool fAutomaticErrors;
+  TString VSeparations = "";
 
   TResultsTableRow* fRows;    //The table rows (content)
 

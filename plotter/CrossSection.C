@@ -1,6 +1,7 @@
 #include "CrossSection.h"
 
 void CrossSection::SetMembers(){
+    notSet = false;
     nBkgs = BkgYield.size();
     nSyst = SysVar.size();
 
@@ -41,11 +42,12 @@ void CrossSection::SetMembers(){
 }
 
 void CrossSection::PrintSystematicTable(TString options){
-  SetMembers();
+  if(notSet) SetMembers();
   Int_t nrows = nSyst+nBkgs+4;
   Int_t ncolumns = 2;
-  TResultsTable t(nrows, ncolumns, false); cout << Form("Creating table with [rows, columns] = [%i, %i]\n", nrows, ncolumns);
+  TResultsTable t(nrows, ncolumns, false); //cout << Form("Creating table with [rows, columns] = [%i, %i]\n", nrows, ncolumns);
   t.SetRowTitleHeader("Source");
+  t.AddVSeparation(Form("%i, %i, %i", nSyst-1, nSyst + nBkgs - 1, nSyst+nBkgs+4 - 2));
 
   // Set row titles
   for(Int_t i = 0; i < nSyst; i++) t.SetRowTitle(i,       SysTags.at(i));
@@ -88,4 +90,10 @@ void CrossSection::PrintCrossSection(TString options){
   cout << "The measured cross section is: " << endl;
   cout << Form(" >>> %1.1f +/- %1.1f (stat) +/- %1.1f (sys) +/- %1.1f (lumi)  pb", xsec, xsec_stat_err, xsec_syst_err, xsec_lumi_err) << endl;
   cout << " >>> " << xsec << " +/- " << xsec_total_err << " (" << xsec_total_err/xsec*100 << " %)" << endl;
+}
+
+void CrossSection::SwitchLabel(TString oldLabel, TString newLabel){
+  if(notSet) SetMembers();
+  for(Int_t i = 0; i < nBkgs; i++) if(BkgTags.at(i) == oldLabel) BkgTags.at(i) = newLabel;
+  for(Int_t i = 0; i < nSyst; i++) if(SysTags.at(i) == oldLabel) SysTags.at(i) = newLabel;
 }

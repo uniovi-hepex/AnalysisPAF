@@ -1,10 +1,11 @@
 
-// https://twiki.cern.ch/twiki/bin/viewauth/CMS/BTagCalibration
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/BTagCalibration https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
 #include "BTagSFUtil.h"
 #include "BTagCalibrationStandalone.cc"
 //#include "BTagEfficienciesTTbarSummer12.C" // Change this to your sample efficiency
 #include "BTagEfficienciesTTbarSummer15.C" // Change this to your sample efficiency
 #include "FastSimCorrectionFactorsSummer12.C" // Change this to your sample efficiency
+#include "TSystem.h"
 
 using namespace std;
 
@@ -12,17 +13,20 @@ BTagSFUtil::BTagSFUtil(string MeasurementType, string BTagAlgorithm, TString Ope
 
   rand_ = new TRandom3(Seed);
 
-  string CSVFileName = "/nfs/fanae/user/palencia/testHeppy/TOP/packages/BTagSFUtil/" + BTagAlgorithm + ".csv";
-  BTagCalibration calib(BTagAlgorithm, CSVFileName);
+  string CSVFileName = (string)gSystem->ExpandPathName("$PWD") + "/packages/BTagSFUtil/" + BTagAlgorithm + ".csv";
+  const BTagCalibration calib(BTagAlgorithm, CSVFileName);
 
-  string SystematicFlagBC = "central";
-  string SystematicFlagL  = "central";
+  SystematicFlagBC = "central";
+  SystematicFlagL  = "central";
   if (abs(SystematicIndex)<10) {
     if (SystematicIndex==-1 || SystematicIndex==-2) SystematicFlagBC = "down";
     if (SystematicIndex==+1 || SystematicIndex==+2) SystematicFlagBC = "up";
     if (SystematicIndex==-3) SystematicFlagL = "down";
     if (SystematicIndex==+3) SystematicFlagL = "up";
   }
+  vector<string> sysTypes;
+  sysTypes.push_back("up");
+  sysTypes.push_back("down");
 
   TaggerCut = -1;
   TaggerName = BTagAlgorithm;
@@ -33,30 +37,48 @@ BTagSFUtil::BTagSFUtil(string MeasurementType, string BTagAlgorithm, TString Ope
     if (TaggerName=="CSV") TaggerCut = 0.244;
     //if (TaggerName=="CSVv2") TaggerCut = 0.605;
     if (TaggerName=="CSVv2") TaggerCut = 0.5426; // for Moriond17
-    reader_bc = new BTagCalibrationReader(&calib, BTagEntry::OP_LOOSE, MeasurementType, SystematicFlagBC);
-    //reader_l  = new BTagCalibrationReader(&calib, BTagEntry::OP_LOOSE, MeasurementType, SystematicFlagL);
-    //reader_l  = new BTagCalibrationReader(&calib, BTagEntry::OP_LOOSE, "comb", SystematicFlagL);
-    reader_l  = new BTagCalibrationReader(&calib, BTagEntry::OP_LOOSE, "incl", SystematicFlagL);  // comb-->incl
+    //reader_bc = new BTagCalibrationReader(calib, BTagEntry::OP_LOOSE, MeasurementType, SystematicFlagBC);
+    //reader_l  = new BTagCalibrationReader(calib, BTagEntry::OP_LOOSE, MeasurementType, SystematicFlagL);
+    //reader_l  = new BTagCalibrationReader(calib, BTagEntry::OP_LOOSE, "comb", SystematicFlagL);
+    //reader_l  = new BTagCalibrationReader(calib, BTagEntry::OP_LOOSE, "incl", SystematicFlagL);  // comb-->incl
+    reader_b = new BTagCalibrationReader(BTagEntry::OP_LOOSE, "central", sysTypes);
+    reader_b -> load(calib, BTagEntry::FLAV_B, MeasurementType);
+    reader_c = new BTagCalibrationReader(BTagEntry::OP_LOOSE, "central", sysTypes);
+    reader_c -> load(calib, BTagEntry::FLAV_C, MeasurementType);
+    reader_l = new BTagCalibrationReader(BTagEntry::OP_LOOSE, "central", sysTypes);
+    reader_l -> load(calib, BTagEntry::FLAV_UDSG, "incl");
   } else if (OperatingPoint=="Medium")  {
     TaggerOP += "M";
     if (TaggerName=="CSV") TaggerCut = 0.679;
     //if (TaggerName=="CSVv2") TaggerCut = 0.890; // for 74X
     //if (TaggerName=="CSVv2") TaggerCut = 0.800; // for 76X
     if (TaggerName=="CSVv2") TaggerCut = 0.8484; // for Moriond17
-    reader_bc = new BTagCalibrationReader(&calib, BTagEntry::OP_MEDIUM, MeasurementType, SystematicFlagBC);
-    //reader_l  = new BTagCalibrationReader(&calib, BTagEntry::OP_MEDIUM, MeasurementType, SystematicFlagL);
-    //reader_l  = new BTagCalibrationReader(&calib, BTagEntry::OP_MEDIUM,  "comb", SystematicFlagL);
-    reader_l  = new BTagCalibrationReader(&calib, BTagEntry::OP_MEDIUM,  "incl", SystematicFlagL);  // comb-->incl
+    //reader_bc = new BTagCalibrationReader(calib, BTagEntry::OP_MEDIUM, MeasurementType, SystematicFlagBC);
+    //reader_l  = new BTagCalibrationReader(calib, BTagEntry::OP_MEDIUM, MeasurementType, SystematicFlagL);
+    //reader_l  = new BTagCalibrationReader(calib, BTagEntry::OP_MEDIUM,  "comb", SystematicFlagL);
+    //reader_l  = new BTagCalibrationReader(calib, BTagEntry::OP_MEDIUM,  "incl", SystematicFlagL);  // comb-->incl
+    reader_b = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central", sysTypes);
+    reader_b -> load(calib, BTagEntry::FLAV_B, MeasurementType);
+    reader_c = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central", sysTypes);
+    reader_c -> load(calib, BTagEntry::FLAV_C, MeasurementType);
+    reader_l = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central", sysTypes);
+    reader_l -> load(calib, BTagEntry::FLAV_UDSG, "incl");
   } else if (OperatingPoint=="Tight")  {
     TaggerOP += "T";
     if (TaggerName=="CSV") TaggerCut = 0.898;
     if (TaggerName=="TCHP") TaggerCut = 3.41;
     //if (TaggerName=="CSVv2") TaggerCut = 0.970;
     if (TaggerName=="CSVv2") TaggerCut = 0.9535; // for Moriond17
-    reader_bc = new BTagCalibrationReader(&calib, BTagEntry::OP_TIGHT, MeasurementType, SystematicFlagBC);
-    //reader_l  = new BTagCalibrationReader(&calib, BTagEntry::OP_TIGHT, MeasurementType, SystematicFlagL);
-    //reader_l  = new BTagCalibrationReader(&calib, BTagEntry::OP_TIGHT, "comb", SystematicFlagL);
-    reader_l  = new BTagCalibrationReader(&calib, BTagEntry::OP_TIGHT, "incl", SystematicFlagL);  // comb-->incl
+    //reader_bc = new BTagCalibrationReader(calib, BTagEntry::OP_TIGHT, MeasurementType, SystematicFlagBC);
+    //reader_l  = new BTagCalibrationReader(calib, BTagEntry::OP_TIGHT, MeasurementType, SystematicFlagL);
+    //reader_l  = new BTagCalibrationReader(calib, BTagEntry::OP_TIGHT, "comb", SystematicFlagL);
+    //reader_l  = new BTagCalibrationReader(calib, BTagEntry::OP_TIGHT, "incl", SystematicFlagL);  // comb-->incl
+    reader_b = new BTagCalibrationReader(BTagEntry::OP_TIGHT, "central", sysTypes);
+    reader_b -> load(calib, BTagEntry::FLAV_B, MeasurementType);
+    reader_c = new BTagCalibrationReader(BTagEntry::OP_TIGHT, "central", sysTypes);
+    reader_c -> load(calib, BTagEntry::FLAV_C, MeasurementType);
+    reader_l = new BTagCalibrationReader(BTagEntry::OP_TIGHT, "central", sysTypes);
+    reader_l -> load(calib, BTagEntry::FLAV_UDSG, "incl");
   } 
 
   if (TaggerCut<0) 
@@ -118,20 +140,18 @@ float BTagSFUtil::JetTagEfficiency(int JetFlavor, float JetPt, float JetEta) {
 
 }
 
-float BTagSFUtil::GetJetSF(int JetFlavor, float JetPt, float JetEta) {
+float BTagSFUtil::GetJetSF(float JetDiscriminant, int JetFlavor, float JetPt, float JetEta) {
 
   float Btag_SF;
 
-  float ThisJetPt = JetPt;
-  if (abs(JetFlavor)==4 || abs(JetFlavor)==5) {
-    if (JetPt>669.99) ThisJetPt = 669.99;
-  } else if (JetPt>999.99) ThisJetPt = 999.99;
+  if (JetPt < 20. && abs(JetEta) < 2.4 && JetDiscriminant > 0. && JetDiscriminant < 1.)  
+    cout << "WARNING: BTagSFUtil: Found jet with pT " << JetPt << " GeV, smaller than 20 GeV. From BTagRecommendation80XReReco: do NOT go lower than 20 GeV." << endl << "Please check your jet pT thresholds. BTagSF for 20 GeV with double uncertainty has been applied." << endl;
 
   if (abs(JetFlavor)==5) 
-    Btag_SF = reader_bc->eval(BTagEntry::FLAV_B, JetEta, ThisJetPt);
+    Btag_SF = reader_b->eval_auto_bounds(SystematicFlagBC, BTagEntry::FLAV_B, JetEta, JetPt, JetDiscriminant);
   else if (abs(JetFlavor)==4) 
-    Btag_SF = reader_bc->eval(BTagEntry::FLAV_C, JetEta, ThisJetPt);
-  else Btag_SF = reader_l->eval(BTagEntry::FLAV_UDSG, JetEta, ThisJetPt);
+    Btag_SF = reader_c->eval_auto_bounds(SystematicFlagBC, BTagEntry::FLAV_C, JetEta, JetPt, JetDiscriminant);
+  else Btag_SF = reader_l->eval_auto_bounds(SystematicFlagL, BTagEntry::FLAV_UDSG, JetEta, JetPt, JetDiscriminant);
   
   if (IsFastSimDataset)
     Btag_SF *= FastSimCorrectionFactor(JetFlavor, JetPt, JetEta);
@@ -144,7 +164,7 @@ bool BTagSFUtil::IsTagged(float JetDiscriminant, int JetFlavor, float JetPt, flo
   bool isBTagged = JetDiscriminant>TaggerCut;
   if (JetFlavor==-999999) return isBTagged; // Data: no correction needed
   bool newBTag = isBTagged;
-  float Btag_SF = GetJetSF(JetFlavor, JetPt, JetEta);
+  float Btag_SF = GetJetSF(JetDiscriminant, JetFlavor, JetPt, JetEta);
   if (Btag_SF == 1) return newBTag; //no correction needed 
 
   //throw die

@@ -42,6 +42,9 @@ void LeptonSelector::Initialise(){
   else if(gSelection == ittHSelec){
 
   }
+  else if(gSelection == iWZSelec){
+
+  }
   else if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
     LepSF->loadHisto(iMuonReco);
     LepSF->loadHisto(iElecReco);
@@ -307,7 +310,7 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
     else return false;
     return false;
   }
-  else if (gSelection == ittHSelec) {
+  else if (gSelection == ittHSelec || gSelection == iWZSelec) {
   	// 	Tight muons for multilepton ttH Analysis:
   	// abs(eta)<0.4, Pt>15, abs(dxy)<0.05cm, abs(dz)<0.1cm, SIP3D<8, Imini<0.4,
   	// isLooseMuon==1,jetCSV<0.8484,isMediumMuon==1,tight-charge,lepMVA>0.90.
@@ -376,7 +379,7 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
   else if(gSelection == iWWSelec){
     return true;
   }
-  else if(gSelection == ittHSelec){
+  else if(gSelection == ittHSelec || gSelection == iWZSelec){
   	// 	Fakeable muons for multilepton ttH Analysis:
   	// Tight muons without medium muon ID, tight charge and lepton MVA cuts.
   	//
@@ -437,7 +440,7 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
 //============================================== Loose leptons (or other)
 Bool_t LeptonSelector::isLooseLepton(Lepton lep){
   Bool_t passId; Bool_t passIso;
-  if(gSelection == ittHSelec){
+  if(gSelection == ittHSelec || gSelection == iWZSelec){
   	// 	Loose muons for multilepton ttH Analysis:
   	// Fakeable muons without jetCSV cut and with pt>5.
   	//

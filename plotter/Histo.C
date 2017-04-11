@@ -51,6 +51,7 @@ void Histo::SetStyle(){
 
 void Histo::SetStatUnc(){
 	if(type == itData) return; // Add MC stats to errors!
+  if(vsysd) return;
 	Int_t nbins = GetNbinsX();
 	vsysu = new Float_t[nbins+1];
 	vsysd = new Float_t[nbins+1];
