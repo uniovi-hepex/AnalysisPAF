@@ -46,8 +46,6 @@ void DrawPlots(TString chan = "ElMu", TString tag = "0"){
     cut   = "(TCat == 4 && TChannel == 5)";
   }
   
- 
-  
   DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag);
   DrawPlot("TnFakeableLepton", cut, chan, 5, 0, 5,     "nFakeLep (#)", "nFakeLepton", tag);
   DrawPlot("TnLooseLepton",    cut, chan, 5, 0, 5,     "nLooseLep (#)", "nLooseLepton", tag);
@@ -102,6 +100,22 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     }
     path        += "random/";
     outputpath  += "random/";
+  }
+  else if (githead.Contains("lepMVAcomparison")) {
+    if (counter == 0) {
+      cout << endl;
+      cout << "Branch LEPMVACOMPARISON chosen" << endl;
+      cout << endl;
+      counter = 1;
+    }
+    path        += "lepmvacomparison/";
+    outputpath  += "lepmvacomparison/";
+    if (tag == "et")      path += "extratight/";
+    else if (tag == "vt") path += "verytight/";
+    else if (tag == "t"   path += "tight/";
+    else if (tag == "m"   path += "medium/";
+    else if (tag == "tth" path += "tth/";
+  }
   }
   else {
     if (counter == 0) {
