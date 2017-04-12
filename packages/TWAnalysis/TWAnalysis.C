@@ -416,23 +416,24 @@ void TWAnalysis::SetTWVariables()
   fTW1j1b->Branch("nBLooseFwd"      , &nBLooseFwd     , "nBLooseFwd/I"     );
   fTW1j1b->Branch("TJet2csv"        , &TJet2csv       , "TJet2csv/F"       );
   fTW1j1b->Branch("MSys"            , &MSys           , "MSys/F"           );
+  fTW1j1b->Branch("THT"             , &THT            , "THT/F"            );
   
   // for DNN
-  fTW1j1b->Branch("TJet1_pt"        , &TJet1_pt       , "TJet1_pt/F"      );
-  fTW1j1b->Branch("TJet1_Dphi"      , &TJet1_Dphi     , "TJet1_Dphi/F"    );    
-  fTW1j1b->Branch("TJet1_pz"        , &TJet1_pz       , "TJet1_pz/F"      );
-  fTW1j1b->Branch("TJet1_E"         , &TJet1_E        , "TJet1_E/F"       );
-  fTW1j1b->Branch("TLep1_pt"        , &TLep1_pt       , "TLep1_pt/F"      );
-  fTW1j1b->Branch("TLep1_Dphi"       , &TLep1_Dphi      , "TLep1_Dphi/F"  );
-  fTW1j1b->Branch("TLep1_pz"        , &TLep1_pz       , "TLep1_pz/F"      );
-  fTW1j1b->Branch("TLep1_E"         , &TLep1_E        , "TLep1_E/F"       );
-  fTW1j1b->Branch("TLep2_pt"        , &TLep2_pt       , "TLep2_pt/F"      );
-  fTW1j1b->Branch("TLep2_Dphi"       , &TLep2_Dphi      , "TLep2_Dphi/F"  );
-  fTW1j1b->Branch("TLep2_pz"        , &TLep2_pz       , "TLep2_pz/F"      );
-  fTW1j1b->Branch("TLep2_E"         , &TLep2_E        , "TLep2_E/F"       );
-  fTW1j1b->Branch("TMET"            , &TMET           , "TMET/F"          );
-  fTW1j1b->Branch("C_jll"           , &C_jll          , "C_jll/F"         );
-  fTW1j1b->Branch("TBDT"            , &TBDT           , "TBDT/F"          );
+  // fTW1j1b->Branch("TJet1_pt"        , &TJet1_pt       , "TJet1_pt/F"      );
+  // fTW1j1b->Branch("TJet1_Dphi"      , &TJet1_Dphi     , "TJet1_Dphi/F"    );    
+  // fTW1j1b->Branch("TJet1_pz"        , &TJet1_pz       , "TJet1_pz/F"      );
+  // fTW1j1b->Branch("TJet1_E"         , &TJet1_E        , "TJet1_E/F"       );
+  // fTW1j1b->Branch("TLep1_pt"        , &TLep1_pt       , "TLep1_pt/F"      );
+  // fTW1j1b->Branch("TLep1_Dphi"       , &TLep1_Dphi      , "TLep1_Dphi/F"  );
+  // fTW1j1b->Branch("TLep1_pz"        , &TLep1_pz       , "TLep1_pz/F"      );
+  // fTW1j1b->Branch("TLep1_E"         , &TLep1_E        , "TLep1_E/F"       );
+  // fTW1j1b->Branch("TLep2_pt"        , &TLep2_pt       , "TLep2_pt/F"      );
+  // fTW1j1b->Branch("TLep2_Dphi"       , &TLep2_Dphi      , "TLep2_Dphi/F"  );
+  // fTW1j1b->Branch("TLep2_pz"        , &TLep2_pz       , "TLep2_pz/F"      );
+  // fTW1j1b->Branch("TLep2_E"         , &TLep2_E        , "TLep2_E/F"       );
+  // fTW1j1b->Branch("TMET"            , &TMET           , "TMET/F"          );
+  // fTW1j1b->Branch("C_jll"           , &C_jll          , "C_jll/F"         );
+  // fTW1j1b->Branch("TBDT"            , &TBDT           , "TBDT/F"          );
 }
 
 
