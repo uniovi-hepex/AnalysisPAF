@@ -145,7 +145,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 			GetCount(Files);
 			if(IsMCatNLO(sampleName)){
 				G_IsMCatNLO = true;
-				if(verbose) cout << " >>> This is a aMCatNLO sample!!" << endl;
+				if(verbose) cout << " >>> This is an aMCatNLO sample!!" << endl;
 				G_Event_Weight = xsec/SumOfWeights;
 			}
 			else G_Event_Weight = xsec/Count;
@@ -250,11 +250,13 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	// Name of analysis class
 	//----------------------------------------------------------------------------
 	myProject->AddSelectorPackage("LeptonSelector");
+	if 	(sel == ittHSelec ) myProject->AddSelectorPackage("TauSelector");
 	myProject->AddSelectorPackage("JetSelector");
 	myProject->AddSelectorPackage("EventBuilder");
 	if      (sel == iStopSelec)  myProject->AddSelectorPackage("StopAnalysis");
 	else if (sel == ittDMSelec)  myProject->AddSelectorPackage("ttDM");
 	else if (sel == iTopSelec )  myProject->AddSelectorPackage("TopAnalysis");
+	else if (sel == ittHSelec )  myProject->AddSelectorPackage("ttHAnalysis");
 	else if (sel == iTWSelec  ){
 	  myProject->AddSelectorPackage("TopAnalysis");
 	  myProject->AddSelectorPackage("TWAnalysis");

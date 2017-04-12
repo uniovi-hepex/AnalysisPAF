@@ -19,6 +19,7 @@ TopAnalysis::TopAnalysis() : PAFChainItemSelector() {
         fHHT[ch][cut][sys]          = 0;
         fHJet0Eta[ch][cut][sys]     = 0;
         fHJet1Eta[ch][cut][sys]     = 0;
+        fHDYInvMass[ch][cut][sys]       = 0;
         fHInvMass[ch][cut][sys]       = 0;
         fHInvMass2[ch][cut][sys]      = 0;
         fHNBtagsNJets[ch][cut][sys]   = 0;
@@ -27,9 +28,13 @@ TopAnalysis::TopAnalysis() : PAFChainItemSelector() {
         fHJet0Pt[ch][cut][sys]       = 0;
         fHJet1Pt[ch][cut][sys]       = 0;
         fHDiLepPt[ch][cut][sys]      = 0;
+        fHLep0Iso[ch][cut][sys]       = 0;
+        fHLep1Iso[ch][cut][sys]       = 0;
         fHLep0Pt[ch][cut][sys]       = 0;
         fHLep1Pt[ch][cut][sys]       = 0;
         fHJetCSV[ch][cut][sys]       = 0;
+        fHJet0CSV[ch][cut][sys]       = 0;
+        fHJet1CSV[ch][cut][sys]       = 0;
         fHvertices[ch][cut][sys]     = 0;
         if(cut == 0){
           fHyields[ch][sys]     = 0;
@@ -126,15 +131,18 @@ void TopAnalysis::InsideLoop(){
     // ===================================================================================================================
     if((selLeptons.at(0).p + selLeptons.at(1).p).M() > 20 && selLeptons.at(0).p.Pt() > 25){ // mll > 20 GeV, dilepton, leading lepton pT > 25 GeV
       if(isSS) fHSSyields[gChannel][0] -> Fill(idilepton, TWeight);
-      else{      fHyields[gChannel][0] -> Fill(idilepton, TWeight);
-        FillHistos(gChannel, idilepton);}
+      else{    
+        fHyields[gChannel][0] -> Fill(idilepton, TWeight);
+        FillHistos(gChannel, idilepton);
+        FillDYHistos(gChannel);
+      }
 
-      if(gChannel == 1 || (TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15)  ){ //  Z Veto in ee, µµ
+      if(TChannel == iElMu || (TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15)  ){ //  Z Veto in ee, µµ
         if(isSS) fHSSyields[gChannel][0] -> Fill(iZVeto, TWeight);
         else{      fHyields[gChannel][0] -> Fill(iZVeto, TWeight);
           FillHistos(gChannel, iZVeto);}
 
-        if(gChannel == 1 || TMET > 40){   // MET > 40 in ee, µµ
+        if(TChannel == iElMu || TMET > 40){   // MET > 40 in ee, µµ
           if(isSS) fHSSyields[gChannel][0] -> Fill(iMETcut, TWeight);
           else{      fHyields[gChannel][0] -> Fill(iMETcut, TWeight);
             FillHistos(gChannel, iMETcut);}
@@ -153,11 +161,12 @@ void TopAnalysis::InsideLoop(){
           }
         }
       }
-      if (gChannel == 1 && (TNJets > 0 || TNJetsJESUp > 0 || TNJetsJESDown > 0)){
-	if (TNBtags > 0 || TNBtagsUp > 0 || TNBtagsDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0){
-	  fTree->Fill();
-	}
+      if(TChannel == iElMu){
+      // if (TChannel == 1 && (TNJets > 0 || TNJetsJESUp > 0 || TNJetsJESDown > 0)){
+      //if (TNBtags > 0 || TNBtagsUp > 0 || TNBtagsDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0){
+      fTree->Fill();
       }
+      //  }
     }   
   }
 }
@@ -178,12 +187,14 @@ void TopAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector
     TLep_Charge[i] = selLeptons.at(i).charge;    
   }
   if(TNSelLeps < 2) gChannel = -1;
-  else if(selLeptons.at(0).isMuon && selLeptons.at(1).isElec) gChannel = 1;
-  else if(selLeptons.at(0).isElec && selLeptons.at(1).isMuon) gChannel = 1;
-  else if(selLeptons.at(0).isMuon && selLeptons.at(1).isMuon) gChannel = 2;
-  else if(selLeptons.at(0).isElec && selLeptons.at(1).isElec) gChannel = 3;
+  else if(selLeptons.at(0).isMuon && selLeptons.at(1).isElec) gChannel = iElMu;
+  else if(selLeptons.at(0).isElec && selLeptons.at(1).isMuon) gChannel = iElMu;
+  else if(selLeptons.at(0).isMuon && selLeptons.at(1).isMuon) gChannel = iMuon;
+  else if(selLeptons.at(0).isElec && selLeptons.at(1).isElec) gChannel = iElec;
   if(TNSelLeps > 1) TMll = (selLeptons.at(0).p + selLeptons.at(1).p).M();      
   TChannel = gChannel;
+  TIsSS = isSS;
+  gChannel = gChannel -1; // gchannel used for chan index of histograms
   
   bool TIsOSDilep = false;
   if (TNSelLeps >= 2)
@@ -204,6 +215,7 @@ void TopAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cle
     TJet_Phi[i]    = selJets.at(i).Phi();
     TJet_E[i]      = selJets.at(i).E();
     TJet_isBJet[i] = selJets.at(i).isBtag;
+    THT += TJet_Pt[i];
     if(selJets.at(i).isBtag)            TNBtags++;
   }
   if(gIsData) return;  // For systematics...
@@ -259,10 +271,11 @@ void TopAnalysis::InitHistos(){
       fHMET[ch][cut][0]         = CreateH1F("H_MET_"        +gChanLabel[ch]+"_"+sCut[cut],"MET"       , 3000, 0,300);
       fHLep0Eta[ch][cut][0]     = CreateH1F("H_Lep0Eta_"    +gChanLabel[ch]+"_"+sCut[cut],"Lep0Eta"   , 50  ,0 ,2.5);
       fHLep1Eta[ch][cut][0]     = CreateH1F("H_Lep1Eta_"    +gChanLabel[ch]+"_"+sCut[cut],"Lep1Eta"   , 50  ,0 ,2.5);
-      fHDelLepPhi[ch][cut][0]   = CreateH1F("H_DelLepPhi_"  +gChanLabel[ch]+"_"+sCut[cut],"DelLepPhi" , 100,-3.2, 3.2);
+      fHDelLepPhi[ch][cut][0]   = CreateH1F("H_DelLepPhi_"  +gChanLabel[ch]+"_"+sCut[cut],"DelLepPhi" , 100, 0, 3.2);
       fHHT[ch][cut][0]          = CreateH1F("H_HT_"         +gChanLabel[ch]+"_"+sCut[cut],"HT"        , 4700,30,500);
       fHJet0Eta[ch][cut][0]     = CreateH1F("H_Jet0Eta_"  +gChanLabel[ch]+"_"+sCut[cut],"Jet0Eta"   , 50,0,2.5);
       fHJet1Eta[ch][cut][0]     = CreateH1F("H_Jet1Eta_"  +gChanLabel[ch]+"_"+sCut[cut],"Jet1Eta"   , 50,0,2.5);
+      fHDYInvMass[ch][cut][0]     = CreateH1F("H_DY_InvMass_"    +gChanLabel[ch]+"_"+sCut[cut],"InvMass"   ,  300,  0., 300.);
       fHInvMass[ch][cut][0]       = CreateH1F("H_InvMass_"    +gChanLabel[ch]+"_"+sCut[cut],"InvMass"   ,  300,  0., 300.);
       fHInvMass2[ch][cut][0]      = CreateH1F("H_InvMass2_"   +gChanLabel[ch]+"_"+sCut[cut],"InvMass2"  ,  400, 70., 110.);
       fHNBtagsNJets[ch][cut][0]   = CreateH1F("H_NBtagsNJets_"+gChanLabel[ch]+"_"+sCut[cut]  ,"NBtagsNJets"   ,15 , -0.5, 14.5);
@@ -273,7 +286,11 @@ void TopAnalysis::InitHistos(){
       fHDiLepPt[ch][cut][0]     = CreateH1F("H_DiLepPt_"    +gChanLabel[ch]+"_"+sCut[cut],"DiLepPt"   , 1600,20,180);
       fHLep0Pt[ch][cut][0]      = CreateH1F("H_Lep0Pt_"     +gChanLabel[ch]+"_"+sCut[cut],"Lep0Pt"    , 1800,20,200);
       fHLep1Pt[ch][cut][0]      = CreateH1F("H_Lep1Pt_"     +gChanLabel[ch]+"_"+sCut[cut],"Lep1Pt"    , 1800,20,200);
-      fHJetCSV[ch][cut][0]  = CreateH1F("H_JetCSV_" +gChanLabel[ch]+"_"+sCut[cut],"CSV" , 100,0, 1.3);
+      fHLep0Iso[ch][cut][0]      = CreateH1F("H_Lep0Iso_"     +gChanLabel[ch]+"_"+sCut[cut],"Leading lepton RelIso"    , 30,0,3);
+      fHLep1Iso[ch][cut][0]      = CreateH1F("H_Lep1Iso_"     +gChanLabel[ch]+"_"+sCut[cut],"Subleading lepton RelIso"    , 30,0,3);
+      fHJetCSV[ch][cut][0]  = CreateH1F("H_JetCSV_" +gChanLabel[ch]+"_"+sCut[cut],"CSV" , 100,0, 1.0);
+      fHJet0CSV[ch][cut][0]  = CreateH1F("H_Jet0CSV_" +gChanLabel[ch]+"_"+sCut[cut],"Jet0CSV" , 100,0, 1.0);
+      fHJet1CSV[ch][cut][0]  = CreateH1F("H_Jet1CSV_" +gChanLabel[ch]+"_"+sCut[cut],"Jet1CSV" , 100,0, 1.0);
       fHvertices[ch][cut][0]     = CreateH1F("H_Vtx_"+gChanLabel[ch]+"_"+sCut[cut],"", 51, -0.5, 50.5); 
     }
   }
@@ -288,6 +305,7 @@ void TopAnalysis::InitHistos(){
         fHHT[ch][cut][sys]          = CreateH1F("H_HT_"         +gChanLabel[ch]+"_"+sCut[cut]+"_"+gSys[sys],"HT"        , 4700,30,500);
         fHJet0Eta[ch][cut][sys]     = CreateH1F("H_Jet0Eta_"  +gChanLabel[ch]+"_"+sCut[cut]+"_"+gSys[sys],"Jet0Eta"   , 50,0,2.5);
         fHJet1Eta[ch][cut][sys]     = CreateH1F("H_Jet1Eta_"  +gChanLabel[ch]+"_"+sCut[cut]+"_"+gSys[sys],"Jet1Eta"   , 50,0,2.5);
+        fHDYInvMass[ch][cut][sys]       = CreateH1F("H_DY_InvMass_"    +gChanLabel[ch]+"_"+sCut[cut]+"_"+gSys[sys],"InvMass"   ,  300,  0., 300.);
         fHInvMass[ch][cut][sys]       = CreateH1F("H_InvMass_"    +gChanLabel[ch]+"_"+sCut[cut]+"_"+gSys[sys],"InvMass"   ,  300,  0., 300.);
         fHInvMass2[ch][cut][sys]      = CreateH1F("H_InvMass2_"   +gChanLabel[ch]+"_"+sCut[cut]+"_"+gSys[sys],"InvMass2"  ,  400, 70., 110.);
         fHNBtagsNJets[ch][cut][sys]   = CreateH1F("H_NBtagsNJets_"+gChanLabel[ch]+"_"+sCut[cut]+"_"+gSys[sys]  ,"NBtagsNJets"   ,15 , -0.5, 14.5);
@@ -298,11 +316,39 @@ void TopAnalysis::InitHistos(){
         fHDiLepPt[ch][cut][sys]      = CreateH1F("H_DiLepPt_"    +gChanLabel[ch]+"_"+sCut[cut]+"_"+gSys[sys],"DiLepPt"   , 1600,20,180);
         fHLep0Pt[ch][cut][sys]       = CreateH1F("H_Lep0Pt_"     +gChanLabel[ch]+"_"+sCut[cut]+"_"+gSys[sys],"Lep0Pt"    , 1800,20,200);
         fHLep1Pt[ch][cut][sys]       = CreateH1F("H_Lep1Pt_"     +gChanLabel[ch]+"_"+sCut[cut]+"_"+gSys[sys],"Lep1Pt"    , 1800,20,200);
-        fHJetCSV[ch][cut][sys]       = CreateH1F("H_JetCSV_" +gChanLabel[ch]+"_"+sCut[cut]+"_"+gSys[sys],"CSV" , 100,0, 1.3);
+        fHLep0Iso[ch][cut][sys]       = CreateH1F("H_Lep0Iso_"     +gChanLabel[ch]+"_"+sCut[cut]+"_"+gSys[sys],"RelIso"    , 30,0,3);
+        fHLep1Iso[ch][cut][sys]       = CreateH1F("H_Lep1Iso_"     +gChanLabel[ch]+"_"+sCut[cut]+"_"+gSys[sys],"RelIso"    , 30,0,3);
+        fHJetCSV[ch][cut][sys]       = CreateH1F("H_JetCSV_AllJets_" +gChanLabel[ch]+"_"+sCut[cut]+"_"+gSys[sys],"CSV" , 100,0, 1.0);
+        fHJet0CSV[ch][cut][sys]       = CreateH1F("H_Jet0CSV_" +gChanLabel[ch]+"_"+sCut[cut]+"_"+gSys[sys],"Jet0CSV" , 100,0, 1.0);
+        fHJet1CSV[ch][cut][sys]       = CreateH1F("H_Jet1CSV_" +gChanLabel[ch]+"_"+sCut[cut]+"_"+gSys[sys],"Jet1CSV" , 100,0, 1.0);
         fHvertices[ch][cut][sys]     = CreateH1F("H_Vtx_"+gChanLabel[ch]+"_"+sCut[cut]+"_"+gSys[sys],"", 51, -0.5, 50.5); 
       }
     }
   }
+}
+
+void TopAnalysis::FillDYHistos(Int_t ch){
+  Int_t sys = 0;
+  Int_t cut;
+  Float_t EventWeight = TWeight;
+  cut = idilepton;
+  fHDYInvMass[ch][cut][sys]       -> Fill(TMll, EventWeight);
+  cut = iZVeto;
+  fHDYInvMass[ch][cut][sys]       -> Fill(TMll, EventWeight);
+  if(TMET > 40){
+    cut = iMETcut;
+    fHDYInvMass[ch][cut][sys]       -> Fill(TMll, EventWeight);
+  }
+  if(TNJets > 1){
+    cut = i2jets;
+    fHDYInvMass[ch][cut][sys]       -> Fill(TMll, EventWeight);
+  }
+  if(TNBtags > 0){
+    cut = i1btag;
+    fHDYInvMass[ch][cut][sys]       -> Fill(TMll, EventWeight);
+  }
+  
+  
 }
 
 void TopAnalysis::FillHistos(Int_t ch, Int_t cut){
@@ -315,13 +361,21 @@ void TopAnalysis::FillHistos(Int_t ch, Int_t cut){
   fHLep1Eta[ch][cut][sys]     -> Fill(TMath::Abs(TLep_Eta[1]), EventWeight);
   fHLep0Pt[ch][cut][sys]      -> Fill(TLep_Pt[0], EventWeight);
   fHLep1Pt[ch][cut][sys]      -> Fill(TLep_Pt[1], EventWeight);
+  fHLep0Iso[ch][cut][sys]      -> Fill(TLep_Pt[0], EventWeight);
+  fHLep1Iso[ch][cut][sys]      -> Fill(TLep_Pt[1], EventWeight);
   fHDiLepPt[ch][cut][sys]      -> Fill((selLeptons[0].p + selLeptons[1].p).Pt(), EventWeight);
-  fHDelLepPhi[ch][cut][sys]   -> Fill(selLeptons[0].p.DeltaPhi(selLeptons[1].p), EventWeight);
+  fHDelLepPhi[ch][cut][sys]   -> Fill(TMath::Abs(selLeptons[0].p.DeltaPhi(selLeptons[1].p)), EventWeight);
   fHHT[ch][cut][sys]          -> Fill(THT, EventWeight);
-  if(TNJets > 0) fHJet0Eta[ch][cut][sys]     -> Fill(TMath::Abs(TJet_Eta[0]), EventWeight);
-  if(TNJets > 0) fHJet0Pt [ch][cut][sys]     -> Fill(TJet_Pt[0], EventWeight);
-  if(TNJets > 1) fHJet1Eta[ch][cut][sys]     -> Fill(TMath::Abs(TJet_Eta[1]), EventWeight);
-  if(TNJets > 1) fHJet1Pt [ch][cut][sys]     -> Fill(TJet_Pt[1], EventWeight);
+  if(TNJets > 0){ 
+    fHJet0Eta[ch][cut][sys]     -> Fill(TMath::Abs(TJet_Eta[0]), EventWeight);
+    fHJet0Pt [ch][cut][sys]     -> Fill(TJet_Pt[0], EventWeight);
+    fHJet0CSV[ch][cut][sys]     -> Fill(selJets.at(0).csv, EventWeight);
+  }
+  if(TNJets > 1){
+    fHJet1Eta[ch][cut][sys]     -> Fill(TMath::Abs(TJet_Eta[1]), EventWeight);
+    fHJet1Pt [ch][cut][sys]     -> Fill(TJet_Pt[1], EventWeight);
+    fHJet1CSV[ch][cut][sys]     -> Fill(selJets.at(1).csv, EventWeight);
+  }
   fHInvMass[ch][cut][sys]       -> Fill(TMll, EventWeight);
   fHInvMass2[ch][cut][sys]      -> Fill(TMll, EventWeight);
   fHNJets[ch][cut][sys]        -> Fill(TNJets, EventWeight);
@@ -329,8 +383,12 @@ void TopAnalysis::FillHistos(Int_t ch, Int_t cut){
   for(Int_t i = 0; i < (Int_t) Jets15.size(); i++){ 
     fHJetCSV[ch][cut][sys]       -> Fill(Jets15.at(i).csv, EventWeight);
   }
-  //fHvertices[ch][cut][sys]      -> Fill(Get<Int_t>("nVert"), EventWeight);
-  fHNBtagsNJets[ch][cut][sys]   -> Fill(0., EventWeight);
+  fHvertices[ch][cut][sys]      -> Fill(Get<Int_t>("nVert"), EventWeight);
+  if(TNJets == 0) fHNBtagsNJets[ch][cut][sys]   -> Fill(TNBtags,    EventWeight);
+  if(TNJets == 1) fHNBtagsNJets[ch][cut][sys]   -> Fill(TNBtags+1,  EventWeight);
+  if(TNJets == 2) fHNBtagsNJets[ch][cut][sys]   -> Fill(TNBtags+3,  EventWeight);
+  if(TNJets == 3) fHNBtagsNJets[ch][cut][sys]   -> Fill(TNBtags+6,  EventWeight);
+  if(TNJets == 4) fHNBtagsNJets[ch][cut][sys]   -> Fill(TNBtags+10, EventWeight);
 }
 
 void TopAnalysis::SetLeptonVariables(){
@@ -342,6 +400,8 @@ void TopAnalysis::SetLeptonVariables(){
   fTree->Branch("TLep_E" ,     TLep_E ,     "TLep_E[TNSelLeps]/F");
   fTree->Branch("TLep_Charge",  TLep_Charge, "TLep_Charge[TNSelLeps]/F");
   fTree->Branch("TChannel",      &TChannel,      "TChannel/I");
+  fTree->Branch("TIsSS",      &TIsSS,      "TIsSS/B");
+  fTree->Branch("TMll",      &TMll,      "TMll/F");
 }
 
 void TopAnalysis::SetJetVariables(){

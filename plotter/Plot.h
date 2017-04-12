@@ -21,7 +21,7 @@
 // Defaul cases and paths
 const TString DefaultPlotfolder = "./Plots/";
 const TString DefaultLimitFolder = "./Datacards/";
-const Float_t DefaultLumi = 35.9; //fb-1
+const Float_t DefaultLumi = 35.85; //fb-1
 
 
 class Plot {
@@ -167,10 +167,12 @@ public:
   TString GetChan(){ return chan;}
   TString GetSignal(){ return signal;}
   Float_t GetLumi(){ return Lumi;}
+  Float_t GetLumiUnc(){ return sys_lumi;}
   void SetVar(TString variable){ var = variable; if(varname == "") varname = variable;}
   void SetVarName(TString variable){ varname = variable;}
   void SetChan(TString ch){chan = ch;}
   void SetLumi(Float_t lum){Lumi = lum;} 
+  void SetLumiUnc(Float_t lum){sys_lumi = lum;} 
   void SetPlotFolder(TString f){plotFolder = f;} 
   void SetLimitFolder(TString f){limitFolder = f;}   
 	void SetCut(TString cuts){cut = (cuts);}
@@ -196,11 +198,13 @@ public:
   void AddSumHistoSystematicDown(Histo* hsys){hsys->SetStyle(); VSumHistoSystDown.push_back(hsys);}
   void IncludeBkgSystematics();
 
-  void SetPath(TString p){ path = p; if(pathSignal == "") pathSignal = path;}
+  void SetPath(TString p){ path = p; if(pathSignal == "") pathSignal = path; if(pathData == "") pathData = path;}
   void SetPathToHeppyTrees(TString p){ pathToHeppyTrees = p;}
   void SetPathSignal(TString p){ pathSignal = p; }
+  void SetPathData(TString p){ pathData = p; }
   void SetTreeName(TString p){ treeName = p;}
   void SetOutputName(TString p){ outputName = p;}
+  void SetYieldsTableName(TString p){ YieldsTableName = p;}
   TString GetOutputName(){ return outputName;}
   TString GetPathToHeppyTrees(){ return pathToHeppyTrees;}
 
@@ -211,18 +215,39 @@ public:
   void PrintYields(TString cuts = "", TString labels = "", TString channels = "", TString options = "");
 	void PrintSystYields();
 	Float_t GetYield(TString pr = "ttbar", TString systag = "0");
+  Float_t GetData();
   Float_t GetTotalSystematic(TString pr);
   Int_t GetColorOfProcess(TString pr);
   Plot* NewPlot(TString newVar = "", TString newCut = "", TString newChan = "", Int_t newnbins = -1, Float_t newbin0 = -999, Float_t newbinN = -999, TString newtitle = "", TString newXtitle = "");
+
+  void SetRatioMin(Float_t r){ RatioMin = r;}
+  void SetRatioMax(Float_t r){ RatioMax = r;}
+  void SetScaleMax(Float_t s){ ScaleMax = s;}
+  void SetScaleLog(Float_t s){ ScaleLog = s;}
+  void SetPlotMinimum(Float_t p){ PlotMinimum = p;}
+  void ScaleProcess(TString process, Float_t factor = 1);
+  void SetTableFormats(TString t){ tableFormats = t;}
 
 protected: 
   TString pathToHeppyTrees = "";
   TString path = "";
   TString pathSignal = "";
+  TString pathData = "";
   TString treeName = "";
   TString outputName = "";
+  TString YieldsTableName = "yields";
+  TString tableFormats = "%1.2f";
   Int_t nSignalSamples;
   
+  // Maximum and minimum value of the ratio plot
+  Float_t RatioMin = 0.8;
+  Float_t RatioMax = 1.2;
+  
+  // Factor to multiply the maximum of the plot to set the maximum
+  Float_t ScaleMax = 1.2;
+  Float_t ScaleLog = 500;
+  Float_t PlotMinimum = 0.;
+
   TString varname = "";
 	TString var;
   TString chan;
