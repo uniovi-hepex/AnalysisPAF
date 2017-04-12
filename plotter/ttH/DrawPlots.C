@@ -130,7 +130,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->SetPath(path);
   p->SetPathSignal(path);
   p->SetTreeName("MiniTree");
-  p->verbose        = false;
+  p->verbose        = true;
   if (chan == "Elec" || chan == "Muon" || chan == "ElMu") name = name+"_2lSS";
   p->SetVarName(name);
   p->doStackSignal  = true;
