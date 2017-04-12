@@ -108,8 +108,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
       cout << endl;
       counter = 1;
     }
-    path        += "lepmvacomparison/";
-    outputpath  += "lepmvacomparison/";
+    path        += "lepMVAcomparison/";
+    outputpath  += "lepMVAcomparison/";
     if (tag == "et")      path += "extratight/";
     else if (tag == "vt") path += "verytight/";
     else if (tag == "t"   path += "tight/";
