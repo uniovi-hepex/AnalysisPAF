@@ -116,7 +116,6 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     else if (tag == "m")    path += "medium/";
     else if (tag == "tth")  path += "tth/";
   }
-  }
   else {
     if (counter == 0) {
       cout << endl;
