@@ -285,10 +285,12 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
     if(lep.isMuon){
       passId  = getMuonId(iTight);
       passIso = getRelIso04POG(iTight);
+      lep.SetIso(RelIso04);
     }
     if(lep.isElec){
       passId = getElecCutBasedId(iTight) && lostHits <= 1;
       passIso = getRelIso03POG(iTight);
+      lep.SetIso(RelIso03);
       if(TMath::Abs(etaSC) > 1.4442 && TMath::Abs(etaSC) < 1.566) return false;
     }
     if(lep.p.Pt() < 20 || TMath::Abs(lep.p.Eta()) > 2.4) return false;
