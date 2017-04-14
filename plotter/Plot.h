@@ -226,6 +226,7 @@ public:
   void SetScaleLog(Float_t s){ ScaleLog = s;}
   void SetPlotMinimum(Float_t p){ PlotMinimum = p;}
   void ScaleProcess(TString process, Float_t factor = 1);
+  void ScaleSys(TString processSys, Float_t factor = 1);
   void SetTableFormats(TString t){ tableFormats = t;}
 
 protected: 

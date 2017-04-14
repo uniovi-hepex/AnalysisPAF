@@ -212,7 +212,7 @@ void TResultsTable::Print(ETResultsTableOutputFormat format, ostream& os) const{
       if (format != kLaTeX || j != GetNColumns()-1) os << cellend;
     }
     os << rowend << std::endl;
-    if(VSeparations.Contains(TString(Form("%i", i)))){ os << doubleline; iColor++;}
+    if(VSeparations.Contains(TString(Form("l%i,", i)))){ os << doubleline; iColor++;}
     else if (fDrawHLines && i != GetNRows()-1) os << singleline;
   }
 
