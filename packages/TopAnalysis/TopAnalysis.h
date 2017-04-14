@@ -29,6 +29,7 @@ class TopAnalysis : public PAFChainItemSelector{
     std::vector<Jet> Jets15  ;
 
     TTree* fTree;
+    Float_t TLHEWeight[254];
     void SetLeptonVariables();
     void SetJetVariables();
     void SetEventVariables();
@@ -105,6 +106,10 @@ class TopAnalysis : public PAFChainItemSelector{
 
     Float_t  TWeight_LepEffUp;
     Float_t  TWeight_LepEffDown;
+    Float_t  TWeight_ElecEffUp;
+    Float_t  TWeight_ElecEffDown;
+    Float_t  TWeight_MuonEffUp;
+    Float_t  TWeight_MuonEffDown;
     Float_t  TWeight_TrigUp;
     Float_t  TWeight_TrigDown;
     Float_t  TWeight_FSUp;

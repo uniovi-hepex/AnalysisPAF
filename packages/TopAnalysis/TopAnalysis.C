@@ -7,6 +7,8 @@ TopAnalysis::TopAnalysis() : PAFChainItemSelector() {
   passMETfilters = 0;
   passTrigger    = 0;
   isSS           = 0;
+
+  for(Int_t i = 0; i < 254; i++) TLHEWeight[i] = 0;
   
   for(Int_t ch = 0; ch < nChannels; ch++){
     for(Int_t cut = 0; cut < nLevels; cut++){
@@ -116,11 +118,46 @@ void TopAnalysis::InsideLoop(){
   if(TNSelLeps >= 2 && passTrigger && passMETfilters){ // dilepton event, 2 leptons // && !isSS
     // Deal with weights:
     Float_t lepSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
-    Float_t lepSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1);
-    Float_t lepSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1);
-    TWeight            = NormWeight*lepSF*TrigSF*PUSF;
-    TWeight_LepEffUp   = NormWeight*lepSFUp*TrigSF*PUSF;
-    TWeight_LepEffDown = NormWeight*lepSFDo*TrigSF*PUSF;
+    Float_t ElecSF = 1; Float_t MuonSF = 1;
+    Float_t ElecSFUp = 1; Float_t ElecSFDo = 1; Float_t MuonSFUp = 1; Float_t MuonSFDo = 1;
+    if(TChannel == iElec){
+      ElecSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
+      ElecSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1);
+      ElecSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1);
+      MuonSFUp = 1; MuonSFDo = 1; MuonSF = 1;
+    }
+    else if(TChannel == iMuon){
+      MuonSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1);
+      MuonSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1);
+      ElecSFUp = 1; ElecSFDo = 1; ElecSF = 1;
+    }
+    else{
+      if(selLeptons.at(0).isMuon){
+        MuonSF   *= selLeptons.at(0).GetSF( 0);
+        MuonSFUp *= selLeptons.at(0).GetSF( 1);
+        MuonSFDo *= selLeptons.at(0).GetSF(-1);
+      }
+      else{
+        ElecSF   *= selLeptons.at(0).GetSF( 0);
+        ElecSFUp *= selLeptons.at(0).GetSF( 1);
+        ElecSFDo *= selLeptons.at(0).GetSF(-1);
+      }
+      if(selLeptons.at(1).isMuon){
+        MuonSF   *= selLeptons.at(1).GetSF( 0);
+        MuonSFUp *= selLeptons.at(1).GetSF( 1);
+        MuonSFDo *= selLeptons.at(1).GetSF(-1);
+      }
+      else{
+        ElecSF   *= selLeptons.at(1).GetSF( 0);
+        ElecSFUp *= selLeptons.at(1).GetSF( 1);
+        ElecSFDo *= selLeptons.at(0).GetSF(-1);
+      }
+    }
+    TWeight             = NormWeight*ElecSF*MuonSF*TrigSF*PUSF;
+    TWeight_ElecEffUp   = NormWeight*ElecSFUp*MuonSF*TrigSF*PUSF;
+    TWeight_ElecEffDown = NormWeight*ElecSFDo*MuonSF*TrigSF*PUSF;
+    TWeight_MuonEffUp   = NormWeight*ElecSF*MuonSFUp*TrigSF*PUSF;
+    TWeight_MuonEffDown = NormWeight*ElecSF*MuonSFDo*TrigSF*PUSF;
     TWeight_TrigUp     = NormWeight*lepSF*TrigSF_Up*PUSF;
     TWeight_TrigDown   = NormWeight*lepSF*TrigSF_Down*PUSF;
     TWeight_PUDown     = NormWeight*lepSF*TrigSF*PUSF_Up;
@@ -256,6 +293,7 @@ void TopAnalysis::GetMET(){
     TMET_Phi    = Get<Float_t>("met_phi");  // MET phi
     TMETJESUp   = Get<Float_t>("met_jecUp_pt"  );
     TMETJESDown = Get<Float_t>("met_jecDown_pt");
+  for(Int_t i = 0; i < Get<Int_t>("nLHEweight"); i++)   TLHEWeight[i] = Get<Float_t>("LHEweight_wgt", i);
 }
 
 void TopAnalysis::InitHistos(){
@@ -440,11 +478,16 @@ void TopAnalysis::SetEventVariables(){
   fTree->Branch("TWeight",      &TWeight,      "TWeight/F");
   fTree->Branch("TWeight_LepEffUp",      &TWeight_LepEffUp,      "TWeight_LepEffUp/F");
   fTree->Branch("TWeight_LepEffDown",    &TWeight_LepEffDown,    "TWeight_LepEffDown/F");
+  fTree->Branch("TWeight_ElecEffUp",      &TWeight_ElecEffUp,      "TWeight_ElecEffUp/F");
+  fTree->Branch("TWeight_ElecEffDown",    &TWeight_ElecEffDown,    "TWeight_ElecEffDown/F");
+  fTree->Branch("TWeight_MuonEffUp",      &TWeight_MuonEffUp,      "TWeight_MuonEffUp/F");
+  fTree->Branch("TWeight_MuonEffDown",    &TWeight_MuonEffDown,    "TWeight_MuonEffDown/F");
   fTree->Branch("TWeight_TrigUp",        &TWeight_TrigUp,        "TWeight_TrigUp/F");
   fTree->Branch("TWeight_TrigDown",      &TWeight_TrigDown,      "TWeight_TrigDown/F");
   fTree->Branch("TWeight_PUUp",        &TWeight_PUUp,        "TWeight_PUUp/F");
   fTree->Branch("TWeight_PUDown",        &TWeight_PUDown,        "TWeight_PUDown/F");
 
+  fTree->Branch("TLHEWeight",        TLHEWeight,         "TLHEWeight[254]/F");
   fTree->Branch("TMET",         &TMET,         "TMET/F");
   fTree->Branch("TMET_Phi",     &TMET_Phi,     "TMET_Phi/F");
   fTree->Branch("TMETJESUp",    &TMETJESUp,    "TMETJESUp/F");
