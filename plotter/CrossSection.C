@@ -5,8 +5,13 @@ void CrossSection::SetMembers(){
     nBkgs = BkgYield.size();
     nSyst = SysVar.size();
 
-    NBkg = 0;
-    for(Int_t k = 0; k < nBkgs; k++) NBkg += BkgYield.at(k);      
+    NBkg = 0; NBkg_err = 0; y_err = 0; NData_err = TMath::Sqrt(NData);
+    for(Int_t k = 0; k < nBkgs; k++) NBkg      += BkgYield.at(k); 
+    for(Int_t k = 0; k < nBkgs; k++) NBkg_err  += ( BkgYield.at(k)*BkgUnc.at(k) )*( BkgYield.at(k)*BkgUnc.at(k) ); 
+    for(Int_t k = 0; k < nSyst; k++) y_err     += (y - SysVar.at(k)) * (y - SysVar.at(k));
+    NBkg_err = TMath::Sqrt(NBkg_err);
+    y_err    = TMath::Sqrt(   y_err);
+    
     xsec = GetXSec(NData, NBkg, y);
     xsec_stat_err = fabs(xsec - GetXSec(NData+TMath::Sqrt(NData), NBkg, y));
     xsec_lumi_err = fabs(xsec*LumiUnc);
@@ -19,26 +24,15 @@ void CrossSection::SetMembers(){
     xsec_total_err = TMath::Sqrt(xsec_syst_err*xsec_syst_err + xsec_lumi_err*xsec_lumi_err + xsec_stat_err*xsec_stat_err);
 
     // For acceptance and efficiency...
-    if(nSimulatedSignal != 0){
-      TotalAcceptance = 0;
-    }
-    else TotalAcceptance = 0;
-    if(nFiducialSignal != 0){
-      acceptance = 0;
-      acc_total_err = 0;
-      acc_stat_err = 0;
-      acc_syst_err = 0;
-      acc_lumi_err = 0;
-    }
-    else acceptance = 0;
+    TotalAcceptance = 0; acceptance = 0; efficiency = 0;
+    eff_err = 0; acc_err = 0;
     if(BR != 0){
-      efficiency = 0;
-      eff_total_err = 0;
-      eff_stat_err = 0;
-      eff_syst_err = 0;
-      eff_lumi_err = 0;
+      TotalAcceptance = y/(Lumi*thxsec)/BR;
+      if(nFiducialSignal != 0 && nSimulatedSignal != 0){
+        acceptance = nFiducialSignal/nSimulatedSignal/BR;
+        efficiency = TotalAcceptance/acceptance;
+      }
     }
-    else efficiency = 0;
 }
 
 void CrossSection::PrintSystematicTable(TString options){
@@ -46,8 +40,10 @@ void CrossSection::PrintSystematicTable(TString options){
   Int_t nrows = nSyst+nBkgs+4;
   Int_t ncolumns = 2;
   TResultsTable t(nrows, ncolumns, false); //cout << Form("Creating table with [rows, columns] = [%i, %i]\n", nrows, ncolumns);
+  t.SetFormatNum("%1.2f");
   t.SetRowTitleHeader("Source");
-  t.AddVSeparation(Form("%i, %i, %i", nSyst-1, nSyst + nBkgs - 1, nSyst+nBkgs+4 - 2));
+  //t.AddVSeparation(Form("%i, %i, %i", nSyst-1, nSyst + nBkgs - 1, nSyst+nBkgs+4 - 2));
+  t.AddVSeparation(nSyst-1);  t.AddVSeparation(nSyst + nBkgs - 1); t.AddVSeparation(nSyst+nBkgs+4 - 2);
 
   // Set row titles
   for(Int_t i = 0; i < nSyst; i++) t.SetRowTitle(i,       SysTags.at(i));
@@ -86,10 +82,40 @@ void CrossSection::PrintSystematicTable(TString options){
   if(options.Contains("txt"))  t.SaveAs(outputFolder + "/" + tableName + ".txt");
 }
 
+void CrossSection::PrintYieldsTable(TString options){
+  if(notSet) SetMembers();
+  Int_t nrows = nBkgs+3;
+  Int_t ncolumns = 1;
+  TResultsTable t(nrows, ncolumns, true); 
+  t.SetFormatNum("%1.2f");
+  t.AddVSeparation(nBkgs-1); t.AddVSeparation(nBkgs); t.AddVSeparation(nBkgs+1);
+  for(Int_t i = 0; i < nBkgs; i++) t.SetRowTitle(i, BkgTags.at(i));
+  t.SetRowTitle(nBkgs  , "Total Background");
+  t.SetRowTitle(nBkgs+1, "Expected signal");
+  t.SetRowTitle(nBkgs+2, "Observed data");
+  t.SetRowTitleHeader("Source");
+  t.SetColumnTitle(0, "Yield");
+  for(Int_t i = 0; i < nBkgs; i++){
+    t[i][0] = BkgYield.at(i);
+    t[i][0].SetError(BkgUnc.at(i)*BkgYield.at(i));
+  }
+    t[nBkgs][0]   = NBkg;  t[nBkgs][0].SetError(NBkg_err);
+    t[nBkgs+1][0] = y;     t[nBkgs+1][0].SetError(y_err);
+    t[nBkgs+2][0] = NData; t[nBkgs+2][0].SetError(NData);
+
+    t.SetDrawHLines(true); t.SetDrawVLines(true); t.Print();
+    if(options.Contains("tex"))  t.SaveAs(outputFolder + "/CrossSection_yields.tex");
+    if(options.Contains("html")) t.SaveAs(outputFolder + "/CrossSection_yields.html");
+    if(options.Contains("txt"))  t.SaveAs(outputFolder + "/CrossSection_yields.txt");
+}
+
 void CrossSection::PrintCrossSection(TString options){
-  cout << "The measured cross section is: " << endl;
-  cout << Form(" >>> %1.1f +/- %1.1f (stat) +/- %1.1f (sys) +/- %1.1f (lumi)  pb", xsec, xsec_stat_err, xsec_syst_err, xsec_lumi_err) << endl;
-  cout << " >>> " << xsec << " +/- " << xsec_total_err << " (" << xsec_total_err/xsec*100 << " %)" << endl;
+  cout << "\033[1;31m >>> The measured cross section is: \033[0m\n";
+  cout << Form("\033[1;36m     - %1.1f +/- %1.1f (stat) +/- %1.1f (sys) +/- %1.1f (lumi)  pb\033[0m\n", xsec, xsec_stat_err, xsec_syst_err, xsec_lumi_err);
+  cout << Form("\033[1;34m     - %1.1f +/- %1.1f (total, %1.2f percent) \033[0m\n", xsec, xsec_total_err, xsec_total_err/xsec*100);
+  cout << Form("\033[1;32m     - BR         = %1.4f \033[0m\n", BR);
+  cout << Form("\033[1;32m     - Acceptance = %1.2f +/- %1.2f \033[0m\n", acceptance, acc_err);
+  cout << Form("\033[1;32m     - Efficiency = %1.2f +/- %1.2f \033[0m\n", efficiency, eff_err);
 }
 
 void CrossSection::SwitchLabel(TString oldLabel, TString newLabel){
