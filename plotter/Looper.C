@@ -57,8 +57,12 @@ TString CraftFormula(TString cuts, TString chan, TString sys){
   else schan = ("1");
 
   TString weight = TString("TWeight");
-  if(sys == "LepEffUp"  ) weight += "_LepEffUp";
+  if     (sys == "LepEffUp"  ) weight += "_LepEffUp";
   else if(sys == "LepEffDown") weight += "_LepEffDown";
+  else if(sys == "ElecEffUp"  ) weight += "_ElecEffUp";
+  else if(sys == "ElecEffDown") weight += "_ElecEffDown";
+  else if(sys == "MuonEffUp"  ) weight += "_MuonEffUp";
+  else if(sys == "MuonEffDown") weight += "_MuonEffDown";
   else if(sys == "TrigUp"    ) weight += "_TrigUp";
   else if(sys == "TrigDown"  ) weight += "_TrigDown";
   else if(sys == "PUUp"      ) weight += "_PUUp";
