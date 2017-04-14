@@ -110,11 +110,11 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     }
     path        += "lepMVAcomparison/";
     outputpath  += "lepMVAcomparison/";
-    if (tag == "et")      path += "extratight/";
-    else if (tag == "vt") path += "verytight/";
-    else if (tag == "t"   path += "tight/";
-    else if (tag == "m"   path += "medium/";
-    else if (tag == "tth" path += "tth/";
+    if (tag == "et")        path += "extratight/";
+    else if (tag == "vt")   path += "verytight/";
+    else if (tag == "t")    path += "tight/";
+    else if (tag == "m")    path += "medium/";
+    else if (tag == "tth")  path += "tth/";
   }
   }
   else {
