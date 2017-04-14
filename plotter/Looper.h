@@ -15,10 +15,12 @@
 #include "TSystem.h"
 
 enum eChannel{iNoChannel, iElMu, iMuon, iElec, iTriLep, iFourLep, nTotalDefinedChannels};
+const Int_t nLHEweights = 112;
 
 TString CraftFormula(TString var, TString cut, TString chan, TString sys);
 TString CraftVar(TString varstring, TString sys);
 TH1D* loadSumOfLHEweights(TString pathToHeppyTrees = "/pool/ciencias/HeppyTreesSummer16/v2/", TString sampleName = "TTbar_PowhegLHE");
+TH1F* hLHE[nLHEweights];
 
 class Looper{
   public:
@@ -73,6 +75,7 @@ class Looper{
 	 void SetFormulas(TString sys = "0"); 
 	 void CreateHisto(TString sys = "0"); 
    void Loop(TString sys = "");
+   Float_t getLHEweight(Int_t i);
 
  // protected:
    Histo* Hist;
