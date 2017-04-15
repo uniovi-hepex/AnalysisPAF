@@ -21,11 +21,12 @@ class CrossSection{
   public:
 
     CrossSection(){}; // void constructor
-    CrossSection(Plot* p, TString sig){  // From a Plot
+    CrossSection(Plot* p, TString sig = ""){  // From a Plot
       /* Takes data, signal and background from a plot
        * Also de systematic uncertainties but you can modify the name of the systematics
        */
-      signalTag = sig;
+      if(sig == "") signalTag = p->GetSignalProcess();
+      else signalTag = sig;
       Int_t nBkgs = p->VBkgs.size(); 
       for(Int_t i = 0; i < nBkgs; i++){
         if(signalTag ==  p->VBkgs.at(i)->GetProcess()) continue;

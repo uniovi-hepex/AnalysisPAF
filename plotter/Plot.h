@@ -34,7 +34,6 @@ public:
   bool doStackOverflow = true;
   bool doSignal        = true;
   bool doSetLogy       = true;
-  bool doStackSignal   = false;
   bool doStatUncInDatacard = true;
 
   std::vector<Histo*> VBkgs;
@@ -229,6 +228,10 @@ public:
   void ScaleSys(TString processSys, Float_t factor = 1);
   void SetTableFormats(TString t){ tableFormats = t;}
 
+  void SetSignalProcess(TString p){ SignalProcess = p;}
+  void SetSignalStyle(TString p){ SignalStyle = p;} 
+  TString GetSignalProcess(){ return SignalProcess;}
+
 protected: 
   TString pathToHeppyTrees = "";
   TString path = "";
@@ -257,6 +260,9 @@ protected:
   Int_t nb; Double_t x0; Double_t xN;
   TString  title;
   TString xtitle;
+ 
+  TString SignalProcess;
+  TString SignalStyle = "";
 
   TString SystVar;
   Int_t iS;
