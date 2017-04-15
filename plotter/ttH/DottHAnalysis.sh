@@ -137,21 +137,8 @@ if [ "$1" == "an" ]; then
 elif [ "$1" == "pl" ]; then
   echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ttH PLOTTER EXECUTION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
   echo ""
-  echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Setting up the environment"
-  source pre_start.sh
-
-  echo "%%%%%> DONE"
-  echo ""
   echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Starting to plot"
-  cd ..
-  root -l -b -q "ttH/DrawPlots.C(\"Muon\")"
-  root -l -b -q "ttH/DrawPlots.C(\"Elec\")"
-  root -l -b -q "ttH/DrawPlots.C(\"ElMu\")"
-  root -l -b -q "ttH/DrawPlots.C(\"2lSS\")"
-  root -l -b -q "ttH/DrawPlots.C(\"3l\")"
-  root -l -b -q "ttH/DrawPlots.C(\"4l\")"
-  root -l -b -q "ttH/DrawPlots.C(\"All\")"
-  cd ttH
+  source PlotThings.sh "0"
 else
     echo "ERROR - No valid arguments given"
     echo "Please, execute this script with a valid argument"
