@@ -46,7 +46,7 @@ class CrossSection{
       //    Optional inputs: nSimulatedSignal, nFiducialSignal, BR, level tag, channel tag
 
     }; 
-    CrossSection(Int_t nbkg, TString *bkgtag, Float_t *bkg, Float_t *bkg_unc, Int_t nsys, TString *systag, Float_t *var, Float_t signal_yield = 1, Float_t data = 1, Float_t lum = 0, Float_t lum_unc = 0){ // From yields
+    CrossSection(Int_t nbkg, TString *bkgtag, Float_t *bkg, Float_t *bkg_unc, Int_t nsys, TString *systag, Float_t *var, Float_t signal_yield = 1, Float_t data = 1, Float_t lum = 0, Float_t lum_unc = 0, Bool_t *isEff = 0){ // From yields
       Int_t nBkgs = nbkg;
       for(Int_t i = 0; i < nBkgs; i++){
         AddBkgTag(bkgtag[i]);
@@ -57,6 +57,7 @@ class CrossSection{
       for(Int_t i = 0; i < nSys; i++){
         AddSysTag(systag[i]);
         AddSysVar(var[i]);
+        if(isEff) AddUncTagEff(isEff[i]);
       }
       y = signal_yield; NData = data;
       Lumi = lum; LumiUnc = lum_unc;
@@ -68,9 +69,13 @@ class CrossSection{
  
     void AddBkg(Float_t v){ BkgYield.push_back(v);}
     void AddBkgUnc(Float_t v){ BkgUnc.push_back(v);}
+
     void AddBkgTag(TString t){ BkgTags.push_back(t);}
     void AddSysTag(TString t){ SysTags.push_back(t);}
     void AddSysVar(Float_t v){ SysVar.push_back(v);}
+    void AddUncTagEff(Bool_t v){ IsEffic.push_back(v);}
+    void SetEfficiencySyst(TString s);
+    void SetAcceptanceSyst(TString s);
 
     void SetLevelTag(TString t){ level = t;}
     void SetChannelTag(TString t){ channel = t;}
@@ -100,6 +105,7 @@ class CrossSection{
 
     // Inputs...
     vector<TString> SysTags  = vector<TString>();
+    vector<Bool_t>  IsEffic  = vector<Bool_t>();  // Does affect to Efficiency? Or acceptance?
     vector<Float_t> SysVar   = vector<Float_t>(); // (relative)
     vector<TString> BkgTags  = vector<TString>();
     vector<Float_t> BkgUnc   = vector<Float_t>(); // (relative)
