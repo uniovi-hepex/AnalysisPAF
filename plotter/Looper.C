@@ -87,7 +87,7 @@ TString CraftFormula(TString cuts, TString chan, TString sys){
     cuts = ( ((TString) cuts).ReplaceAll("TJet_Pt", "TJetJESDown_Pt"));   
   }
   else if(sys == "JER"){
-    cuts = ( ((TString) cuts).ReplaceAll("TNBtags", "TNJetsJER"));   
+    cuts = ( ((TString) cuts).ReplaceAll("TNJets", "TNJetsJER"));   
     cuts = ( ((TString) cuts).ReplaceAll("TJet_Pt", "TJetJER_Pt"));   
   }
   else if(sys == "BtagUp"){
