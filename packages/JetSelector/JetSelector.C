@@ -207,7 +207,7 @@ void JetSelector::InsideLoop(){
     for(Int_t i = 0; i < nJet; i++){
       GetmcJetVariables(i);
       tJ = Jet(tpJ, csv, 1, flavmc);
-      tJ.isBtag = flavmc == 5;
+      tJ.isBtag = (flavmc == 5);
       mcJets.push_back(tJ);
     }
 
@@ -223,6 +223,7 @@ void JetSelector::InsideLoop(){
   SetParam("Jets15",   Jets15);
   SetParam("vetoJets", vetoJets);
   SetParam("genJets",  genJets);
+  SetParam("mcJets",  mcJets);
   SetParam("nSelJets",  nSelJets);
   SetParam("nJets15",  nJets15);
   SetParam("nVetoJets",  nVetoJets);
