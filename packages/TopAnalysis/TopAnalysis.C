@@ -40,6 +40,7 @@ TopAnalysis::TopAnalysis() : PAFChainItemSelector() {
         fHvertices[ch][cut][sys]     = 0;
         if(cut == 0){
           fHyields[ch][sys]     = 0;
+          fHFiduYields[ch][sys]     = 0;
           fHSSyields[ch][sys]   = 0;
         }
       }
@@ -74,6 +75,8 @@ void TopAnalysis::Initialise(){
   vetoLeptons = std::vector<Lepton>();
   selJets = std::vector<Jet>();
   Jets15  = std::vector<Jet>();
+  genJets = std::vector<Jet>();
+  mcJets  = std::vector<Jet>();
 }
 
 void TopAnalysis::InsideLoop(){
@@ -83,6 +86,8 @@ void TopAnalysis::InsideLoop(){
   vetoLeptons = GetParam<vector<Lepton>>("vetoLeptons");
   selJets     = GetParam<vector<Jet>>("selJets");
   Jets15      = GetParam<vector<Jet>>("Jets15");
+  genJets     = GetParam<vector<Jet>>("genJets");
+  mcJets      = GetParam<vector<Jet>>("mcJets");
 
   // Weights and SFs
   NormWeight = GetParam<Float_t>("NormWeight");
@@ -103,9 +108,36 @@ void TopAnalysis::InsideLoop(){
   // Leptons and Jets
   GetLeptonVariables(selLeptons, vetoLeptons);
   GetJetVariables(selJets, Jets15);
+  GetGenJetVariables(genJets, mcJets);
   GetMET();
 
   fhDummy->Fill(1);
+
+  // Number of events in fiducial region
+  if(genLeptons.size() >= 2){ // MIND THE POSSIBLE SKIM (on reco leptons) IN THE SAMPLE!!
+    Int_t GenChannel = -1;
+    if(genLeptons.at(0).isElec && genLeptons.at(0).isMuon) GenChannel = iElMu; 
+    if(genLeptons.at(0).isMuon && genLeptons.at(0).isElec) GenChannel = iElMu; 
+    if(genLeptons.at(0).isMuon && genLeptons.at(0).isMuon) GenChannel = iMuon; 
+    if(genLeptons.at(0).isElec && genLeptons.at(0).isElec) GenChannel = iElec; 
+    if( ( (genLeptons.at(0).p.Pt() > 25 && genLeptons.at(1).p.Pt() > 20) || (genLeptons.at(0).p.Pt() > 20 && genLeptons.at(1).p.Pt() > 25) )
+        && (TMath::Abs(genLeptons.at(0).p.Eta() < 2.4) && TMath::Abs(genLeptons.at(1).p.Eta() < 2.4)) 
+        && ( (genLeptons.at(0).p + genLeptons.at(1).p).M() > 20 ) ){
+      fHFiduYields[GenChannel-1][0] -> Fill(idilepton);
+      if(GenChannel == iElMu || (TMath::Abs((genLeptons.at(0).p + genLeptons.at(1).p).M() - 91) > 15) ){
+        fHFiduYields[GenChannel-1][0] -> Fill(iZVeto);
+        if(GenChannel == iElMu || TGenMET > 40){   // MET > 40 in ee, µµ
+          fHFiduYields[GenChannel-1][0] -> Fill(iMETcut);
+          if(nFiduJets >= 2){ //At least 2 jets
+            fHFiduYields[GenChannel-1][0] -> Fill(i2jets);
+            if(nFidubJets >= 1){ // At least 1 b-tag
+              fHFiduYields[GenChannel-1][0] -> Fill(i1btag);
+            }
+          }
+        }
+      }
+    }
+  }
 
   //if((Int_t) genLeptons.size() >=2 && TNSelLeps >= 2 && passTrigger && passMETfilters){ // dilepton event, 2 leptons // && !isSS
   if (gSelection == iTopSelec){
@@ -288,11 +320,19 @@ void TopAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cle
   
 }
 
+void TopAnalysis::GetGenJetVariables(std::vector<Jet> genJets, std::vector<Jet> mcJets){
+  nFiduJets = 0; nFidubJets = 0; 
+  Int_t nGenJets = genJets.size();
+  for(Int_t i = 0; i < nGenJets; i++) if(genJets.at(i).p.Pt() > 30 && TMath::Abs(genJets.at(i).p.Eta()) < 2.4)                         nFiduJets++;
+  for(Int_t i = 0; i < TNJets; i++)   if(mcJets.at(i).p.Pt()  > 30 && TMath::Abs(mcJets.at(i).Eta()     < 2.4) && mcJets.at(i).isBtag) nFidubJets++;
+}
+
 void TopAnalysis::GetMET(){
     TMET        = Get<Float_t>("met_pt");
     TMET_Phi    = Get<Float_t>("met_phi");  // MET phi
     TMETJESUp   = Get<Float_t>("met_jecUp_pt"  );
     TMETJESDown = Get<Float_t>("met_jecDown_pt");
+    TGenMET     = Get<Float_t>("met_genPt");
   for(Int_t i = 0; i < Get<Int_t>("nLHEweight"); i++)   TLHEWeight[i] = Get<Float_t>("LHEweight_wgt", i);
 }
 
@@ -300,6 +340,7 @@ void TopAnalysis::InitHistos(){
   fhDummy = CreateH1F("fhDummy", "fhDummy", 1, 0, 2);
   for(Int_t ch = 0; ch < nChannels; ch++){
     fHyields[ch][0]     = CreateH1F("H_Yields_"+gChanLabel[ch],"", nLevels, -0.5, nLevels-0.5);
+    fHFiduYields[ch][0]     = CreateH1F("H_FiduYields_"+gChanLabel[ch],"", nLevels, -0.5, nLevels-0.5);
     fHSSyields[ch][0]   = CreateH1F("H_SSYields_"+gChanLabel[ch],"", nLevels, -0.5, nLevels-0.5);
   }
   if(!makeHistos) return;
@@ -489,6 +530,7 @@ void TopAnalysis::SetEventVariables(){
 
   fTree->Branch("TLHEWeight",        TLHEWeight,         "TLHEWeight[254]/F");
   fTree->Branch("TMET",         &TMET,         "TMET/F");
+  fTree->Branch("TGenMET",         &TGenMET,         "TGenMET/F");
   fTree->Branch("TMET_Phi",     &TMET_Phi,     "TMET_Phi/F");
   fTree->Branch("TMETJESUp",    &TMETJESUp,    "TMETJESUp/F");
   fTree->Branch("TMETJESDown",  &TMETJESDown,  "TMETJESDown/F");
