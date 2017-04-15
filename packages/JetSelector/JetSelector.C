@@ -169,6 +169,11 @@ void JetSelector::InsideLoop(){
 	if(tJ.p.Pt() > jet_MinPt){
 	  selJets.push_back(tJ);
 	  if(tJ.isBtag) nBtagJets++; 
+    if(!gIsData){
+      GetmcJetVariables(i);
+      tJ.SetMCjet(tpJ);
+      GetJetVariables(i);
+    }
 	} 
       }
       if (tJ.p.Pt() > vetoJet_minPt && tJ.p.Eta() < vetoJet_maxEta){
@@ -254,8 +259,8 @@ void JetSelector::SetSystematics(Jet *j){
   if(gIsData) return;
   j->pTJESUp     = rawPt*pt_corrUp;
   j->pTJESDown   = rawPt*pt_corrDown;
-  j->pTJERUp     = _pt;
-  j->pTJERDown   = _pt;
+  j->pTJERUp     = getJetJERpt(*j);
+  j->pTJERDown   = getJetJERpt(*j);
   j->isBtag_BtagUp      = fBTagSFbUp->IsTagged(_csv, _flavmc, _pt, _eta);
   j->isBtag_BtagDown    = fBTagSFbDo->IsTagged(_csv, _flavmc, _pt, _eta);
   j->isBtag_MisTagUp    = fBTagSFlUp->IsTagged(_csv, _flavmc, _pt, _eta);

@@ -99,19 +99,67 @@ Float_t JEStoMET(vector<Jet> vjets, Float_t met, Float_t met_phi, Int_t dir){
   return (vmet+nomJets-varJets).Pt();
 }
 
-/*Float_t getJetJERpt(Jet jet){
+Float_t getJERscale(Float_t jet_eta, Int_t dir = 0){
+  // SFs for 80DX https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetResolution#JER_Uncertainty
+  Float_t eta = TMath::Abs(jet_eta);
+  Float_t SF = 1; Float_t err = 0;
+  if     (eta < 0.5){SF = 1.109; err = 0.008; } 
+  else if(eta < 0.8){SF = 1.138; err = 0.013; }
+  else if(eta < 1.1){SF = 1.114; err = 0.013; }
+  else if(eta < 1.3){SF = 1.123; err = 0.024; }
+  else if(eta < 1.7){SF = 1.084; err = 0.011; }
+  else if(eta < 1.9){SF = 1.082; err = 0.035; }
+  else if(eta < 2.1){SF = 1.140; err = 0.047; }
+  else if(eta < 2.3){SF = 1.067; err = 0.053; }
+  else if(eta < 2.5){SF = 1.177; err = 0.041; }
+  else if(eta < 2.8){SF = 1.364; err = 0.039; }
+  else if(eta < 3.0){SF = 1.857; err = 0.071; }
+  else if(eta < 3.2){SF = 1.328; err = 0.022; }
+  else              {SF = 1.160; err = 0.029;  }
+  if     (dir == +1) return SF + err;
+  else if(dir == -1) return SF - err;
+  return SF;
+}
+Float_t getJERscale(Jet jet, Int_t dir = 0){ return getJERscale(jet.p.Eta(), dir);}
 
-  if(flag == 3){
-  Float_t jerScaleUp   = getJERScaleUp(*it);    
-  Float_t jerScale     = getJERScale(*it);    
-  Float_t factor1 = 0.;
-  if (genJet.DeltaR(tmp) < 0.5) factor1 = max(0.0, genJet.Pt() + jerScale*(tmp.Pt() - genJet.Pt()) );
-  else                          factor1 = tmp.Pt();
-  Float_t sigmaMC  = getErrPt(JetPt.at(*it), Jet_eta[*it]) / JetPt.at(*it);
-  Float_t factor   = fRand3->Gaus(1., sqrt(jerScale*jerScale -1.) * sigmaMC );
-  JetPt.at(*it) = JetPt.at(*it) * factor;   // smear for flag 3
-  }
-  }*/
+Float_t getJetPtErr(Jet jet){
+  Float_t pt = jet.p.Pt(); Float_t eta = TMath::Abs(jet.p.Eta());
+  Float_t InvPerr2 = 1;
+  Float_t N(0.), S(0.), C(0.), m(0.);
+  if     ( eta < 0.5) { N = 3.96859; S = 0.18348; C = 0.; m = 0.62627;  }
+  else if( eta < 1. ) { N = 3.55226; S = 0.24026; C = 0.; m = 0.52571;  } 
+  else if( eta < 1.5) { N = 4.54826; S = 0.22652; C = 0.; m = 0.58963;  } 
+  else if( eta < 2. ) { N = 4.62622; S = 0.23664; C = 0.; m = 0.48738;  } 
+  else if( eta < 2.5) { N = 2.53324; S = 0.34306; C = 0.; m = 0.28662;  } 
+  else if( eta < 3. ) { N = 3.33814; S = 0.73360; C = 0.; m = 0.08264;  } 
+  else if( eta < 5. ) { N = 2.95397; S = 0.11619; C = 0.; m = 0.96086;  }
+  // this is the absolute resolution (squared), not sigma(pt)/pt
+  // so have to multiply by pt^2, thats why m+1 instead of m-1
+  InvPerr2 =  (N*TMath::Abs(N)) + (S*S)*pow(pt, m+1) + (C*C)*pt*pt;
+  return sqrt(InvPerr2);
+}
+
+Float_t getJetJERpt(Jet jet){
+  // Hybrid method https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetResolution#JER_Uncertainty
+  Float_t jerScale(1.), genpt(1.), pt(1.), factor1(0.), factor2(0.), sigmaMC(1.), rdm(1.);
+  jerScale     = getJERscale(jet, 0);    
+  genpt = jet.mcp.Pt(); pt = jet.p.Pt();
+
+  // Using JER SF 
+  factor1  = TMath::Max(Float_t(0.0), genpt + jerScale*(pt - genpt))/pt;
+  if(jet.mcp.DeltaR(jet.p) > 0.2) factor1 = -1; // Check matching
+
+  // smearing...
+  TRandom3 *fRand3 = new TRandom3(50);
+  sigmaMC  = getJetPtErr(jet)/pt;
+  rdm  = fRand3->Gaus(0., sigmaMC ); //smear
+  //rdm  = fRand3->Gaus(1., TMath::Sqrt(jerScale*jerScale -1.) * sigmaMC ); //smear
+  factor2 = 1 + rdm*TMath::Sqrt(TMath::Max(Float_t(0.0), jerScale*jerScale - 1));
+  delete fRand3;
+
+  if(factor1 == -1) return pt;//*factor2;
+  return  pt*factor1;   
+}
 
 
 // ==================================================================
