@@ -164,6 +164,7 @@ class TopAnalysis : public PAFChainItemSelector{
     TString gSampleName;
     Bool_t  gIsTTbar;
     Bool_t  gIsTW;
+    Bool_t  gIsLHE;
 
     ClassDef(TopAnalysis, 0);
 };
