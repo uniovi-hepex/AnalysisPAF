@@ -11,6 +11,7 @@ void Histo::SetType(Int_t tipo){
 	else if(type == itSignal){    // Signal: lines
 		SetLineStyle(1);
     SetLineWidth(2);
+    SetFillColor(0);
 	}
 	else if(type == itData){    // Data: points
 		SetLineStyle(0);
@@ -80,13 +81,16 @@ void Histo::SetTitles(TString x, TString c){
 
 void Histo::SetColor(Int_t c){
 	color = c;
-	SetMarkerColor(c); SetLineColor(c); SetFillColor(c);
+	SetMarkerColor(c); SetLineColor(c); if(type != itSignal) SetFillColor(c);
 }
 
 void Histo::AddToLegend(TLegend* leg, Bool_t doyi){
   TH1F* h2 = (TH1F*) Clone("toLeg");
   TString op = "f";
-  if      (type == itSignal) op = "l";
+  if      (type == itSignal){
+    if(GetFillColor() == 0) op = "l";
+    else op = "f";
+  }
   else if (type == itData)   op = "pe";
   else if (type == itCompare)op = "pe";
   if(doyi) leg->AddEntry(h2, Form(process + ": %1.0f", yield), op);

@@ -114,7 +114,7 @@ class TResultsTable {
   ////////////////////////////////////////////////////////////////////////////
   void SetFormatNum(TString k){ formatNum = k;}
   void AddVSeparation(TString t){VSeparations += TString(", ") + t;}
-  void AddVSeparation(Int_t g){ VSeparations += TString(Form(", %i", g));}
+  void AddVSeparation(Int_t g){ VSeparations += TString(Form("l%i,", g));}
   TString getCellColor(Int_t col) const;
 
  protected:

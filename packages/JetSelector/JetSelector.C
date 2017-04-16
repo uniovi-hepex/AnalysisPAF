@@ -135,6 +135,14 @@ void JetSelector::GetGenJetVariables(Int_t i){
   pt =  Get<Float_t>("genJet_pt",i);
 }
 
+void JetSelector::GetmcJetVariables(Int_t i){
+  tpJ.SetPxPyPzE(Get<Float_t>("Jet_mcPx",i), Get<Float_t>("Jet_mcPy",i), Get<Float_t>("Jet_mcPz", i), Get<Float_t>("Jet_mcEnergy",i));
+  eta = tpJ.Eta();
+  pt =  Get<Float_t>("Jet_mcPt",i);
+  flavmc = TMath::Abs(Get<Int_t>("Jet_mcFlavour",i));
+  csv         = Get<Float_t>("Jet_btagCSV", i);
+}
+
 void JetSelector::InsideLoop(){
   // Clear vectors...
   selJets.clear();
@@ -162,6 +170,11 @@ void JetSelector::InsideLoop(){
 	if(tJ.p.Pt() > jet_MinPt){
 	  selJets.push_back(tJ);
 	  if(tJ.isBtag) nBtagJets++; 
+    if(!gIsData){
+      GetmcJetVariables(i);
+      tJ.SetMCjet(tpJ);
+      GetJetVariables(i);
+    }
 	} 
       }
       if (tJ.p.Pt() > vetoJet_minPt && tJ.p.Eta() < vetoJet_maxEta){
@@ -177,33 +190,33 @@ void JetSelector::InsideLoop(){
     for(Int_t i = 0; i < nJet; i++){
       GetJetFwdVariables(i);
       tJ = Jet(tpJ, csv, jetId, flavmc);
-      tJ.isBtag = IsBtag(tJ);
+      tJ.isBtag = false; // Fwd jets are not b-tagged
       if(tJ.id > 0 && Cleaning(tJ, Leptons, minDR)){
         SetSystematics(&tJ);
         tJ.isBtag = IsBtag(tJ);
-	if (TMath::Abs(tJ.p.Eta()) < jet_MaxEta){
-	  if(tJ.p.Pt() > 15 || tJ.pTJESUp > 15 || tJ.pTJESDown > 15) Jets15.push_back(tJ);
-	  if(tJ.p.Pt() > jet_MinPt){
-	    selJets.push_back(tJ);
-	    if(tJ.isBtag) nBtagJets++;
-	  }
+        if (TMath::Abs(tJ.p.Eta()) < jet_MaxEta){
+          if(tJ.p.Pt() > 15 || tJ.pTJESUp > 15 || tJ.pTJESDown > 15) Jets15.push_back(tJ);
+          if(tJ.p.Pt() > jet_MinPt) selJets.push_back(tJ);
         }
-	if (tJ.p.Pt() > vetoJet_minPt && tJ.p.Eta() < vetoJet_maxEta){
-	  if      (gSelection == iWWSelec && tJ.isBtag) vetoJets.push_back(tJ);
-	  else if (gSelection == iWZSelec && tJ.isBtag) vetoJets.push_back(tJ);
-	  else if (gSelection == iTWSelec)          vetoJets.push_back(tJ);
-	  else                                      vetoJets.push_back(tJ);
-	}
+        if (tJ.p.Pt() > vetoJet_minPt && tJ.p.Eta() < vetoJet_maxEta) vetoJets.push_back(tJ);
       }
     }
   }
-  if(!gIsData){  // Add gen jets...
+  if(!gIsData){  // Add gen and mc jets...
     ngenJet = Get<Int_t>("ngenJet");
     for(Int_t i = 0; i < ngenJet; i++){
       GetGenJetVariables(i);
-      tJ = Jet(tpJ, 0, 0, 0);
+      tJ = Jet(tpJ, 0, 1, 0);
       genJets.push_back(tJ);    
     }
+    nJet = Get<Int_t>("nJet");
+    for(Int_t i = 0; i < nJet; i++){
+      GetmcJetVariables(i);
+      tJ = Jet(tpJ, csv, 1, flavmc);
+      tJ.isBtag = (flavmc == 5);
+      mcJets.push_back(tJ);
+    }
+
   }
 
   nSelJets  = selJets.size();
@@ -216,6 +229,7 @@ void JetSelector::InsideLoop(){
   SetParam("Jets15",   Jets15);
   SetParam("vetoJets", vetoJets);
   SetParam("genJets",  genJets);
+  SetParam("mcJets",  mcJets);
   SetParam("nSelJets",  nSelJets);
   SetParam("nJets15",  nJets15);
   SetParam("nVetoJets",  nVetoJets);
@@ -246,8 +260,8 @@ void JetSelector::SetSystematics(Jet *j){
   if(gIsData) return;
   j->pTJESUp     = rawPt*pt_corrUp;
   j->pTJESDown   = rawPt*pt_corrDown;
-  j->pTJERUp     = _pt;
-  j->pTJERDown   = _pt;
+  j->pTJERUp     = getJetJERpt(*j);
+  j->pTJERDown   = getJetJERpt(*j);
   j->isBtag_BtagUp      = fBTagSFbUp->IsTagged(_csv, _flavmc, _pt, _eta);
   j->isBtag_BtagDown    = fBTagSFbDo->IsTagged(_csv, _flavmc, _pt, _eta);
   j->isBtag_MisTagUp    = fBTagSFlUp->IsTagged(_csv, _flavmc, _pt, _eta);

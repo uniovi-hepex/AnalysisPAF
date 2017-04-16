@@ -501,6 +501,8 @@ void LeptonSelector::InsideLoop(){
   for(Int_t i = 0; i < nLep; i++){
     GetLeptonVariables(i);
     tL = Lepton(tP, charge, type);
+    if(tL.isMuon) tL.SetIso(RelIso04);
+    else          tL.SetIso(RelIso03);
     if(isGoodLepton(tL)){
       tL.SetSF(   LepSF->GetLeptonSF(     pt, eta, tL.type) ); // Set SF and error
       tL.SetSFerr(LepSF->GetLeptonSFerror(pt, eta, tL.type) );

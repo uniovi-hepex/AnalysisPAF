@@ -57,8 +57,12 @@ TString CraftFormula(TString cuts, TString chan, TString sys){
   else schan = ("1");
 
   TString weight = TString("TWeight");
-  if(sys == "LepEffUp"  ) weight += "_LepEffUp";
+  if     (sys == "LepEffUp"  ) weight += "_LepEffUp";
   else if(sys == "LepEffDown") weight += "_LepEffDown";
+  else if(sys == "ElecEffUp"  ) weight += "_ElecEffUp";
+  else if(sys == "ElecEffDown") weight += "_ElecEffDown";
+  else if(sys == "MuonEffUp"  ) weight += "_MuonEffUp";
+  else if(sys == "MuonEffDown") weight += "_MuonEffDown";
   else if(sys == "TrigUp"    ) weight += "_TrigUp";
   else if(sys == "TrigDown"  ) weight += "_TrigDown";
   else if(sys == "PUUp"      ) weight += "_PUUp";
@@ -82,8 +86,8 @@ TString CraftFormula(TString cuts, TString chan, TString sys){
     cuts = ( ((TString) cuts).ReplaceAll("THT", "THTJESDown"));   
     cuts = ( ((TString) cuts).ReplaceAll("TJet_Pt", "TJetJESDown_Pt"));   
   }
-  else if(sys == "JER"){
-    cuts = ( ((TString) cuts).ReplaceAll("TNBtags", "TNJetsJER"));   
+  else if(sys == "JER" || sys == "JERUp" || sys == "JERDown"){
+    cuts = ( ((TString) cuts).ReplaceAll("TNJets", "TNJetsJER"));   
     cuts = ( ((TString) cuts).ReplaceAll("TJet_Pt", "TJetJER_Pt"));   
   }
   else if(sys == "BtagUp"){
@@ -131,8 +135,10 @@ void Looper::SetFormulas(TString systematic){
 
   FormulasCuts = new TTreeFormula("Form_" + sampleName + "_" + systematic + "_cut", stringcut, tree);
   FormulasVars = new TTreeFormula("Form_" + sampleName + "_" + systematic + "_var", stringvar, tree);
-  if(doSysScale || doSysPDF) 
+  if(doSysScale || doSysPDF){
     FormulasLHE  = new TTreeFormula("Form_" + sampleName + "_" + systematic + "_LHE", "TLHEWeight", tree);
+    FormulasLHE->GetNdata();
+  }
 }
 
 void Looper::CreateHisto(TString sys){
@@ -141,6 +147,11 @@ void Looper::CreateHisto(TString sys){
   TString name = sampleName;
   if(sys != "0") name += "_" + sys;
   Hist = new Histo(TH1F(name,sampleName+"_"+sys+"_"+var, nbins, bin0, binN));
+  if(doSysPDF || doSysScale){
+    for(Int_t i = 0; i < nLHEweights; i++){
+      hLHE[i] = new TH1F(name+"_"+Form("%i", i),sampleName+"_"+sys+"_"+var+"_"+Form("%i",i), nbins, bin0, binN);
+    }
+  }
 }
 
 void Looper::Loop(TString sys){
@@ -153,57 +164,66 @@ void Looper::Loop(TString sys){
     if(numberInstance != 0) FormulasVars->GetNdata();
     weight  = FormulasCuts->EvalInstance();
     val     = FormulasVars->EvalInstance(numberInstance);
-    if(doSysPDF)   weight *= GetPDFweight(sys);
-    if(doSysScale) weight *= GetScaleWeight(sys);
+    //if(doSysPDF)   weight *= GetPDFweight(sys);
+    if(doSysScale || doSysPDF){
+      Float_t LHEweight = 1;
+      for(Int_t i = 0; i < nLHEweights; i++){
+        LHEweight = weight*getLHEweight(i);
+        hLHE[i]->Fill(val, LHEweight);
+      }
+    }
     Hist->Fill(val, weight);
   }
+  Float_t nom = 0; Float_t var = 0; Float_t ext = 0; Float_t env = 0;
+  if(doSysScale){ // Get envelope!!
+    //cout << " Scale matrix element weights: \n";
+    for(Int_t bin = 1; bin <= nbins; bin++){
+      ext = 0; env = 0;
+      nom = hLHE[0]->GetBinContent(bin);
+      for(Int_t w = 1; w < 9; w++){
+        var = hLHE[w]->GetBinContent(bin);  
+        if(sys.Contains("Up") || sys.Contains("up")){
+          if(nom-var > ext){ ext = nom-var; env = var;}
+        }
+        else{
+          if(var-nom > ext){ ext = var-nom; env = var;}
+        }
+        //cout << "   nom = " << nom << ", var = " << var << endl;
+      }
+      Hist->SetBinContent(bin, env);
+    }
+  }
+  else if(doSysPDF){
+    Float_t rms = 0; Float_t alpha_up = 0; Float_t alpha_dw = 0;
+    //cout << " PDF weights: \n";
+    for(Int_t bin = 1; bin <= nbins; bin++){
+      nom = hLHE[0]->GetBinContent(bin);
+      for(Int_t w = 9; w < 109; w++){
+        var = hLHE[w]->GetBinContent(bin);  
+        ext += (nom-var)*(nom-var);
+        //cout << "   nom = " << nom << ", var = " << var << endl;
+      }
+      rms = TMath::Sqrt(ext/100);
+      alpha_up = TMath::Abs(hLHE[109]->GetBinContent(bin) - nom);
+      alpha_dw = TMath::Abs(hLHE[110]->GetBinContent(bin) - nom);
+      env = TMath::Sqrt(rms*rms + ((alpha_up-alpha_dw)*0.75/2)*((alpha_up-alpha_dw)*0.75/2));
+      if(sys.Contains("Up") || sys.Contains("up"))  Hist->SetBinContent(bin, nom + env);
+      else                                          Hist->SetBinContent(bin, nom - env);
+    }
+  }
 }
 
-Float_t Looper::GetScaleWeight(TString sys){
-  FormulasLHE->GetNdata();
-  Float_t weight = 0; Float_t nom = 0; 
-  Float_t norm = 0; 
-  Int_t bin = 1002; Int_t index = 0;
-  Float_t max_diff = 0;
-  Float_t max_weight = 0;
-
-  norm = hLHEweights->GetBinContent(bin);
-  nom = FormulasLHE->EvalInstance(0); 
-
-  for(Int_t index = 1; index < 9; index++){
-    weight = fabs(FormulasLHE->EvalInstance(index)/hLHEweights->GetBinContent(bin+index)*norm); 
-    if( fabs(weight - nom) > max_diff ) max_weight = weight;
-  }
-  return max_weight; //1 + fabs(max_weight - 1);
-  if(sys.Contains("Up")) return max_weight;
-  else                   return (1 + (1 - max_weight));
-  //else                   return 1 - fabs(max_weight - 1);
-}
-
-Float_t Looper::GetPDFweight(TString sys){
-  FormulasLHE->GetNdata();
-  Float_t weight = 0; Float_t nom = 0; 
-  Float_t norm = 0; 
-  Int_t bin = 1993; Int_t index = 0;
-  Float_t e = 0; Float_t v109 = 0; Float_t v110 = 0;
-  Float_t rms = 0; Float_t pdfWeight = 0;
-
-  norm = hLHEweights->GetBinContent(1002); //nominal
-  nom = FormulasLHE->EvalInstance(0); 
-
-  for(Int_t index = 9; index < 109; index++){
-    weight = FormulasLHE->EvalInstance(index)/hLHEweights->GetBinContent(bin+index)*norm; 
-    //cout << "weight = " << weight << endl;
-    if(index < 109) e += fabs(weight - nom)*fabs(weight - nom);
-    else if(index == 109) v109 = fabs(weight - nom); // Alpha s var
-    else if(index == 110) v110 = fabs(weight - nom); // Alpha s var
-  }
-  rms = TMath::Sqrt(e/100);
-  pdfWeight = TMath::Sqrt(rms*rms + ((v109-v110)*0.75/2)*((v109-v110)*0.75/2));
-  //cout << "pdf weight = " << pdfWeight << endl;
-  
-  if   (sys.Contains("Up")) return nom + pdfWeight;
-  else                      return nom - pdfWeight;
+Float_t Looper::getLHEweight(Int_t i){
+  Float_t weight = 0; Float_t norm = 0; 
+  Int_t bin = 0; 
+  if      (i<9 )  bin = i + 1002;   // 1002-1010: muRmuF
+  else if (i<111) bin = i + 1993;   // 2002-2103: NNPDF
+  else if (i<166) bin = i + 2891;   // 3002-3056: CT10
+  else if (i<222) bin = i + 3836;   // 4000-4057: MMHT2014
+  else if (i<249) bin = i + 4780;   // 5002-5028: muRmuF, hdamp 
+  norm = hLHEweights->GetBinContent(1002);
+  weight = FormulasLHE->EvalInstance(i)/hLHEweights->GetBinContent(bin)*norm; 
+  return weight;
 }
 
 void Looper::loadTree(){
@@ -227,17 +247,9 @@ Histo* Looper::GetHisto(TString sample, TString sys){
       else doSysScale = true;
     }
   }
-
   CreateHisto(sys);
   SetFormulas(sys);
   Loop(sys);
- /* 
-  cout << " >>> Sample = " << sampleName << endl;
-  cout << " >>> Cut  = " << stringcut << endl;
-  cout << " >>> Var  = " << stringvar << endl;
-  cout << " >>> Chan = " << chan << endl;
-  cout << " >>> Systematic = " << sys << endl;
-  */
   return Hist;
 }
 

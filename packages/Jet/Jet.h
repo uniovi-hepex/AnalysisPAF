@@ -20,6 +20,7 @@ class Jet{
 
     Bool_t isBtag;
     TLorentzVector p;
+    TLorentzVector mcp;
     Bool_t id;
     Int_t flavmc;
     Float_t csv; 
@@ -39,6 +40,7 @@ class Jet{
     Float_t Eta(){ return p.Eta();}
     Float_t Phi(){ return p.Phi();}
     Float_t E(){ return p.E();}
+    void SetMCjet(TLorentzVector p){ mcp = p;}
 
 };
 
