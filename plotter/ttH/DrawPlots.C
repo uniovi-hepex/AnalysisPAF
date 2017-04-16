@@ -126,6 +126,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   }
   cout << "+ Path to the root files: " << path << endl;
   cout << "+ Output path: " << outputpath << endl;
+  cout << endl;
+  
   p->SetPlotFolder(outputpath);
   p->SetPath(path);
   p->SetPathSignal(path);
