@@ -127,21 +127,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   if (chan == "Elec" || chan == "Muon" || chan == "ElMu") name = name+"_2lSS";
   p->SetVarName(name);
   
-  
-  // Histogram settings ========================================================
-  p->SetScaleMax(1.7);
-  p->SetRatioMin(0);
-  p->SetRatioMax(2);
-  p->SetSignalStyle("Fill");
-  p->AddSystematic("stat");
-  p->doSetLogy = false;
-  
-  
-  // Yields table settings =====================================================
-  p->SetTableFormats("%1.4f");
-  p->SetYieldsTableName("Yields_"+chan+"_"+tag);
-  
-  
+    
   // Samples import ============================================================
   for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
     p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5);
@@ -171,6 +157,20 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 	  p->AddSample(Signalmc[isample], "ttH", itSignal, kRed);
   }
   //p->AddSample(Signalmc[0], "ttH", itBkg, kRed);
+  
+  
+  // Histogram settings ========================================================
+  p->SetScaleMax(1.7);
+  p->SetRatioMin(0);
+  p->SetRatioMax(2);
+  p->SetSignalStyle("Fill");
+  p->AddSystematic("stat");
+  p->doSetLogy = false;
+  
+  
+  // Yields table settings =====================================================
+  p->SetTableFormats("%1.4f");
+  p->SetYieldsTableName("Yields_"+chan+"_"+tag);
   
 
   // Print and plot ============================================================
