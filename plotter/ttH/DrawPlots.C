@@ -8,18 +8,17 @@ R__LOAD_LIBRARY(Plot.C+)
 #include <iostream>
 #include <fstream>
 
-const TString Signalmc[1]      = {"TTHNonbb"};                   // ttH
-const TString TTWmc[2] 	       = {"TTWToLNu1", "TTWToQQ"};			 // TTW
-const TString TTZmc[2] 	       = {"TTZToLLNuNu", "TTZToQQ"};	   // TTZ
-const TString TTbarmc[2] 	     = {"TTGJets", "TTJets_aMCatNLO"}; // TTbar
-const TString WJetsmc[1]       = {"WJetsToLNu_aMCatNLO"};        // WJets
-const TString STmc[6]    	     = {"TW", "TbarW", "T_tch", "Tbar_tch", "TToLeptons_sch_amcatnlo","TGJets"};// ST
-const TString DYmc[2]          = {"DYJetsToLL_M50_MLM", "DYJetsToLL_M5to50_MLM"};                         // DY at LO (comment/uncomment as desired)
+const TString Signalmc[]      = {"TTHNonbb"};                   // ttH
+const TString TTWmc[] 	      = {"TTWToLNu1", "TTWToQQ"};			 // TTW
+const TString TTZmc[] 	      = {"TTZToLLNuNu", "TTZToQQ"};	   // TTZ
+const TString TTbarmc[] 	    = {"TTGJets", "TTJets_aMCatNLO"}; // TTbar
+const TString WJetsmc[]       = {"WJetsToLNu_aMCatNLO"};        // WJets
+const TString STmc[]    	    = {"TW", "TbarW", "T_tch", "Tbar_tch", "TToLeptons_sch_amcatnlo","TGJets"};// ST
+const TString DYmc[]          = {"DYJetsToLL_M50_MLM", "DYJetsToLL_M5to50_MLM"};                         // DY at LO (comment/uncomment as desired)
 //const TString DYmc[2]          = {"DYJetsToLL_M50_aMCatNLO", "DYJetsToLL_M10to50_aMCatNLO"};              // DY at NLO (comment/uncomment as desired)
-const TString DiTriCuatrimc[13]= {"WGToLNuG", "ZGTo2LG", "WpWpJJ", "WWW", "WWZ", "WZZ", "ZZZ", "WW", "tZq_ll", "TTTT", "WZTo3LNu_amcatnlo", "WWTo2L2Nu", "ZZ"}; // Di&Tri&Cuatriboson
-const TString Data[5]          = {"MuonEG", "SingleMuon", "SingleElec", "DoubleEG", "DoubleMuon"};        // Data samples
+const TString DiTriCuatrimc[] = {"WGToLNuG", "ZGTo2LG", "WpWpJJ", "WWW", "WWZ", "WZZ", "ZZZ", "WW", "tZq_ll", "TTTT", "WZTo3LNu_amcatnlo", "WWTo2L2Nu", "ZZ"}; // Di&Tri&Cuatriboson
+const TString Data[]          = {"MuonEG", "SingleMuon", "SingleElec", "DoubleEG", "DoubleMuon"};        // Data samples
 UInt_t counter = 0;
-
 
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name = "", TString tag = "0");
@@ -168,15 +167,13 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 	  p->AddSample(Signalmc[isample], "ttH", itSignal, kRed);
   }
   //p->AddSample(Signalmc[0], "ttH", itBkg, kRed);
-  p->SetTableFormats("%1.4f");
   
+  p->SetTableFormats("%1.4f");
   p->SetSignalStyle("Fill");
   p->AddSystematic("stat");
   p->doSetLogy = false;
   p->SetYieldsTableName("Yields_"+chan+"_"+tag);
   if (var == "TnTightLepton") p->PrintYields("","","","txt");
   p->DrawStack(tag, 1);
-  //p->doSetLogy = true;
-  //p->DrawStack("0_log", 1);
   delete p;
 }
