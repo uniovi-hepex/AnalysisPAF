@@ -29,21 +29,34 @@ void DrawPlots(TString chan = "ElMu", TString tag = "0"){
   if (chan == "2lSS") {
     cut   = "(TCat == 2 && (TChannel == 1 || TChannel == 2 || TChannel == 3))";
   }
-  if (chan == "Elec") {
-    cut   = "(TCat == 2 && TChannel == 3)";
-  }
-  if (chan == "Muon") {
-    cut   = "(TCat == 2 && TChannel == 2)";
-  }
-  if (chan == "ElMu") {
-    cut   = "(TCat == 2 && TChannel == 1)";
+  else if (chan == "Elec" || chan == "Muon" || chan == "ElMu") {
+    cut   = "(TCat == 2)";
   }
   else if (chan == "3l") {
-    cut   = "(TCat == 3 && TChannel == 4)";
+    cut   = "(TCat == 3)";
   }
   else if (chan == "4l") {
-    cut   = "(TCat == 4 && TChannel == 5)";
+    cut   = "(TCat == 4)";
   }
+  
+  // if (chan == "2lSS") {
+  //   cut   = "(TCat == 2 && (TChannel == 1 || TChannel == 2 || TChannel == 3))";
+  // }
+  // if (chan == "Elec") {
+  //   cut   = "(TCat == 2 && TChannel == 3)";
+  // }
+  // if (chan == "Muon") {
+  //   cut   = "(TCat == 2 && TChannel == 2)";
+  // }
+  // if (chan == "ElMu") {
+  //   cut   = "(TCat == 2 && TChannel == 1)";
+  // }
+  // else if (chan == "3l") {
+  //   cut   = "(TCat == 3 && TChannel == 4)";
+  // }
+  // else if (chan == "4l") {
+  //   cut   = "(TCat == 4 && TChannel == 5)";
+  // }
   
   DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag);
   DrawPlot("TnFakeableLepton", cut, chan, 5, 0, 5,     "nFakeLep (#)", "nFakeLepton", tag);
