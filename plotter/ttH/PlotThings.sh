@@ -5,6 +5,7 @@ source /cms/slc6_amd64_gcc530/external/cmake/3.5.2/etc/profile.d/init.sh
 source /opt/root6/bin/thisroot.sh
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+echo $DIR
 cd $DIR
 cd ..
 
