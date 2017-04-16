@@ -132,7 +132,6 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->verbose        = true;
   if (chan == "Elec" || chan == "Muon" || chan == "ElMu") name = name+"_2lSS";
   p->SetVarName(name);
-  p->doStackSignal  = true;
 
   p->SetScaleMax(1.7);
   p->SetRatioMin(0);
@@ -168,6 +167,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   //p->AddSample(Signalmc[0], "ttH", itBkg, kRed);
   p->SetTableFormats("%1.4f");
   
+  p->SetSignalStyle("Fill")
   p->AddSystematic("stat");
   p->doSetLogy = false;
   p->SetYieldsTableName("Yields_"+chan+"_"+tag);
