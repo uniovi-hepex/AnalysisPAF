@@ -81,7 +81,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   if (githead.Contains("lepidcomparison")) {
     if (counter == 0){
       cout << endl;
-      cout << "Branch LEPIDCOMPARISON chosen" << endl;
+      cout << "+ Branch LEPIDCOMPARISON chosen" << endl;
       cout << endl;
       counter = 1;
     }
@@ -94,7 +94,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   else if (githead.Contains("random")) {
     if (counter == 0) {
       cout << endl;
-      cout << "Branch RANDOM chosen" << endl;
+      cout << "+ Branch RANDOM chosen" << endl;
       cout << endl;
       counter = 1;
     }
@@ -104,7 +104,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   else if (githead.Contains("lepMVAcomparison")) {
     if (counter == 0) {
       cout << endl;
-      cout << "Branch LEPMVACOMPARISON chosen" << endl;
+      cout << "+ Branch LEPMVACOMPARISON chosen" << endl;
       cout << endl;
       counter = 1;
     }
@@ -119,12 +119,13 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   else {
     if (counter == 0) {
       cout << endl;
-      cout << "Branch MASTER chosen" << endl;
+      cout << "+ Branch MASTER chosen" << endl;
       cout << endl;
       counter = 1;
     }
   }
-  
+  cout << "+ Path to the root files: " << path << endl;
+  cout << "+ Output path: " << outputpath << endl;
   p->SetPlotFolder(outputpath);
   p->SetPath(path);
   p->SetPathSignal(path);
