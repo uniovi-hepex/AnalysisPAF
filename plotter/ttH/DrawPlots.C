@@ -65,8 +65,8 @@ void DrawPlots(TString chan = "ElMu", TString tag = "0"){
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name, TString tag = "0"){
   Plot* p = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
-  // TString path                     = "/nfs/fanae/user/vrbouza/Documents/TFG/AnalysisPAF/";
   TString   outputpath             = "/nfs/fanae/user/vrbouza/www/Results/";
+  
   string    cline;
   ifstream  gitinfo("../.git/HEAD");
   getline(gitinfo,cline);
@@ -74,7 +74,6 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   string    cpath = __FILE__ ;
   TString   path(cpath);
   path            = path(0,path.Index("AnalysisPAF/")+12);
-  
   path += "ttH_temp/";
   
   if (githead.Contains("lepidcomparison")) {
@@ -123,6 +122,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
       counter = 1;
     }
   }
+  
   cout << "+ Path to the root files: " << path << endl;
   cout << "+ Output path: " << outputpath << endl;
   cout << endl;
