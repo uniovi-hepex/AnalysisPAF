@@ -167,7 +167,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   //p->AddSample(Signalmc[0], "ttH", itBkg, kRed);
   p->SetTableFormats("%1.4f");
   
-  p->SetSignalStyle("Fill")
+  p->SetSignalStyle("Fill");
   p->AddSystematic("stat");
   p->doSetLogy = false;
   p->SetYieldsTableName("Yields_"+chan+"_"+tag);
