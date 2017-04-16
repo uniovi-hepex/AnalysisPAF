@@ -122,13 +122,13 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->SetPathSignal(path);
   
   
-  // Minitree configuration ====================================================
+  // Minitree settings =========================================================
   p->SetTreeName("MiniTree");
   if (chan == "Elec" || chan == "Muon" || chan == "ElMu") name = name+"_2lSS";
   p->SetVarName(name);
   
   
-  // Histogram configuration ===================================================
+  // Histogram settings ========================================================
   p->SetScaleMax(1.7);
   p->SetRatioMin(0);
   p->SetRatioMax(2);
@@ -137,7 +137,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->doSetLogy = false;
   
   
-  // Histogram configuration ===================================================
+  // Yields table settings =====================================================
   p->SetTableFormats("%1.4f");
   p->SetYieldsTableName("Yields_"+chan+"_"+tag);
   
