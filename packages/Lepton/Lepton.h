@@ -32,6 +32,8 @@ class Lepton : public TObject{
     Float_t GetSF(Int_t sys = 0);
     void SetSF(Float_t val);
     void SetSFerr(Float_t val);
+    void SetIso(Float_t val){ Iso = val;}
+    Float_t GetIso(){ return Iso;} 
 
     Float_t Pt(){return p.Pt();}
     Float_t Eta(){return p.Eta();}
@@ -41,6 +43,7 @@ class Lepton : public TObject{
   protected:
     Float_t SF;
     Float_t SFerr;
+    Float_t Iso;
 
     //ClassDef(Lepton, 0);
 };
