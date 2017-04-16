@@ -138,7 +138,11 @@ elif [ "$1" == "pl" ]; then
   echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ttH PLOTTER EXECUTION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
   echo ""
   echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Starting to plot"
-  source PlotThings.sh "0"
+  categ="0"
+  if [ "$2" != "" ]; then
+    categ=$2
+  fi
+  source PlotThings.sh "$categ"
 else
     echo "ERROR - No valid arguments given"
     echo "Please, execute this script with a valid argument"
