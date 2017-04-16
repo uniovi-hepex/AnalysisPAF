@@ -13,3 +13,5 @@ root -l -b -q "ttH/DrawPlots.C(\"2lSS\" , \"$1\")"
 root -l -b -q "ttH/DrawPlots.C(\"3l\"   , \"$1\")"
 root -l -b -q "ttH/DrawPlots.C(\"4l\"   , \"$1\")"
 root -l -b -q "ttH/DrawPlots.C(\"All\"  , \"$1\")"
+
+cd ttH
