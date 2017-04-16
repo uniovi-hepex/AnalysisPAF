@@ -44,6 +44,7 @@ class TWAnalysis : public PAFChainItemSelector{
     Int_t   TNBtags;
     void    GetMET();
     Double_t getDilepMETJetPt();
+    Double_t getDilepJetPt();
     Double_t getLep1METJetPt();
     Double_t getPtSys(TLorentzVector*, int);
     Double_t getDilepMETJet1Pz();
@@ -67,8 +68,11 @@ class TWAnalysis : public PAFChainItemSelector{
     Float_t TMET           ;
     Float_t TMET_Phi       ;
     Float_t TJet2csv       ;
+    Float_t TJet2pt        ;
     Float_t MSys           ; 
     Float_t TBDT           ;
+    Float_t THT            ; 
+    Float_t DilepJetPt     ;
 
     Int_t nLooseCentral  ;
     Int_t nLooseFwd      ;

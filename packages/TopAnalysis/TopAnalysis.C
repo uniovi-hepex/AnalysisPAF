@@ -75,6 +75,9 @@ void TopAnalysis::Initialise(){
 }
 
 void TopAnalysis::InsideLoop(){
+  
+  SetParam("TWEventToBeFilled", false);
+
   // Vectors with the objects
   genLeptons  = GetParam<vector<Lepton>>("genLeptons");
   selLeptons  = GetParam<vector<Lepton>>("selLeptons");
@@ -164,7 +167,8 @@ void TopAnalysis::InsideLoop(){
       if(TChannel == iElMu){
       // if (TChannel == 1 && (TNJets > 0 || TNJetsJESUp > 0 || TNJetsJESDown > 0)){
       //if (TNBtags > 0 || TNBtagsUp > 0 || TNBtagsDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0){
-      fTree->Fill();
+	SetParam("TWEventToBeFilled", true);
+	fTree->Fill();
       }
       //  }
     }   
@@ -218,6 +222,8 @@ void TopAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cle
     THT += TJet_Pt[i];
     if(selJets.at(i).isBtag)            TNBtags++;
   }
+  SetParam("THT",THT);
+
   if(gIsData) return;  // For systematics...
   for(Int_t i = 0; i < TNJets; i++){
     if(selJets.at(i).isBtag_BtagUp    ) TNBtagsUp++;
