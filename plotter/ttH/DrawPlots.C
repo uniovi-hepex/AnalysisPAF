@@ -26,38 +26,11 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 
 void DrawPlots(TString chan = "ElMu", TString tag = "0"){
   TString cut = "((TCat == 2 && (TChannel == 1 || TChannel == 2 || TChannel == 3)) || (TCat == 3 && TChannel == 4) || (TCat == 4 && TChannel == 5))";
-  if (chan == "2lSS") {
-    cut   = "(TCat == 2 && (TChannel == 1 || TChannel == 2 || TChannel == 3))";
-  }
-  else if (chan == "Elec" || chan == "Muon" || chan == "ElMu") {
-    cut   = "(TCat == 2)";
-  }
-  else if (chan == "3l") {
-    cut   = "(TCat == 3)";
-  }
-  else if (chan == "4l") {
-    cut   = "(TCat == 4)";
-  }
-  
-  // if (chan == "2lSS") {
-  //   cut   = "(TCat == 2 && (TChannel == 1 || TChannel == 2 || TChannel == 3))";
-  // }
-  // if (chan == "Elec") {
-  //   cut   = "(TCat == 2 && TChannel == 3)";
-  // }
-  // if (chan == "Muon") {
-  //   cut   = "(TCat == 2 && TChannel == 2)";
-  // }
-  // if (chan == "ElMu") {
-  //   cut   = "(TCat == 2 && TChannel == 1)";
-  // }
-  // else if (chan == "3l") {
-  //   cut   = "(TCat == 3 && TChannel == 4)";
-  // }
-  // else if (chan == "4l") {
-  //   cut   = "(TCat == 4 && TChannel == 5)";
-  // }
-  
+  if (chan == "2lSS")     cut = "(TCat == 2 && (TChannel == 1 || TChannel == 2 || TChannel == 3))";
+  else if (chan == "Elec" || chan == "Muon" || chan == "ElMu") cut = "(TCat == 2)";
+  else if (chan == "3l")  cut = "(TCat == 3)";
+  else if (chan == "4l")  cut = "(TCat == 4)";
+
   DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag);
   DrawPlot("TnFakeableLepton", cut, chan, 5, 0, 5,     "nFakeLep (#)", "nFakeLepton", tag);
   DrawPlot("TnLooseLepton",    cut, chan, 5, 0, 5,     "nLooseLep (#)", "nLooseLepton", tag);
@@ -77,8 +50,12 @@ void DrawPlots(TString chan = "ElMu", TString tag = "0"){
 }
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name, TString tag = "0"){
-  Plot* p = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
-  TString   outputpath             = "/nfs/fanae/user/vrbouza/www/Results/";
+  Plot* p     = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
+  p->verbose  = true;
+  
+  
+  // Determination of path and output path =====================================
+  TString   outputpath = "/nfs/fanae/user/vrbouza/www/Results/";
   
   string    cline;
   ifstream  gitinfo("../.git/HEAD");
@@ -86,8 +63,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   TString   githead(cline);
   string    cpath = __FILE__ ;
   TString   path(cpath);
-  path            = path(0,path.Index("AnalysisPAF/")+12);
-  path += "ttH_temp/";
+  path      = path(0,path.Index("AnalysisPAF/")+12);
+  path      += "ttH_temp/";
   
   if (githead.Contains("lepidcomparison")) {
     if (counter == 0){
@@ -143,15 +120,29 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->SetPlotFolder(outputpath);
   p->SetPath(path);
   p->SetPathSignal(path);
+  
+  
+  // Minitree configuration ====================================================
   p->SetTreeName("MiniTree");
-  p->verbose        = true;
   if (chan == "Elec" || chan == "Muon" || chan == "ElMu") name = name+"_2lSS";
   p->SetVarName(name);
-
+  
+  
+  // Histogram configuration ===================================================
   p->SetScaleMax(1.7);
   p->SetRatioMin(0);
   p->SetRatioMax(2);
+  p->SetSignalStyle("Fill");
+  p->AddSystematic("stat");
+  p->doSetLogy = false;
   
+  
+  // Histogram configuration ===================================================
+  p->SetTableFormats("%1.4f");
+  p->SetYieldsTableName("Yields_"+chan+"_"+tag);
+  
+  
+  // Samples import ============================================================
   for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
     p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5);
   }
@@ -181,12 +172,10 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   }
   //p->AddSample(Signalmc[0], "ttH", itBkg, kRed);
   
-  p->SetTableFormats("%1.4f");
-  p->SetSignalStyle("Fill");
-  p->AddSystematic("stat");
-  p->doSetLogy = false;
-  p->SetYieldsTableName("Yields_"+chan+"_"+tag);
+
+  // Print and plot ============================================================
   if (var == "TnTightLepton") p->PrintYields("","","","txt");
   p->DrawStack(tag, 1);
+  
   delete p;
 }
