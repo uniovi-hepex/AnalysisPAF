@@ -4,7 +4,7 @@ source /cms/slc6_amd64_gcc530/external/python/2.7.11-giojec2/etc/profile.d/depen
 source /cms/slc6_amd64_gcc530/external/cmake/3.5.2/etc/profile.d/init.sh
 source /opt/root6/bin/thisroot.sh
 
-echo $PWD
+cd ..
 
 root -l -b -q "ttH/DrawPlots.C(\"Muon\" , \"$1\")"
 root -l -b -q "ttH/DrawPlots.C(\"Elec\" , \"$1\")"
