@@ -1,3 +1,6 @@
+source pre_start.sh
+cd ../..
+
 slash="/"
 allok=0
 
