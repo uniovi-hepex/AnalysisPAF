@@ -132,6 +132,8 @@ if [ "$1" == "an" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"DoubleEG\"                           , \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"SingleElec\"                    	   , \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"SingleMuon\"                         , \"$sel\", $2)"
+        
+        
     fi
     cd plotter/ttH
 elif [ "$1" == "pl" ]; then
