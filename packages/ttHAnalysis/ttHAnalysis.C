@@ -102,44 +102,49 @@ void ttHAnalysis::Summary() {
 //		Tree-related methods
 ////////////////////////////////////////////////////////////////////////////////
 void ttHAnalysis::GetTreeVariables() {
+  MET   = 0;
+  Tevt  = 0;
+  
   if (!gIsData){
 		genWeight   = Get<Float_t>("genWeight");
 	}
 
-  MET = 0;
-  MET = Get<Float_t>("met_pt");
+
+  MET   = Get<Float_t>("met_pt");
+  Tevt  = Get<Long_t>("evt");
 }
 
 // Minitree methods
 //------------------------------------------------------------------------------
 void ttHAnalysis::SetLeptonBranches() {
-  fTree->Branch("TnTightLepton",     &nTightLepton,     "nTightLepton/I");
-  fTree->Branch("TnFakeableLepton",  &nFakeableLepton,  "nFakeableLepton/I");
-  fTree->Branch("TnLooseLepton",     &nLooseLepton,     "nLooseLepton/I");
-  fTree->Branch("TnTaus",            &nTaus,            "nTaus/I");
-  fTree->Branch("TPtLeading",        &TPtLeading,       "TPtLeading/F");
-  fTree->Branch("TPtSubLeading",     &TPtSubLeading,    "TPtSubLeading/F");
-  fTree->Branch("TPtSubSubLeading",  &TPtSubSubLeading, "TPtSubSubLeading/F");
+  fTree->Branch("TnTightLepton",    &nTightLepton,      "nTightLepton/I");
+  fTree->Branch("TnFakeableLepton", &nFakeableLepton,   "nFakeableLepton/I");
+  fTree->Branch("TnLooseLepton",    &nLooseLepton,      "nLooseLepton/I");
+  fTree->Branch("TnTaus",           &nTaus,             "nTaus/I");
+  fTree->Branch("TPtLeading",       &TPtLeading,        "TPtLeading/F");
+  fTree->Branch("TPtSubLeading",    &TPtSubLeading,     "TPtSubLeading/F");
+  fTree->Branch("TPtSubSubLeading", &TPtSubSubLeading,  "TPtSubSubLeading/F");
 }
 
 void ttHAnalysis::SetJetBranches() {
-  fTree->Branch("TnMediumBTags" ,    &nMediumBTags,     "nMediumBTags/I");
-  fTree->Branch("TnLooseBTags",      &nLooseBTags,      "nLooseBTags/I");
-  fTree->Branch("TnJets",            &nJets,            "nJets/I");
+  fTree->Branch("TnMediumBTags" ,   &nMediumBTags,      "nMediumBTags/I");
+  fTree->Branch("TnLooseBTags",     &nLooseBTags,       "nLooseBTags/I");
+  fTree->Branch("TnJets",           &nJets,             "nJets/I");
 }
 
 void ttHAnalysis::SetEventBranches() {
-  fTree->Branch("TChannel",      &gChannel,      "gChannel/I");
-  fTree->Branch("TCat",          &TCat,          "TCat/I");
-  fTree->Branch("TpassTrigger",  &passTrigger,   "passTrigger/B");
-  fTree->Branch("TisSS",         &isSS,          "isSS/B");
-  fTree->Branch("TMET",          &MET,           "MET/F");
-  fTree->Branch("TMHT",          &MHT,           "MHT/F");
-  fTree->Branch("THT",           &HT,            "HT/F");
-  fTree->Branch("TMETLD",        &METLD,         "METLD/F");
-  fTree->Branch("TCS",           &TCS,           "TCS/I");
-  fTree->Branch("TMass",         &TMass,         "TMass/F");
-  fTree->Branch("TWeight",       &EventWeight,   "EventWeight/F");
+  fTree->Branch("TChannel",         &gChannel,          "gChannel/I");
+  fTree->Branch("TCat",             &TCat,              "TCat/I");
+  fTree->Branch("TpassTrigger",     &passTrigger,       "passTrigger/B");
+  fTree->Branch("TisSS",            &isSS,              "isSS/B");
+  fTree->Branch("TMET",             &MET,               "MET/F");
+  fTree->Branch("TMHT",             &MHT,               "MHT/F");
+  fTree->Branch("THT",              &HT,                "HT/F");
+  fTree->Branch("TMETLD",           &METLD,             "METLD/F");
+  fTree->Branch("TCS",              &TCS,               "TCS/I");
+  fTree->Branch("TMass",            &TMass,             "TMass/F");
+  fTree->Branch("TWeight",          &EventWeight,       "EventWeight/F");
+  fTree->Branch("Tevt",             &Tevt,              "Tevt/L");
 }
 
 void ttHAnalysis::SetMiniTreeVariables() {
@@ -343,17 +348,18 @@ Bool_t ttHAnalysis::PassesPreCuts() {
 }
 
 Bool_t ttHAnalysis::Is2lSSEvent() {
-	if (nTightLepton != 2) 	       return false;
-	if (!isSS) 					           return false;
-	if (TightLepton[0].Pt() < 25)  return false;
-	if (TightLepton[1].Pt() < 15)  return false;
-  if (TightLepton[2].Pt() > 10)  return false;
+	if (!isSS) 					              return false;
+	if (TightLepton.at(0).Pt() < 25)  return false;
+	if (TightLepton.at(1).Pt() < 15)  return false;
+	if (nTightLepton > 2) {
+    if (TightLepton.at(2).Pt() > 10)  return false;
+  }
 
-	if (nJets < 4) 					       return false;
+	if (nJets < 4) 					          return false;
 
 	if (gChannel == iElec) {
 		if (abs((TightLepton[0].p + TightLepton[1].p).M() - Zm) < 10) return false;
-		if (METLD < 0.2)          return false;
+		if (METLD < 0.2)                return false;
 	}
 	return true;
 }
@@ -472,7 +478,7 @@ void ttHAnalysis::InitialiseVariables() {
   nTaus           = 0;
   nJets           = 0;
   nMediumBTags    = 0;
-  nLooseBTags     = 0;
+  nLooseBTags     = 0;_:
   gChannel        = 0;
   passTrigger     = 0;
   isSS            = 0;
@@ -487,6 +493,7 @@ void ttHAnalysis::InitialiseVariables() {
   TPtSubSubLeading= 0;
   TCS             = 0;
   TMass           = 0;
+  Tevt            = 0;
 }
 
 void ttHAnalysis::GetParameters() {
