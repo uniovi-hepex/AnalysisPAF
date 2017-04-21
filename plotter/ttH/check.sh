@@ -24,6 +24,11 @@ sel="ttH"
 if [ "$2" != "" ]; then
   sel=$2
 fi
+if [ $1 == "" ]; then
+  echo "ERROR - No valid arguments given"
+  echo "Please, execute this script with a valid argument"
+  return
+fi
 
 echo
 echo "Checking that all root files exist in..."
