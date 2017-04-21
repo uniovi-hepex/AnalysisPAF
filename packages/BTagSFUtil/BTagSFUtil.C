@@ -156,6 +156,7 @@ bool BTagSFUtil::IsTagged(float JetDiscriminant, int JetFlavor, float JetPt, flo
   if (Btag_SF == 1) return newBTag; //no correction needed 
 
   //throw die
+  //Seed = 0; // Uncomment for using random seed.
   rand_ = new TRandom3(Seed); // Fixed seeds, dependent on event number, jet pT and systematic variation, for reproducibility. Use Seed=0 for testing that seed dependence is negligible.
   float coin = rand_->Uniform(1.);    
  
