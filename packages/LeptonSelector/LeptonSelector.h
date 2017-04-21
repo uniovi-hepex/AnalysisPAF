@@ -13,7 +13,7 @@ class LeptonSelector : public PAFChainItemSelector{
   public:
 
     LeptonSelector(); 
-    virtual ~LeptonSelector() {}
+    virtual ~LeptonSelector() {delete LepSF;}
     virtual void InsideLoop();
     virtual void Initialise();
     virtual void Summary();
