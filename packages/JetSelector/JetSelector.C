@@ -157,7 +157,7 @@ void JetSelector::InsideLoop(){
 	  if(tJ.isBtag) nBtagJets++; 
 	} 
       }
-      if (tJ.p.Pt() > vetoJet_minPt && tJ.p.Eta() < vetoJet_maxEta){
+      if (tJ.p.Pt() > vetoJet_minPt && TMath::Abs(tJ.p.Eta()) < vetoJet_maxEta){
 	if (gSelection == iWWSelec && tJ.isBtag) vetoJets.push_back(tJ);
 	else if (gSelection == iTWSelec)          vetoJets.push_back(tJ);
 	else                                      vetoJets.push_back(tJ);
@@ -180,7 +180,7 @@ void JetSelector::InsideLoop(){
 	    if(tJ.isBtag) nBtagJets++;
 	  }
         }
-	if (tJ.p.Pt() > vetoJet_minPt && tJ.p.Eta() < vetoJet_maxEta){
+	if (tJ.p.Pt() > vetoJet_minPt && TMath::Abs(tJ.p.Eta()) < vetoJet_maxEta){
 	  if (gSelection == iWWSelec && tJ.isBtag) vetoJets.push_back(tJ);
 	  else if (gSelection == iTWSelec)          vetoJets.push_back(tJ);
 	  else                                      vetoJets.push_back(tJ);
