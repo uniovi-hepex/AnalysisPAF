@@ -143,7 +143,7 @@ void JetSelector::InsideLoop(){
   // Loop over the jets
   nJet = Get<Int_t>("nJet");
   for(Int_t i = 0; i < nJet; i++){
-    GetJetVariables(i); cout << "Jet number " << i << " :   ";
+    GetJetVariables(i);
     tJ = Jet(tpJ, csv, jetId, flavmc);
     tJ.isBtag = IsBtag(tJ);
     // Fill the vectors
