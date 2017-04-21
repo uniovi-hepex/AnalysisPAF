@@ -27,8 +27,11 @@ class TopAnalysis : public PAFChainItemSelector{
     std::vector<Lepton> vetoLeptons ;
     std::vector<Jet> selJets ;
     std::vector<Jet> Jets15  ;
+    std::vector<Jet> genJets  ;
+    std::vector<Jet> mcJets  ;
 
     TTree* fTree;
+    Float_t TLHEWeight[254];
     void SetLeptonVariables();
     void SetJetVariables();
     void SetEventVariables();
@@ -38,7 +41,9 @@ class TopAnalysis : public PAFChainItemSelector{
 
     void GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> VetoLeptons);
     void GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut = 30);
+    void GetGenJetVariables(std::vector<Jet> genJets, std::vector<Jet> mcJets);
     void GetMET();
+    Int_t nFiduJets; Int_t nFidubJets; 
 
     Float_t TrigSF;
     Float_t TrigSF_Up;
@@ -60,6 +65,7 @@ class TopAnalysis : public PAFChainItemSelector{
     Float_t TWeight;   // Total nominal weight
     Float_t TMll;      // Invariant mass
     Float_t TMET;      // MET
+    Float_t TGenMET;     
     Float_t TMET_Phi;  // MET phi
 
     Int_t   TNVetoLeps;
@@ -105,6 +111,10 @@ class TopAnalysis : public PAFChainItemSelector{
 
     Float_t  TWeight_LepEffUp;
     Float_t  TWeight_LepEffDown;
+    Float_t  TWeight_ElecEffUp;
+    Float_t  TWeight_ElecEffDown;
+    Float_t  TWeight_MuonEffUp;
+    Float_t  TWeight_MuonEffDown;
     Float_t  TWeight_TrigUp;
     Float_t  TWeight_TrigDown;
     Float_t  TWeight_FSUp;
@@ -144,6 +154,7 @@ class TopAnalysis : public PAFChainItemSelector{
 
   TH1F* fhDummy;
   TH1F*  fHyields[nChannels][nSysts];
+  TH1F*  fHFiduYields[nChannels][nSysts];
   TH1F*  fHSSyields[nChannels][nSysts];
 
   protected:
@@ -153,6 +164,7 @@ class TopAnalysis : public PAFChainItemSelector{
     TString gSampleName;
     Bool_t  gIsTTbar;
     Bool_t  gIsTW;
+    Bool_t  gIsLHE;
 
     ClassDef(TopAnalysis, 0);
 };

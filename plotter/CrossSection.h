@@ -21,11 +21,12 @@ class CrossSection{
   public:
 
     CrossSection(){}; // void constructor
-    CrossSection(Plot* p, TString sig){  // From a Plot
+    CrossSection(Plot* p, TString sig = ""){  // From a Plot
       /* Takes data, signal and background from a plot
        * Also de systematic uncertainties but you can modify the name of the systematics
        */
-      signalTag = sig;
+      if(sig == "") signalTag = p->GetSignalProcess();
+      else signalTag = sig;
       Int_t nBkgs = p->VBkgs.size(); 
       for(Int_t i = 0; i < nBkgs; i++){
         if(signalTag ==  p->VBkgs.at(i)->GetProcess()) continue;
@@ -46,7 +47,22 @@ class CrossSection{
       //    Optional inputs: nSimulatedSignal, nFiducialSignal, BR, level tag, channel tag
 
     }; 
-    //CrossSection(){}; // From yields
+    CrossSection(Int_t nbkg, TString *bkgtag, Float_t *bkg, Float_t *bkg_unc, Int_t nsys, TString *systag, Float_t *var, Float_t signal_yield = 1, Float_t data = 1, Float_t lum = 0, Float_t lum_unc = 0, Bool_t *isEff = 0){ // From yields
+      Int_t nBkgs = nbkg;
+      for(Int_t i = 0; i < nBkgs; i++){
+        AddBkgTag(bkgtag[i]);
+        AddBkg(bkg[i]);
+        AddBkgUnc(bkg_unc[i]);
+      }
+      Int_t nSys = nsys;
+      for(Int_t i = 0; i < nSys; i++){
+        AddSysTag(systag[i]);
+        AddSysVar(var[i]);
+        if(isEff) AddUncTagEff(isEff[i]);
+      }
+      y = signal_yield; NData = data;
+      Lumi = lum; LumiUnc = lum_unc;
+    }; 
     //CrossSection(){}; // From data, bkg and acceptance
     ~CrossSection(){}; // Destructor
 
@@ -54,9 +70,13 @@ class CrossSection{
  
     void AddBkg(Float_t v){ BkgYield.push_back(v);}
     void AddBkgUnc(Float_t v){ BkgUnc.push_back(v);}
+
     void AddBkgTag(TString t){ BkgTags.push_back(t);}
     void AddSysTag(TString t){ SysTags.push_back(t);}
     void AddSysVar(Float_t v){ SysVar.push_back(v);}
+    void AddUncTagEff(Bool_t v){ IsEffic.push_back(v);}
+    void SetEfficiencySyst(TString s);
+    void SetAcceptanceSyst(TString s);
 
     void SetLevelTag(TString t){ level = t;}
     void SetChannelTag(TString t){ channel = t;}
@@ -73,8 +93,12 @@ class CrossSection{
 
     void SetMembers();
 
-    Float_t GetXSec(Float_t data, Float_t bkg, Float_t y){ return (data-bkg)/y*thxsec;}
+    Float_t GetXSec(Float_t data, Float_t bkg, Float_t y){
+      if(IsFiducial) return(data-bkg)/y*thxsec*(nFiducialSignal/nSimulatedSignal);
+      return (data-bkg)/y*thxsec;
+    }
     void PrintSystematicTable(TString options = "");
+    void PrintYieldsTable(TString options = "");
     void PrintCrossSection(TString options = "");
     void SwitchLabel(TString oldLabel, TString newLabel);
 
@@ -82,6 +106,7 @@ class CrossSection{
 
     // Inputs...
     vector<TString> SysTags  = vector<TString>();
+    vector<Bool_t>  IsEffic  = vector<Bool_t>();  // Does affect to Efficiency? Or acceptance?
     vector<Float_t> SysVar   = vector<Float_t>(); // (relative)
     vector<TString> BkgTags  = vector<TString>();
     vector<Float_t> BkgUnc   = vector<Float_t>(); // (relative)
@@ -112,18 +137,15 @@ class CrossSection{
     Float_t TotalAcceptance = 0;
     Float_t xsec = 0; // nominal value
 
+    Float_t y_err = 0; 
+    Float_t NData_err = 0;
+    Float_t NBkg_err = 0;
     Float_t xsec_total_err = 0;
     Float_t xsec_stat_err = 0;
     Float_t xsec_syst_err = 0;
     Float_t xsec_lumi_err = 0;
-    Float_t acc_total_err = 0;
-    Float_t acc_stat_err = 0;
-    Float_t acc_syst_err = 0;
-    Float_t acc_lumi_err = 0;
-    Float_t eff_total_err = 0;
-    Float_t eff_stat_err = 0;
-    Float_t eff_syst_err = 0;
-    Float_t eff_lumi_err = 0;
+    Float_t acc_err = 0;
+    Float_t eff_err = 0;
 };
 
 #endif

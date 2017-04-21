@@ -34,7 +34,6 @@ public:
   bool doStackOverflow = true;
   bool doSignal        = true;
   bool doSetLogy       = true;
-  bool doStackSignal   = false;
   bool doStatUncInDatacard = true;
 
   std::vector<Histo*> VBkgs;
@@ -215,7 +214,9 @@ public:
   void PrintYields(TString cuts = "", TString labels = "", TString channels = "", TString options = "");
 	void PrintSystYields();
 	Float_t GetYield(TString pr = "ttbar", TString systag = "0");
+	Histo* GetHisto(TString pr = "ttbar", TString systag = "0");
   Float_t GetData();
+  Histo* GetHData();
   Float_t GetTotalSystematic(TString pr);
   Int_t GetColorOfProcess(TString pr);
   Plot* NewPlot(TString newVar = "", TString newCut = "", TString newChan = "", Int_t newnbins = -1, Float_t newbin0 = -999, Float_t newbinN = -999, TString newtitle = "", TString newXtitle = "");
@@ -226,7 +227,12 @@ public:
   void SetScaleLog(Float_t s){ ScaleLog = s;}
   void SetPlotMinimum(Float_t p){ PlotMinimum = p;}
   void ScaleProcess(TString process, Float_t factor = 1);
+  void ScaleSys(TString processSys, Float_t factor = 1);
   void SetTableFormats(TString t){ tableFormats = t;}
+
+  void SetSignalProcess(TString p){ SignalProcess = p;}
+  void SetSignalStyle(TString p){ SignalStyle = p;} 
+  TString GetSignalProcess(){ return SignalProcess;}
 
 protected: 
   TString pathToHeppyTrees = "";
@@ -256,6 +262,9 @@ protected:
   Int_t nb; Double_t x0; Double_t xN;
   TString  title;
   TString xtitle;
+ 
+  TString SignalProcess;
+  TString SignalStyle = "";
 
   TString SystVar;
   Int_t iS;

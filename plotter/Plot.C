@@ -76,6 +76,7 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
     h->SetMarkerSize(1.1); 
   }
   else if(type == itSignal){
+    SetSignalProcess(pr);
     VTagSamples.push_back(p);    // 
     VTagProcesses.push_back(pr);
     nSignalSamples++;
@@ -127,6 +128,7 @@ void Plot::SetData(){  // Returns histogram for Data
   hData = new Histo(TH1F("HistoData", "Data", nb, x0, xN));
   if(VData.size() < 1) doData = false;
   TString p = "";
+
   for(Int_t i = 0; i < (Int_t) VData.size(); i++){
     p = VData.at(i)->GetName();
     if     (chan == "ElMu" && (p == "DoubleMuon" || p == "DoubleEG"))   continue;
@@ -207,6 +209,34 @@ Float_t Plot::GetData(){
   return hData->GetYield();
 }
 
+Histo* Plot::GetHData(){
+  if(!hData) SetData();
+  return hData;
+}
+
+Histo* Plot::GetHisto(TString pr, TString systag){
+  if(pr == "Data") return GetHData();
+  Float_t val = 0; Float_t sys = 0; TString ps; 
+  Int_t nSyst = VSyst.size();
+  Int_t nBkg = VBkgs.size();
+  Int_t nSig = VSignals.size();
+  if(systag == "0"){
+    for(Int_t i = 0; i < nBkg; i++) if(pr == VBkgs.at(i)   ->GetProcess()) return  VBkgs.at(i);
+    for(Int_t i = 0; i < nSig; i++) if(pr == VSignals.at(i)->GetProcess()) return  VSignals.at(i);
+    return 0;
+  }
+  else{  
+    Float_t nom = GetYield(pr, "0");
+    for(int k = 0; k < nSyst; k++){ 
+      ps = VSyst.at(k)->GetTag();
+      if(!ps.BeginsWith(pr))   continue;
+      if(!ps.Contains(systag)) continue;
+      return VSyst.at(k);
+    }
+  }
+  cout << "[Plot::GetHisto] WARNING: No systematic " << systag << " for process " << pr << "........... Returning nominal histo..." << endl;
+  return GetHisto(pr, "0");
+}
 
 Float_t Plot::GetYield(TString pr, TString systag){
   if(pr == "Data") return GetData();
@@ -232,7 +262,7 @@ Float_t Plot::GetYield(TString pr, TString systag){
       return VSyst.at(k)->GetYield();
     }
   }
-  //cout << "No systematic " << systag << " for process " << pr << endl;
+  cout << "[Plot::GetYield] WARNING: No systematic " << systag << " for process " << pr << "!!! ...... Returning nominal value... " << endl;
   return GetYield(pr);
 }
 
@@ -244,11 +274,35 @@ TLegend* Plot::SetLegend(){ // To be executed before using the legend
   Float_t MinYield = 0; 
   int nVBkgs = VBkgs.size();
   if(nVBkgs > 0 && hAllBkg) MinYield = hAllBkg->GetYield()/5000;
+
+  if(doSignal){
+    Int_t nSignals = VSignals.size();
+    if(SignalStyle == "CrossSection" || SignalStyle == "xsec" || SignalStyle == "Bkg" || SignalStyle == "Fill"){
+      for(Int_t i = 0; i < nSignals; i++){
+        if(VSignals.at(i)->GetProcess() == SignalProcess){
+          VSignals.at(i)->SetLineWidth(2);
+          VSignals.at(i)->SetFillColor(VSignals.at(i)->GetColor());
+          VSignals.at(i)->AddToLegend(leg, doYieldsInLeg);  
+        }
+      }
+    }
+    else if((SignalStyle == "SM" || SignalStyle == "H")){ 
+      for(Int_t i = 0; i < nSignals; i++){
+        if(VSignals.at(i)->GetProcess() == SignalProcess){
+          VSignals.at(i)->SetLineWidth(2);
+          VSignals.at(i)->SetFillColor(0);
+          VSignals.at(i)->AddToLegend(leg, doYieldsInLeg);  
+        }
+      }
+    }
+  }
   for(int i = nVBkgs-1; i >= 0; i--){
     if(VBkgs.at(i)->GetYield() < MinYield) continue;
     else VBkgs.at(i)->AddToLegend(leg,doYieldsInLeg);
   }
-  for(int i = VSignals.size()-1; i >= 0; i--) VSignals[i]->AddToLegend(leg, doYieldsInLeg);
+  if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
+    for(int i = VSignals.size()-1; i >= 0; i--) VSignals[i]->AddToLegend(leg, doYieldsInLeg);
+
   if(doData && hData && VData.size() > 0){
     hData->SetTag("Data");
     hData->AddToLegend(leg,doYieldsInLeg);
@@ -343,18 +397,40 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm){
 }
 
 void Plot::DrawStack(TString tag = "0", bool sav = 0){
-  //if(doSys) IncludeBkgSystematics();
   std::vector<Histo*> VStackedSignals;
 
+  if(verbose) cout << "[Plot::DrawStack] Setting Canvas..." << endl;
   TCanvas* c = SetCanvas(); plot->cd(); 
   GetStack();
   SetData();
   if(!doData) hData = hAllBkg;
 
+  Int_t nSignals = 0;
+  if(doSignal){
+    nSignals = VSignals.size();
+    if(verbose) cout << "[Plot::DrawStack] Drawing " << nSignals << " signals..." << endl;
+    Histo* hSignal;
+    for(Int_t i = 0; i < nSignals; i++) if(VSignals.at(i)->GetProcess() == SignalProcess) hSignal = VSignals.at(i);
+    if(verbose) cout << " Signal process: " << SignalProcess << endl;
+    if((SignalStyle == "SM" || SignalStyle == "H")){ // Only supports one signal
+      hSignal->SetFillColor(0);
+      hSignal->SetLineColor(hSignal->GetColor());
+      hSignal->SetLineWidth(2);
+      hStack->Add(hSignal);
+    }
+    else if(SignalStyle == "CrossSection" || SignalStyle == "xsec" || SignalStyle == "Bkg" || SignalStyle == "Fill"){
+      hSignal->SetLineWidth(2);
+      hSignal->SetLineColor(hSignal->GetColor());
+      hSignal->SetFillColor(hSignal->GetColor());
+      hStack->Add(hSignal);
+    }   
+  }
+
   float maxData = hData->GetMax();
   float maxMC = hAllBkg->GetMax();
   float Max = maxMC > maxData? maxMC : maxData;
   if(doSetLogy){
+    if(verbose) cout << "[Plot::DrawStack] Setting log scale..." << endl;
     hStack->SetMaximum(Max*ScaleLog);
     hStack->SetMinimum(PlotMinimum + 0.1*(PlotMinimum + 1));
     plot->SetLogy();
@@ -363,41 +439,16 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
     hStack->SetMaximum(Max*ScaleMax);
     hStack->SetMinimum(PlotMinimum);
   }
+
+  hStack->Draw("hist");
   hStack->GetYaxis()->SetTitle("Number of Events");
   hStack->GetYaxis()->SetTitleSize(0.06);
   hStack->GetYaxis()->SetTitleOffset(0.5);
   hStack->GetYaxis()->SetNdivisions(505);
   hStack->GetXaxis()->SetLabelSize(0.0);
-  if(doSignal){
-    // Draw systematics signal
-    Int_t nSignals = VSignals.size();
-    /* if(verbose) cout << "Drawing " << nSignals << " signals..." << endl;
-       for(Int_t  i = 0; i < nSignals; i++){
-       if(VSignals.at(i)->GetType() != itSignal) continue; // Consistency
-       hSignalerr = (Histo*) VSignals.at(i)->Clone("hSignalErr"); // Add systematics to signal
-       hSignalerr->SetFillColor(17); 
-       hSignalerr->SetMarkerStyle(0);
-       hSignalerr->SetFillStyle(3013);
-       VSignalsErr.push_back(hSignalerr);
-       }*/
-    Histo* htemp;
-    THStack* hstemp;
-    for(Int_t  i = 0; i < nSignals; i++){
-      //if(doSys) VSignalsErr.at(i)->Draw("same,e2");
-      if(doStackSignal){
-        htemp = VSignals.at(i);
-        //htemp->Add(hAllBkg);
-        htemp->SetFillColor(0);
-        VStackedSignals.push_back(htemp);
-        //VStackedSignals.at(i)->Draw("fsame");
-        hstemp = (THStack*) hStack->Clone("tempStack");
-        hstemp->Add(htemp);
-      //  hstemp->Draw("hist,same");
-      }
-      else VSignals.at(i)->Draw("lsame");
-    }
-  } 
-  hStack->Draw("hist");
+
+  if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
+    for(Int_t  i = 0; i < nSignals; i++) VSignals.at(i)->Draw("lsame");
 
   // Draw systematics histo
   hAllBkg->SetFillStyle(3145);
@@ -464,12 +515,17 @@ void Plot::ScaleProcess(TString pr, Float_t SF){
     VSignals.at(i)->Scale(SF);
     VSignals.at(i)->SetStyle();
   }
-  for(Int_t i = 0; i < (Int_t) VSyst.size(); i++) if(VSyst.at(i)->GetProcess().BeginsWith(pr+"_")){
+  for(Int_t i = 0; i < (Int_t) VSyst.size(); i++) if(VSyst.at(i)->GetTag().BeginsWith(pr+"_")){
     VSyst.at(i)->Scale(SF);
     VSyst.at(i)->SetStyle();
   }
-    
+}
 
+void Plot::ScaleSys(TString pr, Float_t SF){
+  for(Int_t i = 0; i < (Int_t) VSyst.size(); i++) if(VSyst.at(i)->GetTag().BeginsWith(pr)){
+    VSyst.at(i)->Scale(SF);
+    VSyst.at(i)->SetStyle();
+  }
 }
 
 //================================================================================
@@ -515,7 +571,6 @@ void Plot::SaveHistograms(){
   TString namesignal;
   for(int i = 0; i < nSig; i++){
     nom = VSignals.at(i);
-    cout << "nominal integral for " << nom->GetProcess() << " is " <<nom->Integral() << endl;
     namesignal = nom->GetProcess();
     nom->SetName(namesignal);
     nbins = nom->GetNbinsX();
@@ -532,7 +587,6 @@ void Plot::SaveHistograms(){
   }
   for(int i = 0; i < (Int_t) VSyst.size(); i++){
     nom = VSyst.at(i);
-    cout << "Saving unc variation " << nom->GetName() << " " << nom->Integral() << endl;
     nom->Write();
   }
   SetData(); GetStack();
@@ -540,7 +594,6 @@ void Plot::SaveHistograms(){
   hData->SetTag("data_obs");
   hData->Write();
   hStack->Write();  
-  cout << "-------> Root file created: " << limitFolder + filename + ".root" << endl;
   //	f->Close(); 
   //	delete f;
 }
@@ -628,7 +681,6 @@ void Plot::MakeDatacard(TString tag, Int_t iSignal){
 
     else{
       out = hSignal ->GetProcess() + " lnN ";
-      cout << "jeje " <<  hSignal->GetProcess() << " " << hSignal->GetSysNorm() << endl;
     }
 
     for(int j = 0; j < nBkgs+1; j++){
@@ -852,8 +904,10 @@ Plot* Plot::NewPlot(TString newVar, TString newCut, TString newChan, Int_t newnb
   p->doStackOverflow = doStackOverflow;
   p->doSignal        = doSignal;       
   p->doSetLogy       = doSetLogy;      
-  p->doStackSignal   = doStackSignal;  
   p->doStatUncInDatacard = doStatUncInDatacard;
+
+  p->SetSignalStyle(SignalStyle);
+  p->SetSignalProcess(SignalProcess);
 
   Int_t nMCSamples   = VTagSamples.size();
   Int_t nDataSamples = VTagDataSamples.size();
@@ -993,3 +1047,15 @@ void Plot::PrintYields(TString cuts, TString labels, TString channels, TString o
   if(options.Contains("html")) t.SaveAs(plotFolder + "/" + YieldsTableName + ".html");
   if(options.Contains("txt"))  t.SaveAs(plotFolder + "/" + YieldsTableName + ".txt");
 }
+
+
+
+    // Draw systematics signal
+    /* if(verbose) cout << "Drawing " << nSignals << " signals..." << endl;
+       for(Int_t  i = 0; i < nSignals; i++){
+       if(VSignals.at(i)->GetType() != itSignal) continue; // Consistency
+       hSignalerr = (Histo*) VSignals.at(i)->Clone("hSignalErr"); // Add systematics to signal
+       hSignalerr->SetFillColor(17); hSignalerr->SetMarkerStyle(0);
+       hSignalerr->SetFillStyle(3013); VSignalsErr.push_back(hSignalerr);
+       }
+      //if(doSys) VSignalsErr.at(i)->Draw("same,e2");*/
