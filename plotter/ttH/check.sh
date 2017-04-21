@@ -24,7 +24,7 @@ sel="ttH"
 if [ "$2" != "" ]; then
   sel=$2
 fi
-if [ $1 == "" ]; then
+if [ "$1" == "" ]; then
   echo "ERROR - No valid arguments given"
   echo "Please, execute this script with a valid argument"
   return
