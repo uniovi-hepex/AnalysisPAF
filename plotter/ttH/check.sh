@@ -4,7 +4,7 @@ cd ../..
 slash="/"
 allok=0
 
-samples=("Tree_TTWToLNu_ext1.root" "Tree_TTWToQQ.root" "Tree_TTZToLLNuNu.root" "Tree_TTZToQQ.root" "Tree_WGToLNuG.root" "Tree_ZGTo2LG.root" "Tree_TGJets.root" "Tree_TTGJets.root" 
+samples=("Tree_TTWToLNu1.root" "Tree_TTWToQQ.root" "Tree_TTZToLLNuNu.root" "Tree_TTZToQQ.root" "Tree_WGToLNuG.root" "Tree_ZGTo2LG.root" "Tree_TGJets.root" "Tree_TTGJets.root" 
   "Tree_WpWpJJ.root" "Tree_ZZZ.root" "Tree_WZZ.root" "Tree_WWZ.root" "Tree_WWW.root" "Tree_WW.root" "Tree_tZq_ll.root" "Tree_TTTT.root" "Tree_TTJets_aMCatNLO.root" "Tree_DYJetsToLL_M50_MLM.root" 
   "Tree_DYJetsToLL_M5to50_MLM.root" "Tree_DYJetsToLL_M50_aMCatNLO.root" "Tree_DYJetsToLL_M10to50_aMCatNLO.root" "Tree_WJetsToLNu_aMCatNLO.root" 
   "Tree_TW.root" "Tree_TbarW.root" "Tree_T_tch.root" "Tree_Tbar_tch.root" "Tree_TToLeptons_sch_amcatnlo.root" "Tree_WZTo3LNu_amcatnlo.root" "Tree_WWTo2L2Nu.root" "Tree_ZZ.root" 
