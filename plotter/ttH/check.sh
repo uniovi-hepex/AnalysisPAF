@@ -54,7 +54,7 @@ while [ $allok != 1 ]; do
       root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $1)"
       break
     fi
-    if [i == 35]; then
+    if [ i == 35 ]; then
       allok=1
     fi
   done
