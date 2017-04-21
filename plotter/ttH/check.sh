@@ -27,6 +27,7 @@ fi
 if [ "$1" == "" ]; then
   echo "ERROR - No valid arguments given"
   echo "Please, execute this script with a valid argument"
+  cd plotter/ttH
   return
 fi
 
