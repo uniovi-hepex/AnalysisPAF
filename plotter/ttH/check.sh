@@ -42,7 +42,8 @@ echo "...cores."
 echo
 
 path=""
-while [ $allok != 1 ]; do
+while [ $allok != 36 ]; do
+  allok=0
   for i in {0..35}; do
     unset path
     path=$plotspath$slash${samples[i]}
@@ -52,11 +53,9 @@ while [ $allok != 1 ]; do
       echo "Reanalyzing..."
       echo
       root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $1)"
-      break
+      allok=-8
     fi
-    if [ i == 35 ]; then
-      allok=1
-    fi
+    allok=allok+1
   done
 done
 
