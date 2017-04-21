@@ -14,7 +14,7 @@ class JetSelector : public PAFChainItemSelector{
   public:
     TString stringWP;
     JetSelector();
-    virtual ~JetSelector() {delete fBTagSFnom, fBTagSFbUp, fBTagSFbDo, fBTagSFlUp, fBTagSFlDo;};
+    virtual ~JetSelector() {delete fBTagSFnom, fBTagSFbUp, fBTagSFbDo, fBTagSFlUp, fBTagSFlDo;}
     virtual void InsideLoop();
     void Initialise();
     void Summary();
