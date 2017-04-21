@@ -22,7 +22,7 @@ void CrossSection::SetMembers(){
   xsec_syst_err  = TMath::Sqrt(xsec_syst_err);
   xsec_total_err = TMath::Sqrt(xsec_syst_err*xsec_syst_err + xsec_lumi_err*xsec_lumi_err + xsec_stat_err*xsec_stat_err);
 
-  while(IsEffic.size() < nSyst) IsEffic.push_back(false);
+  while((Int_t) IsEffic.size() < nSyst) IsEffic.push_back(false);
 
   // For acceptance and efficiency...
   TotalAcceptance = 0; acceptance = 0; efficiency = 0; eff_err = 0; acc_err = 0;
@@ -50,7 +50,7 @@ void CrossSection::SetEfficiencySyst(TString s){
   }
   else{
     nSyst = SysVar.size();
-    while(IsEffic.size() < nSyst) IsEffic.push_back(false);
+    while((Int_t) IsEffic.size() < nSyst) IsEffic.push_back(false);
     for(Int_t i = 0; i < nSyst; i++) if(SysTags.at(i) == s) IsEffic.at(i) = true;
   }
 }
@@ -66,7 +66,7 @@ void CrossSection::SetAcceptanceSyst(TString s){
   }
   else{
     nSyst = SysVar.size();
-    while(IsEffic.size() < nSyst) IsEffic.push_back(false);
+    while((Int_t) IsEffic.size() < nSyst) IsEffic.push_back(false);
     for(Int_t i = 0; i < nSyst; i++) if(SysTags.at(i) == s) IsEffic.at(i) = false;
   }
 }
@@ -90,9 +90,9 @@ void CrossSection::PrintSystematicTable(TString options){
   cout << "nEff = " << nEff << ", nAcc = " << nAcc << endl;
 
   // Set row titles
+  Int_t index = 0;
   if(nEff != 0 && nAcc != 0){
     t.AddVSeparation(nEff-1);
-    Int_t index = 0;
     for(Int_t i = 0; i < nSyst; i++){ 
       if(IsEffic.at(i) ){
         t.SetRowTitle(index,       SysTags.at(i));
@@ -118,9 +118,28 @@ void CrossSection::PrintSystematicTable(TString options){
   t.SetColumnTitle(1, "(%)");
 
   // Fill numbers
-  for(Int_t i = 0; i < nSyst; i++){
-    t[i][0] = fabs(GetXSec(NData, NBkg, SysVar.at(i)) - xsec);
-    t[i][1] = t[i][0]/xsec*100;
+  if(nEff != 0 && nAcc != 0){
+    index = 0;
+    for(Int_t i = 0; i < nSyst; i++){ 
+      if(IsEffic.at(i) ){
+        t[index][0] = fabs(GetXSec(NData, NBkg, SysVar.at(i)) - xsec);
+        t[index][1] = t[index][0]/xsec*100;
+        index++;
+      }
+    }
+    for(Int_t i = 0; i < nSyst; i++){
+      if(!IsEffic.at(i)){
+        t[index][0] = fabs(GetXSec(NData, NBkg, SysVar.at(i)) - xsec);
+        t[index][1] = t[index][0]/xsec*100;
+        index++;
+      }
+    }
+  }
+  else{
+    for(Int_t i = 0; i < nSyst; i++){
+      t[i][0] = fabs(GetXSec(NData, NBkg, SysVar.at(i)) - xsec);
+      t[i][1] = t[i][0]/xsec*100;
+    }
   }
   for(Int_t i = 0; i < nBkgs; i++){
     t[i+nSyst][0] = fabs(GetXSec(NData + BkgUnc.at(i)*BkgYield.at(i), NBkg, y) - xsec);
