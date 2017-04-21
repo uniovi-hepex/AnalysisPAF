@@ -138,10 +138,12 @@ void JetSelector::InsideLoop(){
   Leptons.clear();
   Leptons    = GetParam<vector<Lepton>>("selLeptons"); 
 
+  evt = (UInt_t)Get<ULong64_t>("evt");
+
   // Loop over the jets
   nJet = Get<Int_t>("nJet");
   for(Int_t i = 0; i < nJet; i++){
-    GetJetVariables(i);
+    GetJetVariables(i); cout << "Jet number " << i << " :   ";
     tJ = Jet(tpJ, csv, jetId, flavmc);
     tJ.isBtag = IsBtag(tJ);
     // Fill the vectors
@@ -224,9 +226,9 @@ void JetSelector::InsideLoop(){
 
 Bool_t JetSelector::IsBtag(Jet j){
   Bool_t isbtag;
-  if(gIsData) isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta());
+  if(gIsData) isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
   else if(stringWP == "Loose") isbtag = Get<Float_t>("Jet_csv");//fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta());
-  else        isbtag = fBTagSFnom->IsTagged(j.csv,j.flavmc, j.p.Pt(), j.p.Eta());
+  else        isbtag = fBTagSFnom->IsTagged(j.csv,j.flavmc, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
   return isbtag;
 }
 
@@ -237,10 +239,10 @@ void JetSelector::SetSystematics(Jet *j){
   j->pTJESDown   = rawPt*pt_corrDown;
   j->pTJERUp     = _pt;
   j->pTJERDown   = _pt;
-  j->isBtag_BtagUp      = fBTagSFbUp->IsTagged(_csv, _flavmc, _pt, _eta);
-  j->isBtag_BtagDown    = fBTagSFbDo->IsTagged(_csv, _flavmc, _pt, _eta);
-  j->isBtag_MisTagUp    = fBTagSFlUp->IsTagged(_csv, _flavmc, _pt, _eta);
-  j->isBtag_MisTagDown  = fBTagSFlDo->IsTagged(_csv, _flavmc, _pt, _eta);
+  j->isBtag_BtagUp      = fBTagSFbUp->IsTagged(_csv, _flavmc, _pt, _eta, evt+(UInt_t)_pt+1);
+  j->isBtag_BtagDown    = fBTagSFbDo->IsTagged(_csv, _flavmc, _pt, _eta, evt+(UInt_t)_pt-1);
+  j->isBtag_MisTagUp    = fBTagSFlUp->IsTagged(_csv, _flavmc, _pt, _eta, evt+(UInt_t)_pt+3);
+  j->isBtag_MisTagDown  = fBTagSFlDo->IsTagged(_csv, _flavmc, _pt, _eta, evt+(UInt_t)_pt-3);
 }
 
 Bool_t JetSelector::Cleaning(Jet j, vector<Lepton> vLep, Float_t minDR){
