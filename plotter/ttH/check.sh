@@ -61,3 +61,4 @@ while [ $allok != 1 ]; do
 done
 
 echo "%%%% => All expected ROOT files are in the folder"
+cd plotter/ttH
