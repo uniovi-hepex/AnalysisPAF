@@ -30,7 +30,7 @@ void DrawPlots(TString chan = "ElMu", TString tag = "0"){
   else if (chan == "Elec" || chan == "Muon" || chan == "ElMu") cut = "(TCat == 2)";
   else if (chan == "3l")  cut = "(TCat == 3)";
   else if (chan == "4l")  cut = "(TCat == 4)";
-
+  
   DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag);
   DrawPlot("TnFakeableLepton", cut, chan, 5, 0, 5,     "nFakeLep (#)", "nFakeLepton", tag);
   DrawPlot("TnLooseLepton",    cut, chan, 5, 0, 5,     "nLooseLep (#)", "nLooseLepton", tag);
@@ -71,7 +71,6 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
       cout << endl;
       cout << "+ Branch LEPIDCOMPARISON chosen" << endl;
       cout << endl;
-      counter = 1;
     }
     outputpath  += "lepidcomparison/";
     path        += "lepidcomparison/";
@@ -84,7 +83,6 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
       cout << endl;
       cout << "+ Branch RANDOM chosen" << endl;
       cout << endl;
-      counter = 1;
     }
     path        += "random/";
     outputpath  += "random/";
@@ -94,7 +92,6 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
       cout << endl;
       cout << "+ Branch LEPMVACOMPARISON chosen" << endl;
       cout << endl;
-      counter = 1;
     }
     path        += "lepMVAcomparison/";
     outputpath  += "lepMVAcomparison/";
@@ -109,7 +106,6 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
       cout << endl;
       cout << "+ Branch TEST chosen" << endl;
       cout << endl;
-      counter = 1;
     }
     outputpath  += "test/";
   }
@@ -118,7 +114,6 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
       cout << endl;
       cout << "+ Branch MASTER chosen" << endl;
       cout << endl;
-      counter = 1;
     }
   }
   
@@ -177,17 +172,20 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   if (!githead.Contains("test")) {
     p->SetSignalStyle("Fill");
   }
-  p->AddSystematic("stat");
   p->doSetLogy = false;
   
   
-  // Yields table settings =====================================================
-  p->SetTableFormats("%1.4f");
-  p->SetYieldsTableName("Yields_"+chan+"_"+tag);
+  // Yields table settings and printing ========================================
+  if (counter == 0) {
+    p->AddSystematic("stat");
+    p->SetTableFormats("%1.4f");
+    p->SetYieldsTableName("Yields_"+chan+"_"+tag);
+    p->PrintYields("","","","txt");
+    counter = 1;
+  }
   
 
   // Print and plot ============================================================
-  if (var == "TnTightLepton") p->PrintYields("","","","txt");
   p->DrawStack(tag, 1);
   
   delete p;
