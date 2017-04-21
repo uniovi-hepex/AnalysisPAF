@@ -11,7 +11,7 @@ samples=('Tree_TTWToLNu_ext1.root' 'Tree_TTWToQQ.root' 'Tree_TTZToLLNuNu.root' '
   'Tree_TTHNonbb.root' 'Tree_MuonEG.root' 'Tree_DoubleMuon.root' 'Tree_DoubleEG.root' 'Tree_SingleElec.root' 'Tree_SingleMuon.root')
 
 plotspath="/nfs/fanae/user/vrbouza/Documents/TFG/AnalysisPAF/ttH_temp"
-if [ $3 != "" ]; then
+if [ "$3" != "" ]; then
   plotspath=$3
 fi
 sel="ttH"
@@ -30,7 +30,7 @@ echo "...cores."
 echo
 
 path=""
-while [$allok != 1]; do
+while [ $allok != 1 ]; do
   for i in {0..35}; do
     unset path
     path=$plotspath$slash${samples[i]}
@@ -47,3 +47,5 @@ while [$allok != 1]; do
     fi
   done
 done
+
+echo "%%%% => All expected ROOT files are in the folder"
