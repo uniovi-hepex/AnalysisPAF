@@ -29,6 +29,7 @@ class TopAnalysis : public PAFChainItemSelector{
     std::vector<Jet> Jets15  ;
     std::vector<Jet> genJets  ;
     std::vector<Jet> mcJets  ;
+    std::vector<Jet> vetoJets;
 
     TTree* fTree;
     Float_t TLHEWeight[254];
@@ -61,6 +62,33 @@ class TopAnalysis : public PAFChainItemSelector{
     void FillDYHistos(Int_t ch);
     void FillHistos(Int_t ch, Int_t cut);
   
+    void CalculateTWVariables();
+    void get20Jets();
+    void ReSetTWVariables();
+    void SetTWVariables();
+    Double_t getDilepMETJetPt();
+    Double_t getDilepJetPt();
+    Double_t getLep1METJetPt();
+    Double_t getPtSys(TLorentzVector*, int);
+    Double_t getDilepMETJet1Pz();
+    Double_t getPzSys(TLorentzVector*, int);
+    Double_t getDPtDilep_JetMET();
+    Double_t getDPtDilep_MET();
+    Double_t getDPtLep1_MET();
+    Double_t getDeltaPt(vector<TLorentzVector>, vector<TLorentzVector>);
+    Double_t getSysM();
+    Double_t getM(vector<TLorentzVector>);
+
+
+
+
+  
+
+      
+
+
+
+
     //Variables
     Float_t TWeight;   // Total nominal weight
     Float_t TMll;      // Invariant mass
@@ -122,6 +150,26 @@ class TopAnalysis : public PAFChainItemSelector{
     Float_t  TWeight_PUUp;
     Float_t  TWeight_FSDown;
 
+
+    Float_t  DilepMETJetPt  ;
+    Float_t  Lep1METJetPt   ;
+    Float_t  DPtDilep_JetMET;
+    Float_t  DPtDilep_MET   ;
+    Float_t  DPtLep1_MET    ;
+    Float_t  DilepMETJet1Pz ;
+    Int_t    nLooseCentral  ;
+    Int_t    nLooseFwd      ;
+    Int_t    nBLooseCentral ;
+    Int_t    nBLooseFwd     ;
+    Float_t  TJet2csv       ;
+    Float_t  MSys           ;
+    Float_t  TJetLoosept    ;
+    Float_t  C_jll          ;
+    Float_t  DilepJetPt     ;
+    Float_t  TBDT           ;
+
+
+
 // Histograms
 //=====================================================0
   TH1F* fHLHEweights[nChannels][nLevels][nSysts];
@@ -158,6 +206,7 @@ class TopAnalysis : public PAFChainItemSelector{
   TH1F*  fHSSyields[nChannels][nSysts];
 
   protected:
+
     Bool_t  gIsData;
     Bool_t  gDoSyst;
     Int_t   gSelection;
@@ -166,5 +215,6 @@ class TopAnalysis : public PAFChainItemSelector{
     Bool_t  gIsTW;
     Bool_t  gIsLHE;
 
+    
     ClassDef(TopAnalysis, 0);
 };

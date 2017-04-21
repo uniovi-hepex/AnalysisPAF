@@ -79,11 +79,12 @@ void TopAnalysis::Initialise(){
   Jets15  = std::vector<Jet>();
   genJets = std::vector<Jet>();
   mcJets  = std::vector<Jet>();
+  vetoJets = std::vector<Jet>();
 }
 
 void TopAnalysis::InsideLoop(){
   
-  SetParam("TWEventToBeFilled", false);
+  ReSetTWVariables();
 
   // Vectors with the objects
   genLeptons  = GetParam<vector<Lepton>>("genLeptons");
@@ -91,6 +92,7 @@ void TopAnalysis::InsideLoop(){
   vetoLeptons = GetParam<vector<Lepton>>("vetoLeptons");
   selJets     = GetParam<vector<Jet>>("selJets");
   Jets15      = GetParam<vector<Jet>>("Jets15");
+  vetoJets    = GetParam<vector<Jet>>("vetoJets");
   genJets     = GetParam<vector<Jet>>("genJets");
   mcJets      = GetParam<vector<Jet>>("mcJets");
 
@@ -235,10 +237,12 @@ void TopAnalysis::InsideLoop(){
           }
         }
       }
+      cout << "holaaa" << endl;
       if(TChannel == iElMu || ((TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15))){
         if(TChannel == iElMu || TMET > 40){   // MET > 40 in ee, µµ
           if ((TNJets > 1 || TNJetsJESUp > 1 || TNJetsJESDown > 1 || TNJetsJER > 1)){
             if (TNBtags > 0 || TNBtagsUp > 0 || TNBtagsDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0){
+	      CalculateTWVariables();
               fTree->Fill();
             }
           }
@@ -246,6 +250,7 @@ void TopAnalysis::InsideLoop(){
       }
     }   
   }
+  cout << "adios" << endl;
 }
 
 
@@ -545,3 +550,382 @@ void TopAnalysis::SetEventVariables(){
 }
 
 
+void TopAnalysis::SetTWVariables()
+{
+  fTree->Branch("DilepMETJetPt"   , &DilepMETJetPt  , "DilepMETJetPt/F"  );
+  fTree->Branch("Lep1METJetPt"    , &Lep1METJetPt   , "Lep1METJetPt/F"   );
+  fTree->Branch("DPtDilep_JetMET" , &DPtDilep_JetMET, "DPtDilep_JetMET/F");
+  fTree->Branch("DPtDilep_MET"    , &DPtDilep_MET   , "DPtDilep_MET/F"   );
+  fTree->Branch("DPtLep1_MET"     , &DPtLep1_MET    , "DPtLep1_MET/F"    ); 
+  fTree->Branch("DilepMETJet1Pz"  , &DilepMETJet1Pz , "DilepMETJet1Pz/F" );
+  fTree->Branch("nLooseCentral"   , &nLooseCentral  , "nLooseCentral/I"  );
+  fTree->Branch("nLooseFwd"       , &nLooseFwd      , "nLooseFwd/I"      );
+  fTree->Branch("nBLooseCentral"  , &nBLooseCentral , "nBLooseCentral/I" );
+  fTree->Branch("nBLooseFwd"      , &nBLooseFwd     , "nBLooseFwd/I"     );
+  fTree->Branch("TJet2csv"        , &TJet2csv       , "TJet2csv/F"       );
+  fTree->Branch("MSys"            , &MSys           , "MSys/F"           );
+  fTree->Branch("TJetLoosept"     , &TJetLoosept    , "TJetLoosept/F"    ); // loose jet pt
+  fTree->Branch("C_jll"           , &C_jll          , "C_jll/F"          );
+  fTree->Branch("DilepJetPt"      , &DilepJetPt     , "DilepJetPt/F"     );
+  fTree->Branch("TBDT"            , &TBDT           , "TBDT/F"           );
+}
+
+void TopAnalysis::ReSetTWVariables()
+{
+
+  DilepMETJetPt  = -99;
+  Lep1METJetPt   = -99;
+  DPtDilep_JetMET= -99;
+  DPtDilep_MET   = -99;
+  DPtLep1_MET    = -99;
+  DilepMETJet1Pz = -99;
+  nLooseCentral  = -99;
+  nLooseFwd      = -99;
+  nBLooseCentral = -99;
+  nBLooseFwd     = -99;
+  TJet2csv       = -99;
+  MSys           = -99;
+  TJetLoosept    = -99;
+  C_jll          = -99;
+  DilepJetPt     = -99;
+}
+
+void TopAnalysis::CalculateTWVariables()
+{
+  DilepMETJetPt    =  getDilepMETJetPt()   ;
+  DilepJetPt       =  getDilepJetPt()      ;
+  Lep1METJetPt     =  getLep1METJetPt()    ;
+  DPtDilep_JetMET  =  getDPtDilep_JetMET() ;
+  DPtDilep_MET     =  getDPtDilep_MET()    ;
+  DPtLep1_MET      =  getDPtLep1_MET()     ;    
+  DilepMETJet1Pz   =  getDilepMETJet1Pz()  ;
+  get20Jets();
+  MSys             = getSysM();
+
+  TLorentzVector met; 
+  met.SetPtEtaPhiE(TMET,0,TMET_Phi,TMET);
+
+  C_jll = (selJets[0].p + selLeptons[0].p + selLeptons[1].p).Et() / (selJets[0].p + selLeptons[0].p + selLeptons[1].p).E();
+
+  return;
+
+
+}
+
+void TopAnalysis::get20Jets()
+{
+  nLooseCentral  = 0.;
+  nLooseFwd      = 0.;
+  nBLooseCentral = 0.;
+  nBLooseFwd     = 0.;
+  TJet2csv       = 0.;
+  TJetLoosept    = 0.;
+  
+  for (unsigned int j = 0; j < vetoJets.size(); ++j){
+    if (vetoJets[j].p.Pt() < 20.) continue;
+    if (TMath::Abs(vetoJets[j].p.Eta()) < 2.4) nLooseCentral++;
+    else nLooseFwd++;
+    if (!vetoJets[j].isBtag) continue;
+    if (TMath::Abs(vetoJets[j].p.Eta()) < 2.4) nBLooseCentral++;
+    else nBLooseFwd++;
+  }
+  if (nLooseFwd + nLooseCentral > 1){
+    TJet2csv = TMath::Max( vetoJets[1].csv   , 0.);
+    TJetLoosept = TMath::Max( vetoJets[1].p.Pt(), 0.);
+  }
+
+  return;
+}
+
+
+
+// 1j1b
+Double_t TopAnalysis::getDilepMETJetPt()
+{
+  TLorentzVector vSystem[4];
+  vSystem[0] = selLeptons[0].p;                               // lep1
+  vSystem[1] = selLeptons[1].p;                               // lep2
+  vSystem[2].SetPtEtaPhiE(TMET,0,TMET_Phi,TMET); // met
+  vSystem[3] = selJets[0].p;                                    // jet 1
+  return getPtSys(vSystem,4);
+
+}
+
+Double_t TopAnalysis::getDilepJetPt()
+{
+  TLorentzVector vSystem[3];
+  vSystem[0] = selLeptons[0].p;                               // lep1
+  vSystem[1] = selLeptons[1].p;                               // lep2
+  vSystem[2] = selJets[0].p;                                    // jet 1
+  return getPtSys(vSystem,3);
+
+}
+
+// 1j1b
+Double_t TopAnalysis::getLep1METJetPt()
+{
+  TLorentzVector vSystem[3];
+  vSystem[0] = selLeptons[0].p;
+  vSystem[1].SetPtEtaPhiE(TMET,0,TMET_Phi,TMET);
+  vSystem[2] = selJets[0].p;
+  return getPtSys(vSystem,3);
+}
+
+
+
+Double_t TopAnalysis::getPtSys(TLorentzVector* vSystem, int nSystem)
+{
+  TLorentzVector vSyst;
+  vSyst = vSystem[0];
+  for (int i = 1; i < nSystem; ++i){
+    vSyst += vSystem[i];
+  }
+  return vSyst.Pt();
+}
+
+Double_t TopAnalysis::getDilepMETJet1Pz()
+{
+  TLorentzVector vSystem[4];
+  vSystem[0] = selLeptons[0].p;                               // lep1
+  vSystem[1] = selLeptons[1].p;                               // lep2
+  vSystem[2].SetPtEtaPhiE(TMET,0,TMET_Phi,TMET); // met
+  vSystem[3] = selJets[0].p;                                    // jet 1
+  return getPzSys(vSystem,4);
+
+}
+
+Double_t TopAnalysis::getPzSys(TLorentzVector* vSystem, int nSystem){
+ TLorentzVector vSyst;
+  vSyst = vSystem[0];
+  for (int i = 1; i < nSystem; ++i){
+    vSyst += vSystem[i];
+  }
+  return vSyst.Pz();
+}
+
+
+// 1j1b
+Double_t TopAnalysis::getDPtDilep_JetMET()
+{
+  vector<TLorentzVector> col1;
+  vector<TLorentzVector> col2;
+
+  col1.push_back(selLeptons[0].p);
+  col1.push_back(selLeptons[1].p);
+
+  col2.push_back(selJets[0].p);
+  TLorentzVector met;
+  met.SetPtEtaPhiE(TMET,0,TMET_Phi,TMET);
+  col2.push_back(met);
+  return getDeltaPt(col1,col2);
+
+}
+
+// 1j1b
+Double_t TopAnalysis::getDPtDilep_MET()
+{
+  vector<TLorentzVector> col1;
+  vector<TLorentzVector> col2;
+
+  col1.push_back(selLeptons[0].p);
+  col1.push_back(selLeptons[1].p);
+
+  TLorentzVector met;
+  met.SetPtEtaPhiE(TMET,0,TMET_Phi,TMET);
+  col2.push_back(met);
+  return getDeltaPt(col1,col2);
+
+}
+
+// 1j1b
+Double_t TopAnalysis::getDPtLep1_MET()
+{
+  vector<TLorentzVector>  col1;
+  vector<TLorentzVector>  col2;
+  col1.push_back(selLeptons[0].p);
+  TLorentzVector met;
+  met.SetPtEtaPhiE(TMET,0,TMET_Phi,TMET);
+  col2.push_back(met);
+  return getDeltaPt(col1,col2);
+
+}
+
+Double_t TopAnalysis::getDeltaPt(vector<TLorentzVector> col1, vector<TLorentzVector> col2){
+  TLorentzVector v1, v2;
+  if (col1.size()*col2.size() == 0){
+    cout << "[TAT::getDeltaPt] One of the collections is empty" << endl;
+    return -99.;
+  }
+  v1 = col1[0];
+  v2 = col2[0];
+  for (unsigned int i = 1; i < col1.size(); ++i){
+    v1 += col1[i];
+  }
+  for (unsigned int i = 1; i < col2.size(); ++i){
+    v2 += col2[i];
+  }
+  return (v1-v2).Pt();
+}
+
+
+
+// Double_t TopAnalysis::getM_L1J1()
+// {
+//   vector<TLorentzVector>  col;
+//   col.push_back(selLeptons[0].p);
+//   col.push_back(selJets[0].p);
+//   return getM(col);
+// }
+
+// Double_t TopAnalysis::getM_L1J2()
+// {
+//   vector<TLorentzVector>  col;
+//   col.push_back(selLeptons[0].p);
+//   col.push_back(selJets[1].p);
+//   return getM(col);
+// }
+// Double_t TopAnalysis::getM_L2J1()
+// {
+//   vector<TLorentzVector>  col;
+//   col.push_back(selLeptons[1].p);
+//   col.push_back(selJets[0].p);
+//   return getM(col);
+// }
+// Double_t TopAnalysis::getM_L2J2()
+// {
+//   vector<TLorentzVector>  col;
+//   col.push_back(selLeptons[1].p);
+//   col.push_back(selJets[1].p);
+//   return getM(col);
+// }
+// Double_t TopAnalysis::getM_L2J1J2()
+// {
+//   vector<TLorentzVector>  col;
+//   col.push_back(selLeptons[1].p);
+//   col.push_back(selJets[0].p);
+//   col.push_back(selJets[1].p);
+//   return getM(col);
+// }
+
+Double_t TopAnalysis::getSysM()
+{
+  vector<TLorentzVector> col;
+  TLorentzVector met;
+  met.SetPtEtaPhiE(TMET,0,TMET_Phi,TMET);
+  col.push_back(met);
+  col.push_back(selJets[0].p);
+  col.push_back(selLeptons[0].p);
+  col.push_back(selLeptons[1].p);
+  return getM(col);
+
+}
+
+
+Double_t TopAnalysis::getM(vector<TLorentzVector> col)
+{
+  if (col.size() == 0){
+    cout << "[TAT::getM] One of the collections is empty" << endl;
+    return -99.;
+  }
+  TLorentzVector v;
+  v  = col[0];
+  for (unsigned int i = 1; i < col.size(); ++i){
+    v += col[i];
+  }
+  return v.M();  
+}
+
+// Double_t TopAnalysis::getDilepPt()
+// {
+//   TLorentzVector vSystem[2];
+//   vSystem[0] = selLeptons[0].p;
+//   vSystem[1] = selLeptons[1].p;
+//   return getPtSys(vSystem,2);
+// }
+
+
+// Double_t TopAnalysis::getDPtLep1_Jet1()
+// {
+//   vector<TLorentzVector> col1;
+//   vector<TLorentzVector> col2;
+
+//   col1.push_back(selLeptons[0].p);
+//   TLorentzVector met;
+//   met.SetPtEtaPhiE(TMET,0,TMET_Phi,TMET);
+//   col2.push_back(met);
+//   return getDeltaPt(col1,col2);
+// }
+
+
+// Double_t TopAnalysis::getDeltaRDilep_METJets12()
+// {
+//   vector<TLorentzVector>  col1;
+//   vector<TLorentzVector>  col2;
+//   col1.push_back(selLeptons[0].p);
+//   col1.push_back(selLeptons[1].p);
+//   col2.push_back(selJets[0].p);
+//   col2.push_back(selJets[1].p);
+//   TLorentzVector met;
+//   met.SetPtEtaPhiE(TMET,0,TMET_Phi,TMET);
+//   col2.push_back(met);
+//   return getDeltaR(col1,col2);
+// }
+// Double_t TopAnalysis::getDeltaRDilep_Jets12()
+// {
+//   vector<TLorentzVector>  col1;
+//   vector<TLorentzVector>  col2;
+//   col1.push_back(selLeptons[0].p);
+//   col1.push_back(selLeptons[1].p);
+//   col2.push_back(selJets[0].p);
+//   col2.push_back(selJets[1].p);
+//   return getDeltaR(col1,col2);
+// }
+
+// Double_t TopAnalysis::getDeltaRLep1_Jet1()
+// {
+//   vector<TLorentzVector>  col1;
+//   vector<TLorentzVector>  col2;
+//   col1.push_back(selLeptons[0].p);
+//   col2.push_back(selJets[0].p);
+//   return getDeltaR(col1,col2);
+// }
+
+
+
+// Double_t TopAnalysis::getDeltaR(vector<TLorentzVector> col1, vector<TLorentzVector> col2){
+//   TLorentzVector v1, v2;
+//   if (col1.size()*col2.size() == 0){
+//     cout << "[TAT::getDeltaR] One of the collections is empty" << endl;
+//     return -99.;
+//   }
+//   v1 = col1[0];
+//   v2 = col2[0];
+//   for (unsigned int i = 1; i < col1.size(); ++i){
+//     v1 += col1[i];
+//   }
+//   for (unsigned int i = 1; i < col2.size(); ++i){
+//     v2 += col2[i];
+//   }
+//   return v1.DeltaR(v2);
+// }
+
+void TopAnalysis::setTWBDT()
+{
+
+  BDT = new TMVA::Reader();
+  BDT->AddVariable( "nLooseCentral"                 , &nLooseCentral);
+  BDT->AddVariable( "nLooseFwd"                     , &nLooseFwd    );
+  BDT->AddVariable( "nBLooseCentral + nBLooseFwd"   , &nBTotal      );  
+  BDT->AddVariable( "DilepMETJetPt"                 , &DilepMETJetPt);
+  BDT->AddVariable( "THT"                           , &THT          );    
+  BDT->AddVariable( "TJet1_pt"                      , &TJet1_pt     );   
+  BDT->AddVariable( "TJet2pt"                       , &TJet2pt      );
+  BDT->AddVariable( "DilepMETJetPt/THT"             , &DilepmetjetOverHT  );
+  BDT->AddVariable( "MSys"                          , &MSys         );
+  BDT->AddVariable( "C_jll"                         , &C_jll        ); 
+  BDT->AddVariable( "(TLep1_pt+TLep2_pt)/THT"       , &HTLepOverHT  );
+  BDT->AddVariable( "DilepJetPt"                    , &DilepJetPt   );
+
+  BDT->BookMVA("BDTG","/mnt_pool/fanae105/user/sscruz/TW/AnalysisPAF/plotter/TW/dark-matter/weights/TMVAClassification_BDTG.weights.xml");
+
+}
