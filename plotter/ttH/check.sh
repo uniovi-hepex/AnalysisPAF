@@ -53,9 +53,9 @@ while [ $allok != 36 ]; do
       echo "Reanalyzing..."
       echo
       root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $1)"
-      allok=-8
+      allok=$(($allok-8))
     fi
-    allok=allok+1
+    allok=$(($allok+1))
   done
 done
 
