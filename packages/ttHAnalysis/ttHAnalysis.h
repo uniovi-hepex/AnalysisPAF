@@ -154,12 +154,13 @@ class ttHAnalysis : public PAFChainItemSelector {
 
     //	Minitree variables needed
 		//----------------------------------------------------------------------
-    Int_t   TCat;
-    Float_t TPtLeading;
-    Float_t TPtSubLeading;
-    Float_t TPtSubSubLeading;
-    Int_t   TCS;
-    Float_t TMass;
+    Int_t     TCat;
+    Float_t   TPtLeading;
+    Float_t   TPtSubLeading;
+    Float_t   TPtSubSubLeading;
+    Int_t     TCS;
+    Float_t   TMass;
+    Long64_t  Tevt;
 
 		//	Input variables and vectors
 		//----------------------------------------------------------------------
