@@ -158,9 +158,9 @@ void JetSelector::InsideLoop(){
 	} 
       }
       if (tJ.p.Pt() > vetoJet_minPt && TMath::Abs(tJ.p.Eta()) < vetoJet_maxEta){
-	if (gSelection == iWWSelec && tJ.isBtag) vetoJets.push_back(tJ);
-	else if (gSelection == iTWSelec)          vetoJets.push_back(tJ);
-	else                                      vetoJets.push_back(tJ);
+	if (gSelection == iWWSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
+	else if (gSelection == iTWSelec)           vetoJets.push_back(tJ);
+	else                                       vetoJets.push_back(tJ);
       }
     }
   }
@@ -181,9 +181,9 @@ void JetSelector::InsideLoop(){
 	  }
         }
 	if (tJ.p.Pt() > vetoJet_minPt && TMath::Abs(tJ.p.Eta()) < vetoJet_maxEta){
-	  if (gSelection == iWWSelec && tJ.isBtag) vetoJets.push_back(tJ);
-	  else if (gSelection == iTWSelec)          vetoJets.push_back(tJ);
-	  else                                      vetoJets.push_back(tJ);
+	  if (gSelection == iWWSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
+	  else if (gSelection == iTWSelec)           vetoJets.push_back(tJ);
+	  else                                       vetoJets.push_back(tJ);
 	}
       }
     }
