@@ -154,6 +154,8 @@ void JetSelector::InsideLoop(){
   Leptons.clear();
   Leptons    = GetParam<vector<Lepton>>("selLeptons"); 
 
+  evt = (UInt_t)Get<ULong64_t>("evt");
+
   // Loop over the jets
   nJet = Get<Int_t>("nJet");
   for(Int_t i = 0; i < nJet; i++){
@@ -176,11 +178,11 @@ void JetSelector::InsideLoop(){
     }
 	} 
       }
-      if (tJ.p.Pt() > vetoJet_minPt && tJ.p.Eta() < vetoJet_maxEta){
-	if      (gSelection == iWWSelec && tJ.isBtag) vetoJets.push_back(tJ);
-	else if (gSelection == iWZSelec && tJ.isBtag) vetoJets.push_back(tJ);
-	else if (gSelection == iTWSelec)          vetoJets.push_back(tJ);
-	else                                      vetoJets.push_back(tJ);
+      if (tJ.p.Pt() > vetoJet_minPt && TMath::Abs(tJ.p.Eta()) < vetoJet_maxEta){
+	if      (gSelection == iWWSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
+	else if (gSelection == iWZSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
+	else if (gSelection == iTWSelec)                vetoJets.push_back(tJ);
+	else                                            vetoJets.push_back(tJ);
       }
     }
   }
@@ -192,12 +194,12 @@ void JetSelector::InsideLoop(){
       tJ.isBtag = false; // Fwd jets are not b-tagged
       if(tJ.id > 0 && Cleaning(tJ, Leptons, minDR)){
         SetSystematics(&tJ);
-        tJ.isBtag = IsBtag(tJ);
+        tJ.isBtag  = false; // Fwd jets are not b-tagged
         if (TMath::Abs(tJ.p.Eta()) < jet_MaxEta){
           if(tJ.p.Pt() > 15 || tJ.pTJESUp > 15 || tJ.pTJESDown > 15) Jets15.push_back(tJ);
           if(tJ.p.Pt() > jet_MinPt) selJets.push_back(tJ);
         }
-        if (tJ.p.Pt() > vetoJet_minPt && tJ.p.Eta() < vetoJet_maxEta) vetoJets.push_back(tJ);
+	 if (tJ.p.Pt() > vetoJet_minPt && TMath::Abs(tJ.p.Eta()) < vetoJet_maxEta) vetoJets.push_back(tJ);
       }
     }
   }
@@ -248,9 +250,9 @@ void JetSelector::InsideLoop(){
 
 Bool_t JetSelector::IsBtag(Jet j){
   Bool_t isbtag;
-  if(gIsData) isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta());
+  if(gIsData) isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
   else if(stringWP == "Loose") isbtag = Get<Float_t>("Jet_csv");//fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta());
-  else        isbtag = fBTagSFnom->IsTagged(j.csv,j.flavmc, j.p.Pt(), j.p.Eta());
+  else        isbtag = fBTagSFnom->IsTagged(j.csv,j.flavmc, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
   return isbtag;
 }
 
@@ -261,10 +263,10 @@ void JetSelector::SetSystematics(Jet *j){
   j->pTJESDown   = rawPt*pt_corrDown;
   j->pTJERUp     = getJetJERpt(*j);
   j->pTJERDown   = getJetJERpt(*j);
-  j->isBtag_BtagUp      = fBTagSFbUp->IsTagged(_csv, _flavmc, _pt, _eta);
-  j->isBtag_BtagDown    = fBTagSFbDo->IsTagged(_csv, _flavmc, _pt, _eta);
-  j->isBtag_MisTagUp    = fBTagSFlUp->IsTagged(_csv, _flavmc, _pt, _eta);
-  j->isBtag_MisTagDown  = fBTagSFlDo->IsTagged(_csv, _flavmc, _pt, _eta);
+  j->isBtag_BtagUp      = fBTagSFbUp->IsTagged(_csv, _flavmc, _pt, _eta, evt+(UInt_t)_pt+1);
+  j->isBtag_BtagDown    = fBTagSFbDo->IsTagged(_csv, _flavmc, _pt, _eta, evt+(UInt_t)_pt-1);
+  j->isBtag_MisTagUp    = fBTagSFlUp->IsTagged(_csv, _flavmc, _pt, _eta, evt+(UInt_t)_pt+3);
+  j->isBtag_MisTagDown  = fBTagSFlDo->IsTagged(_csv, _flavmc, _pt, _eta, evt+(UInt_t)_pt-3);
 }
 
 Bool_t JetSelector::Cleaning(Jet j, vector<Lepton> vLep, Float_t minDR){

@@ -9,9 +9,9 @@
 
 using namespace std;
 
-BTagSFUtil::BTagSFUtil(string MeasurementType, string BTagAlgorithm, TString OperatingPoint, int SystematicIndex, TString FastSimDataset, int Seed) {
+BTagSFUtil::BTagSFUtil(string MeasurementType, string BTagAlgorithm, TString OperatingPoint, int SystematicIndex, TString FastSimDataset) {
 
-  rand_ = new TRandom3(Seed);
+  //rand_ = new TRandom3(Seed);
 
   string CSVFileName = (string)gSystem->ExpandPathName("$PWD") + "/packages/BTagSFUtil/" + BTagAlgorithm + ".csv";
   const BTagCalibration calib(BTagAlgorithm, CSVFileName);
@@ -37,10 +37,6 @@ BTagSFUtil::BTagSFUtil(string MeasurementType, string BTagAlgorithm, TString Ope
     if (TaggerName=="CSV") TaggerCut = 0.244;
     //if (TaggerName=="CSVv2") TaggerCut = 0.605;
     if (TaggerName=="CSVv2") TaggerCut = 0.5426; // for Moriond17
-    //reader_bc = new BTagCalibrationReader(calib, BTagEntry::OP_LOOSE, MeasurementType, SystematicFlagBC);
-    //reader_l  = new BTagCalibrationReader(calib, BTagEntry::OP_LOOSE, MeasurementType, SystematicFlagL);
-    //reader_l  = new BTagCalibrationReader(calib, BTagEntry::OP_LOOSE, "comb", SystematicFlagL);
-    //reader_l  = new BTagCalibrationReader(calib, BTagEntry::OP_LOOSE, "incl", SystematicFlagL);  // comb-->incl
     reader_b = new BTagCalibrationReader(BTagEntry::OP_LOOSE, "central", sysTypes);
     reader_b -> load(calib, BTagEntry::FLAV_B, MeasurementType);
     reader_c = new BTagCalibrationReader(BTagEntry::OP_LOOSE, "central", sysTypes);
@@ -53,10 +49,6 @@ BTagSFUtil::BTagSFUtil(string MeasurementType, string BTagAlgorithm, TString Ope
     //if (TaggerName=="CSVv2") TaggerCut = 0.890; // for 74X
     //if (TaggerName=="CSVv2") TaggerCut = 0.800; // for 76X
     if (TaggerName=="CSVv2") TaggerCut = 0.8484; // for Moriond17
-    //reader_bc = new BTagCalibrationReader(calib, BTagEntry::OP_MEDIUM, MeasurementType, SystematicFlagBC);
-    //reader_l  = new BTagCalibrationReader(calib, BTagEntry::OP_MEDIUM, MeasurementType, SystematicFlagL);
-    //reader_l  = new BTagCalibrationReader(calib, BTagEntry::OP_MEDIUM,  "comb", SystematicFlagL);
-    //reader_l  = new BTagCalibrationReader(calib, BTagEntry::OP_MEDIUM,  "incl", SystematicFlagL);  // comb-->incl
     reader_b = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central", sysTypes);
     reader_b -> load(calib, BTagEntry::FLAV_B, MeasurementType);
     reader_c = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central", sysTypes);
@@ -69,10 +61,6 @@ BTagSFUtil::BTagSFUtil(string MeasurementType, string BTagAlgorithm, TString Ope
     if (TaggerName=="TCHP") TaggerCut = 3.41;
     //if (TaggerName=="CSVv2") TaggerCut = 0.970;
     if (TaggerName=="CSVv2") TaggerCut = 0.9535; // for Moriond17
-    //reader_bc = new BTagCalibrationReader(calib, BTagEntry::OP_TIGHT, MeasurementType, SystematicFlagBC);
-    //reader_l  = new BTagCalibrationReader(calib, BTagEntry::OP_TIGHT, MeasurementType, SystematicFlagL);
-    //reader_l  = new BTagCalibrationReader(calib, BTagEntry::OP_TIGHT, "comb", SystematicFlagL);
-    //reader_l  = new BTagCalibrationReader(calib, BTagEntry::OP_TIGHT, "incl", SystematicFlagL);  // comb-->incl
     reader_b = new BTagCalibrationReader(BTagEntry::OP_TIGHT, "central", sysTypes);
     reader_b -> load(calib, BTagEntry::FLAV_B, MeasurementType);
     reader_c = new BTagCalibrationReader(BTagEntry::OP_TIGHT, "central", sysTypes);
@@ -95,7 +83,7 @@ BTagSFUtil::BTagSFUtil(string MeasurementType, string BTagAlgorithm, TString Ope
 
 BTagSFUtil::~BTagSFUtil() {
 
-  delete rand_;
+  delete reader_b, reader_c, reader_l;
 
 }
 
@@ -160,7 +148,7 @@ float BTagSFUtil::GetJetSF(float JetDiscriminant, int JetFlavor, float JetPt, fl
 
 }
 
-bool BTagSFUtil::IsTagged(float JetDiscriminant, int JetFlavor, float JetPt, float JetEta) {
+bool BTagSFUtil::IsTagged(float JetDiscriminant, int JetFlavor, float JetPt, float JetEta, UInt_t Seed) {
   bool isBTagged = JetDiscriminant>TaggerCut;
   if (JetFlavor==-999999) return isBTagged; // Data: no correction needed
   bool newBTag = isBTagged;
@@ -168,6 +156,8 @@ bool BTagSFUtil::IsTagged(float JetDiscriminant, int JetFlavor, float JetPt, flo
   if (Btag_SF == 1) return newBTag; //no correction needed 
 
   //throw die
+  //Seed = 0; // Uncomment for using random seed.
+  rand_ = new TRandom3(Seed); // Fixed seeds, dependent on event number, jet pT and systematic variation, for reproducibility. Use Seed=0 for testing that seed dependence is negligible.
   float coin = rand_->Uniform(1.);    
  
   if(Btag_SF > 1){  // use this if SF>1
@@ -190,6 +180,7 @@ bool BTagSFUtil::IsTagged(float JetDiscriminant, int JetFlavor, float JetPt, flo
 
   }
 
+  delete rand_;
   return newBTag;
 
 }
