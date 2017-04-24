@@ -18,11 +18,11 @@ enum iSFs{
   nfiles
 };
 
-enum wps{iVeto, iLoose, iMedium, iTight, iVeryTight, iExtreamlyTight, iWPforStop, iLooseWPforStop};
+enum wps{iVeto, iVeryLoose, iLoose, iMedium, iTight, iVeryTight, iExtreamlyTight, iWPforStop, iLooseWPforStop};
 
-enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec, iWZSelec};
+enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec, iWZSelec, i4tSelec};
 
-enum eChannel{iNoChannel, iElMu, iMuon, iElec, iTriLep, iFourLep, nTotalDefinedChannels};
+enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, nTotalDefinedChannels};
 
 enum sys{iNom, 
   iJesUp, iJesDown, iJERUp, iJERDown, 
@@ -59,5 +59,10 @@ Float_t getMT2(TLorentzVector plep1, TLorentzVector plep2, TLorentzVector pmet, 
 Float_t getMT2ll(Lepton l1, Lepton l2, Float_t met, Float_t met_phi);
 Float_t getMeff(Lepton l1, Lepton l2, vector<Jet> vjets, Float_t met);
 TLorentzVector getPtllb(Lepton l1, Lepton l2, Float_t met, Float_t met_phi);
+Float_t getISRJetsWeight(Int_t nISRJet);
+Bool_t IsOnZ(vector<Lepton> leptons);
+Bool_t PassLowInvMass(vector<Lepton> leptons, Float_t Mll_max = 12);
+Bool_t hasOSSF(vector<Lepton> leptons);
+Float_t ClosestMlltoZ(vector<Lepton> leptons);
 
 #endif

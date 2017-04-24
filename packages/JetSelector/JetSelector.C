@@ -35,7 +35,7 @@ void JetSelector::Initialise(){
 
   //---- Select your wp for b-tagging and pt, eta for the jets
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-  if      (gSelection == iStopSelec || gSelection == iTopSelec || gSelection == ittDMSelec || gSelection == iTWSelec || gSelection == ittHSelec)  stringWP = "Medium";
+  if      (gSelection == iStopSelec || gSelection == iTopSelec || gSelection == ittDMSelec || gSelection == iTWSelec || gSelection == ittHSelec || gSelection == i4tSelec)  stringWP = "Medium";
   else if (gSelection == iWWSelec)    stringWP = "Loose";
   else if (gSelection == iWZSelec)    stringWP = "Loose";
   else                                stringWP = "Medium";
@@ -43,6 +43,13 @@ void JetSelector::Initialise(){
     jet_MaxEta = 2.4;
     jet_MinPt  = 30;
     vetoJet_minPt = 20;
+    vetoJet_maxEta = 2.4;
+    minDR = 0.4;
+  }
+  else if (gSelection == i4tSelec){
+    jet_MaxEta = 2.4;
+    jet_MinPt  = 30;
+    vetoJet_minPt = 25;
     vetoJet_maxEta = 2.4;
     minDR = 0.4;
   }
@@ -181,6 +188,7 @@ void JetSelector::InsideLoop(){
       if (tJ.p.Pt() > vetoJet_minPt && TMath::Abs(tJ.p.Eta()) < vetoJet_maxEta){
 	if      (gSelection == iWWSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
 	else if (gSelection == iWZSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
+	else if (gSelection == i4tSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
 	else if (gSelection == iTWSelec)                vetoJets.push_back(tJ);
 	else                                            vetoJets.push_back(tJ);
       }
