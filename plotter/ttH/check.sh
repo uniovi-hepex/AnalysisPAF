@@ -44,7 +44,7 @@ echo
 path=""
 while [ $allok != 37 ]; do
   allok=0
-  for i in {0..35}; do
+  for i in {0..36}; do
     unset path
     path=$plotspath$slash${samples[i]}
     if [ ! -e $path ]; then
