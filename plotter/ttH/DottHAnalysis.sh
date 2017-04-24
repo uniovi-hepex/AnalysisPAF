@@ -57,6 +57,7 @@ if [ "$1" == "an" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M10to50_aMCatNLO & DYJetsToLL_M10to50_aMCatNLO_ext\" , \"$sel\", 25)" 
         # 25 - 21s, 30 - 22s, 20 - 22s 
         root -l -b -q "RunAnalyserPAF.C(\"WJetsToLNu_aMCatNLO\"						     , \"$sel\", 25)"
+        root -l -b -q "RunAnalyserPAF.C(\"WJetsToLNu_MLM & WJetsToLNu_MLM_ext2\"                          , \"$sel\", 40)"
         root -l -b -q "RunAnalyserPAF.C(\"TW & TW_ext\"								         , \"$sel\", 25)" 
         # 25 - 24s, 30 - 26s, 20 - 25s 
         root -l -b -q "RunAnalyserPAF.C(\"TbarW & TbarW_ext\"							     , \"$sel\", 25)" 
@@ -114,6 +115,7 @@ if [ "$1" == "an" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M50_aMCatNLO\"				     , \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M10to50_aMCatNLO & DYJetsToLL_M10to50_aMCatNLO_ext\" , \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"WJetsToLNu_aMCatNLO\"						     , \"$sel\", $2)"
+        root -l -b -q "RunAnalyserPAF.C(\"WJetsToLNu_MLM & WJetsToLNu_MLM_ext2\"                          , \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"TW & TW_ext\"								         , \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"TbarW & TbarW_ext\"							     , \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"T_tch\"								               , \"$sel\", $2)"

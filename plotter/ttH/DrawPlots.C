@@ -9,12 +9,13 @@ R__LOAD_LIBRARY(Plot.C+)
 #include <fstream>
 
 const TString Signalmc[]      = {"TTHNonbb"};                   // ttH
-const TString TTWmc[] 	      = {"TTWToLNu1", "TTWToQQ"};			 // TTW
-const TString TTZmc[] 	      = {"TTZToLLNuNu", "TTZToQQ"};	   // TTZ
+const TString TTWmc[] 	      = {"TTWToLNu1", "TTWToQQ"};			  // TTW
+const TString TTZmc[] 	      = {"TTZToLLNuNu", "TTZToQQ"};	    // TTZ
 const TString TTbarmc[] 	    = {"TTGJets", "TTJets_aMCatNLO"}; // TTbar
-const TString WJetsmc[]       = {"WJetsToLNu_aMCatNLO"};        // WJets
+const TString WJetsmc[]       = {"WJetsToLNu_MLM"};             // WJets at LO  (comment/uncomment as desired)
+//const TString WJetsmc[]       = {"WJetsToLNu_aMCatNLO"};        // WJets at NLO (comment/uncomment as desired)
 const TString STmc[]    	    = {"TW", "TbarW", "T_tch", "Tbar_tch", "TToLeptons_sch_amcatnlo","TGJets"};// ST
-const TString DYmc[]          = {"DYJetsToLL_M50_MLM", "DYJetsToLL_M5to50_MLM"};                         // DY at LO (comment/uncomment as desired)
+const TString DYmc[]          = {"DYJetsToLL_M50_MLM", "DYJetsToLL_M5to50_MLM"};                         // DY at LO   (comment/uncomment as desired)
 //const TString DYmc[2]          = {"DYJetsToLL_M50_aMCatNLO", "DYJetsToLL_M10to50_aMCatNLO"};              // DY at NLO (comment/uncomment as desired)
 const TString DiTriCuatrimc[] = {"WGToLNuG", "ZGTo2LG", "WpWpJJ", "WWW", "WWZ", "WZZ", "ZZZ", "WW", "tZq_ll", "TTTT", "WZTo3LNu_amcatnlo", "WWTo2L2Nu", "ZZ"}; // Di&Tri&Cuatriboson
 const TString Data[]          = {"MuonEG", "SingleMuon", "SingleElec", "DoubleEG", "DoubleMuon"};        // Data samples
