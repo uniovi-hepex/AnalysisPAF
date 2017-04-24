@@ -582,8 +582,8 @@ Float_t ttHAnalysis::GetMHT() {
   for (UInt_t i = 0; i < Jets.size(); i++){
     mht += Jets[i].Pt();
   }
-  for (UInt_t i = 0; i < TightLepton.size(); i++){
-    mht += TightLepton[i].Pt();
+  for (UInt_t i = 0; i < FakeableLepton.size(); i++){
+    mht += FakeableLepton[i].Pt();
   }
 	return mht;
 }
