@@ -209,6 +209,34 @@ Float_t Plot::GetData(){
   return hData->GetYield();
 }
 
+Histo* Plot::GetHData(){
+  if(!hData) SetData();
+  return hData;
+}
+
+Histo* Plot::GetHisto(TString pr, TString systag){
+  if(pr == "Data") return GetHData();
+  Float_t val = 0; Float_t sys = 0; TString ps; 
+  Int_t nSyst = VSyst.size();
+  Int_t nBkg = VBkgs.size();
+  Int_t nSig = VSignals.size();
+  if(systag == "0"){
+    for(Int_t i = 0; i < nBkg; i++) if(pr == VBkgs.at(i)   ->GetProcess()) return  VBkgs.at(i);
+    for(Int_t i = 0; i < nSig; i++) if(pr == VSignals.at(i)->GetProcess()) return  VSignals.at(i);
+    return 0;
+  }
+  else{  
+    Float_t nom = GetYield(pr, "0");
+    for(int k = 0; k < nSyst; k++){ 
+      ps = VSyst.at(k)->GetTag();
+      if(!ps.BeginsWith(pr))   continue;
+      if(!ps.Contains(systag)) continue;
+      return VSyst.at(k);
+    }
+  }
+  cout << "[Plot::GetHisto] WARNING: No systematic " << systag << " for process " << pr << "........... Returning nominal histo..." << endl;
+  return GetHisto(pr, "0");
+}
 
 Float_t Plot::GetYield(TString pr, TString systag){
   if(pr == "Data") return GetData();
@@ -234,7 +262,7 @@ Float_t Plot::GetYield(TString pr, TString systag){
       return VSyst.at(k)->GetYield();
     }
   }
-  //cout << "No systematic " << systag << " for process " << pr << endl;
+  cout << "[Plot::GetYield] WARNING: No systematic " << systag << " for process " << pr << "!!! ...... Returning nominal value... " << endl;
   return GetYield(pr);
 }
 

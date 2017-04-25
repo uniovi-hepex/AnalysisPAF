@@ -25,7 +25,7 @@ Bool_t EventBuilder::PassesDoubleElecTrigger(){
   gIsData = GetParam<Bool_t>("IsData");
   if (gIsData)
     run     = Get<Int_t>("run");
-  if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec){
+  if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec || gSelection == i4tSelec){
     // Run B-G, same as H
     pass = (Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"));
     return pass;
@@ -51,7 +51,7 @@ Bool_t EventBuilder::PassesDoubleMuonTrigger(){
   Bool_t pass = false;
   if (gIsData)
     run     = Get<Int_t>("run");
-  if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec){
+  if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec || gSelection == i4tSelec){
     // Run B-G or MC
     if ( (gIsData && run <= 280385) || (!gIsData)){
       pass = (Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v")  ||
@@ -87,7 +87,7 @@ Bool_t EventBuilder::PassesElMuTrigger(){
   Bool_t pass = false;
   if (gIsData)
     run     = Get<Int_t>("run");
-  if( gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec){
+  if( gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec || gSelection == i4tSelec){
     // Run B-G or MC
     if ( (gIsData && run <= 280385) || (!gIsData)){
       pass = ( Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v")  ||
@@ -147,6 +147,20 @@ Bool_t EventBuilder::PassesSingleMuonTrigger(){
   return pass;
 }
 
+Bool_t EventBuilder::PassesDoubleMuonHTTrigger(){
+  if(gIsFastSim) return true; // no triger in FastSim samples
+  return Get<Int_t>("HLT_BIT_HLT_DoubleMu8_Mass8_PFHT300");
+}
+
+Bool_t EventBuilder::PassesDoubleElecHTTrigger(){
+  if(gIsFastSim) return true; // no triger in FastSim samples
+  return Get<Int_t>("HLT_BIT_HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300");
+}
+
+Bool_t EventBuilder::PassesElMuHTTrigger(){
+  if(gIsFastSim) return true; // no triger in FastSim samples
+  return Get<Int_t>("HLT_BIT_HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300");
+}
 
 Bool_t EventBuilder::PassesThreelFourlTrigger() {
   if(gIsFastSim) return true; // no triger in FastSim samples
@@ -242,13 +256,37 @@ void EventBuilder::InsideLoop(){
     else if (selLeptons.size() >= 4) gChannel = iFourLep;
   }
 
-
-
   passTrigger = false;
   if      (gChannel == iElMu && TrigElMu()) passTrigger = true;
   else if (gChannel == iMuon && TrigMuMu()) passTrigger = true;
   else if (gChannel == iElec && TrigElEl()) passTrigger = true;
   else if ((gChannel == iTriLep || gChannel == iFourLep) && Trig3l4l()) passTrigger = true;
+
+  if(gSelection == i4tSelec){
+    if(selLeptons.size() == 2){
+      if( (selLeptons[0].charge*selLeptons[1].charge) > 0){
+        gChannel = i2lss; isSS = true;
+      }
+      else gChannel = -1; // 2 leptons OS
+    }
+    else if(selLeptons.size() == 3) gChannel = iTriLep;
+    else if(selLeptons.size() >= 4) gChannel = iFourLep;
+    else gChannel = -1; // less than 2 leptons...
+
+    passTrigger = PassesElMuTrigger() || PassesElMuHTTrigger() ||
+      PassesDoubleMuonTrigger() || PassesDoubleMuonHTTrigger() ||
+      PassesDoubleElecTrigger() || PassesDoubleElecHTTrigger();
+    if(gIsDoubleMuon){
+      passTrigger = !PassesElMuTrigger() && !PassesElMuHTTrigger() &&
+        (PassesDoubleMuonTrigger() || PassesDoubleMuonHTTrigger() ||
+        PassesDoubleElecTrigger() || PassesDoubleElecHTTrigger() );
+    }
+    if(gIsDoubleElec){
+      passTrigger = !PassesElMuTrigger() && !PassesElMuHTTrigger() &&
+        !PassesDoubleMuonTrigger() && !PassesDoubleMuonHTTrigger() &&
+        (PassesDoubleElecTrigger() || PassesDoubleElecHTTrigger() );
+    }
+  }
 
   METfilters = PassesMETfilters();
 
@@ -368,16 +406,3 @@ Bool_t EventBuilder::PassesMETfilters(){
   else return false;
 }
 
-/*
-void  EventBuilder::SetCountLHE(){
-  for(Int_t i = 0; i < numberOfSamples; i++){
-    for(Int_t k = 1; k < nLHEWeight+1; k++){
-      if      (k<10  ) bin = i + 1001;   // 1002-1010: muRmuF
-      else if (k<112) bin = i + 1992;   // 2002-2103: NNPDF
-      else if (k<167) bin = i + 2890;   // 3002-3056: CT10
-      else if (k<223) bin = i + 3835;   // 4000-4057: MMHT2014
-      else if (k<250) bin = i + 4779;   // 5002-5028: muRmuF, hdamp
-      CountLHE->SetBinContent(k, x0+x);
-    }
-  }
-}*/

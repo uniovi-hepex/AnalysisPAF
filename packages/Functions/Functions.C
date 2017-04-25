@@ -161,6 +161,19 @@ Float_t getJetJERpt(Jet jet){
   return  pt*factor1;   
 }
 
+Float_t getISRJetsWeight(Int_t nISRJet){
+  Float_t SF = 0;
+  if     (nISRJet == 0) SF = 1;
+  else if(nISRJet == 1) SF = 0.882;
+  else if(nISRJet == 2) SF = 0.792;
+  else if(nISRJet == 3) SF = 0.702;
+  else if(nISRJet == 4) SF = 0.648;
+  else if(nISRJet == 5) SF = 0.601;
+  else                  SF = 0.515;
+  return SF;
+}
+
+
 
 // ==================================================================
 // ========================== Other ================================
@@ -188,3 +201,70 @@ vector<Jet> SortJetsByPt(vector<Jet>& Jets){
   sort (theJet.begin(), theJet.end(), JetMomentumComparator);
   return theJet;
 }
+
+// Playing with lepton masses...
+
+Float_t ClosestMlltoZ(vector<Lepton> leptons){
+  Int_t nLeps = leptons.size(); Float_t mll = 0; Float_t best_mll = 0;
+  if(nLeps < 2) return false;
+  for(Int_t i = 0; i < nLeps; i++){
+    for(Int_t j = i; j < nLeps; j++){
+      if(leptons.at(i).type == leptons.at(j).type){ // same flavour
+        if(leptons.at(i).charge*leptons.at(j).charge < 1){ // opposite sign
+          mll = (leptons.at(i).p + leptons.at(j).p).M(); if(best_mll = 0) best_mll = mll; 
+          if( TMath::Abs(mll - 91) < TMath::Abs(best_mll - 91) ) best_mll = mll;
+        }
+      }
+    }
+  } 
+  return best_mll;
+}
+
+Bool_t hasOSSF(vector<Lepton> leptons){
+  Int_t nLeps = leptons.size();
+  if(nLeps < 2) return false;
+  for(Int_t i = 0; i < nLeps; i++){
+    for(Int_t j = i; j < nLeps; j++){
+      if(leptons.at(i).type == leptons.at(j).type){ // same flavour
+        if(leptons.at(i).charge*leptons.at(j).charge < 1){ // opposite sign
+          return true;
+        }
+      }
+    }
+  } 
+  return false;
+
+}
+
+Bool_t IsOnZ(vector<Lepton> leptons){
+  Int_t nLeps = leptons.size();
+  if(nLeps < 2) return false;
+  for(Int_t i = 0; i < nLeps; i++){
+    for(Int_t j = i; j < nLeps; j++){
+      if(leptons.at(i).type == leptons.at(j).type){ // same flavour
+        if(leptons.at(i).charge*leptons.at(j).charge < 1){ // opposite sign
+          if( TMath::Abs( (leptons.at(i).p + leptons.at(j).p).M() - 91) < 15){ // on Z
+            return true;
+          }
+        }
+      }
+    }
+  } 
+  return false;
+}
+
+Bool_t PassLowInvMass(vector<Lepton> leptons, Float_t Mll_max){
+  Int_t nLeps = leptons.size();
+  if(nLeps < 2) return false;
+  for(Int_t i = 0; i < nLeps; i++){
+    for(Int_t j = i; j < nLeps; j++){
+      if(leptons.at(i).type == leptons.at(j).type){ // same flavour
+        if(leptons.at(i).charge*leptons.at(j).charge < 1){ // opposite sign
+          if( (leptons.at(i).p + leptons.at(j).p).M()  < Mll_max) return false;
+        }
+      }
+    }
+  } 
+  return true;
+}
+
