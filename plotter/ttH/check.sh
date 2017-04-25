@@ -11,8 +11,8 @@ samples=("Tree_TTWToLNu1.root" "Tree_TTWToQQ.root" "Tree_TTZToLLNuNu.root" "Tree
   "Tree_TTHNonbb.root" "Tree_MuonEG.root" "Tree_DoubleMuon.root" "Tree_DoubleEG.root" "Tree_SingleElec.root" "Tree_SingleMuon.root")
 
 runsamples=("TTWToLNu_ext1 & TTWToLNu_ext2" "TTWToQQ" "TTZToLLNuNu_ext & TTZToLLNuNu_ext2" "TTZToQQ" "WGToLNuG" "ZGTo2LG" "TGJets & TGJets_ext" "TTGJets & TTGJets_ext" 
-  "WpWpJJ" "ZZZ" "WZZ" "WWZ" "WWW" "WW & WW_ext" "tZq_ll" "TTTT" "TTJets_aMCatNLO" "DYJetsToLL_M50_MLM" 
-  "DYJetsToLL_M50_MLM_ext & DYJetsToLL_M50_MLM_ext2" "DYJetsToLL_M50_aMCatNLO" "DYJetsToLL_M10to50_aMCatNLO & DYJetsToLL_M10to50_aMCatNLO_ext" "WJetsToLNu_aMCatNLO" "WJetsToLNu_MLM & WJetsToLNu_MLM_ext2"
+  "WpWpJJ" "ZZZ" "WZZ" "WWZ" "WWW" "WW & WW_ext" "tZq_ll" "TTTT" "TTJets_aMCatNLO" "DYJetsToLL_M50_MLM_ext & DYJetsToLL_M50_MLM_ext2" 
+  "DYJetsToLL_M5to50_MLM" "DYJetsToLL_M50_aMCatNLO" "DYJetsToLL_M10to50_aMCatNLO & DYJetsToLL_M10to50_aMCatNLO_ext" "WJetsToLNu_aMCatNLO" "WJetsToLNu_MLM & WJetsToLNu_MLM_ext2"
   "TW & TW_ext" "TbarW & TbarW_ext" "T_tch" "Tbar_tch" "TToLeptons_sch_amcatnlo" "WZTo3LNu_amcatnlo" "WWTo2L2Nu" "ZZ & ZZ_ext" 
   "TTHNonbb" "MuonEG" "DoubleMuon" "DoubleEG" "SingleElec" "SingleMuon")
 
