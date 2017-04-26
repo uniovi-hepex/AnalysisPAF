@@ -6,7 +6,7 @@
 
 # Exclude files by emacs
 *~
-
+.~*
 # Exclude downloaded Datasets
 Datasets/
 

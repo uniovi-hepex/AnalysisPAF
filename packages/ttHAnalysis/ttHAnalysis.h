@@ -38,17 +38,8 @@ enum gCategories {
     gNCATEGORIES,
 };
 
-enum gChannel {
-    channels_begin,
-    MuMu = channels_begin,
-    ElEl,
-    ElMu,
-    All,
-    gNCHANNELS,
-};
-
 const TString gCatLabel	[gNCATEGORIES] 	= {"2lSS","3l","4l","Total"};
-const TString gChanLabel[gNCHANNELS] 	  = {"MuMu","ElEl","ElMu","All"};
+const TString gChanLabel[4] 	  = {"MuMu","ElEl","ElMu","All"};
 
 //------------------------------------------------------------------------------
 //		Classes declarations
@@ -73,11 +64,11 @@ class ttHAnalysis : public PAFChainItemSelector {
 		////////////////////////////////////////////////////////////////////////
 		//	Methods
 		//----------------------------------------------------------------------
-		void 	GetTreeVariables();
-    void  SetLeptonBranches();
-    void  SetJetBranches();
-    void  SetEventBranches();
-    void  SetMiniTreeVariables();
+		void 	  GetTreeVariables();
+    void    SetLeptonBranches();
+    void    SetJetBranches();
+    void    SetEventBranches();
+    void    SetMiniTreeVariables();
 
     // Minitree things
     //----------------------------------------------------------------------
@@ -96,88 +87,90 @@ class ttHAnalysis : public PAFChainItemSelector {
 
     //	Filling methods
 		//----------------------------------------------------------------------
-		void 	FillEventHistos();
-		void 	FillYieldHistos();
-		void 	FillKinematicHistos();
-		void 	FillMETHistos();
-		void 	FillMiscHistos();
+		void 	  FillEventHistos();
+		void 	  FillYieldHistos();
+		void 	  FillKinematicHistos();
+		void 	  FillMETHistos();
+		void 	  FillMiscHistos();
 
 		////////////////////////////////////////////////////////////////////////
 		//	   Events selection
 		////////////////////////////////////////////////////////////////////////
+		Bool_t 	PassesPreCuts();
+    
     Bool_t 	Is2lSSEvent();
     Bool_t 	Is3lEvent();
     Bool_t 	Is4lEvent();
 
-		Bool_t 	PassesPreCuts();
 
     ////////////////////////////////////////////////////////////////////////
-		//	   Get/set/other methods
+		//	   Other methods (get, set, misc...)
 		////////////////////////////////////////////////////////////////////////
-		Float_t getMET();
-		Float_t getMETLD();
-		Int_t 	getCS();
 		void 	  GetParameters();
-    Int_t   GetnLooseBTags();
     void    GetEventVariables();
     void    InitialiseVariables();
+    
+		Float_t GetMETLD();
+    Float_t GetHT();
+    Float_t GetMHT();
+		Int_t 	GetCS();
+    Int_t   GetnMediumBTags();
+    Int_t   GetnLooseBTags();
 
 	protected:
 		////////////////////////////////////////////////////////////////////////
 		//		Data members
 		////////////////////////////////////////////////////////////////////////
-		//	Essential and global parameters
+		//	Analysis parameters
 		//----------------------------------------------------------------------
     TString gSampleName;
 		Bool_t  gIsData;
 		Bool_t  gIsMCatNLO;
 		Float_t gWeight;
 
-		//	EventWeight
+		//	Weight of the event
 		//----------------------------------------------------------------------
 		Float_t EventWeight;
 		Float_t genWeight;
 
-		//	Histograms and trees
+		//	Histograms
 		//----------------------------------------------------------------------
-		TH1F*   fHEvents    		  [gNCATEGORIES][gNCHANNELS]; // Events
-		TH1F*   fHTightLep			  [gNCATEGORIES][gNCHANNELS]; // Yields
-		TH1F*   fHFakeLep			    [gNCATEGORIES][gNCHANNELS];
-		TH1F*   fHLooseLep			  [gNCATEGORIES][gNCHANNELS];
-		TH1F*   fHTau				      [gNCATEGORIES][gNCHANNELS];
-		TH1F*   fHJet				      [gNCATEGORIES][gNCHANNELS];
-		TH1F*   fHMedBTagJet		  [gNCATEGORIES][gNCHANNELS];
-		TH1F*   fHLosBTagJet		  [gNCATEGORIES][gNCHANNELS];
-		TH1F*   fHPtLeading			  [gNCATEGORIES][gNCHANNELS]; // Kinematic
-		TH1F*   fHPtSubLeading		[gNCATEGORIES][gNCHANNELS];
-		TH1F*   fHPtSubSubLeading	[gNCATEGORIES][gNCHANNELS];
-		TH1F*   fHMET				      [gNCATEGORIES][gNCHANNELS]; // MET
-		TH1F*   fHMHT				      [gNCATEGORIES][gNCHANNELS];
-		TH1F*   fHMETLD				    [gNCATEGORIES][gNCHANNELS];
-		TH1F*   fHChargeSum			  [gNCATEGORIES][gNCHANNELS]; // Misc
-		TH1F*   fHMass				    [gNCATEGORIES][gNCHANNELS];
+		TH1F*   fHEvents    		  [gNCATEGORIES][4]; // Events
+		TH1F*   fHTightLep			  [gNCATEGORIES][4]; // Yields
+		TH1F*   fHFakeLep			    [gNCATEGORIES][4];
+		TH1F*   fHLooseLep			  [gNCATEGORIES][4];
+		TH1F*   fHTau				      [gNCATEGORIES][4];
+		TH1F*   fHJet				      [gNCATEGORIES][4];
+		TH1F*   fHMedBTagJet		  [gNCATEGORIES][4];
+		TH1F*   fHLosBTagJet		  [gNCATEGORIES][4];
+		TH1F*   fHPtLeading			  [gNCATEGORIES][4]; // Kinematic
+		TH1F*   fHPtSubLeading		[gNCATEGORIES][4];
+		TH1F*   fHPtSubSubLeading	[gNCATEGORIES][4];
+		TH1F*   fHMET				      [gNCATEGORIES][4]; // MET
+		TH1F*   fHMHT				      [gNCATEGORIES][4];
+		TH1F*   fHMETLD				    [gNCATEGORIES][4];
+		TH1F*   fHChargeSum			  [gNCATEGORIES][4]; // Misc
+		TH1F*   fHMass				    [gNCATEGORIES][4];
 
-    Int_t   TCat;
-    Int_t   TisSS;
-    Int_t   TIsEvent;
-    Float_t TPtLeading;
-    Float_t TPtSubLeading;
-    Float_t TPtSubSubLeading;
-    Int_t   TCS;
-    Float_t TMass;
-    Float_t TMETLD;
-    Float_t TWeight;
-    Int_t   TpassTrigger;
+    //	Minitree variables needed
+		//----------------------------------------------------------------------
+    Int_t     TCat;
+    Float_t   TPtLeading;
+    Float_t   TPtSubLeading;
+    Float_t   TPtSubSubLeading;
+    Int_t     TCS;
+    Float_t   TMass;
+    Long64_t  Tevt;
 
 		//	Input variables and vectors
 		//----------------------------------------------------------------------
-		UInt_t 	nTightLepton;
-		UInt_t 	nFakeableLepton;
-		UInt_t 	nLooseLepton;
-		UInt_t 	nTaus;
-		UInt_t 	nJets;
-		UInt_t 	nMediumBTags;
-		UInt_t 	nLooseBTags;
+		Int_t 	nTightLepton;
+		Int_t 	nFakeableLepton;
+		Int_t 	nLooseLepton;
+		Int_t 	nTaus;
+		Int_t 	nJets;
+		Int_t 	nMediumBTags;
+		Int_t 	nLooseBTags;
 
     std::vector<Lepton> LooseLepton;
 		std::vector<Lepton> FakeableLepton;
@@ -186,7 +179,9 @@ class ttHAnalysis : public PAFChainItemSelector {
 		std::vector<Jet>    Jets;
 
 		Float_t MET;
+    Float_t METLD;
 		Float_t MHT;
+		Float_t HT;
 
     Int_t   gChannel;
     Bool_t  passTrigger;
