@@ -14,7 +14,7 @@
 #include "Histo.h"
 #include "TSystem.h"
 
-enum eChannel{iNoChannel, iElMu, iMuon, iElec, iTriLep, iFourLep, nTotalDefinedChannels};
+enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, nTotalDefinedChannels};
 const Int_t nLHEweights = 112;
 
 TString CraftFormula(TString var, TString cut, TString chan, TString sys);
