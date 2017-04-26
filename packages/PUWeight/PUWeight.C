@@ -896,6 +896,6 @@ TH3D* PUWeight::CalculateWeight3D(float ScaleFactor) {
   /////////////
 
 
-
+  delete DHist, MHist;
   return fWeight3D;
 }

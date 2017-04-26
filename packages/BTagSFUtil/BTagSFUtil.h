@@ -11,11 +11,11 @@ class BTagSFUtil{
 
  public:
     
-  BTagSFUtil(string MeasurementType, string BTagAlgorithm, TString OperatingPoint, int SystematicIndex = 0, TString FastSimDataset = "", int Seed = 0);
+  BTagSFUtil(string MeasurementType, string BTagAlgorithm, TString OperatingPoint, int SystematicIndex = 0, TString FastSimDataset = "");
   ~BTagSFUtil();
 
   float GetJetSF(float JetDiscriminant, int JetFlavor, float JetPt, float JetEta);
-  bool IsTagged(float JetDiscriminant, int JetFlavor, float JetPt, float JetEta);
+  bool IsTagged(float JetDiscriminant, int JetFlavor, float JetPt, float JetEta, UInt_t Seed = 0);
 
  private:
 

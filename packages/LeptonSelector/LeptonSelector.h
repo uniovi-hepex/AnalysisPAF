@@ -13,7 +13,7 @@ class LeptonSelector : public PAFChainItemSelector{
   public:
 
     LeptonSelector(); 
-    virtual ~LeptonSelector() {}
+    virtual ~LeptonSelector() {delete LepSF;}
     virtual void InsideLoop();
     virtual void Initialise();
     virtual void Summary();
@@ -63,6 +63,8 @@ class LeptonSelector : public PAFChainItemSelector{
     Float_t MVAID;
     Float_t jetBTagCSV;
     Float_t SegComp;
+    Int_t isGlobalMuon;
+    Int_t isTrackerMuon;
     
     // genLeptons
     Int_t ngenLep;
@@ -84,6 +86,7 @@ class LeptonSelector : public PAFChainItemSelector{
     Bool_t getRelIso04POG(Int_t wp);
     Bool_t getminiRelIso(Int_t wp);
     Bool_t getMuonId(Int_t wp);
+    Bool_t getElecMVA(Int_t wp);
     Bool_t getElecMVAId(Int_t wp, Lepton lep); 
     Bool_t getElecCutBasedId(Int_t wp); 
     Bool_t getMultiIso(Int_t wp);
