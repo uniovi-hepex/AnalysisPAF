@@ -162,18 +162,17 @@ Float_t getJetJERpt(Jet jet){
 }
 
 Float_t getISRJetsWeight(Int_t nISRJet){
+  // https://indico.cern.ch/event/592621/contributions/2398559/attachments/1383909/2105089/16-12-05_ana_manuelf_isr.pdf --> Slide 8
   Float_t SF = 0;
   if     (nISRJet == 0) SF = 1;
-  else if(nISRJet == 1) SF = 0.882;
-  else if(nISRJet == 2) SF = 0.792;
-  else if(nISRJet == 3) SF = 0.702;
-  else if(nISRJet == 4) SF = 0.648;
-  else if(nISRJet == 5) SF = 0.601;
-  else                  SF = 0.515;
+  else if(nISRJet == 1) SF = 0.920;
+  else if(nISRJet == 2) SF = 0.821;
+  else if(nISRJet == 3) SF = 0.715;
+  else if(nISRJet == 4) SF = 0.652;
+  else if(nISRJet == 5) SF = 0.561;
+  else                  SF = 0.511;
   return SF;
 }
-
-
 
 // ==================================================================
 // ========================== Other ================================
