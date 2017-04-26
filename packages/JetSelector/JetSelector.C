@@ -95,21 +95,25 @@ void JetSelector::Initialise(){
   mcJets   = std::vector<Jet>();
   genJets  = std::vector<Jet>();
   vetoJets = std::vector<Jet>();
+  selJetsJecUp = std::vector<Jet>();
+  selJetsJecDown = std::vector<Jet>();
+  
+
 }
 
-void JetSelector::GetJetVariables(Int_t i){
-  tpJ.SetPxPyPzE(Get<Float_t>("Jet_px",i), Get<Float_t>("Jet_py",i), Get<Float_t>("Jet_pz", i), Get<Float_t>("Jet_energy",i));
+void JetSelector::GetJetVariables(Int_t i, TString jec){
+  tpJ.SetPxPyPzE(Get<Float_t>("Jet"+jec+"_px",i), Get<Float_t>("Jet"+jec+"_py",i), Get<Float_t>("Jet"+jec+"_pz", i), Get<Float_t>("Jet"+jec+"_energy",i));
   eta = tpJ.Eta();;
   pt = tpJ.Pt();
-  rawPt       = Get<Float_t>("Jet_rawPt",i);
-  pt_corrUp   = Get<Float_t>("Jet_corr_JECUp",i); 
-  pt_corrDown = Get<Float_t>("Jet_corr_JECDown",i);
-  jetId       = Get<Int_t>("Jet_id",i);
-  csv         = Get<Float_t>("Jet_btagCSV", i);
+  rawPt       = Get<Float_t>("Jet"+jec+"_rawPt",i);
+  pt_corrUp   = Get<Float_t>("Jet"+jec+"_corr_JECUp",i); 
+  pt_corrDown = Get<Float_t>("Jet"+jec+"_corr_JECDown",i);
+  jetId       = Get<Int_t>("Jet"+jec+"_id",i);
+  csv         = Get<Float_t>("Jet"+jec+"_btagCSV", i);
   flavmc = -999999;
   if(!gIsData){
-    flavmc = Get<Int_t>("Jet_hadronFlavour", i);
-    tmcJ.SetPxPyPzE(Get<Float_t>("Jet_mcPx",i), Get<Float_t>("Jet_mcPy",i), Get<Float_t>("Jet_mcPz",i), Get<Float_t>("Jet_mcEnergy",i));
+    flavmc = Get<Int_t>("Jet"+jec+"_hadronFlavour", i);
+    tmcJ.SetPxPyPzE(Get<Float_t>("Jet"+jec+"_mcPx",i), Get<Float_t>("Jet"+jec+"_mcPy",i), Get<Float_t>("Jet"+jec+"_mcPz",i), Get<Float_t>("Jet"+jec+"_mcEnergy",i));
   }
 }
 
@@ -135,22 +139,26 @@ void JetSelector::GetGenJetVariables(Int_t i){
   pt =  Get<Float_t>("genJet_pt",i);
 }
 
-void JetSelector::GetmcJetVariables(Int_t i){
-  tpJ.SetPxPyPzE(Get<Float_t>("Jet_mcPx",i), Get<Float_t>("Jet_mcPy",i), Get<Float_t>("Jet_mcPz", i), Get<Float_t>("Jet_mcEnergy",i));
+void JetSelector::GetmcJetVariables(Int_t i, TString jec){
+  tpJ.SetPxPyPzE(Get<Float_t>("Jet"+jec+"_mcPx",i), Get<Float_t>("Jet"+jec+"_mcPy",i), Get<Float_t>("Jet"+jec+"_mcPz", i), Get<Float_t>("Jet"+jec+"_mcEnergy",i));
   eta = tpJ.Eta();
-  pt =  Get<Float_t>("Jet_mcPt",i);
-  flavmc = TMath::Abs(Get<Int_t>("Jet_mcFlavour",i));
-  csv         = Get<Float_t>("Jet_btagCSV", i);
+  pt =  Get<Float_t>("Jet"+jec+"_mcPt",i);
+  flavmc = TMath::Abs(Get<Int_t>("Jet"+jec+"_mcFlavour",i));
+  csv         = Get<Float_t>("Jet"+jec+"_btagCSV", i);
 }
 
 void JetSelector::InsideLoop(){
   // Clear vectors...
   selJets.clear();
+  selJetsJecUp.clear();
+  selJetsJecDown.clear();
   mcJets.clear();
   genJets.clear();
   vetoJets.clear();
   Jets15.clear();
   nBtagJets = 0;
+  nBtagJetsJECUp = 0;
+  nBtagJetsJECDown = 0;
   Leptons.clear();
   Leptons    = GetParam<vector<Lepton>>("selLeptons"); 
 
@@ -169,11 +177,11 @@ void JetSelector::InsideLoop(){
 	if(tJ.p.Pt() > jet_MinPt){
 	  selJets.push_back(tJ);
 	  if(tJ.isBtag) nBtagJets++; 
-    if(!gIsData){
-      GetmcJetVariables(i);
-      tJ.SetMCjet(tpJ);
-      GetJetVariables(i);
-    }
+	  if(!gIsData){
+	    GetmcJetVariables(i);
+	    tJ.SetMCjet(tpJ);
+	    GetJetVariables(i);
+	  }
 	} 
       }
       if (tJ.p.Pt() > vetoJet_minPt && tJ.p.Eta() < vetoJet_maxEta){
@@ -201,6 +209,60 @@ void JetSelector::InsideLoop(){
       }
     }
   }
+
+  // Loop over the jets
+  if (!gIsData && gSelection == iTWSelec){
+    nJet = Get<Int_t>("nJet_jecUp");
+    for(Int_t i = 0; i < nJet; i++){
+      GetJetVariables(i,"_jecUp");
+      tJ = Jet(tpJ, csv, jetId, flavmc);
+      tJ.isBtag = IsBtag(tJ);
+      // Fill the vectors
+      if(tJ.id > 0 && Cleaning(tJ, Leptons, minDR)){
+	SetSystematics(&tJ);
+	tJ.isBtag = IsBtag(tJ);
+	if (TMath::Abs(tJ.p.Eta()) < jet_MaxEta){
+	  if(tJ.p.Pt() > jet_MinPt){
+	  selJetsJecUp.push_back(tJ);
+	  if(tJ.isBtag) nBtagJetsJECUp++; 
+	  }
+	}
+	if (tJ.p.Pt() > vetoJet_minPt && tJ.p.Eta() < vetoJet_maxEta){
+	  if      (gSelection == iWWSelec && tJ.isBtag) vetoJetsJECUp.push_back(tJ);
+	  else if (gSelection == iWZSelec && tJ.isBtag) vetoJetsJECUp.push_back(tJ);
+	  else if (gSelection == iTWSelec)          vetoJetsJECUp.push_back(tJ);
+	  else                                      vetoJetsJECUp.push_back(tJ);
+	}
+      }
+    }
+  }
+  if (!gIsData  && gSelection == iTWSelec){
+    nJet = Get<Int_t>("nJet_jecDown");
+    for(Int_t i = 0; i < nJet; i++){
+      GetJetVariables(i,"_jecDown");
+      tJ = Jet(tpJ, csv, jetId, flavmc);
+      tJ.isBtag = IsBtag(tJ);
+      // Fill the vectors
+      if(tJ.id > 0 && Cleaning(tJ, Leptons, minDR)){
+	SetSystematics(&tJ);
+	tJ.isBtag = IsBtag(tJ);
+	if (TMath::Abs(tJ.p.Eta()) < jet_MaxEta){
+	  if(tJ.p.Pt() > jet_MinPt){
+	  selJetsJecDown.push_back(tJ);
+	  if(tJ.isBtag) nBtagJetsJECDown++; 
+	  }
+	}
+	if (tJ.p.Pt() > vetoJet_minPt && tJ.p.Eta() < vetoJet_maxEta){
+	  if      (gSelection == iWWSelec && tJ.isBtag) vetoJetsJECDown.push_back(tJ);
+	  else if (gSelection == iWZSelec && tJ.isBtag) vetoJetsJECDown.push_back(tJ);
+	  else if (gSelection == iTWSelec)          vetoJetsJECDown.push_back(tJ);
+	  else                                      vetoJetsJECDown.push_back(tJ);
+	}
+      }
+    }
+  }
+
+
   if(!gIsData){  // Add gen and mc jets...
     ngenJet = Get<Int_t>("ngenJet");
     for(Int_t i = 0; i < ngenJet; i++){
@@ -225,6 +287,8 @@ void JetSelector::InsideLoop(){
 
   // Set params...
   SetParam("selJets",  selJets);
+  SetParam("selJetsJecUp", selJetsJecUp);
+  SetParam("selJetsJecDown", selJetsJecDown);
   SetParam("Jets15",   Jets15);
   SetParam("vetoJets", vetoJets);
   SetParam("genJets",  genJets);
@@ -234,6 +298,8 @@ void JetSelector::InsideLoop(){
   SetParam("nVetoJets",  nVetoJets);
   SetParam("nGenJets",  nGenJets);
   SetParam("nSelBJets",  nBtagJets);
+  SetParam("nSelBJetsJECUp",  nBtagJetsJECUp);
+  SetParam("nSelBJetsJECDown",  nBtagJetsJECDown);
 
   // Propagate JES to MET
   if(nSelJets > 0){
