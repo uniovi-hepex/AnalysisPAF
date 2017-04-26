@@ -159,7 +159,8 @@ void JetSelector::InsideLoop(){
   Jets15.clear();
   nBtagJets = 0;
   Leptons.clear();
-  Leptons    = GetParam<vector<Lepton>>("selLeptons"); 
+  if (gSelection == ittHSelec) Leptons = GetParam<vector<Lepton>>("vetoLeptons");
+  else                         Leptons = GetParam<vector<Lepton>>("selLeptons"); 
 
   evt = (UInt_t)Get<ULong64_t>("evt");
 

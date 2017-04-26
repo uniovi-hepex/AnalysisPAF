@@ -270,5 +270,3 @@ TH1D* loadSumOfLHEweights(TString pathToHeppyTrees, TString sampleName){
   hSumOfLHEweights->SetDirectory(0);
   return hSumOfLHEweights;
 }
-
-
