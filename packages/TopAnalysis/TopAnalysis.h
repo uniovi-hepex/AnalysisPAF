@@ -4,6 +4,8 @@
 #include "Functions.h"
 #include <iostream>
 #include <vector>
+#include "TMVA/Factory.h"
+#include "TMVA/Reader.h"
 
 //enum eChannels{iUnkChan, iElMu, iMuon, iElec, nChannels};
 const Int_t nChannels = 3;
@@ -26,12 +28,16 @@ class TopAnalysis : public PAFChainItemSelector{
     std::vector<Lepton> selLeptons  ;
     std::vector<Lepton> vetoLeptons ;
     std::vector<Jet> selJets ;
+    std::vector<Jet> selJetsJecUp   ;
+    std::vector<Jet> selJetsJecDown ;
+
     std::vector<Jet> Jets15  ;
     std::vector<Jet> genJets  ;
     std::vector<Jet> mcJets  ;
     std::vector<Jet> vetoJets;
 
     TTree* fTree;
+    TTree* fTWTree;
     Float_t TLHEWeight[254];
     void SetLeptonVariables();
     void SetJetVariables();
@@ -66,17 +72,17 @@ class TopAnalysis : public PAFChainItemSelector{
     void get20Jets();
     void ReSetTWVariables();
     void SetTWVariables();
-    Double_t getDilepMETJetPt();
-    Double_t getDilepJetPt();
-    Double_t getLep1METJetPt();
+    Double_t getDilepMETJetPt(TString sys = "Norm");
+    Double_t getDilepJetPt(TString sys = "Norm");
+    Double_t getLep1METJetPt(TString sys = "Norm");
     Double_t getPtSys(TLorentzVector*, int);
-    Double_t getDilepMETJet1Pz();
+    Double_t getDilepMETJet1Pz(TString sys = "Norm");
     Double_t getPzSys(TLorentzVector*, int);
-    Double_t getDPtDilep_JetMET();
-    Double_t getDPtDilep_MET();
-    Double_t getDPtLep1_MET();
+    Double_t getDPtDilep_JetMET(TString sys = "Norm");
+    Double_t getDPtDilep_MET(TString sys = "Norm");
+    Double_t getDPtLep1_MET(TString sys = "Norm");
     Double_t getDeltaPt(vector<TLorentzVector>, vector<TLorentzVector>);
-    Double_t getSysM();
+    Double_t getSysM(TString sys = "Norm");
     Double_t getM(vector<TLorentzVector>);
 
 
@@ -151,22 +157,30 @@ class TopAnalysis : public PAFChainItemSelector{
     Float_t  TWeight_FSDown;
 
 
-    Float_t  DilepMETJetPt  ;
-    Float_t  Lep1METJetPt   ;
-    Float_t  DPtDilep_JetMET;
-    Float_t  DPtDilep_MET   ;
-    Float_t  DPtLep1_MET    ;
-    Float_t  DilepMETJet1Pz ;
-    Int_t    nLooseCentral  ;
-    Int_t    nLooseFwd      ;
-    Int_t    nBLooseCentral ;
-    Int_t    nBLooseFwd     ;
-    Float_t  TJet2csv       ;
-    Float_t  MSys           ;
-    Float_t  TJetLoosept    ;
-    Float_t  C_jll          ;
-    Float_t  DilepJetPt     ;
-    Float_t  TBDT           ;
+    Float_t  DilepMETJetPt  , DilepMETJetPtJESUp  , DilepMETJetPtJESDown  ;
+    Float_t  Lep1METJetPt   , Lep1METJetPtJESUp   , Lep1METJetPtJESDown   ;
+    Float_t  DPtDilep_JetMET, DPtDilep_JetMETJESUp, DPtDilep_JetMETJESDown;
+    Float_t  DPtDilep_MET   , DPtDilep_METJESUp   , DPtDilep_METJESDown   ;
+    Float_t  DPtLep1_MET    , DPtLep1_METJESUp    , DPtLep1_METJESDown    ;
+    Float_t  DilepMETJet1Pz , DilepMETJet1PzJESUp , DilepMETJet1PzJESDown ;
+    Float_t  nLooseCentral  , nLooseCentralJESUp  , nLooseCentralJESDown  ;
+    Float_t  nLooseFwd      , nLooseFwdJESUp      , nLooseFwdJESDown      ;
+    Float_t  nBLooseCentral , nBLooseCentralJESUp , nBLooseCentralJESDown ;
+    Float_t  nBLooseFwd     , nBLooseFwdJESUp     , nBLooseFwdJESDown     ;
+    Float_t  TJet2csv       , TJet2csvJESUp       , TJet2csvJESDown       ;
+    Float_t  MSys           , MSysJESUp           , MSysJESDown           ;
+    Float_t  TJetLoosept    , TJetLooseptJESUp    , TJetLooseptJESDown    ;
+    Float_t  C_jll          , C_jllJESUp          , C_jllJESDown          ;
+    Float_t  DilepJetPt     , DilepJetPtJESUp     , DilepJetPtJESDown     ;
+    Float_t  TBDT           , TBDTJESUp           , TBDTJESDown           ;
+    Float_t  nBTotal          , nBTotalJESUp          , nBTotalJESDown          ; 
+    Float_t  DilepmetjetOverHT, DilepmetjetOverHTJESUp, DilepmetjetOverHTJESDown; 
+    Float_t  HTLepOverHT      , HTLepOverHTJESUp      , HTLepOverHTJESDown      ; 
+    Float_t  TJet1_pt         , TJet1_ptJESUp         , TJet1_ptJESDown         ;
+
+
+
+
 
 
 
@@ -214,7 +228,10 @@ class TopAnalysis : public PAFChainItemSelector{
     Bool_t  gIsTTbar;
     Bool_t  gIsTW;
     Bool_t  gIsLHE;
+    void    setTWBDT();
+    TMVA::Reader* BDT;
+    TMVA::Reader* BDT_JESUp;
+    TMVA::Reader* BDT_JESDown;
 
-    
     ClassDef(TopAnalysis, 0);
 };
