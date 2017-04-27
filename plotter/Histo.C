@@ -159,11 +159,12 @@ Double_t AnalHisto::GetYield(TString sys){
 void AnalHisto::Fill(TString variable, TString sys, Bool_t isFastSim){
   if(variable != "") var = variable;
   TCut schan = TCut("1");
-  if     (chan == "Elec")  schan = TCut("TChannel == 3");
-  else if(chan == "Muon")  schan = TCut("TChannel == 2");
-  else if(chan == "ElMu")  schan = TCut("TChannel == 1");
-  else if(chan == "3l")  schan = TCut("TChannel == 4");
-  else if(chan == "4l")  schan = TCut("TChannel == 5");
+  if     (chan == "ElMu") schan = TCut("TChannel == 1");
+  else if(chan == "Muon") schan = TCut("TChannel == 2");
+  else if(chan == "Elec") schan = TCut("TChannel == 3");
+  else if(chan == "2lss") schan = TCut("TChannel == 4");
+  else if(chan == "3l")   schan = TCut("TChannel == 5");
+  else if(chan == "4l")   schan = TCut("TChannel == 6");
   else if(chan == "SF" || chan == "sameF") schan = TCut("TChannel != 1");
   else schan = TCut("1");
 
