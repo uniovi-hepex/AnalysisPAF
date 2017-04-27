@@ -133,7 +133,7 @@ void ttHAnalysis::SetJetBranches() {
 }
 
 void ttHAnalysis::SetEventBranches() {
-  fTree->Branch("TChannel",         &TChannel,          "TChannel/I");
+  fTree->Branch("TChannel",         &gChannel,          "gChannel/I");
   fTree->Branch("TCat",             &TCat,              "TCat/I");
   fTree->Branch("TpassTrigger",     &passTrigger,       "passTrigger/B");
   fTree->Branch("TisSS",            &isSS,              "isSS/B");
@@ -239,13 +239,13 @@ void ttHAnalysis::FillEventHistos() {
 	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (Int_t ichan = 0; ichan < 4; ichan++) {
 			if (icat 	== twolSS 	&& !Is2lSSEvent()) 						       continue;
-			if (gChanLabel[ichan] == "MuMu" 		&& (TChannel != iMuon)) 					   continue;
-			if (gChanLabel[ichan] == "ElEl" 		&& (TChannel != iElec)) 					   continue;
-			if (gChanLabel[ichan] == "ElMu" 		&& (TChannel != iElMu)) 			       continue;
+			if (gChanLabel[ichan] == "MuMu" 		&& (gChannel != iMuon)) 					   continue;
+			if (gChanLabel[ichan] == "ElEl" 		&& (gChannel != iElec)) 					   continue;
+			if (gChanLabel[ichan] == "ElMu" 		&& (gChannel != iElMu)) 			       continue;
 			if (icat 	== threel 	&& (!Is3lEvent() || gChanLabel[ichan] != "All")) 	 continue;
 			if (icat 	== fourl 	  && (!Is4lEvent() || gChanLabel[ichan] != "All")) 	 continue;
 			if (icat 	== Total 		&& gChanLabel[ichan] != "All" ) 	                 continue;
-			if (icat 	== Total 		&& (!Is2lSSEvent() || (TChannel != iMuon)) && (!Is2lSSEvent() || (TChannel != iElec)) && (!Is2lSSEvent() || (TChannel != iElMu)) && !Is3lEvent()) 	continue;
+			if (icat 	== Total 		&& (!Is2lSSEvent() || (gChannel != iMuon)) && (!Is2lSSEvent() || (gChannel != iElec)) && (!Is2lSSEvent() || (gChannel != iElMu)) && !Is3lEvent()) 	continue;
 
 			fHEvents     [icat][ichan]->Fill(0.5,EventWeight);
 		}
@@ -256,13 +256,13 @@ void ttHAnalysis::FillYieldHistos() {
 	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (Int_t ichan = 0; ichan < 4; ichan++) {
       if (icat 	== twolSS 	&& !Is2lSSEvent()) 						       continue;
-			if (gChanLabel[ichan] == "MuMu" 		&& (TChannel != iMuon)) 					       continue;
-			if (gChanLabel[ichan] == "ElEl" 		&& (TChannel != iElec)) 					       continue;
-			if (gChanLabel[ichan] == "ElMu" 		&& (TChannel != iElMu)) 			           continue;
+			if (gChanLabel[ichan] == "MuMu" 		&& (gChannel != iMuon)) 					       continue;
+			if (gChanLabel[ichan] == "ElEl" 		&& (gChannel != iElec)) 					       continue;
+			if (gChanLabel[ichan] == "ElMu" 		&& (gChannel != iElMu)) 			           continue;
 			if (icat 	== threel 	&& (!Is3lEvent() || gChanLabel[ichan] != "All")) 	 continue;
 			if (icat 	== fourl 	  && (!Is4lEvent() || gChanLabel[ichan] != "All")) 	 continue;
 			if (icat 	== Total 		&& gChanLabel[ichan] != "All" ) 	                 continue;
-			if (icat 	== Total 		&& (!Is2lSSEvent() || (TChannel != iMuon)) && (!Is2lSSEvent() || (TChannel != iElec)) && (!Is2lSSEvent() || (TChannel != iElMu)) && !Is3lEvent()) 	continue;
+			if (icat 	== Total 		&& (!Is2lSSEvent() || (gChannel != iMuon)) && (!Is2lSSEvent() || (gChannel != iElec)) && (!Is2lSSEvent() || (gChannel != iElMu)) && !Is3lEvent()) 	continue;
 			fHTightLep	 [icat][ichan]->Fill(nTightLepton,EventWeight);
 			fHFakeLep	   [icat][ichan]->Fill(nFakeableLepton,EventWeight);
 			fHLooseLep	 [icat][ichan]->Fill(nLooseLepton,EventWeight);
@@ -278,13 +278,13 @@ void ttHAnalysis::FillKinematicHistos() {
 	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (Int_t ichan = 0; ichan < 4; ichan++) {
       if (icat 	== twolSS 	&& !Is2lSSEvent()) 						       continue;
-			if (gChanLabel[ichan] == "MuMu" 		&& (TChannel != iMuon)) 					       continue;
-			if (gChanLabel[ichan] == "ElEl" 		&& (TChannel != iElec)) 					       continue;
-			if (gChanLabel[ichan] == "ElMu" 		&& (TChannel != iElMu)) 			           continue;
+			if (gChanLabel[ichan] == "MuMu" 		&& (gChannel != iMuon)) 					       continue;
+			if (gChanLabel[ichan] == "ElEl" 		&& (gChannel != iElec)) 					       continue;
+			if (gChanLabel[ichan] == "ElMu" 		&& (gChannel != iElMu)) 			           continue;
 			if (icat 	== threel 	&& (!Is3lEvent() || gChanLabel[ichan] != "All")) 	 continue;
 			if (icat 	== fourl 	  && (!Is4lEvent() || gChanLabel[ichan] != "All")) 	 continue;
 			if (icat 	== Total 		&& gChanLabel[ichan] != "All" ) 	                 continue;
-			if (icat 	== Total 		&& (!Is2lSSEvent() || (TChannel != iMuon)) && (!Is2lSSEvent() || (TChannel != iElec)) && (!Is2lSSEvent() || (TChannel != iElMu)) && !Is3lEvent()) 	continue;
+			if (icat 	== Total 		&& (!Is2lSSEvent() || (gChannel != iMuon)) && (!Is2lSSEvent() || (gChannel != iElec)) && (!Is2lSSEvent() || (gChannel != iElMu)) && !Is3lEvent()) 	continue;
 			fHPtLeading			  [icat][ichan]->Fill(TightLepton[0].Pt(),EventWeight);
 			fHPtSubLeading		[icat][ichan]->Fill(TightLepton[1].Pt(),EventWeight);
 			fHPtSubSubLeading	[icat][ichan]->Fill(TightLepton[2].Pt(),EventWeight);
@@ -296,13 +296,13 @@ void ttHAnalysis::FillMETHistos() {
 	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (Int_t ichan = 0; ichan < 4; ichan++) {
       if (icat 	== twolSS 	&& !Is2lSSEvent()) 						       continue;
-			if (gChanLabel[ichan] == "MuMu" 		&& (TChannel != iMuon)) 					       continue;
-			if (gChanLabel[ichan] == "ElEl" 		&& (TChannel != iElec)) 					       continue;
-			if (gChanLabel[ichan] == "ElMu" 		&& (TChannel != iElMu)) 			           continue;
+			if (gChanLabel[ichan] == "MuMu" 		&& (gChannel != iMuon)) 					       continue;
+			if (gChanLabel[ichan] == "ElEl" 		&& (gChannel != iElec)) 					       continue;
+			if (gChanLabel[ichan] == "ElMu" 		&& (gChannel != iElMu)) 			           continue;
 			if (icat 	== threel 	&& (!Is3lEvent() || gChanLabel[ichan] != "All")) 	 continue;
 			if (icat 	== fourl 	  && (!Is4lEvent() || gChanLabel[ichan] != "All")) 	 continue;
 			if (icat 	== Total 		&& gChanLabel[ichan] != "All" ) 	                 continue;
-			if (icat 	== Total 		&& (!Is2lSSEvent() || (TChannel != iMuon)) && (!Is2lSSEvent() || (TChannel != iElec)) && (!Is2lSSEvent() || (TChannel != iElMu)) && !Is3lEvent()) 	continue;
+			if (icat 	== Total 		&& (!Is2lSSEvent() || (gChannel != iMuon)) && (!Is2lSSEvent() || (gChannel != iElec)) && (!Is2lSSEvent() || (gChannel != iElMu)) && !Is3lEvent()) 	continue;
 			fHMET	  [icat][ichan]->Fill(MET,EventWeight);
 			fHMHT	  [icat][ichan]->Fill(MHT,EventWeight);
 			fHMETLD	[icat][ichan]->Fill(METLD,EventWeight);
@@ -314,13 +314,13 @@ void ttHAnalysis::FillMiscHistos() {
 	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
 		for (Int_t ichan = 0; ichan < 4; ichan++) {
 			if (icat 	== twolSS 	&& (!Is2lSSEvent()	|| gChanLabel[ichan] != "All"))	continue;
-			if (gChanLabel[ichan] == "MuMu" 		&& (TChannel != iMuon)) 					        continue;
-			if (gChanLabel[ichan] == "ElEl" 		&& (TChannel != iElec)) 					        continue;
-			if (gChanLabel[ichan] == "ElMu" 		&& (TChannel != iElMu)) 					        continue;
+			if (gChanLabel[ichan] == "MuMu" 		&& (gChannel != iMuon)) 					        continue;
+			if (gChanLabel[ichan] == "ElEl" 		&& (gChannel != iElec)) 					        continue;
+			if (gChanLabel[ichan] == "ElMu" 		&& (gChannel != iElMu)) 					        continue;
 			if (icat 	== threel 	&& (!Is3lEvent() || gChanLabel[ichan] != "All")) 	  continue;
 			if (icat 	== fourl 	  && (!Is4lEvent() || gChanLabel[ichan] != "All")) 	  continue;
 			if (icat 	== Total 		&& gChanLabel[ichan] != "All") 	                    continue;
-			if (icat 	== Total 		&& (!Is2lSSEvent() || (TChannel != iMuon)) && (!Is2lSSEvent() || (TChannel != iElec)) && (!Is2lSSEvent() || (TChannel != iElMu)) && !Is3lEvent()) 	continue;
+			if (icat 	== Total 		&& (!Is2lSSEvent() || (gChannel != iMuon)) && (!Is2lSSEvent() || (gChannel != iElec)) && (!Is2lSSEvent() || (gChannel != iElMu)) && !Is3lEvent()) 	continue;
 			fHChargeSum	[icat][ichan]->Fill(GetCS(),EventWeight);
 			if (icat == twolSS || icat == threel || icat == Total) fHMass	[icat][ichan]->Fill((TightLepton[0].p+TightLepton[1].p).M(),EventWeight);
 		}
@@ -357,7 +357,7 @@ Bool_t ttHAnalysis::Is2lSSEvent() {
 
 	if (nJets < 4) 					          return false;
 
-	if (TChannel == iElec) {
+	if (gChannel == iElec) {
 		if (abs((TightLepton[0].p + TightLepton[1].p).M() - Zm) < 10) return false;
 		if (METLD < 0.2)                return false;
 	}
@@ -494,7 +494,6 @@ void ttHAnalysis::InitialiseVariables() {
   TCS             = 0;
   TMass           = 0;
   Tevt            = 0;
-  TChannel        = 0;
 }
 
 
@@ -534,7 +533,6 @@ void ttHAnalysis::GetEventVariables() {
   TPtSubSubLeading= 0;
   TCS             = 0;
   TMass           = 0;
-  TChannel        = 0;
 
   // Import event-dependent variables
   TightLepton     = GetParam<vector<Lepton>>("selLeptons");
@@ -564,22 +562,6 @@ void ttHAnalysis::GetEventVariables() {
   if (!gIsData) {
     EventWeight = gWeight;
     if (gIsMCatNLO) EventWeight *= genWeight;
-  }
-  
-  // Correct channel (if needed; +info: check 2lSS requirements regarding Pt of third (tight)lepton)
-  if (gChannel == iTriLep || gChannel == iFourLep) {
-    if (TightLepton.at(2).Pt() <= 10) {
-      if     (TightLepton.at(0).isElec && TightLepton.at(1).isMuon) TChannel = iElMu;
-      else if(TightLepton.at(0).isMuon && TightLepton.at(1).isElec) TChannel = iElMu;
-      else if(TightLepton.at(0).isMuon && TightLepton.at(1).isMuon) TChannel = iMuon;
-      else if(TightLepton.at(0).isElec && TightLepton.at(1).isElec) TChannel = iElec;
-    }
-    else {
-      TChannel = gChannel;
-    }
-  }
-  else {
-    TChannel = gChannel;
   }
 }
 
