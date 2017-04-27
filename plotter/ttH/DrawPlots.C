@@ -26,7 +26,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 
 
 void DrawPlots(TString chan = "ElMu", TString tag = "0"){
-  TString cut = "((TCat == 2 && (TChannel == 1 || TChannel == 2 || TChannel == 3)) || (TCat == 3 && TChannel == 4) || (TCat == 4 && TChannel == 5))";
+  TString cut = "((TCat == 2 && (TChannel == 1 || TChannel == 2 || TChannel == 3)) || (TCat == 3 && TChannel == 5) || (TCat == 4 && TChannel == 6))";
   if (chan == "2lSS")     cut = "(TCat == 2 && (TChannel == 1 || TChannel == 2 || TChannel == 3))";
   else if (chan == "Elec" || chan == "Muon" || chan == "ElMu") cut = "(TCat == 2)";
   else if (chan == "3l")  cut = "(TCat == 3)";
