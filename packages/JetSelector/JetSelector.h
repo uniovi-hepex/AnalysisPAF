@@ -69,6 +69,7 @@ class JetSelector : public PAFChainItemSelector{
     Int_t ngenJet;
 
     void GetJetVariables(Int_t i);
+    void GetDiscJetVariables(Int_t i);
     void GetJetFwdVariables(Int_t i);
     void GetGenJetVariables(Int_t i);
     void GetmcJetVariables(Int_t i);
