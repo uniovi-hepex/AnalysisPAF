@@ -183,7 +183,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   
   // Yields table settings and printing ========================================
   if (counter == 0) {
-    p->AddSystematic("stat");
+    p->AddSystematic("stat,JES");
     p->SetTableFormats("%1.4f");
     p->SetYieldsTableName("Yields_"+chan+"_"+tag);
     p->PrintYields("","","","txt");
