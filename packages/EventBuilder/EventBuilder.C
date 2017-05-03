@@ -149,17 +149,17 @@ Bool_t EventBuilder::PassesSingleMuonTrigger(){
 
 Bool_t EventBuilder::PassesDoubleMuonHTTrigger(){
   if(gIsFastSim) return true; // no triger in FastSim samples
-  return Get<Int_t>("HLT_BIT_HLT_DoubleMu8_Mass8_PFHT300");
+  return Get<Int_t>("HLT_BIT_HLT_DoubleMu8_Mass8_PFHT300_v");
 }
 
 Bool_t EventBuilder::PassesDoubleElecHTTrigger(){
   if(gIsFastSim) return true; // no triger in FastSim samples
-  return Get<Int_t>("HLT_BIT_HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300");
+  return Get<Int_t>("HLT_BIT_HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v");
 }
 
 Bool_t EventBuilder::PassesElMuHTTrigger(){
   if(gIsFastSim) return true; // no triger in FastSim samples
-  return Get<Int_t>("HLT_BIT_HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300");
+  return Get<Int_t>("HLT_BIT_HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v");
 }
 
 Bool_t EventBuilder::PassesThreelFourlTrigger() {
@@ -386,6 +386,7 @@ Bool_t EventBuilder::Trig3l4l() {
 
 Bool_t EventBuilder::PassesMETfilters(){
   // https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2#Moriond_2017
+  if(gIsFastSim) return true;
   if( (Get<Int_t>("Flag_HBHENoiseFilter") &&        // MET filters for data and MC
         Get<Int_t>("Flag_HBHENoiseIsoFilter") &&
         Get<Int_t>("Flag_EcalDeadCellTriggerPrimitiveFilter") &&
