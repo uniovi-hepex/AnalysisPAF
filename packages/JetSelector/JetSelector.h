@@ -21,16 +21,22 @@ class JetSelector : public PAFChainItemSelector{
 
     std::vector<Lepton> Leptons;
     std::vector<Jet> selJets;
+    std::vector<Jet> selJetsJecUp;
+    std::vector<Jet> selJetsJecDown;
     std::vector<Jet> Jets15;
     std::vector<Jet> genJets;
     std::vector<Jet> mcJets;
     std::vector<Jet> vetoJets;
+    std::vector<Jet> vetoJetsJECUp;
+    std::vector<Jet> vetoJetsJECDown;
 
     Int_t nSelJets;
     Int_t nGenJets;
     Int_t nVetoJets;
     Int_t nJets15;
     Int_t nBtagJets;
+    Int_t nBtagJetsJECUp;
+    Int_t nBtagJetsJECDown;
 
     Float_t minDR;
     Float_t jet_MaxEta;
@@ -68,11 +74,11 @@ class JetSelector : public PAFChainItemSelector{
     // genJet
     Int_t ngenJet;
 
-    void GetJetVariables(Int_t i);
     void GetDiscJetVariables(Int_t i);
+    void GetJetVariables(Int_t i, TString jec = "");
     void GetJetFwdVariables(Int_t i);
     void GetGenJetVariables(Int_t i);
-    void GetmcJetVariables(Int_t i);
+    void GetmcJetVariables(Int_t i, TString jec = "");
     Bool_t IsBtag(Jet j); 
     void SetSystematics(Jet *j);
     Bool_t Cleaning(Jet j, vector<Lepton> vLep, Float_t minDR = 0.4);

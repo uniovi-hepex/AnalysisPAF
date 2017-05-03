@@ -21,7 +21,7 @@
 // Defaul cases and paths
 const TString DefaultPlotfolder = "./Plots/";
 const TString DefaultLimitFolder = "./Datacards/";
-const Float_t DefaultLumi = 35.85; //fb-1
+const Float_t DefaultLumi = 35.87; //fb-1
 
 
 class Plot {

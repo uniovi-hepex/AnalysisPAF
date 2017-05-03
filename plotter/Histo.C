@@ -122,9 +122,9 @@ void Histo::AddToSystematics(Histo* hsys, TString dir){
 void Histo::SetBinsErrorFromSyst(){
   Int_t nbins = GetNbinsX();
   Float_t max = 0;
-  for(Int_t k = 1; k < nbins+1; k++){
+  for(Int_t k = 0; k < nbins; k++){
     //max = vsysd[k] > vsysu[k] ? vsysd[k] : vsysu[k];
-    SetBinError(k, TMath::Sqrt((vsysu[k]+vsysd[k])/2));
+    SetBinError(k+1, TMath::Sqrt((vsysu[k]+vsysd[k])/2));
   }
 }
 
@@ -162,6 +162,8 @@ void AnalHisto::Fill(TString variable, TString sys, Bool_t isFastSim){
   if     (chan == "Elec")  schan = TCut("TChannel == 3");
   else if(chan == "Muon")  schan = TCut("TChannel == 2");
   else if(chan == "ElMu")  schan = TCut("TChannel == 1");
+  else if(chan == "3l")  schan = TCut("TChannel == 4");
+  else if(chan == "4l")  schan = TCut("TChannel == 5");
   else if(chan == "SF" || chan == "sameF") schan = TCut("TChannel != 1");
   else schan = TCut("1");
 

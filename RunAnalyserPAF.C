@@ -216,6 +216,8 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
   else                  pafmode = new PAFPoDEnvironment(nSlots);
   PAFProject* myProject = new PAFProject(pafmode); // Create PAF Project whith that environment
 
+  myProject->AddLibrary("/nfs/fanae/root6/lib/libTMVA.so");
+  
 	myProject->AddDataFiles(Files); 
 
 	if     (nEvents > 0 && FirstEvent == 0) myProject->SetNEvents(nEvents);
@@ -261,7 +263,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	else if (sel == i4tSelec)  myProject->AddSelectorPackage("t4Analysis");
 	else if (sel == iTWSelec  ){
 	  myProject->AddSelectorPackage("TopAnalysis");
-	  myProject->AddSelectorPackage("TWAnalysis");
+	  // myProject->AddSelectorPackage("TWAnalysis");
 	}
 	else if (sel == iWWSelec  )  myProject->AddSelectorPackage("WWAnalysis");
 	else                         cout << " >>>>>>>> No selector found for this analysis!!!! " << endl;
