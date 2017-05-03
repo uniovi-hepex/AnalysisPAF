@@ -10,8 +10,10 @@ class StopAnalysis : public PAFChainItemSelector{
   public:
     TTree* fTree;
 
+    TH1F* fSumISRJets;  
+    TH1F* fISRJets;  
     Int_t TNLHEWeight;
-    Float_t TLHEWeight[nLHEWeight];
+    Float_t TLHEWeight[254];
  
     StopAnalysis();
     virtual ~StopAnalysis(){}
@@ -20,6 +22,7 @@ class StopAnalysis : public PAFChainItemSelector{
     virtual void Summary();
     std::vector<Lepton> selLeptons  ;
     std::vector<Lepton> vetoLeptons ;
+    std::vector<Lepton> genLeptons ;
     std::vector<Jet> selJets ;
     std::vector<Jet> Jets15  ;
 
@@ -45,6 +48,8 @@ class StopAnalysis : public PAFChainItemSelector{
     Bool_t gIsFastSim = false;
     Int_t gStopMass;
     Int_t gLspMass;
+
+    Float_t normISRweight;
   
     // Tree Variables
     Float_t TWeight;   // Total nominal weight
@@ -60,11 +65,16 @@ class StopAnalysis : public PAFChainItemSelector{
     Int_t   TNVetoLeps;
     Int_t   TNSelLeps;
     Int_t TChannel;
-    Float_t TLep_Pt[10];    
-    Float_t TLep_Eta[10];
-    Float_t TLep_Phi[10];
-    Float_t TLep_E[10];
-    Float_t TLep_Charge[10];
+    Float_t TLep0_Pt;    
+    Float_t TLep0_Eta;
+    Float_t TLep0_Phi;
+    Float_t TLep0_E;
+    Float_t TLep0_Charge;
+    Float_t TLep1_Pt;    
+    Float_t TLep1_Eta;
+    Float_t TLep1_Phi;
+    Float_t TLep1_E;
+    Float_t TLep1_Charge;
 
     Int_t TNJets;            // Jets...
     Int_t TNBtags;
@@ -97,6 +107,7 @@ class StopAnalysis : public PAFChainItemSelector{
     Float_t TMT2llJESUp;
     Float_t TMT2llJESDown;
 
+    Float_t  TISRweight;
     Float_t  TWeight_LepEffUp;
     Float_t  TWeight_LepEffDown;
     Float_t  TWeight_TrigUp;
@@ -108,6 +119,7 @@ class StopAnalysis : public PAFChainItemSelector{
 
   protected:
     Bool_t  gIsData;
+    Bool_t  gIsLHE;
     Bool_t  gDoSyst;
     Int_t   gSelection;
     TString gSampleName;
