@@ -46,7 +46,7 @@ TString CraftVar(TString varstring, TString sys){
   return var;
 }
 
-TString CraftFormula(TString cuts, TString chan, TString sys){
+TString CraftFormula(TString cuts, TString chan, TString sys, TString options){
   TString schan = ("1");
   if     (chan == "Elec")  schan = (Form("(TChannel == %i)", iElec));
   else if(chan == "Muon")  schan = (Form("(TChannel == %i)", iMuon));
@@ -112,6 +112,7 @@ TString CraftFormula(TString cuts, TString chan, TString sys){
 
   }
   TString formula = TString("(") + cuts + TString(")*") + schan + TString("*") + weight;
+  if(options.Contains("isr") || options.Contains("ISR")) formula = "TISRweight*(" + formula + ")";
   return formula;
 }
 
@@ -121,7 +122,7 @@ void Looper::SetFormulas(TString systematic){
   if(FormulasLHE)  delete FormulasLHE;
   stringcut = ""; stringvar = "";
   TString cu = ""; TString ch = ""; TString v = ""; 
-  stringcut = CraftFormula(cut, chan, systematic);
+  stringcut = CraftFormula(cut, chan, systematic, options);
   stringvar = CraftVar(var, systematic);
 
   if(stringvar.Contains("[") && stringvar.Contains("]")){
@@ -247,6 +248,7 @@ Histo* Looper::GetHisto(TString sample, TString sys){
       else doSysScale = true;
     }
   }
+
   CreateHisto(sys);
   SetFormulas(sys);
   Loop(sys);

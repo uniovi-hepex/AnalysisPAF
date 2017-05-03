@@ -17,7 +17,7 @@
 enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, nTotalDefinedChannels};
 const Int_t nLHEweights = 112;
 
-TString CraftFormula(TString var, TString cut, TString chan, TString sys);
+TString CraftFormula(TString cut, TString chan, TString sys, TString options = "");
 TString CraftVar(TString varstring, TString sys);
 TH1D* loadSumOfLHEweights(TString pathToHeppyTrees = "/pool/ciencias/HeppyTreesSummer16/v2/", TString sampleName = "TTbar_PowhegLHE");
 TH1F* hLHE[nLHEweights];
@@ -63,6 +63,7 @@ class Looper{
    }
    Bool_t doSysPDF = false;
    Bool_t doSysScale = false;
+   Bool_t doISRweight = false;
    Int_t numberInstance;
    void SetSampleName(TString t){sampleName   = t;}
 	 void SetTreeName(  TString t){treeName     = t;}
@@ -76,6 +77,7 @@ class Looper{
 	 void CreateHisto(TString sys = "0"); 
    void Loop(TString sys = "");
    Float_t getLHEweight(Int_t i);
+   void SetOptions(TString p){options = p;}
 
  // protected:
    Histo* Hist;
@@ -98,7 +100,7 @@ class Looper{
    TString path;
    TString treeName;
    TString cut; TString chan; TString var;
-
+   TString options = "";
    TString sampleName;
 
    void loadTree();

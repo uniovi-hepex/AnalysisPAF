@@ -5,13 +5,14 @@
 Histo* Plot::GetH(TString sample, TString sys, Int_t type){ 
   // Returns a Histo for sample and systematic variation 
   TString pathToMiniTree = path;
-  if     (type == itSignal) pathToMiniTree = pathSignal;
+  if     (type == itSignal || sample.Contains("T2tt")) pathToMiniTree = pathSignal;
   else if(type == itData  ) pathToMiniTree = pathData;
   else if(sample.Contains("/")){
     pathToMiniTree = sample(0, sample.Last('/')+1);
     sample = sample(sample.Last('/')+1, sample.Sizeof());
   }
   Looper* ah = new Looper(pathToMiniTree, treeName, var, cut, chan, nb, x0, xN);
+  ah->SetOptions(LoopOptions);
   Histo* h = ah->GetHisto(sample, sys);
   h->SetDirectory(0);
   if(sys.Contains("stat")){
@@ -22,8 +23,10 @@ Histo* Plot::GetH(TString sample, TString sys, Int_t type){
   return h;
 }
 
-void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, TString sys){
+void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, TString sys, TString options){
 
+  SetLoopOptions(options);
+  VTagOptions.push_back(options);
 
   // Add a sample to your plot...
   //  -> p  is the name of the sample
@@ -168,8 +171,8 @@ void Plot::AddSystematic(TString var){
     return;
   }
   for(Int_t i = 0; i < (Int_t) VTagSamples.size(); i++){
-    AddSample(VTagSamples.at(i), VTagProcesses.at(i), itSys, 1, 0, var+"Up");
-    AddSample(VTagSamples.at(i), VTagProcesses.at(i), itSys, 1, 0, var+"Down");
+    AddSample(VTagSamples.at(i), VTagProcesses.at(i), itSys, 1, 0, var+"Up", VTagOptions.at(i));
+    AddSample(VTagSamples.at(i), VTagProcesses.at(i), itSys, 1, 0, var+"Down", VTagOptions.at(i));
   }
   if(verbose) cout << "[Plot::AddSystematic] Systematic histograms added to the list for variation: " << var << endl;
 }
@@ -718,7 +721,7 @@ TString Plot::GetShapeUncLines(){
       }
       lin += TString("\n");
     }
-    else if(sys == "nlo" || sys == "fsr" || sys == "isr" || sys == "ue" || sys == "had"){
+    else if(sys == "nlo" || sys == "fsr" || sys == "isr" || sys == "ue" || sys == "had" || sys == "pdf" || sys == "Scale"){
       for(int k = 0; k < nBkgs+1; k++){
         if     (k >= nBkgs)                       lin += TString(" - ");
 	else if(VBkgs.at(k)->GetTag() == "ttbar") lin += TString(" 1 ");
