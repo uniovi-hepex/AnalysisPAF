@@ -30,10 +30,8 @@ void yields(){
   //p->doData = false;
   //p->doStackSignal = true;
 
-  cout << "HEre" << endl;
   // Diboson
   p->AddSample("ZZ",        "VV non-WZ", itBkg, kYellow-10, 0.50);
-  cout << "HEre2" << endl;
   //p->AddSample("WW",     "VV non-WZ", itBkg);
   p->AddSample("WWTo2L2Nu", "VV non-WZ", itBkg);  
   p->AddSample("WpWpJJ",    "VV non-WZ", itBkg);
@@ -112,7 +110,7 @@ void yields(){
   p->AddSystematic("stat");
   // p->AddSystematic("JES");
   //p->PrintYields(dilepton + ", " + jets2 + ", " + btag1, "Dilepton, 2jets, 1btag", "ElMu, ElMu, ElMu");
-  p->PrintYields();
+  p->PrintYields("", "", "", "html");
 
   //CrossSection *x = new CrossSection(p, "ttbar");
   //x->SetTheoXsec(831.8);
