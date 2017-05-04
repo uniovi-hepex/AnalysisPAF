@@ -108,7 +108,8 @@ void yields(){
 */
 
 
- // p->AddSystematic("JES");
+  p->AddSystematic("stat");
+  // p->AddSystematic("JES");
   //p->PrintYields(dilepton + ", " + jets2 + ", " + btag1, "Dilepton, 2jets, 1btag", "ElMu, ElMu, ElMu");
   p->PrintYields();
 
