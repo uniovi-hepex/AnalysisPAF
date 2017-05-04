@@ -226,10 +226,6 @@ void EventBuilder::Initialise(){
   isSS = 0;
   nTrueInt = 0;
 
-  TriggerSF      = 1;
-  TriggerSF_err  = 1;
-  TriggerSF_Up   = 1;
-  TriggerSF_Down = 1;
   PUSF = 1;
   PUSF_Up = 1;
   PUSF_Down = 1;
@@ -307,33 +303,7 @@ void EventBuilder::InsideLoop(){
     PUSF_Down = 1;
   }
 
-  // >>>>>>>>> Calculate Trigger SF and variations <<<<<<<<<<<<<<<<<<<<<<<<<< Trigger SFs... needs to be updated!!!!
-  // ### 2 LEPTONS
-  TriggerSF = 1; TriggerSF_Up = 1; TriggerSF_Down = 1;
-/*
-    if     (gChannel == iMuon){  // µµ channel
-    passTrigger = PassDoubleMuonTrigger();
-    TriggerSF      = TrigSF->GetTrigDoubleMuSF(    SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());
-    TriggerSF_err  = TrigSF->GetTrigDoubleMuSF_err(SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());
-    }
-    else if(gChannel == iElec){  // ee channel
-    passTrigger    = PassDoubleElecTrigger();
-    TriggerSF      = TrigSF->GetTrigDoubleElSF(    SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());
-    TriggerSF_err  = TrigSF->GetTrigDoubleElSF_err(SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());
-    }
-    else{  // eµ channel
-    passTrigger = PassElMuTrigger();
-    TriggerSF      = TrigSF->GetTrigElMuSF(    SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());
-    TriggerSF_err  = TrigSF->GetTrigElMuSF_err(SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());
-    }
-    TriggerSF_Down = TriggerSF-TriggerSF_err;
-    TriggerSF_Up   = TriggerSF+TriggerSF_err;
-  */
-
   // Set Params to pass all the info...
-  SetParam("TriggerSF",      TriggerSF);
-  SetParam("TriggerSF_Up",   TriggerSF_Up);
-  SetParam("TriggerSF_Down", TriggerSF_Down);
   SetParam("PUSF",      PUSF);
   SetParam("PUSF_Up",   PUSF_Up);
   SetParam("PUSF_Down", PUSF_Down);
