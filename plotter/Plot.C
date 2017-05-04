@@ -1046,9 +1046,9 @@ void Plot::PrintYields(TString cuts, TString labels, TString channels, TString o
     }
   }
   t.SetDrawHLines(true); t.SetDrawVLines(true); t.Print();
-  if(options.Contains("tex"))  t.SaveAs(plotFolder + "/" + YieldsTableName + ".tex");
-  if(options.Contains("html")) t.SaveAs(plotFolder + "/" + YieldsTableName + ".html");
-  if(options.Contains("txt"))  t.SaveAs(plotFolder + "/" + YieldsTableName + ".txt");
+  if(options.Contains("tex"))  t.SaveAs(gSystem->ExpandPathName(plotFolder + "/" + YieldsTableName + ".tex"));
+  if(options.Contains("html")) t.SaveAs(gSystem->ExpandPathName(plotFolder + "/" + YieldsTableName + ".html"));
+  if(options.Contains("txt"))  t.SaveAs(gSystem->ExpandPathName(plotFolder + "/" + YieldsTableName + ".txt"));
 }
 
 
