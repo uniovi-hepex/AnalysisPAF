@@ -89,7 +89,8 @@ void yields(){
   p->AddSample("TTTT"   , "TTTT", itSignal, kRed, 0.10);
 
   p->AddSample("DoubleEG"  , "Data", itData);
-  //// p->AddSample("MuonEG"    , "Data", itData);
+  p->AddSample("DoubleMuon", "Data", itData);
+  p->AddSample("MuonEG"    , "Data", itData);
   //// p->AddSample("SingleMuon", "Data", itData);
   //// p->AddSample("SingleElec", "Data", itData);
 
