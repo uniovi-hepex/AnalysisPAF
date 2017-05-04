@@ -24,9 +24,10 @@ TString btag1    = "TNJets >= 2 && TNBtags > 0";
 
 TString pathToTree = "./tttt_temp/";
 void yields(TString plotsFolder=""){
-  Plot* p = new Plot("TChannel", dilepton, "All", 1, 0, 10, "Channel", "xsec", plotsFolder);
+  Plot* p = new Plot("TChannel", dilepton, "All", 1, 0, 10, "Channel", "xsec");
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
   p->verbose = true;
+  p->SetPlotFolder(plotsFolder);
   //p->doData = false;
   //p->doStackSignal = true;
 
