@@ -11,7 +11,8 @@ R__LOAD_LIBRARY(Plot.C+)
 const TString Signalmc[]      = {"TTHNonbb"};                   // ttH
 const TString TTWmc[] 	      = {"TTWToLNu1", "TTWToQQ"};			  // TTW
 const TString TTZmc[] 	      = {"TTZToLLNuNu", "TTZToQQ"};	    // TTZ
-const TString TTbarmc[] 	    = {"TTGJets", "TTJets_aMCatNLO"}; // TTbar
+const TString TTbarmc[] 	    = {"TTGJets", "TTbar_Powheg"}; // TTbar at LO (comment/uncomment as desired)
+//const TString TTbarmc[] 	    = {"TTGJets", "TTJets_aMCatNLO"}; // TTbar at NLO (comment/uncomment as desired)
 const TString WJetsmc[]       = {"WJetsToLNu_MLM"};             // WJets at LO  (comment/uncomment as desired)
 //const TString WJetsmc[]       = {"WJetsToLNu_aMCatNLO"};        // WJets at NLO (comment/uncomment as desired)
 const TString STmc[]    	    = {"TW", "TbarW", "T_tch", "Tbar_tch", "TToLeptons_sch_amcatnlo","TGJets"};// ST
