@@ -31,6 +31,10 @@ class LeptonSelector : public PAFChainItemSelector{
     Int_t gSelection;
     TString localPath;
 
+    // Trigger     
+    Float_t TriggerSF;
+    Float_t TriggerSFerr;
+
     // LepGood
     Lepton tL;
     Int_t nLep;
@@ -78,6 +82,7 @@ class LeptonSelector : public PAFChainItemSelector{
     Int_t nLooseLeptons;
 
     void GetLeptonVariables(Int_t i);
+    void GetDiscLeptonVariables(Int_t i);
     void GetGenLeptonVariables(Int_t i);
     void GetGenLepFromTauVariables(Int_t i);
     Bool_t getSIPcut(Float_t cut); 

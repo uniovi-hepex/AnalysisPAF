@@ -124,6 +124,22 @@ void JetSelector::GetJetVariables(Int_t i, TString jec){
   }
 }
 
+void JetSelector::GetDiscJetVariables(Int_t i){
+  tpJ.SetPxPyPzE(Get<Float_t>("DiscJet_px",i), Get<Float_t>("DiscJet_py",i), Get<Float_t>("DiscJet_pz", i), Get<Float_t>("DiscJet_energy",i));
+  eta = tpJ.Eta();;
+  pt = tpJ.Pt();
+  rawPt       = Get<Float_t>("DiscJet_rawPt",i);
+  pt_corrUp   = Get<Float_t>("DiscJet_corr_JECUp",i); 
+  pt_corrDown = Get<Float_t>("DiscJet_corr_JECDown",i);
+  jetId       = Get<Int_t>("DiscJet_id",i);
+  csv         = Get<Float_t>("DiscJet_btagCSV", i);
+  flavmc = -999999;
+  if(!gIsData){
+    flavmc = Get<Int_t>("DiscJet_hadronFlavour", i);
+    tmcJ.SetPxPyPzE(Get<Float_t>("DiscJet_mcPx",i), Get<Float_t>("DiscJet_mcPy",i), Get<Float_t>("DiscJet_mcPz",i), Get<Float_t>("DiscJet_mcEnergy",i));
+  }
+}
+
 void JetSelector::GetJetFwdVariables(Int_t i){
   tpJ.SetPxPyPzE(Get<Float_t>("JetFwd_px",i), Get<Float_t>("JetFwd_py",i), Get<Float_t>("JetFwd_pz", i), Get<Float_t>("JetFwd_energy",i));
   eta = tpJ.Eta();;
@@ -183,26 +199,56 @@ void JetSelector::InsideLoop(){
       SetSystematics(&tJ);
       tJ.isBtag = IsBtag(tJ);
       if (TMath::Abs(tJ.p.Eta()) < jet_MaxEta){
-	if(tJ.p.Pt() > 15 || tJ.pTJESUp > 15 || tJ.pTJESDown > 15 ) Jets15.push_back(tJ);
-	if(tJ.p.Pt() > jet_MinPt){
-	  selJets.push_back(tJ);
-	  if(tJ.isBtag) nBtagJets++; 
-	  if(!gIsData){
-	    GetmcJetVariables(i);
-	    tJ.SetMCjet(tpJ);
-	    GetJetVariables(i);
-	  }
-	} 
+        if(tJ.p.Pt() > 15 || tJ.pTJESUp > 15 || tJ.pTJESDown > 15 ) Jets15.push_back(tJ);
+        if(tJ.p.Pt() > jet_MinPt){
+          selJets.push_back(tJ);
+          if(tJ.isBtag) nBtagJets++; 
+          if(!gIsData){
+            GetmcJetVariables(i);
+            tJ.SetMCjet(tpJ);
+            GetJetVariables(i);
+          }
+        } 
       }
       if (tJ.p.Pt() > vetoJet_minPt && TMath::Abs(tJ.p.Eta()) < vetoJet_maxEta){
-	if      (gSelection == iWWSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
-	else if (gSelection == iWZSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
-	else if (gSelection == i4tSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
-	else if (gSelection == iTWSelec)                vetoJets.push_back(tJ);
-	else                                            vetoJets.push_back(tJ);
+        if      (gSelection == iWWSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
+        else if (gSelection == iWZSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
+        else if (gSelection == i4tSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
+        else if (gSelection == iTWSelec)                vetoJets.push_back(tJ);
+        else                                            vetoJets.push_back(tJ);
       }
     }
   }
+  // If stop, disc
+  if(gSelection == iStopSelec){
+    nJet = Get<Int_t>("nDiscJet");
+    for(Int_t i = 0; i < nJet; i++){
+      GetDiscJetVariables(i);
+      tJ = Jet(tpJ, csv, jetId, flavmc);
+      tJ.isBtag = IsBtag(tJ);
+      // Fill the vectors
+      if(tJ.id > 0 && Cleaning(tJ, Leptons, minDR)){
+        SetSystematics(&tJ);
+        tJ.isBtag = IsBtag(tJ);
+        if (TMath::Abs(tJ.p.Eta()) < jet_MaxEta){
+          if(tJ.p.Pt() > 15 || tJ.pTJESUp > 15 || tJ.pTJESDown > 15 ) Jets15.push_back(tJ);
+          if(tJ.p.Pt() > jet_MinPt){
+            selJets.push_back(tJ);
+            if(tJ.isBtag) nBtagJets++; 
+            if(!gIsData){
+              GetmcJetVariables(i);
+              tJ.SetMCjet(tpJ);
+              GetJetVariables(i);
+            }
+          } 
+        }
+        if (tJ.p.Pt() > vetoJet_minPt && TMath::Abs(tJ.p.Eta()) < vetoJet_maxEta){
+          vetoJets.push_back(tJ);
+        }
+      }
+    }
+  }
+
   if(jet_MaxEta > 2.4 || vetoJet_maxEta > 2.4){ // Add jets from JetFwd collection
     nJet = Get<Int_t>("nJetFwd");
     for(Int_t i = 0; i < nJet; i++){

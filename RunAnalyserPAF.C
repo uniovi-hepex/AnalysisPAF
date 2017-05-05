@@ -10,9 +10,10 @@ R__LOAD_LIBRARY(DatasetManager/DatasetManager.C+)
 
 Bool_t IsMCatNLO(TString sampleName);
 void GetCount(vector<TString> Files, Bool_t IsData = false);
-void RunAnalyserPAF(TString sampleName  = "TTbar_Powheg", TString Selection = "StopDilep", Int_t nSlots = 1, Long64_t nEvents = 0, Long64_t FirstEvent = 0, Float_t ThisWeight = 1.0, Int_t stopMass = 0, Int_t lspMass  = 0);
+void RunAnalyserPAF(TString sampleName  = "TTbar_Powheg", TString Selection = "StopDilep", Int_t nSlots = 1, Long64_t nEvents = 0, Long64_t FirstEvent = 0, Float_t uxsec = 1.0, Int_t stopMass = 0, Int_t lspMass  = 0);
 Float_t GetSMSnorm(Int_t mStop, Int_t mLsp);
 Double_t GetStopXSec(Int_t StopMass);
+vector<TString> GetAllFiles(TString path, TString  filename = "");
 //Float_t* GetCountLHE(std::vector<TString> Files, Float_t a[]);
 
 vector<TString> Files;
@@ -23,12 +24,12 @@ Float_t xsec;
 Bool_t verbose = true;
 const Int_t nLHEWeight = 248;
 
-enum             sel         {iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec, nSel};
-const TString tagSel[nSel] = {"Stop",         "Top",     "TW",     "WW",     "ttDM",     "ttH"      };
+enum             sel         {iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec, iWZSelec, i4tSelec, nSel};
+const TString tagSel[nSel] = {"Stop",         "Top",     "TW",     "WW",     "ttDM",     "ttH",   "WZ",    "tttt" };
 
-void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_t nEvents, Long64_t FirstEvent, Float_t ThisWeight,	Int_t stopMass, Int_t lspMass) {
+void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_t nEvents, Long64_t FirstEvent, Float_t uxsec,	Int_t stopMass, Int_t lspMass) {
 
-	Int_t iChunck = Int_t(ThisWeight);
+	Int_t iChunck = Int_t(uxsec);
 	if(FirstEvent != 0) verbose = false;
   TString orig_sampleName = sampleName;
 
@@ -57,6 +58,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
   else if(Selection == "TW"        || Selection == "tW"      ) sel = iTWSelec;
   else if(Selection == "ttDM"      || Selection == "ttMET"   ) sel = ittDMSelec;
   else if(Selection == "ttH"       || Selection == "TTH"     ) sel = ittHSelec;
+  else if(Selection == "tttt"      || Selection == "4t"      ) sel = i4tSelec;
   else if(Selection == "WW"                                  ) sel = iWWSelec;
   else{ cout << "\033[1;31m >>>> WRONG SELECTION <<<< \033[0m\n"; return;}
 	cout << "\n" << endl;
@@ -70,6 +72,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 
   // Tab in the spreadsheet https://docs.google.com/spreadsheets/d/1b4qnWfZrimEGYc1z4dHl21-A9qyJgpqNUbhOlvCzjbE
   dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2");
+  //dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2_noSkim");
   
   TString pathToFiles = dataPath + dm->FindLocalFolder();
   // Deal with data samples
@@ -103,13 +106,12 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 		if(sampleName.BeginsWith("LocalFile:")){ // LocalFile
 			theSample = sampleName.ReplaceAll("LocalFile:", ""); 
 			if(verbose) cout << " >>> Analysing a local sample: " << theSample << endl;
-			sampleName = TString( theSample(theSample.Last('/')+1, theSample.Sizeof())).ReplaceAll(".root", "").ReplaceAll("Tree_", "");
-			//myProject->AddDataFile(theSample);
-			Files.push_back(theSample);
+			sampleName = TString( theSample(theSample.Last('/')+1, theSample.Sizeof())).ReplaceAll(".root", "").ReplaceAll("Tree_", "").ReplaceAll("_*", "").ReplaceAll("*", "");
+			//Files.push_back(theSample);
+			Files = GetAllFiles(theSample);
       GetCount(Files, G_IsData);
-      xsec = 1;
-      if(ThisWeight != 1) G_Event_Weight = ThisWeight;
-      else G_Event_Weight = xsec/Count;
+      xsec = uxsec;
+      G_Event_Weight = xsec/Count;
 		}
 		else if(sampleName.BeginsWith("Scan:")){ // T2tt sample
 			theSample = sampleName.ReplaceAll("Scan:", "");
@@ -141,6 +143,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 				//myProject->AddDataFiles(dm->GetFiles()); 
 				Files.insert(Files.end(), (dm->GetFiles()).begin(), (dm->GetFiles()).end());
 				xsec    = dm->GetCrossSection();
+				if(uxsec != 1) xsec    = uxsec;
 			}
 			GetCount(Files);
 			if(IsMCatNLO(sampleName)){
@@ -257,12 +260,13 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	else if (sel == ittDMSelec)  myProject->AddSelectorPackage("ttDM");
 	else if (sel == iTopSelec )  myProject->AddSelectorPackage("TopAnalysis");
 	else if (sel == ittHSelec )  myProject->AddSelectorPackage("ttHAnalysis");
+	else if (sel == i4tSelec)  myProject->AddSelectorPackage("t4Analysis");
 	else if (sel == iTWSelec  ){
 	  myProject->AddSelectorPackage("TopAnalysis");
 	  // myProject->AddSelectorPackage("TWAnalysis");
 	}
 	else if (sel == iWWSelec  )  myProject->AddSelectorPackage("WWAnalysis");
-	else                         myProject->AddSelectorPackage("CreateMiniTree");
+	else                         cout << " >>>>>>>> No selector found for this analysis!!!! " << endl;
 
 	// Additional packages
 	//----------------------------------------------------------------------------
@@ -309,60 +313,8 @@ void GetCount(std::vector<TString> Files, Bool_t IsData){
 		}
 		f->Close();    
 	}
+  //cout << "Count   = " << Count   << endl; cout << "nEvents = " << nTrueEntries << endl;
 }
-
-/*
-Float_t* GetCountLHE(std::vector<TString> Files, Float_t CountLHE[]){
-  Int_t nFiles = Files.size(); TFile *f; TH1D* htemp;
-  //Float_t CountLHE[nLHEWeight];
-  Float_t x = 0; Int_t bin = 0;
-  for(Int_t k = 1; k < nLHEWeight+1; k++) CountLHE[k] = 0;
-
-  for(Int_t i = 0; i < nFiles; i++){
-    f = TFile::Open(Files.at(i));
-    f->GetObject("CountLHE", htemp);
-
-    for(Int_t k = 1; k < nLHEWeight+1; k++){
-      if      (k<10 ) bin = k + 1001;   // 1002-1010: muRmuF
-      else if (k<112) bin = k + 1992;   // 2002-2103: NNPDF
-      else if (k<167) bin = k + 2890;   // 3002-3056: CT10
-      else if (k<223) bin = k + 3835;   // 4000-4057: MMHT2014
-      else if (k<250) bin = k + 4779;   // 5002-5028: muRmuF, hdamp 
-      x = htemp->GetBinContent(bin);
-      CountLHE[k-1] += x;
-      //cout << Form("[k = %i, bin = %i, x0 = %g, x = %g]\n", k, bin, x0, x);
-    }
-    f->Close();    
-  }
-  return CountLHE;
-}
-
-
-std::vector<Float_t> *GetCountLHE(std::vector<TString> Files){
-  Int_t nFiles = Files.size(); TFile *f; TH1D* htemp;
-  std::vector<Float_t> *CountLHE = new std::vector<Float_t>();
-  Double_t x = 0; Double_t x0=0; Int_t bin = 0;
-  for(Int_t k = 1; k < nLHEWeight+1; k++) CountLHE->push_back(0.);
-
-  for(Int_t i = 0; i < nFiles; i++){
-    f = TFile::Open(Files.at(i));
-    f->GetObject("CountLHE", htemp);
-
-    for(Int_t k = 1; k < nLHEWeight+1; k++){
-      if      (k<10 ) bin = k + 1001;   // 1002-1010: muRmuF
-      else if (k<112) bin = k + 1992;   // 2002-2103: NNPDF
-      else if (k<167) bin = k + 2890;   // 3002-3056: CT10
-      else if (k<223) bin = k + 3835;   // 4000-4057: MMHT2014
-      else if (k<250) bin = k + 4779;   // 5002-5028: muRmuF, hdamp 
-      x = htemp->GetBinContent(bin);
-      x0 = CountLHE->at(k-1); 
-      CountLHE->at(k-1) = x0+x;
-      //cout << Form("[k = %i, bin = %i, x0 = %g, x = %g]\n", k, bin, x0, x);
-    }
-    f->Close();    
-  }
-  return CountLHE;
-}*/
 
 Float_t GetSMSnorm(Int_t mStop, Int_t mLsp){
   cout << Form("\033[1;36m >>> Searching for normalization factor for stop point with masses [%i, %i]...\033[0m\n", mStop, mLsp);
@@ -433,3 +385,53 @@ Double_t GetStopXSec(Int_t StopMass){
 		return v0 + (vf-v0)*x;
 	}
 }
+
+vector<TString> GetAllFiles(TString path, TString  filename) {
+  if(verbose) cout << "[GetAllFiles] Obtaining files of form " << filename << " in folder " << path << endl;  
+  vector<TString> theFiles;
+
+  TString command("ls ");
+  if(filename != "")
+    command += 
+      path + "/" + filename + ".root " +
+      path + "/" + filename + "_[0-9].root " +
+      path + "/" + filename + "_[0-9][0-9].root " +
+      path + "/Tree_" + filename + ".root " +
+      path + "/Tree_" + filename + "_[0-9].root " +
+      path + "/Tree_" + filename + "_[0-9][0-9].root";
+  else command += path;
+
+  command += " 2> /dev/null";
+  if(verbose) cout << "[GetAllFiles] Executing command: " << command << endl;
+
+  //We cannot use GetFromPipe because it is too verbose, so we implement
+  //the full code
+  //    TString result=gSystem->GetFromPipe(command);
+  TString result;
+  FILE *pipe = gSystem->OpenPipe(command, "r");
+  if (!pipe) cerr << "ERROR: in GetAllFiles. Cannot run command \"" << command << "\"" << endl;
+  else {
+    TString line;
+    while (line.Gets(pipe)) {
+      if (result != "")	result += "\n";
+      result += line;
+    }
+    gSystem->ClosePipe(pipe);
+  }
+  
+  if (result != "" ) {
+    TObjArray* filesfound = result.Tokenize(TString('\n'));
+    if (!filesfound) cerr << "ERROR: in GetAllFiles. Could not parse output while finding files" << endl;
+    else {
+      for (int i = 0; i < filesfound->GetEntries(); i++) theFiles.push_back(filesfound->At(i)->GetName());
+      filesfound->Clear();
+      delete filesfound;
+    }
+  }
+
+  if (theFiles.size() == 0) cerr << "ERROR: in GetAllFiles. Could not find data!" << endl;
+  return theFiles;
+}
+
+
+

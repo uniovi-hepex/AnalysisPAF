@@ -6,25 +6,22 @@
 #include <vector>
 
 
-class StopAnalysis : public PAFChainItemSelector{
+class t4Analysis : public PAFChainItemSelector{
   public:
     TTree* fTree;
 
-    TH1F* fSumISRJets;  
-    TH1F* fISRJets;  
     Int_t TNLHEWeight;
     Float_t TLHEWeight[254];
  
-    StopAnalysis();
-    virtual ~StopAnalysis(){}
+    t4Analysis();
+    virtual ~t4Analysis(){}
     virtual void InsideLoop();
     virtual void Initialise();
     virtual void Summary();
     std::vector<Lepton> selLeptons  ;
     std::vector<Lepton> vetoLeptons ;
-    std::vector<Lepton> genLeptons ;
-    std::vector<Jet> selJets ;
-    std::vector<Jet> Jets15  ;
+    std::vector<Jet>    selJets ;
+    std::vector<Jet>    Jets15  ;
 
     void SetLeptonVariables();
     void SetJetVariables();
@@ -33,7 +30,6 @@ class StopAnalysis : public PAFChainItemSelector{
     void GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> VetoLeptons);
     void GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut = 30);
     void GetMET();
-    void GetGenInfo();
 
     Float_t TrigSF;
     Float_t TrigSF_Up;
@@ -41,41 +37,27 @@ class StopAnalysis : public PAFChainItemSelector{
     Float_t PUSF;
     Float_t PUSF_Up;
     Float_t PUSF_Down;
-    Int_t gChannel;
-    Bool_t passMETfilters;
-    Bool_t passTrigger;
-    Bool_t isSS;
+    Int_t   gChannel;
+    Bool_t  passMETfilters;
+    Bool_t  passTrigger;
+    Bool_t  isSS;
     Float_t NormWeight;
-    Bool_t gIsFastSim = false;
-    Int_t gStopMass;
-    Int_t gLspMass;
-
-    Float_t normISRweight;
+    Bool_t  gIsFastSim = false;
   
     // Tree Variables
     Float_t TWeight;   // Total nominal weight
     Float_t TMll;      // Invariant mass
-    Float_t TDeltaPhi; 
-    Float_t TDeltaEta;
-    Float_t TMT2;      // Invariant mass
     Float_t TMET;      // MET
     Float_t TMET_Phi;  // MET phi
-    Float_t TgenMET;   // MET_genPt
-    Bool_t  TIsSS;
 
-    Int_t   TNVetoLeps;
+    Int_t   TNFakeableLeps;
     Int_t   TNSelLeps;
-    Int_t TChannel;
-    Float_t TLep0_Pt;    
-    Float_t TLep0_Eta;
-    Float_t TLep0_Phi;
-    Float_t TLep0_E;
-    Float_t TLep0_Charge;
-    Float_t TLep1_Pt;    
-    Float_t TLep1_Eta;
-    Float_t TLep1_Phi;
-    Float_t TLep1_E;
-    Float_t TLep1_Charge;
+    Int_t   TChannel;
+    Float_t TLep_Pt[10];
+    Float_t TLep_Eta[10];
+    Float_t TLep_Phi[10];
+    Float_t TLep_E[10];
+    Int_t TLep_Charge[10];
 
     Int_t TNJets;            // Jets...
     Int_t TNBtags;
@@ -105,10 +87,7 @@ class StopAnalysis : public PAFChainItemSelector{
     Int_t   TNISRJets;
     Float_t TMETJESUp;
     Float_t TMETJESDown;
-    Float_t TMT2llJESUp;
-    Float_t TMT2llJESDown;
 
-    Float_t  TISRweight;
     Float_t  TWeight_LepEffUp;
     Float_t  TWeight_LepEffDown;
     Float_t  TWeight_TrigUp;
@@ -118,16 +97,6 @@ class StopAnalysis : public PAFChainItemSelector{
     Float_t  TWeight_PUUp;
     Float_t  TWeight_FSDown;
 
-    Float_t TgenTop1Pt ;
-    Float_t TgenTop1Eta;
-    Float_t TgenTop1Phi;
-    Float_t TgenTop1M  ;
-    Float_t TgenTop2Pt ;
-    Float_t TgenTop2Eta;
-    Float_t TgenTop2Phi;
-    Float_t TgenTop2M  ;
-
-    Float_t TgenMETPhi;
   protected:
     Bool_t  gIsData;
     Bool_t  gIsLHE;
@@ -135,5 +104,5 @@ class StopAnalysis : public PAFChainItemSelector{
     Int_t   gSelection;
     TString gSampleName;
 
-    ClassDef(StopAnalysis, 0);
+    ClassDef(t4Analysis, 0);
 };

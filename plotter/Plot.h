@@ -47,6 +47,7 @@ public:
   std::vector<TString> VTagSamples;
   std::vector<TString> VTagDataSamples;
   std::vector<TString> VTagProcesses;
+  std::vector<TString> VTagOptions;
   Histo* hData = NULL;
   THStack* hStack = NULL;
   Histo* hAllBkg = NULL;
@@ -95,6 +96,7 @@ public:
     VTagSamples = std::vector<TString>();
     VTagDataSamples = std::vector<TString>();
     VTagProcesses = std::vector<TString>();
+    VTagOptions = std::vector<TString>();
     hData = NULL;
     hStack = NULL;
     hAllBkg = NULL;
@@ -134,7 +136,7 @@ public:
     if(hAllBkg) delete hAllBkg;
 };            // Destructor
 
-	void AddSample(TString p = "TTbar_Powheg", TString pr = "ttbar", Int_t type = -1, Int_t color = 0, Float_t S = 1, TString tsys = "0");
+	void AddSample(TString p = "TTbar_Powheg", TString pr = "ttbar", Int_t type = -1, Int_t color = 0, Float_t S = 1, TString tsys = "0", TString options = "");
 	//void AddSample(TString p = "TTbar_Powheg", TString pr = "ttbar", Int_t type = -1, Int_t color = 0, Float_t S = 1, TString Syst);
 
 	// ######### Methods ########
@@ -229,6 +231,7 @@ public:
   void ScaleProcess(TString process, Float_t factor = 1);
   void ScaleSys(TString processSys, Float_t factor = 1);
   void SetTableFormats(TString t){ tableFormats = t;}
+  void SetLoopOptions(TString t){LoopOptions = t;}
 
   void SetSignalProcess(TString p){ SignalProcess = p;}
   void SetSignalStyle(TString p){ SignalStyle = p;} 
@@ -265,6 +268,7 @@ protected:
  
   TString SignalProcess;
   TString SignalStyle = "";
+  TString LoopOptions = "";
 
   TString SystVar;
   Int_t iS;

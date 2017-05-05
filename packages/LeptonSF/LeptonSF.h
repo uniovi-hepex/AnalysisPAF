@@ -29,7 +29,7 @@ class LeptonSF {
   // Trigger SFs
   Float_t GetTrigDoubleMuSF(Float_t eta1, Float_t eta2) const;
   Float_t GetTrigDoubleElSF(Float_t eta1, Float_t eta2) const;
-  Float_t GetTrigElMuGSF   (Float_t eta1, Float_t eta2) const;
+  Float_t GetTrigElMuSF    (Float_t eta1, Float_t eta2) const;
   // Trigger SF errors
   Float_t GetTrigDoubleMuSF_err(Float_t eta1, Float_t eta2) const;
   Float_t GetTrigDoubleElSF_err(Float_t eta1, Float_t eta2) const;

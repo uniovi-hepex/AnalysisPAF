@@ -149,17 +149,17 @@ Bool_t EventBuilder::PassesSingleMuonTrigger(){
 
 Bool_t EventBuilder::PassesDoubleMuonHTTrigger(){
   if(gIsFastSim) return true; // no triger in FastSim samples
-  return Get<Int_t>("HLT_BIT_HLT_DoubleMu8_Mass8_PFHT300");
+  return Get<Int_t>("HLT_BIT_HLT_DoubleMu8_Mass8_PFHT300_v");
 }
 
 Bool_t EventBuilder::PassesDoubleElecHTTrigger(){
   if(gIsFastSim) return true; // no triger in FastSim samples
-  return Get<Int_t>("HLT_BIT_HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300");
+  return Get<Int_t>("HLT_BIT_HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v");
 }
 
 Bool_t EventBuilder::PassesElMuHTTrigger(){
   if(gIsFastSim) return true; // no triger in FastSim samples
-  return Get<Int_t>("HLT_BIT_HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300");
+  return Get<Int_t>("HLT_BIT_HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v");
 }
 
 Bool_t EventBuilder::PassesThreelFourlTrigger() {
@@ -226,10 +226,6 @@ void EventBuilder::Initialise(){
   isSS = 0;
   nTrueInt = 0;
 
-  TriggerSF      = 1;
-  TriggerSF_err  = 1;
-  TriggerSF_Up   = 1;
-  TriggerSF_Down = 1;
   PUSF = 1;
   PUSF_Up = 1;
   PUSF_Down = 1;
@@ -309,33 +305,7 @@ void EventBuilder::InsideLoop(){
     PUSF_Down = 1;
   }
 
-  // >>>>>>>>> Calculate Trigger SF and variations <<<<<<<<<<<<<<<<<<<<<<<<<< Trigger SFs... needs to be updated!!!!
-  // ### 2 LEPTONS
-  TriggerSF = 1; TriggerSF_Up = 1; TriggerSF_Down = 1;
-/*
-    if     (gChannel == iMuon){  // µµ channel
-    passTrigger = PassDoubleMuonTrigger();
-    TriggerSF      = TrigSF->GetTrigDoubleMuSF(    SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());
-    TriggerSF_err  = TrigSF->GetTrigDoubleMuSF_err(SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());
-    }
-    else if(gChannel == iElec){  // ee channel
-    passTrigger    = PassDoubleElecTrigger();
-    TriggerSF      = TrigSF->GetTrigDoubleElSF(    SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());
-    TriggerSF_err  = TrigSF->GetTrigDoubleElSF_err(SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());
-    }
-    else{  // eµ channel
-    passTrigger = PassElMuTrigger();
-    TriggerSF      = TrigSF->GetTrigElMuSF(    SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());
-    TriggerSF_err  = TrigSF->GetTrigElMuSF_err(SelLeptons[0].p.Eta(), SelLeptons[1].p.Eta());
-    }
-    TriggerSF_Down = TriggerSF-TriggerSF_err;
-    TriggerSF_Up   = TriggerSF+TriggerSF_err;
-  */
-
   // Set Params to pass all the info...
-  SetParam("TriggerSF",      TriggerSF);
-  SetParam("TriggerSF_Up",   TriggerSF_Up);
-  SetParam("TriggerSF_Down", TriggerSF_Down);
   SetParam("PUSF",      PUSF);
   SetParam("PUSF_Up",   PUSF_Up);
   SetParam("PUSF_Down", PUSF_Down);
@@ -394,6 +364,7 @@ Bool_t EventBuilder::Trig3l4l() {
 
 Bool_t EventBuilder::PassesMETfilters(){
   // https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2#Moriond_2017
+  if(gIsFastSim) return true;
   if( (Get<Int_t>("Flag_HBHENoiseFilter") &&        // MET filters for data and MC
         Get<Int_t>("Flag_HBHENoiseIsoFilter") &&
         Get<Int_t>("Flag_EcalDeadCellTriggerPrimitiveFilter") &&
