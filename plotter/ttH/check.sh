@@ -60,14 +60,12 @@ while [ $allok != 38 ]; do
         cp Tree_TTHNonbb_0.root Tree_TTHNonbb.root
         rm Tree_TTHNonbb_0.root
         cd $workingpath
-        cd ../..
       elif [ ${samples[i]} == "Tree_WJetsToLNu_aMCatNLO.root" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/HeppyTreesSummer16/v2/jet25/Tree_WJetsToLNu_aMCatNLO_0.root\", \"$sel\", $1, 0, 0, 61526.7)"
         cd $plotspath
         cp Tree_WJetsToLNu_aMCatNLO_0.root Tree_WJetsToLNu_aMCatNLO.root
         rm Tree_WJetsToLNu_aMCatNLO_0.root
         cd $workingpath
-        cd ../..
       else
         root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $1)"
       fi
