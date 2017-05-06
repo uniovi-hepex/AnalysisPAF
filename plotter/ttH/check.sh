@@ -52,7 +52,13 @@ while [ $allok != 38 ]; do
       echo ${samples[i]}
       echo "Reanalyzing..."
       echo
-      root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $1)"
+      if [ ${samples[i]} == "Tree_TTHNonbb.root" ]; then
+        root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/HeppyTreesSummer16/v2/jet25/Tree_TTHNonbb_0.root\", \"$sel\", $1, 0, 0, 0.21510)"
+      elif [ ${samples[i]} == "Tree_WJetsToLNu_aMCatNLO.root" ]; then
+        root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/HeppyTreesSummer16/v2/jet25/Tree_WJetsToLNu_aMCatNLO_0.root\", \"$sel\", $1, 0, 0, 61526.7)"
+      else
+        root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $1)"
+      fi
       allok=$(($allok-8))
     fi
     allok=$(($allok+1))
