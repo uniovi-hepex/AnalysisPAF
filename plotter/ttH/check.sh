@@ -4,6 +4,8 @@ cd ../..
 slash="/"
 allok=0
 
+workingpath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 samples=("Tree_TTWToLNu1.root" "Tree_TTWToQQ.root" "Tree_TTZToLLNuNu.root" "Tree_TTZToQQ.root" "Tree_WGToLNuG.root" "Tree_ZGTo2LG.root" "Tree_TGJets.root" "Tree_TTGJets.root" 
   "Tree_WpWpJJ.root" "Tree_ZZZ.root" "Tree_WZZ.root" "Tree_WWZ.root" "Tree_WWW.root" "Tree_WW.root" "Tree_tZq_ll.root" "Tree_TTTT.root" "Tree_TTJets_aMCatNLO.root" "Tree_TTbar_Powheg.root" 
   "Tree_DYJetsToLL_M50_MLM.root" "Tree_DYJetsToLL_M5to50_MLM.root" "Tree_DYJetsToLL_M50_aMCatNLO.root" "Tree_DYJetsToLL_M10to50_aMCatNLO.root" "Tree_WJetsToLNu_aMCatNLO.root" 
@@ -57,11 +59,15 @@ while [ $allok != 38 ]; do
         cd $plotspath
         cp Tree_TTHNonbb_0.root Tree_TTHNonbb.root
         rm Tree_TTHNonbb_0.root
+        cd $workingpath
+        cd ../..
       elif [ ${samples[i]} == "Tree_WJetsToLNu_aMCatNLO.root" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/HeppyTreesSummer16/v2/jet25/Tree_WJetsToLNu_aMCatNLO_0.root\", \"$sel\", $1, 0, 0, 61526.7)"
         cd $plotspath
         cp Tree_WJetsToLNu_aMCatNLO_0.root Tree_WJetsToLNu_aMCatNLO.root
         rm Tree_WJetsToLNu_aMCatNLO_0.root
+        cd $workingpath
+        cd ../..
       else
         root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $1)"
       fi
