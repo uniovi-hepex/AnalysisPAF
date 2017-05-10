@@ -87,8 +87,8 @@ void t4Analysis::InsideLoop(){
   GetJetVariables(selJets, Jets15);
   GetMET();
   
-  bool taus(false);
-  Int_t nReqLeps(taus ? 1 : 2);
+  bool tauFakesSelection(false);
+  Int_t nReqLeps(tauFakesSelection ? 1 : 2);
 
   if( (TNSelLeps > nReqLeps || TNFakeableLeps > nReqLeps) && passTrigger && passMETfilters){ // 2 leptons, OS
     // Deal with weights:
