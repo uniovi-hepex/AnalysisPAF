@@ -29,7 +29,7 @@ const TString tagSel[nSel] = {"Stop",         "Top",     "TW",     "WW",     "tt
 
 void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_t nEvents, Long64_t FirstEvent, Float_t uxsec,	Int_t stopMass, Int_t lspMass) {
 
-	Int_t iChunck = Int_t(uxsec);
+	Int_t iChunk = Int_t(uxsec);
 	if(FirstEvent != 0) verbose = false;
   TString orig_sampleName = sampleName;
 
@@ -184,7 +184,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
     Int_t nChunks = TMath::Abs(nEvents);
     Int_t firstEvent = 0;
     cout << endl;
-    cout << Form("\033[0;97m >>> The sample is going to be divided in %i chuncks!! \033[0m\n\n", nChunks);
+    cout << Form("\033[0;97m >>> The sample is going to be divided in %i chunks!! \033[0m\n\n", nChunks);
     for(Int_t i = 0; i < nChunks; i++){
 			firstEvent = (nTrueEntries/nChunks)*i+1;
       nEvents = nTrueEntries/nChunks;
@@ -203,8 +203,8 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
   }
   else if(FirstEvent != 0){
     if(FirstEvent == 1) FirstEvent = 0;
-		cout << Form("\033[1;36m >>> Running chunck number %i, starting in event %lli... will loop over %lli events (last event = %lli)\n\n\033[0m", iChunck, FirstEvent, nEvents, FirstEvent + nEvents);
-    sampleName += Form("_%i", iChunck);
+		cout << Form("\033[1;36m >>> Running chunk number %i, starting in event %lli... will loop over %lli events (last event = %lli)\n\n\033[0m", iChunk, FirstEvent, nEvents, FirstEvent + nEvents);
+    sampleName += Form("_%i", iChunk);
   }
 
 
