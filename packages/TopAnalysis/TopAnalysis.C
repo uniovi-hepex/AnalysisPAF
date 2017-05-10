@@ -89,9 +89,7 @@ void TopAnalysis::Initialise(){
 }
 
 void TopAnalysis::InsideLoop(){
-  cout << "inside loop" << endl;
   ReSetTWVariables();
-  cout << "resettw variables" << endl;
   // Vectors with the objects
   genLeptons  = GetParam<vector<Lepton>>("genLeptons");
   selLeptons  = GetParam<vector<Lepton>>("selLeptons");
@@ -103,29 +101,25 @@ void TopAnalysis::InsideLoop(){
   vetoJets    = GetParam<vector<Jet>>("vetoJets");
   genJets     = GetParam<vector<Jet>>("genJets");
   mcJets      = GetParam<vector<Jet>>("mcJets");
-  cout << "gotten jets" << endl;
   // Weights and SFs
   NormWeight = GetParam<Float_t>("NormWeight");
   TrigSF       = GetParam<Float_t>("TriggerSF");
-  TrigSF_Up    = GetParam<Float_t>("TriggerSF_Up");
-  TrigSF_Down  = GetParam<Float_t>("TriggerSF_Down");
+  TrigSF_Up    = TrigSF + GetParam<Float_t>("TriggerSFerr");
+  TrigSF_Down  = TrigSF - GetParam<Float_t>("TriggerSFerr");
   PUSF         = GetParam<Float_t>("PUSF");
   PUSF_Up      = GetParam<Float_t>("PUSF_Up");
   PUSF_Down    = GetParam<Float_t>("PUSF_Down");
-  TrigSF = 1; TrigSF_Up = 1; TrigSF_Down = 1;
 
   // Event variables
   gChannel       = GetParam<Int_t>("gChannel");
   passMETfilters = GetParam<Bool_t>("METfilters");
   passTrigger    = GetParam<Bool_t>("passTrigger");
   isSS           = GetParam<Bool_t>("isSS");
-  cout << "gotten event variables" << endl;
   // Leptons and Jets
   GetLeptonVariables(selLeptons, vetoLeptons);
   GetJetVariables(selJets, Jets15);
   GetGenJetVariables(genJets, mcJets);
   GetMET();
-  cout << "filling dummy" << endl;
   fhDummy->Fill(1);
 
   // Number of events in fiducial region
@@ -153,7 +147,6 @@ void TopAnalysis::InsideLoop(){
       }
     }
   }
-  cout << "Holaaaa" << endl;
   //if((Int_t) genLeptons.size() >=2 && TNSelLeps >= 2 && passTrigger && passMETfilters){ // dilepton event, 2 leptons // && !isSS
   if (gSelection == iTopSelec){
     if (gIsTTbar && genLeptons.size() < 2) return; // Dilepton selection for ttbar!!!
@@ -161,28 +154,23 @@ void TopAnalysis::InsideLoop(){
   else if (gSelection == iTWSelec){
     if (gIsTW && genLeptons.size() < 2) return; // Dilepton selection for tw!!
   }
-  cout << "geninfo passed" << endl;
   if(TNSelLeps >= 2 && passTrigger && passMETfilters){ // dilepton event, 2 leptons // && !isSS
-    cout << "passes 2jets" << endl;
     // Deal with weights:
     Float_t lepSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
     Float_t ElecSF = 1; Float_t MuonSF = 1;
     Float_t ElecSFUp = 1; Float_t ElecSFDo = 1; Float_t MuonSFUp = 1; Float_t MuonSFDo = 1;
     if(TChannel == iElec){
-      cout << "ee" << endl;
       ElecSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
       ElecSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1);
       ElecSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1);
       MuonSFUp = 1; MuonSFDo = 1; MuonSF = 1;
     }
     else if(TChannel == iMuon){
-      cout << "mm" << endl;
       MuonSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1);
       MuonSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1);
       ElecSFUp = 1; ElecSFDo = 1; ElecSF = 1;
     }
     else{
-      cout << "em" << endl;
       if(selLeptons.at(0).isMuon){
         MuonSF   *= selLeptons.at(0).GetSF( 0);
         MuonSFUp *= selLeptons.at(0).GetSF( 1);
@@ -204,7 +192,6 @@ void TopAnalysis::InsideLoop(){
         ElecSFDo *= selLeptons.at(0).GetSF(-1);
       }
     }
-    cout << "gettingweights" << endl;
     TWeight             = NormWeight*ElecSF*MuonSF*TrigSF*PUSF;
     TWeight_ElecEffUp   = NormWeight*ElecSFUp*MuonSF*TrigSF*PUSF;
     TWeight_ElecEffDown = NormWeight*ElecSFDo*MuonSF*TrigSF*PUSF;
@@ -215,8 +202,6 @@ void TopAnalysis::InsideLoop(){
     TWeight_PUDown     = NormWeight*lepSF*TrigSF*PUSF_Up;
     TWeight_PUUp       = NormWeight*lepSF*TrigSF*PUSF_Down;
     if(gIsData) TWeight = 1;
-    cout << TWeight_ElecEffUp << " " << TWeight_ElecEffDown << endl;
-    cout << "here's teh real thing" << endl;
     // Event Selection
     // ===================================================================================================================
     if((selLeptons.at(0).p + selLeptons.at(1).p).M() > 20 && selLeptons.at(0).p.Pt() > 25){ // mll > 20 GeV, dilepton, leading lepton pT > 25 GeV
@@ -253,19 +238,14 @@ void TopAnalysis::InsideLoop(){
       }
       if(TChannel == iElMu || ((TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15))){
         if(TChannel == iElMu || TMET > 40){   // MET > 40 in ee, µµ
-	  if (TNBtags > 0 || TNBtagsUp > 0 || TNBtagsDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0){
-	    cout << "calculating tw varaibles. dont forget to remove that" << endl;
-	    CalculateTWVariables();
-	    cout << "done" << endl;
-	    fTree->Fill();
-	    
-	    
-	  }
+          if (TNBtags > 0 || TNBtagsUp > 0 || TNBtagsDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0){
+            CalculateTWVariables();
+            fTree->Fill();
+          }
         }
       }
     }   
   }
-  cout << "doesnt fill here" << endl;
 }
 
 
@@ -448,17 +428,17 @@ void TopAnalysis::FillDYHistos(Int_t ch){
   fHDYInvMass[ch][cut][sys]       -> Fill(TMll, EventWeight);
   cut = iZVeto;
   fHDYInvMass[ch][cut][sys]       -> Fill(TMll, EventWeight);
-  if(TMET > 40){
-    cut = iMETcut;
-    fHDYInvMass[ch][cut][sys]       -> Fill(TMll, EventWeight);
-  }
+  //  if(TMET > 40){
+  cut = iMETcut;
+  fHDYInvMass[ch][cut][sys]       -> Fill(TMll, EventWeight);
+  //  }
   if(TNJets > 1){
     cut = i2jets;
     fHDYInvMass[ch][cut][sys]       -> Fill(TMll, EventWeight);
-  }
-  if(TNBtags > 0){
-    cut = i1btag;
-    fHDYInvMass[ch][cut][sys]       -> Fill(TMll, EventWeight);
+    if(TNBtags > 0){
+      cut = i1btag;
+      fHDYInvMass[ch][cut][sys]       -> Fill(TMll, EventWeight);
+    }
   }
 }
 
@@ -623,7 +603,6 @@ void TopAnalysis::CalculateTWVariables()
 
   get20Jets();
   if (TNJets == 1 && TNBtags == 1){
-    cout << "nominal" << endl;
     DilepMETJetPt    =  getDilepMETJetPt()   ;
     DilepJetPt       =  getDilepJetPt()      ;
     Lep1METJetPt     =  getLep1METJetPt()    ;
@@ -658,22 +637,13 @@ void TopAnalysis::CalculateTWVariables()
 
 
   if (TNJetsJESUp == 1 && TNBtagsJESUp == 1){
-    cout << "varup" << endl;
-    cout << selJetsJecUp.size() << endl;
     DilepMETJetPtJESUp   =  getDilepMETJetPt("JESUp")   ;
-    cout << "A" << endl;
     DilepJetPtJESUp      =  getDilepJetPt("JESUp")      ;
-    cout << "B" << endl;
     Lep1METJetPtJESUp    =  getLep1METJetPt("JESUp")    ;
-    cout << "C" << endl;
     DPtDilep_JetMETJESUp =  getDPtDilep_JetMET("JESUp") ;
-    cout << "D" << endl;
     DPtDilep_METJESUp    =  getDPtDilep_MET("JESUp")    ;
-    cout << "E" << endl;
     DPtLep1_METJESUp     =  getDPtLep1_MET("JESUp")     ;    
-    cout << "F" << endl;
     DilepMETJet1PzJESUp  =  getDilepMETJet1Pz("JESUp")  ;
-    cout << "G" << endl;
     TLorentzVector met; met.SetPtEtaPhiE(TMETJESUp,0,TMET_Phi,TMETJESUp);
     C_jllJESUp = (selJetsJecUp[0].p + selLeptons[0].p + selLeptons[1].p).Et() / (selJetsJecUp[0].p + selLeptons[0].p + selLeptons[1].p).E();
     TJet1_ptJESUp           = selJetsJecUp.at(0).p.Pt();
@@ -699,7 +669,6 @@ void TopAnalysis::CalculateTWVariables()
   }
 
   if (TNJetsJESDown == 1 && TNBtagsJESDown == 1){
-    cout << "vardown" << endl;
     DilepMETJetPtJESDown   =  getDilepMETJetPt("JESDown")   ;
     DilepJetPtJESDown      =  getDilepJetPt("JESDown")      ;
     Lep1METJetPtJESDown    =  getLep1METJetPt("JESDown")    ;
@@ -1126,7 +1095,6 @@ Double_t TopAnalysis::getSysM(TString sys)
     col.push_back(selJetsJecDown.at(0).p);
   }
   else{
-    cout << "Wrong systematic in TopAnalysis::getSysM" << endl;
     return -9999.;
   }
 
@@ -1141,7 +1109,6 @@ Double_t TopAnalysis::getSysM(TString sys)
 Double_t TopAnalysis::getM(vector<TLorentzVector> col)
 {
   if (col.size() == 0){
-    cout << "[TAT::getM] One of the collections is empty" << endl;
     return -99.;
   }
   TLorentzVector v;

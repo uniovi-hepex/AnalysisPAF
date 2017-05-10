@@ -31,6 +31,10 @@ class LeptonSelector : public PAFChainItemSelector{
     Int_t gSelection;
     TString localPath;
 
+    // Trigger     
+    Float_t TriggerSF;
+    Float_t TriggerSFerr;
+
     // LepGood
     Lepton tL;
     Int_t nLep;

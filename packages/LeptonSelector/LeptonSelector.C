@@ -49,6 +49,9 @@ void LeptonSelector::Initialise(){
 
   }
   else if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
+    LepSF->loadHisto(iTrigDoubleMuon);
+    LepSF->loadHisto(iTrigDoubleElec);
+    LepSF->loadHisto(iTrigElMu);
     LepSF->loadHisto(iMuonReco);
     LepSF->loadHisto(iElecReco);
     LepSF->loadHisto(iMuonId,   iTight);
@@ -78,14 +81,14 @@ Bool_t LeptonSelector::getGoodVertex(Int_t wp){
     }
   } else {
     if(type == 1){ //electrons
-	  if(wp == iTight){
-	    if(etaSC <= 1.479 && ((dxy >= 0.05) || (dz  >= 0.10))) return false;
-	    if(etaSC >  1.479 && ((dxy >= 0.10) || (dz  >= 0.20))) return false;
-	  }
+      if(wp == iTight){
+        if(etaSC <= 1.479 && ((dxy >= 0.05) || (dz  >= 0.10))) return false;
+        if(etaSC >  1.479 && ((dxy >= 0.10) || (dz  >= 0.20))) return false;
+      }
     }
     else{ // muons
-	  if(wp == iMedium && (dxy > 0.2  || dz > 0.5)) return false;
-	  if(wp == iTight  && (dxy > 0.05 || dz > 0.1)) return false;
+      if(wp == iMedium && (dxy > 0.2  || dz > 0.5)) return false;
+      if(wp == iTight  && (dxy > 0.05 || dz > 0.1)) return false;
     }
   }
   return true;
@@ -639,7 +642,7 @@ void LeptonSelector::InsideLoop(){
       looseLeptons.push_back(tL);
     }
   }
-  if(gSelection == iStopSelec){
+  if(gSelection == iStopSelec){ // Adding leptons for the discarded collection
     nLep     = Get<Int_t>("nDiscLep");
     for(Int_t i = 0; i < nLep; i++){
       GetDiscLeptonVariables(i);
@@ -687,6 +690,24 @@ void LeptonSelector::InsideLoop(){
   nLooseLeptons = genLeptons.size();
   nGenLeptons  	= looseLeptons.size();
 
+  TriggerSF = 1; TriggerSFerr = 0;
+  if(gSelection == iTopSelec){
+    if(nSelLeptons >= 2){
+      if     (selLeptons.at(0).isMuon && selLeptons.at(1).isMuon){
+        LepSF->GetTrigDoubleMuSF(    selLeptons.at(0).p.Pt(), selLeptons.at(1).p.Pt());
+        LepSF->GetTrigDoubleMuSF_err(selLeptons.at(0).p.Pt(), selLeptons.at(1).p.Pt());
+      }
+      else if(selLeptons.at(0).isElec && selLeptons.at(1).isElec){
+        LepSF->GetTrigDoubleElSF(    selLeptons.at(0).p.Pt(), selLeptons.at(1).p.Pt());
+        LepSF->GetTrigDoubleElSF_err(selLeptons.at(0).p.Pt(), selLeptons.at(1).p.Pt());
+      }
+      else{
+        LepSF->GetTrigElMuSF(        selLeptons.at(0).p.Pt(), selLeptons.at(1).p.Pt());
+        LepSF->GetTrigElMuSF_err(    selLeptons.at(0).p.Pt(), selLeptons.at(1).p.Pt());
+      }
+    }
+  }
+
   // Set params for the next selectors
   SetParam("selLeptons",  selLeptons );
   SetParam("vetoLeptons", vetoLeptons);
@@ -697,6 +718,9 @@ void LeptonSelector::InsideLoop(){
   SetParam("nSelLeptons", nSelLeptons);
   SetParam("nVetoLeptons", nVetoLeptons);
   SetParam("nLooseLeptons", nVetoLeptons);
+
+  SetParam("TriggerSF",    TriggerSF);
+  SetParam("TriggerSFerr", TriggerSFerr);
 }
 
 //################################################################
