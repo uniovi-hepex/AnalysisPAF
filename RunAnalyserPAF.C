@@ -259,10 +259,6 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	myProject->SetInputParam("doSyst"       , G_DoSystematics  ); 
 
 
-	// CONFIGURATION PARAMETERS
-	myProject->SetInputParam("BTagSFPath", 
-				 TString(Form("%s/packages/BTagSFUtil/", gSystem->ExpandPathName("$PWD"))));
-
 	// Name of analysis class
 	//----------------------------------------------------------------------------
 	myProject->AddSelectorPackage("LeptonSelector");
