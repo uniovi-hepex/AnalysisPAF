@@ -91,11 +91,13 @@ void JetSelector::Initialise(){
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
   if (gSelection == iTopSelec) MeasType = "mujets";
-  fBTagSFnom = new BTagSFUtil(MeasType, "CSVv2", stringWP,  0);
-  fBTagSFbUp = new BTagSFUtil(MeasType, "CSVv2", stringWP,  1);
-  fBTagSFbDo = new BTagSFUtil(MeasType, "CSVv2", stringWP, -1);
-  fBTagSFlUp = new BTagSFUtil(MeasType, "CSVv2", stringWP,  3);
-  fBTagSFlDo = new BTagSFUtil(MeasType, "CSVv2", stringWP, -3);
+  TString BTagSFPath  = GetParam<TString>("BTagSFPath");
+
+  fBTagSFnom = new BTagSFUtil(MeasType, BTagSFPath, "CSVv2", stringWP,  0);
+  fBTagSFbUp = new BTagSFUtil(MeasType, BTagSFPath, "CSVv2", stringWP,  1);
+  fBTagSFbDo = new BTagSFUtil(MeasType, BTagSFPath, "CSVv2", stringWP, -1);
+  fBTagSFlUp = new BTagSFUtil(MeasType, BTagSFPath, "CSVv2", stringWP,  3);
+  fBTagSFlDo = new BTagSFUtil(MeasType, BTagSFPath, "CSVv2", stringWP, -3);
 
   Leptons  = std::vector<Lepton>();
   selJets  = std::vector<Jet>();
