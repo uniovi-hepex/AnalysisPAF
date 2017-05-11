@@ -518,7 +518,7 @@ TString DatasetManager::WriteGetDatasetsScript() {
   os << "echo -e \"#Dataset\\tN_Events\\tCross Section\\tMain Folder\\tBase File\\tSumWeight\" >> $outputfile" << endl;
   os << "" << endl;
   os << "#Iterate over rows (first 2 rows are titles)" << endl;
-  os << "echo \"   + Iterating over rows...\"" << endl;
+  os << "echo \"   + Iterating over $lastcellnum rows...\"" << endl;
   os << "for i in `seq 3 $lastcellnum`; do" << endl;
   os << "    #echo -n \"$i \"" << endl;
   os << "    Ai=`grep -A 1 \"A$i</title>\" $formatedfile | grep -v title| cut -d \\> -f 2 | cut -d \\< -f 1`" << endl;
@@ -531,13 +531,14 @@ TString DatasetManager::WriteGetDatasetsScript() {
   os << "    xsection=`grep -A 1 \"" << xsectioncol << "$i</title>\" $formatedfile | grep -v title| cut -d \\> -f 2 | cut -d \\< -f 1 | sed 's/,/./g'`" << endl;
   os << "    sumWeight=`grep -A 1 \"" << sumWeightcol << "$i</title>\" $formatedfile | grep -v title| cut -d \\> -f 2 | cut -d \\< -f 1 | sed 's/,/./g'`" << endl;
   os << "    #echo \"     - DEB: File = $rootfilebase\" " << endl;
-  os << "    #echo \"     - DEB: NEvt = $nevents\" " << endl;
-  os << "    #echo \"     - DEB: Xsec = $xsection\" " << endl;
-  os << "    #echo \"	  - DEB: SumW = $sumWeight\" " << endl;
+  os << "    #echo \"     - DEB: NEvt = \\'$nevents\\'\" " << endl;
+  os << "    #echo \"     - DEB: Xsec = \\'$xsection\\'\" " << endl;
+  os << "    #echo \"     - DEB: SumW = $sumWeight\" " << endl;
   os << "    " << endl;
   os << "    #Only printout if number of events and cross section are numbers" << endl;
   os << "    numberformat='^[0-9]+([.][0-9]+)?$'" << endl;
-  os << "    [[ $nevents =~ $numberformat ]] && [[ $xsection =~ $numberformat ]] && echo -e \"$Ai\\t$nevents\\t$xsection\\t$mainfolder\\t$rootfilebase\t$sumWeight\" >> $outputfile" << endl;
+  os << "    #[[ $nevents =~ $numberformat ]] && [[ $xsection =~ $numberformat ]] && echo -e \"Escribiendo que es gerundio\"" << endl;
+ os << "    [[ $nevents =~ $numberformat ]] && [[ $xsection =~ $numberformat ]] && echo -e \"$Ai\\t$nevents\\t$xsection\\t$mainfolder\\t$rootfilebase\t$sumWeight\" >> $outputfile" << endl;
   os << "done #rows" << endl;
   os << "#echo \"\"" << endl;
   os << "exit 0" << endl;
