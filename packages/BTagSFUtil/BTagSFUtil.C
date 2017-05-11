@@ -9,13 +9,17 @@
 
 using namespace std;
 
-BTagSFUtil::BTagSFUtil(string MeasurementType, string BTagAlgorithm, TString OperatingPoint, int SystematicIndex, TString FastSimDataset) {
+BTagSFUtil::BTagSFUtil(const string& MeasurementType, 
+		       const TString& BTagSFPath, const string& BTagAlgorithm, 
+		       const TString& OperatingPoint, int SystematicIndex, TString FastSimDataset) {
 
   //rand_ = new TRandom3(Seed);
-
-  string CSVFileName = (string)gSystem->ExpandPathName("$PWD") + "/packages/BTagSFUtil/" + BTagAlgorithm + ".csv";
-  const BTagCalibration calib(BTagAlgorithm, CSVFileName);
-
+  TString CSVFileName = Form("%s/%s.csv", BTagSFPath.Data(), BTagAlgorithm.c_str());
+  //  string CSVFileName = (string) pathtocsv.Data() + BTagAlgorithm + ".csv";
+  cout << "PAF_INFO: [BTagSFUtil] BTag SF will be read from " << CSVFileName << endl;
+  
+  const BTagCalibration calib(BTagAlgorithm, (string) CSVFileName.Data());
+  
   SystematicFlagBC = "central";
   SystematicFlagL  = "central";
   if (abs(SystematicIndex)<10) {
