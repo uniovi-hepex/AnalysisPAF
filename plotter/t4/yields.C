@@ -112,7 +112,7 @@ void yields(TString plotsFolder=""){
   // p->AddSystematic("JES");
   //p->PrintYields(dilepton + ", " + jets2 + ", " + btag1, "Dilepton, 2jets, 1btag", "ElMu, ElMu, ElMu");
   p->PrintYields("", "", "", "html");
-
+  p->PrintYields(dilepton + ", " + jets2 + ", " + btag1, "Dilepton, 2jets, 1btag", "ElMu, ElMu, ElMu", "html");
   //CrossSection *x = new CrossSection(p, "ttbar");
   //x->SetTheoXsec(831.8);
   //x->SetChannelTag("ElMu");
