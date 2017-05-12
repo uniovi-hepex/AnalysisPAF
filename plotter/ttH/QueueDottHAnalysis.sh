@@ -26,6 +26,9 @@ elif [ "$1" == "pl" ]; then
   if [ "$2" != "" ]; then
     categ=$2
   fi
+
+  source RemakeLibraries.sh
+  
   qsub -o $logpath -e $logpath -d $workingpath -F "$categ" PlotThings.sh
 else
     echo "ERROR - No valid arguments given"
