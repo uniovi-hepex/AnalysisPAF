@@ -49,8 +49,8 @@ root -l -b -q 'RunAnalyserPAF.C("TGJets & TGJets_ext"  , "4t",8, -4)'
 root -l -b -q 'RunAnalyserPAF.C("TTGJets & TTGJets_ext", "4t",8, -4)'
 root -l -b -q 'RunAnalyserPAF.C("WGToLNuG"             , "4t",8, -4)'
 root -l -b -q 'RunAnalyserPAF.C("ZGTo2LG"              , "4t",8, -4)'
-root -l -b -q 'RunAnalyserPAF.C("WZG_amcatnlo"   , "4t",8)' # WZG_TuneCUETP8M1_13TeV-amcatnlo-pythia8
-root -l -b -q 'RunAnalyserPAF.C("WWG_amcatnlo"   , "4t",8)' # WWG_TuneCUETP8M1_13TeV-amcatnlo-pythia8
+root -l -b -q 'RunAnalyserPAF.C("WZG_amcatnlo"   , "4t",8, -4)' # WZG_TuneCUETP8M1_13TeV-amcatnlo-pythia8
+root -l -b -q 'RunAnalyserPAF.C("WWG_amcatnlo"   , "4t",8, -4)' # WWG_TuneCUETP8M1_13TeV-amcatnlo-pythia8
 
 # ====================
 # SIGNAL
