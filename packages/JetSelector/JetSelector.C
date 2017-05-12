@@ -27,6 +27,15 @@ JetSelector::JetSelector() : PAFChainItemSelector() {
   jet_MinPt = 0;
   vetoJet_minPt = 0;
 }
+
+JetSelector::~JetSelector() {
+  delete fBTagSFnom; 
+  delete fBTagSFbUp; 
+  delete fBTagSFbDo;
+  delete fBTagSFlUp; 
+  delete fBTagSFlDo;
+}
+
 void JetSelector::Summary(){}
 
 void JetSelector::Initialise(){
@@ -91,11 +100,15 @@ void JetSelector::Initialise(){
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
   if (gSelection == iTopSelec) MeasType = "mujets";
-  fBTagSFnom = new BTagSFUtil(MeasType, "CSVv2", stringWP,  0);
-  fBTagSFbUp = new BTagSFUtil(MeasType, "CSVv2", stringWP,  1);
-  fBTagSFbDo = new BTagSFUtil(MeasType, "CSVv2", stringWP, -1);
-  fBTagSFlUp = new BTagSFUtil(MeasType, "CSVv2", stringWP,  3);
-  fBTagSFlDo = new BTagSFUtil(MeasType, "CSVv2", stringWP, -3);
+  TString pwd  = GetParam<TString>("WorkingDir");
+  TString BTagSFPath = Form("%s/packages/BTagSFUtil", pwd.Data());
+  
+
+  fBTagSFnom = new BTagSFUtil(MeasType, BTagSFPath, "CSVv2", stringWP,  0);
+  fBTagSFbUp = new BTagSFUtil(MeasType, BTagSFPath, "CSVv2", stringWP,  1);
+  fBTagSFbDo = new BTagSFUtil(MeasType, BTagSFPath, "CSVv2", stringWP, -1);
+  fBTagSFlUp = new BTagSFUtil(MeasType, BTagSFPath, "CSVv2", stringWP,  3);
+  fBTagSFlDo = new BTagSFUtil(MeasType, BTagSFPath, "CSVv2", stringWP, -3);
 
   Leptons  = std::vector<Lepton>();
   selJets  = std::vector<Jet>();
@@ -108,7 +121,7 @@ void JetSelector::Initialise(){
 
 }
 
-void JetSelector::GetJetVariables(Int_t i, TString jec){
+void JetSelector::GetJetVariables(Int_t i, const TString& jec){
   tpJ.SetPxPyPzE(Get<Float_t>("Jet"+jec+"_px",i), Get<Float_t>("Jet"+jec+"_py",i), Get<Float_t>("Jet"+jec+"_pz", i), Get<Float_t>("Jet"+jec+"_energy",i));
   eta = tpJ.Eta();;
   pt = tpJ.Pt();
@@ -162,7 +175,7 @@ void JetSelector::GetGenJetVariables(Int_t i){
   pt =  Get<Float_t>("genJet_pt",i);
 }
 
-void JetSelector::GetmcJetVariables(Int_t i, TString jec){
+void JetSelector::GetmcJetVariables(Int_t i, const TString& jec){
   tpJ.SetPxPyPzE(Get<Float_t>("Jet"+jec+"_mcPx",i), Get<Float_t>("Jet"+jec+"_mcPy",i), Get<Float_t>("Jet"+jec+"_mcPz", i), Get<Float_t>("Jet"+jec+"_mcEnergy",i));
   eta = tpJ.Eta();
   pt =  Get<Float_t>("Jet"+jec+"_mcPt",i);

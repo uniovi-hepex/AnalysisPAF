@@ -213,12 +213,21 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
   }
 
 
-  // PAF mode
+  // PAF mode selection (based on number of slots)
   //----------------------------------------------------------------------------
   PAFIExecutionEnvironment* pafmode = 0;
-  if      (nSlots <=1 ) pafmode = new PAFSequentialEnvironment();
-  else if (nSlots <=64) pafmode = new PAFPROOFLiteEnvironment(nSlots);
-  else                  pafmode = new PAFPoDEnvironment(nSlots);
+  if      (nSlots <=1 ) {
+    PAF_INFO("RunAnalyser", "Sequential mode selected");
+    pafmode = new PAFSequentialEnvironment();
+  }
+  else if (nSlots <=8 ) {
+    PAF_INFO("RunAnalyser", "PROOF Lite mode selected");
+    pafmode = new PAFPROOFLiteEnvironment(nSlots);
+  }
+  else {
+    PAF_INFO("RunAnalyser", "PoD mode selected");
+    pafmode = new PAFPoDEnvironment(nSlots);
+  }
   PAFProject* myProject = new PAFProject(pafmode); // Create PAF Project whith that environment
 
   myProject->AddLibrary("/nfs/fanae/root6/lib/libTMVA.so");
