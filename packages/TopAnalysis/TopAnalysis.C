@@ -565,6 +565,8 @@ void TopAnalysis::SetTWVariables()
   fTree->Branch("TJetLoosept"     , &TJetLoosept    , "TJetLoosept/F"    ); // loose jet pt
   fTree->Branch("C_jll"           , &C_jll          , "C_jll/F"          );
   fTree->Branch("DilepJetPt"      , &DilepJetPt     , "DilepJetPt/F"     );
+  fTree->Branch("TJet1_pt"        , &TJet1_pt       , "TJet1_pt/F"       );
+  fTree->Branch("HTLepOverHT"     , &HTLepOverHT    , "HTLepOverHT/F"    );
 
   // for signal extraction
   fTree->Branch("TBDT"            , &TBDT           , "TBDT/F"           );
@@ -1204,11 +1206,11 @@ void TopAnalysis::setTWBDT()
   BDT->AddVariable( "DilepMETJetPt"                 , &DilepMETJetPt      );
   BDT->AddVariable( "THT"                           , &THT                );    
   BDT->AddVariable( "TJet1_pt"                      , &TJet1_pt           );
-  BDT->AddVariable( "TJet2pt"                       , &TJetLoosept        );
+  BDT->AddVariable( "TJetLoosept"                   , &TJetLoosept        );
   BDT->AddVariable( "DilepMETJetPt/THT"             , &DilepmetjetOverHT  );
   BDT->AddVariable( "MSys"                          , &MSys               );
   BDT->AddVariable( "C_jll"                         , &C_jll              ); 
-  BDT->AddVariable( "(TLep1_pt+TLep2_pt)/THT"       , &HTLepOverHT        );
+  BDT->AddVariable( "HTLepOverHT"                   , &HTLepOverHT        );
   BDT->AddVariable( "DilepJetPt"                    , &DilepJetPt         );       
 
   BDT->BookMVA("BDTG","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/dannys_bdt/weights/test_tw_00_AdaBoostDefault.weights.xml");
@@ -1220,11 +1222,11 @@ void TopAnalysis::setTWBDT()
   BDT_JESUp->AddVariable( "DilepMETJetPt"                 , &DilepMETJetPtJESUp      );
   BDT_JESUp->AddVariable( "THT"                           , &THTJESUp                );    
   BDT_JESUp->AddVariable( "TJet1_pt"                      , &TJet1_ptJESUp           );
-  BDT_JESUp->AddVariable( "TJet2pt"                       , &TJetLooseptJESUp        );
+  BDT_JESUp->AddVariable( "TJetLoosept"                   , &TJetLooseptJESUp        );
   BDT_JESUp->AddVariable( "DilepMETJetPt/THT"             , &DilepmetjetOverHTJESUp  );
   BDT_JESUp->AddVariable( "MSys"                          , &MSysJESUp               );
   BDT_JESUp->AddVariable( "C_jll"                         , &C_jllJESUp              ); 
-  BDT_JESUp->AddVariable( "(TLep1_pt+TLep2_pt)/THT"       , &HTLepOverHTJESUp        );
+  BDT_JESUp->AddVariable( "HTLepOverHT"                   , &HTLepOverHTJESUp        );
   BDT_JESUp->AddVariable( "DilepJetPt"                    , &DilepJetPtJESUp         );       
   BDT_JESUp->BookMVA("BDTG_JESUp","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/dannys_bdt/weights/test_tw_00_AdaBoostDefault.weights.xml");
 
@@ -1235,11 +1237,11 @@ void TopAnalysis::setTWBDT()
   BDT_JESDown->AddVariable( "DilepMETJetPt"                 , &DilepMETJetPtJESDown      );
   BDT_JESDown->AddVariable( "THT"                           , &THTJESDown                );    
   BDT_JESDown->AddVariable( "TJet1_pt"                      , &TJet1_ptJESDown           );
-  BDT_JESDown->AddVariable( "TJet2pt"                       , &TJetLooseptJESDown        );
+  BDT_JESDown->AddVariable( "TJetLoosept"                   , &TJetLooseptJESDown        );
   BDT_JESDown->AddVariable( "DilepMETJetPt/THT"             , &DilepmetjetOverHTJESDown  );
   BDT_JESDown->AddVariable( "MSys"                          , &MSysJESDown               );
   BDT_JESDown->AddVariable( "C_jll"                         , &C_jllJESDown              ); 
-  BDT_JESDown->AddVariable( "(TLep1_pt+TLep2_pt)/THT"       , &HTLepOverHTJESDown        );
+  BDT_JESDown->AddVariable( "HTLepOverHT"                   , &HTLepOverHTJESDown        );
   BDT_JESDown->AddVariable( "DilepJetPt"                    , &DilepJetPtJESDown         );       
   BDT_JESDown->BookMVA("BDTG_JESDown","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/dannys_bdt/weights/test_tw_00_AdaBoostDefault.weights.xml");
 
