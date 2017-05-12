@@ -29,7 +29,7 @@ const TString tagSel[nSel] = {"Stop",         "Top",     "TW",     "WW",     "tt
 
 void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_t nEvents, Long64_t FirstEvent, Float_t uxsec,	Int_t stopMass, Int_t lspMass) {
 
-	Int_t iChunck = Int_t(uxsec);
+	Int_t iChunk = Int_t(uxsec);
 	if(FirstEvent != 0) verbose = false;
   TString orig_sampleName = sampleName;
 
@@ -184,7 +184,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
     Int_t nChunks = TMath::Abs(nEvents);
     Int_t firstEvent = 0;
     cout << endl;
-    cout << Form("\033[0;97m >>> The sample is going to be divided in %i chuncks!! \033[0m\n\n", nChunks);
+    cout << Form("\033[0;97m >>> The sample is going to be divided in %i chunks!! \033[0m\n\n", nChunks);
     for(Int_t i = 0; i < nChunks; i++){
 			firstEvent = (nTrueEntries/nChunks)*i+1;
       nEvents = nTrueEntries/nChunks;
@@ -203,17 +203,26 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
   }
   else if(FirstEvent != 0){
     if(FirstEvent == 1) FirstEvent = 0;
-		cout << Form("\033[1;36m >>> Running chunck number %i, starting in event %lli... will loop over %lli events (last event = %lli)\n\n\033[0m", iChunck, FirstEvent, nEvents, FirstEvent + nEvents);
-    sampleName += Form("_%i", iChunck);
+		cout << Form("\033[1;36m >>> Running chunk number %i, starting in event %lli... will loop over %lli events (last event = %lli)\n\n\033[0m", iChunk, FirstEvent, nEvents, FirstEvent + nEvents);
+    sampleName += Form("_%i", iChunk);
   }
 
 
-  // PAF mode
+  // PAF mode selection (based on number of slots)
   //----------------------------------------------------------------------------
   PAFIExecutionEnvironment* pafmode = 0;
-  if      (nSlots <=1 ) pafmode = new PAFSequentialEnvironment();
-  else if (nSlots <=64) pafmode = new PAFPROOFLiteEnvironment(nSlots);
-  else                  pafmode = new PAFPoDEnvironment(nSlots);
+  if      (nSlots <=1 ) {
+    PAF_INFO("RunAnalyser", "Sequential mode selected");
+    pafmode = new PAFSequentialEnvironment();
+  }
+  else if (nSlots <=8 ) {
+    PAF_INFO("RunAnalyser", "PROOF Lite mode selected");
+    pafmode = new PAFPROOFLiteEnvironment(nSlots);
+  }
+  else {
+    PAF_INFO("RunAnalyser", "PoD mode selected");
+    pafmode = new PAFPoDEnvironment(nSlots);
+  }
   PAFProject* myProject = new PAFProject(pafmode); // Create PAF Project whith that environment
 
   myProject->AddLibrary("/nfs/fanae/root6/lib/libTMVA.so");

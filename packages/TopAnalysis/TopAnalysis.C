@@ -239,7 +239,7 @@ void TopAnalysis::InsideLoop(){
       if(TChannel == iElMu || ((TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15))){
         if(TChannel == iElMu || TMET > 40){   // MET > 40 in ee, µµ
           if (TNBtags > 0 || TNBtagsUp > 0 || TNBtagsDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0){
-            CalculateTWVariables();
+	    CalculateTWVariables();
             fTree->Fill();
           }
         }
@@ -824,7 +824,7 @@ void TopAnalysis::get20Jets()
 
 
 // 1j1b
-Double_t TopAnalysis::getDilepMETJetPt(TString sys)
+Double_t TopAnalysis::getDilepMETJetPt(const TString& sys)
 {
   TLorentzVector vSystem[4];
   vSystem[0] = selLeptons.at(0).p;                               // lep1
@@ -851,7 +851,7 @@ Double_t TopAnalysis::getDilepMETJetPt(TString sys)
 
 }
 
-Double_t TopAnalysis::getDilepJetPt(TString sys)
+Double_t TopAnalysis::getDilepJetPt(const TString& sys)
 {
   TLorentzVector vSystem[3];
   vSystem[0] = selLeptons[0].p;                               // lep1
@@ -873,7 +873,7 @@ Double_t TopAnalysis::getDilepJetPt(TString sys)
 }
 
 // 1j1b
-Double_t TopAnalysis::getLep1METJetPt(TString sys)
+Double_t TopAnalysis::getLep1METJetPt(const TString& sys)
 {
   TLorentzVector vSystem[3];
   vSystem[0] = selLeptons[0].p;
@@ -909,7 +909,7 @@ Double_t TopAnalysis::getPtSys(TLorentzVector* vSystem, int nSystem)
   return vSyst.Pt();
 }
 
-Double_t TopAnalysis::getDilepMETJet1Pz(TString sys)
+Double_t TopAnalysis::getDilepMETJet1Pz(const TString& sys)
 {
   TLorentzVector vSystem[4];
   vSystem[0] = selLeptons[0].p;                               // lep1
@@ -946,7 +946,7 @@ Double_t TopAnalysis::getPzSys(TLorentzVector* vSystem, int nSystem){
 
 
 // 1j1b
-Double_t TopAnalysis::getDPtDilep_JetMET(TString sys)
+Double_t TopAnalysis::getDPtDilep_JetMET(const TString& sys)
 {
   vector<TLorentzVector> col1;
   vector<TLorentzVector> col2;
@@ -976,7 +976,7 @@ Double_t TopAnalysis::getDPtDilep_JetMET(TString sys)
 }
 
 // 1j1b
-Double_t TopAnalysis::getDPtDilep_MET(TString sys)
+Double_t TopAnalysis::getDPtDilep_MET(const TString& sys)
 {
   vector<TLorentzVector> col1;
   vector<TLorentzVector> col2;
@@ -1002,7 +1002,7 @@ Double_t TopAnalysis::getDPtDilep_MET(TString sys)
 }
 
 // 1j1b
-Double_t TopAnalysis::getDPtLep1_MET(TString sys)
+Double_t TopAnalysis::getDPtLep1_MET(const TString& sys)
 {
   vector<TLorentzVector>  col1;
   vector<TLorentzVector>  col2;
@@ -1080,7 +1080,7 @@ Double_t TopAnalysis::getDeltaPt(vector<TLorentzVector> col1, vector<TLorentzVec
 //   return getM(col);
 // }
 
-Double_t TopAnalysis::getSysM(TString sys)
+Double_t TopAnalysis::getSysM(const TString& sys)
 {
   vector<TLorentzVector> col;
   TLorentzVector met;

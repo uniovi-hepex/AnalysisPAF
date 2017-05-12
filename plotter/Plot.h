@@ -70,8 +70,8 @@ public:
     limitFolder = DefaultLimitFolder; 
     Lumi = DefaultLumi;
     nSignalSamples = 0;
-  }
-  Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Double_t bin0 = 0, Double_t binN = 0, TString tit = "title", TString xtit = "VAR"){
+        }
+        Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Double_t bin0 = 0, Double_t binN = 0, TString tit = "title", TString xtit = "VAR"){
     var    = variable;
     cut    = (cuts);
     chan   = channel;
@@ -82,7 +82,7 @@ public:
     xtitle = xtit;
     varname = variable; if(variable.Contains(" ")) TString(variable(0,variable.First(" ")));
 
-    plotFolder = DefaultPlotfolder; 
+    plotFolder = DefaultPlotfolder;
     limitFolder = DefaultLimitFolder; 
     Lumi = DefaultLumi;
     VBkgs = std::vector<Histo*>();
