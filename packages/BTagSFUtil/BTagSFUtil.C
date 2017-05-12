@@ -9,13 +9,17 @@
 
 using namespace std;
 
-BTagSFUtil::BTagSFUtil(string MeasurementType, string BTagAlgorithm, TString OperatingPoint, int SystematicIndex, TString FastSimDataset) {
+BTagSFUtil::BTagSFUtil(const string& MeasurementType, 
+		       const TString& BTagSFPath, const string& BTagAlgorithm, 
+		       const TString& OperatingPoint, int SystematicIndex, TString FastSimDataset) {
 
   //rand_ = new TRandom3(Seed);
-
-  string CSVFileName = (string)gSystem->ExpandPathName("$PWD") + "/packages/BTagSFUtil/" + BTagAlgorithm + ".csv";
-  const BTagCalibration calib(BTagAlgorithm, CSVFileName);
-
+  TString CSVFileName = Form("%s/%s.csv", BTagSFPath.Data(), BTagAlgorithm.c_str());
+  //  string CSVFileName = (string) pathtocsv.Data() + BTagAlgorithm + ".csv";
+  cout << "PAF_INFO: [BTagSFUtil] BTag SF will be read from " << CSVFileName << endl;
+  
+  const BTagCalibration calib(BTagAlgorithm, (string) CSVFileName.Data());
+  
   SystematicFlagBC = "central";
   SystematicFlagL  = "central";
   if (abs(SystematicIndex)<10) {
@@ -91,8 +95,14 @@ float BTagSFUtil::FastSimCorrectionFactor(int JetFlavor, float JetPt, float JetE
 
   float CF = 1.;
  
-  if (JetPt<FastSimPtBinEdge[0]) { cout << "CF is not available for jet pt<" << FastSimPtBinEdge[0] << " GeV" << endl; return -1.; }
-  if (fabs(JetEta)>2.4) { cout << "CF is not available for jet |eta|>2.4" << endl; return -1.; }
+  if (JetPt<FastSimPtBinEdge[0]) { 
+    // cout << "CF is not available for jet pt<" << FastSimPtBinEdge[0] << " GeV" << endl; 
+    return -1.;
+  }
+  if (fabs(JetEta)>2.4) { 
+    // cout << "CF is not available for jet |eta|>2.4" << endl; 
+    return -1.;
+  }
 
   int JetFlavorFlag = 2;
   if (abs(JetFlavor)==4) JetFlavorFlag = 1;
@@ -132,8 +142,8 @@ float BTagSFUtil::GetJetSF(float JetDiscriminant, int JetFlavor, float JetPt, fl
 
   float Btag_SF;
 
-  if (JetPt < 20. && abs(JetEta) < 2.4 && JetDiscriminant > 0. && JetDiscriminant < 1.)  
-    cout << "WARNING: BTagSFUtil: Found jet with pT " << JetPt << " GeV, smaller than 20 GeV. From BTagRecommendation80XReReco: do NOT go lower than 20 GeV." << endl << "Please check your jet pT thresholds. BTagSF for 20 GeV with double uncertainty has been applied." << endl;
+  // if (JetPt < 20. && abs(JetEta) < 2.4 && JetDiscriminant > 0. && JetDiscriminant < 1.)  
+  //   cout << "WARNING: BTagSFUtil: Found jet with pT " << JetPt << " GeV, smaller than 20 GeV. From BTagRecommendation80XReReco: do NOT go lower than 20 GeV." << endl << "Please check your jet pT thresholds. BTagSF for 20 GeV with double uncertainty has been applied." << endl;
 
   if (abs(JetFlavor)==5) 
     Btag_SF = reader_b->eval_auto_bounds(SystematicFlagBC, BTagEntry::FLAV_B, JetEta, JetPt, JetDiscriminant);

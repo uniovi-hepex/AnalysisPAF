@@ -13,18 +13,37 @@ class Lepton : public TObject{
       isElec = 0; isMuon = 0; isTau = 0;
     };
     //Lepton(const Lepton &l): p(l.p), charge(l.charge), type(l.type), index(l.index){ };
-    Lepton(TLorentzVector vec, Int_t ch = 0, Int_t ty = -1){
-      p = vec;
-      charge = ch;
-      type = ty;
-
-      if(ty == 0){ isMuon = 1; isElec = 0; isTau = 0;}
-      if(ty == 1){ isMuon = 0; isElec = 1; isTau = 0;}
+ Lepton(TLorentzVector vec, 
+        Int_t ch = 0,
+        Int_t ty = -1,
+        Int_t tdecayMode   = -1,
+        Int_t tidDecayMode = -1, 
+        Int_t tidMVA       = -1, 
+        Int_t tidAntiE     = -1, 
+        Int_t tidAntiMu    = -1 ):
+      charge(ch),
+      type(ty),
+      decayMode   (tdecayMode  ),
+      idDecayMode (tidDecayMode), 
+      idMVA       (tidMVA      ), 
+      idAntiE     (tidAntiE    ), 
+      idAntiMu    (tidAntiMu   ) 
+      {
+        p = vec;
+        
+        
+        if(ty == 0){ isMuon = 1; isElec = 0; isTau = 0;}
+        if(ty == 1){ isMuon = 0; isElec = 1; isTau = 0;}
       if(ty == 2){ isMuon = 0; isElec = 0; isTau = 1;}
     }
     ~Lepton(){};
     TLorentzVector p;
     Int_t charge;
+    Int_t decayMode;
+    Int_t idDecayMode;
+    Int_t idMVA;
+    Int_t idAntiE;
+    Int_t idAntiMu;
     Int_t type;
     Bool_t isElec;
     Bool_t isMuon;

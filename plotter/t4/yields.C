@@ -23,17 +23,16 @@ TString btag1    = "TNJets >= 2 && TNBtags > 0";
 // Baseline
 
 TString pathToTree = "./tttt_temp/";
-void yields(){
+void yields(TString plotsFolder=""){
   Plot* p = new Plot("TChannel", dilepton, "All", 1, 0, 10, "Channel", "xsec");
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
   p->verbose = true;
+  p->SetPlotFolder(plotsFolder);
   //p->doData = false;
   //p->doStackSignal = true;
 
-  cout << "HEre" << endl;
   // Diboson
   p->AddSample("ZZ",        "VV non-WZ", itBkg, kYellow-10, 0.50);
-  cout << "HEre2" << endl;
   //p->AddSample("WW",     "VV non-WZ", itBkg);
   p->AddSample("WWTo2L2Nu", "VV non-WZ", itBkg);  
   p->AddSample("WpWpJJ",    "VV non-WZ", itBkg);
@@ -89,7 +88,8 @@ void yields(){
   p->AddSample("TTTT"   , "TTTT", itSignal, kRed, 0.10);
 
   p->AddSample("DoubleEG"  , "Data", itData);
-  //// p->AddSample("MuonEG"    , "Data", itData);
+  p->AddSample("DoubleMuon", "Data", itData);
+  p->AddSample("MuonEG"    , "Data", itData);
   //// p->AddSample("SingleMuon", "Data", itData);
   //// p->AddSample("SingleElec", "Data", itData);
 
@@ -108,10 +108,11 @@ void yields(){
 */
 
 
- // p->AddSystematic("JES");
+  p->AddSystematic("stat");
+  // p->AddSystematic("JES");
   //p->PrintYields(dilepton + ", " + jets2 + ", " + btag1, "Dilepton, 2jets, 1btag", "ElMu, ElMu, ElMu");
-  p->PrintYields();
-
+  p->PrintYields("", "", "", "html");
+  p->PrintYields(dilepton + ", " + jets2 + ", " + btag1, "Dilepton, 2jets, 1btag", "ElMu, ElMu, ElMu", "html");
   //CrossSection *x = new CrossSection(p, "ttbar");
   //x->SetTheoXsec(831.8);
   //x->SetChannelTag("ElMu");

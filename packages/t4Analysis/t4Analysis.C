@@ -6,7 +6,7 @@ t4Analysis::t4Analysis() : PAFChainItemSelector() {
 
   TrigSF = 0; TrigSF_Up = 0; TrigSF_Down = 0; PUSF = 0; PUSF_Up = 0; PUSF_Down = 0;
   gChannel = 0; passMETfilters = 0; passTrigger = 0; isSS = 0;  NormWeight = 0; TWeight = 0;
-  TMll = 0;  TMET = 0; TMET_Phi = 0; TNJets = 0; TNBtags = 0; THT = 0; 
+  TMll = 0;  TMET = 0; TMET_Phi = 0; TNTaus = 0; TNJets = 0; TNBtags = 0; THT = 0; 
   TNFakeableLeps = 0; TNSelLeps = 0; TChannel = 0; 
   TNJetsJESUp = 0; TNJetsJESDown = 0; TNJetsJER = 0; TNBtagsJESUp = 0; TNBtagsJESDown = 0;
   TNBtagsUp = 0; TNBtagsDown = 0; TNBtagsMisTagUp = 0; TNBtagsMisTagDown = 0;
@@ -24,11 +24,20 @@ t4Analysis::t4Analysis() : PAFChainItemSelector() {
     TJetJER_Pt[i] = 0;
   }
   for(Int_t i = 0; i < 10; i++){
-    TLep_Pt[i] = 0;
-    TLep_Eta[i] = 0;
-    TLep_Phi[i] = 0;
-    TLep_E[i] = 0;
-    TLep_Charge[i] = 0;
+    TTau_Pt         [i] = 0;
+    TTau_Eta        [i] = 0;
+    TTau_Charge     [i] = 0;
+    TTau_DecayMode  [i] = 0;
+    TTau_IdDecayMode[i] = 0;   
+    TTau_IdMVA      [i] = 0;   
+    TTau_IdAntiE    [i] = 0;   
+    TTau_IdAntiMu   [i] = 0;   
+
+    TLep_Pt       [i] = 0;
+    TLep_Eta      [i] = 0;
+    TLep_Phi      [i] = 0;
+    TLep_E        [i] = 0;
+    TLep_Charge   [i] = 0;
   }
   for(Int_t i = 0; i < 254; i++) TLHEWeight[i] = 0;
 }
@@ -46,10 +55,12 @@ void t4Analysis::Initialise(){
   gIsLHE = false;
   if(gSampleName.Contains("LHE")) gIsLHE = true;
 
+  SetTauVariables();
   SetLeptonVariables();
   SetJetVariables();
   SetEventVariables();
 
+  selTaus     = std::vector<Lepton>();
   selLeptons  = std::vector<Lepton>();
   vetoLeptons = std::vector<Lepton>();
   selJets = std::vector<Jet>();
@@ -59,19 +70,21 @@ void t4Analysis::Initialise(){
 
 void t4Analysis::InsideLoop(){
   // Vectors with the objects
+  selTaus.clear();
   selLeptons.clear(); vetoLeptons.clear();
   selJets.clear(); Jets15.clear();
 
-  selLeptons  = GetParam<vector<Lepton>>("selLeptons");
-  vetoLeptons = GetParam<vector<Lepton>>("vetoLeptons");
-  selJets     = GetParam<vector<Jet>>("selJets");
-  Jets15      = GetParam<vector<Jet>>("Jets15");
+  selTaus     = GetParam<vector<Lepton> >("selTaus"    );
+  selLeptons  = GetParam<vector<Lepton> >("selLeptons" );
+  vetoLeptons = GetParam<vector<Lepton> >("vetoLeptons");
+  selJets     = GetParam<vector<Jet>    >("selJets"    );
+  Jets15      = GetParam<vector<Jet>    >("Jets15"     );
 
   // Weights and SFs
   NormWeight = GetParam<Float_t>("NormWeight");
   TrigSF       = GetParam<Float_t>("TriggerSF");
-  TrigSF_Up    = GetParam<Float_t>("TriggerSF_Up");
-  TrigSF_Down  = GetParam<Float_t>("TriggerSF_Down");
+  //TrigSF_Up    = GetParam<Float_t>("TriggerSF_Up");
+  //TrigSF_Down  = GetParam<Float_t>("TriggerSF_Down");
   PUSF         = GetParam<Float_t>("PUSF");
   PUSF_Up      = GetParam<Float_t>("PUSF_Up");
   PUSF_Down    = GetParam<Float_t>("PUSF_Down");
@@ -83,12 +96,16 @@ void t4Analysis::InsideLoop(){
   isSS           = GetParam<Bool_t>("isSS");
 
   // Leptons and Jets
+  GetTauVariables(selTaus);
   GetLeptonVariables(selLeptons, vetoLeptons);
   GetJetVariables(selJets, Jets15);
   GetMET();
-
-
-  if( (TNSelLeps > 2 || TNFakeableLeps > 2) && passTrigger && passMETfilters){ // 2 leptons, OS
+  
+  bool tauFakesSelection(true);
+  Int_t nReqLeps (tauFakesSelection ? 1        :    2);
+  bool passJetReq(tauFakesSelection ? TNJets>0 : true);
+  
+  if( (TNSelLeps > nReqLeps || TNFakeableLeps > nReqLeps) && passJetReq && passTrigger && passMETfilters){
     // Deal with weights:
     Float_t lepSF   = 1;//selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
     Float_t lepSFUp = 1;//selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1);
@@ -115,6 +132,19 @@ void t4Analysis::InsideLoop(){
 //#####################################################################
 // Functions
 //------------------------------------------------------------------
+
+void t4Analysis::SetTauVariables(){
+  fTree->Branch("TNTaus"          , &TNTaus         , "TNTaus/I"                   );
+  fTree->Branch("TTau_Pt"         , TTau_Pt         , "TTau_Pt[TNTaus]/F"          );
+  fTree->Branch("TTau_Eta"        , TTau_Eta        , "TTau_Eta[TNTaus]/F"         );
+  fTree->Branch("TTau_Charge"     , TTau_Charge     , "TTau_Charge[TNTaus]/F"      );
+  fTree->Branch("TTau_DecayMode"  , TTau_DecayMode  , "TTau_DecayMode[TNTaus]/F"   );
+  fTree->Branch("TTau_IdDecayMode", TTau_IdDecayMode, "TTau_IdDecayMode[TNTaus]/F" );
+  fTree->Branch("TTau_IdMVA"      , TTau_IdMVA      , "TTau_IdMVA[TNTaus]/F"       );
+  fTree->Branch("TTau_IdAntiE"    , TTau_IdAntiE    , "TTau_IdAntiE[TNTaus]/F"     );
+  fTree->Branch("TTau_IdAntiMu"   , TTau_IdAntiMu   , "TTau_IdAntiMu[TNTaus]/F"    );
+}
+
 
 void t4Analysis::SetLeptonVariables(){
   fTree->Branch("TNFakeableLeps",     &TNFakeableLeps,     "TNFakeableLeps/I");
@@ -171,6 +201,39 @@ void t4Analysis::SetEventVariables(){
   fTree->Branch("TLHEWeight",        TLHEWeight,         "TLHEWeight[254]/F");
   fTree->Branch("TMETJESUp",    &TMETJESUp,    "TMETJESUp/F");
   fTree->Branch("TMETJESDown",  &TMETJESDown,  "TMETJESDown/F");
+}
+
+void t4Analysis::GetTauVariables(std::vector<Lepton> selTaus)
+{
+  TNTaus = selTaus.size();
+  
+  for(Int_t i=0; i<10; ++i)
+    {
+      if(i<TNTaus)
+        {
+          TTau_Pt         [i] = selTaus.at(i).Pt();
+          TTau_Eta        [i] = selTaus.at(i).Eta();
+          TTau_Charge     [i] = selTaus.at(i).charge;
+          TTau_DecayMode  [i] = selTaus.at(i).decayMode;  
+          TTau_IdDecayMode[i] = selTaus.at(i).idDecayMode;
+          TTau_IdMVA      [i] = selTaus.at(i).idMVA;      
+          TTau_IdAntiE    [i] = selTaus.at(i).idAntiE;    
+          TTau_IdAntiMu   [i] = selTaus.at(i).idAntiMu;   
+
+        }
+      else
+        {
+          TTau_Pt         [i] = 0;
+          TTau_Eta        [i] = 0;
+          TTau_Charge     [i] = 0;
+          TTau_DecayMode  [i] = 0;
+          TTau_IdDecayMode[i] = 0;
+          TTau_IdMVA      [i] = 0;
+          TTau_IdAntiE    [i] = 0;
+          TTau_IdAntiMu   [i] = 0;
+        }
+    }
+
 }
 
 void t4Analysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> VetoLeptons){
@@ -255,8 +318,8 @@ void t4Analysis::GetMET(){
   TMET        = Get<Float_t>("met_pt");
   TMET_Phi    = Get<Float_t>("met_phi");  // MET phi
   if(gIsData) return;
-  TMETJESUp   = GetParam<Float_t>("MET_JESUp");
-  TMETJESDown = GetParam<Float_t>("MET_JESDown");
+  //TMETJESUp   = GetParam<Float_t>("MET_JESUp");
+  //TMETJESDown = GetParam<Float_t>("MET_JESDown");
   if(gIsLHE) for(Int_t i = 0; i < Get<Int_t>("nLHEweight"); i++)   TLHEWeight[i] = Get<Float_t>("LHEweight_wgt", i);
 }
 

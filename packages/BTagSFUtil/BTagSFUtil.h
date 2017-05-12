@@ -11,7 +11,9 @@ class BTagSFUtil{
 
  public:
     
-  BTagSFUtil(string MeasurementType, string BTagAlgorithm, TString OperatingPoint, int SystematicIndex = 0, TString FastSimDataset = "");
+  BTagSFUtil(const string& MeasurementType, 
+	     const TString& BTagSFPath, const string& BTagAlgorithm, 
+	     const TString& OperatingPoint, int SystematicIndex = 0, TString FastSimDataset = "");
   ~BTagSFUtil();
 
   float GetJetSF(float JetDiscriminant, int JetFlavor, float JetPt, float JetEta);
