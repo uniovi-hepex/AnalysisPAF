@@ -5,6 +5,4 @@ R__LOAD_LIBRARY(Plot.C+)
 
 #include <iostream>
 
-void CreateLibraries() {
-  return
-}
+void CreateLibraries() {}
