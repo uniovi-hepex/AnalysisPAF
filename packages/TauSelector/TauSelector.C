@@ -44,9 +44,11 @@ void TauSelector::Initialise() {
 // =============================================================== SELECTED TAUS
 Bool_t TauSelector::isGoodTau(Lepton tau){
 
-  if(gSelection == i4tSelec) looseLeptons  = GetParam<std::vector<Lepton>>("selLeptons"  );
-  else                       looseLeptons  = GetParam<std::vector<Lepton>>("looseLeptons");
+  //if(gSelection == i4tSelec) looseLeptons  = GetParam<std::vector<Lepton>>("selLeptons"  );
+  //else                       looseLeptons  = GetParam<std::vector<Lepton>>("looseLeptons");
+  looseLeptons  = GetParam<std::vector<Lepton>>("looseLeptons");
   
+
   if (gSelection == ittHSelec) {
     //      Selection of taus for multilepton ttH analysis:
     // idDecayMode = 1, pt > 20, abs(eta) < 2.3, medium wp in idMVA, no one can
