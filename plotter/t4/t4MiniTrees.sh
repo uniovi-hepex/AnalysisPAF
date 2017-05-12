@@ -2,9 +2,6 @@
 # FAKES
 # ====================
 
-# Double-# (##) commented samples corresponden a muestras no disponibles
-<<<<<<< HEAD
-
 # DY, WJets
 root -l -b -q 'RunAnalyserPAF.C("WJetsToLNu_MLM & WJetsToLNu_MLM_ext2"            , "4t",  8)'
 root -l -b -q 'RunAnalyserPAF.C("DYJetsToLL_M5to50_MLM"                           , "4t", 30, -4)'
