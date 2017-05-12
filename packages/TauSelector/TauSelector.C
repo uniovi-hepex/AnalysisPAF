@@ -94,7 +94,7 @@ Bool_t TauSelector::isGoodTau(Lepton tau){
       // <<  idAntiMu    << " "
       //      << endl;
 
-      cout << (idMVA) << endl;
+      //cout << (idMVA) << endl;
       
 
       for (Int_t i = 0; i < looseLeptons.size(); i++) {
@@ -152,7 +152,7 @@ Bool_t TauSelector::isGoodTau(Lepton tau){
 //        }
       
       if (!passDecayMode || !passPt || !passEta || !passID || !passOverlap || !passAntiE || !passAntiMu) return false;
-      cout << "I will return true" << endl;
+      //      cout << "I will return true" << endl;
       return true;
     }
   else {
