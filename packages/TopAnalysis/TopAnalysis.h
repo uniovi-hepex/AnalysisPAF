@@ -173,6 +173,9 @@ class TopAnalysis : public PAFChainItemSelector{
     Float_t  C_jll          , C_jllJESUp          , C_jllJESDown          ;
     Float_t  DilepJetPt     , DilepJetPtJESUp     , DilepJetPtJESDown     ;
     Float_t  TBDT           , TBDTJESUp           , TBDTJESDown           ;
+    /* Float_t  TBDTBTagUp     , TBDTBTagDown; */
+    /* Float_t  TBDTMistagUp   , TBDTBMistagDown; */
+
     Float_t  nBTotal          , nBTotalJESUp          , nBTotalJESDown          ; 
     Float_t  DilepmetjetOverHT, DilepmetjetOverHTJESUp, DilepmetjetOverHTJESDown; 
     Float_t  HTLepOverHT      , HTLepOverHTJESUp      , HTLepOverHTJESDown      ; 
