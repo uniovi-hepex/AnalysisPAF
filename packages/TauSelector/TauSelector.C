@@ -83,20 +83,9 @@ Bool_t TauSelector::isGoodTau(Lepton tau){
       Bool_t passEta       (abs(eta) < 2.3  );
       Bool_t passID        (idMVA >= 2      );
       Bool_t passAntiE     (idAntiE >= 4    );
-      Bool_t passAntiMu    (idAntiMu >= 4   );
+      Bool_t passAntiMu    (idAntiMu > 1    );
       Bool_t passOverlap   (true            );
       
-      //cout <<  (idDecayMode == 1) << " " 
-      // <<  pt         << " "
-      // <<  abs(eta)  << " "
-      // <<  idMVA      << " "
-      // <<  idAntiE     << " "
-      // <<  idAntiMu    << " "
-      //      << endl;
-
-      //cout << (idMVA) << endl;
-      
-
       for (Int_t i = 0; i < looseLeptons.size(); i++) {
         if (tau.p.DeltaR(looseLeptons[i].p) < 0.4)
           {
@@ -104,55 +93,7 @@ Bool_t TauSelector::isGoodTau(Lepton tau){
           }
       }
       
-
-      //if(!passDecayMode ) cout << "passDecayMode is true, "<< endl;
-      //if(!passPt        ) cout << "passPt        is true, "<< endl;
-      //if(!passEta       ) cout << "passEta       is true, "<< endl;
-      //if(!passID        ) cout << "passID        is true, "<< endl;
-      //if(!passOverlap   ) cout << "passOverlap   is true, "<< endl;
-      //if(!passAntiE     ) cout << "passAntiE     is true, "<< endl;
-      //if(!passAntiMu    ) cout << "passAntiMu    is true, "<< endl;
-   
-      //cout << passDecayMode << " "
-      //     << passPt        << " " 
-      //     << passEta       << " " 
-      //     << passID        << " " 
-      //     << passOverlap   << " " 
-      //     << passAntiE     << " " 
-      //     << passAntiMu    << " " << endl;
-   
-//      cout << "==========================================" << endl;
-//      if (passDecayMode)
-//        {
-//          cout << "Pass 1 " << endl;
-//          if(passPt)
-//            {
-//              cout << "Pass 2 " << endl;
-//              if(passEta)
-//                {
-//                  cout << "Pass 3 " << endl;
-//                  if(passID)
-//                    {
-//                      cout << "Pass 4 " << endl;
-//                      if(passOverlap)
-//                        {
-//                          cout << "Pass 5 " << endl;
-//                          if(passAntiE)
-//                            {
-//                              cout << "Pass 6 " << endl;
-//                              if(passAntiMu)
-//                                {
-//                                  cout << "Pass 7 " << endl;
-//                              }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-      
       if (!passDecayMode || !passPt || !passEta || !passID || !passOverlap || !passAntiE || !passAntiMu) return false;
-      //      cout << "I will return true" << endl;
       return true;
     }
   else {
@@ -237,9 +178,6 @@ void TauSelector::GetTauVariables(Int_t i) { // Once per tau, get all the info
   idAntiE     = Get<Int_t>("TauGood_idAntiE"    ,i);
   idAntiMu    = Get<Int_t>("TauGood_idAntiMu"   ,i);
 
-  //if(idDecayMode!=0) cout << "DECMODE " << idDecayMode << endl;
-  //if(idMVA!=0)       cout << "MVA: " << Get<Int_t>("TauGood_idMVA"      ,i)  << endl;
-  
   SetParam("charge"     , charge     );
   SetParam("decayMode"  , decayMode  );
   SetParam("idDecayMode", idDecayMode);
