@@ -701,22 +701,22 @@ void TopAnalysis::CalculateTWVariables()
     HTLepOverHTJESDown       = -99.;
     MSysJESDown              = -99.;
   }
-  if (TNJets == 1 && TNBtags == 1 && TNJetsJESUp == 1 && TNBtagsJESUp == 1 && TNJetsJESDown == 1 && TNBtagsJESDown == 1){
-    cout << "######################################################################################" << endl;
-    cout << nLooseCentral       << " " << nLooseCentralJESUp       << " " << nLooseCentralJESDown     << endl;
-    cout << nLooseFwd           << " " << nLooseFwdJESUp           << " " << nLooseFwdJESDown         << endl;
-    cout << nBTotal             << " " << nBTotalJESUp             << " " << nBTotalJESDown           << endl;
-    cout << DilepMETJetPt       << " " << DilepMETJetPtJESUp       << " " << DilepMETJetPtJESDown     << endl;
-    cout << THT                 << " " << THTJESUp                 << " " << THTJESDown               << endl;
-    cout << TJet1_pt            << " " << TJet1_ptJESUp            << " " << TJet1_ptJESDown          << endl;
-    cout << TJetLoosept         << " " << TJetLooseptJESUp         << " " << TJetLooseptJESDown       << endl;
-    cout << DilepmetjetOverHT   << " " << DilepmetjetOverHTJESUp   << " " << DilepmetjetOverHTJESDown << endl;
-    cout << MSys                << " " << MSysJESUp                << " " << MSysJESDown              << endl;
-    cout << C_jll               << " " << C_jllJESUp               << " " << C_jllJESDown             << endl;
-    cout << HTLepOverHT         << " " << HTLepOverHTJESUp         << " " << HTLepOverHTJESDown       << endl;
-    cout << DilepJetPt          << " " << DilepJetPtJESUp          << " " << DilepJetPtJESDown        << endl;
-    cout << "######################################################################################" << endl;
-  }
+  // if (TNJets == 1 && TNBtags == 1 && TNJetsJESUp == 1 && TNBtagsJESUp == 1 && TNJetsJESDown == 1 && TNBtagsJESDown == 1){
+  //   cout << "######################################################################################" << endl;
+  //   cout << nLooseCentral       << " " << nLooseCentralJESUp       << " " << nLooseCentralJESDown     << endl;
+  //   cout << nLooseFwd           << " " << nLooseFwdJESUp           << " " << nLooseFwdJESDown         << endl;
+  //   cout << nBTotal             << " " << nBTotalJESUp             << " " << nBTotalJESDown           << endl;
+  //   cout << DilepMETJetPt       << " " << DilepMETJetPtJESUp       << " " << DilepMETJetPtJESDown     << endl;
+  //   cout << THT                 << " " << THTJESUp                 << " " << THTJESDown               << endl;
+  //   cout << TJet1_pt            << " " << TJet1_ptJESUp            << " " << TJet1_ptJESDown          << endl;
+  //   cout << TJetLoosept         << " " << TJetLooseptJESUp         << " " << TJetLooseptJESDown       << endl;
+  //   cout << DilepmetjetOverHT   << " " << DilepmetjetOverHTJESUp   << " " << DilepmetjetOverHTJESDown << endl;
+  //   cout << MSys                << " " << MSysJESUp                << " " << MSysJESDown              << endl;
+  //   cout << C_jll               << " " << C_jllJESUp               << " " << C_jllJESDown             << endl;
+  //   cout << HTLepOverHT         << " " << HTLepOverHTJESUp         << " " << HTLepOverHTJESDown       << endl;
+  //   cout << DilepJetPt          << " " << DilepJetPtJESUp          << " " << DilepJetPtJESDown        << endl;
+  //   cout << "######################################################################################" << endl;
+  // }
   if (TNJets == 1 && TNBtags == 1)
     TBDT = BDT->EvaluateMVA("BDTG");
   else

@@ -83,7 +83,7 @@ float BTagSFUtil::TagEfficiencyB(float JetPt, float JetEta) {
     }
   }
 
-  cout << "BTagSFUtil: Jet pt (" << JetPt << ") or jet eta (" << JetEta << ") out of range!" << endl;
+  // cout << "BTagSFUtil: Jet pt (" << JetPt << ") or jet eta (" << JetEta << ") out of range!" << endl;
 
   if (TaggerOP=="CSVv2M") return 0.65;
 
@@ -174,7 +174,7 @@ float BTagSFUtil::TagEfficiencyC(float JetPt, float JetEta) {
     }  
   }
   
-  cout << "BTagSFUtil: Jet pt (" << JetPt << ") or jet eta (" << JetEta << ") out of range!" << endl;
+  // cout << "BTagSFUtil: Jet pt (" << JetPt << ") or jet eta (" << JetEta << ") out of range!" << endl;
 
   if (TaggerOP=="CSVv2M") return 0.16;
 
@@ -265,7 +265,7 @@ float BTagSFUtil::TagEfficiencyLight(float JetPt, float JetEta) {
     }
   }
   
-  cout << "BTagSFUtil: Jet pt (" << JetPt << ") or jet eta (" << JetEta << ") out of range!" << endl;
+  // cout << "BTagSFUtil: Jet pt (" << JetPt << ") or jet eta (" << JetEta << ") out of range!" << endl;
 
   if (TaggerOP=="CSVv2M") return 0.02;
 
