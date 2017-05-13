@@ -2,7 +2,7 @@
 //gSystem->loadMacro("mt2.C");
 
 //TString path = "/pool/ciencias/HeppyTreesDR80X/v2/";
-TString path = "/pool/ciencias/HeppyTreesSummer16/v2/";
+TString path = "/pool/ciencias/HeppyTreesSummer16/v2/jet25/";
 TString outputpath = "./";
 TString namettbar = "TTJets_MLM_0";
 TString namettbar2 = "TTbar_Powheg_ext_0";
@@ -21,12 +21,22 @@ float getMT2ll();
 TTree* fChain;
 TFile* file;
 TFile* outputfile;
-const int nprocess = 8;
 //const TString process[nprocess]     = {"ttbar_Powheg", "ttbar_MLM", "ttbar_MLM_fastSim", "stop_175_1", "stop_250_75"};
 //const TString processfile[nprocess] = {"TTbar_Powheg_ext_0", "TTJets_MLM_0", "TTJets_MLM_FastSim_0", "T2tt_150to250_0", "T2tt_150to250_0"};
-const TString process[nprocess]     = {"ttbar_Powheg", "S_217_50", "S_233_50", "S_275_50", "SFS_200_50","SFS_225_50", "SFS_250_50", "ttbar_MLM"};
-const TString processfile[nprocess] = {"TTbar_Powheg_0", "T2tt_150to250_0", "T2tt_150to250_0", "T2tt_250to350_0", "T2tt_200_50_FS_summer_0", "T2tt_225_50_FS_summer_0", "T2tt_250_50_FS_summer_0", "TTJets_MLM_0"};
 
+const int nprocess = 15;
+const TString process[nprocess]     = {"ttbar_Powheg", "S_217_50", "S_233_50", "S_275_50", "S_200_50","S_225_50", "S_250_50", "SFS_200_50","SFS_225_50", "SFS_250_50", "SFStt_200_50","SFStt_225_50", "SFStt_250_50", "ttbar_MLM", "ttbar_MLM_FastSim"};
+const TString processfile[nprocess] = {"TTbar_Powheg_0", "T2tt_150to250_0", "T2tt_150to250_0", "T2tt_250to350_0", "T2tt_150to250_0", "T2tt_150to250_0", "T2tt_150to250_0", "T2tt_200_50_FS_summer_0", "T2tt_225_50_FS_summer_0", "T2tt_250_50_FS_summer_0", "T2tt_200_50_FS_xqcut20_0", "T2tt_225_50_FS_xqcut20_0", "T2tt_250_50_FS_xqcut20_0", "TTJets_MLM_0", "TTJets_MLM_FastSim_0"};
+
+//const TString process[nprocess]     = {"ttbar_Powheg", "S_217_50", "S_233_50", "S_275_50", "S_200_50","S_225_50", "S_250_50", "SFS_200_50","SFS_225_50", "SFS_250_50", "SFStt_200_50","SFStt_225_50", "SFStt_250_50", "ttbar_MLM"};
+//const TString processfile[nprocess] = {"TTbar_Powheg_0", "T2tt_150to250_0", "T2tt_150to250_0", "T2tt_250to350_0", "T2tt_150to250_0", "T2tt_150to250_0", "T2tt_150to250_0", "T2tt_200_50_FS_summer_0", "T2tt_225_50_FS_summer_0", "T2tt_250_50_FS_summer_0", "T2tt_200_50_FS_xqcut20_0", "T2tt_225_50_FS_xqcut20_0", "T2tt_250_50_FS_xqcut20_0", "TTJets_MLM_0"};
+
+//
+// S_mass_mass     --> Scan FastSim
+// SFS_mass_mass   --> Full Sim con FastSim-like configuration
+// SFStt_mass_mass --> Full Sim con ttbar-like configuration
+//
+//
 
 TH1F* njets[nprocess];
 TH1F* nbjets[nprocess];
@@ -50,7 +60,9 @@ TH1F* dphilepjet[nprocess];
 TH1F* dphilepmet[nprocess];
 TH1F* dphijetmet[nprocess];
 
+Int_t           nTrueGenLep;
 // ---------------------------------------------------------------------------------------------
+Int_t           nLepGood;
 Int_t           ngenLep;
 Int_t           genLep_motherId[10];   //[ngenLep]
 Int_t           genLep_grandmotherId[10];   //[ngenLep]
@@ -111,6 +123,7 @@ TBranch        *b_Jet_phi;   //!
 TBranch        *b_Jet_mass;   //!
 TBranch        *b_Jet_mcFlavour;   //!
 TBranch        *b_ngenLep;   //!
+TBranch        *b_nLepGood;   //!
 TBranch        *b_genLep_motherId;   //!
 TBranch        *b_genLep_grandmotherId;   //!
 TBranch        *b_genLep_sourceId;   //!
@@ -185,6 +198,7 @@ void SBA(){
 	fChain->SetBranchAddress("Jet_phi", Jet_phi, &b_Jet_phi);
 	fChain->SetBranchAddress("Jet_mass", Jet_mass, &b_Jet_mass);
 	fChain->SetBranchAddress("Jet_mcFlavour", Jet_mcFlavour, &b_Jet_mcFlavour);
+	fChain->SetBranchAddress("nLepGood", &nLepGood, &b_nLepGood);
 	fChain->SetBranchAddress("ngenLep", &ngenLep, &b_ngenLep);
 	fChain->SetBranchAddress("genLep_motherId", genLep_motherId, &b_genLep_motherId);
 	fChain->SetBranchAddress("genLep_grandmotherId", genLep_grandmotherId, &b_genLep_grandmotherId);
@@ -233,22 +247,29 @@ void loop(Int_t iprocess = 0){
     if(iprocess == 1 && (GenSusyMStop != 217 || GenSusyMNeutralino !=  50)) continue;
     if(iprocess == 2 && (GenSusyMStop != 233 || GenSusyMNeutralino !=  50)) continue;
     if(iprocess == 3 && (GenSusyMStop != 275 || GenSusyMNeutralino !=  50)) continue;
+    if(iprocess == 4 && (GenSusyMStop != 200 || GenSusyMNeutralino !=  50)) continue;
+    if(iprocess == 5 && (GenSusyMStop != 225 || GenSusyMNeutralino !=  50)) continue;
+    if(iprocess == 6 && (GenSusyMStop != 250 || GenSusyMNeutralino !=  50)) continue;
 
+		if(nLepGood < 2) continue;
 		if(ngenLep < 2) continue;
 		if(nJet < 2)    continue;
 		lep0 = TLorentzVector(0,0,0,0);  lep1 = TLorentzVector(0,0,0,0);
 		jet0 = TLorentzVector(0,0,0,0);  jet1 = TLorentzVector(0,0,0,0);
     mett = TLorentzVector(0,0,0,0);
     nJets = 0; nBJets = 0; ht_ = 0; meff_ = 0;
+    nTrueGenLep = 0;
 
 		for(int i = 0; i < ngenLep; i++){
 			if(abs(genLep_motherId[i]) != 24 || abs(genLep_grandmotherId[i]) != 6) continue; 
 			else{
+        nTrueGenLep++;
 				if(lep0.Pt() == 0) lep0.SetPtEtaPhiM(genLep_pt[i], genLep_eta[i], genLep_phi[i], genLep_mass[i]);
 				else if(lep1.Pt() == 0) lep1.SetPtEtaPhiM(genLep_pt[i], genLep_eta[i], genLep_phi[i], genLep_mass[i]);
 				else continue;
 			}
 		}
+    if(nTrueGenLep < 2) continue;
     if(lep0.Pt() == 0 || lep1.Pt() == 0) continue;
 
     for(int i = 0; i < nJet; i++){
