@@ -14,7 +14,7 @@ class JetSelector : public PAFChainItemSelector{
   public:
     TString stringWP;
     JetSelector();
-    virtual ~JetSelector() {delete fBTagSFnom, fBTagSFbUp, fBTagSFbDo, fBTagSFlUp, fBTagSFlDo;}
+    virtual ~JetSelector();
     virtual void InsideLoop();
     void Initialise();
     void Summary();
@@ -75,10 +75,10 @@ class JetSelector : public PAFChainItemSelector{
     Int_t ngenJet;
 
     void GetDiscJetVariables(Int_t i);
-    void GetJetVariables(Int_t i, TString jec = "");
+    void GetJetVariables(Int_t i, const TString& jec = "");
     void GetJetFwdVariables(Int_t i);
     void GetGenJetVariables(Int_t i);
-    void GetmcJetVariables(Int_t i, TString jec = "");
+    void GetmcJetVariables(Int_t i, const TString& jec = "");
     Bool_t IsBtag(Jet j); 
     void SetSystematics(Jet *j);
     Bool_t Cleaning(Jet j, vector<Lepton> vLep, Float_t minDR = 0.4);

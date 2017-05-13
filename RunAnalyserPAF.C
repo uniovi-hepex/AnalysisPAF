@@ -166,36 +166,41 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 		if(G_IsMCatNLO) cout << Form("\033[1;34m #### Sum of weights   = %g \033[0m\n", SumOfWeights);
 		cout << "\033[1;30m=================================================\033[0m\n";
 	}
-
-  // ------->>>>> Termporary solution:
-  //if(sampleName.Contains("PowhegLHE")) CountLHE = GetCountLHE(Files, arr);
-
-
+        
+        // ------->>>>> Termporary solution:
+        //if(sampleName.Contains("PowhegLHE")) CountLHE = GetCountLHE(Files, arr);
+        
+        
 	// Output dir and tree name
 	//----------------------------------------------------------------------------
-	TString outputDir = "./" + tagSel[sel] + "_temp";
+	
+        TString username(gSystem->GetUserInfo(gSystem->GetUid())->fUser);
+        TString outPrefix("./");
+        if(username=="vischia") outPrefix="/pool/cienciasrw/userstorage/pietro/tttt/2l_skim/";
+        // Insert here your conditional. Si no, por defecto es ./
+        TString outputDir = outPrefix + tagSel[sel] + "_temp";
 	if(sampleName.BeginsWith("T2tt")) outputDir += "/T2tt/";
 	gSystem->mkdir(outputDir, kTRUE);
 	if(sampleName.Contains("_ext2")) sampleName.ReplaceAll("_ext2",""); 
 	if(sampleName.Contains("_ext"))  sampleName.ReplaceAll("_ext",""); 
-
+        
 	//if     (nEvents > 0 && FirstEvent == 0) myProject->SetNEvents(nEvents);
-  if(nEvents < 0 && FirstEvent == 0){ // Divide the sample
-    Int_t nChunks = TMath::Abs(nEvents);
-    Int_t firstEvent = 0;
-    cout << endl;
-    cout << Form("\033[0;97m >>> The sample is going to be divided in %i chunks!! \033[0m\n\n", nChunks);
-    for(Int_t i = 0; i < nChunks; i++){
-			firstEvent = (nTrueEntries/nChunks)*i+1;
-      nEvents = nTrueEntries/nChunks;
-			if(i == nChunks - 1) nEvents = nTrueEntries-firstEvent;
-			RunAnalyserPAF(orig_sampleName, Selection, nSlots, nEvents, firstEvent, i, stopMass , lspMass);
-      //gSystem->Exec("resetpaf -a");
-      //gSystem->Exec("resetpaf -a");
+        if(nEvents < 0 && FirstEvent == 0){ // Divide the sample
+          Int_t nChunks = TMath::Abs(nEvents);
+          Int_t firstEvent = 0;
+          cout << endl;
+          cout << Form("\033[0;97m >>> The sample is going to be divided in %i chunks!! \033[0m\n\n", nChunks);
+          for(Int_t i = 0; i < nChunks; i++){
+            firstEvent = (nTrueEntries/nChunks)*i+1;
+            nEvents = nTrueEntries/nChunks;
+            if(i == nChunks - 1) nEvents = nTrueEntries-firstEvent;
+            RunAnalyserPAF(orig_sampleName, Selection, nSlots, nEvents, firstEvent, i, stopMass , lspMass);
+            //gSystem->Exec("resetpaf -a");
+            //gSystem->Exec("resetpaf -a");
     }
-    cout << "\033[1;31m >>> Merging trees... \n\033[0m";
-    TString haddCommand = "hadd " + outputDir + "/Tree_" + sampleName + ".root " + outputDir + "/Tree_" + sampleName + "_*.root";
-    gSystem->Exec(haddCommand);
+          cout << "\033[1;31m >>> Merging trees... \n\033[0m";
+          TString haddCommand = "hadd " + outputDir + "/Tree_" + sampleName + ".root " + outputDir + "/Tree_" + sampleName + "_*.root";
+          gSystem->Exec(haddCommand);
     cout << "\033[1;37m================================================\n\033[0m";
     cout << "\033[1;37m >>>>> >>>> >>> >> > Finito! < << <<< <<<< <<<<<\n\033[0m";
     cout << "\033[1;37m================================================\n\033[0m";
@@ -208,12 +213,21 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
   }
 
 
-  // PAF mode
+  // PAF mode selection (based on number of slots)
   //----------------------------------------------------------------------------
   PAFIExecutionEnvironment* pafmode = 0;
-  if      (nSlots <=1 ) pafmode = new PAFSequentialEnvironment();
-  else if (nSlots <=64) pafmode = new PAFPROOFLiteEnvironment(nSlots);
-  else                  pafmode = new PAFPoDEnvironment(nSlots);
+  if      (nSlots <=1 ) {
+    PAF_INFO("RunAnalyser", "Sequential mode selected");
+    pafmode = new PAFSequentialEnvironment();
+  }
+  else if (nSlots <=8 ) {
+    PAF_INFO("RunAnalyser", "PROOF Lite mode selected");
+    pafmode = new PAFPROOFLiteEnvironment(nSlots);
+  }
+  else {
+    PAF_INFO("RunAnalyser", "PoD mode selected");
+    pafmode = new PAFPoDEnvironment(nSlots);
+  }
   PAFProject* myProject = new PAFProject(pafmode); // Create PAF Project whith that environment
 
   myProject->AddLibrary("/nfs/fanae/root6/lib/libTMVA.so");
@@ -253,7 +267,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	// Name of analysis class
 	//----------------------------------------------------------------------------
 	myProject->AddSelectorPackage("LeptonSelector");
-	if 	(sel == ittHSelec ) myProject->AddSelectorPackage("TauSelector");
+	if(sel == ittHSelec || sel == i4tSelec) myProject->AddSelectorPackage("TauSelector");
 	myProject->AddSelectorPackage("JetSelector");
 	myProject->AddSelectorPackage("EventBuilder");
 	if      (sel == iStopSelec)  myProject->AddSelectorPackage("StopAnalysis");
@@ -277,7 +291,6 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	myProject->AddPackage("LeptonSF");
 	myProject->AddPackage("BTagSFUtil");
 	myProject->AddPackage("PUWeight");
-
 	// Let's rock!
 	//----------------------------------------------------------------------------
 	myProject->Run();

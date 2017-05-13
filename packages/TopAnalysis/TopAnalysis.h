@@ -72,17 +72,17 @@ class TopAnalysis : public PAFChainItemSelector{
     void get20Jets();
     void ReSetTWVariables();
     void SetTWVariables();
-    Double_t getDilepMETJetPt(TString sys = "Norm");
-    Double_t getDilepJetPt(TString sys = "Norm");
-    Double_t getLep1METJetPt(TString sys = "Norm");
+    Double_t getDilepMETJetPt(const TString& sys = "Norm");
+    Double_t getDilepJetPt(const TString& sys = "Norm");
+    Double_t getLep1METJetPt(const TString& sys = "Norm");
     Double_t getPtSys(TLorentzVector*, int);
-    Double_t getDilepMETJet1Pz(TString sys = "Norm");
+    Double_t getDilepMETJet1Pz(const TString& sys = "Norm");
     Double_t getPzSys(TLorentzVector*, int);
-    Double_t getDPtDilep_JetMET(TString sys = "Norm");
-    Double_t getDPtDilep_MET(TString sys = "Norm");
-    Double_t getDPtLep1_MET(TString sys = "Norm");
+    Double_t getDPtDilep_JetMET(const TString& sys = "Norm");
+    Double_t getDPtDilep_MET(const TString& sys = "Norm");
+    Double_t getDPtLep1_MET(const TString& sys = "Norm");
     Double_t getDeltaPt(vector<TLorentzVector>, vector<TLorentzVector>);
-    Double_t getSysM(TString sys = "Norm");
+    Double_t getSysM(const TString& sys = "Norm");
     Double_t getM(vector<TLorentzVector>);
 
 
@@ -173,6 +173,9 @@ class TopAnalysis : public PAFChainItemSelector{
     Float_t  C_jll          , C_jllJESUp          , C_jllJESDown          ;
     Float_t  DilepJetPt     , DilepJetPtJESUp     , DilepJetPtJESDown     ;
     Float_t  TBDT           , TBDTJESUp           , TBDTJESDown           ;
+    /* Float_t  TBDTBTagUp     , TBDTBTagDown; */
+    /* Float_t  TBDTMistagUp   , TBDTBMistagDown; */
+
     Float_t  nBTotal          , nBTotalJESUp          , nBTotalJESDown          ; 
     Float_t  DilepmetjetOverHT, DilepmetjetOverHTJESUp, DilepmetjetOverHTJESDown; 
     Float_t  HTLepOverHT      , HTLepOverHTJESUp      , HTLepOverHTJESDown      ; 

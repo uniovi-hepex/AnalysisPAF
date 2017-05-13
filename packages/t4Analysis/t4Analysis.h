@@ -18,15 +18,18 @@ class t4Analysis : public PAFChainItemSelector{
     virtual void InsideLoop();
     virtual void Initialise();
     virtual void Summary();
+    std::vector<Lepton> selTaus     ;
     std::vector<Lepton> selLeptons  ;
     std::vector<Lepton> vetoLeptons ;
     std::vector<Jet>    selJets ;
     std::vector<Jet>    Jets15  ;
 
+    void SetTauVariables();
     void SetLeptonVariables();
     void SetJetVariables();
     void SetEventVariables();
 
+    void GetTauVariables(std::vector<Lepton> selTaus);
     void GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> VetoLeptons);
     void GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut = 30);
     void GetMET();
@@ -58,6 +61,16 @@ class t4Analysis : public PAFChainItemSelector{
     Float_t TLep_Phi[10];
     Float_t TLep_E[10];
     Int_t TLep_Charge[10];
+
+    Int_t TNTaus;
+    Float_t TTau_Pt         [10];
+    Float_t TTau_Eta        [10];
+    Float_t TTau_Charge     [10];
+    Float_t TTau_DecayMode  [10];
+    Float_t TTau_IdDecayMode[10];   
+    Float_t TTau_IdMVA      [10];   
+    Float_t TTau_IdAntiE    [10];   
+    Float_t TTau_IdAntiMu   [10];   
 
     Int_t TNJets;            // Jets...
     Int_t TNBtags;

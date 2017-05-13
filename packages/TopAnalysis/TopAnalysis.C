@@ -239,7 +239,7 @@ void TopAnalysis::InsideLoop(){
       if(TChannel == iElMu || ((TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15))){
         if(TChannel == iElMu || TMET > 40){   // MET > 40 in ee, µµ
           if (TNBtags > 0 || TNBtagsUp > 0 || TNBtagsDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0){
-            CalculateTWVariables();
+	    CalculateTWVariables();
             fTree->Fill();
           }
         }
@@ -565,6 +565,8 @@ void TopAnalysis::SetTWVariables()
   fTree->Branch("TJetLoosept"     , &TJetLoosept    , "TJetLoosept/F"    ); // loose jet pt
   fTree->Branch("C_jll"           , &C_jll          , "C_jll/F"          );
   fTree->Branch("DilepJetPt"      , &DilepJetPt     , "DilepJetPt/F"     );
+  fTree->Branch("TJet1_pt"        , &TJet1_pt       , "TJet1_pt/F"       );
+  fTree->Branch("HTLepOverHT"     , &HTLepOverHT    , "HTLepOverHT/F"    );
 
   // for signal extraction
   fTree->Branch("TBDT"            , &TBDT           , "TBDT/F"           );
@@ -699,22 +701,22 @@ void TopAnalysis::CalculateTWVariables()
     HTLepOverHTJESDown       = -99.;
     MSysJESDown              = -99.;
   }
-  if (TNJets == 1 && TNBtags == 1 && TNJetsJESUp == 1 && TNBtagsJESUp == 1 && TNJetsJESDown == 1 && TNBtagsJESDown == 1){
-    cout << "######################################################################################" << endl;
-    cout << nLooseCentral       << " " << nLooseCentralJESUp       << " " << nLooseCentralJESDown     << endl;
-    cout << nLooseFwd           << " " << nLooseFwdJESUp           << " " << nLooseFwdJESDown         << endl;
-    cout << nBTotal             << " " << nBTotalJESUp             << " " << nBTotalJESDown           << endl;
-    cout << DilepMETJetPt       << " " << DilepMETJetPtJESUp       << " " << DilepMETJetPtJESDown     << endl;
-    cout << THT                 << " " << THTJESUp                 << " " << THTJESDown               << endl;
-    cout << TJet1_pt            << " " << TJet1_ptJESUp            << " " << TJet1_ptJESDown          << endl;
-    cout << TJetLoosept         << " " << TJetLooseptJESUp         << " " << TJetLooseptJESDown       << endl;
-    cout << DilepmetjetOverHT   << " " << DilepmetjetOverHTJESUp   << " " << DilepmetjetOverHTJESDown << endl;
-    cout << MSys                << " " << MSysJESUp                << " " << MSysJESDown              << endl;
-    cout << C_jll               << " " << C_jllJESUp               << " " << C_jllJESDown             << endl;
-    cout << HTLepOverHT         << " " << HTLepOverHTJESUp         << " " << HTLepOverHTJESDown       << endl;
-    cout << DilepJetPt          << " " << DilepJetPtJESUp          << " " << DilepJetPtJESDown        << endl;
-    cout << "######################################################################################" << endl;
-  }
+  // if (TNJets == 1 && TNBtags == 1 && TNJetsJESUp == 1 && TNBtagsJESUp == 1 && TNJetsJESDown == 1 && TNBtagsJESDown == 1){
+  //   cout << "######################################################################################" << endl;
+  //   cout << nLooseCentral       << " " << nLooseCentralJESUp       << " " << nLooseCentralJESDown     << endl;
+  //   cout << nLooseFwd           << " " << nLooseFwdJESUp           << " " << nLooseFwdJESDown         << endl;
+  //   cout << nBTotal             << " " << nBTotalJESUp             << " " << nBTotalJESDown           << endl;
+  //   cout << DilepMETJetPt       << " " << DilepMETJetPtJESUp       << " " << DilepMETJetPtJESDown     << endl;
+  //   cout << THT                 << " " << THTJESUp                 << " " << THTJESDown               << endl;
+  //   cout << TJet1_pt            << " " << TJet1_ptJESUp            << " " << TJet1_ptJESDown          << endl;
+  //   cout << TJetLoosept         << " " << TJetLooseptJESUp         << " " << TJetLooseptJESDown       << endl;
+  //   cout << DilepmetjetOverHT   << " " << DilepmetjetOverHTJESUp   << " " << DilepmetjetOverHTJESDown << endl;
+  //   cout << MSys                << " " << MSysJESUp                << " " << MSysJESDown              << endl;
+  //   cout << C_jll               << " " << C_jllJESUp               << " " << C_jllJESDown             << endl;
+  //   cout << HTLepOverHT         << " " << HTLepOverHTJESUp         << " " << HTLepOverHTJESDown       << endl;
+  //   cout << DilepJetPt          << " " << DilepJetPtJESUp          << " " << DilepJetPtJESDown        << endl;
+  //   cout << "######################################################################################" << endl;
+  // }
   if (TNJets == 1 && TNBtags == 1)
     TBDT = BDT->EvaluateMVA("BDTG");
   else
@@ -822,7 +824,7 @@ void TopAnalysis::get20Jets()
 
 
 // 1j1b
-Double_t TopAnalysis::getDilepMETJetPt(TString sys)
+Double_t TopAnalysis::getDilepMETJetPt(const TString& sys)
 {
   TLorentzVector vSystem[4];
   vSystem[0] = selLeptons.at(0).p;                               // lep1
@@ -849,7 +851,7 @@ Double_t TopAnalysis::getDilepMETJetPt(TString sys)
 
 }
 
-Double_t TopAnalysis::getDilepJetPt(TString sys)
+Double_t TopAnalysis::getDilepJetPt(const TString& sys)
 {
   TLorentzVector vSystem[3];
   vSystem[0] = selLeptons[0].p;                               // lep1
@@ -871,7 +873,7 @@ Double_t TopAnalysis::getDilepJetPt(TString sys)
 }
 
 // 1j1b
-Double_t TopAnalysis::getLep1METJetPt(TString sys)
+Double_t TopAnalysis::getLep1METJetPt(const TString& sys)
 {
   TLorentzVector vSystem[3];
   vSystem[0] = selLeptons[0].p;
@@ -907,7 +909,7 @@ Double_t TopAnalysis::getPtSys(TLorentzVector* vSystem, int nSystem)
   return vSyst.Pt();
 }
 
-Double_t TopAnalysis::getDilepMETJet1Pz(TString sys)
+Double_t TopAnalysis::getDilepMETJet1Pz(const TString& sys)
 {
   TLorentzVector vSystem[4];
   vSystem[0] = selLeptons[0].p;                               // lep1
@@ -944,7 +946,7 @@ Double_t TopAnalysis::getPzSys(TLorentzVector* vSystem, int nSystem){
 
 
 // 1j1b
-Double_t TopAnalysis::getDPtDilep_JetMET(TString sys)
+Double_t TopAnalysis::getDPtDilep_JetMET(const TString& sys)
 {
   vector<TLorentzVector> col1;
   vector<TLorentzVector> col2;
@@ -974,7 +976,7 @@ Double_t TopAnalysis::getDPtDilep_JetMET(TString sys)
 }
 
 // 1j1b
-Double_t TopAnalysis::getDPtDilep_MET(TString sys)
+Double_t TopAnalysis::getDPtDilep_MET(const TString& sys)
 {
   vector<TLorentzVector> col1;
   vector<TLorentzVector> col2;
@@ -1000,7 +1002,7 @@ Double_t TopAnalysis::getDPtDilep_MET(TString sys)
 }
 
 // 1j1b
-Double_t TopAnalysis::getDPtLep1_MET(TString sys)
+Double_t TopAnalysis::getDPtLep1_MET(const TString& sys)
 {
   vector<TLorentzVector>  col1;
   vector<TLorentzVector>  col2;
@@ -1078,7 +1080,7 @@ Double_t TopAnalysis::getDeltaPt(vector<TLorentzVector> col1, vector<TLorentzVec
 //   return getM(col);
 // }
 
-Double_t TopAnalysis::getSysM(TString sys)
+Double_t TopAnalysis::getSysM(const TString& sys)
 {
   vector<TLorentzVector> col;
   TLorentzVector met;
@@ -1204,11 +1206,11 @@ void TopAnalysis::setTWBDT()
   BDT->AddVariable( "DilepMETJetPt"                 , &DilepMETJetPt      );
   BDT->AddVariable( "THT"                           , &THT                );    
   BDT->AddVariable( "TJet1_pt"                      , &TJet1_pt           );
-  BDT->AddVariable( "TJet2pt"                       , &TJetLoosept        );
+  BDT->AddVariable( "TJetLoosept"                   , &TJetLoosept        );
   BDT->AddVariable( "DilepMETJetPt/THT"             , &DilepmetjetOverHT  );
   BDT->AddVariable( "MSys"                          , &MSys               );
   BDT->AddVariable( "C_jll"                         , &C_jll              ); 
-  BDT->AddVariable( "(TLep1_pt+TLep2_pt)/THT"       , &HTLepOverHT        );
+  BDT->AddVariable( "HTLepOverHT"                   , &HTLepOverHT        );
   BDT->AddVariable( "DilepJetPt"                    , &DilepJetPt         );       
 
   BDT->BookMVA("BDTG","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/dannys_bdt/weights/test_tw_00_AdaBoostDefault.weights.xml");
@@ -1220,11 +1222,11 @@ void TopAnalysis::setTWBDT()
   BDT_JESUp->AddVariable( "DilepMETJetPt"                 , &DilepMETJetPtJESUp      );
   BDT_JESUp->AddVariable( "THT"                           , &THTJESUp                );    
   BDT_JESUp->AddVariable( "TJet1_pt"                      , &TJet1_ptJESUp           );
-  BDT_JESUp->AddVariable( "TJet2pt"                       , &TJetLooseptJESUp        );
+  BDT_JESUp->AddVariable( "TJetLoosept"                   , &TJetLooseptJESUp        );
   BDT_JESUp->AddVariable( "DilepMETJetPt/THT"             , &DilepmetjetOverHTJESUp  );
   BDT_JESUp->AddVariable( "MSys"                          , &MSysJESUp               );
   BDT_JESUp->AddVariable( "C_jll"                         , &C_jllJESUp              ); 
-  BDT_JESUp->AddVariable( "(TLep1_pt+TLep2_pt)/THT"       , &HTLepOverHTJESUp        );
+  BDT_JESUp->AddVariable( "HTLepOverHT"                   , &HTLepOverHTJESUp        );
   BDT_JESUp->AddVariable( "DilepJetPt"                    , &DilepJetPtJESUp         );       
   BDT_JESUp->BookMVA("BDTG_JESUp","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/dannys_bdt/weights/test_tw_00_AdaBoostDefault.weights.xml");
 
@@ -1235,11 +1237,11 @@ void TopAnalysis::setTWBDT()
   BDT_JESDown->AddVariable( "DilepMETJetPt"                 , &DilepMETJetPtJESDown      );
   BDT_JESDown->AddVariable( "THT"                           , &THTJESDown                );    
   BDT_JESDown->AddVariable( "TJet1_pt"                      , &TJet1_ptJESDown           );
-  BDT_JESDown->AddVariable( "TJet2pt"                       , &TJetLooseptJESDown        );
+  BDT_JESDown->AddVariable( "TJetLoosept"                   , &TJetLooseptJESDown        );
   BDT_JESDown->AddVariable( "DilepMETJetPt/THT"             , &DilepmetjetOverHTJESDown  );
   BDT_JESDown->AddVariable( "MSys"                          , &MSysJESDown               );
   BDT_JESDown->AddVariable( "C_jll"                         , &C_jllJESDown              ); 
-  BDT_JESDown->AddVariable( "(TLep1_pt+TLep2_pt)/THT"       , &HTLepOverHTJESDown        );
+  BDT_JESDown->AddVariable( "HTLepOverHT"                   , &HTLepOverHTJESDown        );
   BDT_JESDown->AddVariable( "DilepJetPt"                    , &DilepJetPtJESDown         );       
   BDT_JESDown->BookMVA("BDTG_JESDown","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/dannys_bdt/weights/test_tw_00_AdaBoostDefault.weights.xml");
 
