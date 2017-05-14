@@ -62,7 +62,7 @@ Bool_t TauSelector::isGoodTau(Lepton tau){
     passEta       = (abs(eta) < 2.3  );
     passID        = (idMVA >= 3      );
     passAntiE     = (idAntiE >= 4    );
-    passAntiMu    = (idAntiMu >= 4   );
+    passAntiMu    = (idAntiMu > 1    );
     
     passOverlap             = 1;
     for (Int_t i = 0; i < looseLeptons.size(); i++) {
