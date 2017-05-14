@@ -20,16 +20,17 @@ if [ "$1" == "an" ]; then
 elif [ "$1" == "pl" ]; then
   echo ""
   echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ttH PLOTTER EXECUTION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-  echo ""
-  echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Creating job..."
   categ="0"
   if [ "$2" != "" ]; then
     categ=$2
   else
+    echo ""
+    echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Remaking libraries..."  
     source RemakeLibraries.sh
   fi
-
   
+  echo ""
+  echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Creating job..."  
   qsub -o $logpath -e $logpath -d $workingpath -F "$categ" PlotThings.sh
 else
     echo "ERROR - No valid arguments given"
