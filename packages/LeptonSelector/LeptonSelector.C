@@ -309,10 +309,13 @@ Bool_t LeptonSelector::getElecCutBasedId(Int_t wp){
 
 Bool_t LeptonSelector::getMultiIso(Int_t wp){
   if(wp == iVeryTight) return (miniIso < 0.09 && (ptRatio > 0.84 || ptRel > 7.2));
-  if(wp == iTight    )     return false;
+  if(wp == iTight    ) return (miniIso < 0.12 && (ptRatio > 0.80 || ptRel > 7.2));
   if(wp == iMedium   ) return (miniIso < 0.16 && (ptRatio > 0.76 || ptRel > 7.2));
   if(wp == iLoose    ) return (miniIso < 0.20 && (ptRatio > 0.69 || ptRel > 6.0));
-  if(wp == iVeto     )     return false;
+  if(wp == iVeto     ){
+    if(type == 1)      return (miniIso < 0.40 && (ptRatio > 0.80 || ptRel > 7.2));
+    else               return (miniIso < 0.40 && (ptRatio > 0.76 || ptRel > 7.2));
+  }    
   return true;
 }
 
