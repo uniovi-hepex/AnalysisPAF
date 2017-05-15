@@ -83,8 +83,8 @@ void t4Analysis::InsideLoop(){
   // Weights and SFs
   NormWeight = GetParam<Float_t>("NormWeight");
   TrigSF       = GetParam<Float_t>("TriggerSF");
-  //TrigSF_Up    = GetParam<Float_t>("TriggerSF_Up");
-  //TrigSF_Down  = GetParam<Float_t>("TriggerSF_Down");
+  TrigSF_Up    = TrigSF + GetParam<Float_t>("TriggerSFerr");
+  TrigSF_Down  = TrigSF - GetParam<Float_t>("TriggerSFerr");
   PUSF         = GetParam<Float_t>("PUSF");
   PUSF_Up      = GetParam<Float_t>("PUSF_Up");
   PUSF_Down    = GetParam<Float_t>("PUSF_Down");
@@ -318,8 +318,8 @@ void t4Analysis::GetMET(){
   TMET        = Get<Float_t>("met_pt");
   TMET_Phi    = Get<Float_t>("met_phi");  // MET phi
   if(gIsData) return;
-  //TMETJESUp   = GetParam<Float_t>("MET_JESUp");
-  //TMETJESDown = GetParam<Float_t>("MET_JESDown");
+  TMETJESUp   = GetParam<Float_t>("MET_JESUp");
+  TMETJESDown = GetParam<Float_t>("MET_JESDown");
   if(gIsLHE) for(Int_t i = 0; i < Get<Int_t>("nLHEweight"); i++)   TLHEWeight[i] = Get<Float_t>("LHEweight_wgt", i);
 }
 
