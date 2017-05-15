@@ -415,7 +415,7 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
     //if(!getminiRelIso(iLoose)) return false;
     if(!getGoodVertex(iTight)) return false;
     if(!getSIPcut(4)) return false;
-    if(TightCharge != 2) return;
+    if(TightCharge != 2) return false;
     return true;
   }
   else if (gSelection == ittHSelec || gSelection == iWZSelec) {
@@ -508,7 +508,7 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
     //if(!getminiRelIso(iLoose)) return false;
     if(!getGoodVertex(iTight)) return false;
     if(!getSIPcut(4)) return false;
-    if(TightCharge != 2) return;
+    if(TightCharge != 2) return false;
     return true;
   }
   else if(gSelection == ittHSelec || gSelection == iWZSelec){
@@ -664,11 +664,17 @@ void LeptonSelector::InsideLoop(){
     }
     if(isVetoLepton(tL)){ // If you need to veto extra leptons...
       //tL.SetSF(1); tL.SetSFerr(1); // To be updated if ever needed
-      vetoLeptons.push_back(tL);
+      if(gSelection == i4tSelec){
+        if(!isGoodLepton(tL)) vetoLeptons.push_back(tL);
+      }
+      else vetoLeptons.push_back(tL);
     }
     if(isLooseLepton(tL)){ // A loose category... used in ttH, for example
       //tL.SetSF(1); tL.SetSFerr(1); // To be updated if ever needed
-      looseLeptons.push_back(tL);
+      if(gSelection == i4tSelec){
+        if(!isGoodLepton(tL)) looseLeptons.push_back(tL);
+      }
+      else looseLeptons.push_back(tL);
     }
   }
   if(gSelection == iStopSelec){ // Adding leptons for the discarded collection
