@@ -160,14 +160,14 @@ void ttHAnalysis::SetMiniTreeVariables() {
   TCS             = GetCS();
   TMass           = (TightLepton[0].p+TightLepton[1].p).M();
 	if (nTightLepton >= 2) {
-	  TPtVector.pushback(TightLepton.at(0).Pt());
-	  TPtVector.pushback(TightLepton.at(1).Pt());
+	  TPtVector.push_back(TightLepton.at(0).Pt());
+	  TPtVector.push_back(TightLepton.at(1).Pt());
 	}
 	if (nTightLepton >= 3) {
-		TPtVector.pushback(TightLepton.at(2).Pt());
+		TPtVector.push_back(TightLepton.at(2).Pt());
 	}
 	if (nTightLepton >= 4) {
-		TPtVector.pushback(TightLepton.at(3).Pt());
+		TPtVector.push_back(TightLepton.at(3).Pt());
 	}
 }
 
