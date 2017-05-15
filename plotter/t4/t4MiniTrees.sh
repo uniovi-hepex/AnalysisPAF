@@ -12,8 +12,8 @@ root -l -b -q 'RunAnalyserPAF.C("TTbar_Powheg"           ,"4t", 30, -4)'
 root -l -b -q 'RunAnalyserPAF.C("T_tch"                  ,"4t", 30)'
 root -l -b -q 'RunAnalyserPAF.C("Tbar_tch"               ,"4t", 30)'
 root -l -b -q 'RunAnalyserPAF.C("TToLeptons_sch_amcatnlo","4t", 30)'
-root -l -b -q 'RunAnalyserPAF.C("Tree_TbarW_noFullyHadr & Tree_TbarW_noFullyHadr_ext & Tree_TbarW_noFullyHadr_ext2"   ,"4t", 30, -4)'
-root -l -b -q 'RunAnalyserPAF.C("Tree_TW_noFullyHadr & Tree_TW_noFullyHadr_ext & Tree_TW_noFullyHadr_ext2"            ,"4t", 30, -4)'
+root -l -b -q 'RunAnalyserPAF.C("TbarW_noFullyHadr & TbarW_noFullyHadr_ext & TbarW_noFullyHadr_ext2"   ,"4t", 30, -4)'
+root -l -b -q 'RunAnalyserPAF.C("TW_noFullyHadr & TW_noFullyHadr_ext & TW_noFullyHadr_ext2"            ,"4t", 30, -4)'
 
 
 # Inclusive samples, not dileptonic...
