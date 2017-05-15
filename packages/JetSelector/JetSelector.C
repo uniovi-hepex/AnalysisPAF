@@ -57,7 +57,7 @@ void JetSelector::Initialise(){
   }
   else if (gSelection == i4tSelec){
     jet_MaxEta = 2.4;
-    jet_MinPt  = 30;
+    jet_MinPt  = 40;
     vetoJet_minPt = 25;
     vetoJet_maxEta = 2.4;
     minDR = 0.4;
