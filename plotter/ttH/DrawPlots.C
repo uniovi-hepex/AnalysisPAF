@@ -182,19 +182,20 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   //}
   p->doSetLogy = false;
   
+  // Errors ====================================================================
+  p->AddSystematic("stat,JES");
   
   // Yields table settings and printing ========================================
   if (counter == 0) {
-    p->AddSystematic("stat,JES");
     p->SetTableFormats("%1.4f");
     p->SetYieldsTableName("Yields_"+chan+"_"+tag);
     p->PrintYields("","","","txt");
-    counter = 1;
   }
   
-
-  // Print and plot ============================================================
+  // Plotting ==================================================================
   if (counter != 0) p->DrawStack(tag, 1);
+	
   
+  if (counter == 0) counter = 1;
   delete p;
 }
