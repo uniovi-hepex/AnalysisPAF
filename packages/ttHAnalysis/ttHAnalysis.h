@@ -127,7 +127,8 @@ class ttHAnalysis : public PAFChainItemSelector {
 		Bool_t  gIsData;
 		Bool_t  gIsMCatNLO;
 		Float_t gWeight;
-
+    Float_t gPUSF;
+    
 		//	Weight of the event
 		//----------------------------------------------------------------------
 		Float_t EventWeight;

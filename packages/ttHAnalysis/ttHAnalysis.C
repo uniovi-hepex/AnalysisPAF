@@ -514,6 +514,7 @@ void ttHAnalysis::GetParameters() {
   gSampleName	    =	GetParam<TString>("sampleName");
   gIsData         =	GetParam<Bool_t>("IsData");
   gWeight         =	GetParam<Float_t>("weight"); // cross section / events in the sample
+  gPUSF         	=	GetParam<Float_t>("PUSF");
 	gIsMCatNLO      =	GetParam<Bool_t>("IsMCatNLO");
 }
 
@@ -573,7 +574,7 @@ void ttHAnalysis::GetEventVariables() {
   // Set the weight of the event (for MC samples)
   EventWeight 	= 1.;
   if (!gIsData) {
-    EventWeight = gWeight;
+    EventWeight = gWeight*gPUSF;
     if (gIsMCatNLO) EventWeight *= genWeight;
   }
 }
