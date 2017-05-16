@@ -132,22 +132,22 @@ void t4Analysis::InsideLoop(){
     }
     else if(TNSelLeps == 2 && TNFakeableLeps == 0){ // 2lss
       if(IsThereSSpair(selLeptons)) TChannel = i2lss;
-      cout << "TNSelLeps == 2 && TNFakeableLeps == 0, TChannel = i2lss = " << TChannel << endl;
+      //cout << "TNSelLeps == 2 && TNFakeableLeps == 0, TChannel = i2lss = " << TChannel << endl;
     }
     else if(TNSelLeps == 2 && TNFakeableLeps >= 1){ // Fakes for 3L
       TChannel = iTriLep_fake;
       if(xLeptons.at(0).charge == xLeptons.at(1).charge && xLeptons.at(0).charge == xLeptons.at(2).charge) TChannel = -1; // Three leptons SS 
-      cout << "TNSelLeps == 2 && TNFakeableLeps >= 1, TChannel = iTrilep_fake = " << TChannel << endl;
+      //cout << "TNSelLeps == 2 && TNFakeableLeps >= 1, TChannel = iTrilep_fake = " << TChannel << endl;
     } 
     else if(TNSelLeps >= 3){
       TChannel = iTriLep;
       if(selLeptons.at(0).charge == selLeptons.at(1).charge && selLeptons.at(0).charge == selLeptons.at(2).charge) TChannel = -1; // Three leptons SS 
-      cout << "TNSelLeps >= 3, TChannel = iTrilep = " << TChannel << endl;
+      //cout << "TNSelLeps >= 3, TChannel = iTrilep = " << TChannel << endl;
     }
   }
   else if(TNTaus >= 1){
     if(TNSelLeps >= 2) {TChannel = i2l1tau;
-      cout << "TNTaus >= 1 && TSelLeps >= 2, TChannel = i2l1tau = " << TChannel << endl;
+      //cout << "TNTaus >= 1 && TSelLeps >= 2, TChannel = i2l1tau = " << TChannel << endl;
 
 }
   }
