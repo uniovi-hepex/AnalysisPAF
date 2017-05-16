@@ -20,7 +20,7 @@ TString VarNBtagsNJets = "TNBtags + (TNJets == 1) + (TNJets == 2)*3 + (TNJets ==
 
 TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/StopTrees/mar16/Baseline/";
 void DrawPlots(TString chan = "ElMu"){
-  DrawPlot("TMT2", SScut,    chan, 40, 0, 200, "M_{T2} [GeV]", "MT2_SS");
+  DrawPlot("TMT2", BaselineCut, chan, 40, 0, 200, "M_{T2} [GeV]", "MT2_SS");
 //  DrawPlot("TMT2", ThirdLep, chan, 20, 0, 120, "M_{T2} [GeV]", "MT2_3Lep");
 //  DrawPlot("TMT2", "TNJets > 1 && TNBtags > 0 && !TIsSS && TNVetoLeps < 3", chan, 40, 0, 200, "M_{T2} [GeV]", "MT2_bl");
 //  DrawPlot("TDeltaPhi", BaselineCut, "ElMu", 30, -3.15, 3.15, "#Delta#varphi_{e#mu} [rad]", "DeltaPhi_bl");
@@ -64,17 +64,16 @@ void DrawPlots(TString chan = "ElMu"){
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name){
   Plot* p = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
-  p->SetPathSignal(pathToTree + "T2tt/");
+  p->SetPathSignal(pathToTree + "T2tt_noSkim/");
   p->verbose = true;
-  p->SetLumi(10.0);
   //p->doData = false;
-  //p->doStackSignal = true;
   if(name != "") p->SetVarName(name);
   //p->doData = false;
 
   p->AddSample("WZ", "VV", itBkg, kYellow-10, 0.50);
   p->AddSample("WW", "VV", itBkg);
   p->AddSample("ZZ", "VV", itBkg);
+  //p->AddSample("T2tt_200_50_FS_summer", "S_200_50", itSignal, kBlue+2, 0.1); 
   //p->AddSample("WJetsToLNu_aMCatNLO", "WJets", itBkg, kGray, 0.5);
   //p->AddSample("WJetsToLNu_MLM", "WJets", itBkg, kGray, 0.5);
 	p->AddSample("TTWToLNu", "ttV", itBkg, kOrange-3, 0.5);
@@ -89,23 +88,36 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 	p->AddSample("MuonEG", "Data", itData);
 	p->AddSample("SingleMuon", "Data", itData);
 	p->AddSample("SingleElec", "Data", itData);
-//	p->AddSample("DoubleEG", "Data", itData);
+ //	p->AddSample("DoubleEG", "Data", itData);
 //	p->AddSample("DoubleMuon", "Data", itData);
- // p->AddSample("T2tt_mStop175_mLsp1", "T2tt_175_1", itSignal, kGreen+1, 0.1); 
- // p->AddSample("T2tt_mStop250_mLsp75", "T2tt_250_75", itSignal, kAzure-2, 0.1); 
-  p->AddSample("T2tt_200_50_FS_summer", "S_200_50", itSignal, kBlue+2, 0.1); 
-  p->AddSample("T2tt_225_50_FS_summer", "S_225_50", itSignal, kPink-1, 0.1); 
-  p->AddSample("T2tt_250_50_FS_summer", "S_250_50", itSignal, kGreen+2, 0.1); 
+  //p->AddSample("T2tt_mStop175_mLsp1", "T2tt_175_1", itSignal, kGreen+1, 0.1, "0", "isrweight"); 
+ // p->AddSample("T2tt_mStop250_mLsp75", "T2tt_250_75", itSignal, kAzure-2, 0.1, "0", "isrweight"); 
+//  p->AddSample("T2tt_200_50_FS_summer", "S_200_50", itSignal, kPink-1,  0.1, "0", "isrweight"); 
+//  p->AddSample("T2tt_225_50_FS_summer", "S_225_50", itSignal, kPink-1,  0.1, "0", "isrweight"); 
+//  p->AddSample("T2tt_250_50_FS_summer", "S_250_50", itSignal, kGreen+2, 0.1, "0", "isrweight"); 
+  p->AddSample("T2tt_225_50_FS_summer", "S_225_50", itSignal, kPink-1,  0.1, "0"); 
+
+  /*Plot* isr = new Plot(var, "TISRweight*(" + cut + ")", chan, nbins, bin0, binN, "Title", Xtitle);
+  isr->SetPath(pathToTree); isr->SetTreeName(NameOfTree); isr->SetPathSignal(pathToTree + "T2tt_noSkim/");
+  isr->AddSample("T2tt_225_50_FS_summer", "S_225_50", itSignal, kPink-1, 0.1); 
+  isr->AddSample("T2tt_250_50_FS_summer", "S_250_50", itSignal, kGreen+2, 0.1); 
+  Histo* S_225_50 = isr->GetHisto("S_225_50");
+  Histo* S_250_50 = isr->GetHisto("S_250_50");
+  p->AddToHistos(S_225_50);
+  p->AddToHistos(S_250_50);
+*/
+  //p->SetSignalProcess("T2tt_175_1");
+  p->SetSignalStyle("");
 
   //p->AddSystematic("JES,Btag,MisTag,LepEff,PU");
-  p->AddSystematic("JES,Btag");
+  //p->AddSystematic("stat");
   p->PrintYields();
-  p->PrintSamples();
-  p->doSetLogy = false;
-  p->DrawStack("0", 1);
-  p->doSetLogy = true;
-  p->DrawStack("0_log", 1);
-  p->PrintSystYields();
+  //p->PrintSamples();
+  //p->doSetLogy = false;
+  //p->DrawStack("prueba", 1);
+  //p->doSetLogy = true;
+  //p->DrawStack("prueba_log", 1);
+  //p->PrintSystYields();
   delete p;
 }
 

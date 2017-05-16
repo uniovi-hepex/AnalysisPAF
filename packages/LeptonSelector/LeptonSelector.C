@@ -158,6 +158,24 @@ Bool_t LeptonSelector::getElecMVA(Int_t wp){
       else if(pt > 25           ) point = -0.95;
     }
   }
+  if(wp == iLoose){
+    if(aeta < 0.8){
+      if     (pt > 10 && pt < 15) point = -0.48;
+      else if(pt > 15 && pt < 25) point = -0.48 + (-0.96+0.48)/10*(pt-15);
+      else if(pt > 25           ) point = -0.96;
+    }
+    else if(aeta < 1.479){
+      if     (pt > 10 && pt < 15) point = -0.67;
+      else if(pt > 15 && pt < 25) point = -0.67 + (-0.91+0.67)/10*(pt-15);
+      else if(pt > 25           ) point = -0.91;
+    }
+    else if(aeta < 2.5){
+      if     (pt > 10 && pt < 15) point = -0.49;
+      else if(pt > 15 && pt < 25) point = -0.49 + (-0.83+0.49)/10*(pt-15);
+      else if(pt > 25           ) point = -0.83;
+    }
+  }
+ 
   else if(wp == iTight){
     if(aeta < 0.8){
       if     (pt > 10 && pt < 15) point = 0.77;
@@ -309,10 +327,14 @@ Bool_t LeptonSelector::getElecCutBasedId(Int_t wp){
 
 Bool_t LeptonSelector::getMultiIso(Int_t wp){
   if(wp == iVeryTight) return (miniIso < 0.09 && (ptRatio > 0.84 || ptRel > 7.2));
-  if(wp == iTight    )     return false;
+  if(wp == iTight    ) return (miniIso < 0.12 && (ptRatio > 0.80 || ptRel > 7.2));
   if(wp == iMedium   ) return (miniIso < 0.16 && (ptRatio > 0.76 || ptRel > 7.2));
-  if(wp == iLoose    ) return (miniIso < 0.20 && (ptRatio > 0.69 || ptRel > 6.0));
-  if(wp == iVeto     )     return false;
+  if(wp == iLoose    ) return (miniIso < 0.40 && (ptRatio > 0    || ptRel > 0  ));
+  //if(wp == iLoose    ) return (miniIso < 0.20 && (ptRatio > 0.69 || ptRel > 6.0));
+  if(wp == iVeto     ){
+    if(type == 1)      return (miniIso < 0.40 && (ptRatio > 0.80 || ptRel > 7.2));
+    else               return (miniIso < 0.40 && (ptRatio > 0.76 || ptRel > 7.2));
+  }    
   return true;
 }
 
@@ -375,24 +397,25 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
   }
   else if(gSelection == i4tSelec){
     if(lep.isMuon){
-      if(lep.p.Pt() < 15) return false;
+      if(lep.p.Pt() < 20) return false;
       if(TMath::Abs(lep.p.Eta()) > 2.4) return false;
       if(!isGlobalMuon && !isTrackerMuon) return false; 
       if(!getMuonId(iMedium)) return false;
-      if(!getMultiIso(iLoose)) return false;
+      if(!getMultiIso(iMedium)) return false;
     }
     if(lep.isElec){
-      if(lep.p.Pt() < 15) return false;
+      if(lep.p.Pt() < 20) return false;
       if(TMath::Abs(lep.p.Eta()) > 2.5) return false;
       if(!getElecCutBasedId(iLoose)) return false;
       if(!convVeto) return false;
       if(lostHits != 0) return false;
       if(!getElecMVA(iTight)) return false;
-      if(!getMultiIso(iMedium)) return false;
+      if(!getMultiIso(iTight)) return false;
     }
-    if(!getminiRelIso(iLoose)) return false;
+    //if(!getminiRelIso(iLoose)) return false;
     if(!getGoodVertex(iTight)) return false;
     if(!getSIPcut(4)) return false;
+    if(TightCharge != 2) return false;
     return true;
   }
   else if (gSelection == ittHSelec || gSelection == iWZSelec) {
@@ -471,6 +494,7 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
       if(TMath::Abs(lep.p.Eta()) > 2.4) return false;
       if(!isGlobalMuon && !isTrackerMuon) return false; 
       if(!getMuonId(iMedium)) return false;
+      if(!getMultiIso(iLoose)) return false;
     }
     if(lep.isElec){
       if(lep.p.Pt() < 15) return false;
@@ -479,10 +503,12 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
       if(!convVeto) return false;
       if(lostHits != 0) return false;
       if(!getElecMVA(iVeryLoose)) return false;
+      if(!getMultiIso(iLoose)) return false;
     }
-    if(!getminiRelIso(iLoose)) return false;
+    //if(!getminiRelIso(iLoose)) return false;
     if(!getGoodVertex(iTight)) return false;
     if(!getSIPcut(4)) return false;
+    if(TightCharge != 2) return false;
     return true;
   }
   else if(gSelection == ittHSelec || gSelection == iWZSelec){
@@ -551,6 +577,8 @@ Bool_t LeptonSelector::isLooseLepton(Lepton lep){
       if(lep.p.Pt() < 15) return false;
       if(TMath::Abs(lep.p.Eta()) > 2.4) return false;
       if(!isGlobalMuon && !isTrackerMuon) return false; 
+      // Smallest muon Id: Loose Id!! 
+      if(!getMultiIso(iLoose)) return false;
     }
     if(lep.isElec){
       if(lep.p.Pt() < 15) return false;
@@ -558,9 +586,10 @@ Bool_t LeptonSelector::isLooseLepton(Lepton lep){
       if(!getElecCutBasedId(iLoose)) return false;
       if(!convVeto) return false;
       if(lostHits > 2) return false;
-      if(!getElecMVA(iVeryLoose)) return false;
+      if(!getElecMVA(iLoose)) return false;
+      if(!getMultiIso(iLoose)) return false;
     }
-    if(!getminiRelIso(iLoose)) return false;
+    //if(!getminiRelIso(iLoose)) return false;
     if(!getGoodVertex(iTight)) return false;
     return true;
   }
@@ -635,11 +664,17 @@ void LeptonSelector::InsideLoop(){
     }
     if(isVetoLepton(tL)){ // If you need to veto extra leptons...
       //tL.SetSF(1); tL.SetSFerr(1); // To be updated if ever needed
-      vetoLeptons.push_back(tL);
+      if(gSelection == i4tSelec){
+        if(!isGoodLepton(tL)) vetoLeptons.push_back(tL);
+      }
+      else vetoLeptons.push_back(tL);
     }
     if(isLooseLepton(tL)){ // A loose category... used in ttH, for example
       //tL.SetSF(1); tL.SetSFerr(1); // To be updated if ever needed
-      looseLeptons.push_back(tL);
+      if(gSelection == i4tSelec){
+        if(!isGoodLepton(tL)) looseLeptons.push_back(tL);
+      }
+      else looseLeptons.push_back(tL);
     }
   }
   if(gSelection == iStopSelec){ // Adding leptons for the discarded collection

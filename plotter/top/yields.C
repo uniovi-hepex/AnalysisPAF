@@ -8,7 +8,7 @@ R__LOAD_LIBRARY(CrossSection.C+)
 #include "Plot.h"
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name = "");
-//TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/StopTrees/mar16/Dilepton/";
+TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/TopTrees/may10/";
 //TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/Stop_temp/Baseline/";
 TString NameOfTree = "MiniTree";
 TString SScut = "TMT2 > 0 && TMET > 50 && TNJets > 1 && TNBtags > 0 && TIsSS && TNVetoLeps < 3";
@@ -19,13 +19,12 @@ TString VarNBtagsNJets = "TNBtags + (TNJets == 1) + (TNJets == 2)*3 + (TNJets ==
 //TString btag1    = "TLep_Charge[0]*TLep_Charge[1] < 0 && TNJets >= 2 && TNBtags > 0";
 TString dilepton = "1";
 TString jets2    = "TNJets >= 2";
-TString btag1    = "TNJets >= 2 && TNBtags > 0";
+TString btag1    = "!TIsSS && TNJets >= 2 && TNBtags >= 1";
 
 // Baseline
 
-TString pathToTree = "/nfs/fanae/user/palencia/mar30_top2016data/AnalysisPAF/mar30Top_temp/";
 void yields(){
-  Plot* p = new Plot("TChannel", btag1, "All", 1, 0, 10, "Channel", "xsec");
+  Plot* p = new Plot("TMET", btag1, "ElMu", 30, 0, 300, "MET [GeV]", "xsec");
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
   p->verbose = true;
   //p->doData = false;
@@ -34,9 +33,9 @@ void yields(){
   p->AddSample("WZ", "VV", itBkg, kYellow-10, 0.50);
   p->AddSample("WW", "VV", itBkg);
   p->AddSample("ZZ", "VV", itBkg);
-  p->AddSample("TTbar_Powheg_Semi", "NonWZ", itBkg, kGreen-2, 0.50);
+  p->AddSample("TTbar_Powheg_Semilep", "NonWZ", itBkg, kGreen-2, 0.50);
   p->AddSample("WJetsToLNu_aMCatNLO", "NonWZ", itBkg);
-	p->AddSample("TTWToLNu1", "ttV", itBkg, kOrange-3, 0.5);
+	p->AddSample("TTWToLNu", "ttV", itBkg, kOrange-3, 0.5);
 	p->AddSample("TTWToQQ", "ttV", itBkg);
 	p->AddSample("TTZToQQ", "ttV", itBkg);
 	p->AddSample("TTZToLLNuNu", "ttV", itBkg);
@@ -68,12 +67,12 @@ void yields(){
   //p->PrintYields(dilepton + ", " + jets2 + ", " + btag1, "Dilepton, 2jets, 1btag", "ElMu, ElMu, ElMu");
   p->PrintYields();
 
-  CrossSection *x = new CrossSection(p, "ttbar");
+/*  CrossSection *x = new CrossSection(p, "ttbar");
   x->SetTheoXsec(831.8);
   x->SetChannelTag("ElMu");
   x->SetLevelTag(">2jets");
   x->PrintSystematicTable();
-  //x->SetBR();
+*/  //x->SetBR();
 
 
   //p->ScaleProcess("VV", 2.);
@@ -82,7 +81,7 @@ void yields(){
   //p->PrintSamples();
   //p->PrintSystYields();
   //p->PrintYields("TMET > 50, TMET > 50, TMET > 50", "ElMu, Elec, Muon", "ElMu, Elec, Muon");
-  //p->DrawStack("prueba", 1);
+  p->DrawStack("prueba", 1);
  
   //Plot* k = p->NewPlot("TMET", "TMET > 200");
   //k->PrintYields();
