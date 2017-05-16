@@ -121,29 +121,39 @@ void t4Analysis::InsideLoop(){
   Int_t nReqLeps (tauFakesSelection ? 1        :    2);
   bool  passJetReq(tauFakesSelection ? TNJets>0 : true);
 
+  TChannel = -1;
   if(TNTaus == 0){
     if     (TNSelLeps == 0 && TNFakeableLeps >= 2){ // Fakes for 2lss
-      if(IsThereSSpair(xLeptons)) TChannel == i2lss_fake; 
+      if(IsThereSSpair(xLeptons)) TChannel ==i2lss_fake; 
     }
     else if(TNSelLeps == 1 && TNFakeableLeps >= 1){ // Fakes for 2lss
       if   (IsThereSSpair(xLeptons))    TChannel = i2lss_fake; 
       else if(TNFakeableLeps >= 2) TChannel = iTriLep_fake; // Fakes for 3L
     }
     else if(TNSelLeps == 2 && TNFakeableLeps == 0){ // 2lss
-      if(IsThereSSpair(xLeptons)) TChannel == i2lss;
+      if(IsThereSSpair(selLeptons)) TChannel = i2lss;
+      cout << "TNSelLeps == 2 && TNFakeableLeps == 0, TChannel = i2lss = " << TChannel << endl;
     }
     else if(TNSelLeps == 2 && TNFakeableLeps >= 1){ // Fakes for 3L
       TChannel = iTriLep_fake;
+      if(xLeptons.at(0).charge == xLeptons.at(1).charge && xLeptons.at(0).charge == xLeptons.at(2).charge) TChannel = -1; // Three leptons SS 
+      cout << "TNSelLeps == 2 && TNFakeableLeps >= 1, TChannel = iTrilep_fake = " << TChannel << endl;
     } 
     else if(TNSelLeps >= 3){
       TChannel = iTriLep;
+      if(selLeptons.at(0).charge == selLeptons.at(1).charge && selLeptons.at(0).charge == selLeptons.at(2).charge) TChannel = -1; // Three leptons SS 
+      cout << "TNSelLeps >= 3, TChannel = iTrilep = " << TChannel << endl;
     }
   }
-  else{
-    if(TNSelLeps >= 2) TChannel = i2l1tau;
+  else if(TNTaus >= 1){
+    if(TNSelLeps >= 2) {TChannel = i2l1tau;
+      cout << "TNTaus >= 1 && TSelLeps >= 2, TChannel = i2l1tau = " << TChannel << endl;
+
+}
   }
 
-  if( (TNSelLeps > nReqLeps || TNFakeableLeps > nReqLeps) && passJetReq && passTrigger && passMETfilters){
+  //if( (TNSelLeps > nReqLeps || TNFakeableLeps > nReqLeps) && passJetReq && passTrigger && passMETfilters){
+  if(TChannel > 0 && passTrigger && passMETfilters){ // It's in some valid category and passes triggers and MET
     // Deal with weights:
     Float_t lepSF   = 1;//selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
     Float_t lepSFUp = 1;//selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1);
@@ -159,7 +169,7 @@ void t4Analysis::InsideLoop(){
 
     // Event Selection
     // ===================================================================================================================
-    if(PassLowInvMass(selLeptons, 12)){ // mll > 12 GeV
+    if(PassLowInvMass(selLeptons, 12) && PassLowInvMass(xLeptons, 12)){ // mll > 12 GeV
       //if(TNJets >= 2 || TNJetsJESUp >= 2 || TNJetsJESDown >= 2 || TNJetsJER >= 2){ //At least 2 jets
       fTree->Fill();
       //}
