@@ -26,7 +26,7 @@ root -l -b -q 'RunAnalyserPAF.C("TTWToLNu_ext1 & TTWToLNu_ext2"     ,"4t",   8)'
 root -l -b -q 'RunAnalyserPAF.C("TTZToLLNuNu_ext & TTZToLLNuNu_ext2", "4t",  8)'
 root -l -b -q 'RunAnalyserPAF.C("TTZToLL_M1to10", "4t",8)' # TTZToLL_M-1to10_TuneCUETP8M1_13TeV-amcatnlo-pythia8
 root -l -b -q 'RunAnalyserPAF.C("TTHNonbb"                          , "4t",  8)'
-root -l -b -q 'RunAnalyserPAF.C("tZq_ll"                            , "4t", 40, -4)'
+root -l -b -q 'RunAnalyserPAF.C("tZq_ll"                            , "4t", 1, -6)'
 
 #Di and tri bosons
 root -l -b -q 'RunAnalyserPAF.C("ZZTo4L"   ,   "4t", 8 )' #root -l -b -q 'RunAnalyserPAF.C("ZZ & ZZ_ext"   ,"4t", 8)'
