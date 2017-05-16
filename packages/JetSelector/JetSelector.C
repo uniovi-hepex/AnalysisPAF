@@ -57,7 +57,7 @@ void JetSelector::Initialise(){
   }
   else if (gSelection == i4tSelec){
     jet_MaxEta = 2.4;
-    jet_MinPt  = 30;
+    jet_MinPt  = 40;
     vetoJet_minPt = 25;
     vetoJet_maxEta = 2.4;
     minDR = 0.4;
@@ -372,21 +372,24 @@ void JetSelector::InsideLoop(){
   SetParam("nSelBJetsJECDown",  nBtagJetsJECDown);
 
   // Propagate JES to MET
+  Float_t met_pt  = Get<Float_t>("met_pt");
+  Float_t met_phi = Get<Float_t>("met_phi");
+  MET_JESUp   = met_pt;
+  MET_JESDown = met_pt;
   if(nSelJets > 0){
-    Float_t met_pt  = Get<Float_t>("met_pt");
-    Float_t met_phi = Get<Float_t>("met_phi");
     MET_JESUp   = JEStoMET(selJets, met_pt, met_phi,  1);
     MET_JESDown = JEStoMET(selJets, met_pt, met_phi, -1);
-    SetParam("MET_JESUp",   MET_JESUp);
-    SetParam("MET_JESDown", MET_JESDown);
   }
+  SetParam("MET_JESUp",   MET_JESUp);
+  SetParam("MET_JESDown", MET_JESDown);
 }
 
 Bool_t JetSelector::IsBtag(Jet j){
+  if(j.Pt() < 20) return false;
   Bool_t isbtag;
   if(gIsData) isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
-  else if(stringWP == "Loose") isbtag = Get<Float_t>("Jet_csv");//fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta());
-  else        isbtag = fBTagSFnom->IsTagged(j.csv,j.flavmc, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
+  else if(stringWP == "Loose") isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
+  else                         isbtag = fBTagSFnom->IsTagged(j.csv,j.flavmc, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
   return isbtag;
 }
 

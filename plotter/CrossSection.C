@@ -22,8 +22,6 @@ void CrossSection::SetMembers(){
   xsec_syst_err  = TMath::Sqrt(xsec_syst_err);
   xsec_total_err = TMath::Sqrt(xsec_syst_err*xsec_syst_err + xsec_lumi_err*xsec_lumi_err + xsec_stat_err*xsec_stat_err);
 
-  while((Int_t) IsEffic.size() < nSyst) IsEffic.push_back(false);
-
   // For acceptance and efficiency...
   TotalAcceptance = 0; acceptance = 0; efficiency = 0; eff_err = 0; acc_err = 0;
   if(BR != 0 && nFiducialSignal != 0 && nSimulatedSignal != 0){
@@ -183,9 +181,9 @@ void CrossSection::PrintYieldsTable(TString options){
     t[nBkgs+2][0] = NData; t[nBkgs+2][0].SetError(NData);
 
     t.SetDrawHLines(true); t.SetDrawVLines(true); t.Print();
-    if(options.Contains("tex"))  t.SaveAs(outputFolder + "/CrossSection_yields.tex");
-    if(options.Contains("html")) t.SaveAs(outputFolder + "/CrossSection_yields.html");
-    if(options.Contains("txt"))  t.SaveAs(outputFolder + "/CrossSection_yields.txt");
+    if(options.Contains("tex"))  t.SaveAs(outputFolder + "/" + yieldsTableName + ".tex");
+    if(options.Contains("html")) t.SaveAs(outputFolder + "/" + yieldsTableName + ".html");
+    if(options.Contains("txt"))  t.SaveAs(outputFolder + "/" + yieldsTableName + ".txt");
 }
 
 void CrossSection::PrintCrossSection(TString options){
@@ -195,6 +193,37 @@ void CrossSection::PrintCrossSection(TString options){
   cout << Form("\033[1;32m     - BR         = %1.4f \033[0m\n", BR);
   cout << Form("\033[1;32m     - Acceptance = %1.5f +/- %1.5f (%1.3f percent) \033[0m\n", acceptance, acc_err, acc_err/acceptance*100);
   cout << Form("\033[1;32m     - Efficiency = %1.5f +/- %1.5f (%1.3f percent) \033[0m\n", efficiency, eff_err, eff_err/efficiency*100);
+
+  if(notSet) SetMembers();
+  Int_t nrows = 5;
+  Int_t ncolumns = 5;
+  TResultsTable t(nrows, ncolumns, false); 
+  t.SetFormatNum("%1.2f");
+  t.AddVSeparation(0); t.AddVSeparation(3); 
+
+  t.SetRowTitleHeader(" ");
+  t.SetColumnTitle(0, "Value");
+  t.SetColumnTitle(1, "Stat");
+  t.SetColumnTitle(2, "Syst");
+  t.SetColumnTitle(3, "Lumi");
+  t.SetColumnTitle(4, "Total");
+  t.SetRowTitle(0, "Inclusive Cross Section");
+  t.SetRowTitle(1, "Branching ratio");
+  t.SetRowTitle(2, "Efficiency");
+  t.SetRowTitle(3, "Acceptance");
+  t.SetRowTitle(4, "Fiducial Cross Section");
+
+  t[0][0] = xsec; t[0][1] = xsec_stat_err; t[0][2] = xsec_syst_err; t[0][3] = xsec_lumi_err; t[0][4] = xsec_total_err;
+  t[1][0] = BR;
+  t[2][0] = acceptance; t[2][4] = acc_err;
+  t[3][0] = efficiency; t[3][4] = eff_err;
+  t[4][0] = 0;
+
+
+  t.SetDrawHLines(true); t.SetDrawVLines(true); t.Print();
+  if(options.Contains("tex"))  t.SaveAs(outputFolder + "/" + xsecvalTableName + ".tex");
+  if(options.Contains("html")) t.SaveAs(outputFolder + "/" + xsecvalTableName + ".html");
+  if(options.Contains("txt"))  t.SaveAs(outputFolder + "/" + xsecvalTableName + ".txt");
 }
 
 void CrossSection::SwitchLabel(TString oldLabel, TString newLabel){
@@ -202,3 +231,36 @@ void CrossSection::SwitchLabel(TString oldLabel, TString newLabel){
   for(Int_t i = 0; i < nBkgs; i++) if(BkgTags.at(i) == oldLabel) BkgTags.at(i) = newLabel;
   for(Int_t i = 0; i < nSyst; i++) if(SysTags.at(i) == oldLabel) SysTags.at(i) = newLabel;
 }
+
+void CrossSection::SetUnc(TString source, Float_t value){
+  if(notSet) SetMembers();
+  Int_t nSyst = SysTags.size();
+  Int_t nBkg  = BkgTags.size();
+  for(Int_t i = 0; i < nSyst; i ++) if(source == SysTags.at(i)) SysVar.at(i) = value;
+  for(Int_t i = 0; i < nBkg ; i ++) if(source == BkgTags.at(i)) BkgUnc.at(i) = value;
+}
+
+void CrossSection::SetYield(TString bkg, Float_t value){
+  if(notSet) SetMembers();
+  if(bkg == signalTag) y = value;
+  Int_t nBkg  = BkgTags.size();
+  for(Int_t i = 0; i < nBkg ; i ++) if(bkg == BkgTags.at(i)) BkgYield.at(i) = value;
+}
+
+Float_t CrossSection::GetYield(TString bkg){
+  if(bkg == signalTag) return y;
+  Int_t nBkg  = BkgTags.size();
+  for(Int_t i = 0; i < nBkg ; i ++) if(bkg == BkgTags.at(i)) return BkgYield.at(i);
+  cout << "[CrossSection::GetYield] Error, label not found: " << bkg << endl;
+  return 0;
+}
+
+Float_t CrossSection::GetUnc(TString source){
+  Int_t nSyst = SysTags.size();
+  Int_t nBkg  = BkgTags.size();
+  for(Int_t i = 0; i < nSyst; i ++) if(source == SysTags.at(i)) return SysVar.at(i);
+  for(Int_t i = 0; i < nBkg ; i ++) if(source == BkgTags.at(i)) return BkgUnc.at(i);
+  cout << "[CrossSection::GetUnc] Error, label not found: " << source << endl;
+  return 0;
+}
+

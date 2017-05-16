@@ -1,18 +1,9 @@
-#include "Plot.C"
+#include "DrawPlots.C"
 
-const TString pathToMiniTrees = "";
+TH1F* loadDYHisto(TString lab = "MC", TString ch = "ElMu", TString lev = "2jets");
 
-const Int_t nChannels = 3;
-TString channels[nChannels] = {"ElMu", "Muon", "Elec"};
-
-
-Plot* pDY[3];
-Plot* pData[3];
-
-GetDYSF(Plot* p){
-
-  pDY[] = new Plot("TMll", cut, chan, 400, 0, 400, "Title", "Invariant Mass");
-}
+double GetDYDD(  TString ch = "ElMu", TString lev = "2jets", bool IsErr = false, bool docout = false);
+double GetNonWDD(TString ch = "ElMu", TString lev = "2jets", bool IsErr = false, bool docout = false);
 
 TH1F* loadDYHisto(TString lab, TString ch, TString lev){
 	TFile* f1; TFile* f2;
@@ -35,18 +26,25 @@ TH1F* loadDYHisto(TString lab, TString ch, TString lev){
   return h1;
 }
 
-double GetDYDD(TString ch, TString lev, bool IsErr, bool docout){
-//  ch = Chan; lev = Level;
-  double Re     = 0; double N_ine  = 0; double N_oute = 0; double k_lle = 0; double SFel = 0;
-	double R_erre = 0; double N_in_erre = 0; double N_out_erre = 0; double k_ll_erre = 0; double SFel_err = 0;
+class ROUTIN{
+ 
+  private:
+    double Re     = 0; double N_ine  = 0; double N_oute = 0; double k_lle = 0; double SFel = 0;
+    double R_erre = 0; double N_in_erre = 0; double N_out_erre = 0; double k_ll_erre = 0; double SFel_err = 0;
 
-  double Rm     = 0; double N_inm  = 0; double N_outm = 0; double k_llm = 0; double SFmu = 0;
-	double R_errm = 0; double N_in_errm = 0; double N_out_errm = 0; double k_ll_errm = 0; double SFmu_err = 0;
+    double Rm     = 0; double N_inm  = 0; double N_outm = 0; double k_llm = 0; double SFmu = 0;
+    double R_errm = 0; double N_in_errm = 0; double N_out_errm = 0; double k_ll_errm = 0; double SFmu_err = 0;
 
   double N_inem = 0; double N_in_errem = 0; double SFem = 0; double SFem_err = 0;
 
 	Double_t nout_ee(0.),nin_ee(0.),nout_err_ee(0.),nin_err_ee(0.);
 	Double_t nout_mm(0.),nin_mm(0.),nout_err_mm(0.),nin_err_mm(0.);
+     
+}
+
+double GetDYDD(TString ch, TString lev, bool IsErr, bool docout){
+//  ch = Chan; lev = Level;
+
   
   TH1F* DYmm   = loadDYHisto("DY","Muon", lev);
   TH1F* DYee   = loadDYHisto("DY","Elec", lev);
@@ -167,7 +165,54 @@ double GetDYDD(TString ch, TString lev, bool IsErr, bool docout){
   return 1.;
 }
 
-/*
+double GetNonWDD(TString ch, TString lev, bool IsErr, bool docout){
+//  ch = Chan;
+//  lev = Level;
+	double fake   = yield("fake", ch, lev, "0", 0);
+	double efake   = getStatError("fake", ch, lev, "0", 0);
+
+/*	if(ch == "Muon"){
+		if(IsErr) return efake;
+		else      return  fake;
+  }*/
+
+	double fakeSS = yield("fake", ch, lev, "0", 1);
+	double dataSS = yield("data", ch, lev, "0", 1);
+	double bkgSS  = yield("bkg",  ch, lev, "0", 1) - fakeSS;  // prompt MC in SS
+  
+	double efakeSS = getStatError("fake", ch, lev, "0", 1);
+	double edataSS = getStatError("data", ch, lev, "0", 1);
+	double ebkgSS  = getStatError("bkg",  ch, lev, "0", 1) - efakeSS;
+  
+	double  R = fake/fakeSS; 
+  double eR = R*(efake/fake + efakeSS/fakeSS);
+
+  double  DDfake = R*(dataSS - bkgSS);
+  double eDDfake = DDfake*(eR/R  + (edataSS/dataSS - ebkgSS/bkgSS));
+
+  double  SF = DDfake/fake;
+  double eSF = SF*(eDDfake/DDfake + efake/fake);
+
+	if(docout){
+   cout <<      " NonW leptons DD estimate for " << lev << endl;
+   cout <<      "==================================================================" << endl;
+	 cout << Form(" MC fake estimate    (OS WJets + ttbar semilep)   = %2.2f ± %0.2f", fake, efake) << endl;
+	 cout <<      "------------------------------------------------------------------" << endl;
+	 cout << Form(" MC fake SS (WJets + ttbar semilep)   = %2.2f ± %0.2f", fakeSS, efakeSS)  << endl;
+   cout << Form(" R = fakeOS/fakeSS                    = %2.2f ± %0.2f", R, eR)            << endl;
+	 cout << Form(" MC prompt SS (other sources)         = %2.2f ± %0.2f", bkgSS , ebkgSS )  << endl;
+	 cout << Form(" Data SS events                       = %2.2f ± %0.2f", dataSS , edataSS )  << endl;
+	 cout <<      "------------------------------------------------------------------" << endl;
+   cout << Form(" DD fake estimate = R(DataSS-bkgSS)   = %2.2f ± %0.2f", DDfake , eDDfake )  << endl;
+ //  cout << Form(" Scake Factor (DD/MC)                 = %2.2f ± %0.2f", SF , eSF )  << endl;
+   cout <<      "==================================================================" << endl;
+	}
+
+	if(IsErr) return eDDfake;
+	else      return DDfake;
+}
+
+void GetDataDriven(){
   cout << " ------ Drell-Yan DD (R out/in) ------" << endl;
 	cout << endl;
 	GetDYDD(Chan, "dilepton", 0, 1);
@@ -177,6 +222,15 @@ double GetDYDD(TString ch, TString lev, bool IsErr, bool docout){
 	GetDYDD(Chan, "2jets", 0, 1);
 	cout << endl;
 	cout << endl;
-*/
+  cout << " ------ NonW leptons estimate ------" << endl;
+	cout << endl;
+  GetNonWDD(Chan, "dilepton", 0, 1);
+	cout << endl;
+  GetNonWDD(Chan, "MET", 0, 1);
+	cout << endl;
+  GetNonWDD(Chan, "2jets", 0, 1);
+	cout << endl;
+}
+
 
 

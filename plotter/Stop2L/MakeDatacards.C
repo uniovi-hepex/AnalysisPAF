@@ -13,12 +13,12 @@ TString NameOfTree = "tree";
 TString BaselineCut = "TMET > 50 && TNJets > 1 && TNBtags > 0 && !TIsSS && TNVetoLeps < 3";
 
 void MakeDatacards(){
-  //DrawPlot("TChannel", BaselineCut, "ElMu", 1, 0, 2, "Channel", "CutAndCount");
-  //DrawPlot("TMT2", BaselineCut, "ElMu", 40, 0, 200, "M_{T2} [GeV]");
-//      DrawPlot("TMT2", "TMET > 50 && TNJets > 1 && TNBtags > 0 && !TIsSS && TNVetoLeps < 3 && TMT2 < 140", "ElMu", 40, 0, 200, "M_{T2} [GeV]", "TMT2low"); //  DrawPlot("TMET", "TNJets > 1 && TNBtags > 0 && !TIsSS && TNVetoLeps < 3", "ElMu", 40, 0, 400, "MET [GeV]");
-  DrawPlot("TDeltaPhi", BaselineCut, "ElMu", 30, -3.15, 3.15, "#Delta#varphi_{e#mu} [rad]");
-  //DrawPlot("TDeltaEta", BaselineCut, "ElMu", 30, 0, 2.4, "#Delta#eta_{e#mu} [rad]");
-//  DrawPlot("TChannel", BaselineCut, "All", 3, 1, 4, "Channel", "Comb3chan");
+  DrawPlot("TChannel", BaselineCut, "ElMu", 1, 0, 2, "Channel", "CutAndCount");
+//  DrawPlot("TMT2", BaselineCut, "ElMu", 40, 0, 200, "M_{T2} [GeV]");
+//  DrawPlot("TMT2", "TMET > 50 && TNJets > 1 && TNBtags > 0 && !TIsSS && TNVetoLeps < 3 && TMT2 < 140", "ElMu", 40, 0, 200, "M_{T2} [GeV]", "TMT2low"); //  DrawPlot("TMET", "TNJets > 1 && TNBtags > 0 && !TIsSS && TNVetoLeps < 3", "ElMu", 40, 0, 400, "MET [GeV]");
+ // DrawPlot("TDeltaPhi", BaselineCut, "ElMu", 30, -3.15, 3.15, "#Delta#varphi_{e#mu} [rad]");
+//  DrawPlot("TDeltaEta", BaselineCut, "ElMu", 30, 0, 2.4, "#Delta#eta_{e#mu} [rad]");
+  //DrawPlot("TChannel", BaselineCut, "All", 3, 1, 4, "Channel", "Comb3chan");
   //DrawPlot("TNJets", BaselineCut, "ElMu", 1, 0, 10, "CutAndCount","CutAndCount");
   //DrawPlot("TMT2", BaselineCut, "ElMu", 40, 0, 200, "M_{T2} [GeV]");
   //DrawPlot("TMET", "TNJets > 1 && TNBtags > 0 && !TIsSS && TNVetoLeps < 3", "ElMu", 40, 0, 400, "MET [GeV]");
@@ -27,8 +27,9 @@ void MakeDatacards(){
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name){
   Plot* p = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
-  p->SetPathSignal(pathToTree + "T2tt/");
-  p->verbose = false;
+  //p->SetPathSignal(pathToTree + "T2tt/");
+  p->SetPathSignal(pathToTree + "T2tt_noSkim/");
+  p->verbose = true;
   //p->doData = false;
   if(name != "") p->SetVarName(name);
 
@@ -50,19 +51,26 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 	p->AddSample("MuonEG", "Data", itData);
 	p->AddSample("SingleMuon", "Data", itData);
 	p->AddSample("SingleElec", "Data", itData);
-	p->AddSample("DoubleEG", "Data", itData);
-	p->AddSample("DoubleMuon", "Data", itData);
+//	p->AddSample("DoubleEG", "Data", itData);
+//	p->AddSample("DoubleMuon", "Data", itData);
   p->AddSample("TTbar_Powheg_ueUp", "ttbar", itSys, 1, 0, "ueUp"); 
   p->AddSample("TTbar_Powheg_ueDown", "ttbar", itSys, 1, 0, "ueDown"); 
   p->AddSample("TTbar_Powheg_isrUp", "ttbar", itSys, 1, 0, "isrUp"); 
   p->AddSample("TTbar_Powheg_isrDown", "ttbar", itSys, 1, 0, "isrDown"); 
-  p->AddSample("TTbar_Powheg_fsrUp", "ttbar", itSys, 1, 0, "fsrUp"); 
-  p->AddSample("TTbar_Powheg_fsrDown", "ttbar", itSys, 1, 0, "fsrDown"); 
-  p->AddSample("TTJets_aMCatNLO", "ttbar", itSys, 1, 0, "nloUp"); 
-  p->AddSample("TTbar_PowhegLHE", "ttbar", itSys, 1, 0, "nloDown"); 
-  p->AddSample("TTbar_Powheg_Herwig", "ttbar", itSys, 1, 0, "hadUp"); 
-  p->AddSample("TTbar_PowhegLHE", "ttbar", itSys, 1, 0, "hadDown"); 
-  p->AddSample("T2tt_mStop175_mLsp1", "S_175_1", itSignal, kCyan, 0.1); 
+//  p->AddSample("TTbar_Powheg_fsrUp", "ttbar", itSys, 1, 0, "fsrUp"); 
+//  p->AddSample("TTbar_Powheg_fsrDown", "ttbar", itSys, 1, 0, "fsrDown"); 
+//  p->AddSample("TTJets_aMCatNLO", "ttbar", itSys, 1, 0, "nloUp"); 
+//  p->AddSample("TTbar_PowhegLHE", "ttbar", itSys, 1, 0, "nloDown"); 
+//  p->AddSample("TTbar_Powheg_Herwig", "ttbar", itSys, 1, 0, "hadUp"); 
+//  p->AddSample("TTbar_PowhegLHE", "ttbar", itSys, 1, 0, "hadDown"); 
+  p->AddSample("TTbar_PowhegLHE", "ttbar", itSys, 1, 0, "ScaleUp"); 
+  p->AddSample("TTbar_PowhegLHE", "ttbar", itSys, 1, 0, "ScaleDown"); 
+  p->AddSample("TTbar_PowhegLHE", "ttbar", itSys, 1, 0, "pdfUp"); 
+  p->AddSample("TTbar_PowhegLHE", "ttbar", itSys, 1, 0, "pdfDown"); 
+  p->AddSample("T2tt_200_50_FS_summer", "S_200_50", itSignal, kPink-1,  0.1, "0", "isrweight"); 
+//  p->AddSample("T2tt_225_50_FS_summer", "S_225_50", itSignal, kPink-1,  0.1, "0", "isrweight"); 
+//  p->AddSample("T2tt_250_50_FS_summer", "S_250_50", itSignal, kGreen+2, 0.1, "0", "isrweight"); 
+/*  p->AddSample("T2tt_mStop175_mLsp1", "S_175_1", itSignal, kCyan, 0.1); 
   p->AddSample("T2tt_mStop183_mLsp1", "S_183_1", itSignal, kCyan, 0.1); 
   p->AddSample("T2tt_mStop192_mLsp25", "S_192_25", itSignal, kCyan, 0.1); 
   p->AddSample("T2tt_mStop200_mLsp25", "S_200_25", itSignal, kCyan, 0.1); 
@@ -74,11 +82,11 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample("T2tt_200_50_FS_summer", "SFS_200_50", itSignal, kCyan, 0.1); 
   p->AddSample("T2tt_225_50_FS_summer", "SFS_225_50", itSignal, kPink, 0.1); 
   p->AddSample("T2tt_250_50_FS_summer", "SFS_250_50", itSignal, 1, 0.1); 
+*/
+  p->AddSystematic("JES,Btag,MisTag,LepEff,PU");
+ // p->AddSystematic("Btag,MisTag,PU");
 
-  p->AddSystematic("JES,Btag,MisTag,LepEff,PU,Scale,PDF");
-//  p->AddSystematic("Btag,MisTag,PU");
-
-  p->PrintSystYields();
+  //p->PrintSystYields();
   p->PrintYields("","","","tex,html,txt");
   p->MakeAllDatacards();
   delete p;

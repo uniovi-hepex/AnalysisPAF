@@ -232,7 +232,6 @@ Bool_t hasOSSF(vector<Lepton> leptons){
     }
   } 
   return false;
-
 }
 
 Bool_t IsOnZ(vector<Lepton> leptons){
@@ -258,7 +257,7 @@ Bool_t PassLowInvMass(vector<Lepton> leptons, Float_t Mll_max){
   for(Int_t i = 0; i < nLeps; i++){
     for(Int_t j = i; j < nLeps; j++){
       if(leptons.at(i).type == leptons.at(j).type){ // same flavour
-        if(leptons.at(i).charge*leptons.at(j).charge < 1){ // opposite sign
+        if(leptons.at(i).charge*leptons.at(j).charge < 0){ // opposite sign
           if( (leptons.at(i).p + leptons.at(j).p).M()  < Mll_max) return false;
         }
       }
@@ -267,3 +266,12 @@ Bool_t PassLowInvMass(vector<Lepton> leptons, Float_t Mll_max){
   return true;
 }
 
+Bool_t IsThereSSpair(vector<Lepton> leptons){
+  Int_t nLeps = leptons.size();
+  for(Int_t i = 0; i < nLeps; i++){
+    for(Int_t j = i; j < nLeps; j++){
+        if(leptons.at(i).charge*leptons.at(j).charge > 0) return true;
+    }
+  }
+  return false;
+}

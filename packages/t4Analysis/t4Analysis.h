@@ -21,6 +21,9 @@ class t4Analysis : public PAFChainItemSelector{
     std::vector<Lepton> selTaus     ;
     std::vector<Lepton> selLeptons  ;
     std::vector<Lepton> vetoLeptons ;
+    std::vector<Lepton> looseLeptons;
+    std::vector<Lepton> zLeptons;
+    std::vector<Lepton> xLeptons;
     std::vector<Jet>    selJets ;
     std::vector<Jet>    Jets15  ;
 
@@ -30,7 +33,8 @@ class t4Analysis : public PAFChainItemSelector{
     void SetEventVariables();
 
     void GetTauVariables(std::vector<Lepton> selTaus);
-    void GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> VetoLeptons);
+    void GetLeptonVariables(std::vector<Lepton> selLeptons);
+    void GetFakeableLeptonVariables(std::vector<Lepton> vetoLeptons);
     void GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut = 30);
     void GetMET();
 
@@ -50,8 +54,11 @@ class t4Analysis : public PAFChainItemSelector{
     // Tree Variables
     Float_t TWeight;   // Total nominal weight
     Float_t TMll;      // Invariant mass
+    Float_t TM3l;      
+    Float_t TMZ;      
     Float_t TMET;      // MET
     Float_t TMET_Phi;  // MET phi
+    Int_t   TIsOnZ;
 
     Int_t   TNFakeableLeps;
     Int_t   TNSelLeps;
@@ -60,7 +67,12 @@ class t4Analysis : public PAFChainItemSelector{
     Float_t TLep_Eta[10];
     Float_t TLep_Phi[10];
     Float_t TLep_E[10];
-    Int_t TLep_Charge[10];
+    Int_t   TLep_Charge[10];
+    Float_t TFLep_Pt[5];
+    Float_t TFLep_Eta[5];
+    Float_t TFLep_Phi[5];
+    Float_t TFLep_E[5];
+    Int_t   TFLep_Charge[5];
 
     Int_t TNTaus;
     Float_t TTau_Pt         [10];
