@@ -200,6 +200,7 @@ void EventBuilder::Initialise(){
   gChannel = -1;
 
   selLeptons = std::vector<Lepton>();
+  vetoLeptons = std::vector<Lepton>();
 
   gIsDoubleElec = false; gIsDoubleMuon = false; gIsSingleElec = false;
   gIsSingleMuon = false; gIsMuonEG = false;
@@ -234,6 +235,7 @@ void EventBuilder::Initialise(){
 void EventBuilder::InsideLoop(){
   // >>>>>>>>>>>>>> Get selected leptons:
   selLeptons = GetParam<std::vector<Lepton>>("selLeptons");
+  vetoLeptons = GetParam<std::vector<Lepton>>("vetoLeptons");
   // Set channel
   if(selLeptons.size() >= 2){ // Dilepton Channels
     if     (selLeptons.at(0).isElec && selLeptons.at(1).isMuon) gChannel = iElMu;
@@ -261,14 +263,20 @@ void EventBuilder::InsideLoop(){
   else if ((gChannel == iTriLep || gChannel == iFourLep) && Trig3l4l()) passTrigger = true;
 
   if(gSelection == i4tSelec){
-    if(selLeptons.size() == 2){
-      if( (selLeptons[0].charge*selLeptons[1].charge) > 0){
+    gChannel = -1; 
+    if(selLeptons.size() < 2 && vetoLeptons.size() >= 2){ 
+      if( (vetoLeptons[0].charge*vetoLeptons[1].charge) > 0){  // fakes of 2lss
         gChannel = i2lss; isSS = true;
       }
-      else gChannel = -1; // 2 leptons OS
     }
-    else if(selLeptons.size() == 3) gChannel = iTriLep;
-    else if(selLeptons.size() >= 4) gChannel = iFourLep;
+    else if(selLeptons.size() == 2){ 
+      if( (selLeptons[0].charge*selLeptons[1].charge) > 0){ // 2lss
+        gChannel = i2lss; isSS = true;
+      }
+      else if(vetoLeptons.size() > 2) gChannel = iTriLep; // fakes of 3 leptons 
+    }
+    else if(selLeptons.size() == 3) gChannel = iTriLep; // 3 leptons
+    else if(selLeptons.size() >= 4) gChannel = iFourLep; // 4 leptons
     else gChannel = -1; // less than 2 leptons...
 
     passTrigger = PassesElMuTrigger() || PassesElMuHTTrigger() ||

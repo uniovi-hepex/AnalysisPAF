@@ -60,8 +60,8 @@ void yields(TString plotsFolder=""){
   p->AddSample("T_tch"                  ,"t/tW", itBkg, kMagenta, 0.2);
   p->AddSample("Tbar_tch"               ,"t/tW", itBkg);
   p->AddSample("TToLeptons_sch_amcatnlo","t/tW", itBkg);
-  //p->AddSample("TW",    "t/tW", itBkg);
-  //p->AddSample("TbarW", "t/tW", itBkg);
+  p->AddSample("TW_noFullyHadr"         ,"t/tW", itBkg);
+  p->AddSample("TbarW_noFullyHadr"      ,"t/tW", itBkg);
   
   // tt
   p->AddSample("TTbar_Powheg", "tt", itBkg, kRed+1, 0.05);

@@ -53,8 +53,7 @@ class TopAnalysis : public PAFChainItemSelector{
     Int_t nFiduJets; Int_t nFidubJets; 
 
     Float_t TrigSF;
-    Float_t TrigSF_Up;
-    Float_t TrigSF_Down;
+    Float_t TrigSFerr;
     Float_t PUSF;
     Float_t PUSF_Up;
     Float_t PUSF_Down;

@@ -24,19 +24,18 @@ Histo* Plot::GetH(TString sample, TString sys, Int_t type){
 }
 
 void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, TString sys, TString options){
+  p.ReplaceAll(" ", "");
+  if(p.Contains(",")){
+    TString First_p = p(0, p.First(','));
+    TString theRest = p(p.First(',')+1, p.Sizeof());
+    AddSample(First_p, pr, type, color, S, sys, options);
+    AddSample(theRest, pr, type, color, S, sys, options);
+    return;
+  }
 
   SetLoopOptions(options);
   VTagOptions.push_back(options);
 
-  // Add a sample to your plot...
-  //  -> p  is the name of the sample
-  //  -> pr is the name of the process that includes the sample
-  //  -> type: itBkg    for a background sample
-  //           itSignal for a signal sample
-  //           itData   for a data sample
-  //           -1       for a systematic variation
-  //  -> S is the normalization uncertainty of the sample (for datacards)
-  //  -> iSyst is the index of the systematic variaton
   Histo* h = GetH(p, sys, type);
   h->SetProcess(pr);
   TString t = (sys == "0")? pr : pr + "_" + sys;
@@ -92,13 +91,9 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, Float_t S, 
         return;
       }
     }
-
   }
-  h->SetType(type); h->SetColor(color); 
 
-  h->SetStyle(); 
-  h->SetSysNorm(S);
-
+  h->SetType(type); h->SetColor(color); h->SetStyle(); h->SetSysNorm(S);
   AddToHistos(h);
 } 
 
@@ -522,6 +517,10 @@ void Plot::ScaleProcess(TString pr, Float_t SF){
     VSyst.at(i)->Scale(SF);
     VSyst.at(i)->SetStyle();
   }
+}
+
+void Plot::ScaleSignal(Float_t SF){
+  ScaleProcess(SignalProcess, SF);
 }
 
 void Plot::ScaleSys(TString pr, Float_t SF){

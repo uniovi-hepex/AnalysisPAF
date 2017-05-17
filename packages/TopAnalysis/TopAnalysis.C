@@ -73,7 +73,7 @@ void TopAnalysis::Initialise(){
     SetEventVariables();
     SetTWVariables();
   }
-  setTWBDT();
+  //setTWBDT();
   InitHistos();
 
   genLeptons  = std::vector<Lepton>();
@@ -104,8 +104,7 @@ void TopAnalysis::InsideLoop(){
   // Weights and SFs
   NormWeight = GetParam<Float_t>("NormWeight");
   TrigSF       = GetParam<Float_t>("TriggerSF");
-  TrigSF_Up    = TrigSF + GetParam<Float_t>("TriggerSFerr");
-  TrigSF_Down  = TrigSF - GetParam<Float_t>("TriggerSFerr");
+  TrigSFerr    = GetParam<Float_t>("TriggerSFerr");
   PUSF         = GetParam<Float_t>("PUSF");
   PUSF_Up      = GetParam<Float_t>("PUSF_Up");
   PUSF_Down    = GetParam<Float_t>("PUSF_Down");
@@ -197,8 +196,8 @@ void TopAnalysis::InsideLoop(){
     TWeight_ElecEffDown = NormWeight*ElecSFDo*MuonSF*TrigSF*PUSF;
     TWeight_MuonEffUp   = NormWeight*ElecSF*MuonSFUp*TrigSF*PUSF;
     TWeight_MuonEffDown = NormWeight*ElecSF*MuonSFDo*TrigSF*PUSF;
-    TWeight_TrigUp     = NormWeight*lepSF*TrigSF_Up*PUSF;
-    TWeight_TrigDown   = NormWeight*lepSF*TrigSF_Down*PUSF;
+    TWeight_TrigUp     = NormWeight*lepSF*(TrigSF+TrigSFerr)*PUSF;
+    TWeight_TrigDown   = NormWeight*lepSF*(TrigSF-TrigSFerr)*PUSF;
     TWeight_PUDown     = NormWeight*lepSF*TrigSF*PUSF_Up;
     TWeight_PUUp       = NormWeight*lepSF*TrigSF*PUSF_Down;
     if(gIsData) TWeight = 1;
@@ -239,7 +238,7 @@ void TopAnalysis::InsideLoop(){
       if(TChannel == iElMu || ((TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15))){
         if(TChannel == iElMu || TMET > 40){   // MET > 40 in ee, µµ
           if (TNBtags > 0 || TNBtagsUp > 0 || TNBtagsDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0){
-	    CalculateTWVariables();
+	    //CalculateTWVariables();
             fTree->Fill();
           }
         }

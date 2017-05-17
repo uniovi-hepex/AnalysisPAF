@@ -45,7 +45,6 @@ class CrossSection{
       NData = p->GetData(); // Set dataaaaaaaa
       // External inputs not provided by plot: thxsec
       //    Optional inputs: nSimulatedSignal, nFiducialSignal, BR, level tag, channel tag
-
     }; 
     CrossSection(Int_t nbkg, TString *bkgtag, Float_t *bkg, Float_t *bkg_unc, Int_t nsys, TString *systag, Float_t *var, Float_t signal_yield = 1, Float_t data = 1, Float_t lum = 0, Float_t lum_unc = 0, Bool_t *isEff = 0){ // From yields
       Int_t nBkgs = nbkg;
@@ -72,9 +71,13 @@ class CrossSection{
     void AddBkgUnc(Float_t v){ BkgUnc.push_back(v);}
 
     void AddBkgTag(TString t){ BkgTags.push_back(t);}
-    void AddSysTag(TString t){ SysTags.push_back(t);}
+    void AddSysTag(TString t){ SysTags.push_back(t); IsEffic.push_back(false);}
     void AddSysVar(Float_t v){ SysVar.push_back(v);}
     void AddUncTagEff(Bool_t v){ IsEffic.push_back(v);}
+    void SetUnc(TString source, Float_t value);
+    void SetYield(TString bkg, Float_t value);
+    Float_t GetYield(TString bkg);
+    Float_t GetUnc(TString source);
     void SetEfficiencySyst(TString s);
     void SetAcceptanceSyst(TString s);
 
@@ -90,6 +93,8 @@ class CrossSection{
     void SetSignalYield(Float_t n){ y = n;}
     void SetOutputFolder(TString t){ outputFolder = t;}
     void SetTableName(TString t){ tableName = t;}
+    void SetXsecTableName(TString t){ xsecvalTableName = t;}
+    void SetYieldsTableName(TString t){ yieldsTableName = t;}
 
     void SetMembers();
 
@@ -129,6 +134,8 @@ class CrossSection{
     TString signalTag = "";
     TString outputFolder = "./";
     TString tableName = "xsec";
+    TString yieldsTableName = "xsec_yields";
+    TString xsecvalTableName = "xsecval";
 
     // Derived quantities
     Float_t NBkg = 0;
