@@ -10,8 +10,9 @@ R__LOAD_LIBRARY(Plot.C+)
 
 const TString Signalmc[]      = {"TTHNonbb"};                   // ttH
 const TString TTWmc[] 	      = {"TTWToLNu1", "TTWToQQ"};			  // TTW
-const TString TTZmc[] 	      = {"TTZToLLNuNu", "TTZToQQ"};	    // TTZ
-const TString TTbarmc[] 	    = {"TTGJets", "TTJets_aMCatNLO"}; // TTbar
+const TString TTZmc[] 	      = {"TTZToLLNuNu1", "TTZToQQ"};	    // TTZ
+const TString TTbarmc[] 	    = {"TTGJets", "TTbar_Powheg"}; // TTbar at LO (comment/uncomment as desired)
+//const TString TTbarmc[] 	    = {"TTGJets", "TTJets_aMCatNLO"}; // TTbar at NLO (comment/uncomment as desired)
 const TString WJetsmc[]       = {"WJetsToLNu_MLM"};             // WJets at LO  (comment/uncomment as desired)
 //const TString WJetsmc[]       = {"WJetsToLNu_aMCatNLO"};        // WJets at NLO (comment/uncomment as desired)
 const TString STmc[]    	    = {"TW", "TbarW", "T_tch", "Tbar_tch", "TToLeptons_sch_amcatnlo","TGJets"};// ST
@@ -26,12 +27,13 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 
 
 void DrawPlots(TString chan = "ElMu", TString tag = "0"){
-  TString cut = "((TCat == 2 && (TChannel == 1 || TChannel == 2 || TChannel == 3)) || (TCat == 3 && TChannel == 4) || (TCat == 4 && TChannel == 5))";
+  TString cut = "((TCat == 2 && (TChannel == 1 || TChannel == 2 || TChannel == 3)) || (TCat == 3 && TChannel == 5) || (TCat == 4 && TChannel == 6))";
   if (chan == "2lSS")     cut = "(TCat == 2 && (TChannel == 1 || TChannel == 2 || TChannel == 3))";
   else if (chan == "Elec" || chan == "Muon" || chan == "ElMu") cut = "(TCat == 2)";
   else if (chan == "3l")  cut = "(TCat == 3)";
   else if (chan == "4l")  cut = "(TCat == 4)";
   
+  DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag);
   DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag);
   DrawPlot("TnFakeableLepton", cut, chan, 5, 0, 5,     "nFakeLep (#)", "nFakeLepton", tag);
   DrawPlot("TnLooseLepton",    cut, chan, 5, 0, 5,     "nLooseLep (#)", "nLooseLepton", tag);
@@ -42,6 +44,7 @@ void DrawPlots(TString chan = "ElMu", TString tag = "0"){
   DrawPlot("TPtLeading",       cut, chan, 10, 0, 200,  "Pt (GeV)", "PtLeading", tag);
   DrawPlot("TPtSubLeading",    cut, chan, 10, 0, 200,  "Pt (GeV)", "PtSubLeading", tag);
   DrawPlot("TPtSubSubLeading", cut, chan, 10, 0, 200,  "Pt (GeV)", "PtSubSubLeading", tag);
+  DrawPlot("TPtVector",        cut, chan, 10, 0, 200,  "Pt (GeV)", "PtVector", tag);
   DrawPlot("TMET",             cut, chan, 10, 0, 400,  "MET (GeV)", "MET", tag);
   DrawPlot("TMHT",             cut, chan, 10, 0, 1000, "MHT (GeV)", "MHT", tag);
   DrawPlot("THT",              cut, chan, 10, 0, 1000, "HT (GeV)", "HT", tag);
@@ -75,7 +78,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     }
     outputpath  += "lepidcomparison/";
     path        += "lepidcomparison/";
-    if (tag == "top")       path += "top/";
+    if      (tag == "top")  path += "top/";
     else if (tag == "Stop") path += "Stop/";
     else if (tag == "ttH")  path += "ttH/";
   }
@@ -96,11 +99,13 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     }
     path        += "lepMVAcomparison/";
     outputpath  += "lepMVAcomparison/";
-    if (tag == "et")        path += "extratight/";
-    else if (tag == "vt")   path += "verytight/";
-    else if (tag == "t")    path += "tight/";
-    else if (tag == "m")    path += "medium/";
-    else if (tag == "tth")  path += "tth/";
+    if      (tag == "et")     path += "extratight/";
+    else if (tag == "vt")     path += "verytight/";
+    else if (tag == "t")      path += "tight/";
+    else if (tag == "m")      path += "medium/";
+    else if (tag == "tth")    path += "tth/";
+    else if (tag == "tth95")  path += "tth95/";
+    else if (tag == "tth97")  path += "tth97/";
   }
   else if (githead.Contains("test")) {
     if (counter == 0) {
@@ -160,34 +165,37 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   for (UInt_t isample = 0; isample < sizeof(Data)/sizeof(*Data); isample++) {
 	  p->AddSample(Data[isample], "Data", itData,kBlack);
   }
-  for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
-	  p->AddSample(Signalmc[isample], "ttH", itSignal, kRed);
+  if (counter == 0) {
+    for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
+	    p->AddSample(Signalmc[isample], "ttH", itSignal, kRed);
+    }
+  } else {
+    p->AddSample(Signalmc[0], "ttH", itBkg, kRed);
   }
-  //p->AddSample(Signalmc[0], "ttH", itBkg, kRed);
-  
   
   // Histogram settings ========================================================
   p->SetScaleMax(1.7);
   p->SetRatioMin(0);
   p->SetRatioMax(2);
-  if (!githead.Contains("test")) {
-    p->SetSignalStyle("Fill");
-  }
+  //if (!githead.Contains("test")) {
+  //  p->SetSignalStyle("Fill");
+  //}
   p->doSetLogy = false;
   
+  // Errors ====================================================================
+  p->AddSystematic("stat,JES");
   
   // Yields table settings and printing ========================================
   if (counter == 0) {
-    p->AddSystematic("stat");
     p->SetTableFormats("%1.4f");
     p->SetYieldsTableName("Yields_"+chan+"_"+tag);
     p->PrintYields("","","","txt");
-    counter = 1;
   }
   
-
-  // Print and plot ============================================================
-  p->DrawStack(tag, 1);
+  // Plotting ==================================================================
+  if (counter != 0) p->DrawStack(tag, 1);
+	
   
+  if (counter == 0) counter = 1;
   delete p;
 }

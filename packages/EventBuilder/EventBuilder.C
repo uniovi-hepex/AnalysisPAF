@@ -250,8 +250,10 @@ void EventBuilder::InsideLoop(){
   }
   
   if(gSelection == ittHSelec && selLeptons.size() > 2){
-    if      (selLeptons.size() == 3) gChannel = iTriLep;
-    else if (selLeptons.size() >= 4) gChannel = iFourLep;
+    if (selLeptons.at(2).Pt() > 10) {
+      if      (selLeptons.size() == 3) gChannel = iTriLep;
+      else if (selLeptons.size() >= 4) gChannel = iFourLep;
+    }
   }
 
   passTrigger = false;

@@ -124,6 +124,7 @@ void ttHAnalysis::SetLeptonBranches() {
   fTree->Branch("TPtLeading",       &TPtLeading,        "TPtLeading/F");
   fTree->Branch("TPtSubLeading",    &TPtSubLeading,     "TPtSubLeading/F");
   fTree->Branch("TPtSubSubLeading", &TPtSubSubLeading,  "TPtSubSubLeading/F");
+  fTree->Branch("TPtVector", 				&TPtVector);
 }
 
 void ttHAnalysis::SetJetBranches() {
@@ -158,6 +159,16 @@ void ttHAnalysis::SetMiniTreeVariables() {
   
   TCS             = GetCS();
   TMass           = (TightLepton[0].p+TightLepton[1].p).M();
+	if (nTightLepton >= 2) {
+	  TPtVector.push_back(TightLepton.at(0).Pt());
+	  TPtVector.push_back(TightLepton.at(1).Pt());
+	}
+	if (nTightLepton >= 3) {
+		TPtVector.push_back(TightLepton.at(2).Pt());
+	}
+	if (nTightLepton >= 4) {
+		TPtVector.push_back(TightLepton.at(3).Pt());
+	}
 }
 
 
@@ -472,13 +483,14 @@ void ttHAnalysis::InitialiseVariables() {
   LooseLepton.clear();
   Tau.clear();
   Jets.clear();
+  TPtVector.clear();
   nTightLepton    = 0;
   nFakeableLepton = 0;
   nLooseLepton    = 0;
   nTaus           = 0;
   nJets           = 0;
   nMediumBTags    = 0;
-  nLooseBTags     = 0;_:
+  nLooseBTags     = 0;
   gChannel        = 0;
   passTrigger     = 0;
   isSS            = 0;
@@ -496,6 +508,7 @@ void ttHAnalysis::InitialiseVariables() {
   Tevt            = 0;
 }
 
+
 void ttHAnalysis::GetParameters() {
   // Import essential and global variables of the execution
   gSampleName	    =	GetParam<TString>("sampleName");
@@ -504,6 +517,7 @@ void ttHAnalysis::GetParameters() {
 	gIsMCatNLO      =	GetParam<Bool_t>("IsMCatNLO");
 }
 
+
 void ttHAnalysis::GetEventVariables() {
   // Clean all event variables (also the minitree ones)
   TightLepton.clear();
@@ -511,6 +525,7 @@ void ttHAnalysis::GetEventVariables() {
   LooseLepton.clear();
   Tau.clear();
   Jets.clear();
+  TPtVector.clear();
   nTightLepton    = 0;
   nFakeableLepton = 0;
   nLooseLepton    = 0;
@@ -563,11 +578,13 @@ void ttHAnalysis::GetEventVariables() {
   }
 }
 
+
 Float_t ttHAnalysis::GetMETLD() {
 	Float_t metld;
 	metld = MET * 0.00397 + MHT * 0.00265;
 	return metld;
 }
+
 
 Float_t ttHAnalysis::GetHT() {
 	Float_t ht = 0;
@@ -576,6 +593,7 @@ Float_t ttHAnalysis::GetHT() {
   } 
 	return ht;
 }
+
 
 Float_t ttHAnalysis::GetMHT() {
 	Float_t mht = 0;
@@ -588,6 +606,7 @@ Float_t ttHAnalysis::GetMHT() {
 	return mht;
 }
 
+
 Int_t ttHAnalysis::GetCS() {
 	Int_t cs = 0;
 	for (UInt_t i = 0; i < TightLepton.size(); i++) {
@@ -596,6 +615,7 @@ Int_t ttHAnalysis::GetCS() {
 	return cs;
 }
 
+
 Int_t ttHAnalysis::GetnMediumBTags(){
   Int_t nmediumbtag = 0;
   for(UInt_t i = 0; i < Jets.size(); i++) {
@@ -603,6 +623,7 @@ Int_t ttHAnalysis::GetnMediumBTags(){
   }
   return nmediumbtag;
 }
+
 
 Int_t ttHAnalysis::GetnLooseBTags(){
   Int_t nloosebtag = 0;
