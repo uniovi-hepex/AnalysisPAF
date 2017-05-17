@@ -220,7 +220,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
     PAF_INFO("RunAnalyser", "Sequential mode selected");
     pafmode = new PAFSequentialEnvironment();
   }
-  else if (nSlots <=8 ) {
+  else if (nSlots <=64 ) {
     PAF_INFO("RunAnalyser", "PROOF Lite mode selected");
     pafmode = new PAFPROOFLiteEnvironment(nSlots);
   }
