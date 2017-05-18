@@ -162,13 +162,64 @@ void Looper::Loop(TString sys){
   //SetFormulas(sys); // Change systematic
   Int_t nEntries = tree->GetEntries();
   Float_t val = 0; Float_t weight = 0;
+  Int_t nInstances = FormulasVars->GetNdata();
+  Bool_t doAllInstances(false);
+  if(options.Contains("AllInstances")){
+    doAllInstances = true;
+    cout << "Looping over all values of the variable!! Number of instances: " << nInstances << endl;
+  }
+
+  // Options for systematics
   if(doSysPDF || doSysScale) hLHEweights = loadSumOfLHEweights(pathToHeppyTrees, sampleName);
+
+  // For fake or flips from data
+/*  Bool_t histo2D(false);
+  TTreeFormula *LepPt;
+  TTreeFormula *LepEta;
+  if(options.Contains("UseHisto2D")){
+    histo2D = true; 
+
+    TString InfoHisto = TString(options.Data());
+    InfoHisto.ReplaceAll(" ", "");
+    InfoHisto.ReplaceAll("UseHisto2D:", "");
+    // Careful if there's more than one option! it should be after the UseHisto!
+    if(InfoHisto.Contains(",")) InfoHisto = InfoHisto(0, InfoHisto.First(','));
+    TString Path_to_histo = InfoHisto(0, InfoHisto.First(':')); InfoHisto.ReplaceAll(Path_to_histo + ":", "");
+    TString histo_name    = InfoHisto(0, InfoHisto.First(':')); InfoHisto.ReplaceAll(histo_name + ":", "");
+    TString varname1      = InfoHisto(0, InfoHisto.First(':')); InfoHisto.ReplaceAll(varname1 + ":", "");
+    TString varname2      = InfoHisto(0, InfoHisto.First(':')); InfoHisto.ReplaceAll(varname2 + ":", "");
+    loadHisto2D(Path_to_histo, histo_name);
+    LepPt    = GetFormula("LepPt",    "TFLep_Pt");
+    LepEta   = GetFormula("LepEta",   "TFLep_Eta");
+  }*/
+  Float_t f;
+  if(options.Contains("Fake") || options.Contains("fake")){
+    TString WorkingDir = gSystem->WorkingDirectory();
+
+/*
+    LepPt    = GetFormula("LepPt",    "TFLep_Pt");
+    LepEta   = GetFormula("LepEta",   "TFLep_Eta");
+    LepPdgId = GetFormula("LepPdgId", "TFLep_pdgId");
+    LepChar  = GetFormula("LepChar",  "TFLep_Charge");
+    nSelLep  = GetFormula("nSelLep",  "TNSelLeps");
+    nFakeLep = GetFormula("nFakeLep", "TNFakeableLeps");
+*/
+    tree->SetBranchAddress("TFLep_Pt", FLepPt);
+    tree->SetBranchAddress("TFLep_Eta", FLepEta);
+    tree->SetBranchAddress("TFLep_pdgId", FLepPdgId);
+    tree->SetBranchAddress("TFLep_Charge", FLepCharge);
+    tree->SetBranchAddress("TLep_Charge", LepCharge);
+    tree->SetBranchAddress("TNSelLeps", &nLeps);
+    tree->SetBranchAddress("TNFakeableLeps", &nFakeLeps);
+  }
+
   for (Long64_t jentry=0; jentry<nEntries; jentry++) {
     tree->GetEntry(jentry);
     if(numberInstance != 0) FormulasVars->GetNdata();
     weight  = FormulasCuts->EvalInstance();
     val     = FormulasVars->EvalInstance(numberInstance);
-    //if(doSysPDF)   weight *= GetPDFweight(sys);
+
+    // For ScaleME and PDF systematics
     if(doSysScale || doSysPDF){
       Float_t LHEweight = 1;
       for(Int_t i = 0; i < nLHEweights; i++){
@@ -176,8 +227,44 @@ void Looper::Loop(TString sys){
         hLHE[i]->Fill(val, LHEweight);
       }
     }
-    Hist->Fill(val, weight);
+
+    // For fakes or flips
+    /*if(histo2D){
+      // One weight for lepton
+        Float_t hWeight = 1;
+          Float_t v1 = 0; Float_t v2 = 0; Float_t vIso = 0;
+          for(Int_t = 0; i < nLeptons; i++){
+          v1 = var1->EvalInstance(i);
+          v2 = var2->EvalInstance(i);
+          } 
+     }     */
+
+    if(options.Contains("Fake") || options.Contains("fake")){
+      f = 1;
+      if(nFakeLeps <= 0) continue;
+      if(nLeps >= 3)     continue;
+      if(nLeps == 2){ // If is SS, is not fake
+        if(LepCharge[0] == LepCharge[1]) continue;
+      }
+      for(Int_t i = 0; i < nFakeLeps; i++){
+        //if(FLepPdgId[i] == 11) f *= electronFakeRate(FLepPt[i], FLepEta[i]);
+        //if(FLepPdgId[i] == 13) f *=     muonFakeRate(FLepPt[i], FLepEta[i]);
+      }
+      weight *= f/(1-f);
+      if(options.Contains("Sub") || options.Contains("sub")) weight *= -1;
+    }
+
+    if(doAllInstances){
+      nInstances = FormulasVars->GetNdata();
+      for(Int_t g = 0; g < nInstances; g++){
+        val = FormulasVars->EvalInstance(g);
+        Hist->Fill(val, weight);
+      }
+    }
+    else    Hist->Fill(val, weight);
   }
+
+
   Float_t nom = 0; Float_t var = 0; Float_t ext = 0; Float_t env = 0;
   if(doSysScale){ // Get envelope!!
     //cout << " Scale matrix element weights: \n";
@@ -274,4 +361,16 @@ TH1D* loadSumOfLHEweights(TString pathToHeppyTrees, TString sampleName){
   }
   hSumOfLHEweights->SetDirectory(0);
   return hSumOfLHEweights;
+}
+
+
+
+TTreeFormula* Looper::GetFormula(TString name, TString var){
+  TTreeFormula *f = new TTreeFormula(name, var, tree);
+  f->GetNdata();
+  return f;
+}
+
+void Looper::loadHisto2D(TString Path_to_histo, TString histo_name){
+
 }

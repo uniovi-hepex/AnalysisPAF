@@ -6,7 +6,7 @@ t4Analysis::t4Analysis() : PAFChainItemSelector() {
 
   TrigSF = 0; TrigSF_Up = 0; TrigSF_Down = 0; PUSF = 0; PUSF_Up = 0; PUSF_Down = 0;
   gChannel = 0; passMETfilters = 0; passTrigger = 0; isSS = 0;  NormWeight = 0; TWeight = 0; TIsOnZ = 0;
-  TMZ = 0; TM3l = 0; TMll = 0;  TMET = 0; TMET_Phi = 0; TNTaus = 0; TNJets = 0; TNBtags = 0; THT = 0; 
+  TMZ = 0; TM3l = 0; TMll = 0;  TMET = 0; TMET_Phi = 0; TMT2 = 0; TNTaus = 0; TNJets = 0; TNBtags = 0; THT = 0; 
   TNFakeableLeps = 0; TNSelLeps = 0; TChannel = 0; 
   TNJetsJESUp = 0; TNJetsJESDown = 0; TNJetsJER = 0; TNBtagsJESUp = 0; TNBtagsJESDown = 0;
   TNBtagsUp = 0; TNBtagsDown = 0; TNBtagsMisTagUp = 0; TNBtagsMisTagDown = 0;
@@ -38,6 +38,7 @@ t4Analysis::t4Analysis() : PAFChainItemSelector() {
     TLep_Phi      [i] = 0;
     TLep_E        [i] = 0;
     TLep_Charge   [i] = 0;
+    TLep_pdgId    [i] = 0;
   }
   for(Int_t i = 0; i < 5; i++){
     TFLep_Pt       [i] = 0;
@@ -132,24 +133,20 @@ void t4Analysis::InsideLoop(){
     }
     else if(TNSelLeps == 2 && TNFakeableLeps == 0){ // 2lss
       if(IsThereSSpair(selLeptons)) TChannel = i2lss;
-      cout << "TNSelLeps == 2 && TNFakeableLeps == 0, TChannel = i2lss = " << TChannel << endl;
     }
     else if(TNSelLeps == 2 && TNFakeableLeps >= 1){ // Fakes for 3L
       TChannel = iTriLep_fake;
       if(xLeptons.at(0).charge == xLeptons.at(1).charge && xLeptons.at(0).charge == xLeptons.at(2).charge) TChannel = -1; // Three leptons SS 
-      cout << "TNSelLeps == 2 && TNFakeableLeps >= 1, TChannel = iTrilep_fake = " << TChannel << endl;
     } 
     else if(TNSelLeps >= 3){
       TChannel = iTriLep;
       if(selLeptons.at(0).charge == selLeptons.at(1).charge && selLeptons.at(0).charge == selLeptons.at(2).charge) TChannel = -1; // Three leptons SS 
-      cout << "TNSelLeps >= 3, TChannel = iTrilep = " << TChannel << endl;
     }
   }
   else if(TNTaus >= 1){
-    if(TNSelLeps >= 2) {TChannel = i2l1tau;
-      cout << "TNTaus >= 1 && TSelLeps >= 2, TChannel = i2l1tau = " << TChannel << endl;
-
-}
+    if(TNSelLeps >= 2) {
+      TChannel = i2l1tau;
+    }
   }
 
   //if( (TNSelLeps > nReqLeps || TNFakeableLeps > nReqLeps) && passJetReq && passTrigger && passMETfilters){
@@ -201,6 +198,7 @@ void t4Analysis::SetLeptonVariables(){
   fTree->Branch("TLep_Phi",        TLep_Phi,        "TLep_Phi[TNSelLeps]/F");
   fTree->Branch("TLep_E" ,         TLep_E ,         "TLep_E[TNSelLeps]/F");
   fTree->Branch("TLep_Charge",     TLep_Charge,     "TLep_Charge[TNSelLeps]/F");
+  fTree->Branch("TLep_pdgId",      TLep_pdgId,      "TLep_pdgId[TNSelLeps]/I");
   fTree->Branch("TFLep_Pt",        TFLep_Pt,        "TFLep_Pt[TNFakeableLeps]/F");
   fTree->Branch("TFLep_Eta",       TFLep_Eta,       "TFLep_Eta[TNFakeableLeps]/F");
   fTree->Branch("TFLep_Phi",       TFLep_Phi,       "TFLep_Phi[TNFakeableLeps]/F");
@@ -243,6 +241,7 @@ void t4Analysis::SetEventVariables(){
   fTree->Branch("TWeight",      &TWeight,      "TWeight/F");
   fTree->Branch("TMET",         &TMET,         "TMET/F");
   fTree->Branch("TMET_Phi",     &TMET_Phi,     "TMET_Phi/F");
+  fTree->Branch("TMT2",         &TMT2,         "TMT2/F");
   fTree->Branch("TIsOnZ",       &TIsOnZ,       "TIsOnZ/I");
 
   if(gIsData) return;
@@ -300,6 +299,7 @@ void t4Analysis::GetLeptonVariables(std::vector<Lepton> selLeptons){
       TLep_Phi[i]    = selLeptons.at(i).Phi();
       TLep_E[i]      = selLeptons.at(i).E();
       TLep_Charge[i] = selLeptons.at(i).charge;
+      TLep_pdgId[i]  = selLeptons.at(i).isElec? 11 : 13;
     }
     else{
       TLep_Pt[i]     = 0;
@@ -307,6 +307,7 @@ void t4Analysis::GetLeptonVariables(std::vector<Lepton> selLeptons){
       TLep_Phi[i]    = 0;
       TLep_E[i]      = 0;
       TLep_Charge[i] = 0;
+      TLep_pdgId[i]  = 0;
     }
   }
   TMll = TNSelLeps < 2 ? 0 : (selLeptons.at(0).p + selLeptons.at(1).p).M();      
@@ -393,6 +394,7 @@ void t4Analysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> clea
 void t4Analysis::GetMET(){
   TMET        = Get<Float_t>("met_pt");
   TMET_Phi    = Get<Float_t>("met_phi");  // MET phi
+  if(TNSelLeps>1)  TMT2 = getMT2ll(selLeptons.at(0), selLeptons.at(1), TMET,        TMET_Phi);
   if(gIsData) return;
   TMETJESUp   = GetParam<Float_t>("MET_JESUp");
   TMETJESDown = GetParam<Float_t>("MET_JESDown");

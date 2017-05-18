@@ -320,7 +320,7 @@ bool DatasetManager::DownloadAvailableTabs() {
 bool DatasetManager::DownloadTab(const char* folder) {
   //Write script
 #ifdef DEBUGDS  
-  cout << "DEBUG: Writting..." << endl;
+  cout << "DEBUG: Writing..." << endl;
 #endif
   TString scriptname = WriteGetDatasetsScript();
 
@@ -509,7 +509,7 @@ TString DatasetManager::WriteGetDatasetsScript() {
   os << "#echo \"   DEB: Skim 2 folder = $skim2folder\"" << endl;
   os << "" << endl;
   os << "outputfile=$pathtodatfiles/$dataset.dat" << endl;
-  os << "echo \"   + Writting info to $outputfile...\"" << endl;
+  os << "echo \"   + Writing info to $outputfile...\"" << endl;
   os << "if [ -f $outputfile ]; then" << endl;
   os << "    echo \"     - $outputfile already exists. Moving it to $outputfile.bak\"" << endl;
   os << "    mv $outputfile $outputfile.bak" << endl;

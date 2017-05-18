@@ -207,7 +207,7 @@ Float_t ClosestMlltoZ(vector<Lepton> leptons){
   Int_t nLeps = leptons.size(); Float_t mll = 0; Float_t best_mll = 0;
   if(nLeps < 2) return false;
   for(Int_t i = 0; i < nLeps; i++){
-    for(Int_t j = i; j < nLeps; j++){
+    for(Int_t j = 0; j < i; j++){
       if(leptons.at(i).type == leptons.at(j).type){ // same flavour
         if(leptons.at(i).charge*leptons.at(j).charge < 1){ // opposite sign
           mll = (leptons.at(i).p + leptons.at(j).p).M(); if(best_mll = 0) best_mll = mll; 
@@ -223,7 +223,7 @@ Bool_t hasOSSF(vector<Lepton> leptons){
   Int_t nLeps = leptons.size();
   if(nLeps < 2) return false;
   for(Int_t i = 0; i < nLeps; i++){
-    for(Int_t j = i; j < nLeps; j++){
+    for(Int_t j = 0; j < i; j++){
       if(leptons.at(i).type == leptons.at(j).type){ // same flavour
         if(leptons.at(i).charge*leptons.at(j).charge < 1){ // opposite sign
           return true;
@@ -238,7 +238,7 @@ Bool_t IsOnZ(vector<Lepton> leptons){
   Int_t nLeps = leptons.size();
   if(nLeps < 2) return false;
   for(Int_t i = 0; i < nLeps; i++){
-    for(Int_t j = i; j < nLeps; j++){
+    for(Int_t j = 0; j < i; j++){
       if(leptons.at(i).type == leptons.at(j).type){ // same flavour
         if(leptons.at(i).charge*leptons.at(j).charge < 1){ // opposite sign
           if( TMath::Abs( (leptons.at(i).p + leptons.at(j).p).M() - 91) < 15){ // on Z
@@ -255,7 +255,7 @@ Bool_t PassLowInvMass(vector<Lepton> leptons, Float_t Mll_max){
   Int_t nLeps = leptons.size();
   if(nLeps < 2) return false;
   for(Int_t i = 0; i < nLeps; i++){
-    for(Int_t j = i; j < nLeps; j++){
+    for(Int_t j = 0; j < i; j++){
       if(leptons.at(i).type == leptons.at(j).type){ // same flavour
         if(leptons.at(i).charge*leptons.at(j).charge < 0){ // opposite sign
           if( (leptons.at(i).p + leptons.at(j).p).M()  < Mll_max) return false;
@@ -267,9 +267,10 @@ Bool_t PassLowInvMass(vector<Lepton> leptons, Float_t Mll_max){
 }
 
 Bool_t IsThereSSpair(vector<Lepton> leptons){
+//  return true;
   Int_t nLeps = leptons.size();
   for(Int_t i = 0; i < nLeps; i++){
-    for(Int_t j = i; j < nLeps; j++){
+    for(Int_t j = 0; j < i; j++){
         if(leptons.at(i).charge*leptons.at(j).charge > 0) return true;
     }
   }
