@@ -33,7 +33,7 @@ void DrawPlots(TString chan = "ElMu", TString tag = "0"){
   else if (chan == "3l")  cut = "(TCat == 3)";
   else if (chan == "4l")  cut = "(TCat == 4)";
   
-  DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag);
+  DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag); // This is only for getting yields.
   DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag);
   DrawPlot("TnFakeableLepton", cut, chan, 5, 0, 5,     "nFakeLep (#)", "nFakeLepton", tag);
   DrawPlot("TnLooseLepton",    cut, chan, 5, 0, 5,     "nLooseLep (#)", "nLooseLepton", tag);
@@ -141,38 +141,72 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   
     
   // Samples import ============================================================
-  for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
-    p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5);
-  }
-  for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
-	  p->AddSample(TTZmc[isample], "TTZ", itBkg, kSpring+2);
-  }
-  for (UInt_t isample = 0; isample < sizeof(TTbarmc)/sizeof(*TTbarmc); isample++) {
-	  p->AddSample(TTbarmc[isample], "TTbar", itBkg, kSpring+10);
-  }
-  for (UInt_t isample = 0; isample < sizeof(WJetsmc)/sizeof(*WJetsmc); isample++) {
-	  p->AddSample(WJetsmc[isample], "WJets", itBkg, kViolet+10);
-  }
-  for (UInt_t isample = 0; isample < sizeof(STmc)/sizeof(*STmc); isample++) {
-	  p->AddSample(STmc[isample], "ST", itBkg, kYellow);
-  }
-  for (UInt_t isample = 0; isample < sizeof(DYmc)/sizeof(*DYmc); isample++) {
-	  p->AddSample(DYmc[isample], "DY", itBkg, kOrange);
-  }
-  for (UInt_t isample = 0; isample < sizeof(DiTriCuatrimc)/sizeof(*DiTriCuatrimc); isample++) {
-	  p->AddSample(DiTriCuatrimc[isample], "Di&Tri&Cuatriboson", itBkg, kAzure-9);
-  }
-  for (UInt_t isample = 0; isample < sizeof(Data)/sizeof(*Data); isample++) {
-	  p->AddSample(Data[isample], "Data", itData,kBlack);
-  }
-  if (counter == 0) {
-    for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
-	    p->AddSample(Signalmc[isample], "ttH", itSignal, kRed);
+  if (var != "TPtVector") {
+    for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
+      p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5);
     }
-  } else {
-    p->AddSample(Signalmc[0], "ttH", itBkg, kRed);
+    for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
+  	  p->AddSample(TTZmc[isample], "TTZ", itBkg, kSpring+2);
+    }
+    for (UInt_t isample = 0; isample < sizeof(TTbarmc)/sizeof(*TTbarmc); isample++) {
+  	  p->AddSample(TTbarmc[isample], "TTbar", itBkg, kSpring+10);
+    }
+    for (UInt_t isample = 0; isample < sizeof(WJetsmc)/sizeof(*WJetsmc); isample++) {
+  	  p->AddSample(WJetsmc[isample], "WJets", itBkg, kViolet+10);
+    }
+    for (UInt_t isample = 0; isample < sizeof(STmc)/sizeof(*STmc); isample++) {
+  	  p->AddSample(STmc[isample], "ST", itBkg, kYellow);
+    }
+    for (UInt_t isample = 0; isample < sizeof(DYmc)/sizeof(*DYmc); isample++) {
+  	  p->AddSample(DYmc[isample], "DY", itBkg, kOrange);
+    }
+    for (UInt_t isample = 0; isample < sizeof(DiTriCuatrimc)/sizeof(*DiTriCuatrimc); isample++) {
+  	  p->AddSample(DiTriCuatrimc[isample], "Di&Tri&Cuatriboson", itBkg, kAzure-9);
+    }
+    for (UInt_t isample = 0; isample < sizeof(Data)/sizeof(*Data); isample++) {
+  	  p->AddSample(Data[isample], "Data", itData,kBlack);
+    }
+    if (counter == 0) {
+      for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
+  	    p->AddSample(Signalmc[isample], "ttH", itSignal, kRed);
+      }
+    } else {
+      p->AddSample(Signalmc[0], "ttH", itBkg, kRed);
+    }
   }
-  
+  else {
+    for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
+      p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5, 1, "0", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
+  	  p->AddSample(TTZmc[isample], "TTZ", itBkg, kSpring+2, 1, "0", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(TTbarmc)/sizeof(*TTbarmc); isample++) {
+  	  p->AddSample(TTbarmc[isample], "TTbar", itBkg, kSpring+10, 1, "0", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(WJetsmc)/sizeof(*WJetsmc); isample++) {
+  	  p->AddSample(WJetsmc[isample], "WJets", itBkg, kViolet+10, 1, "0", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(STmc)/sizeof(*STmc); isample++) {
+  	  p->AddSample(STmc[isample], "ST", itBkg, kYellow, 1, "0", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(DYmc)/sizeof(*DYmc); isample++) {
+  	  p->AddSample(DYmc[isample], "DY", itBkg, kOrange, 1, "0", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(DiTriCuatrimc)/sizeof(*DiTriCuatrimc); isample++) {
+  	  p->AddSample(DiTriCuatrimc[isample], "Di&Tri&Cuatriboson", itBkg, kAzure-9, 1, "0", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(Data)/sizeof(*Data); isample++) {
+  	  p->AddSample(Data[isample], "Data", itData,kBlack, 1, "0", "AllInstances");
+    }
+    if (counter == 0) {
+      for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
+  	    p->AddSample(Signalmc[isample], "ttH", itSignal, kRed, 1, "0", "AllInstances");
+      }
+    } else {
+      p->AddSample(Signalmc[0], "ttH", itBkg, kRed, 1, "0", "AllInstances");
+    }    
+  }
   // Histogram settings ========================================================
   p->SetScaleMax(1.7);
   p->SetRatioMin(0);
