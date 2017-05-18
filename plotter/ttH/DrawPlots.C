@@ -176,35 +176,35 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   }
   else {
     for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
-      p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5, 1, "0", "AllInstances");
+      p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5, 0, "0", "AllInstances");
     }
     for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
-  	  p->AddSample(TTZmc[isample], "TTZ", itBkg, kSpring+2, 1, "0", "AllInstances");
+  	  p->AddSample(TTZmc[isample], "TTZ", itBkg, kSpring+2, 0, "0", "AllInstances");
     }
     for (UInt_t isample = 0; isample < sizeof(TTbarmc)/sizeof(*TTbarmc); isample++) {
-  	  p->AddSample(TTbarmc[isample], "TTbar", itBkg, kSpring+10, 1, "0", "AllInstances");
+  	  p->AddSample(TTbarmc[isample], "TTbar", itBkg, kSpring+10, 0, "0", "AllInstances");
     }
     for (UInt_t isample = 0; isample < sizeof(WJetsmc)/sizeof(*WJetsmc); isample++) {
-  	  p->AddSample(WJetsmc[isample], "WJets", itBkg, kViolet+10, 1, "0", "AllInstances");
+  	  p->AddSample(WJetsmc[isample], "WJets", itBkg, kViolet+10, 0, "0", "AllInstances");
     }
     for (UInt_t isample = 0; isample < sizeof(STmc)/sizeof(*STmc); isample++) {
-  	  p->AddSample(STmc[isample], "ST", itBkg, kYellow, 1, "0", "AllInstances");
+  	  p->AddSample(STmc[isample], "ST", itBkg, kYellow, 0, "0", "AllInstances");
     }
     for (UInt_t isample = 0; isample < sizeof(DYmc)/sizeof(*DYmc); isample++) {
-  	  p->AddSample(DYmc[isample], "DY", itBkg, kOrange, 1, "0", "AllInstances");
+  	  p->AddSample(DYmc[isample], "DY", itBkg, kOrange, 0, "0", "AllInstances");
     }
     for (UInt_t isample = 0; isample < sizeof(DiTriCuatrimc)/sizeof(*DiTriCuatrimc); isample++) {
-  	  p->AddSample(DiTriCuatrimc[isample], "Di&Tri&Cuatriboson", itBkg, kAzure-9, 1, "0", "AllInstances");
+  	  p->AddSample(DiTriCuatrimc[isample], "Di&Tri&Cuatriboson", itBkg, kAzure-9, 0, "0", "AllInstances");
     }
     for (UInt_t isample = 0; isample < sizeof(Data)/sizeof(*Data); isample++) {
-  	  p->AddSample(Data[isample], "Data", itData,kBlack, 1, "0", "AllInstances");
+  	  p->AddSample(Data[isample], "Data", itData,kBlack, 0, "0", "AllInstances");
     }
     if (counter == 0) {
       for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
-  	    p->AddSample(Signalmc[isample], "ttH", itSignal, kRed, 1, "0", "AllInstances");
+  	    p->AddSample(Signalmc[isample], "ttH", itSignal, kRed, 0, "0", "AllInstances");
       }
     } else {
-      p->AddSample(Signalmc[0], "ttH", itBkg, kRed, 1, "0", "AllInstances");
+      p->AddSample(Signalmc[0], "ttH", itBkg, kRed, 0, "0", "AllInstances");
     }    
   }
   // Histogram settings ========================================================
