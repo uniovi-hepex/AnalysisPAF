@@ -115,6 +115,17 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     }
     outputpath  += "test/";
   }
+  else if (githead.Contains("tauidcomparison")) {
+    if (counter == 0) {
+      cout << endl;
+      cout << "+ Branch TAUIDCOMPARISON chosen" << endl;
+      cout << endl;
+    }
+    path        += "tauidcomparison/";
+    outputpath  += "tauidcomparison/";
+    if      (tag == "tau")    path += "tau/";
+    else if (tag == "tth")    path += "tth/";
+  }
   else {
     if (counter == 0) {
       cout << endl;
