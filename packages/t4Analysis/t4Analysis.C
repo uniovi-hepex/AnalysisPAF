@@ -38,6 +38,7 @@ t4Analysis::t4Analysis() : PAFChainItemSelector() {
     TLep_Phi      [i] = 0;
     TLep_E        [i] = 0;
     TLep_Charge   [i] = 0;
+    TLep_pdgId    [i] = 0;
   }
   for(Int_t i = 0; i < 5; i++){
     TFLep_Pt       [i] = 0;
@@ -201,6 +202,7 @@ void t4Analysis::SetLeptonVariables(){
   fTree->Branch("TLep_Phi",        TLep_Phi,        "TLep_Phi[TNSelLeps]/F");
   fTree->Branch("TLep_E" ,         TLep_E ,         "TLep_E[TNSelLeps]/F");
   fTree->Branch("TLep_Charge",     TLep_Charge,     "TLep_Charge[TNSelLeps]/F");
+  fTree->Branch("TLep_pdgId",      TLep_pdgId,      "TLep_pdgId[TNSelLeps]/I");
   fTree->Branch("TFLep_Pt",        TFLep_Pt,        "TFLep_Pt[TNFakeableLeps]/F");
   fTree->Branch("TFLep_Eta",       TFLep_Eta,       "TFLep_Eta[TNFakeableLeps]/F");
   fTree->Branch("TFLep_Phi",       TFLep_Phi,       "TFLep_Phi[TNFakeableLeps]/F");
@@ -300,6 +302,7 @@ void t4Analysis::GetLeptonVariables(std::vector<Lepton> selLeptons){
       TLep_Phi[i]    = selLeptons.at(i).Phi();
       TLep_E[i]      = selLeptons.at(i).E();
       TLep_Charge[i] = selLeptons.at(i).charge;
+      TLep_pdgId[i]  = selLeptons.at(i).IsElec? 11 : 13;
     }
     else{
       TLep_Pt[i]     = 0;
@@ -307,6 +310,7 @@ void t4Analysis::GetLeptonVariables(std::vector<Lepton> selLeptons){
       TLep_Phi[i]    = 0;
       TLep_E[i]      = 0;
       TLep_Charge[i] = 0;
+      TLep_pdgId[i]  = 0;
     }
   }
   TMll = TNSelLeps < 2 ? 0 : (selLeptons.at(0).p + selLeptons.at(1).p).M();      
