@@ -58,6 +58,7 @@ class t4Analysis : public PAFChainItemSelector{
     Float_t TMZ;      
     Float_t TMET;      // MET
     Float_t TMET_Phi;  // MET phi
+    Float_t TMT2;
     Int_t   TIsOnZ;
 
     Int_t   TNFakeableLeps;

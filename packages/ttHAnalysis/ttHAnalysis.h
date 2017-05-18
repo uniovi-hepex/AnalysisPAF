@@ -38,8 +38,8 @@ enum gCategories {
     gNCATEGORIES,
 };
 
-const TString gCatLabel	[gNCATEGORIES] 	= {"2lSS","3l","4l","Total"};
-const TString gChanLabel[4] 	  = {"MuMu","ElEl","ElMu","All"};
+const TString gCatLabel	[gNCATEGORIES] = {"2lSS","3l","4l","Total"};
+const TString gChanLabel[4] 	         = {"MuMu","ElEl","ElMu","All"};
 
 //------------------------------------------------------------------------------
 //		Classes declarations
@@ -102,7 +102,6 @@ class ttHAnalysis : public PAFChainItemSelector {
     Bool_t 	Is3lEvent();
     Bool_t 	Is4lEvent();
 
-
     ////////////////////////////////////////////////////////////////////////
 		//	   Other methods (get, set, misc...)
 		////////////////////////////////////////////////////////////////////////
@@ -116,6 +115,7 @@ class ttHAnalysis : public PAFChainItemSelector {
 		Int_t 	GetCS();
     Int_t   GetnMediumBTags();
     Int_t   GetnLooseBTags();
+
 
 	protected:
 		////////////////////////////////////////////////////////////////////////
@@ -161,6 +161,7 @@ class ttHAnalysis : public PAFChainItemSelector {
     Int_t     TCS;
     Float_t   TMass;
     Long64_t  Tevt;
+		std::vector<Float_t>  TPtVector;
 
 		//	Input variables and vectors
 		//----------------------------------------------------------------------
