@@ -597,12 +597,15 @@ Float_t ttHAnalysis::GetHT() {
 
 Float_t ttHAnalysis::GetMHT() {
 	Float_t mht = 0;
+  TLorentzVector vectemp(0.,0.,0.,0.);
   for (UInt_t i = 0; i < Jets.size(); i++){
-    mht += Jets[i].Pt();
+    vectemp += Jets.at(i).p;
   }
   for (UInt_t i = 0; i < FakeableLepton.size(); i++){
-    mht += FakeableLepton[i].Pt();
+    vectemp += FakeableLepton.at(i).p;
   }
+  vectemp = -vectemp;
+  mht = vectemp.Pt();
 	return mht;
 }
 
