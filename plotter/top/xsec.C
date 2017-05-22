@@ -43,10 +43,12 @@ void xsec(){
   //p->doStackSignal = true;
 
   p->AddSample("WZ, WW, ZZ",                                            "VV",    itBkg, kYellow-10, 0.30);
-  p->AddSample("TTbar_Powheg_Semilep, WJetsToLNu_aMCatNLO",             "NonWZ", itBkg, kGreen+1,   0.30);
+  //p->AddSample("TTbar_Powheg_Semilep, WJetsToLNu_aMCatNLO",             "NonWZ", itBkg, kGreen+1,   0.30);
+  p->AddSample("TTbar_Powheg_Semilep, WJetsToLNu_MLM",                  "NonWZ", itBkg, kGreen+1,   0.30);
 	p->AddSample("TTWToLNu, TTWToQQ, TTZToQQ, TTZToQQ",                   "ttV",   itBkg, kOrange-3,  0.30);
 	p->AddSample("TW, TbarW",                                             "tW",    itBkg, kMagenta,   0.30);
-  p->AddSample("DYJetsToLL_M50_aMCatNLO, DYJetsToLL_M10to50_aMCatNLO",  "DY",    itBkg, kAzure-8,   0.15);
+  p->AddSample("DYJetsToLL_M50_aMCatNLO",                               "DY",    itBkg, kAzure-8,   0.15);
+  //p->AddSample("DYJetsToLL_M50_MLM, DYJetsToLL_M5to50_MLM,",            "DY",    itBkg, kAzure-8,   0.15);
   p->AddSample("TTbar_Powheg",                                          "ttbar", itBkg, kRed+1,     0.00);
   p->AddSample("MuonEG, DoubleEG, DoubleMuon, SingleMuon, SingleElec",  "Data",  itData);
 
@@ -118,6 +120,7 @@ void xsec(){
   // Scale FSR unc by sqrt
   Float_t diff = TMath::Abs(x->GetYield("ttbar") - x->GetUnc("FSR scale"));
   x->SetUnc("FSR scale", x->GetYield("ttbar")-diff/TMath::Sqrt(2));
+  x->SetUnc("FSR scale", x->GetYield("ttbar"));
   x->SetMembers();
 
   x->SetOutputFolder("./top/xsec/");
