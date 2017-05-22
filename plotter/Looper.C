@@ -57,7 +57,7 @@ TString CraftFormula(TString cuts, TString chan, TString sys, TString options){
   else if(chan == "3l")    schan = (Form("(TChannel == %i)", iTriLep));
   else if(chan == "4l")    schan = (Form("(TChannel == %i)", iFourLep));
   else if(chan == "SF" || chan == "sameF") schan = (Form("(TChannel != %i)", iElMu));
-  else schan = ("1");
+  else schan = chan;
 
   TString weight = TString("TWeight");
   if     (sys == "LepEffUp"  ) weight += "_LepEffUp";
@@ -114,7 +114,8 @@ TString CraftFormula(TString cuts, TString chan, TString sys, TString options){
   else if(sys == "genMETDown"){ // Extra MET systematic for FS
 
   }
-  TString formula = TString("(") + cuts + TString(")*") + schan + TString("*") + weight;
+  TString formula = TString("(") + cuts + TString(")*(") + schan + TString(")*") + weight;
+  if(options.Contains("Fake") || options.Contains("fake")) formula = TString("(") + cuts + TString(")*") + weight;
   if(options.Contains("isr") || options.Contains("ISR")) formula = "TISRweight*(" + formula + ")";
   return formula;
 }
@@ -166,51 +167,23 @@ void Looper::Loop(TString sys){
   Bool_t doAllInstances(false);
   if(options.Contains("AllInstances")){
     doAllInstances = true;
-    cout << "Looping over all values of the variable!! Number of instances: " << nInstances << endl;
   }
 
   // Options for systematics
   if(doSysPDF || doSysScale) hLHEweights = loadSumOfLHEweights(pathToHeppyTrees, sampleName);
 
   // For fake or flips from data
-/*  Bool_t histo2D(false);
-  TTreeFormula *LepPt;
-  TTreeFormula *LepEta;
-  if(options.Contains("UseHisto2D")){
-    histo2D = true; 
-
-    TString InfoHisto = TString(options.Data());
-    InfoHisto.ReplaceAll(" ", "");
-    InfoHisto.ReplaceAll("UseHisto2D:", "");
-    // Careful if there's more than one option! it should be after the UseHisto!
-    if(InfoHisto.Contains(",")) InfoHisto = InfoHisto(0, InfoHisto.First(','));
-    TString Path_to_histo = InfoHisto(0, InfoHisto.First(':')); InfoHisto.ReplaceAll(Path_to_histo + ":", "");
-    TString histo_name    = InfoHisto(0, InfoHisto.First(':')); InfoHisto.ReplaceAll(histo_name + ":", "");
-    TString varname1      = InfoHisto(0, InfoHisto.First(':')); InfoHisto.ReplaceAll(varname1 + ":", "");
-    TString varname2      = InfoHisto(0, InfoHisto.First(':')); InfoHisto.ReplaceAll(varname2 + ":", "");
-    loadHisto2D(Path_to_histo, histo_name);
-    LepPt    = GetFormula("LepPt",    "TFLep_Pt");
-    LepEta   = GetFormula("LepEta",   "TFLep_Eta");
-  }*/
   Float_t f;
   if(options.Contains("Fake") || options.Contains("fake")){
     TString WorkingDir = gSystem->WorkingDirectory();
 
-/*
-    LepPt    = GetFormula("LepPt",    "TFLep_Pt");
-    LepEta   = GetFormula("LepEta",   "TFLep_Eta");
-    LepPdgId = GetFormula("LepPdgId", "TFLep_pdgId");
-    LepChar  = GetFormula("LepChar",  "TFLep_Charge");
-    nSelLep  = GetFormula("nSelLep",  "TNSelLeps");
-    nFakeLep = GetFormula("nFakeLep", "TNFakeableLeps");
-*/
-    tree->SetBranchAddress("TFLep_Pt", FLepPt);
-    tree->SetBranchAddress("TFLep_Eta", FLepEta);
-    tree->SetBranchAddress("TFLep_pdgId", FLepPdgId);
-    tree->SetBranchAddress("TFLep_Charge", FLepCharge);
-    tree->SetBranchAddress("TLep_Charge", LepCharge);
-    tree->SetBranchAddress("TNSelLeps", &nLeps);
-    tree->SetBranchAddress("TNFakeableLeps", &nFakeLeps);
+    ForFLepPt    = GetFormula("LepPt",    "TFLep_Pt");
+    ForFLepEta   = GetFormula("LepEta",   "TFLep_Eta");
+    ForFLepPdgId = GetFormula("LepPdgId", "TFLep_pdgId");
+    ForLepChar  = GetFormula("LepChar",  "TLep_Charge");
+    FornSelLep  = GetFormula("nSelLep",  "TNSelLeps");
+    FornFakeLep = GetFormula("nFakeLep", "TNFakeableLeps");
+
   }
 
   for (Long64_t jentry=0; jentry<nEntries; jentry++) {
@@ -228,30 +201,69 @@ void Looper::Loop(TString sys){
       }
     }
 
-    // For fakes or flips
-    /*if(histo2D){
-      // One weight for lepton
-        Float_t hWeight = 1;
-          Float_t v1 = 0; Float_t v2 = 0; Float_t vIso = 0;
-          for(Int_t = 0; i < nLeptons; i++){
-          v1 = var1->EvalInstance(i);
-          v2 = var2->EvalInstance(i);
-          } 
-     }     */
-
     if(options.Contains("Fake") || options.Contains("fake")){
       f = 1;
+      ForFLepPt   ->GetNdata();
+      ForFLepEta  ->GetNdata();
+      ForFLepPdgId->GetNdata();
+      nFakeLeps = FornFakeLep->EvalInstance();
+      nLeps     = FornSelLep->EvalInstance();
       if(nFakeLeps <= 0) continue;
       if(nLeps >= 3)     continue;
       if(nLeps == 2){ // If is SS, is not fake
-        if(LepCharge[0] == LepCharge[1]) continue;
+        if(ForLepChar->EvalInstance(0) == ForLepChar->EvalInstance(1)) continue;
       }
+      //cout << "nFakeLeps = " << nFakeLeps << ", nLeps = " << nLeps << endl;
       for(Int_t i = 0; i < nFakeLeps; i++){
-        //if(FLepPdgId[i] == 11) f *= electronFakeRate(FLepPt[i], FLepEta[i]);
-        //if(FLepPdgId[i] == 13) f *=     muonFakeRate(FLepPt[i], FLepEta[i]);
+        FLepPt    = ForFLepPt ->EvalInstance(i);
+        FLepEta   = ForFLepEta->EvalInstance(i);
+        FLepPdgId = ForFLepPdgId->EvalInstance(i);
+        //cout << "[pt, eta, pdgId] = [" << FLepPt << ", " << FLepEta << ", " << FLepPdgId << "]" << endl;
+        if(FLepPdgId == 11) f *= electronFakeRate(FLepPt, FLepEta);
+        if(FLepPdgId == 13) f *=     muonFakeRate(FLepPt, FLepEta);
       }
+      if(f == 1) continue;
       weight *= f/(1-f);
       if(options.Contains("Sub") || options.Contains("sub")) weight *= -1;
+    }
+
+
+    Float_t nom = 0; Float_t var = 0; Float_t ext = 0; Float_t env = 0;
+    if(doSysScale){ // Get envelope!!
+      //cout << " Scale matrix element weights: \n";
+      for(Int_t bin = 1; bin <= nbins; bin++){
+        ext = 0; env = 0;
+        nom = hLHE[0]->GetBinContent(bin);
+        for(Int_t w = 1; w < 9; w++){
+          var = hLHE[w]->GetBinContent(bin);  
+          if(sys.Contains("Up") || sys.Contains("up")){
+            if(nom-var > ext){ ext = nom-var; env = var;}
+          }
+          else{
+            if(var-nom > ext){ ext = var-nom; env = var;}
+          }
+          //cout << "   nom = " << nom << ", var = " << var << endl;
+        }
+        Hist->SetBinContent(bin, env);
+      }
+    }
+    else if(doSysPDF){
+      Float_t rms = 0; Float_t alpha_up = 0; Float_t alpha_dw = 0;
+      //cout << " PDF weights: \n";
+      for(Int_t bin = 1; bin <= nbins; bin++){
+        nom = hLHE[0]->GetBinContent(bin);
+        for(Int_t w = 9; w < 109; w++){
+          var = hLHE[w]->GetBinContent(bin);  
+          ext += (nom-var)*(nom-var);
+          //cout << "   nom = " << nom << ", var = " << var << endl;
+        }
+        rms = TMath::Sqrt(ext/100);
+        alpha_up = TMath::Abs(hLHE[109]->GetBinContent(bin) - nom);
+        alpha_dw = TMath::Abs(hLHE[110]->GetBinContent(bin) - nom);
+        env = TMath::Sqrt(rms*rms + ((alpha_up-alpha_dw)*0.75/2)*((alpha_up-alpha_dw)*0.75/2));
+        if(sys.Contains("Up") || sys.Contains("up"))  Hist->SetBinContent(bin, nom + env);
+        else                                          Hist->SetBinContent(bin, nom - env);
+      }
     }
 
     if(doAllInstances){
@@ -262,45 +274,6 @@ void Looper::Loop(TString sys){
       }
     }
     else    Hist->Fill(val, weight);
-  }
-
-
-  Float_t nom = 0; Float_t var = 0; Float_t ext = 0; Float_t env = 0;
-  if(doSysScale){ // Get envelope!!
-    //cout << " Scale matrix element weights: \n";
-    for(Int_t bin = 1; bin <= nbins; bin++){
-      ext = 0; env = 0;
-      nom = hLHE[0]->GetBinContent(bin);
-      for(Int_t w = 1; w < 9; w++){
-        var = hLHE[w]->GetBinContent(bin);  
-        if(sys.Contains("Up") || sys.Contains("up")){
-          if(nom-var > ext){ ext = nom-var; env = var;}
-        }
-        else{
-          if(var-nom > ext){ ext = var-nom; env = var;}
-        }
-        //cout << "   nom = " << nom << ", var = " << var << endl;
-      }
-      Hist->SetBinContent(bin, env);
-    }
-  }
-  else if(doSysPDF){
-    Float_t rms = 0; Float_t alpha_up = 0; Float_t alpha_dw = 0;
-    //cout << " PDF weights: \n";
-    for(Int_t bin = 1; bin <= nbins; bin++){
-      nom = hLHE[0]->GetBinContent(bin);
-      for(Int_t w = 9; w < 109; w++){
-        var = hLHE[w]->GetBinContent(bin);  
-        ext += (nom-var)*(nom-var);
-        //cout << "   nom = " << nom << ", var = " << var << endl;
-      }
-      rms = TMath::Sqrt(ext/100);
-      alpha_up = TMath::Abs(hLHE[109]->GetBinContent(bin) - nom);
-      alpha_dw = TMath::Abs(hLHE[110]->GetBinContent(bin) - nom);
-      env = TMath::Sqrt(rms*rms + ((alpha_up-alpha_dw)*0.75/2)*((alpha_up-alpha_dw)*0.75/2));
-      if(sys.Contains("Up") || sys.Contains("up"))  Hist->SetBinContent(bin, nom + env);
-      else                                          Hist->SetBinContent(bin, nom - env);
-    }
   }
 }
 
