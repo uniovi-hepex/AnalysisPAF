@@ -80,7 +80,7 @@ void yields(TString plotsFolder=""){
   p->AddSample("WWW", "VVV", itBkg);
   
   // ttV
-  p->AddSample("TTZToLLNuNu"   , "ttV", itBkg, kOrange-3, 0.5);
+  p->AddSample("TTZToLLNuNu1"  , "ttV", itBkg, kOrange-3, 0.5);
   p->AddSample("TTWToLNu1"     , "ttV", itBkg) ;
   p->AddSample("TTZToLL_M1to10", "ttV", itBkg);
 
