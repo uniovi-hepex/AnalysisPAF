@@ -69,6 +69,7 @@ class t4Analysis : public PAFChainItemSelector{
     Float_t TLep_Eta[10];
     Float_t TLep_Phi[10];
     Float_t TLep_E[10];
+    Float_t TLep_pdgId[10];
     Int_t   TLep_Charge[10];
     Float_t TFLep_Pt[5];
     Float_t TFLep_Eta[5];
