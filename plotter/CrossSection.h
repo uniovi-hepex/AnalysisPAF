@@ -33,6 +33,7 @@ class CrossSection{
         AddBkgTag(p->VBkgs.at(i)->GetProcess());
         AddBkg(p->VBkgs.at(i)->GetYield());
         AddBkgUnc(p->VBkgs.at(i)->GetSysNorm());
+        AddBkgStatUnc( (p->GetYield(p->VBkgs.at(i)->GetProcess(), "stat") - p->VBkgs.at(i)->GetYield())/p->VBkgs.at(i)->GetYield() );
       }
       Int_t nSys = p->VSystLabel.size();
       for(Int_t i = 0; i < nSys; i++){
@@ -40,6 +41,7 @@ class CrossSection{
         AddSysVar(p->GetYield(signalTag, p->VSystLabel.at(i)));
       }
       y = p->GetYield(signalTag, "0");
+      y_staterr = TMath::Abs(y - p->GetYield(signalTag, "stat"));
       Lumi = p->GetLumi();
       LumiUnc = p->GetLumiUnc();
       NData = p->GetData(); // Set dataaaaaaaa
@@ -69,6 +71,7 @@ class CrossSection{
  
     void AddBkg(Float_t v){ BkgYield.push_back(v);}
     void AddBkgUnc(Float_t v){ BkgUnc.push_back(v);}
+    void AddBkgStatUnc(Float_t v){ BkgStatUnc.push_back(v);}
 
     void AddBkgTag(TString t){ BkgTags.push_back(t);}
     void AddSysTag(TString t){ SysTags.push_back(t); IsEffic.push_back(false);}
@@ -115,6 +118,7 @@ class CrossSection{
     vector<Float_t> SysVar   = vector<Float_t>(); // (relative)
     vector<TString> BkgTags  = vector<TString>();
     vector<Float_t> BkgUnc   = vector<Float_t>(); // (relative)
+    vector<Float_t> BkgStatUnc = vector<Float_t>(); // (relative)
     vector<Float_t> BkgYield = vector<Float_t>(); // Already scaled to lumi
     Int_t nBkgs = 0;
     Int_t nSyst = 0;
@@ -145,8 +149,10 @@ class CrossSection{
     Float_t xsec = 0; // nominal value
 
     Float_t y_err = 0; 
+    Float_t y_staterr = 0; 
     Float_t NData_err = 0;
     Float_t NBkg_err = 0;
+    Float_t NBkg_staterr = 0;
     Float_t xsec_total_err = 0;
     Float_t xsec_stat_err = 0;
     Float_t xsec_syst_err = 0;
