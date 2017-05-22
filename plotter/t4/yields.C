@@ -61,7 +61,7 @@ TString pathToTree("./tttt_temp/");
 void yields(TString plotsFolder=""){
   Plot* p = new Plot("TChannel", alwaystrue, "All", 1, 0, 10, "Channel", "xsec");
   TString username(gSystem->GetUserInfo(gSystem->GetUid())->fUser);
-  if(username=="vischia") pathToTree="/pool/ciencias/userstorage/pietro/tttt/2l_skim/tttt_temp/";
+  if(username=="vischia") pathToTree="/pool/ciencias/userstorage/pietro/tttt/2l_skim_wmt2/tttt_temp/";
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
   p->verbose = true;
   p->SetPlotFolder(plotsFolder);
