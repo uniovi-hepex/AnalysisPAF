@@ -176,7 +176,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	
         TString username(gSystem->GetUserInfo(gSystem->GetUid())->fUser);
         TString outPrefix("./");
-        if(username=="vischia") outPrefix="/pool/cienciasrw/userstorage/pietro/tttt/2l_skim/";
+        if(username=="vischia") outPrefix="/pool/cienciasrw/userstorage/pietro/tttt/2l_skim_wmt2/";
         // Insert here your conditional. Si no, por defecto es ./
         TString outputDir = outPrefix + tagSel[sel] + "_temp";
 	if(sampleName.BeginsWith("T2tt")) outputDir += "/T2tt/";
