@@ -59,7 +59,7 @@ TString pathToTree("./tttt_temp/");
 
 
 void yields(TString plotsFolder=""){
-  Plot* p = new Plot("TChannel", alwaystrue, "All", 1, 0, 10, "Channel", "xsec");
+  Plot* p = new Plot("TChannel", alwaystrue, "1", 1, 0, 10, "Channel", "xsec");
   TString username(gSystem->GetUserInfo(gSystem->GetUid())->fUser);
   if(username=="vischia") pathToTree="/pool/ciencias/userstorage/pietro/tttt/2l_skim_wmt2/tttt_temp/";
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
@@ -81,7 +81,7 @@ void yields(TString plotsFolder=""){
   
   // ttV
   p->AddSample("TTZToLLNuNu1"  , "ttV", itBkg, kOrange-3, 0.5);
-  p->AddSample("TTWToLNu1"     , "ttV", itBkg) ;
+  p->AddSample("TTWToLNu1"     , "ttV", itBkg);
   p->AddSample("TTZToLL_M1to10", "ttV", itBkg);
 
   // ttH/tZq
@@ -147,6 +147,7 @@ void yields(TString plotsFolder=""){
   // p->AddSystematic("JES");
   //p->PrintYields(dilepton + ", " + jets2 + ", " + btag1, "Dilepton, 2jets, 1btag", "ElMu, ElMu, ElMu");
   //p->PrintYields("", "", "", "html");
+  p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", "   1,    1,    1", "html");
   p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", "ElMu, ElMu, ElMu", "html");
   p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", "MuMu, MuMu, MuMu", "html");
   p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", "ElEl, ElEl, ElEl", "html");
