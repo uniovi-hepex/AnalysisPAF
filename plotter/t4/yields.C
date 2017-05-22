@@ -10,21 +10,58 @@ R__LOAD_LIBRARY(plotter/CrossSection.C+)
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name = "");
 
 TString NameOfTree = "tree";
-TString SScut = "TMT2 > 0 && TMET > 50 && TNJets > 1 && TNBtags > 0 && TIsSS && TNVetoLeps < 3";
-TString VarNBtagsNJets = "TNBtags + (TNJets == 1) + (TNJets == 2)*3 + (TNJets == 3)*6 + (TNJets >= 4)*10";
 
-//TString dilepton = "TLep_Charge[0]*TLep_Charge[1] < 0";
-//TString jets2    = "TLep_Charge[0]*TLep_Charge[1] < 0 && TNJets >= 2";
-//TString btag1    = "TLep_Charge[0]*TLep_Charge[1] < 0 && TNJets >= 2 && TNBtags > 0";
-TString dilepton = "1";
-TString jets2    = "TNJets >= 2";
-TString btag1    = "TNJets >= 2 && TNBtags > 0";
+TString alwaystrue("1");
+//TString presel("TMET>50 && TMT2>0 && isSS && TNVetLeps < 3");
+TString presel("TMET>50 && TIsSS && TNVetLeps < 3"); // MT2 falta de los trees
+TString SRs(presel+" && TNBtags>1");
+TString CRs(presel+" && TNBtags <2 && TNJets>0");
 
-// Baseline
+//TNTaus    : TNTaus/I                                               *
+//TTau_Pt   : TTau_Pt[TNTaus]/F                                      *
+//TTau_Eta  : TTau_Eta[TNTaus]/F                                     *
+//TTau_Charge : TTau_Charge[TNTaus]/F                                *
+//TTau_DecayMode : TTau_DecayMode[TNTaus]/F                          *
+//TTau_IdDecayMode : TTau_IdDecayMode[TNTaus]/F                      *
+//TTau_IdMVA : TTau_IdMVA[TNTaus]/F                                  *
+//TTau_IdAntiE : TTau_IdAntiE[TNTaus]/F                              *
+//TTau_IdAntiMu : TTau_IdAntiMu[TNTaus]/F                            *
+//TNFakeableLeps : TNFakeableLeps/I                                  *
+//TNSelLeps : TNSelLeps/I                                            *
+//TLep_Pt   : TLep_Pt[TNSelLeps]/F                                   *
+//TLep_Eta  : TLep_Eta[TNSelLeps]/F                                  *
+//TLep_Phi  : TLep_Phi[TNSelLeps]/F                                  *
+//TLep_E    : TLep_E[TNSelLeps]/F                                    *
+//TLep_Charge : TLep_Charge[TNSelLeps]/F                             *
+//TFLep_Pt  : TFLep_Pt[TNFakeableLeps]/F                             *
+//TFLep_Eta : TFLep_Eta[TNFakeableLeps]/F                            *
+//TFLep_Phi : TFLep_Phi[TNFakeableLeps]/F                            *
+//TFLep_E   : TFLep_E[TNFakeableLeps]/F                              *
+//TFLep_Charge : TFLep_Charge[TNFakeableLeps]/F                      *
+//TChannel  : TChannel/I                                             *
+//TMll      : TMll/F                                                 *
+//TM3l      : TM3l/F                                                 *
+//TMZ       : TMZ/F                                                  *
+//TNJets    : TNJets/I                                               *
+//TNBtags   : TNBtags/I                                              *
+//TJet_isBJet : TJet_isBJet[TNJets]/I                                *
+//TJet_Pt   : TJet_Pt[TNJets]/F                                      *
+//TJet_Eta  : TJet_Eta[TNJets]/F                                     *
+//TJet_Phi  : TJet_Phi[TNJets]/F                                     *
+//TJet_E    : TJet_E[TNJets]/F                                       *
+//THT       : THT/F                                                  *
+//TWeight   : TWeight/F                                              *
+//TMET      : TMET/F                                                 *
+//TMET_Phi  : TMET_Phi/F                                             *
+//TIsOnZ    : TIsOnZ/I                                               *
 
-TString pathToTree = "./tttt_temp/";
+TString pathToTree("./tttt_temp/");
+
+
 void yields(TString plotsFolder=""){
-  Plot* p = new Plot("TChannel", dilepton, "All", 1, 0, 10, "Channel", "xsec");
+  Plot* p = new Plot("TChannel", alwaystrue, "All", 1, 0, 10, "Channel", "xsec");
+  TString username(gSystem->GetUserInfo(gSystem->GetUid())->fUser);
+  if(username=="vischia") pathToTree="/pool/ciencias/userstorage/pietro/tttt/2l_skim_wmt2/tttt_temp/";
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
   p->verbose = true;
   p->SetPlotFolder(plotsFolder);
@@ -32,10 +69,9 @@ void yields(TString plotsFolder=""){
   //p->doStackSignal = true;
 
   // Diboson
-  p->AddSample("ZZ",        "VV non-WZ", itBkg, kYellow-10, 0.50);
-  //p->AddSample("WW",     "VV non-WZ", itBkg);
+  p->AddSample("ZZTo4L"   , "VV non-WZ", itBkg, kYellow-10, 0.50);
   p->AddSample("WWTo2L2Nu", "VV non-WZ", itBkg);  
-  p->AddSample("WpWpJJ",    "VV non-WZ", itBkg);
+  p->AddSample("WpWpJJ"   , "VV non-WZ", itBkg);
   
   // Triboson
   p->AddSample("ZZZ", "VVV", itBkg);
@@ -44,14 +80,13 @@ void yields(TString plotsFolder=""){
   p->AddSample("WWW", "VVV", itBkg);
   
   // ttV
-  p->AddSample("TTZToLLNuNu", "ttV", itBkg, kOrange-3, 0.5);
-  ///// Rerunning: p->AddSample("TTWToLNu1"  , "ttV", itBkg) ;
-  //p->AddSample("TTWToQQ", "ttV", itBkg);
-  //p->AddSample("TTZToQQ", "ttV", itBkg);
+  p->AddSample("TTZToLLNuNu1"  , "ttV", itBkg, kOrange-3, 0.5);
+  p->AddSample("TTWToLNu1"     , "ttV", itBkg) ;
+  p->AddSample("TTZToLL_M1to10", "ttV", itBkg);
 
   // ttH/tZq
-  ///// Rerunning: p->AddSample("tZq_ll",   "tZq", itBkg, kOrange-1, 0.5);
-  //p->AddSample("TTHNonbb", "ttH/tZq", itBkg);
+  p->AddSample("tZq_ll",   "tZq", itBkg, kOrange-1, 0.5);
+  //p->AddSample("TTHNonbb", "ttH/tZq", itBkg); // Must run from jet25, but need jet15
 
   // WZ
   p->AddSample("WZTo3LNu",     "WZ", itBkg);
@@ -68,17 +103,17 @@ void yields(TString plotsFolder=""){
   //p->AddSample("TTbar_Powheg_Semi", "NonWZ", itBkg, kGreen-2, 0.50);  
 
   // Conversions
-  p->AddSample("TGJets"  , "Conversions", itBkg, kBlue-1, 0.5);
-  //p->AddSample("TTGJets" , "Conversions", itBkg);
-  p->AddSample("WGToLNuG", "Conversions", itBkg);
-  p->AddSample("ZGTo2LG" , "Conversions", itBkg);
-  //p->AddSample("WZG", "Conversions", itBkg);
-  //p->AddSample("WWG", "Conversions", itBkg);
+  p->AddSample("TGJets"      , "Conversions", itBkg, kBlue-1, 0.5);
+  p->AddSample("TTGJets"     , "Conversions", itBkg);
+  p->AddSample("WGToLNuG"    , "Conversions", itBkg);
+  p->AddSample("ZGTo2LG"     , "Conversions", itBkg);
+  p->AddSample("WZG_amcatnlo", "Conversions", itBkg);
+  p->AddSample("WWG_amcatnlo", "Conversions", itBkg);
 
   // V+jets
-  p->AddSample("WJetsToLNu_MLM", "WJets", itBkg, kAzure-4, 0.50);
-  p->AddSample("DYJetsToLL_M50_MLM", "DY", itBkg, kAzure-8, 0.50);
-  p->AddSample("DYJetsToLL_M5to50_MLM",     "DY", itBkg);
+  p->AddSample("WJetsToLNu_MLM"       , "WJets", itBkg, kAzure-4, 0.50);
+  p->AddSample("DYJetsToLL_M50_MLM"   , "DY"   , itBkg, kAzure-8, 0.50);
+  p->AddSample("DYJetsToLL_M5to50_MLM", "DY"   , itBkg);
   // Substitute with DY/WJets  aMCatNLO?
   //p->AddSample("WJetsToLNu_aMCatNLO", "WJets", itBkg, kAzure-4, 0.50);
   //p->AddSample("DYJetsToLL_M50_aMCatNLO", "DY", itBkg, kAzure-8, 0.50);
@@ -111,8 +146,12 @@ void yields(TString plotsFolder=""){
   p->AddSystematic("stat");
   // p->AddSystematic("JES");
   //p->PrintYields(dilepton + ", " + jets2 + ", " + btag1, "Dilepton, 2jets, 1btag", "ElMu, ElMu, ElMu");
-  p->PrintYields("", "", "", "html");
-  p->PrintYields(dilepton + ", " + jets2 + ", " + btag1, "Dilepton, 2jets, 1btag", "ElMu, ElMu, ElMu", "html");
+  //p->PrintYields("", "", "", "html");
+  p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", "ElMu, ElMu, ElMu", "html");
+  p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", "MuMu, MuMu, MuMu", "html");
+  p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", "ElEl, ElEl, ElEl", "html");
+
+
   //CrossSection *x = new CrossSection(p, "ttbar");
   //x->SetTheoXsec(831.8);
   //x->SetChannelTag("ElMu");

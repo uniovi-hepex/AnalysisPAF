@@ -414,7 +414,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   if(doSignal){
     nSignals = VSignals.size();
     if(verbose) cout << "[Plot::DrawStack] Drawing " << nSignals << " signals..." << endl;
-    Histo* hSignal;
+    Histo* hSignal = nullptr;
     for(Int_t i = 0; i < nSignals; i++) if(VSignals.at(i)->GetProcess() == SignalProcess) hSignal = VSignals.at(i);
     if(verbose) cout << " Signal process: " << SignalProcess << endl;
     if((SignalStyle == "SM" || SignalStyle == "H")){ // Only supports one signal

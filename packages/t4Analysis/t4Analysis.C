@@ -6,7 +6,7 @@ t4Analysis::t4Analysis() : PAFChainItemSelector() {
 
   TrigSF = 0; TrigSF_Up = 0; TrigSF_Down = 0; PUSF = 0; PUSF_Up = 0; PUSF_Down = 0;
   gChannel = 0; passMETfilters = 0; passTrigger = 0; isSS = 0;  NormWeight = 0; TWeight = 0; TIsOnZ = 0;
-  TMZ = 0; TM3l = 0; TMll = 0;  TMET = 0; TMET_Phi = 0; TMT2 = 0; TNTaus = 0; TNJets = 0; TNBtags = 0; THT = 0; 
+  TIsSS = false; TMZ = 0; TM3l = 0; TMll = 0;  TMET = 0; TMET_Phi = 0; TMT2 = 0; TNTaus = 0; TNJets = 0; TNBtags = 0; THT = 0; 
   TNFakeableLeps = 0; TNSelLeps = 0; TChannel = 0; 
   TNJetsJESUp = 0; TNJetsJESDown = 0; TNJetsJER = 0; TNBtagsJESUp = 0; TNBtagsJESDown = 0;
   TNBtagsUp = 0; TNBtagsDown = 0; TNBtagsMisTagUp = 0; TNBtagsMisTagDown = 0;
@@ -211,23 +211,24 @@ void t4Analysis::SetTauVariables(){
 }
 
 void t4Analysis::SetLeptonVariables(){
-  fTree->Branch("TNFakeableLeps",  &TNFakeableLeps, "TNFakeableLeps/I");
-  fTree->Branch("TNSelLeps",       &TNSelLeps,      "TNSelLeps/I");
-  fTree->Branch("TLep_Pt",         TLep_Pt,         "TLep_Pt[TNSelLeps]/F");
-  fTree->Branch("TLep_Eta",        TLep_Eta,        "TLep_Eta[TNSelLeps]/F");
-  fTree->Branch("TLep_Phi",        TLep_Phi,        "TLep_Phi[TNSelLeps]/F");
-  fTree->Branch("TLep_E" ,         TLep_E ,         "TLep_E[TNSelLeps]/F");
-  fTree->Branch("TLep_Charge",     TLep_Charge,     "TLep_Charge[TNSelLeps]/F");
+  fTree->Branch("TNFakeableLeps"  ,&TNFakeableLeps, "TNFakeableLeps/I");
+  fTree->Branch("TNSelLeps"       ,&TNSelLeps,      "TNSelLeps/I");
+  fTree->Branch("TLep_Pt"         ,TLep_Pt,         "TLep_Pt[TNSelLeps]/F");
+  fTree->Branch("TLep_Eta"        ,TLep_Eta,        "TLep_Eta[TNSelLeps]/F");
+  fTree->Branch("TLep_Phi"        ,TLep_Phi,        "TLep_Phi[TNSelLeps]/F");
+  fTree->Branch("TLep_E"          ,TLep_E ,         "TLep_E[TNSelLeps]/F");
+  fTree->Branch("TLep_Charge"     ,TLep_Charge,     "TLep_Charge[TNSelLeps]/F");
   fTree->Branch("TFLep_pdgId",     TFLep_pdgId,     "TFLep_pdgId[TNFakeableLeps]/I");
-  fTree->Branch("TFLep_Pt",        TFLep_Pt,        "TFLep_Pt[TNFakeableLeps]/F");
-  fTree->Branch("TFLep_Eta",       TFLep_Eta,       "TFLep_Eta[TNFakeableLeps]/F");
-  fTree->Branch("TFLep_Phi",       TFLep_Phi,       "TFLep_Phi[TNFakeableLeps]/F");
-  fTree->Branch("TFLep_E" ,        TFLep_E ,        "TFLep_E[TNFakeableLeps]/F");
-  fTree->Branch("TFLep_Charge",    TFLep_Charge,    "TFLep_Charge[TNFakeableLeps]/F");
-  fTree->Branch("TChannel",        &TChannel,       "TChannel/I");
-  fTree->Branch("TMll",            &TMll,           "TMll/F");
-  fTree->Branch("TM3l",            &TM3l,           "TM3l/F");
-  fTree->Branch("TMZ",             &TMZ,            "TMZ/F");
+  fTree->Branch("TFLep_Pt"        ,TFLep_Pt,        "TFLep_Pt[TNFakeableLeps]/F");
+  fTree->Branch("TFLep_Eta"       ,TFLep_Eta,       "TFLep_Eta[TNFakeableLeps]/F");
+  fTree->Branch("TFLep_Phi"       ,TFLep_Phi,       "TFLep_Phi[TNFakeableLeps]/F");
+  fTree->Branch("TFLep_E"         ,TFLep_E ,        "TFLep_E[TNFakeableLeps]/F");
+  fTree->Branch("TFLep_Charge"    ,TFLep_Charge,    "TFLep_Charge[TNFakeableLeps]/F");
+  fTree->Branch("TChannel"        ,&TChannel,       "TChannel/I");
+  fTree->Branch("TMll"            ,&TMll,           "TMll/F");
+  fTree->Branch("TM3l"            ,&TM3l,           "TM3l/F");
+  fTree->Branch("TMZ"             ,&TMZ,            "TMZ/F");
+  fTree->Branch("TIsSS"           ,&TIsSS,          "TIsSS/B");
 }
 
 void t4Analysis::SetJetVariables(){
@@ -414,6 +415,7 @@ void t4Analysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> clea
 void t4Analysis::GetMET(){
   TMET        = Get<Float_t>("met_pt");
   TMET_Phi    = Get<Float_t>("met_phi");  // MET phi
+  TIsSS       = isSS;
   if(TNSelLeps>1)  TMT2 = getMT2ll(selLeptons.at(0), selLeptons.at(1), TMET,        TMET_Phi);
   if(gIsData) return;
   TMETJESUp   = GetParam<Float_t>("MET_JESUp");
