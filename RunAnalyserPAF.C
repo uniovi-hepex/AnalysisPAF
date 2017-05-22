@@ -14,6 +14,8 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Powheg", TString Selection = "S
 Float_t GetSMSnorm(Int_t mStop, Int_t mLsp);
 Double_t GetStopXSec(Int_t StopMass);
 vector<TString> GetAllFiles(TString path, TString  filename = "");
+void CheckTreesInDir(TString path, TString treeName = "tree", Int_t verbose = 0);
+void CheckTree(TString filename, TString treeName = "tree", Int_t verbose = 0);
 //Float_t* GetCountLHE(std::vector<TString> Files, Float_t a[]);
 
 vector<TString> Files;
@@ -28,6 +30,13 @@ enum             sel         {iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSe
 const TString tagSel[nSel] = {"Stop",         "Top",     "TW",     "WW",     "ttDM",     "ttH",   "WZ",    "tttt" };
 
 void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_t nEvents, Long64_t FirstEvent, Float_t uxsec,	Int_t stopMass, Int_t lspMass) {
+
+  if(sampleName.BeginsWith("Check:")){
+    verbose = false;
+    sampleName.ReplaceAll("Check:", "");
+    CheckTreesInDir(sampleName, Selection, nSlots);
+    return;
+  }
 
 	Int_t iChunk = Int_t(uxsec);
 	if(FirstEvent != 0) verbose = false;
@@ -274,7 +283,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	else if (sel == ittDMSelec)  myProject->AddSelectorPackage("ttDM");
 	else if (sel == iTopSelec )  myProject->AddSelectorPackage("TopAnalysis");
 	else if (sel == ittHSelec )  myProject->AddSelectorPackage("ttHAnalysis");
-	else if (sel == i4tSelec)  myProject->AddSelectorPackage("t4Analysis");
+	else if (sel == i4tSelec)    myProject->AddSelectorPackage("t4Analysis");
 	else if (sel == iTWSelec  ){
 	  myProject->AddSelectorPackage("TopAnalysis");
 	  // myProject->AddSelectorPackage("TWAnalysis");
@@ -286,6 +295,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	//----------------------------------------------------------------------------
 	myProject->AddPackage("Lepton");
 	myProject->AddPackage("Jet");
+  if(sel == i4tSelec) myProject->AddPackage("SFfor4top");
 	myProject->AddPackage("mt2");
 	myProject->AddPackage("Functions");
 	myProject->AddPackage("LeptonSF");
@@ -406,6 +416,7 @@ vector<TString> GetAllFiles(TString path, TString  filename) {
   TString command("ls ");
   if(filename != "")
     command += 
+      path + "/" + filename + " " +
       path + "/" + filename + ".root " +
       path + "/" + filename + "_[0-9].root " +
       path + "/" + filename + "_[0-9][0-9].root " +
@@ -446,5 +457,28 @@ vector<TString> GetAllFiles(TString path, TString  filename) {
   return theFiles;
 }
 
+void CheckTree(TString filename, TString treeName, Int_t verbose){
+  if(verbose) cout << "Checking rootfile " << filename << "... "; 
+  TFile* f = TFile::Open(filename);
+  if(verbose) cout << "Looking for TTree " << treeName << "... ";
+  TTree* t; f->GetObject(treeName, t);
+  if(t){
+    if(verbose) cout << "Found! ";  
+    Int_t nEntries = t->GetEntries();
+    if(verbose) cout << "nEntries = " << nEntries << endl;
+  }
+  else{
+    if(verbose) cout << "TTree not found in " << filename << endl;
+  }
+}
 
-
+void CheckTreesInDir(TString path, TString treeName, Int_t verbose){
+  if(path.EndsWith(".root")){
+    CheckTree(path, treeName);
+    return;
+  }
+  vector<TString> AllFiles = GetAllFiles(path, "Tree_*.root");
+  for(Int_t i = 0; i < (Int_t) AllFiles.size(); i++){
+    CheckTree(AllFiles.at(i), treeName, verbose);
+  }
+}
