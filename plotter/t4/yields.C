@@ -13,7 +13,7 @@ TString NameOfTree = "tree";
 
 TString alwaystrue("1");
 //TString presel("TMET>50 && TMT2>0 && isSS && TNVetLeps < 3");
-TString presel("TMET>50 && isSS && TNVetLeps < 3"); // MT2 falta de los trees
+TString presel("TMET>50 && TIsSS && TNVetLeps < 3"); // MT2 falta de los trees
 TString SRs(presel+" && TNBtags>1");
 TString CRs(presel+" && TNBtags <2 && TNJets>0");
 
