@@ -4,6 +4,7 @@
 #include "Functions.h"
 #include <iostream>
 #include <vector>
+#include "SFfor4top.h"
 
 
 class t4Analysis : public PAFChainItemSelector{
@@ -68,13 +69,13 @@ class t4Analysis : public PAFChainItemSelector{
     Float_t TLep_Eta[10];
     Float_t TLep_Phi[10];
     Float_t TLep_E[10];
-    Float_t TLep_pdgId[10];
     Int_t   TLep_Charge[10];
     Float_t TFLep_Pt[5];
     Float_t TFLep_Eta[5];
     Float_t TFLep_Phi[5];
     Float_t TFLep_E[5];
     Int_t   TFLep_Charge[5];
+    Int_t TFLep_pdgId[10];
 
     Int_t TNTaus;
     Float_t TTau_Pt         [10];
