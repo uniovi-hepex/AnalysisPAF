@@ -5,7 +5,7 @@
 # DY, WJets
 root -l -b -q 'RunAnalyserPAF.C("WJetsToLNu_MLM & WJetsToLNu_MLM_ext2"            , "4t",  8)'
 root -l -b -q 'RunAnalyserPAF.C("DYJetsToLL_M5to50_MLM"                           , "4t", 30)'
-root -l -b -q 'RunAnalyserPAF.C("DYJetsToLL_M50_MLM_ext & DYJetsToLL_M50_MLM_ext2", "4t", 50, -8)'
+root -l -b -q 'RunAnalyserPAF.C("DYJetsToLL_M50_MLM_ext & DYJetsToLL_M50_MLM_ext2", "4t", 50)'
 
 # ttbar, single-t
 root -l -b -q 'RunAnalyserPAF.C("TTbar_Powheg"           ,"4t", 30)'
