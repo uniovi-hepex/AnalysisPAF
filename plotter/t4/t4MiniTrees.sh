@@ -44,7 +44,7 @@ root -l -b -q 'RunAnalyserPAF.C("WWTo2L2Nu_DoubleScat"   ,"4t", 5)' # WW DoubleS
 # CONVERSIONS
 # ====================
 root -l -b -q 'RunAnalyserPAF.C("TGJets & TGJets_ext"  , "4t",8, -4)'
-root -l -b -q 'RunAnalyserPAF.C("TTGJets & TTGJets_ext", "4t",8, -4)'
+root -l -b -q 'RunAnalyserPAF.C("TTGJets & TTGJets_ext", "4t",30   )'
 root -l -b -q 'RunAnalyserPAF.C("WGToLNuG"             , "4t",8, -4)'
 root -l -b -q 'RunAnalyserPAF.C("ZGTo2LG"              , "4t",8, -4)'
 root -l -b -q 'RunAnalyserPAF.C("WZG_amcatnlo"   , "4t",8, -4)' # WZG_TuneCUETP8M1_13TeV-amcatnlo-pythia8
