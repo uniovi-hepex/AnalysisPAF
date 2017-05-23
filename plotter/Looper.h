@@ -16,7 +16,7 @@
 #include "TSystem.h"
 #include "../InputFiles/for4t/fake_rates.h"
 
-enum eChannel{iNoChannel, iElMu, iMuon, iMuMu, iElEl, iElec, i2lss, iTriLep, iFourLep, i2l1tau, i2l2taus, i2lss_fake, iTriLep_fake, nTotalDefinedChannels};
+enum eChannel{iNoChannel, iElMu, iMuon, iMuMu, i2lss, iTriLep, iFourLep, i2l1tau, i2l2taus, i2lss_fake, iTriLep_fake, iElEl, iElec, nTotalDefinedChannels};
 const Int_t nLHEweights = 112;
 
 TString CraftFormula(TString cut, TString chan, TString sys, TString options = "");
