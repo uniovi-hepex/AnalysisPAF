@@ -12,51 +12,11 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 TString NameOfTree = "tree";
 
 TString alwaystrue("1");
-//TString presel("TMET>50 && TMT2>0 && isSS && TNVetLeps < 3");
-TString presel("TMET>50 && TIsSS && TNVetLeps < 3"); // MT2 falta de los trees
-TString SRs(presel+" && TNBtags>1");
-TString CRs(presel+" && TNBtags <2 && TNJets>0");
-
-//TNTaus    : TNTaus/I                                               *
-//TTau_Pt   : TTau_Pt[TNTaus]/F                                      *
-//TTau_Eta  : TTau_Eta[TNTaus]/F                                     *
-//TTau_Charge : TTau_Charge[TNTaus]/F                                *
-//TTau_DecayMode : TTau_DecayMode[TNTaus]/F                          *
-//TTau_IdDecayMode : TTau_IdDecayMode[TNTaus]/F                      *
-//TTau_IdMVA : TTau_IdMVA[TNTaus]/F                                  *
-//TTau_IdAntiE : TTau_IdAntiE[TNTaus]/F                              *
-//TTau_IdAntiMu : TTau_IdAntiMu[TNTaus]/F                            *
-//TNFakeableLeps : TNFakeableLeps/I                                  *
-//TNSelLeps : TNSelLeps/I                                            *
-//TLep_Pt   : TLep_Pt[TNSelLeps]/F                                   *
-//TLep_Eta  : TLep_Eta[TNSelLeps]/F                                  *
-//TLep_Phi  : TLep_Phi[TNSelLeps]/F                                  *
-//TLep_E    : TLep_E[TNSelLeps]/F                                    *
-//TLep_Charge : TLep_Charge[TNSelLeps]/F                             *
-//TFLep_Pt  : TFLep_Pt[TNFakeableLeps]/F                             *
-//TFLep_Eta : TFLep_Eta[TNFakeableLeps]/F                            *
-//TFLep_Phi : TFLep_Phi[TNFakeableLeps]/F                            *
-//TFLep_E   : TFLep_E[TNFakeableLeps]/F                              *
-//TFLep_Charge : TFLep_Charge[TNFakeableLeps]/F                      *
-//TChannel  : TChannel/I                                             *
-//TMll      : TMll/F                                                 *
-//TM3l      : TM3l/F                                                 *
-//TMZ       : TMZ/F                                                  *
-//TNJets    : TNJets/I                                               *
-//TNBtags   : TNBtags/I                                              *
-//TJet_isBJet : TJet_isBJet[TNJets]/I                                *
-//TJet_Pt   : TJet_Pt[TNJets]/F                                      *
-//TJet_Eta  : TJet_Eta[TNJets]/F                                     *
-//TJet_Phi  : TJet_Phi[TNJets]/F                                     *
-//TJet_E    : TJet_E[TNJets]/F                                       *
-//THT       : THT/F                                                  *
-//TWeight   : TWeight/F                                              *
-//TMET      : TMET/F                                                 *
-//TMET_Phi  : TMET_Phi/F                                             *
-//TIsOnZ    : TIsOnZ/I                                               *
+TString presel("TMET>50 && TMT2>0 && TIsSS && TNFakeableLeps < 3"); // MT2 falta de los trees
+TString SRs(presel+" && TNBtags>=2");
+TString CRs(presel+" && TNBtags<2 && TNJets>0");
 
 TString pathToTree("./tttt_temp/");
-
 
 void yields(TString plotsFolder=""){
   Plot* p = new Plot("TChannel", alwaystrue, "1", 1, 0, 10, "Channel", "xsec");
