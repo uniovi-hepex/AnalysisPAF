@@ -107,10 +107,11 @@ void yields(TString plotsFolder=""){
   // p->AddSystematic("JES");
   //p->PrintYields(dilepton + ", " + jets2 + ", " + btag1, "Dilepton, 2jets, 1btag", "ElMu, ElMu, ElMu");
   //p->PrintYields("", "", "", "html");
-  p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", "   1,    1,    1", "html");
-  p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", "ElMu, ElMu, ElMu", "html");
-  p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", "MuMu, MuMu, MuMu", "html");
-  p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", "ElEl, ElEl, ElEl", "html");
+  
+  p->SetYieldsTableName("inclusive"); p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", "   1,    1,    1", "html");
+  p->SetYieldsTableName("emu"      ); p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", Form("TChannel==%i, TChannel==%i, TChannel==%i",iElMu,iElMu,iElMu), "html");
+  p->SetYieldsTableName("ee"       ); p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", Form("TChannel==%i, TChannel==%i, TChannel==%i",iElEl,iElEl,iElEl), "html");
+  p->SetYieldsTableName("mumu"     ); p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", Form("TChannel==%i, TChannel==%i, TChannel==%i",iMuMu,iMuMu,iMuMu), "html");
 
 
   //CrossSection *x = new CrossSection(p, "ttbar");
