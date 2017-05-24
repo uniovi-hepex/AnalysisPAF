@@ -12,8 +12,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 TString NameOfTree = "tree";
 
 TString alwaystrue("1");
-TString presel("TMET>50 && TMT2>0 && TIsSS && TNFakeableLeps < 3"); // MT2 falta de los trees
-TString SRs(presel+" && TNBtags>=2");
+TString presel("TMT2>0 && TIsSS && TNFakeableLeps < 3"); // MT2 falta de los trees
+TString SRs(presel+" && TNBtags>=2 && TNJets >=2 && TMET>50 && THT > 300");
 TString CRs(presel+" && TNBtags<2 && TNJets>0");
 
 TString pathToTree("./tttt_temp/");
