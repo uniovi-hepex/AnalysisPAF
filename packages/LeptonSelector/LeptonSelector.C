@@ -21,6 +21,7 @@ void LeptonSelector::Initialise(){
   gIsData        = GetParam<Bool_t>("IsData");
   gIsFastSim     = GetParam<Bool_t>("IsFastSim");
   gSelection     = GetParam<Int_t>("iSelection");
+  gChannel       = GetParam<Int_t>("gChannel");
   localPath      = GetParam<TString>("WorkingDir");
   LepSF = new LeptonSF(localPath + "/InputFiles/");
 
@@ -40,7 +41,21 @@ void LeptonSelector::Initialise(){
     }
   }
   else if(gSelection == ittHSelec){
-
+    if (gChannel == iElec || gChannel == iMuon || gChannel == iElMu) {
+      LepSF->loadHisto(iMuonlepMVA2lSSttH);
+      LepSF->loadHisto(iEleclepMVA2lSSttH);
+    }
+    else {
+      LepSF->loadHisto(iMuonlepMVA3l4lttH);
+      LepSF->loadHisto(iEleclepMVA3l4lttH);
+    }
+    LepSF->loadHisto(iMuonReco);
+    LepSF->loadHisto(iMuonLooseTracksttH);
+    LepSF->loadHisto(iMuonLooseMiniIsottH);
+    LepSF->loadHisto(iMuonTightIP2DttH);
+    LepSF->loadHisto(iElecTightIP2DM17ttH);
+    LepSF->loadHisto(iElecMini4M17ttH);
+    LepSF->loadHisto(iElecConvVetoM17ttH);
   }
   else if(gSelection == i4tSelec){
 
