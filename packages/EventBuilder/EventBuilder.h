@@ -62,6 +62,7 @@ class EventBuilder : public PAFChainItemSelector{
     Bool_t PassesDoubleMuonHTTrigger();
     Bool_t PassesDoubleElecHTTrigger();
     Bool_t PassesElMuHTTrigger();
+    Bool_t PassesPFJet450Trigger();
     Bool_t PassesThreelFourlTrigger();
 
     Bool_t gIsSingleMuon;

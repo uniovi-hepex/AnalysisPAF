@@ -10,21 +10,18 @@ R__LOAD_LIBRARY(plotter/CrossSection.C+)
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name = "");
 
 TString NameOfTree = "tree";
-TString SScut = "TMT2 > 0 && TMET > 50 && TNJets > 1 && TNBtags > 0 && TIsSS && TNVetoLeps < 3";
-TString VarNBtagsNJets = "TNBtags + (TNJets == 1) + (TNJets == 2)*3 + (TNJets == 3)*6 + (TNJets >= 4)*10";
 
-//TString dilepton = "TLep_Charge[0]*TLep_Charge[1] < 0";
-//TString jets2    = "TLep_Charge[0]*TLep_Charge[1] < 0 && TNJets >= 2";
-//TString btag1    = "TLep_Charge[0]*TLep_Charge[1] < 0 && TNJets >= 2 && TNBtags > 0";
-TString dilepton = "1";
-TString jets2    = "TNJets >= 2";
-TString btag1    = "TNJets >= 2 && TNBtags > 0";
+TString alwaystrue("1");
+TString presel("TMT2>0 && TIsSS && TNFakeableLeps < 3"); // MT2 falta de los trees
+TString SRs(presel+" && TNBtags>=2 && TNJets >=2 && TMET>50 && THT > 300");
+TString CRs(presel+" && TNBtags<2 && TNJets>0");
 
-// Baseline
+TString pathToTree("./tttt_temp/");
 
-TString pathToTree = "./tttt_temp/";
 void yields(TString plotsFolder=""){
-  Plot* p = new Plot("TChannel", dilepton, "All", 1, 0, 10, "Channel", "xsec");
+  Plot* p = new Plot("TChannel", alwaystrue, "1", 1, 0, 10, "Channel", "xsec");
+  TString username(gSystem->GetUserInfo(gSystem->GetUid())->fUser);
+  if(username=="vischia") pathToTree="/pool/ciencias/userstorage/pietro/tttt/2l_skim_wmt2/tttt_temp/";
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
   p->verbose = true;
   p->SetPlotFolder(plotsFolder);
@@ -32,10 +29,9 @@ void yields(TString plotsFolder=""){
   //p->doStackSignal = true;
 
   // Diboson
-  p->AddSample("ZZ",        "VV non-WZ", itBkg, kYellow-10, 0.50);
-  //p->AddSample("WW",     "VV non-WZ", itBkg);
+  p->AddSample("ZZTo4L"   , "VV non-WZ", itBkg, kYellow-10, 0.50);
   p->AddSample("WWTo2L2Nu", "VV non-WZ", itBkg);  
-  p->AddSample("WpWpJJ",    "VV non-WZ", itBkg);
+  p->AddSample("WpWpJJ"   , "VV non-WZ", itBkg);
   
   // Triboson
   p->AddSample("ZZZ", "VVV", itBkg);
@@ -44,14 +40,13 @@ void yields(TString plotsFolder=""){
   p->AddSample("WWW", "VVV", itBkg);
   
   // ttV
-  p->AddSample("TTZToLLNuNu", "ttV", itBkg, kOrange-3, 0.5);
-  ///// Rerunning: p->AddSample("TTWToLNu1"  , "ttV", itBkg) ;
-  //p->AddSample("TTWToQQ", "ttV", itBkg);
-  //p->AddSample("TTZToQQ", "ttV", itBkg);
+  p->AddSample("TTZToLLNuNu1"  , "ttV", itBkg, kOrange-3, 0.5);
+  p->AddSample("TTWToLNu1"     , "ttV", itBkg);
+  p->AddSample("TTZToLL_M1to10", "ttV", itBkg);
 
   // ttH/tZq
-  ///// Rerunning: p->AddSample("tZq_ll",   "tZq", itBkg, kOrange-1, 0.5);
-  //p->AddSample("TTHNonbb", "ttH/tZq", itBkg);
+  p->AddSample("tZq_ll",   "tZq", itBkg, kOrange-1, 0.5);
+  //p->AddSample("TTHNonbb", "ttH/tZq", itBkg); // Must run from jet25, but need jet15
 
   // WZ
   p->AddSample("WZTo3LNu",     "WZ", itBkg);
@@ -68,17 +63,17 @@ void yields(TString plotsFolder=""){
   //p->AddSample("TTbar_Powheg_Semi", "NonWZ", itBkg, kGreen-2, 0.50);  
 
   // Conversions
-  p->AddSample("TGJets"  , "Conversions", itBkg, kBlue-1, 0.5);
-  //p->AddSample("TTGJets" , "Conversions", itBkg);
-  p->AddSample("WGToLNuG", "Conversions", itBkg);
-  p->AddSample("ZGTo2LG" , "Conversions", itBkg);
-  //p->AddSample("WZG", "Conversions", itBkg);
-  //p->AddSample("WWG", "Conversions", itBkg);
+  p->AddSample("TGJets"      , "Conversions", itBkg, kBlue-1, 0.5);
+  p->AddSample("TTGJets"     , "Conversions", itBkg);
+  p->AddSample("WGToLNuG"    , "Conversions", itBkg);
+  p->AddSample("ZGTo2LG"     , "Conversions", itBkg);
+  p->AddSample("WZG_amcatnlo", "Conversions", itBkg);
+  p->AddSample("WWG_amcatnlo", "Conversions", itBkg);
 
   // V+jets
-  p->AddSample("WJetsToLNu_MLM", "WJets", itBkg, kAzure-4, 0.50);
-  p->AddSample("DYJetsToLL_M50_MLM", "DY", itBkg, kAzure-8, 0.50);
-  p->AddSample("DYJetsToLL_M5to50_MLM",     "DY", itBkg);
+  p->AddSample("WJetsToLNu_MLM"       , "WJets", itBkg, kAzure-4, 0.50);
+  p->AddSample("DYJetsToLL_M50_MLM"   , "DY"   , itBkg, kAzure-8, 0.50);
+  p->AddSample("DYJetsToLL_M5to50_MLM", "DY"   , itBkg);
   // Substitute with DY/WJets  aMCatNLO?
   //p->AddSample("WJetsToLNu_aMCatNLO", "WJets", itBkg, kAzure-4, 0.50);
   //p->AddSample("DYJetsToLL_M50_aMCatNLO", "DY", itBkg, kAzure-8, 0.50);
@@ -111,8 +106,14 @@ void yields(TString plotsFolder=""){
   p->AddSystematic("stat");
   // p->AddSystematic("JES");
   //p->PrintYields(dilepton + ", " + jets2 + ", " + btag1, "Dilepton, 2jets, 1btag", "ElMu, ElMu, ElMu");
-  p->PrintYields("", "", "", "html");
-  p->PrintYields(dilepton + ", " + jets2 + ", " + btag1, "Dilepton, 2jets, 1btag", "ElMu, ElMu, ElMu", "html");
+  //p->PrintYields("", "", "", "html");
+  
+  p->SetYieldsTableName("inclusive"); p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", "   1,    1,    1", "html");
+  p->SetYieldsTableName("emu"      ); p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", Form("TChannel==%i, TChannel==%i, TChannel==%i",iElMu,iElMu,iElMu), "html");
+  p->SetYieldsTableName("ee"       ); p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", Form("TChannel==%i, TChannel==%i, TChannel==%i",iElEl,iElEl,iElEl), "html");
+  p->SetYieldsTableName("mumu"     ); p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", Form("TChannel==%i, TChannel==%i, TChannel==%i",iMuMu,iMuMu,iMuMu), "html");
+
+
   //CrossSection *x = new CrossSection(p, "ttbar");
   //x->SetTheoXsec(831.8);
   //x->SetChannelTag("ElMu");

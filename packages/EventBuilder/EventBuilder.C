@@ -25,7 +25,7 @@ Bool_t EventBuilder::PassesDoubleElecTrigger(){
   gIsData = GetParam<Bool_t>("IsData");
   if (gIsData)
     run     = Get<Int_t>("run");
-  if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec || gSelection == i4tSelec){
+  if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec){ //|| gSelection == i4tSelec
     // Run B-G, same as H
     pass = (Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"));
     return pass;
@@ -44,6 +44,10 @@ Bool_t EventBuilder::PassesDoubleElecTrigger(){
             Get<Int_t>("HLT_BIT_HLT_Ele27_eta2p1_WPLoose_Gsf_v"));
     return pass;
   }
+  else{
+    cout << "[EventBuilder] Wrong selection for checking trigger requirements!!" << endl;
+    return false;
+  }
 }
 
 Bool_t EventBuilder::PassesDoubleMuonTrigger(){
@@ -51,7 +55,7 @@ Bool_t EventBuilder::PassesDoubleMuonTrigger(){
   Bool_t pass = false;
   if (gIsData)
     run     = Get<Int_t>("run");
-  if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec || gSelection == i4tSelec){
+  if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec){// || gSelection == i4tSelec){
     // Run B-G or MC
     if ( (gIsData && run <= 280385) || (!gIsData)){
       pass = (Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v")  ||
@@ -80,6 +84,10 @@ Bool_t EventBuilder::PassesDoubleMuonTrigger(){
         Get<Int_t>("HLT_BIT_HLT_IsoTkMu24_v"));
     return pass;
   }
+  else{
+    cout << "[EventBuilder] Wrong selection for checking trigger requirements!!" << endl;
+    return pass;
+  }
 }
 
 Bool_t EventBuilder::PassesElMuTrigger(){
@@ -87,7 +95,7 @@ Bool_t EventBuilder::PassesElMuTrigger(){
   Bool_t pass = false;
   if (gIsData)
     run     = Get<Int_t>("run");
-  if( gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec || gSelection == i4tSelec){
+  if( gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec){// || gSelection == i4tSelec){
     // Run B-G or MC
     if ( (gIsData && run <= 280385) || (!gIsData)){
       pass = ( Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v")  ||
@@ -128,6 +136,10 @@ Bool_t EventBuilder::PassesElMuTrigger(){
             Get<Int_t>("HLT_BIT_HLT_Ele27_eta2p1_WPLoose_Gsf_v"));
 	return pass;
   }
+  else{
+    cout << "[EventBuilder] Wrong selection for checking trigger requirements!!" << endl;
+    return false;
+  }
 }
 
 Bool_t EventBuilder::PassesSingleElecTrigger(){
@@ -135,7 +147,7 @@ Bool_t EventBuilder::PassesSingleElecTrigger(){
   Bool_t pass = false;
   if(gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec)
     pass =  Get<Int_t>("HLT_BIT_HLT_Ele27_WPTight_Gsf_v") ||
-      Get<Int_t>("HLT_Ele25_eta2p1_WPTight_Gsf_v");
+      Get<Int_t>("HLT_BIT_HLT_Ele25_eta2p1_WPTight_Gsf_v");
   return pass;
 }
 
@@ -162,6 +174,11 @@ Bool_t EventBuilder::PassesDoubleElecHTTrigger(){
 Bool_t EventBuilder::PassesElMuHTTrigger(){
   if(gIsFastSim) return true; // no triger in FastSim samples
   return Get<Int_t>("HLT_BIT_HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v");
+}
+
+Bool_t EventBuilder::PassesPFJet450Trigger(){
+  if(gIsFastSim) return true; // no triger in FastSim samples
+  return Get<Int_t>("HLT_BIT_HLT_PFHT400_v"); // Jet450
 }
 
 Bool_t EventBuilder::PassesThreelFourlTrigger() {
@@ -259,10 +276,6 @@ void EventBuilder::InsideLoop(){
   }
 
   passTrigger = false;
-  if      (gChannel == iElMu && TrigElMu()) passTrigger = true;
-  else if (gChannel == iMuon && TrigMuMu()) passTrigger = true;
-  else if (gChannel == iElec && TrigElEl()) passTrigger = true;
-  else if ((gChannel == iTriLep || gChannel == iFourLep) && Trig3l4l()) passTrigger = true;
 
   if(gSelection == i4tSelec){
     gChannel = -1; 
@@ -281,19 +294,36 @@ void EventBuilder::InsideLoop(){
     else if(selLeptons.size() >= 4) gChannel = iFourLep; // 4 leptons
     else gChannel = -1; // less than 2 leptons...
 
-    passTrigger = PassesElMuTrigger() || PassesElMuHTTrigger() ||
-      PassesDoubleMuonTrigger() || PassesDoubleMuonHTTrigger() ||
-      PassesDoubleElecTrigger() || PassesDoubleElecHTTrigger();
-    if(gIsDoubleMuon){
-      passTrigger = !PassesElMuTrigger() && !PassesElMuHTTrigger() &&
-        (PassesDoubleMuonTrigger() || PassesDoubleMuonHTTrigger() ||
-        PassesDoubleElecTrigger() || PassesDoubleElecHTTrigger() );
+    Int_t nLepForCharge = 0;
+    Int_t pdgIdsum = 0;
+    for(Int_t i = 0; i < (Int_t) selLeptons.size(); i++){
+      if(nLepForCharge >= 2) continue;
+      pdgIdsum = selLeptons.at(i).isElec? pdgIdsum + 11 : pdgIdsum + 13;
+      nLepForCharge++;
     }
-    if(gIsDoubleElec){
-      passTrigger = !PassesElMuTrigger() && !PassesElMuHTTrigger() &&
-        !PassesDoubleMuonTrigger() && !PassesDoubleMuonHTTrigger() &&
-        (PassesDoubleElecTrigger() || PassesDoubleElecHTTrigger() );
+    for(Int_t i = 0; i < (Int_t) vetoLeptons.size(); i++){
+      if(nLepForCharge >= 2) continue;
+      pdgIdsum = vetoLeptons.at(i).isElec? pdgIdsum + 11 : pdgIdsum + 13;
+      nLepForCharge++;
     }
+    if(gChannel == -1) pdgIdsum = -1;
+    if(pdgIdsum != -1 && pdgIdsum != 22 && pdgIdsum != 24 && pdgIdsum != 26) cout << "[EventBuilder] Error with channel definition!!\n";
+    else{
+      if(pdgIdsum == 22){ gIsDoubleElec = true;  gIsDoubleMuon = false; gIsMuonEG = false;}
+      if(pdgIdsum == 24){ gIsDoubleElec = false; gIsDoubleMuon = false; gIsMuonEG = true; }
+      if(pdgIdsum == 26){ gIsDoubleElec = false; gIsDoubleMuon = true;  gIsMuonEG = false;}
+    }
+
+    if     (gIsMuonEG)      passTrigger = PassesElMuHTTrigger()       || PassesPFJet450Trigger();
+    else if(gIsDoubleMuon)  passTrigger = PassesDoubleMuonHTTrigger() || PassesPFJet450Trigger();
+    else if(gIsDoubleElec)  passTrigger = PassesDoubleElecHTTrigger() || PassesPFJet450Trigger();
+    else                    passTrigger = false;
+  }
+  else{
+    if      (gChannel == iElMu && TrigElMu()) passTrigger = true;
+    else if (gChannel == iMuon && TrigMuMu()) passTrigger = true;
+    else if (gChannel == iElec && TrigElEl()) passTrigger = true;
+    else if ((gChannel == iTriLep || gChannel == iFourLep) && Trig3l4l()) passTrigger = true;
   }
 
   METfilters = PassesMETfilters();

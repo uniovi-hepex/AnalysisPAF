@@ -296,6 +296,7 @@ Bool_t LeptonSelector::getElecCutBasedId(Int_t wp){
       if(HoE > 0.07 ) return false;
       if(eImpI < -0.05 || eImpI > 0.005) return false;
     }
+    return true;
   }
   else{
     if(wp == iTight   && tightVar < 3)     return false;

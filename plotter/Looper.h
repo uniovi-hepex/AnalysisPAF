@@ -14,8 +14,9 @@
 #include "Histo.h"
 #include "TH2F.h"
 #include "TSystem.h"
+#include "../InputFiles/for4t/fake_rates.h"
 
-enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, i2l1tau, i2l2taus, i2lss_fake, iTriLep_fake, nTotalDefinedChannels};
+enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, i2l1tau, i2l2taus, i2lss_fake, iTriLep_fake, iElEl, iMumu, nTotalDefinedChannels};
 const Int_t nLHEweights = 112;
 
 TString CraftFormula(TString cut, TString chan, TString sys, TString options = "");
@@ -114,11 +115,19 @@ class Looper{
 
    Int_t nLeps; 
    Int_t nFakeLeps; 
-   Float_t *FLepPt; 
-   Float_t *FLepEta; 
-   Int_t *FLepCharge; 
-   Int_t *LepCharge; 
-   Int_t *FLepPdgId; 
+   Float_t FLepPt; 
+   Float_t FLepEta; 
+   Float_t FLepCharge; 
+   Float_t LepCharge; 
+   Int_t   FLepPdgId; 
+
+   TTreeFormula *ForFLepPt;
+   TTreeFormula *ForFLepEta; 
+   TTreeFormula *ForFLepPdgId;
+   TTreeFormula *ForLepChar;
+   TTreeFormula *FornSelLep;
+   TTreeFormula *FornFakeLep;
+
 };
 
 #endif

@@ -6,7 +6,7 @@ StopAnalysis::StopAnalysis() : PAFChainItemSelector() {
   fSumISRJets = 0;  
   fISRJets = 0;  
 
-  TrigSF = 0; TrigSF_Up = 0; TrigSF_Down = 0; PUSF = 0; PUSF_Up = 0; PUSF_Down = 0;
+  TrigSF = 0; TrigSFerr = 0; PUSF = 0; PUSF_Up = 0; PUSF_Down = 0;
   gChannel = 0; passMETfilters = 0; passTrigger = 0; isSS = 0;  NormWeight = 0; TWeight = 0;
   TMT2 = 0; TMll = 0;  TMET = 0; TMET_Phi = 0; TgenMET = 0; TNJets = 0; TNBtags = 0; THT = 0; 
   TNVetoLeps = 0; TNSelLeps = 0; TChannel = 0; TDeltaPhi = 0; TDeltaEta = 0;
@@ -54,7 +54,7 @@ void StopAnalysis::Initialise(){
   if(gSampleName.Contains("200_50_FS_summer")) normISRweight = 0.923371;
 
   gIsLHE = false;
-  if(gSampleName.Contains("LHE")) gIsLHE = true;
+  if(gSampleName == ("TTbar_Powheg")) gIsLHE = true;
 
   TNLHEWeight = 254; 
   SetLeptonVariables();
@@ -83,10 +83,9 @@ void StopAnalysis::InsideLoop(){
   Jets15      = GetParam<vector<Jet>>("Jets15");
 
   // Weights and SFs
-  NormWeight = GetParam<Float_t>("NormWeight");
+  NormWeight   = GetParam<Float_t>("NormWeight");
   TrigSF       = GetParam<Float_t>("TriggerSF");
-  TrigSF_Up    = GetParam<Float_t>("TriggerSF_Up");
-  TrigSF_Down  = GetParam<Float_t>("TriggerSF_Down");
+  TrigSFerr    = GetParam<Float_t>("TriggerSFerr");
   PUSF         = GetParam<Float_t>("PUSF");
   PUSF_Up      = GetParam<Float_t>("PUSF_Up");
   PUSF_Down    = GetParam<Float_t>("PUSF_Down");
@@ -101,18 +100,17 @@ void StopAnalysis::InsideLoop(){
   GetLeptonVariables(selLeptons, vetoLeptons);
   GetJetVariables(selJets, Jets15);
   GetMET();
+  GetGenInfo();
   TISRweight = getISRJetsWeight(TNISRJets)/normISRweight;
 
   fSumISRJets->Fill(1, getISRJetsWeight(TNISRJets)); 
 
-  GetGenInfo();
 
   if(TNSelLeps == 2 && passTrigger && passMETfilters){ // 2 leptons, OS
 //  if(TNSelLeps == 2){ // 2 leptons, OS
 //  if(TNSelLeps == 2 && passTrigger && passMETfilters && !isSS){ // 2 leptons, OS
     //if(TNVetoLeps < 3){  // Veto to 3rd lepton
     if(1){  // Veto to 3rd lepton
-
       // Deal with weights:
       Float_t lepSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
       Float_t lepSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1);
@@ -120,8 +118,8 @@ void StopAnalysis::InsideLoop(){
       TWeight            = NormWeight*lepSF*TrigSF*PUSF;
       TWeight_LepEffUp   = NormWeight*lepSFUp*TrigSF*PUSF;
       TWeight_LepEffDown = NormWeight*lepSFDo*TrigSF*PUSF;
-      TWeight_TrigUp     = NormWeight*lepSF*TrigSF_Up*PUSF;
-      TWeight_TrigDown   = NormWeight*lepSF*TrigSF_Down*PUSF;
+      TWeight_TrigUp     = NormWeight*lepSF*(TrigSF+TrigSFerr)*PUSF;
+      TWeight_TrigDown   = NormWeight*lepSF*(TrigSF-TrigSFerr)*PUSF;
       TWeight_PUDown     = NormWeight*lepSF*TrigSF*PUSF_Up;
       TWeight_PUUp       = NormWeight*lepSF*TrigSF*PUSF_Down;
       if(gIsData) TWeight = 1;
@@ -133,7 +131,6 @@ void StopAnalysis::InsideLoop(){
           if(TNJets > 1 || TNJetsJESUp > 1 || TNJetsJESDown > 1 || TNJetsJER > 1){ //At least 2 jets
             if(TNBtags > 0 || TNBtagsUp > 0 || TNBtagsDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0){ // At least 1 b-tag
               fTree->Fill();
-              if(TNBtags > 0 && TNJets > 1) fISRJets->Fill(TNISRJets, TWeight);
             }
           }
         }
@@ -226,7 +223,6 @@ void StopAnalysis::SetEventVariables(){
   fTree->Branch("TgenTop2Eta" , &TgenTop2Eta, "TgenTop2Eta/F"); 
   fTree->Branch("TgenTop2Phi" , &TgenTop2Phi, "TgenTop2Phi/F"); 
   fTree->Branch("TgenTop2M"   , &TgenTop2M  , "TgenTop2M/F"  ); 
-
 }
 
 void StopAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> VetoLeptons){
@@ -261,7 +257,6 @@ void StopAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vecto
 }
 
 void StopAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut){
-  TNISRJets = Int_t(Get<Float_t>("nISRJet30"));
   TNJets = selJets.size(); THT = 0;
   TNBtags = 0; TNBtagsUp = 0; TNBtagsDown = 0;
   TNBtagsMisTagUp = 0;  TNBtagsMisTagDown = 0;
@@ -284,6 +279,7 @@ void StopAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cl
     THT += TJet_Pt[i];
   }
   if(gIsData) return;  // For systematics...
+  TNISRJets = Int_t(Get<Float_t>("nISRJet30"));
   for(Int_t i = 0; i < TNJets; i++){
     if(selJets.at(i).isBtag_BtagUp    ) TNBtagsUp++;
     if(selJets.at(i).isBtag_BtagDown  ) TNBtagsDown++;
@@ -332,9 +328,8 @@ void StopAnalysis::GetMET(){
   if(gIsLHE) for(Int_t i = 0; i < Get<Int_t>("nLHEweight"); i++)   TLHEWeight[i] = Get<Float_t>("LHEweight_wgt", i);
 }
 
-
 void StopAnalysis::GetGenInfo(){
-
+  if(gIsData) return; 
   TgenMETPhi = Get<Float_t>("met_genPhi");
 
   TgenTop1Pt  = -1;   TgenTop2Pt  = -1;
@@ -348,8 +343,5 @@ void StopAnalysis::GetGenInfo(){
     TgenTop1Phi = Get<Float_t>("GenTop_phi" , 0);   TgenTop2Phi = Get<Float_t>("GenTop_phi" , 1);
     TgenTop1M   = Get<Float_t>("GenTop_mass", 0);   TgenTop2M   = Get<Float_t>("GenTop_mass", 1);
   }
-
   return; 
-  
-
 }

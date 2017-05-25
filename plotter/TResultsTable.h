@@ -12,15 +12,19 @@ TString KeepOneDecimal(Float_t number, Float_t error = 0);
 
 class TResultsTableContent {
  public:
-  TResultsTableContent(double content = 0) {fContent = content;}
+  //TResultsTableContent(double content = 0) {fContent = content; fError = 0; fStatError = 0;}
+  TResultsTableContent(double content = 0) {fContent = content; fError = 0; fStatError = 0;}
 
   double Content() const {return fContent;}
   double& Content() {return fContent;}
   double Error() const {return fError;}
   double& Error() {return fError;}
+  double StatError() const {return fStatError;}
+  double& StatError() {return fStatError;}
 
   void SetContent(double c) {fContent = c;}
   void SetError(double e) {fError = e;}
+  void SetStatError(double e) {fStatError = e;}
 
   operator double() const {return fContent;}
   operator double() {return fContent;}
@@ -28,7 +32,7 @@ class TResultsTableContent {
  protected:
   double fContent;
   double fError;
-
+  double fStatError;
 };
 
 class TResultsTableRow {
@@ -52,7 +56,7 @@ class TResultsTableRow {
 
 class TResultsTable {
  public:
-  TResultsTable(unsigned int nrows, unsigned int ncols, bool witherrors = false, bool automaticerrors=true);
+  TResultsTable(unsigned int nrows, unsigned int ncols, Int_t witherrors = 0, bool automaticerrors=true);
   ~TResultsTable() {if (fRows) delete[] fRows;}
 
   ////////////////////////////////////////////////////////////////////////////
@@ -114,21 +118,23 @@ class TResultsTable {
   ////////////////////////////////////////////////////////////////////////////
   void SetFormatNum(TString k){ formatNum = k;}
   void AddVSeparation(TString t){VSeparations += TString(", ") + t;}
-  void AddVSeparation(Int_t g){ VSeparations += TString(Form("l%i,", g));}
+  void AddVSeparation(Int_t g){ VSeparations += TString(Form("l%i,", g));} // Separation between rows g and g+1
   TString getCellColor(Int_t col) const;
 
  protected:
   TString FixWidth(const TString& s, unsigned int width=11, bool prepend = true) const;
 
-  TString formatNum = TString("%1.2f");
+  TString formatNum;
   unsigned int fNColumns; //Number of columns
   unsigned int fNRows;    //Number of rows
 
   TString colorRow[20] = {"#0099cc", "#ff9966", "#99ff99", "#ff66ff", "#99cc00", "#0099cc", "#ff9966", "#99ff99", "#ff66ff", "#99cc00", "#0099cc", "#ff9966", "#99ff99", "#ff66ff", "#99cc00", "#0099cc", "#ff9966", "#99ff99", "#ff66ff", "#99cc00"};
   TString color[20]    = {"#ccffff", "#ffffcc", "#ccffcc", "#ffccff", "#ccff99", "#ccffff", "#ffffcc", "#ccffcc", "#ffccff", "#ccff99", "#ccffff", "#ffffcc", "#ccffcc", "#ffccff", "#ccff99", "#ccffff", "#ffffcc", "#ccffcc", "#ffccff", "#ccff99"};
-  bool fWithErrors;
+  //TString colorRow[20];
+  //TString color[20]; 
+  Int_t fWithErrors;
   bool fAutomaticErrors;
-  TString VSeparations = "";
+  TString VSeparations;
 
   TResultsTableRow* fRows;    //The table rows (content)
 

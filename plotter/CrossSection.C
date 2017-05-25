@@ -5,11 +5,13 @@ void CrossSection::SetMembers(){
   nBkgs = BkgYield.size();
   nSyst = SysVar.size();
 
-  NBkg = 0; NBkg_err = 0; y_err = 0; NData_err = TMath::Sqrt(NData);
+  NBkg = 0; NBkg_err = 0; NBkg_staterr = 0; y_err = 0; NData_err = TMath::Sqrt(NData);
   for(Int_t k = 0; k < nBkgs; k++) NBkg      += BkgYield.at(k); 
   for(Int_t k = 0; k < nBkgs; k++) NBkg_err  += ( BkgYield.at(k)*BkgUnc.at(k) )*( BkgYield.at(k)*BkgUnc.at(k) ); 
+  for(Int_t k = 0; k < nBkgs; k++) NBkg_staterr  += ( BkgYield.at(k)*BkgStatUnc.at(k) )*( BkgYield.at(k)*BkgStatUnc.at(k) ); 
   for(Int_t k = 0; k < nSyst; k++) y_err     += (y - SysVar.at(k)) * (y - SysVar.at(k));
   NBkg_err = TMath::Sqrt(NBkg_err);
+  NBkg_staterr = TMath::Sqrt(NBkg_staterr);
   y_err    = TMath::Sqrt(   y_err);
 
   xsec = GetXSec(NData, NBkg, y);
@@ -163,7 +165,7 @@ void CrossSection::PrintYieldsTable(TString options){
   if(notSet) SetMembers();
   Int_t nrows = nBkgs+3;
   Int_t ncolumns = 1;
-  TResultsTable t(nrows, ncolumns, true); 
+  TResultsTable t(nrows, ncolumns, 2); 
   t.SetFormatNum("%1.2f");
   t.AddVSeparation(nBkgs-1); t.AddVSeparation(nBkgs); t.AddVSeparation(nBkgs+1);
   for(Int_t i = 0; i < nBkgs; i++) t.SetRowTitle(i, BkgTags.at(i));
@@ -173,12 +175,16 @@ void CrossSection::PrintYieldsTable(TString options){
   t.SetRowTitleHeader("Source");
   t.SetColumnTitle(0, "Yield");
   for(Int_t i = 0; i < nBkgs; i++){
-    t[i][0] = BkgYield.at(i);
+    t[i][0].SetContent(BkgYield.at(i));
     t[i][0].SetError(BkgUnc.at(i)*BkgYield.at(i));
+    t[i][0].SetStatError(BkgStatUnc.at(i)*BkgYield.at(i));
   }
-    t[nBkgs][0]   = NBkg;  t[nBkgs][0].SetError(NBkg_err);
-    t[nBkgs+1][0] = y;     t[nBkgs+1][0].SetError(y_err);
-    t[nBkgs+2][0] = NData; t[nBkgs+2][0].SetError(NData);
+    t[nBkgs][0].SetContent(   NBkg);  t[nBkgs][0].SetError(NBkg_err);
+    t[nBkgs+1][0].SetContent( y);     t[nBkgs+1][0].SetError(y_err);
+    t[nBkgs+2][0].SetContent( NData); t[nBkgs+2][0].SetError(TMath::Sqrt(NData));
+
+    t[nBkgs][0].SetContent(   NBkg);  t[nBkgs][0].SetStatError(NBkg_staterr);
+    t[nBkgs+1][0].SetContent( y);     t[nBkgs+1][0].SetStatError(y_staterr);
 
     t.SetDrawHLines(true); t.SetDrawVLines(true); t.Print();
     if(options.Contains("tex"))  t.SaveAs(outputFolder + "/" + yieldsTableName + ".tex");
