@@ -46,7 +46,10 @@ echo
 
 path=""
 
+
 uplimit=$((${#samples[@]}-1))
+echo ${#samples[@]}
+echo $uplimit
 
 while [ $allok != ${#samples[@]} ]; do
   allok=0
