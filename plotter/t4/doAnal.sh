@@ -5,7 +5,7 @@
 if [ "$1" == "batch" ]; then
     source plotter/t4/batch.sh
 
-elif [ "$1" == "yield" ]; then    
+elif [ "$1" == "yields" ]; then    
     root -l -b plotter/t4/yields.C\(\"~/www/t4/plots\"\)
 
 else

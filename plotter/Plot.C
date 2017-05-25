@@ -17,7 +17,7 @@ Histo* Plot::GetH(TString sample, TString sys, Int_t type){
   h->SetDirectory(0);
   if(sys.Contains("stat")){
     if(sys.Contains("Up")) for(Int_t i = 0; i <= nb; i++) h->SetBinContent(i, h->GetBinContent(i) + h->GetBinError(i));
-    else for(Int_t i = 0; i <= nb; i++) h->SetBinContent(i, h->GetBinContent(i) - h->GetBinError(i));
+    else                   for(Int_t i = 0; i <= nb; i++) h->SetBinContent(i, h->GetBinContent(i) - h->GetBinError(i));
   }
   delete ah;
   return h;
@@ -130,8 +130,8 @@ void Plot::SetData(){  // Returns histogram for Data
   for(Int_t i = 0; i < (Int_t) VData.size(); i++){
     p = VData.at(i)->GetName();
     if     (chan == "ElMu" && (p == "DoubleMuon" || p == "DoubleEG"))   continue;
-    else if(chan == "Muon" && (p != "DoubleMuon" && p!= "SingleMuon"))  continue;
-    else if(chan == "Elec" && (p != "DoubleEG" && p!= "SingleElec"))    continue;
+    else if((chan == "MuMu" || chan == "Muon") && (p != "DoubleMuon" && p!= "SingleMuon"))  continue;
+    else if((chan == "ElEl" || chan == "Elec") && (p != "DoubleEG" && p!= "SingleElec"))    continue;
     else if( (chan == "SF" || chan == "sameF") && (p == "MuonEG"))      continue;
     hData->Add(VData.at(i));
   }
@@ -166,6 +166,7 @@ void Plot::AddSystematic(TString var){
     return;
   }
   for(Int_t i = 0; i < (Int_t) VTagSamples.size(); i++){
+    if(VTagOptions.at(i).Contains("Fake") || VTagOptions.at(i).Contains("fake")) continue;
     AddSample(VTagSamples.at(i), VTagProcesses.at(i), itSys, 1, 0, var+"Up", VTagOptions.at(i));
     AddSample(VTagSamples.at(i), VTagProcesses.at(i), itSys, 1, 0, var+"Down", VTagOptions.at(i));
   }
@@ -253,12 +254,18 @@ Float_t Plot::GetYield(TString pr, TString systag){
   }
   else{  // ATENTOOOOOO --> Comparar variación con nominal y coger la mayor!
     Float_t nom = GetYield(pr, "0");
+    Float_t var = 0; Float_t diff = 0; Float_t tempvar = 0;
     for(int k = 0; k < nSyst; k++){ // Systematics in k
       ps = VSyst.at(k)->GetTag();
       if(!ps.BeginsWith(pr))   continue;
       if(!ps.Contains(systag)) continue;
-      return VSyst.at(k)->GetYield();
+      tempvar = VSyst.at(k)->GetYield();
+      if( TMath::Abs(tempvar - nom) > diff){
+        var = tempvar;
+        diff = TMath::Abs(tempvar - nom);
+      }
     }
+    if(var != 0) return var;
   }
   cout << "[Plot::GetYield] WARNING: No systematic " << systag << " for process " << pr << "!!! ...... Returning nominal value... " << endl;
   return GetYield(pr);
@@ -385,7 +392,7 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm){
 
   if(sav){ // Save the histograms
     TString dir = plotFolder;
-    TString plotname = varname + "_" + chan + "_" + tag + "_compare";
+    TString plotname = varname + "_" + tag + "_compare";
     gSystem->mkdir(dir, kTRUE);
     c->Print( dir + plotname + ".png", "png");
     delete c;
@@ -407,7 +414,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   if(doSignal){
     nSignals = VSignals.size();
     if(verbose) cout << "[Plot::DrawStack] Drawing " << nSignals << " signals..." << endl;
-    Histo* hSignal;
+    Histo* hSignal = nullptr;
     for(Int_t i = 0; i < nSignals; i++) if(VSignals.at(i)->GetProcess() == SignalProcess) hSignal = VSignals.at(i);
     if(verbose) cout << " Signal process: " << SignalProcess << endl;
     if((SignalStyle == "SM" || SignalStyle == "H")){ // Only supports one signal
@@ -491,7 +498,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
 
   if(sav){ // Save the histograms
     TString dir = plotFolder;
-    TString plotname = (outputName == "")? varname + "_" + chan + "_" + tag : outputName;
+    TString plotname = (outputName == "")? varname + "_" + tag : outputName;
 	  	
     gSystem->mkdir(dir, kTRUE);
     c->Print( dir + plotname + ".pdf", "pdf");
@@ -545,7 +552,7 @@ void Plot::SaveHistograms(){
   SavedHistos = true;
   TFile *f;
 
-  TString filename =  varname + "_" + chan;
+  TString filename =  varname;
   if(outputName != "") filename = outputName;
   gSystem->mkdir(limitFolder, kTRUE);
   f = new TFile(limitFolder + filename + ".root", "recreate");
@@ -822,8 +829,8 @@ void Plot::MakeDatacardAllBins(TString tag = "b", Int_t iSignal){
 void Plot::SetTexChan(TString cuts){
   TString t = "";
   if (chan == "ElMu") t += "e^{#pm}#mu^{#mp}";
-  else if (chan == "Elec") t += "e^{+}e^{-}";
-  else if (chan == "Muon") t += "#mu^{+}#mu^{-}";
+  else if (chan == "ElEl" || chan == "Elec") t += "e^{+}e^{-}";
+  else if (chan == "MuMu" || chan == "Muon") t += "#mu^{+}#mu^{-}";
   else if (chan == "All") t += "#mu^{+}#mu^{-} + e^{+}e^{-} + e^{#pm}#mu^{#mp}";
   else if (chan == "sameF") t += "#mu^{+}#mu^{-} + e^{+}e^{-}";
   t += cuts;
@@ -982,7 +989,7 @@ void Plot::PrintYields(TString cuts, TString labels, TString channels, TString o
   Int_t ncolumns = 1 + cuts.CountChar(','); 
   channels.ReplaceAll(" ", "");
   Bool_t doChannels = false; if(cuts.CountChar(',') == channels.CountChar(',')) doChannels = true;
-  TResultsTable t(nrows, ncolumns, true); //cout << Form("Creating table with [rows, columns] = [%i, %i]\n", nrows, ncolumns);
+  TResultsTable t(nrows, ncolumns, 2); //cout << Form("Creating table with [rows, columns] = [%i, %i]\n", nrows, ncolumns);
   t.SetRowTitleHeader("Process");
   t.SetFormatNum(tableFormats);
   Plot* np = NULL;
@@ -1028,20 +1035,24 @@ void Plot::PrintYields(TString cuts, TString labels, TString channels, TString o
     for(Int_t i = 0; i < nBkgs; i++){
       t[i][k] = np->VBkgs.at(i)->GetYield();
       t[i][k].SetError(np->GetTotalSystematic(np->VBkgs.at(i)->GetProcess()));
+//      t[i][k].SetStatError(np->GetTotalSystematic(np->VBkgs.at(i)->GetProcess()));
       TotalBkgSystematic += (np->GetTotalSystematic(np->VBkgs.at(i)->GetProcess()))*(np->GetTotalSystematic(np->VBkgs.at(i)->GetProcess()));
     }
     TotalBkgSystematic = TMath::Sqrt(TotalBkgSystematic);
     np->GetStack();
     t[nBkgs][k] = np->hAllBkg->GetYield();
     t[nBkgs][k].SetError(TotalBkgSystematic); 
+//    t[nBkgs][k].SetStatError(TotalBkgSystematic); 
     for(Int_t i = nBkgs+1; i < nSignals+nBkgs+1; i++){
       t[i][k] = np->VSignals.at(i-(nBkgs+1))->GetYield();
       t[i][k].SetError(np->GetTotalSystematic(np->VSignals.at(i-(nBkgs+1))->GetProcess()));
+//      t[i][k].SetStatError(np->GetTotalSystematic(np->VSignals.at(i-(nBkgs+1))->GetProcess()));
     }
     if(doData){
       np->SetData();
       t[nBkgs+1+nSignals][k] = np->hData->GetYield();
       t[nBkgs+1+nSignals][k].SetError(TMath::Sqrt(np->hData->GetYield()));
+//      t[nBkgs+1+nSignals][k].SetStatError(TMath::Sqrt(np->hData->GetYield()));
     }
   }
   t.SetDrawHLines(true); t.SetDrawVLines(true); t.Print();
@@ -1060,4 +1071,4 @@ void Plot::PrintYields(TString cuts, TString labels, TString channels, TString o
        hSignalerr->SetFillColor(17); hSignalerr->SetMarkerStyle(0);
        hSignalerr->SetFillStyle(3013); VSignalsErr.push_back(hSignalerr);
        }
-      //if(doSys) VSignalsErr.at(i)->Draw("same,e2");*/
+      //if(doSys) VSignalsErr.at(i)Stat->Draw("same,e2");*/

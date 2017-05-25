@@ -9,16 +9,14 @@ R__LOAD_LIBRARY(Plot.C+)
 #include <fstream>
 
 const TString Signalmc[]      = {"TTHNonbb"};                   // ttH
-const TString TTWmc[] 	      = {"TTWToLNu1", "TTWToQQ"};			  // TTW
-const TString TTZmc[] 	      = {"TTZToLLNuNu", "TTZToQQ"};	    // TTZ
-const TString TTbarmc[] 	    = {"TTGJets", "TTbar_Powheg"}; // TTbar at LO (comment/uncomment as desired)
+const TString TTWmc[] 	      = {"TTWToLNu1", "TTWToQQ"};		    // TTW
+const TString TTZmc[] 	      = {"TTZToLLNuNu1", "TTZToQQ"};    // TTZ
+const TString TTbarmc[] 	    = {"TTGJets", "TTbar_Powheg"};    // TTbar at LO (comment/uncomment as desired)
 //const TString TTbarmc[] 	    = {"TTGJets", "TTJets_aMCatNLO"}; // TTbar at NLO (comment/uncomment as desired)
-const TString WJetsmc[]       = {"WJetsToLNu_MLM"};             // WJets at LO  (comment/uncomment as desired)
-//const TString WJetsmc[]       = {"WJetsToLNu_aMCatNLO"};        // WJets at NLO (comment/uncomment as desired)
+const TString WJetsmc[]       = {"WJetsToLNu_MLM"};             // WJets
 const TString STmc[]    	    = {"TW", "TbarW", "T_tch", "Tbar_tch", "TToLeptons_sch_amcatnlo","TGJets"};// ST
-const TString DYmc[]          = {"DYJetsToLL_M50_MLM", "DYJetsToLL_M5to50_MLM"};                         // DY at LO   (comment/uncomment as desired)
-//const TString DYmc[2]          = {"DYJetsToLL_M50_aMCatNLO", "DYJetsToLL_M10to50_aMCatNLO"};              // DY at NLO (comment/uncomment as desired)
-const TString DiTriCuatrimc[] = {"WGToLNuG", "ZGTo2LG", "WpWpJJ", "WWW", "WWZ", "WZZ", "ZZZ", "WW", "tZq_ll", "TTTT", "WZTo3LNu_amcatnlo", "WWTo2L2Nu", "ZZ"}; // Di&Tri&Cuatriboson
+const TString DYmc[]          = {"DYJetsToLL_M50_MLM", "DYJetsToLL_M5to50_MLM"};                         // DY
+const TString DiTriCuatrimc[] = {"WGToLNuG", "ZGTo2LG", "WpWpJJ", "WWW", "WWZ", "WZZ", "ZZZ", "WW", "tZq_ll", "TTTT", "WZTo3LNu", "WWTo2L2Nu", "ZZ"}; // Di&Tri&Cuatriboson
 const TString Data[]          = {"MuonEG", "SingleMuon", "SingleElec", "DoubleEG", "DoubleMuon"};        // Data samples
 UInt_t counter = 0;
 
@@ -33,7 +31,7 @@ void DrawPlots(TString chan = "ElMu", TString tag = "0"){
   else if (chan == "3l")  cut = "(TCat == 3)";
   else if (chan == "4l")  cut = "(TCat == 4)";
   
-  DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag);
+  DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag); // This one is only for getting yields.
   DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag);
   DrawPlot("TnFakeableLepton", cut, chan, 5, 0, 5,     "nFakeLep (#)", "nFakeLepton", tag);
   DrawPlot("TnLooseLepton",    cut, chan, 5, 0, 5,     "nLooseLep (#)", "nLooseLepton", tag);
@@ -115,6 +113,17 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     }
     outputpath  += "test/";
   }
+  else if (githead.Contains("tauidcomparison")) {
+    if (counter == 0) {
+      cout << endl;
+      cout << "+ Branch TAUIDCOMPARISON chosen" << endl;
+      cout << endl;
+    }
+    path        += "tauidcomparison/";
+    outputpath  += "tauidcomparison/";
+    if      (tag == "tau")    path += "tau/";
+    else if (tag == "tth")    path += "tth/";
+  }
   else {
     if (counter == 0) {
       cout << endl;
@@ -141,38 +150,72 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   
     
   // Samples import ============================================================
-  for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
-    p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5);
-  }
-  for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
-	  p->AddSample(TTZmc[isample], "TTZ", itBkg, kSpring+2);
-  }
-  for (UInt_t isample = 0; isample < sizeof(TTbarmc)/sizeof(*TTbarmc); isample++) {
-	  p->AddSample(TTbarmc[isample], "TTbar", itBkg, kSpring+10);
-  }
-  for (UInt_t isample = 0; isample < sizeof(WJetsmc)/sizeof(*WJetsmc); isample++) {
-	  p->AddSample(WJetsmc[isample], "WJets", itBkg, kViolet+10);
-  }
-  for (UInt_t isample = 0; isample < sizeof(STmc)/sizeof(*STmc); isample++) {
-	  p->AddSample(STmc[isample], "ST", itBkg, kYellow);
-  }
-  for (UInt_t isample = 0; isample < sizeof(DYmc)/sizeof(*DYmc); isample++) {
-	  p->AddSample(DYmc[isample], "DY", itBkg, kOrange);
-  }
-  for (UInt_t isample = 0; isample < sizeof(DiTriCuatrimc)/sizeof(*DiTriCuatrimc); isample++) {
-	  p->AddSample(DiTriCuatrimc[isample], "Di&Tri&Cuatriboson", itBkg, kAzure-9);
-  }
-  for (UInt_t isample = 0; isample < sizeof(Data)/sizeof(*Data); isample++) {
-	  p->AddSample(Data[isample], "Data", itData,kBlack);
-  }
-  if (counter == 0) {
-    for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
-	    p->AddSample(Signalmc[isample], "ttH", itSignal, kRed);
+  if (var != "TPtVector") {
+    for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
+      p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5);
     }
-  } else {
-    p->AddSample(Signalmc[0], "ttH", itBkg, kRed);
+    for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
+  	  p->AddSample(TTZmc[isample], "TTZ", itBkg, kSpring+2);
+    }
+    for (UInt_t isample = 0; isample < sizeof(TTbarmc)/sizeof(*TTbarmc); isample++) {
+  	  p->AddSample(TTbarmc[isample], "TTbar", itBkg, kSpring+10);
+    }
+    for (UInt_t isample = 0; isample < sizeof(WJetsmc)/sizeof(*WJetsmc); isample++) {
+  	  p->AddSample(WJetsmc[isample], "WJets", itBkg, kViolet+10);
+    }
+    for (UInt_t isample = 0; isample < sizeof(STmc)/sizeof(*STmc); isample++) {
+  	  p->AddSample(STmc[isample], "ST", itBkg, kYellow);
+    }
+    for (UInt_t isample = 0; isample < sizeof(DYmc)/sizeof(*DYmc); isample++) {
+  	  p->AddSample(DYmc[isample], "DY", itBkg, kOrange);
+    }
+    for (UInt_t isample = 0; isample < sizeof(DiTriCuatrimc)/sizeof(*DiTriCuatrimc); isample++) {
+  	  p->AddSample(DiTriCuatrimc[isample], "Di&Tri&Cuatriboson", itBkg, kAzure-9);
+    }
+    for (UInt_t isample = 0; isample < sizeof(Data)/sizeof(*Data); isample++) {
+  	  p->AddSample(Data[isample], "Data", itData,kBlack);
+    }
+    if (counter == 0) {
+      for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
+  	    p->AddSample(Signalmc[isample], "ttH", itSignal, kRed);
+      }
+    } else {
+      p->AddSample(Signalmc[0], "ttH", itBkg, kRed);
+    }
   }
-  
+  else {
+    for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
+      p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5, 0, "0", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
+  	  p->AddSample(TTZmc[isample], "TTZ", itBkg, kSpring+2, 0, "0", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(TTbarmc)/sizeof(*TTbarmc); isample++) {
+  	  p->AddSample(TTbarmc[isample], "TTbar", itBkg, kSpring+10, 0, "0", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(WJetsmc)/sizeof(*WJetsmc); isample++) {
+  	  p->AddSample(WJetsmc[isample], "WJets", itBkg, kViolet+10, 0, "0", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(STmc)/sizeof(*STmc); isample++) {
+  	  p->AddSample(STmc[isample], "ST", itBkg, kYellow, 0, "0", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(DYmc)/sizeof(*DYmc); isample++) {
+  	  p->AddSample(DYmc[isample], "DY", itBkg, kOrange, 0, "0", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(DiTriCuatrimc)/sizeof(*DiTriCuatrimc); isample++) {
+  	  p->AddSample(DiTriCuatrimc[isample], "Di&Tri&Cuatriboson", itBkg, kAzure-9, 0, "0", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(Data)/sizeof(*Data); isample++) {
+  	  p->AddSample(Data[isample], "Data", itData,kBlack, 0, "0", "AllInstances");
+    }
+    if (counter == 0) {
+      for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
+  	    p->AddSample(Signalmc[isample], "ttH", itSignal, kRed, 0, "0", "AllInstances");
+      }
+    } else {
+      p->AddSample(Signalmc[0], "ttH", itBkg, kRed, 0, "0", "AllInstances");
+    }    
+  }
   // Histogram settings ========================================================
   p->SetScaleMax(1.7);
   p->SetRatioMin(0);

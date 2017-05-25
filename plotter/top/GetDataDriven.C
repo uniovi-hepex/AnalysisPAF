@@ -23,9 +23,9 @@ TH1F* loadDYHisto(TString lab, TString ch, TString lev){
     if(!lab.Contains("Single") && !lab.Contains("Double") && !lab.Contains("MuonEG")) h->Scale(Lumi);
   }
   else if(lab == "MC" || lab == "DY"){
-    h1 = loadDYHisto("DYJetsToLL_M10to50_aMCatNLO", ch, lev);
+    //h1 = loadDYHisto("DYJetsToLL_M5to50_MLM", ch, lev);
     h  = loadDYHisto("DYJetsToLL_M50_aMCatNLO", ch, lev);
-    h->Add(h1);
+    //h->Add(h1);
   }
   else{
     if     (ch == "ElMu"){
@@ -297,7 +297,8 @@ double yield(TString process, TString chan, TString level, TString syst, bool is
   double y = 0;
   if       (process == "ttbar"  ) y = getYield("TTbar_Powheg", chan, level, syst, isSS);
   else if  (process == "tW"     ) y = getYield("TbarW", chan, level, syst, isSS) + getYield("TW", chan, level, syst, isSS);
-  else if  (process == "DY"     ) y = getYield("DYJetsToLL_M10to50_aMCatNLO", chan, level, syst, isSS) + getYield("DYJetsToLL_M50_aMCatNLO", chan, level, syst, isSS);
+  //else if  (process == "DY"     ) y = getYield("DYJetsToLL_M5to50_MLM", chan, level, syst, isSS) + getYield("DYJetsToLL_M50_aMCatNLO", chan, level, syst, isSS);
+  else if  (process == "DY"     ) y = getYield("DYJetsToLL_M50_aMCatNLO", chan, level, syst, isSS);
   else if  (process == "VV"     ) y = getYield("WW", chan, level, syst, isSS) + getYield("WZ", chan, level, syst, isSS) + getYield("ZZ", chan, level, syst, isSS);
   else if  (process == "fake"||process == "NonW/Z" ||process=="NonW")  y = getYield("WJetsToLNu_MLM", chan, level, syst, isSS) + getYield("TTbar_Powheg_Semilep", chan, level, syst, isSS);
   else if  (process == "ttV"     ) y = getYield("TTWToLNu", chan, level, syst, isSS) + getYield("TTZToQQ", chan, level, syst, isSS) + getYield("TTZToLLNuNu", chan, level, syst, isSS) + getYield("TTWToQQ", chan, level, syst, isSS);
@@ -318,7 +319,8 @@ double getStatError(TString sample, TString chan, TString level, TString syst, b
 
   if       (sample == "ttbar"  ) return getStatError("TTbar_Powheg", chan, level, syst, isSS);
   else if  (sample == "tW"     ) return getStatError("TbarW", chan, level, syst, isSS) + getStatError("TW", chan, level, syst, isSS);
-  else if  (sample == "DY"   ) return getStatError("DYJetsToLL_M50_aMCatNLO", chan, level, syst, isSS) + getStatError("DYJetsToLL_M10to50_aMCatNLO", chan, level, syst, isSS);
+ // else if  (sample == "DY"   ) return getStatError("DYJetsToLL_M50_aMCatNLO", chan, level, syst, isSS) + getStatError("DYJetsToLL_M5to50_MLM", chan, level, syst, isSS);
+  else if  (sample == "DY"   ) return getStatError("DYJetsToLL_M50_aMCatNLO", chan, level, syst, isSS);
   else if  (sample == "VV"   ) return getStatError("WW", chan, level, syst, isSS) + getStatError("WZ", chan, level, syst, isSS) + getStatError("ZZ", chan, level, syst);
   else if  (sample == "ttV"  ) return getStatError("TTWToLNu", chan, level, syst, isSS) + getStatError("TTZToQQ", chan, level, syst, isSS) + getStatError("TTZToLLNuNu", chan, level, syst, isSS) + getStatError("TTWToQQ", chan, level, syst, isSS);
   else if  (sample == "fake"||sample == "NonW/Z" ||sample =="NonW")  return getStatError("WJetsToLNu_MLM", chan, level, syst, isSS) + getStatError("TTbar_Powheg_Semilep", chan, level, syst, isSS);

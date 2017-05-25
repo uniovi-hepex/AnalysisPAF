@@ -25,7 +25,7 @@ if [ "$1" == "an" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"TTWToLNu_ext1 & TTWToLNu_ext2\"      , \"$sel\", 40)" 
         # 25 - 50s
         root -l -b -q "RunAnalyserPAF.C(\"TTWToQQ\"								             , \"$sel\", 25)"
-        root -l -b -q "RunAnalyserPAF.C(\"TTZToLLNuNu_ext & TTZToLLNuNu_ext2\" , \"$sel\", 35)" 
+        root -l -b -q "RunAnalyserPAF.C(\"TTZToLLNuNu_ext1 & TTZToLLNuNu_ext2\", \"$sel\", 35)" 
         # 25 - 60s, 40 - 57s, 64 - 62s, 60 - 61s
         root -l -b -q "RunAnalyserPAF.C(\"TTZToQQ\"								             , \"$sel\", 25)"
         root -l -b -q "RunAnalyserPAF.C(\"WGToLNuG\"							             , \"$sel\", 25)"
@@ -49,17 +49,11 @@ if [ "$1" == "an" ]; then
 		echo "%%%%%> MC SAMPLES FOR CONTROL REGIONS"
         root -l -b -q "RunAnalyserPAF.C(\"TTJets_aMCatNLO\"						         , \"$sel\", 45)" 
         # 50 - 69s, 64 - 74s, 64 - 74s, 40 - 76s
-        root -l -b -q "RunAnalyserPAF.C(\"TTbar_Powheg\" 						         , \"$sel\", 45)" 
-        root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M50_MLM_ext & DYJetsToLL_M50_MLM_ext2\"				     , \"$sel\", 60)" 
-        root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M5to50_MLM\"              , \"$sel\", 25)" 
-        # 25 - 21s, 30 - 22s, 20 - 22s 
-        root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M50_aMCatNLO\"				     , \"$sel\", 60)" 
-        # 64 - 312s, 60 - 318s 
-        root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M10to50_aMCatNLO & DYJetsToLL_M10to50_aMCatNLO_ext\" , \"$sel\", 25)" 
-        # 25 - 21s, 30 - 22s, 20 - 22s 
-        root -l -b -q "RunAnalyserPAF.C(\"WJetsToLNu_aMCatNLO\"						     , \"$sel\", 25)"
-        root -l -b -q "RunAnalyserPAF.C(\"WJetsToLNu_MLM & WJetsToLNu_MLM_ext2\"                          , \"$sel\", 40)"
-        root -l -b -q "RunAnalyserPAF.C(\"TW & TW_ext\"								         , \"$sel\", 25)" 
+        root -l -b -q "RunAnalyserPAF.C(\"TTbar_Powheg\" 						           , \"$sel\", 45)" 
+        root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M50_MLM_ext & DYJetsToLL_M50_MLM_ext2\"  , \"$sel\", 60)" 
+        root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M5to50_MLM\"              , \"$sel\", 25)"
+        root -l -b -q "RunAnalyserPAF.C(\"WJetsToLNu_MLM & WJetsToLNu_MLM_ext2\"              , \"$sel\", 40)"
+        root -l -b -q "RunAnalyserPAF.C(\"TW_ext\"								             , \"$sel\", 25)" 
         # 25 - 24s, 30 - 26s, 20 - 25s 
         root -l -b -q "RunAnalyserPAF.C(\"TbarW & TbarW_ext\"							     , \"$sel\", 25)" 
         # 25 - 25s, 30 - 26s, 20 - 26s 
@@ -68,7 +62,7 @@ if [ "$1" == "an" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"Tbar_tch\"							             , \"$sel\", 40)" 
         # 25 - 27s, 35 - 26s, 45 - 27s
         root -l -b -q "RunAnalyserPAF.C(\"TToLeptons_sch_amcatnlo\"				     , \"$sel\", 25)"
-        root -l -b -q "RunAnalyserPAF.C(\"WZTo3LNu_amcatnlo\"			             , \"$sel\", 40)" 
+        root -l -b -q "RunAnalyserPAF.C(\"WZTo3LNu\"        			             , \"$sel\", 40)" 
         # 20 - 76s
         root -l -b -q "RunAnalyserPAF.C(\"WWTo2L2Nu\"							             , \"$sel\", 30)" 
         # 25 - 22s, 20 - 24s
@@ -94,7 +88,7 @@ if [ "$1" == "an" ]; then
       echo "%%%%%> MC SAMPLES FOR COMPARISON WITH DATA"
         root -l -b -q "RunAnalyserPAF.C(\"TTWToLNu_ext1 & TTWToLNu_ext2\"      , \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"TTWToQQ\"								             , \"$sel\", $2)"
-        root -l -b -q "RunAnalyserPAF.C(\"TTZToLLNuNu_ext & TTZToLLNuNu_ext2\" , \"$sel\", $2)"
+        root -l -b -q "RunAnalyserPAF.C(\"TTZToLLNuNu_ext1 & TTZToLLNuNu_ext2\", \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"TTZToQQ\"								             , \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"WGToLNuG\"							             , \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"ZGTo2LG\"								             , \"$sel\", $2)"
@@ -111,19 +105,16 @@ if [ "$1" == "an" ]; then
 
 		echo "%%%%%> MC SAMPLES FOR CONTROL REGIONS"
         root -l -b -q "RunAnalyserPAF.C(\"TTJets_aMCatNLO\"						         , \"$sel\", $2)"
-        root -l -b -q "RunAnalyserPAF.C(\"TTbar_Powheg\" 						         , \"$sel\", $2)" 
-        root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M50_MLM_ext & DYJetsToLL_M50_MLM_ext2\"				      , \"$sel\", $2)" 
-        root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M5to50_MLM\"              , \"$sel\", $2)" 
-        root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M50_aMCatNLO\"				     , \"$sel\", $2)"
-        root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M10to50_aMCatNLO & DYJetsToLL_M10to50_aMCatNLO_ext\" , \"$sel\", $2)"
-        root -l -b -q "RunAnalyserPAF.C(\"WJetsToLNu_aMCatNLO\"						     , \"$sel\", $2)"
-        root -l -b -q "RunAnalyserPAF.C(\"WJetsToLNu_MLM & WJetsToLNu_MLM_ext2\"                          , \"$sel\", $2)"
-        root -l -b -q "RunAnalyserPAF.C(\"TW & TW_ext\"								         , \"$sel\", $2)"
+        root -l -b -q "RunAnalyserPAF.C(\"TTbar_Powheg\" 						           , \"$sel\", $2)" 
+        root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M50_MLM_ext & DYJetsToLL_M50_MLM_ext2\"  , \"$sel\", $2)" 
+        root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M5to50_MLM\"              , \"$sel\", $2)"
+        root -l -b -q "RunAnalyserPAF.C(\"WJetsToLNu_MLM & WJetsToLNu_MLM_ext2\"              , \"$sel\", $2)"
+        root -l -b -q "RunAnalyserPAF.C(\"TW_ext\"								             , \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"TbarW & TbarW_ext\"							     , \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"T_tch\"								               , \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"Tbar_tch\"							             , \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"TToLeptons_sch_amcatnlo\"				     , \"$sel\", $2)"
-        root -l -b -q "RunAnalyserPAF.C(\"WZTo3LNu_amcatnlo\"				           , \"$sel\", $2)"
+        root -l -b -q "RunAnalyserPAF.C(\"WZTo3LNu\"				                   , \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"WWTo2L2Nu\"							             , \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"ZZ & ZZ_ext\"								         , \"$sel\", $2)"
 

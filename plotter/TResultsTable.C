@@ -27,7 +27,7 @@ void TResultsTableRow::SetNColumns(unsigned int ncols) {
 // TResultsTable
 TResultsTable::TResultsTable(unsigned int nrows, 
 			     unsigned int ncol,
-			     bool witherrors,
+			     Int_t witherrors,
 			     bool automaticerrors):
   fNColumns(ncol),
   fNRows(nrows),
@@ -38,6 +38,11 @@ TResultsTable::TResultsTable(unsigned int nrows,
   fDrawVLines(false),
   fColumnWidth(11) {
 
+  formatNum = TString("%1.2f");
+  VSeparations = "";
+  //colorRow[20] = {"#0099cc", "#ff9966", "#99ff99", "#ff66ff", "#99cc00", "#0099cc", "#ff9966", "#99ff99", "#ff66ff", "#99cc00", "#0099cc", "#ff9966", "#99ff99", "#ff66ff", "#99cc00", "#0099cc", "#ff9966", "#99ff99", "#ff66ff", "#99cc00"};
+  //color[20]    = {"#ccffff", "#ffffcc", "#ccffcc", "#ffccff", "#ccff99", "#ccffff", "#ffffcc", "#ccffcc", "#ffccff", "#ccff99", "#ccffff", "#ffffcc", "#ccffcc", "#ffccff", "#ccff99", "#ccffff", "#ffffcc", "#ccffcc", "#ffccff", "#ccff99"};
+
   fRows = new TResultsTableRow[fNRows];
 
   fRowTitle = new TString[fNRows];
@@ -47,8 +52,8 @@ TResultsTable::TResultsTable(unsigned int nrows,
     fRows[i].SetNColumns(fNColumns);
   }
 
-  if (fWithErrors)
-    fColumnWidth=2*fColumnWidth+3;
+  //if (fWithErrors > 0) fColumnWidth=2*fColumnWidth+3;
+  if (fWithErrors > 0) fColumnWidth=(1+fWithErrors)*fColumnWidth+3*fWithErrors;
 
   if (fAutomaticErrors)
     std::cerr << "WARNING: Automatic errors not yet implemented" << std::endl;
@@ -76,8 +81,8 @@ void TResultsTable::Print(ETResultsTableOutputFormat format, ostream& os) const{
     
   // Widths
   unsigned int colwidth = fColumnWidth;
-  if (fWithErrors)
-    colwidth=(colwidth/2)-3;
+  //if (fWithErrors > 0) colwidth=(colwidth/2)-3;
+  if (fWithErrors > 0) colwidth=(colwidth/(1+fWithErrors))-3*fWithErrors;
 
   unsigned int firstcolw = GetRowTitleHeader().Length();
   for (unsigned int i = 0; i < fNRows; i++) {
@@ -197,11 +202,24 @@ void TResultsTable::Print(ETResultsTableOutputFormat format, ostream& os) const{
     if(format == kHTML) cellstart = getCellColor(j);
       os << cellstart;
       os.width(colwidth);
-      if     (formatNum.Contains("fix") ) os << KeepAllErrorDecimals(fRows[i][j], fRows[i][j].Error());
-      else if(formatNum.Contains("auto")) os << KeepOneDecimal(      fRows[i][j], fRows[i][j].Error());
-      else    os << Form(formatNum,fRows[i][j]);
+      if     (formatNum.Contains("fix") ) os << KeepAllErrorDecimals(fRows[i][j].Content(), fRows[i][j].Error());
+      else if(formatNum.Contains("auto")) os << KeepOneDecimal(      fRows[i][j].Content(), fRows[i][j].Error());
+      else    os << Form(formatNum,fRows[i][j].Content());
 
-      if (fWithErrors) {
+      if (fWithErrors == 1) {
+        os.width(colwidth);
+        os << plusminus; 
+        if     (formatNum.Contains("fix") ) os << KeepAllErrorDecimals(fRows[i][j].Error(), 0);
+        else if(formatNum.Contains("auto")) os << KeepOneDecimal(      fRows[i][j].Error(), 0);
+        else os << Form(formatNum, fRows[i][j].Error());
+      }
+      else if (fWithErrors > 1) {
+        os.width(colwidth);
+        os << plusminus; 
+        if     (formatNum.Contains("fix") ) os << KeepAllErrorDecimals(fRows[i][j].StatError(), 0);
+        else if(formatNum.Contains("auto")) os << KeepOneDecimal(      fRows[i][j].StatError(), 0);
+        else os << Form(formatNum, fRows[i][j].StatError());
+
         os.width(colwidth);
         os << plusminus; 
         if     (formatNum.Contains("fix") ) os << KeepAllErrorDecimals(fRows[i][j].Error(), 0);
