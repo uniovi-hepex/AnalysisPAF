@@ -28,18 +28,6 @@
 const Double_t pi = 3.1415926535897932384;
 const Float_t Zm = 91.1876;
 
-// Other variable type definitions and other constants
-enum gCategories {
-    categories_begin,
-    twolSS = categories_begin,
-    threel,
-    fourl,
-    Total,
-    gNCATEGORIES,
-};
-
-const TString gCatLabel	[gNCATEGORIES] = {"2lSS","3l","4l","Total"};
-const TString gChanLabel[4] 	         = {"MuMu","ElEl","ElMu","All"};
 
 //------------------------------------------------------------------------------
 //		Classes declarations
@@ -68,30 +56,12 @@ class ttHAnalysis : public PAFChainItemSelector {
     void    SetLeptonBranches();
     void    SetJetBranches();
     void    SetEventBranches();
+    
     void    SetMiniTreeVariables();
 
     // Minitree things
     //----------------------------------------------------------------------
     TTree* fTree;
-
-    ////////////////////////////////////////////////////////////////////////
-		//		Histogram-related methods declarations
-		////////////////////////////////////////////////////////////////////////
-    // Initialising
-		//----------------------------------------------------------------------
-  	virtual void InitialiseEventHistos();
-  	virtual void InitialiseYieldHistos();
-  	virtual void InitialiseKinematicHistos();
-  	virtual void InitialiseMETHistos();
-  	virtual void InitialiseMiscHistos();
-
-    //	Filling methods
-		//----------------------------------------------------------------------
-		void 	  FillEventHistos();
-		void 	  FillYieldHistos();
-		void 	  FillKinematicHistos();
-		void 	  FillMETHistos();
-		void 	  FillMiscHistos();
 
 		////////////////////////////////////////////////////////////////////////
 		//	   Events selection
@@ -108,6 +78,7 @@ class ttHAnalysis : public PAFChainItemSelector {
 		void 	  GetParameters();
     void    GetEventVariables();
     void    InitialiseVariables();
+    void    CalculateWeight();
     
 		Float_t GetMETLD();
     Float_t GetHT();
@@ -133,25 +104,6 @@ class ttHAnalysis : public PAFChainItemSelector {
 		//----------------------------------------------------------------------
 		Float_t EventWeight;
 		Float_t genWeight;
-
-		//	Histograms
-		//----------------------------------------------------------------------
-		TH1F*   fHEvents    		  [gNCATEGORIES][4]; // Events
-		TH1F*   fHTightLep			  [gNCATEGORIES][4]; // Yields
-		TH1F*   fHFakeLep			    [gNCATEGORIES][4];
-		TH1F*   fHLooseLep			  [gNCATEGORIES][4];
-		TH1F*   fHTau				      [gNCATEGORIES][4];
-		TH1F*   fHJet				      [gNCATEGORIES][4];
-		TH1F*   fHMedBTagJet		  [gNCATEGORIES][4];
-		TH1F*   fHLosBTagJet		  [gNCATEGORIES][4];
-		TH1F*   fHPtLeading			  [gNCATEGORIES][4]; // Kinematic
-		TH1F*   fHPtSubLeading		[gNCATEGORIES][4];
-		TH1F*   fHPtSubSubLeading	[gNCATEGORIES][4];
-		TH1F*   fHMET				      [gNCATEGORIES][4]; // MET
-		TH1F*   fHMHT				      [gNCATEGORIES][4];
-		TH1F*   fHMETLD				    [gNCATEGORIES][4];
-		TH1F*   fHChargeSum			  [gNCATEGORIES][4]; // Misc
-		TH1F*   fHMass				    [gNCATEGORIES][4];
 
     //	Minitree variables needed
 		//----------------------------------------------------------------------

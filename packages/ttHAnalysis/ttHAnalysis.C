@@ -15,28 +15,7 @@ ClassImp(ttHAnalysis); // PAF definition as class
 //		Initial definitions
 ////////////////////////////////////////////////////////////////////////////////
 ttHAnalysis::ttHAnalysis() : PAFChainItemSelector() {
-	// Defining to zero the aim of the histogram pointers
-	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
-		for (Int_t ichan = 0; ichan < 4; ichan++) {
-			fHEvents    		  [icat][ichan]	=	0; // Events
-			fHTightLep		   	[icat][ichan]	=	0; // Yields
-			fHFakeLep			    [icat][ichan]	=	0;
-			fHLooseLep			  [icat][ichan]	=	0;
-			fHTau				      [icat][ichan]	=	0;
-			fHJet				      [icat][ichan]	=	0;
-			fHMedBTagJet		  [icat][ichan]	=	0;
-			fHLosBTagJet		  [icat][ichan]	=	0;
-			fHPtLeading			  [icat][ichan]	=	0; // Kinematic
-			fHPtSubLeading	  [icat][ichan]	=	0;
-			fHPtSubSubLeading	[icat][ichan]	=	0;
-			fHMET				      [icat][ichan]	=	0; // MET
-			fHMHT				      [icat][ichan]	=	0;
-			fHMETLD				    [icat][ichan]	=	0;
-	    fHChargeSum			  [icat][ichan]	=	0; // Misc
-			fHMass				    [icat][ichan]	=	0;
-		}
-	}
-  // Initialise minitree
+	// Defining to zero the aim of the minitree.
   fTree       = 0;
 }
 
@@ -49,15 +28,8 @@ void ttHAnalysis::Initialise() {
 	PAF_INFO("ttHAnalysis", "+ Initializing analysis parameters");
 	GetParameters();
 
-	PAF_INFO("ttHAnalysis", "+ Initializing histograms");
+	PAF_INFO("ttHAnalysis", "+ Initializing minitree");
 	TH1::SetDefaultSumw2();
-	InitialiseEventHistos();
-	InitialiseYieldHistos();
-	InitialiseKinematicHistos();
-	InitialiseMETHistos();
-	InitialiseMiscHistos();
-
-	PAF_INFO("ttHAnalysis", "+ Initializing minitrees");
   fTree = CreateTree("MiniTree","Created with PAF");
   SetLeptonBranches();
   SetJetBranches();
@@ -77,19 +49,15 @@ void ttHAnalysis::InsideLoop() {
 	GetTreeVariables();
   GetEventVariables();
   
+  SetMiniTreeVariables();
+  
+  CalculateWeight();
+  
   // Check trigger and precuts
   if (!PassesPreCuts()) return;
   if (!passTrigger)     return;
-
-	// Fill histograms
-	FillEventHistos();
-	FillYieldHistos();
-	FillKinematicHistos();
-	FillMETHistos();
-	FillMiscHistos();
   
   // Set branches and fill minitree
-  SetMiniTreeVariables();
   fTree->Fill();  
 }
 
@@ -108,7 +76,6 @@ void ttHAnalysis::GetTreeVariables() {
   if (!gIsData){
 		genWeight   = Get<Float_t>("genWeight");
 	}
-
 
   MET   = Get<Float_t>("met_pt");
   Tevt  = Get<Long_t>("evt");
@@ -153,12 +120,12 @@ void ttHAnalysis::SetMiniTreeVariables() {
   else if (Is3lEvent())         TCat  = 3;
   else if (Is4lEvent())         TCat  = 4;
   
-  TPtLeading      = TightLepton[0].Pt();
-  TPtSubLeading   = TightLepton[1].Pt();
-  if (TightLepton.size() > 2) TPtSubSubLeading = TightLepton[2].Pt();
+  TPtLeading      = TightLepton.at(0).Pt();
+  TPtSubLeading   = TightLepton.at(1).Pt();
+  if (TightLepton.size() > 2) TPtSubSubLeading = TightLepton.at(2).Pt();
   
   TCS             = GetCS();
-  TMass           = (TightLepton[0].p+TightLepton[1].p).M();
+  TMass           = (TightLepton.at(0).p+TightLepton.at(1).p).M();
 	if (nTightLepton >= 2) {
 	  TPtVector.push_back(TightLepton.at(0).Pt());
 	  TPtVector.push_back(TightLepton.at(1).Pt());
@@ -173,172 +140,6 @@ void ttHAnalysis::SetMiniTreeVariables() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-//		Histogram-related methods
-////////////////////////////////////////////////////////////////////////////////
-// Initialising
-//------------------------------------------------------------------------------
-void ttHAnalysis::InitialiseEventHistos() {
-	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
-		for (Int_t ichan = 0; ichan < 4; ichan++) {
-			if (icat == threel 		&& gChanLabel[ichan] != "All") 	continue;
-			if (icat == fourl 		&& gChanLabel[ichan] != "All") 	continue;
-			if (icat == Total 		&& gChanLabel[ichan] != "All") 	continue;
-			fHEvents     [icat][ichan] = CreateH1F("H_Events_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""						, 1, 0, 1);
-		}
-	}
-}
-
-void ttHAnalysis::InitialiseYieldHistos() {
-	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
-		for (Int_t ichan = 0; ichan < 4; ichan++) {
-			if (icat == threel 		&& gChanLabel[ichan] != "All") 	continue;
-			if (icat == fourl 		&& gChanLabel[ichan] != "All") 	continue;
-			if (icat == Total 		&& gChanLabel[ichan] != "All") 	continue;
-			fHTightLep	[icat][ichan] = CreateH1F("H_TightLep_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""				, 6, 0, 6);
-			fHFakeLep	  [icat][ichan] = CreateH1F("H_FakeLep_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""					, 5, 0, 5);
-			fHLooseLep	[icat][ichan] = CreateH1F("H_LooseLep_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""				, 5, 0, 5);
-			fHTau		    [icat][ichan] = CreateH1F("H_Tau_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""						, 3, 0, 3);
-			fHJet		    [icat][ichan] = CreateH1F("H_Jet_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""						, 10, 0, 10);
-			fHMedBTagJet[icat][ichan] = CreateH1F("H_MedBTagJet_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""				, 6, 0, 6);
-			fHLosBTagJet[icat][ichan] = CreateH1F("H_LosBTagJet_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""				, 6, 0, 6);
-		}
-	}
-}
-
-void ttHAnalysis::InitialiseKinematicHistos() {
-	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
-		for (Int_t ichan = 0; ichan < 4; ichan++) {
-			if (icat == threel 		&& gChanLabel[ichan] != "All") 	continue;
-			if (icat == fourl 		&& gChanLabel[ichan] != "All") 	continue;
-			if (icat == Total 		&& gChanLabel[ichan] != "All") 	continue;
-			fHPtLeading			  [icat][ichan] = CreateH1F("H_PtLeading_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""		, 10, 0, 200);
-			fHPtSubLeading		[icat][ichan] = CreateH1F("H_PtSubLeading_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""	, 10, 0, 200);
-			fHPtSubSubLeading	[icat][ichan] = CreateH1F("H_PtSubSubLeading_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""	, 10, 0, 200);
-		}
-	}
-}
-
-void ttHAnalysis::InitialiseMETHistos() {
-	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
-		for (Int_t ichan = 0; ichan < 4; ichan++) {
-			if (icat == threel 		&& gChanLabel[ichan] != "All") 	continue;
-			if (icat == fourl 		&& gChanLabel[ichan] != "All") 	continue;
-			if (icat == Total 		&& gChanLabel[ichan] != "All") 	continue;
-			fHMET				[icat][ichan] = CreateH1F("H_MET_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""				, 10, 0, 400);
-			fHMHT				[icat][ichan] = CreateH1F("H_MHT_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""				, 10, 0, 1000);
-			fHMETLD			[icat][ichan] = CreateH1F("H_METLD_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""			, 10, 0, 2);
-		}
-	}
-}
-
-void ttHAnalysis::InitialiseMiscHistos() {
-	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
-		for (Int_t ichan = 0; ichan < 4; ichan++) {
-			if (icat == twolSS 		&& gChanLabel[ichan] != "All") 	continue;
-			if (icat == threel 		&& gChanLabel[ichan] != "All") 	continue;
-			if (icat == fourl 		&& gChanLabel[ichan] != "All") 	continue;
-			if (icat == Total 		&& gChanLabel[ichan] != "All") 	continue;
-			fHChargeSum		[icat][ichan] = CreateH1F("H_ChargeSum_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""		, 7, -3.5, 3.5);
-			fHMass				[icat][ichan] = CreateH1F("H_Mass_"+gCatLabel[icat]+"_"+gChanLabel[ichan],""			, 10, 0, 400);
-		}
-	}
-}
-
-// Filling methods
-//------------------------------------------------------------------------------
-void ttHAnalysis::FillEventHistos() {
-	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
-		for (Int_t ichan = 0; ichan < 4; ichan++) {
-			if (icat 	== twolSS 	&& !Is2lSSEvent()) 						       continue;
-			if (gChanLabel[ichan] == "MuMu" 		&& (gChannel != iMuon)) 					   continue;
-			if (gChanLabel[ichan] == "ElEl" 		&& (gChannel != iElec)) 					   continue;
-			if (gChanLabel[ichan] == "ElMu" 		&& (gChannel != iElMu)) 			       continue;
-			if (icat 	== threel 	&& (!Is3lEvent() || gChanLabel[ichan] != "All")) 	 continue;
-			if (icat 	== fourl 	  && (!Is4lEvent() || gChanLabel[ichan] != "All")) 	 continue;
-			if (icat 	== Total 		&& gChanLabel[ichan] != "All" ) 	                 continue;
-			if (icat 	== Total 		&& (!Is2lSSEvent() || (gChannel != iMuon)) && (!Is2lSSEvent() || (gChannel != iElec)) && (!Is2lSSEvent() || (gChannel != iElMu)) && !Is3lEvent()) 	continue;
-
-			fHEvents     [icat][ichan]->Fill(0.5,EventWeight);
-		}
-	}
-}
-
-void ttHAnalysis::FillYieldHistos() {
-	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
-		for (Int_t ichan = 0; ichan < 4; ichan++) {
-      if (icat 	== twolSS 	&& !Is2lSSEvent()) 						       continue;
-			if (gChanLabel[ichan] == "MuMu" 		&& (gChannel != iMuon)) 					       continue;
-			if (gChanLabel[ichan] == "ElEl" 		&& (gChannel != iElec)) 					       continue;
-			if (gChanLabel[ichan] == "ElMu" 		&& (gChannel != iElMu)) 			           continue;
-			if (icat 	== threel 	&& (!Is3lEvent() || gChanLabel[ichan] != "All")) 	 continue;
-			if (icat 	== fourl 	  && (!Is4lEvent() || gChanLabel[ichan] != "All")) 	 continue;
-			if (icat 	== Total 		&& gChanLabel[ichan] != "All" ) 	                 continue;
-			if (icat 	== Total 		&& (!Is2lSSEvent() || (gChannel != iMuon)) && (!Is2lSSEvent() || (gChannel != iElec)) && (!Is2lSSEvent() || (gChannel != iElMu)) && !Is3lEvent()) 	continue;
-			fHTightLep	 [icat][ichan]->Fill(nTightLepton,EventWeight);
-			fHFakeLep	   [icat][ichan]->Fill(nFakeableLepton,EventWeight);
-			fHLooseLep	 [icat][ichan]->Fill(nLooseLepton,EventWeight);
-			fHTau		     [icat][ichan]->Fill(nTaus,EventWeight);
-			fHJet		     [icat][ichan]->Fill(nJets,EventWeight);
-			fHMedBTagJet [icat][ichan]->Fill(nMediumBTags,EventWeight);
-			fHLosBTagJet [icat][ichan]->Fill(nLooseBTags,EventWeight);
-		}
-	}
-}
-
-void ttHAnalysis::FillKinematicHistos() {
-	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
-		for (Int_t ichan = 0; ichan < 4; ichan++) {
-      if (icat 	== twolSS 	&& !Is2lSSEvent()) 						       continue;
-			if (gChanLabel[ichan] == "MuMu" 		&& (gChannel != iMuon)) 					       continue;
-			if (gChanLabel[ichan] == "ElEl" 		&& (gChannel != iElec)) 					       continue;
-			if (gChanLabel[ichan] == "ElMu" 		&& (gChannel != iElMu)) 			           continue;
-			if (icat 	== threel 	&& (!Is3lEvent() || gChanLabel[ichan] != "All")) 	 continue;
-			if (icat 	== fourl 	  && (!Is4lEvent() || gChanLabel[ichan] != "All")) 	 continue;
-			if (icat 	== Total 		&& gChanLabel[ichan] != "All" ) 	                 continue;
-			if (icat 	== Total 		&& (!Is2lSSEvent() || (gChannel != iMuon)) && (!Is2lSSEvent() || (gChannel != iElec)) && (!Is2lSSEvent() || (gChannel != iElMu)) && !Is3lEvent()) 	continue;
-			fHPtLeading			  [icat][ichan]->Fill(TightLepton[0].Pt(),EventWeight);
-			fHPtSubLeading		[icat][ichan]->Fill(TightLepton[1].Pt(),EventWeight);
-			fHPtSubSubLeading	[icat][ichan]->Fill(TightLepton[2].Pt(),EventWeight);
-		}
-	}
-}
-
-void ttHAnalysis::FillMETHistos() {
-	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
-		for (Int_t ichan = 0; ichan < 4; ichan++) {
-      if (icat 	== twolSS 	&& !Is2lSSEvent()) 						       continue;
-			if (gChanLabel[ichan] == "MuMu" 		&& (gChannel != iMuon)) 					       continue;
-			if (gChanLabel[ichan] == "ElEl" 		&& (gChannel != iElec)) 					       continue;
-			if (gChanLabel[ichan] == "ElMu" 		&& (gChannel != iElMu)) 			           continue;
-			if (icat 	== threel 	&& (!Is3lEvent() || gChanLabel[ichan] != "All")) 	 continue;
-			if (icat 	== fourl 	  && (!Is4lEvent() || gChanLabel[ichan] != "All")) 	 continue;
-			if (icat 	== Total 		&& gChanLabel[ichan] != "All" ) 	                 continue;
-			if (icat 	== Total 		&& (!Is2lSSEvent() || (gChannel != iMuon)) && (!Is2lSSEvent() || (gChannel != iElec)) && (!Is2lSSEvent() || (gChannel != iElMu)) && !Is3lEvent()) 	continue;
-			fHMET	  [icat][ichan]->Fill(MET,EventWeight);
-			fHMHT	  [icat][ichan]->Fill(MHT,EventWeight);
-			fHMETLD	[icat][ichan]->Fill(METLD,EventWeight);
-		}
-	}
-}
-
-void ttHAnalysis::FillMiscHistos() {
-	for (Int_t icat = 0; icat < gNCATEGORIES; icat++) {
-		for (Int_t ichan = 0; ichan < 4; ichan++) {
-			if (icat 	== twolSS 	&& (!Is2lSSEvent()	|| gChanLabel[ichan] != "All"))	continue;
-			if (gChanLabel[ichan] == "MuMu" 		&& (gChannel != iMuon)) 					        continue;
-			if (gChanLabel[ichan] == "ElEl" 		&& (gChannel != iElec)) 					        continue;
-			if (gChanLabel[ichan] == "ElMu" 		&& (gChannel != iElMu)) 					        continue;
-			if (icat 	== threel 	&& (!Is3lEvent() || gChanLabel[ichan] != "All")) 	  continue;
-			if (icat 	== fourl 	  && (!Is4lEvent() || gChanLabel[ichan] != "All")) 	  continue;
-			if (icat 	== Total 		&& gChanLabel[ichan] != "All") 	                    continue;
-			if (icat 	== Total 		&& (!Is2lSSEvent() || (gChannel != iMuon)) && (!Is2lSSEvent() || (gChannel != iElec)) && (!Is2lSSEvent() || (gChannel != iElMu)) && !Is3lEvent()) 	continue;
-			fHChargeSum	[icat][ichan]->Fill(GetCS(),EventWeight);
-			if (icat == twolSS || icat == threel || icat == Total) fHMass	[icat][ichan]->Fill((TightLepton[0].p+TightLepton[1].p).M(),EventWeight);
-		}
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
 //	   Events selection
 ////////////////////////////////////////////////////////////////////////////////
 Bool_t ttHAnalysis::PassesPreCuts() {
@@ -347,7 +148,7 @@ Bool_t ttHAnalysis::PassesPreCuts() {
   
 	for (Int_t i = 0; i < nLooseLepton; i++) {
 		for (Int_t j = i+1; j < nLooseLepton; j++) {
-		  if ((LooseLepton[i].p + LooseLepton[j].p).M() < 12) return false;
+		  if ((LooseLepton.at(i).p + LooseLepton.at(j).p).M() < 12) return false;
 	  }
   }
 
@@ -369,7 +170,7 @@ Bool_t ttHAnalysis::Is2lSSEvent() {
 	if (nJets < 4) 					          return false;
 
 	if (gChannel == iElec) {
-		if (abs((TightLepton[0].p + TightLepton[1].p).M() - Zm) < 10) return false;
+		if (abs((TightLepton.at(0).p + TightLepton.at(1).p).M() - Zm) < 10) return false;
 		if (METLD < 0.2)                return false;
 	}
 	return true;
@@ -377,23 +178,23 @@ Bool_t ttHAnalysis::Is2lSSEvent() {
 
 Bool_t ttHAnalysis::Is3lEvent() {
 	if (nTightLepton != 3)         return false;
-	if (TightLepton[0].Pt() < 25)  return false;
-	if (TightLepton[1].Pt() < 15)  return false;
-	if (TightLepton[2].Pt() < 15)  return false;
+	if (TightLepton.at(0).Pt() < 25)  return false;
+	if (TightLepton.at(1).Pt() < 15)  return false;
+	if (TightLepton.at(2).Pt() < 15)  return false;
 
 	for (Int_t i = 0; i < nLooseLepton; i++) {
 		for (Int_t j = i+1; j < nLooseLepton; j++) {
-			if (LooseLepton[i].type != LooseLepton[j].type) continue;
-			if (LooseLepton[i].charge*LooseLepton[j].charge > 0) continue;
-			if (abs((LooseLepton[i].p+LooseLepton[j].p).M() - Zm) < 10) return false;
+			if (LooseLepton.at(i).type != LooseLepton.at(j).type) continue;
+			if (LooseLepton.at(i).charge*LooseLepton.at(j).charge > 0) continue;
+			if (abs((LooseLepton.at(i).p+LooseLepton.at(j).p).M() - Zm) < 10) return false;
 		}
 	}
 
 	Int_t OSSF = 0;
 	for (Int_t i = 0; i < nTightLepton; i++) {
 		for (Int_t j = i+1; j < nTightLepton; j++) {
-			if (TightLepton[i].type != TightLepton[j].type) continue;
-			if (TightLepton[i].charge*TightLepton[j].charge < 0) OSSF = 1;
+			if (TightLepton.at(i).type != TightLepton.at(j).type) continue;
+			if (TightLepton.at(i).charge*TightLepton.at(j).charge < 0) OSSF = 1;
 		}
 	}
 
@@ -403,21 +204,21 @@ Bool_t ttHAnalysis::Is3lEvent() {
 		if (METLD < 0.3) return false;
 	}
 
-	if (abs(TightLepton[0].charge + TightLepton[1].charge + TightLepton[2].charge) != 1) return false;
+	if (abs(TightLepton.at(0).charge + TightLepton.at(1).charge + TightLepton.at(2).charge) != 1) return false;
   
 	std::vector<TLorentzVector> OSSFpair;
   OSSFpair	  = std::vector<TLorentzVector>();
   for (Int_t i = 0; i < nLooseLepton; i++) {
 		for (Int_t j = i+1; j < nLooseLepton; j++) {
-			if (LooseLepton[i].type != LooseLepton[j].type)      continue;
-			if (LooseLepton[i].charge*LooseLepton[j].charge > 0) continue;
-      OSSFpair.push_back(LooseLepton[i].p+LooseLepton[j].p);
+			if (LooseLepton.at(i).type != LooseLepton.at(j).type)      continue;
+			if (LooseLepton.at(i).charge*LooseLepton.at(j).charge > 0) continue;
+      OSSFpair.push_back(LooseLepton.at(i).p+LooseLepton.at(j).p);
 		}
 	}
 	
 	for (UInt_t i = 0; i < OSSFpair.size(); i++) {
 		for (UInt_t j = i+1; j < OSSFpair.size(); j++) {
-			if ((OSSFpair[i]+OSSFpair[j]).M() < 140) return false;
+			if ((OSSFpair.at(i)+OSSFpair.at(j)).M() < 140) return false;
 		}
 	}
 	
@@ -426,24 +227,24 @@ Bool_t ttHAnalysis::Is3lEvent() {
 
 Bool_t ttHAnalysis::Is4lEvent() {
   if (nTightLepton <= 3)        return false;
-	if (TightLepton[0].Pt() < 25) return false;
-	if (TightLepton[1].Pt() < 15) return false;
-	if (TightLepton[2].Pt() < 15) return false;
-	if (TightLepton[3].Pt() < 10) return false;
+	if (TightLepton.at(0).Pt() < 25) return false;
+	if (TightLepton.at(1).Pt() < 15) return false;
+	if (TightLepton.at(2).Pt() < 15) return false;
+	if (TightLepton.at(3).Pt() < 10) return false;
 
 	for (Int_t i = 0; i < nLooseLepton; i++) {
 		for (Int_t j = i+1; j < nLooseLepton; j++) {
-			if (LooseLepton[i].type != LooseLepton[j].type) continue;
-			if (LooseLepton[i].charge*LooseLepton[j].charge > 0) continue;
-			if (abs((LooseLepton[i].p+LooseLepton[j].p).M() - Zm) < 10) return false;
+			if (LooseLepton.at(i).type != LooseLepton.at(j).type) continue;
+			if (LooseLepton.at(i).charge*LooseLepton.at(j).charge > 0) continue;
+			if (abs((LooseLepton.at(i).p+LooseLepton.at(j).p).M() - Zm) < 10) return false;
 		}
 	}
 
 	Int_t OSSF = 0;
 	for (Int_t i = 0; i < nTightLepton; i++) {
 		for (Int_t j = i+1; j < nTightLepton; j++) {
-			if (TightLepton[i].type != TightLepton[j].type) continue;
-			if (TightLepton[i].charge*TightLepton[j].charge < 0) OSSF = 1;
+			if (TightLepton.at(i).type != TightLepton.at(j).type) continue;
+			if (TightLepton.at(i).charge*TightLepton.at(j).charge < 0) OSSF = 1;
 		}
 	}
 
@@ -453,20 +254,20 @@ Bool_t ttHAnalysis::Is4lEvent() {
 		if (METLD < 0.3) return false;
 	}
 
-	if (abs(TightLepton[0].charge + TightLepton[1].charge + TightLepton[2].charge) != 1) return false;
+	if (abs(TightLepton.at(0).charge + TightLepton.at(1).charge + TightLepton.at(2).charge) != 1) return false;
 
 	std::vector<TLorentzVector> OSSFpair;
 	OSSFpair	  = std::vector<TLorentzVector>();
   for (Int_t i = 0; i < nLooseLepton; i++) {
 		for (Int_t j = i+1; j < nLooseLepton; j++) {
-			if (LooseLepton[i].type != LooseLepton[j].type)      continue;
-			if (LooseLepton[i].charge*LooseLepton[j].charge > 0) continue;
-      OSSFpair.push_back(LooseLepton[i].p+LooseLepton[j].p);
+			if (LooseLepton.at(i).type != LooseLepton.at(j).type)      continue;
+			if (LooseLepton.at(i).charge*LooseLepton.at(j).charge > 0) continue;
+      OSSFpair.push_back(LooseLepton.at(i).p+LooseLepton.at(j).p);
 		}
 	}
 	for (UInt_t i = 0; i < OSSFpair.size(); i++) {
 		for (UInt_t j = i+1; j < OSSFpair.size(); j++) {
-			if ((OSSFpair[i]+OSSFpair[j]).M() < 140) return false;
+			if ((OSSFpair.at(i)+OSSFpair.at(j)).M() < 140) return false;
 		}
 	}
 		
@@ -484,6 +285,7 @@ void ttHAnalysis::InitialiseVariables() {
   Tau.clear();
   Jets.clear();
   TPtVector.clear();
+  
   nTightLepton    = 0;
   nFakeableLepton = 0;
   nLooseLepton    = 0;
@@ -492,6 +294,7 @@ void ttHAnalysis::InitialiseVariables() {
   nMediumBTags    = 0;
   nLooseBTags     = 0;
   gChannel        = 0;
+  gPUSF           = 0;
   passTrigger     = 0;
   isSS            = 0;
   MET             = 0;
@@ -506,6 +309,14 @@ void ttHAnalysis::InitialiseVariables() {
   TCS             = 0;
   TMass           = 0;
   Tevt            = 0;
+  
+  gSampleName	    =	"0";
+  gIsData         =	0;
+  gWeight         =	0;
+	gIsMCatNLO      =	0;
+  
+  EventWeight     = 0;
+  
 }
 
 
@@ -514,7 +325,6 @@ void ttHAnalysis::GetParameters() {
   gSampleName	    =	GetParam<TString>("sampleName");
   gIsData         =	GetParam<Bool_t>("IsData");
   gWeight         =	GetParam<Float_t>("weight"); // cross section / events in the sample
-  gPUSF         	=	GetParam<Float_t>("PUSF");
 	gIsMCatNLO      =	GetParam<Bool_t>("IsMCatNLO");
 }
 
@@ -527,6 +337,7 @@ void ttHAnalysis::GetEventVariables() {
   Tau.clear();
   Jets.clear();
   TPtVector.clear();
+  
   nTightLepton    = 0;
   nFakeableLepton = 0;
   nLooseLepton    = 0;
@@ -535,6 +346,7 @@ void ttHAnalysis::GetEventVariables() {
   nMediumBTags    = 0;
   nLooseBTags     = 0;
   gChannel        = 0;
+  gPUSF           = 0;
   passTrigger     = 0;
   isSS            = 0;
   METLD           = 0;
@@ -562,6 +374,7 @@ void ttHAnalysis::GetEventVariables() {
   nJets           = GetParam<Int_t>("nSelJets");
 
   gChannel        = GetParam<Int_t>("gChannel");
+  gPUSF         	=	GetParam<Float_t>("PUSF");
   passTrigger     = GetParam<Bool_t>("passTrigger");
   isSS            = GetParam<Bool_t>("isSS");
   
@@ -570,11 +383,54 @@ void ttHAnalysis::GetEventVariables() {
   MHT             = GetMHT();
   HT              = GetHT();
   METLD           = GetMETLD();
-  
-  // Set the weight of the event (for MC samples)
+
+}
+
+
+void ttHAnalysis::CalculateWeight() {
   EventWeight 	= 1.;
+  
   if (!gIsData) {
+    // First: normalization and PU weight.
     EventWeight = gWeight*gPUSF;
+    
+    // Second: leptons weight.
+    if (TCat >= 2) {
+      Float_t ElecSF = 1; Float_t MuonSF = 1;
+      
+      if (TightLepton.at(0).isMuon) {
+        MuonSF  *= TightLepton.at(0).GetSF( 0);
+      }
+      else {
+        ElecSF  *= TightLepton.at(0).GetSF( 0);
+      }
+      if (TightLepton.at(1).isMuon) {
+        MuonSF  *= TightLepton.at(1).GetSF( 0);
+      }
+      else {
+        ElecSF  *= TightLepton.at(1).GetSF( 0);
+      }
+      if (TCat >= 3) {
+        if (TightLepton.at(2).isMuon) {
+          MuonSF  *= TightLepton.at(2).GetSF( 0);
+        }
+        else {
+          ElecSF  *= TightLepton.at(2).GetSF( 0);
+        }
+        if (TCat == 4) {
+      	  for (UInt_t i = 3; i < TightLepton.size(); i++) {
+            if (TightLepton.at(i).isMuon) {
+              MuonSF  *= TightLepton.at(i).GetSF( 0);
+            }
+            else {
+              ElecSF  *= TightLepton.at(i).GetSF( 0);
+            }
+          }
+        }
+      }
+      EventWeight *= ElecSF*MuonSF;
+    }
+    
     if (gIsMCatNLO) EventWeight *= genWeight;
   }
 }
@@ -590,7 +446,7 @@ Float_t ttHAnalysis::GetMETLD() {
 Float_t ttHAnalysis::GetHT() {
 	Float_t ht = 0;
   for (UInt_t i = 0; i < Jets.size(); i++){
-    ht += Jets[i].Pt();
+    ht += Jets.at(i).Pt();
   } 
 	return ht;
 }
@@ -599,10 +455,10 @@ Float_t ttHAnalysis::GetHT() {
 Float_t ttHAnalysis::GetMHT() {
 	Float_t mht = 0;
   for (UInt_t i = 0; i < Jets.size(); i++){
-    mht += Jets[i].Pt();
+    mht += Jets.at(i).Pt();
   }
   for (UInt_t i = 0; i < FakeableLepton.size(); i++){
-    mht += FakeableLepton[i].Pt();
+    mht += FakeableLepton.at(i).Pt();
   }
 	return mht;
 }
@@ -611,7 +467,7 @@ Float_t ttHAnalysis::GetMHT() {
 Int_t ttHAnalysis::GetCS() {
 	Int_t cs = 0;
 	for (UInt_t i = 0; i < TightLepton.size(); i++) {
-		cs += TightLepton[i].charge;
+		cs += TightLepton.at(i).charge;
 	}
 	return cs;
 }
@@ -620,7 +476,7 @@ Int_t ttHAnalysis::GetCS() {
 Int_t ttHAnalysis::GetnMediumBTags(){
   Int_t nmediumbtag = 0;
   for(UInt_t i = 0; i < Jets.size(); i++) {
-    if (Jets[i].csv > 0.8484) nmediumbtag++;
+    if (Jets.at(i).csv > 0.8484) nmediumbtag++;
   }
   return nmediumbtag;
 }
@@ -629,7 +485,7 @@ Int_t ttHAnalysis::GetnMediumBTags(){
 Int_t ttHAnalysis::GetnLooseBTags(){
   Int_t nloosebtag = 0;
   for(UInt_t i = 0; i < Jets.size(); i++) {
-    if (Jets[i].csv > 0.5426) nloosebtag++;
+    if (Jets.at(i).csv > 0.5426) nloosebtag++;
   }
   return nloosebtag;
 }
