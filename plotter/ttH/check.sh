@@ -53,7 +53,8 @@ echo $uplimit
 
 while [ $allok != ${#samples[@]} ]; do
   allok=0
-  for i in {0..$uplimit}; do
+  for ((i=0; i<=$uplimit; i++)); do
+  #for i in {0..$uplimit}; do
     unset path
     path=$plotspath$slash${samples[i]}
     if [ ! -e $path ]; then
