@@ -45,16 +45,12 @@ echo "...cores."
 echo
 
 path=""
-
-
 uplimit=$((${#samples[@]}-1))
-echo ${#samples[@]}
-echo $uplimit
+
 
 while [ $allok != ${#samples[@]} ]; do
   allok=0
   for ((i=0; i<=$uplimit; i++)); do
-  #for i in {0..$uplimit}; do
     unset path
     path=$plotspath$slash${samples[i]}
     if [ ! -e $path ]; then
