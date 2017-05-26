@@ -28,7 +28,8 @@ class LeptonSelector : public PAFChainItemSelector{
     LeptonSF *LepSF;
     Bool_t gIsData;
     Bool_t gIsFastSim;
-    Int_t gSelection;
+    Int_t  gSelection;
+    Int_t  gChannel;
     TString localPath;
 
     // Trigger     
