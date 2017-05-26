@@ -41,7 +41,7 @@ void LeptonSelector::Initialise(){
     }
   }
   else if(gSelection == ittHSelec){
-    if (gChannel == iElec || gChannel == iMuon || gChannel == iElMu) {
+    if ((gChannel == iElec) || (gChannel == iMuon) || (gChannel == iElMu)) {
       LepSF->loadHisto(iMuonlepMVA2lSSttH);
       LepSF->loadHisto(iEleclepMVA2lSSttH);
     }
