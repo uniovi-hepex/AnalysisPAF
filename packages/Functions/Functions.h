@@ -15,6 +15,10 @@ enum iSFs{
   iMuonReco, iMuonId, iMuonIdSUSY, iMuonIsoTightId, iMuonIsoMediumId, iMuonIsoSUSY, iMuonIP2D, iMuonSIP3D, iMuonIdFastSim, iMuonIsoFastSim,
   iElecReco, iElecId, iElecIdSUSY, iElecIso, iElecIsoSUSY, iElecIP2D, iElecSIP3D, iElecFastSim,
   iTrigDoubleMuon, iTrigDoubleElec, iTrigElMu,
+  iMuonlepMVA2lSSttH, iMuonlepMVA3l4lttH, 
+  iMuonLooseTracksttH, iMuonLooseMiniIsottH, iMuonTightIP2DttH,
+  iEleclepMVA2lSSttH, iEleclepMVA3l4lttH, 
+  iElecTightIP2DM17ttH, iElecMini4M17ttH, iElecConvVetoM17ttH,
   nfiles
 };
 
