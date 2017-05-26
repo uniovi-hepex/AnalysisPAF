@@ -49,13 +49,13 @@ void ttHAnalysis::InsideLoop() {
 	GetTreeVariables();
   GetEventVariables();
   
-  SetMiniTreeVariables();
-  
-  CalculateWeight();
-  
   // Check trigger and precuts
   if (!PassesPreCuts()) return;
   if (!passTrigger)     return;
+  
+  SetMiniTreeVariables();
+  
+  CalculateWeight(); 
   
   // Set branches and fill minitree
   fTree->Fill();  
@@ -120,9 +120,9 @@ void ttHAnalysis::SetMiniTreeVariables() {
   else if (Is3lEvent())         TCat  = 3;
   else if (Is4lEvent())         TCat  = 4;
   
-  TPtLeading      = TightLepton.at(0).Pt();
-  TPtSubLeading   = TightLepton.at(1).Pt();
-  if (TightLepton.size() > 2) TPtSubSubLeading = TightLepton.at(2).Pt();
+  if (nTightLepton >= 1) TPtLeading       = TightLepton.at(0).Pt();
+  if (nTightLepton >= 2) TPtSubLeading    = TightLepton.at(1).Pt();
+  if (nTightLepton > 2)  TPtSubSubLeading = TightLepton.at(2).Pt();
   
   TCS             = GetCS();
   TMass           = (TightLepton.at(0).p+TightLepton.at(1).p).M();
@@ -160,12 +160,10 @@ Bool_t ttHAnalysis::PassesPreCuts() {
 }
 
 Bool_t ttHAnalysis::Is2lSSEvent() {
+	if (nTightLepton != 2)            return false;
 	if (!isSS) 					              return false;
 	if (TightLepton.at(0).Pt() < 25)  return false;
 	if (TightLepton.at(1).Pt() < 15)  return false;
-	if (nTightLepton > 2) {
-    if (TightLepton.at(2).Pt() > 10)  return false;
-  }
 
 	if (nJets < 4) 					          return false;
 
@@ -177,7 +175,7 @@ Bool_t ttHAnalysis::Is2lSSEvent() {
 }
 
 Bool_t ttHAnalysis::Is3lEvent() {
-	if (nTightLepton != 3)         return false;
+	if (nTightLepton != 3)            return false;
 	if (TightLepton.at(0).Pt() < 25)  return false;
 	if (TightLepton.at(1).Pt() < 15)  return false;
 	if (TightLepton.at(2).Pt() < 15)  return false;
@@ -226,7 +224,7 @@ Bool_t ttHAnalysis::Is3lEvent() {
 }
 
 Bool_t ttHAnalysis::Is4lEvent() {
-  if (nTightLepton <= 3)        return false;
+  if (nTightLepton <= 3)           return false;
 	if (TightLepton.at(0).Pt() < 25) return false;
 	if (TightLepton.at(1).Pt() < 15) return false;
 	if (TightLepton.at(2).Pt() < 15) return false;
