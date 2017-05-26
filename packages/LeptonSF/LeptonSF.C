@@ -16,8 +16,8 @@ LeptonSF::LeptonSF(TString path):
   fMuonSIP3DSF(0),    // Muon SIP
   fMuonIsoFastSim(0),
   fMuonIdFastSim(0),
-  fMuon2lSSttH(0),    // Muon ttH LepMVA 2lSS
-  fMuon3l4lttH(0),    // Muon ttH LepMVA 3l, 4l
+  fMuonlepMVA2lSSttH(0),    // Muon ttH LepMVA 2lSS
+  fMuonlepMVA3l4lttH(0),    // Muon ttH LepMVA 3l, 4l
 
   fElecTrackerSF(0),  // Electron Reco
   fElecIdSF(0),       // Electron Id (+Iso)
@@ -25,8 +25,8 @@ LeptonSF::LeptonSF(TString path):
   fElecIP2DSF(0),     // Electron IP2D
   fElecSIP3DSF(0),    // Electron SIP3D
   fElecFastSim(0),
-  fElec2lSSttH(0),    // Elec ttH LepMVA 2lSS
-  fElec3l4lttH(0),    // Elec ttH LepMVA 3l, 4l
+  fEleclepMVA2lSSttH(0),    // Elec ttH LepMVA 2lSS
+  fEleclepMVA3l4lttH(0),    // Elec ttH LepMVA 3l, 4l
 
   fDoubleMuSF(0),     // Trigger Double Muon
   fDoubleElSF(0),     // Trigger Double Elec
@@ -258,7 +258,7 @@ Float_t LeptonSF::GetLeptonSF(Float_t pt, Float_t ieta, Int_t type){
       else if(id == iEleclepMVA3l4lttH)   SF *= fEleclepMVA3l4lttH    ->GetBinContent(fEleclepMVA3l4lttH    ->FindBin(pt,eta));
       else if(id == iElecTightIP2DM17ttH) SF *= fElecTightIP2DM17ttH  ->GetBinContent(fElecTightIP2DM17ttH  ->FindBin(pt,eta));
       else if(id == iElecMini4M17ttH)     SF *= fElecMini4M17ttH      ->GetBinContent(fElecMini4M17ttH      ->FindBin(pt,eta));
-      else if(id == ifElecConvVetoM17ttH) SF *= fElecConvVetoM17ttH   ->GetBinContent(fElecConvVetoM17ttH   ->FindBin(pt,eta));
+      else if(id == iElecConvVetoM17ttH)  SF *= fElecConvVetoM17ttH   ->GetBinContent(fElecConvVetoM17ttH   ->FindBin(pt,eta));
     }
   }
   return SF;
