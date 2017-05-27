@@ -256,15 +256,9 @@ void ttHAnalysis::InitialiseVariables() {
   Tevt            = 0;
   Trun            = 0;
   
-  gSampleName	    =	"0";
-  gIsData         =	0;
-  gWeight         =	0;
-  gIsMCatNLO      =	0;
-  
   EventWeight         = 0;
   EventWeight_PUUp    = 0;
   EventWeight_PUDown  = 0;
-  
 }
 
 void ttHAnalysis::Initialise3l4lLeptonSF() {
@@ -291,7 +285,6 @@ void ttHAnalysis::Reset3l4lLeptonSF() {
 
 void ttHAnalysis::GetParameters() {
   // Import essential and global variables of the execution
-  gSampleName	=	GetParam<TString>("sampleName");
   gIsData     =	GetParam<Bool_t>("IsData");
   gWeight     =	GetParam<Float_t>("weight"); // cross section / events in the sample
   gIsMCatNLO  =	GetParam<Bool_t>("IsMCatNLO");
