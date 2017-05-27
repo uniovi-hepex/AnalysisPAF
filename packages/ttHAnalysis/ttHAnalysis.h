@@ -6,7 +6,6 @@
 //------------------------------------------------------------------------------
 //		Preprocessor directives
 //------------------------------------------------------------------------------
-
 #pragma once
 
 // PAF inclusion
@@ -14,6 +13,7 @@
 
 // Analysis packages inclusion
 #include "Functions.h"
+#include "LeptonSF.h"
 
 // C++ packages inclusion
 #include <vector>
@@ -21,38 +21,26 @@
 #include <math.h>
 
 
-//------------------------------------------------------------------------------
-//		Enumerations, constants and other variable type declarations
-//------------------------------------------------------------------------------
-// Physical parameters and mathematical constants
-const Double_t pi = 3.1415926535897932384;
-const Float_t Zm = 91.1876;
-
-
-//------------------------------------------------------------------------------
-//		Classes declarations
-//------------------------------------------------------------------------------
-// Analysis class
 class ttHAnalysis : public PAFChainItemSelector {
-	public:
-		////////////////////////////////////////////////////////////////////////
-		//		Initial declarations
-		////////////////////////////////////////////////////////////////////////
-		// Constructor and destructor
-		ttHAnalysis();
-		virtual ~ttHAnalysis() {}
+  public:
+    ////////////////////////////////////////////////////////////////////////
+    //		Initial declarations
+    ////////////////////////////////////////////////////////////////////////
+    // Constructor and destructor
+    ttHAnalysis();
+    virtual ~ttHAnalysis() {}
 
-		// Core PAF-analysis methods
-		virtual void Initialise();
-		virtual void InsideLoop();
-		virtual void Summary();
+    // Core PAF-analysis methods
+    virtual void Initialise();
+    virtual void InsideLoop();
+    virtual void Summary();
 
-		////////////////////////////////////////////////////////////////////////
-		//		Trees-related declarations
-		////////////////////////////////////////////////////////////////////////
-		//	Methods
-		//----------------------------------------------------------------------
-		void 	  GetTreeVariables();
+    ////////////////////////////////////////////////////////////////////////
+    //		Trees-related declarations
+    ////////////////////////////////////////////////////////////////////////
+    //	Methods
+    //----------------------------------------------------------------------
+    void 	  GetTreeVariables();
     void    SetLeptonBranches();
     void    SetJetBranches();
     void    SetEventBranches();
@@ -63,51 +51,57 @@ class ttHAnalysis : public PAFChainItemSelector {
     //----------------------------------------------------------------------
     TTree* fTree;
 
-		////////////////////////////////////////////////////////////////////////
-		//	   Events selection
-		////////////////////////////////////////////////////////////////////////
-		Bool_t 	PassesPreCuts();
+    ////////////////////////////////////////////////////////////////////////
+    //	   Events selection
+    ////////////////////////////////////////////////////////////////////////
+    Bool_t 	PassesPreCuts();
     
     Bool_t 	Is2lSSEvent();
     Bool_t 	Is3lEvent();
     Bool_t 	Is4lEvent();
 
     ////////////////////////////////////////////////////////////////////////
-		//	   Other methods (get, set, misc...)
-		////////////////////////////////////////////////////////////////////////
-		void 	  GetParameters();
+    //	   Other methods (get, set, misc...)
+    ////////////////////////////////////////////////////////////////////////
+    void 	  GetParameters();
     void    GetEventVariables();
     void    InitialiseVariables();
+    void    Initialise3l4lLeptonSF();
+    void    Reset3l4lLeptonSF();
     void    CalculateWeight();
     
-		Float_t GetMETLD();
-    Float_t GetHT();
-    Float_t GetMHT();
-		Int_t 	GetCS();
-    Int_t   GetnMediumBTags();
-    Int_t   GetnLooseBTags();
-
-
-	protected:
-		////////////////////////////////////////////////////////////////////////
-		//		Data members
-		////////////////////////////////////////////////////////////////////////
-		//	Analysis parameters
-		//----------------------------------------------------------------------
-    TString gSampleName;
-		Bool_t  gIsData;
-		Bool_t  gIsMCatNLO;
-		Float_t gWeight;
+    UInt_t  GetnMediumBTags();
+    UInt_t  GetnLooseBTags();
     
-		//	Weight of the event
-		//----------------------------------------------------------------------
-		Float_t EventWeight;
+    Bool_t 	PassesTightChargeCuts();
+
+  protected:
+    ////////////////////////////////////////////////////////////////////////
+    //		Data members
+    ////////////////////////////////////////////////////////////////////////
+    //	Analysis parameters
+    //----------------------------------------------------------------------
+    TString gSampleName;
+    TString gLocalPath;
+    Bool_t  gIsData;
+    Bool_t  gIsMCatNLO;
+    Float_t gWeight;
+    Float_t gPUSF;
+    
+    
+    //  SF tool for resetting 3l and 4l leptons SF.
+    //----------------------------------------------------------------------    
+    LeptonSF *Lep3l4lSF;
+    
+    //	Weight of the event
+    //----------------------------------------------------------------------
+    Float_t EventWeight;
 		Float_t EventWeight_PUUp;
 		Float_t EventWeight_PUDown;
-		Float_t genWeight;
+    Float_t genWeight;
 
     //	Minitree variables needed
-		//----------------------------------------------------------------------
+    //----------------------------------------------------------------------
     Int_t     TCat;
     Float_t   TPtLeading;
     Float_t   TPtSubLeading;
@@ -115,29 +109,30 @@ class ttHAnalysis : public PAFChainItemSelector {
     Int_t     TCS;
     Float_t   TMass;
     Long64_t  Tevt;
-		std::vector<Float_t>  TPtVector;
+    Long64_t  Trun;
+    std::vector<Float_t>  TPtVector;
 
-		//	Input variables and vectors
-		//----------------------------------------------------------------------
-		Int_t 	nTightLepton;
-		Int_t 	nFakeableLepton;
-		Int_t 	nLooseLepton;
-		Int_t 	nTaus;
-		Int_t 	nJets;
-		Int_t 	nMediumBTags;
-		Int_t 	nLooseBTags;
+    //	Input variables and vectors
+    //----------------------------------------------------------------------
+    UInt_t 	nTightLepton;
+    UInt_t 	nFakeableLepton;
+    UInt_t 	nLooseLepton;
+    UInt_t 	nTaus;
+    UInt_t 	nJets;
+    UInt_t 	nMediumBTags;
+    UInt_t 	nLooseBTags;
 
     std::vector<Lepton> LooseLepton;
-		std::vector<Lepton> FakeableLepton;
-		std::vector<Lepton> TightLepton;
-		std::vector<Lepton> Tau;
-		std::vector<Jet>    Jets;
+    std::vector<Lepton> FakeableLepton;
+    std::vector<Lepton> TightLepton;
+    std::vector<Lepton> Tau;
+    std::vector<Jet>    Jets;
 
-		Float_t MET;
+    Float_t MET;
     Float_t METLD;
-		Float_t MHT;
-		Float_t HT;
-
+    Float_t MHT;
+    Float_t HT;
+    
     Int_t   gChannel;
     Bool_t  passTrigger;
     Bool_t  isSS;
@@ -146,5 +141,5 @@ class ttHAnalysis : public PAFChainItemSelector {
     Float_t PUSF_Up;
     Float_t PUSF_Down;
     
-		ClassDef(ttHAnalysis,0);  // ROOT definition as class
+    ClassDef(ttHAnalysis,0);  // ROOT definition as class
 };
