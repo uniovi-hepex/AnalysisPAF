@@ -72,6 +72,7 @@ void ttHAnalysis::Summary() {
 void ttHAnalysis::GetTreeVariables() {
   MET   = 0;
   Tevt  = 0;
+  Trun  = 0;
   
   if (!gIsData){
     genWeight   = Get<Float_t>("genWeight");
@@ -79,6 +80,7 @@ void ttHAnalysis::GetTreeVariables() {
 
   MET         = Get<Float_t>("met_pt");
   Tevt        = Get<Long_t>("evt");
+  Trun        = Get<Long_t>("run");
 }
 
 // Minitree methods
@@ -113,6 +115,7 @@ void ttHAnalysis::SetEventBranches() {
   fTree->Branch("TMass",            &TMass,             "TMass/F");
   fTree->Branch("TWeight",          &EventWeight,       "EventWeight/F");
   fTree->Branch("Tevt",             &Tevt,              "Tevt/L");
+  fTree->Branch("Trun",             &Trun,              "Trun/L");
 }
 
 void ttHAnalysis::SetMiniTreeVariables() {
@@ -245,6 +248,7 @@ void ttHAnalysis::InitialiseVariables() {
   TCS             = 0;
   TMass           = 0;
   Tevt            = 0;
+  Trun            = 0;
   
   gSampleName	    =	"0";
   gIsData         =	0;
