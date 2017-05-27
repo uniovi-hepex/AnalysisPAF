@@ -110,7 +110,7 @@ if [ "$1" == "an" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"DYJetsToLL_M5to50_MLM\"              , \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"WJetsToLNu_MLM & WJetsToLNu_MLM_ext2\"              , \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"TW_ext\"								             , \"$sel\", $2)"
-        root -l -b -q "RunAnalyserPAF.C(\"TbarW & TbarW_ext\"							     , \"$sel\", $2)"
+        root -l -b -q "RunAnalyserPAF.C(\"TbarW_ext\"							             , \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"T_tch\"								               , \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"Tbar_tch\"							             , \"$sel\", $2)"
         root -l -b -q "RunAnalyserPAF.C(\"TToLeptons_sch_amcatnlo\"				     , \"$sel\", $2)"
