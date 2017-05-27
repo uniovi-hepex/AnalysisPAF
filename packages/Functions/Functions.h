@@ -38,7 +38,8 @@ enum sys{iNom,
   nSys
 };
 
-const Int_t nLHEWeight = 254;
+const Int_t   nLHEWeight  = 254;
+const Float_t Zm          = 91.1876;
 //enum eChannel{iElMu, iElec, iMuon, nChannels};
 
 
@@ -55,6 +56,7 @@ Float_t p2(Float_t x);
 Float_t getDeltaPhillJet(Lepton lep1, Lepton lep2, Jet jet);
 Float_t getDPhiClosestJet(vector<Jet> vJet, TLorentzVector lep);
 Float_t getHT(vector<Jet> jet);
+Float_t getMHT(vector<Lepton> lepton, vector<Jet> jet);
 Float_t getMT(TLorentzVector v1, TLorentzVector v2);
 Float_t getMinDPhiMetJets(vector<Jet> vjets, Float_t met, Float_t met_phi);
 Float_t getDelPhi(TLorentzVector v1, TLorentzVector v2);
@@ -66,8 +68,12 @@ TLorentzVector getPtllb(Lepton l1, Lepton l2, Float_t met, Float_t met_phi);
 Float_t getISRJetsWeight(Int_t nISRJet);
 Bool_t IsOnZ(vector<Lepton> leptons);
 Bool_t PassLowInvMass(vector<Lepton> leptons, Float_t Mll_max = 12);
+Bool_t  PassesLowMassLimit(vector<Lepton> lepton, Float_t mm_max);
 Bool_t hasOSSF(vector<Lepton> leptons);
+Bool_t  has2OSSFwMlmm(vector<Lepton> lepton, Float_t mm);
 Float_t ClosestMlltoZ(vector<Lepton> leptons);
 Bool_t IsThereSSpair(vector<Lepton> leptons);
+
+Int_t   getCS(vector<Lepton> lepton);
 
 #endif
