@@ -23,7 +23,7 @@ Float_t getHT(vector<Jet> jet){
   return ht;
 }
 
-Float_t ttHAnalysis::getMHT(vector<Lepton> lepton, vector<Jet> jet) { // (~MET but with selected objects)
+Float_t getMHT(vector<Lepton> lepton, vector<Jet> jet) { // (~MET but with selected objects)
   Float_t mht = 0;
   TLorentzVector vectemp(0.,0.,0.,0.);
   for (UInt_t i = 0; i < jet.size(); i++)    vectemp += jet.at(i).p;
@@ -33,7 +33,7 @@ Float_t ttHAnalysis::getMHT(vector<Lepton> lepton, vector<Jet> jet) { // (~MET b
   return mht;
 }
 
-Float_t ttHAnalysis::getMETLD(Float_t MET, Float_t MHT) {
+Float_t getMETLD(Float_t MET, Float_t MHT) {
   Float_t metld;
   metld = MET * 0.00397 + MHT * 0.00265;
   
