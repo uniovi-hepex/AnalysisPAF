@@ -34,6 +34,7 @@ void ttHAnalysis::Initialise() {
   SetLeptonBranches();
   SetJetBranches();
   SetEventBranches();
+  SetSystBranches();
 
   PAF_INFO("ttHAnalysis", "+ Initializing variables");
   InitialiseVariables();
@@ -118,10 +119,17 @@ void ttHAnalysis::SetEventBranches() {
   fTree->Branch("TCS",              &TCS,               "TCS/I");
   fTree->Branch("TMass",            &TMass,             "TMass/F");
   fTree->Branch("TWeight",          &EventWeight,       "EventWeight/F");
-  fTree->Branch("TWeight_PUUp",     &EventWeight_PUUp,  "EventWeight_PUUp/F");
-  fTree->Branch("TWeight_PUDown",   &EventWeight_PUDown,"EventWeight_PUDown/F");
   fTree->Branch("Tevt",             &Tevt,              "Tevt/L");
   fTree->Branch("Trun",             &Trun,              "Trun/L");
+}
+
+void ttHAnalysis::SetSystBranches() {
+  fTree->Branch("TWeight_PUUp",         &EventWeight_PUUp,    "EventWeight_PUUp/F");
+  fTree->Branch("TWeight_PUDown",       &EventWeight_PUDown,  "EventWeight_PUDown/F");
+  fTree->Branch("TWeight_ElecEffUp",    &EventWeight_ElecUp,  "EventWeight_ElecUp/F");
+  fTree->Branch("TWeight_ElecEffDown",  &EventWeight_ElecDown,"EventWeight_ElecDown/F");
+  fTree->Branch("TWeight_MuonEffUp",    &EventWeight_MuonUp,  "EventWeight_MuonUp/F");
+  fTree->Branch("TWeight_MuonEffDown",  &EventWeight_MuonDown,"EventWeight_MuonDown/F");
 }
 
 void ttHAnalysis::SetMiniTreeVariables() {
@@ -231,34 +239,38 @@ void ttHAnalysis::InitialiseVariables() {
   Jets.clear();
   TPtVector.clear();
   
-  nTightLepton    = 0;
-  nFakeableLepton = 0;
-  nLooseLepton    = 0;
-  nTaus           = 0;
-  nJets           = 0;
-  nMediumBTags    = 0;
-  nLooseBTags     = 0;
-  gChannel        = 0;
-  PUSF           = 0;
-  passTrigger     = 0;
-  isSS            = 0;
-  MET             = 0;
-  METLD           = 0;
-  MHT             = 0;
-  HT              = 0;
+  nTightLepton        = 0;
+  nFakeableLepton     = 0;
+  nLooseLepton        = 0;
+  nTaus               = 0;
+  nJets               = 0;
+  nMediumBTags        = 0;
+  nLooseBTags         = 0;
+  gChannel            = 0;
+  PUSF                = 0;
+  passTrigger         = 0;
+  isSS                = 0;
+  MET                 = 0;
+  METLD               = 0;
+  MHT                 = 0;
+  HT                  = 0;
 
-  TCat            = 0;
-  TPtLeading      = 0;
-  TPtSubLeading   = 0;
-  TPtSubSubLeading= 0;
-  TCS             = 0;
-  TMass           = 0;
-  Tevt            = 0;
-  Trun            = 0;
+  TCat                = 0;
+  TPtLeading          = 0;
+  TPtSubLeading       = 0;
+  TPtSubSubLeading    = 0;
+  TCS                 = 0;
+  TMass               = 0;
+  Tevt                = 0;
+  Trun                = 0;
   
-  EventWeight         = 0;
-  EventWeight_PUUp    = 0;
-  EventWeight_PUDown  = 0;
+  EventWeight           = 0;
+  EventWeight_PUUp      = 0;
+  EventWeight_PUDown    = 0;
+  EventWeight_ElecUp    = 0;
+  EventWeight_ElecDown  = 0;
+  EventWeight_MuonUp    = 0;
+  EventWeight_MuonDown  = 0;
 }
 
 void ttHAnalysis::Initialise3l4lLeptonSF() {
@@ -353,61 +365,60 @@ void ttHAnalysis::GetEventVariables() {
 
 
 void ttHAnalysis::CalculateWeight() {
-  EventWeight 	      = 1.;
-  EventWeight_PUUp 	  = 1.;
-  EventWeight_PUDown 	= 1.;
+  EventWeight           = 1;
+  EventWeight_PUUp      = 1;
+  EventWeight_PUDown    = 1;
+  EventWeight_ElecUp    = 1;
+  EventWeight_ElecDown  = 1;
+  EventWeight_MuonUp    = 1;
+  EventWeight_MuonDown  = 1;
   
   if (!gIsData) {
     // First: normalization and PU weight.
-    EventWeight         = gWeight*PUSF;
-    EventWeight_PUUp    = gWeight*PUSF_Up;
-    EventWeight_PUDown  = gWeight*PUSF_Down;
+    EventWeight           *= gWeight*PUSF;
+    EventWeight_PUUp      *= gWeight*PUSF_Up;
+    EventWeight_PUDown    *= gWeight*PUSF_Down;
+    EventWeight_ElecUp    *= gWeight*PUSF;
+    EventWeight_ElecDown  *= gWeight*PUSF;
+    EventWeight_MuonUp    *= gWeight*PUSF;
+    EventWeight_MuonDown  *= gWeight*PUSF;
     
     // Second: leptons weight.
-    if (TCat >= 2) {
+    if (nTightLepton != 0) {
       Float_t ElecSF = 1; Float_t MuonSF = 1;
       Float_t ElecSF_Up = 1; Float_t ElecSF_Down = 1;
-			Float_t MuonSF_Up = 1; Float_t MuonSF_Down = 1;
+      Float_t MuonSF_Up = 1; Float_t MuonSF_Down = 1;
       
-      if (TightLepton.at(0).isMuon) {
-        MuonSF  *= TightLepton.at(0).GetSF( 0);
-      }
-      else {
-        ElecSF  *= TightLepton.at(0).GetSF( 0);
-      }
-      if (TightLepton.at(1).isMuon) {
-        MuonSF  *= TightLepton.at(1).GetSF( 0);
-      }
-      else {
-        ElecSF  *= TightLepton.at(1).GetSF( 0);
-      }
-      if (TCat >= 3) {
-        if (TightLepton.at(2).isMuon) {
-          MuonSF  *= TightLepton.at(2).GetSF( 0);
+      for (UInt_t i = 0; i < nTightLepton; i++) {
+        if (TightLepton.at(i).isMuon) {
+          MuonSF      *= TightLepton.at(i).GetSF( 0);
+          MuonSF_Up   *= TightLepton.at(i).GetSF(+1);
+          MuonSF_Down *= TightLepton.at(i).GetSF(-1);
         }
         else {
-          ElecSF  *= TightLepton.at(2).GetSF( 0);
-        }
-        if (TCat == 4) {
-          for (UInt_t i = 3; i < nTightLepton; i++) {
-            if (TightLepton.at(i).isMuon) {
-              MuonSF  *= TightLepton.at(i).GetSF( 0);
-            }
-            else {
-              ElecSF  *= TightLepton.at(i).GetSF( 0);
-            }
-          }
+          ElecSF      *= TightLepton.at(i).GetSF( 0);
+          ElecSF_Up   *= TightLepton.at(i).GetSF(+1);
+          ElecSF_Down *= TightLepton.at(i).GetSF(-1);
         }
       }
-      EventWeight         *= ElecSF*MuonSF;
-      EventWeight_PUUp    *= ElecSF*MuonSF;
-      EventWeight_PUDown  *= ElecSF*MuonSF;
+      
+      EventWeight           *= ElecSF*MuonSF;
+      EventWeight_PUUp      *= ElecSF*MuonSF;
+      EventWeight_PUDown    *= ElecSF*MuonSF;
+      EventWeight_ElecUp    *= ElecSF_Up*MuonSF;
+      EventWeight_ElecDown  *= ElecSF_Down*MuonSF;
+      EventWeight_MuonUp    *= ElecSF*MuonSF_Up;
+      EventWeight_MuonDown  *= ElecSF*MuonSF_Down;
     }
     
     if (gIsMCatNLO) {
-      EventWeight         *= genWeight;
-      EventWeight_PUUp    *= genWeight;
-      EventWeight_PUDown  *= genWeight;
+      EventWeight           *= genWeight;
+      EventWeight_PUUp      *= genWeight;
+      EventWeight_PUDown    *= genWeight;
+      EventWeight_ElecUp    *= genWeight;
+      EventWeight_ElecDown  *= genWeight;
+      EventWeight_MuonUp    *= genWeight;
+      EventWeight_MuonDown  *= genWeight;
     }
   }
 }

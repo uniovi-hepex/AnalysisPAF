@@ -226,7 +226,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->doSetLogy = false;
   
   // Errors ====================================================================
-  p->AddSystematic("stat,PU");
+  p->AddSystematic("stat,PU,LepEff");
   
   // Yields table settings and printing ========================================
   if (counter == 0) {

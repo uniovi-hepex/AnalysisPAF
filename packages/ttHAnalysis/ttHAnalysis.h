@@ -44,6 +44,7 @@ class ttHAnalysis : public PAFChainItemSelector {
     void    SetLeptonBranches();
     void    SetJetBranches();
     void    SetEventBranches();
+    void    SetSystBranches();
     
     void    SetMiniTreeVariables();
 
@@ -98,6 +99,10 @@ class ttHAnalysis : public PAFChainItemSelector {
     Float_t EventWeight;
 		Float_t EventWeight_PUUp;
 		Float_t EventWeight_PUDown;
+		Float_t EventWeight_ElecUp;
+		Float_t EventWeight_ElecDown;
+		Float_t EventWeight_MuonUp;
+		Float_t EventWeight_MuonDown;
     Float_t genWeight;
 
     //	Minitree variables needed
