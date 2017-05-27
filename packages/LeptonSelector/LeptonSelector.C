@@ -432,15 +432,16 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
   	//
   	// 	Tight electrons for multilepton ttH Analysis:
   	// abs(eta)<0.5, Pt>15, abs(dxy)<0.05cm, abs(dz)<0.1cm, SIP3D<8, Imini<0.4,
-  	// jetCSV<0.8484,tight-charge,lepMVA>0.90,missinghits==0,conversion rej..
+  	// jetCSV<0.8484,lepMVA>0.90,missinghits==0,conversion rej..
   	// Furthermore, 3 regions in eta-phi space are defined: 0-0.8-1.479-2.5,
   	// where: MVA ID>(0,0,0.7), sigmaietaieta<(0.011,0.011,0.031),
   	// HoverE<(0.10,0.10,0.07), Deltaetain<(0.01,0.01,0.008),
   	// Deltaphiin<(0.04,0.04,0.07),-0.05<1/E-1/p<(0.01,0.01,0.005)
   	//
   	Bool_t passVertex; Bool_t passEta; Bool_t passPt; Bool_t passSIP;
-  	Bool_t passCSV; Bool_t passTightCharge; Bool_t passLepMVA;
-  	Bool_t passElecCutBasedId; Bool_t passptRatio;
+  	Bool_t passCSV; Bool_t passLepMVA; Bool_t passElecCutBasedId;
+    Bool_t passptRatio;
+    
   	if (lep.isMuon) {
   	  passEta 			     = (abs(eta) < 2.4);
   	  passPt	 		       = (pt > 15);
@@ -449,7 +450,6 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
   	  passIso			       = getminiRelIso(iTight);
   	  passCSV			       = (jetBTagCSV < 0.8484);
   	  passId			       = mediumMuonId;
-  	  passTightCharge	   = (TightCharge != 0);
   	  passLepMVA		     = (MVATTH > 0.90);
 
   	  passptRatio		     = 1;
@@ -464,12 +464,11 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
   	  passElecCutBasedId = getElecMVAId(iTight,lep);
   	  passptRatio		     = 1;
   	  passCSV			       = (jetBTagCSV < 0.8484);
-  	  passTightCharge	   = (TightCharge != 0);
   	  passLepMVA		     = (MVATTH > 0.90);
 
   	  passId			       = 1;
   	}
-  	if (!passEta || !passPt || !passVertex || !passSIP || !passIso || !passCSV || !passId || !passTightCharge || !passLepMVA || !passptRatio || !passElecCutBasedId) return false;
+  	if (!passEta || !passPt || !passVertex || !passSIP || !passIso || !passCSV || !passId || !passLepMVA || !passptRatio || !passElecCutBasedId) return false;
 	return true;
   }
 	return true;
@@ -528,8 +527,8 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
   	// w/o cut in ptratio) and, in this case too, with <0.3 jet CSV.
   	//
   	Bool_t passVertex; Bool_t passEta; Bool_t passPt; Bool_t passSIP;
-  	Bool_t passCSV; Bool_t passTightCharge; Bool_t passLepMVA;
-  	Bool_t passElecCutBasedId; Bool_t passptRatio; Bool_t passSegComp;
+  	Bool_t passCSV; Bool_t passLepMVA; Bool_t passElecCutBasedId;
+    Bool_t passptRatio; Bool_t passSegComp;
   	if (lep.isMuon) {
   	  passEta 		      = (abs(eta) < 2.4);
   	  passPt	 		      = (pt > 15);
@@ -546,7 +545,6 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
   	    passSegComp		     = 1;
   	  }
   	  passId			       = 1;
-  	  passTightCharge	   = 1;
   	  passLepMVA		     = 1;
   	  passElecCutBasedId = 1;
   	}
@@ -565,12 +563,11 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
   	  	passCSV				     = (jetBTagCSV < 0.8484);
   	  }
 
-  	  passTightCharge	  = 1;
   	  passLepMVA			  = 1;
   	  passId					  = 1;
       passSegComp			  = 1;
   	}
-  	if (!passEta || !passPt || !passVertex || !passSIP || !passIso || !passCSV || !passId || !passTightCharge || !passLepMVA || !passptRatio || !passElecCutBasedId || !passSegComp) return false;
+  	if (!passEta || !passPt || !passVertex || !passSIP || !passIso || !passCSV || !passId || !passLepMVA || !passptRatio || !passElecCutBasedId || !passSegComp) return false;
     return true;
   }
   return false;
@@ -609,8 +606,8 @@ Bool_t LeptonSelector::isLooseLepton(Lepton lep){
   	// ptratio, 1/E-1/p, deltaPhiin, deltaEtain, H/E, sigmaietaieta cuts
   	//
   	Bool_t passVertex; Bool_t passEta; Bool_t passPt; Bool_t passSIP;
-  	Bool_t passCSV; Bool_t passTightCharge; Bool_t passLepMVA;
-  	Bool_t passElecCutBasedId; Bool_t passptRatio;
+  	Bool_t passCSV; Bool_t passLepMVA; Bool_t passElecCutBasedId; 
+    Bool_t passptRatio;
   	if (lep.isMuon) {
   	  passEta 		       = (abs(eta) < 2.4);
   	  passPt	 		       = (pt > 5);
@@ -620,7 +617,6 @@ Bool_t LeptonSelector::isLooseLepton(Lepton lep){
 
   	  passCSV		         = 1;
   	  passId			       = 1;
-  	  passTightCharge	   = 1;
   	  passLepMVA		     = 1;
   	  passptRatio		     = 1;
   	  passElecCutBasedId = 1;
@@ -635,11 +631,10 @@ Bool_t LeptonSelector::isLooseLepton(Lepton lep){
 
   	  passptRatio		     = 1;
   	  passCSV			       = 1;
-  	  passTightCharge	   = 1;
   	  passLepMVA		     = 1;
   	  passId			       = 1;
   	}
-  	if (!passEta || !passPt || !passVertex || !passSIP || !passIso || !passCSV || !passId || !passTightCharge || !passLepMVA || !passptRatio || !passElecCutBasedId) return false;
+  	if (!passEta || !passPt || !passVertex || !passSIP || !passIso || !passCSV || !passId || !passLepMVA || !passptRatio || !passElecCutBasedId) return false;
     return true;
   }
     return true;
