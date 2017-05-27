@@ -307,11 +307,11 @@ void ttHAnalysis::GetEventVariables() {
   Tau             = GetParam<vector<Lepton>>("selTaus");
   Jets            = GetParam<vector<Jet>>("selJets");
 
-  nTightLepton    = GetParam<Int_t>("nSelLeptons");
-  nFakeableLepton = GetParam<Int_t>("nVetoLeptons");
-  nLooseLepton    = GetParam<Int_t>("nLooseLeptons");
-  nTaus           = GetParam<Int_t>("nSelTaus");
-  nJets           = GetParam<Int_t>("nSelJets");
+  nTightLepton    = GetParam<UInt_t>("nSelLeptons");
+  nFakeableLepton = GetParam<UInt_t>("nVetoLeptons");
+  nLooseLepton    = GetParam<UInt_t>("nLooseLeptons");
+  nTaus           = GetParam<UInt_t>("nSelTaus");
+  nJets           = GetParam<UInt_t>("nSelJets");
 
   gChannel        = GetParam<Int_t>("gChannel");
   gPUSF         	=	GetParam<Float_t>("PUSF");
@@ -376,8 +376,8 @@ void ttHAnalysis::CalculateWeight() {
 }
 
 
-Int_t ttHAnalysis::GetnMediumBTags() {
-  Int_t nmediumbtag = 0;
+UInt_t ttHAnalysis::GetnMediumBTags() {
+  UInt_t nmediumbtag = 0;
   for(UInt_t i = 0; i < nJets; i++) {
     if (Jets.at(i).csv > 0.8484) nmediumbtag++;
   }
@@ -385,8 +385,8 @@ Int_t ttHAnalysis::GetnMediumBTags() {
 }
 
 
-Int_t ttHAnalysis::GetnLooseBTags() {
-  Int_t nloosebtag = 0;
+UInt_t ttHAnalysis::GetnLooseBTags() {
+  UInt_t nloosebtag = 0;
   for(UInt_t i = 0; i < nJets; i++) {
     if (Jets.at(i).csv > 0.5426) nloosebtag++;
   }

@@ -67,8 +67,8 @@ class ttHAnalysis : public PAFChainItemSelector {
     void    InitialiseVariables();
     void    CalculateWeight();
     
-    Int_t   GetnMediumBTags();
-    Int_t   GetnLooseBTags();
+    UInt_t  GetnMediumBTags();
+    UInt_t  GetnLooseBTags();
     
     Bool_t 	PassesTightChargeCuts();
 
