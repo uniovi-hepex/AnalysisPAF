@@ -33,8 +33,8 @@ class Histo : public TH1F{
 			SetStyle();
 		}
 		~Histo(){
-			if(vsysd) delete vsysd;
-			if(vsysu) delete vsysu;
+			//if(vsysd) delete vsysd;
+			//if(vsysu) delete vsysu;
 		};
 
 		void SetType(Int_t tipo = 0);
@@ -86,61 +86,5 @@ Histo::Histo(const char *name, const char *title, Int_t nbins, Double_t xlow, Do
 	tag = TString(name);
 	process = TString(title);
 }
-/*
-Histo::Histo(const char *name, const char *title, Int_t nbins, const Float_t* xbins): TH1F(name,title,nbins,xbins){
-	SetType(0);
-	SetStyle();
-	SetColor(1);
-	tag = TString(name);
-	process = TString(title);
-}*/
-
-class AnalHisto{
-  public:
-   //AnalHisto(){};
-   //AnalHisto(TString sample = "TTbar_Powheg", TString ct="", TString channel = "All", TString path = "", TString treeName = "", Int_t isyst = -1);
-   AnalHisto(TString sample = "TTbar_Powheg", TCut    ct="", TString channel = "All", TString path = "", TString treeName = "", TString systag = "0");
-   ~AnalHisto(){
-     delete h;
-		 delete tree->GetCurrentFile();
-   };
-
-   void SetCut(TCut t){cut = TCut(t);}
-   void SetChannel(TString t){chan = t;}
-   void SetChannel(Int_t i){
-     if(i == 0 || i == 1) chan = "ElMu";
-     else if(i == 2) chan = "Muon";
-     else if(i == 3) chan = "Elec";
-     else if(i == 4) chan = "SF";
-     else chan = "All";
-   }
-   void SetSystematic(TString t){SysTag = t;}
-   Histo* GetHisto(){return h;}
-   void Fill(TString variable = "", TString sys = "0", Bool_t isFastSim = false);   
-   void SetHisto(TString name, Int_t nb, Double_t xi, Double_t xe);
-   //void SetHisto(TString name, Int_t nb, Float_t thebins[100]);
-
-   Float_t *xbins = NULL;
-   TTree* tree = NULL;
-	 void SetTreeName(TString t);
-	 void SetPath(TString t);
-   Double_t GetYield(TString sys = "0");
-
-  protected:
-   TString path;
-   TString treeName;
-   Histo *h = NULL;
-   TString sampleName;
-   TCut cut;
-   TString chan;
-   TString weight;
-   TString SysTag;
-   TString var;
-   Int_t AnalHistoBins; Double_t AnalHistoX0; Double_t AnalHistoXf;
-   TString histoname;
-
-   void loadTree();
-
-};
 
 #endif
