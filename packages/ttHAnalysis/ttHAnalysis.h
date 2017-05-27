@@ -98,11 +98,12 @@ class ttHAnalysis : public PAFChainItemSelector {
 		Bool_t  gIsData;
 		Bool_t  gIsMCatNLO;
 		Float_t gWeight;
-    Float_t gPUSF;
     
 		//	Weight of the event
 		//----------------------------------------------------------------------
 		Float_t EventWeight;
+		Float_t EventWeight_PUUp;
+		Float_t EventWeight_PUDown;
 		Float_t genWeight;
 
     //	Minitree variables needed
@@ -140,6 +141,10 @@ class ttHAnalysis : public PAFChainItemSelector {
     Int_t   gChannel;
     Bool_t  passTrigger;
     Bool_t  isSS;
-
+    
+    Float_t PUSF;
+    Float_t PUSF_Up;
+    Float_t PUSF_Down;
+    
 		ClassDef(ttHAnalysis,0);  // ROOT definition as class
 };

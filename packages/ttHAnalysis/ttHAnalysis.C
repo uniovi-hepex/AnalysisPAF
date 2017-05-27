@@ -112,6 +112,8 @@ void ttHAnalysis::SetEventBranches() {
   fTree->Branch("TCS",              &TCS,               "TCS/I");
   fTree->Branch("TMass",            &TMass,             "TMass/F");
   fTree->Branch("TWeight",          &EventWeight,       "EventWeight/F");
+  fTree->Branch("TWeight_PUUp",     &EventWeight_PUUp,  "EventWeight_PUUp/F");
+  fTree->Branch("TWeight_PUDown",   &EventWeight_PUDown,"EventWeight_PUDown/F");
   fTree->Branch("Tevt",             &Tevt,              "Tevt/L");
 }
 
@@ -284,36 +286,38 @@ void ttHAnalysis::InitialiseVariables() {
   Jets.clear();
   TPtVector.clear();
   
-  nTightLepton    = 0;
-  nFakeableLepton = 0;
-  nLooseLepton    = 0;
-  nTaus           = 0;
-  nJets           = 0;
-  nMediumBTags    = 0;
-  nLooseBTags     = 0;
-  gChannel        = 0;
-  gPUSF           = 0;
-  passTrigger     = 0;
-  isSS            = 0;
-  MET             = 0;
-  METLD           = 0;
-  MHT             = 0;
-  HT              = 0;
+  nTightLepton        = 0;
+  nFakeableLepton     = 0;
+  nLooseLepton        = 0;
+  nTaus               = 0;
+  nJets               = 0;
+  nMediumBTags        = 0;
+  nLooseBTags         = 0;
+  gChannel            = 0;
+  PUSF                = 0;
+  passTrigger         = 0;
+  isSS                = 0;
+  MET                 = 0;
+  METLD               = 0;
+  MHT                 = 0;
+  HT                  = 0;
 
-  TCat            = 0;
-  TPtLeading      = 0;
-  TPtSubLeading   = 0;
-  TPtSubSubLeading= 0;
-  TCS             = 0;
-  TMass           = 0;
-  Tevt            = 0;
+  TCat                = 0;
+  TPtLeading          = 0;
+  TPtSubLeading       = 0;
+  TPtSubSubLeading    = 0;
+  TCS                 = 0;
+  TMass               = 0;
+  Tevt                = 0;
   
-  gSampleName	    =	"0";
-  gIsData         =	0;
-  gWeight         =	0;
-	gIsMCatNLO      =	0;
+  gSampleName	        =	"0";
+  gIsData             =	0;
+  gWeight             =	0;
+  gIsMCatNLO          =	0;
   
-  EventWeight     = 0;
+  EventWeight         = 0;
+  EventWeight_PUUp    = 0;
+  EventWeight_PUDown  = 0;
   
 }
 
@@ -344,7 +348,7 @@ void ttHAnalysis::GetEventVariables() {
   nMediumBTags    = 0;
   nLooseBTags     = 0;
   gChannel        = 0;
-  gPUSF           = 0;
+  PUSF            = 0;
   passTrigger     = 0;
   isSS            = 0;
   METLD           = 0;
@@ -372,7 +376,9 @@ void ttHAnalysis::GetEventVariables() {
   nJets           = GetParam<Int_t>("nSelJets");
 
   gChannel        = GetParam<Int_t>("gChannel");
-  gPUSF         	=	GetParam<Float_t>("PUSF");
+  PUSF         	  =	GetParam<Float_t>("PUSF");
+  PUSF_Up      	  =	GetParam<Float_t>("PUSF_Up");
+  PUSF_Down    	  =	GetParam<Float_t>("PUSF_Down");
   passTrigger     = GetParam<Bool_t>("passTrigger");
   isSS            = GetParam<Bool_t>("isSS");
   
@@ -386,15 +392,21 @@ void ttHAnalysis::GetEventVariables() {
 
 
 void ttHAnalysis::CalculateWeight() {
-  EventWeight 	= 1.;
+  EventWeight 	      = 1.;
+  EventWeight_PUUp 	  = 1.;
+  EventWeight_PUDown 	= 1.;
   
   if (!gIsData) {
     // First: normalization and PU weight.
-    EventWeight = gWeight*gPUSF;
+    EventWeight         = gWeight*PUSF;
+    EventWeight_PUUp    = gWeight*PUSF_Up;
+    EventWeight_PUDown  = gWeight*PUSF_Down;
     
     // Second: leptons weight.
     if (TCat >= 2) {
       Float_t ElecSF = 1; Float_t MuonSF = 1;
+      Float_t ElecSF_Up = 1; Float_t ElecSF_Down = 1;
+			Float_t MuonSF_Up = 1; Float_t MuonSF_Down = 1;
       
       if (TightLepton.at(0).isMuon) {
         MuonSF  *= TightLepton.at(0).GetSF( 0);
@@ -426,10 +438,16 @@ void ttHAnalysis::CalculateWeight() {
           }
         }
       }
-      EventWeight *= ElecSF*MuonSF;
+      EventWeight         *= ElecSF*MuonSF;
+      EventWeight_PUUp    *= ElecSF*MuonSF;
+      EventWeight_PUDown  *= ElecSF*MuonSF;
     }
     
-    if (gIsMCatNLO) EventWeight *= genWeight;
+    if (gIsMCatNLO) {
+      EventWeight         *= genWeight;
+      EventWeight_PUUp    *= genWeight;
+      EventWeight_PUDown  *= genWeight;
+    }
   }
 }
 
