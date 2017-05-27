@@ -13,6 +13,7 @@
 
 // Analysis packages inclusion
 #include "Functions.h"
+#include "LeptonSF.h"
 
 // C++ packages inclusion
 #include <vector>
@@ -65,6 +66,8 @@ class ttHAnalysis : public PAFChainItemSelector {
     void 	  GetParameters();
     void    GetEventVariables();
     void    InitialiseVariables();
+    void    Initialise3l4lLeptonSF();
+    void    Reset3l4lLeptonSF();
     void    CalculateWeight();
     
     UInt_t  GetnMediumBTags();
@@ -79,6 +82,7 @@ class ttHAnalysis : public PAFChainItemSelector {
     //	Analysis parameters
     //----------------------------------------------------------------------
     TString gSampleName;
+    TString gLocalPath;
     Bool_t  gIsData;
     Bool_t  gIsMCatNLO;
     Float_t gWeight;

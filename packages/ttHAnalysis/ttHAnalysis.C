@@ -37,7 +37,10 @@ void ttHAnalysis::Initialise() {
 
   PAF_INFO("ttHAnalysis", "+ Initializing variables");
   InitialiseVariables();
-
+  
+  PAF_INFO("ttHAnalysis", "+ Initializing tool for resetting SF for 3l and 4l categories");
+  Initialise3l4lLeptonSF();
+  
   cout << endl;
   PAF_INFO("ttHAnalysis", "+ Initialization DONE");
   cout << endl;
@@ -55,6 +58,7 @@ void ttHAnalysis::InsideLoop() {
   
   SetMiniTreeVariables();
   
+  Reset3l4lLeptonSF();
   CalculateWeight(); 
   
   // Set branches and fill minitree
@@ -259,13 +263,35 @@ void ttHAnalysis::InitialiseVariables() {
   
 }
 
+void ttHAnalysis::Initialise3l4lLeptonSF() {
+  Lep3l4lSF = new LeptonSF(gLocalPath + "/InputFiles/");
+  Lep3l4lSF->loadHisto(iMuonlepMVA3l4lttH);
+  Lep3l4lSF->loadHisto(iEleclepMVA3l4lttH);
+  Lep3l4lSF->loadHisto(iMuonReco);
+  Lep3l4lSF->loadHisto(iMuonLooseTracksttH);
+  Lep3l4lSF->loadHisto(iMuonLooseMiniIsottH);
+  Lep3l4lSF->loadHisto(iMuonTightIP2DttH);
+  Lep3l4lSF->loadHisto(iElecTightIP2DM17ttH);
+  Lep3l4lSF->loadHisto(iElecMini4M17ttH);
+  Lep3l4lSF->loadHisto(iElecConvVetoM17ttH);
+}
+
+void ttHAnalysis::Reset3l4lLeptonSF() {
+  if (nTightLepton < 3) return;
+  for (UInt_t i = 0; i < nTightLepton; i++) {
+    TightLepton.at(i).SetSF(   Lep3l4lSF->GetLeptonSF(     TightLepton.at(i).Pt(), TightLepton.at(i).Eta(), TightLepton.at(i).type) );
+    TightLepton.at(i).SetSFerr(Lep3l4lSF->GetLeptonSFerror(TightLepton.at(i).Pt(), TightLepton.at(i).Eta(), TightLepton.at(i).type) );
+  }
+}
+
 
 void ttHAnalysis::GetParameters() {
   // Import essential and global variables of the execution
-  gSampleName	    =	GetParam<TString>("sampleName");
-  gIsData         =	GetParam<Bool_t>("IsData");
-  gWeight         =	GetParam<Float_t>("weight"); // cross section / events in the sample
-  gIsMCatNLO      =	GetParam<Bool_t>("IsMCatNLO");
+  gSampleName	=	GetParam<TString>("sampleName");
+  gIsData     =	GetParam<Bool_t>("IsData");
+  gWeight     =	GetParam<Float_t>("weight"); // cross section / events in the sample
+  gIsMCatNLO  =	GetParam<Bool_t>("IsMCatNLO");
+  gLocalPath  = GetParam<TString>("WorkingDir");
 }
 
 

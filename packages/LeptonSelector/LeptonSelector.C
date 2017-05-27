@@ -40,6 +40,8 @@ void LeptonSelector::Initialise(){
     }
   }
   else if(gSelection == ittHSelec){
+    LepSF->loadHisto(iMuonlepMVA2lSSttH);
+    LepSF->loadHisto(iEleclepMVA2lSSttH);
     LepSF->loadHisto(iMuonReco);
     LepSF->loadHisto(iMuonLooseTracksttH);
     LepSF->loadHisto(iMuonLooseMiniIsottH);
@@ -699,21 +701,6 @@ void LeptonSelector::InsideLoop(){
         //tL.SetSF(1); tL.SetSFerr(1); // To be updated if ever needed
         looseLeptons.push_back(tL);
       }
-    }
-  }
-
-  if(gSelection == ittHSelec) { // Resetting lepton SF's that depend on category.
-    if (selLeptons.size() <= 2) {
-      LepSF->loadHisto(iMuonlepMVA2lSSttH);
-      LepSF->loadHisto(iEleclepMVA2lSSttH);
-    }
-    else {
-      LepSF->loadHisto(iMuonlepMVA3l4lttH);
-      LepSF->loadHisto(iEleclepMVA3l4lttH);      
-    }
-    for (UInt_t i = 0; i < selLeptons.size(); i++) {
-      selLeptons.at(i).SetSF(   LepSF->GetLeptonSF(     selLeptons.at(i).Pt(), selLeptons.at(i).Eta(), selLeptons.at(i).type) );
-      selLeptons.at(i).SetSFerr(LepSF->GetLeptonSFerror(selLeptons.at(i).Pt(), selLeptons.at(i).Eta(), selLeptons.at(i).type) );
     }
   }
 
