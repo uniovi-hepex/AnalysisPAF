@@ -88,6 +88,11 @@ class ttHAnalysis : public PAFChainItemSelector {
     Float_t gWeight;
     Float_t gPUSF;
     
+    
+    //  SF tool for resetting 3l and 4l leptons SF.
+    //----------------------------------------------------------------------    
+    LeptonSF *Lep3l4lSF;
+    
     //	Weight of the event
     //----------------------------------------------------------------------
     Float_t EventWeight;
