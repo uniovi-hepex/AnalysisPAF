@@ -57,6 +57,7 @@ Float_t getDeltaPhillJet(Lepton lep1, Lepton lep2, Jet jet);
 Float_t getDPhiClosestJet(vector<Jet> vJet, TLorentzVector lep);
 Float_t getHT(vector<Jet> jet);
 Float_t getMHT(vector<Lepton> lepton, vector<Jet> jet);
+Float_t getMETLD(Float_t MET, Float_t MHT);
 Float_t getMT(TLorentzVector v1, TLorentzVector v2);
 Float_t getMinDPhiMetJets(vector<Jet> vjets, Float_t met, Float_t met_phi);
 Float_t getDelPhi(TLorentzVector v1, TLorentzVector v2);
