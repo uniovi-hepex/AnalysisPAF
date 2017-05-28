@@ -146,7 +146,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   // Minitree settings =========================================================
   p->SetTreeName("MiniTree");
   if (chan == "Elec" || chan == "Muon" || chan == "ElMu") name = name+"_2lSS";
-  p->SetVarName(name+chan);
+  p->SetVarName(name+"_"+chan);
   
     
   // Samples import ============================================================
