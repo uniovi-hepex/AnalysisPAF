@@ -79,6 +79,7 @@ while [ $allok != ${#samples[@]} ]; do
       allok=$(($allok-8))
     fi
     allok=$(($allok+1))
+    sleep 5
   done
   if [ $checker == 25 ]; then
     echo " "
