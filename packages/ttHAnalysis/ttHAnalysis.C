@@ -74,9 +74,10 @@ void ttHAnalysis::Summary() {
 //		Tree-related methods
 ////////////////////////////////////////////////////////////////////////////////
 void ttHAnalysis::GetTreeVariables() {
-  MET   = 0;
-  Tevt  = 0;
-  Trun  = 0;
+  MET       = 0;
+  Tevt      = 0;
+  Trun      = 0;
+  genWeight = 1;
   
   if (!gIsData){
     genWeight   = Get<Float_t>("genWeight");
@@ -150,14 +151,11 @@ void ttHAnalysis::SetMiniTreeVariables() {
 //	   Events selection
 ////////////////////////////////////////////////////////////////////////////////
 Bool_t ttHAnalysis::PassesPreCuts() {
-  if (nTightLepton < 2)                     return false;
-  if (nTaus != 0)                           return false;
-  if (!PassesLowMassLimit(LooseLepton,12))  return false;
-  if (nJets < 2)                            return false;
-  
-  if (nLooseBTags < 2) {
-    if (nMediumBTags < 1)                   return false;
-  }
+  if (nTightLepton < 2)                         return false;
+  if (nTaus != 0)                               return false;
+  if (!PassesLowMassLimit(LooseLepton,12))      return false;
+  if (nJets < 2)                                return false;
+  if ((nLooseBTags < 2) && (nMediumBTags < 1))  return false;
   
   return true;
 }
@@ -167,13 +165,13 @@ Bool_t ttHAnalysis::Is2lSSEvent() {
   if (!isSS) 					              return false;
   if (TightLepton.at(0).Pt() < 25)  return false;
   if (!PassesTightChargeCuts())     return false;
-
   if (nJets < 4)                    return false;
 
   if (gChannel == iElec) {
-    if (abs((TightLepton.at(0).p + TightLepton.at(1).p).M() - Zm) < 10) return false;
+    if (abs(ClosestMlltoZ(TightLepton) - Zm) < 10) return false;
     if (METLD < 0.2)                return false;
   }
+  
   return true;
 }
 
@@ -255,7 +253,9 @@ void ttHAnalysis::InitialiseVariables() {
   Trun            = 0;
   
   EventWeight     = 0;
+  genWeight       = 0;
 }
+
 
 void ttHAnalysis::Initialise3l4lLeptonSF() {
   Lep3l4lSF = new LeptonSF(gLocalPath + "/InputFiles/");
@@ -270,11 +270,13 @@ void ttHAnalysis::Initialise3l4lLeptonSF() {
   Lep3l4lSF->loadHisto(iElecConvVetoM17ttH);
 }
 
+
 void ttHAnalysis::Reset3l4lLeptonSF() {
-  if (nTightLepton < 3) return;
-  for (UInt_t i = 0; i < nTightLepton; i++) {
-    TightLepton.at(i).SetSF(   Lep3l4lSF->GetLeptonSF(     TightLepton.at(i).Pt(), TightLepton.at(i).Eta(), TightLepton.at(i).type) );
-    TightLepton.at(i).SetSFerr(Lep3l4lSF->GetLeptonSFerror(TightLepton.at(i).Pt(), TightLepton.at(i).Eta(), TightLepton.at(i).type) );
+  if (nTightLepton >= 3) {
+    for (UInt_t i = 0; i < nTightLepton; i++) {
+      TightLepton.at(i).SetSF(   Lep3l4lSF->GetLeptonSF(     TightLepton.at(i).Pt(), TightLepton.at(i).Eta(), TightLepton.at(i).type));
+      TightLepton.at(i).SetSFerr(Lep3l4lSF->GetLeptonSFerror(TightLepton.at(i).Pt(), TightLepton.at(i).Eta(), TightLepton.at(i).type));
+    }
   }
 }
 
@@ -342,7 +344,6 @@ void ttHAnalysis::GetEventVariables() {
   MHT             = getMHT(FakeableLepton,Jets);
   HT              = getHT(Jets);
   METLD           = getMETLD(MET,MHT);
-
 }
 
 
