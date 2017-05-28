@@ -79,15 +79,16 @@ while [ $allok != ${#samples[@]} ]; do
       allok=$(($allok-8))
     fi
     allok=$(($allok+1))
-    sleep 5
   done
-  if [ $checker == 25 ]; then
+  if [ $checker == 10 ]; then
     echo " "
-    echo "%%%% => ERROR: limit of iterations (25) reached. There has been a problem with the execution or the sample files."
+    echo "%%%% => ERROR: limit of iterations (10) reached. There has been a problem with the execution or the sample files."
+    echo "%%%% => The bash script will now end."
     echo " "
     cd plotter/ttH
     exit
   fi
+  sleep 5
 done
 
 echo "%%%% => All expected ROOT files are in the folder"
