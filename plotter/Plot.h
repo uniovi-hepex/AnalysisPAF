@@ -136,8 +136,7 @@ public:
     if(hAllBkg) delete hAllBkg;
 };            // Destructor
 
-	void AddSample(TString p = "TTbar_Powheg", TString pr = "ttbar", Int_t type = -1, Int_t color = 0, Float_t S = 1, TString tsys = "0", TString options = "");
-	//void AddSample(TString p = "TTbar_Powheg", TString pr = "ttbar", Int_t type = -1, Int_t color = 0, Float_t S = 1, TString Syst);
+	void AddSample(TString p = "TTbar_Powheg", TString pr = "ttbar", Int_t type = -1, Int_t color = 0, TString tsys = "0", TString options = "");
 
 	// ######### Methods ########
   Histo* GetH(TString sample = "TTbar_Powheg", TString s = "0", Int_t type = itBkg);
@@ -233,6 +232,7 @@ public:
   void ScaleSys(TString processSys, Float_t factor = 1);
   void SetTableFormats(TString t){ tableFormats = t;}
   void SetLoopOptions(TString t){LoopOptions = t;}
+  void SetRatioOptions(TString t){RatioOptions = t;}
 
   void SetSignalProcess(TString p){ SignalProcess = p;}
   void SetSignalStyle(TString p){ SignalStyle = p;} 
@@ -270,6 +270,7 @@ protected:
   TString SignalProcess;
   TString SignalStyle = "";
   TString LoopOptions = "";
+  TString RatioOptions = "";
 
   TString SystVar;
   Int_t iS;
@@ -277,7 +278,6 @@ protected:
   TString plotFolder;
   TString limitFolder;
   Bool_t ShowSystematics = false;
-  Bool_t SavedHistos = false;
 };
 
 #endif
