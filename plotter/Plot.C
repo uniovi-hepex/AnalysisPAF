@@ -131,8 +131,8 @@ void Plot::SetData(){  // Returns histogram for Data
   for(Int_t i = 0; i < (Int_t) VData.size(); i++){
     p = VData.at(i)->GetName();
     if     (chan == "ElMu" && (p == "DoubleMuon" || p == "DoubleEG"))   continue;
-    else if(chan == "Muon" && (p != "DoubleMuon" && p!= "SingleMuon"))  continue;
-    else if(chan == "Elec" && (p != "DoubleEG" && p!= "SingleElec"))    continue;
+    else if((chan == "MuMu" || chan == "Muon") && (p != "DoubleMuon" && p!= "SingleMuon"))  continue;
+    else if((chan == "ElEl" || chan == "Elec") && (p != "DoubleEG" && p!= "SingleElec"))    continue;
     else if( (chan == "SF" || chan == "sameF") && (p == "MuonEG"))      continue;
     hData->Add(VData.at(i));
   }
@@ -634,8 +634,8 @@ void Plot::SaveHistograms(){
 void Plot::SetTexChan(TString cuts){
   TString t = "";
   if (chan == "ElMu") t += "e^{#pm}#mu^{#mp}";
-  else if (chan == "Elec") t += "e^{+}e^{-}";
-  else if (chan == "Muon") t += "#mu^{+}#mu^{-}";
+  else if (chan == "ElEl" || chan == "Elec") t += "e^{+}e^{-}";
+  else if (chan == "MuMu" || chan == "Muon") t += "#mu^{+}#mu^{-}";
   else if (chan == "All") t += "#mu^{+}#mu^{-} + e^{+}e^{-} + e^{#pm}#mu^{#mp}";
   else if (chan == "sameF") t += "#mu^{+}#mu^{-} + e^{+}e^{-}";
   t += cuts;

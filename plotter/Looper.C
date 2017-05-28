@@ -10,6 +10,8 @@ TString CraftVar(TString varstring, TString sys){
     var = var.ReplaceAll("TJet_Pt", "TJetJESUp_Pt");
     var = var.ReplaceAll("TNBtags", "TNBtagsJESUp");
     var = var.ReplaceAll("TBDT", "TBDTJESUp");
+    var = var.ReplaceAll("TBDTada" , "TBDTadaJESUp");
+    var = var.ReplaceAll("TBDTgrad", "TBDTgradJESUp");
   }
   else if(sys == "JESDown"){
     var = var.ReplaceAll("TNJets", "TNJetsJESDown");
@@ -19,6 +21,8 @@ TString CraftVar(TString varstring, TString sys){
     var = var.ReplaceAll("TJet_Pt", "TJetJESDown_Pt");
     var = var.ReplaceAll("TNBtags", "TNBtagsJESDown");
     var = var.ReplaceAll("TBDT", "TBDTJESDown");
+    var = var.ReplaceAll("TBDTada" , "TBDTadaJESDown");
+    var = var.ReplaceAll("TBDTgrad", "TBDTgradJESDown");
   }
   else if(sys == "JER"){
     var = var.ReplaceAll("TNBtags", "TNJetsJER");

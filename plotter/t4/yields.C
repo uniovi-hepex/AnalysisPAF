@@ -12,54 +12,14 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 TString NameOfTree = "tree";
 
 TString alwaystrue("1");
-//TString presel("TMET>50 && TMT2>0 && isSS && TNVetLeps < 3");
-TString presel("TMET>50 && TIsSS && TNVetLeps < 3"); // MT2 falta de los trees
-TString SRs(presel+" && TNBtags>1");
-TString CRs(presel+" && TNBtags <2 && TNJets>0");
-
-//TNTaus    : TNTaus/I                                               *
-//TTau_Pt   : TTau_Pt[TNTaus]/F                                      *
-//TTau_Eta  : TTau_Eta[TNTaus]/F                                     *
-//TTau_Charge : TTau_Charge[TNTaus]/F                                *
-//TTau_DecayMode : TTau_DecayMode[TNTaus]/F                          *
-//TTau_IdDecayMode : TTau_IdDecayMode[TNTaus]/F                      *
-//TTau_IdMVA : TTau_IdMVA[TNTaus]/F                                  *
-//TTau_IdAntiE : TTau_IdAntiE[TNTaus]/F                              *
-//TTau_IdAntiMu : TTau_IdAntiMu[TNTaus]/F                            *
-//TNFakeableLeps : TNFakeableLeps/I                                  *
-//TNSelLeps : TNSelLeps/I                                            *
-//TLep_Pt   : TLep_Pt[TNSelLeps]/F                                   *
-//TLep_Eta  : TLep_Eta[TNSelLeps]/F                                  *
-//TLep_Phi  : TLep_Phi[TNSelLeps]/F                                  *
-//TLep_E    : TLep_E[TNSelLeps]/F                                    *
-//TLep_Charge : TLep_Charge[TNSelLeps]/F                             *
-//TFLep_Pt  : TFLep_Pt[TNFakeableLeps]/F                             *
-//TFLep_Eta : TFLep_Eta[TNFakeableLeps]/F                            *
-//TFLep_Phi : TFLep_Phi[TNFakeableLeps]/F                            *
-//TFLep_E   : TFLep_E[TNFakeableLeps]/F                              *
-//TFLep_Charge : TFLep_Charge[TNFakeableLeps]/F                      *
-//TChannel  : TChannel/I                                             *
-//TMll      : TMll/F                                                 *
-//TM3l      : TM3l/F                                                 *
-//TMZ       : TMZ/F                                                  *
-//TNJets    : TNJets/I                                               *
-//TNBtags   : TNBtags/I                                              *
-//TJet_isBJet : TJet_isBJet[TNJets]/I                                *
-//TJet_Pt   : TJet_Pt[TNJets]/F                                      *
-//TJet_Eta  : TJet_Eta[TNJets]/F                                     *
-//TJet_Phi  : TJet_Phi[TNJets]/F                                     *
-//TJet_E    : TJet_E[TNJets]/F                                       *
-//THT       : THT/F                                                  *
-//TWeight   : TWeight/F                                              *
-//TMET      : TMET/F                                                 *
-//TMET_Phi  : TMET_Phi/F                                             *
-//TIsOnZ    : TIsOnZ/I                                               *
+TString presel("TMT2>0 && TIsSS && TNFakeableLeps < 3"); // MT2 falta de los trees
+TString SRs(presel+" && TNBtags>=2 && TNJets >=2 && TMET>50 && THT > 300");
+TString CRs(presel+" && TNBtags<2 && TNJets>0");
 
 TString pathToTree("./tttt_temp/");
 
-
 void yields(TString plotsFolder=""){
-  Plot* p = new Plot("TChannel", alwaystrue, "All", 1, 0, 10, "Channel", "xsec");
+  Plot* p = new Plot("TChannel", alwaystrue, "1", 1, 0, 10, "Channel", "xsec");
   TString username(gSystem->GetUserInfo(gSystem->GetUid())->fUser);
   if(username=="vischia") pathToTree="/pool/ciencias/userstorage/pietro/tttt/2l_skim_wmt2/tttt_temp/";
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
@@ -81,7 +41,7 @@ void yields(TString plotsFolder=""){
   
   // ttV
   p->AddSample("TTZToLLNuNu1"  , "ttV", itBkg, kOrange-3, 0.5);
-  p->AddSample("TTWToLNu1"     , "ttV", itBkg) ;
+  p->AddSample("TTWToLNu1"     , "ttV", itBkg);
   p->AddSample("TTZToLL_M1to10", "ttV", itBkg);
 
   // ttH/tZq
@@ -147,9 +107,11 @@ void yields(TString plotsFolder=""){
   // p->AddSystematic("JES");
   //p->PrintYields(dilepton + ", " + jets2 + ", " + btag1, "Dilepton, 2jets, 1btag", "ElMu, ElMu, ElMu");
   //p->PrintYields("", "", "", "html");
-  p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", "ElMu, ElMu, ElMu", "html");
-  p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", "MuMu, MuMu, MuMu", "html");
-  p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", "ElEl, ElEl, ElEl", "html");
+  
+  p->SetYieldsTableName("inclusive"); p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", "   1,    1,    1", "html");
+  p->SetYieldsTableName("emu"      ); p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", Form("TChannel==%i, TChannel==%i, TChannel==%i",iElMu,iElMu,iElMu), "html");
+  p->SetYieldsTableName("ee"       ); p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", Form("TChannel==%i, TChannel==%i, TChannel==%i",iElEl,iElEl,iElEl), "html");
+  p->SetYieldsTableName("mumu"     ); p->PrintYields(presel + ", " + SRs + ", " + CRs, "Preselection, Signal Regions, Control Regions", Form("TChannel==%i, TChannel==%i, TChannel==%i",iMuMu,iMuMu,iMuMu), "html");
 
 
   //CrossSection *x = new CrossSection(p, "ttbar");

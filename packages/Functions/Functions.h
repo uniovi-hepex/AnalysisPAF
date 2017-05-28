@@ -22,7 +22,7 @@ enum wps{iVeto, iVeryLoose, iLoose, iMedium, iTight, iVeryTight, iExtreamlyTight
 
 enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec, iWZSelec, i4tSelec};
 
-enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, i2l1tau, i2l2taus, i2lss_fake, iTriLep_fake, nTotalDefinedChannels};
+enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, i2l1tau, i2l2taus, i2lss_fake, iTriLep_fake, iElEl, iMuMu, nTotalDefinedChannels};
 
 enum sys{iNom, 
   iJesUp, iJesDown, iJERUp, iJERDown, 
