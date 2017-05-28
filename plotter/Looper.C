@@ -1,58 +1,31 @@
 #include "Looper.h"
 
-TString CraftVar(TString varstring, TString sys){
-  TString var = varstring;
-	if(sys == "JESUp"){
-		var = var.ReplaceAll("TNJets", "TNJetsJESUp");
-    var = var.ReplaceAll("TMET", "TMETJESUp");
-    var = var.ReplaceAll("TMT2ll", "TMT2llJESUp");
-    var = var.ReplaceAll("THT", "THTJESUp");
-    var = var.ReplaceAll("TJet_Pt", "TJetJESUp_Pt");
-    var = var.ReplaceAll("TNBtags", "TNBtagsJESUp");
-    var = var.ReplaceAll("TBDT", "TBDTJESUp");
-    var = var.ReplaceAll("TBDTada" , "TBDTadaJESUp");
-    var = var.ReplaceAll("TBDTgrad", "TBDTgradJESUp");
+std::vector<TString> GetAllVars(TString varstring){ 
+  std::vector<TString> g;
+  TString var; Int_t i;
+  TString chain = varstring;
+  while(chain.Contains("T")){
+    i = 0;
+    var = chain(chain.First('T'), chain.Sizeof());
+    while(TString(var[i]).IsAlnum()) i++;
+    var = var(0,i);
+    g.push_back(var);
+    chain.ReplaceAll(var, "");
   }
-  else if(sys == "JESDown"){
-    var = var.ReplaceAll("TNJets", "TNJetsJESDown");
-    var = var.ReplaceAll("TMET", "TMETJESDown");
-    var = var.ReplaceAll("TMT2ll", "TMT2llJESDown");
-    var = var.ReplaceAll("THT", "THTJESDown");
-    var = var.ReplaceAll("TJet_Pt", "TJetJESDown_Pt");
-    var = var.ReplaceAll("TNBtags", "TNBtagsJESDown");
-    var = var.ReplaceAll("TBDT", "TBDTJESDown");
-    var = var.ReplaceAll("TBDTada" , "TBDTadaJESDown");
-    var = var.ReplaceAll("TBDTgrad", "TBDTgradJESDown");
-  }
-  else if(sys == "JER"){
-    var = var.ReplaceAll("TNBtags", "TNJetsJER");
-    var = var.ReplaceAll("TJet_Pt", "TJetJER_Pt");
-  }
-  else if(sys == "BtagUp"){
-    var = var.ReplaceAll("TNBtags", "TNBtagsUp");
-  }
-  else if(sys == "BtagDown"){
-    var = var.ReplaceAll("TNBtags", "TNBtagsDown");
-  }
-  else if(sys == "MisTagUp"){
-    var = var.ReplaceAll("TNBtags", "TNBtagsMisTagUp");
-  }
-  else if(sys == "MisTagDown"){
-    var = var.ReplaceAll("TNBtags", "TNBtagsMisTagDown");
-  }
-  else if(sys == "genMETUp"){
-    var = var.ReplaceAll("TMET", "TMETJESUp");
-    var = var.ReplaceAll("TMT2ll", "TMT2llJESUp");
-    var = var.ReplaceAll("THT", "THTJESUp");
-    var = var.ReplaceAll("TJet_Pt", "TJetJESUp_Pt");
-  }
-  else if(sys == "genMETDown"){
+  return g;
+}
 
-  }
+TString Looper::CraftVar(TString varstring, TString sys){
+  TString var = varstring;
+  std::vector<TString> AllVars = GetAllVars(var);
+  Int_t nvars = AllVars.size();
+  for(Int_t i = 0; i < nvars; i++) 
+    if(tree->GetBranchStatus(AllVars.at(i) + sys)) 
+      var.ReplaceAll(AllVars.at(i), AllVars.at(i)+sys);
   return var;
 }
 
-TString CraftFormula(TString cuts, TString chan, TString sys, TString options){
+TString Looper::CraftFormula(TString cuts, TString chan, TString sys, TString options){
   TString schan = ("1");
   if     (chan == "ElMu")  schan = (Form("(TChannel == %i)", iElMu));
   else if(chan == "Muon")  schan = (Form("(TChannel == %i)", iMuon));
@@ -64,60 +37,14 @@ TString CraftFormula(TString cuts, TString chan, TString sys, TString options){
   else schan = chan;
 
   TString weight = TString("TWeight");
-  if     (sys == "LepEffUp"  ) weight += "_LepEffUp";
-  else if(sys == "LepEffDown") weight += "_LepEffDown";
-  else if(sys == "ElecEffUp"  ) weight += "_ElecEffUp";
-  else if(sys == "ElecEffDown") weight += "_ElecEffDown";
-  else if(sys == "MuonEffUp"  ) weight += "_MuonEffUp";
-  else if(sys == "MuonEffDown") weight += "_MuonEffDown";
-  else if(sys == "TrigUp"    ) weight += "_TrigUp";
-  else if(sys == "TrigDown"  ) weight += "_TrigDown";
-  else if(sys == "PUUp"      ) weight += "_PUUp";
-  else if(sys == "PUDown"    ) weight += "_PUDown";
-  else if(sys == "FSUp"      ) weight += "_FSUp";
-  else if(sys == "FSDown"    ) weight += "_FSDown";
+  if(tree->GetBranchStatus(weight + "_" + sys)) weight += "_" + sys; 
 
-  else if(sys == "JESUp"){
-    cuts = ( ((TString) cuts).ReplaceAll("TNJets", "TNJetsJESUp"));   
-    cuts = ( ((TString) cuts).ReplaceAll("TNBtags", "TNBtagsJESUp"));   
-    cuts = ( ((TString) cuts).ReplaceAll("TMET", "TMETJESUp"));   
-    cuts = ( ((TString) cuts).ReplaceAll("TMT2ll", "TMT2llJESUp"));   
-    cuts = ( ((TString) cuts).ReplaceAll("THT", "THTJESUp"));   
-    cuts = ( ((TString) cuts).ReplaceAll("TJet_Pt", "TJetJESUp_Pt"));   
-  }
-  else if(sys == "JESDown"){
-    cuts = ( ((TString) cuts).ReplaceAll("TNJets", "TNJetsJESDown"));   
-    cuts = ( ((TString) cuts).ReplaceAll("TNBtags", "TNBtagsJESDown"));   
-    cuts = ( ((TString) cuts).ReplaceAll("TMET", "TMETJESDown"));   
-    cuts = ( ((TString) cuts).ReplaceAll("TMT2ll", "TMT2llJESDown"));   
-    cuts = ( ((TString) cuts).ReplaceAll("THT", "THTJESDown"));   
-    cuts = ( ((TString) cuts).ReplaceAll("TJet_Pt", "TJetJESDown_Pt"));   
-  }
-  else if(sys == "JER" || sys == "JERUp" || sys == "JERDown"){
-    cuts = ( ((TString) cuts).ReplaceAll("TNJets", "TNJetsJER"));   
-    cuts = ( ((TString) cuts).ReplaceAll("TJet_Pt", "TJetJER_Pt"));   
-  }
-  else if(sys == "BtagUp"){
-    cuts = ( ((TString) cuts).ReplaceAll("TNBtags", "TNBtagsUp"));   
-  }
-  else if(sys == "BtagDown"){
-    cuts = ( ((TString) cuts).ReplaceAll("TNBtags", "TNBtagsDown"));   
-  }
-  else if(sys == "MisTagUp"){
-    cuts = ( ((TString) cuts).ReplaceAll("TNBtags", "TNBtagsMisTagUp"));   
-  }
-  else if(sys == "MisTagDown"){
-    cuts = ( ((TString) cuts).ReplaceAll("TNBtags", "TNBtagsMisTagDown"));   
-  }
-  else if(sys == "genMETUp"){
-    cuts = ( ((TString) cuts).ReplaceAll("TMET", "TMETGenUp"));
-    cuts = ( ((TString) cuts).ReplaceAll("TMT2ll", "TMT2llJESUp"));
-    cuts = ( ((TString) cuts).ReplaceAll("THT", "THTJESUp"));
-    cuts = ( ((TString) cuts).ReplaceAll("TJet_Pt", "TJetJESUp_Pt"));
-  }
-  else if(sys == "genMETDown"){ // Extra MET systematic for FS
+  std::vector<TString> AllVars = GetAllVars((TString) cuts);
+  Int_t nvars = AllVars.size();
+  for(Int_t i = 0; i < nvars; i++) 
+    if(tree->GetBranchStatus(AllVars.at(i) + sys)) 
+      cuts = ( ((TString) cuts).ReplaceAll(AllVars.at(i), AllVars.at(i)+sys));
 
-  }
   TString formula = TString("(") + cuts + TString(")*(") + schan + TString(")*") + weight;
   if(options.Contains("Fake") || options.Contains("fake")) formula = TString("(") + cuts + TString(")*") + weight;
   if(options.Contains("isr") || options.Contains("ISR")) formula = "TISRweight*(" + formula + ")";
