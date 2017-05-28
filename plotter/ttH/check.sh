@@ -74,6 +74,7 @@ while [ $allok != 38 ]; do
       allok=$(($allok-8))
     fi
     allok=$(($allok+1))
+    sleep 5
   done
 done
 
