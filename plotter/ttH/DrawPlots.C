@@ -49,6 +49,7 @@ void DrawPlots(TString chan = "ElMu", TString tag = "0"){
   DrawPlot("TMETLD",           cut, chan, 10, 0, 2,    "METLD (GeV)", "METLD", tag);
   DrawPlot("TCS",              cut, chan, 7, -3.5, 3.5,"Sum of charges", "CS", tag);
   DrawPlot("TMass",            cut, chan, 10, 0, 400,  "Invariant mass (GeV)", "Mass", tag);
+  DrawPlot("TWeight",          cut, chan, 20, -1.5, 1.5,"Weight", "Weight", tag);
 }
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name, TString tag = "0"){
@@ -146,7 +147,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   // Minitree settings =========================================================
   p->SetTreeName("MiniTree");
   if (chan == "Elec" || chan == "Muon" || chan == "ElMu") name = name+"_2lSS";
-  p->SetVarName(name);
+  p->SetVarName(name+"_"+chan);
   
     
   // Samples import ============================================================

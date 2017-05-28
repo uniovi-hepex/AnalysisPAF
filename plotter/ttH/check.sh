@@ -16,7 +16,7 @@ samples=("Tree_TTWToLNu1.root" "Tree_TTWToQQ.root" "Tree_TTZToLLNuNu1.root" "Tre
 runsamples=("TTWToLNu_ext1 & TTWToLNu_ext2" "TTWToQQ" "TTZToLLNuNu_ext1 & TTZToLLNuNu_ext2" "TTZToQQ" "WGToLNuG" "ZGTo2LG" "TGJets & TGJets_ext" "TTGJets & TTGJets_ext" 
   "WpWpJJ" "ZZZ" "WZZ" "WWZ" "WWW" "WW & WW_ext" "tZq_ll" "TTTT" "TTJets_aMCatNLO" "TTbar_Powheg" 
   "DYJetsToLL_M50_MLM_ext & DYJetsToLL_M50_MLM_ext2" "DYJetsToLL_M5to50_MLM" 
-  "WJetsToLNu_MLM & WJetsToLNu_MLM_ext2" "TW_ext" "TbarW & TbarW_ext" "T_tch" "Tbar_tch" "TToLeptons_sch_amcatnlo" "WZTo3LNu" "WWTo2L2Nu" 
+  "WJetsToLNu_MLM & WJetsToLNu_MLM_ext2" "TW_ext" "TbarW_ext" "T_tch" "Tbar_tch" "TToLeptons_sch_amcatnlo" "WZTo3LNu" "WWTo2L2Nu" 
   "ZZ & ZZ_ext" "TTHNonbb" "MuonEG" "DoubleMuon" "DoubleEG" "SingleElec" "SingleMuon")
 
 plotspath="/nfs/fanae/user/vrbouza/Documents/TFG/AnalysisPAF/ttH_temp"
@@ -34,7 +34,7 @@ if [ "$1" == "" ]; then
   return
 fi
 
-echo
+echo " "
 echo "Checking that all root files exist in..."
 echo $plotspath
 echo "...with selection..."
@@ -42,22 +42,24 @@ echo $sel
 echo "...and with..."
 echo $1
 echo "...cores."
-echo
+echo " "
 
 path=""
 uplimit=$((${#samples[@]}-1))
-
+checker=0
 
 while [ $allok != ${#samples[@]} ]; do
+  checker=$(($checker+1))
   allok=0
   for ((i=0; i<=$uplimit; i++)); do
     unset path
     path=$plotspath$slash${samples[i]}
     if [ ! -e $path ]; then
+      echo " "
       echo "%%%% => ROOT file not found. The sample that is missing is:"
       echo ${samples[i]}
       echo "Reanalyzing..."
-      echo
+      echo " "
       root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $1)"
       # if [ ${samples[i]} == "Tree_TTHNonbb.root" ]; then
       #   root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/HeppyTreesSummer16/v2/jet25/Tree_TTHNonbb_0.root\", \"$sel\", $1, 0, 0, 0.21510)"
@@ -78,6 +80,15 @@ while [ $allok != ${#samples[@]} ]; do
     fi
     allok=$(($allok+1))
   done
+  if [ $checker == 10 ]; then
+    echo " "
+    echo "%%%% => ERROR: limit of iterations (10) reached. There has been a problem with the execution or the sample files."
+    echo "%%%% => The bash script will now end."
+    echo " "
+    cd plotter/ttH
+    exit
+  fi
+  sleep 5
 done
 
 echo "%%%% => All expected ROOT files are in the folder"
