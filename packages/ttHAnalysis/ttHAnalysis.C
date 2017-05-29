@@ -414,11 +414,12 @@ void ttHAnalysis::CalculateWeight() {
         Trig      = 1.00;
         Trig_Up   = 1.01;
         Trig_Down = 0.99;
-    }
+      }
       else if (gChannel == iElMu) {
         Trig      = 1.01;
         Trig_Up   = 1.02;
         Trig_Down = 1.00;
+      }
     }
     else {
       Trig      = 1.00;
@@ -435,7 +436,6 @@ void ttHAnalysis::CalculateWeight() {
     EventWeight_ElecDown  *= gWeight*Trig*PUSF*ElecSF_Down*MuonSF;
     EventWeight_MuonUp    *= gWeight*Trig*PUSF*ElecSF*MuonSF_Up;
     EventWeight_MuonDown  *= gWeight*Trig*PUSF*ElecSF*MuonSF_Down;
-    
     
     if (gIsMCatNLO) {
       EventWeight           *= genWeight;

@@ -31,24 +31,25 @@ void DrawPlots(TString chan = "ElMu", TString tag = "0"){
   else if (chan == "3l")  cut = "(TCat == 3)";
   else if (chan == "4l")  cut = "(TCat == 4)";
   
-  DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag); // This one is only for getting yields.
-  DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag);
-  DrawPlot("TnFakeableLepton", cut, chan, 5, 0, 5,     "nFakeLep (#)", "nFakeLepton", tag);
-  DrawPlot("TnLooseLepton",    cut, chan, 5, 0, 5,     "nLooseLep (#)", "nLooseLepton", tag);
-  DrawPlot("TnTaus",           cut, chan, 3, 0, 3,     "nTaus (#)", "nTaus", tag);
-  DrawPlot("TnJets",           cut, chan, 10, 0, 10,   "nJets (#)", "nJets", tag);
-  DrawPlot("TnMediumBTags",    cut, chan, 6, 0, 6,     "nMediumBTags (#)", "nMediumBTags", tag);
-  DrawPlot("TnLooseBTags",     cut, chan, 6, 0, 6,     "nLooseBTags (#)", "nLooseBTags", tag);
-  DrawPlot("TPtLeading",       cut, chan, 10, 0, 200,  "Pt (GeV)", "PtLeading", tag);
-  DrawPlot("TPtSubLeading",    cut, chan, 10, 0, 200,  "Pt (GeV)", "PtSubLeading", tag);
-  DrawPlot("TPtSubSubLeading", cut, chan, 10, 0, 200,  "Pt (GeV)", "PtSubSubLeading", tag);
-  DrawPlot("TPtVector",        cut, chan, 10, 0, 200,  "Pt (GeV)", "PtVector", tag);
-  DrawPlot("TMET",             cut, chan, 10, 0, 400,  "MET (GeV)", "MET", tag);
-  DrawPlot("TMHT",             cut, chan, 10, 0, 1000, "MHT (GeV)", "MHT", tag);
-  DrawPlot("THT",              cut, chan, 10, 0, 1000, "HT (GeV)", "HT", tag);
-  DrawPlot("TMETLD",           cut, chan, 10, 0, 2,    "METLD (GeV)", "METLD", tag);
-  DrawPlot("TCS",              cut, chan, 7, -3.5, 3.5,"Sum of charges", "CS", tag);
-  DrawPlot("TMass",            cut, chan, 10, 0, 400,  "Invariant mass (GeV)", "Mass", tag);
+  DrawPlot("TnTightLepton",       cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag); // This one is only for getting yields.
+  DrawPlot("TnTightLepton",       cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag);
+  DrawPlot("TnFakeableLepton",    cut, chan, 5, 0, 5,     "nFakeLep (#)", "nFakeLepton", tag);
+  DrawPlot("TnLooseLepton",       cut, chan, 5, 0, 5,     "nLooseLep (#)", "nLooseLepton", tag);
+  DrawPlot("TnTaus",              cut, chan, 3, 0, 3,     "nTaus (#)", "nTaus", tag);
+  DrawPlot("TnJets",              cut, chan, 10, 0, 10,   "nJets (#)", "nJets", tag);
+  DrawPlot("TnMediumBTags",       cut, chan, 6, 0, 6,     "nMediumBTags (#)", "nMediumBTags", tag);
+  DrawPlot("TnLooseBTags",        cut, chan, 6, 0, 6,     "nLooseBTags (#)", "nLooseBTags", tag);
+  DrawPlot("TPtLeading",          cut, chan, 10, 0, 200,  "Pt (GeV)", "PtLeading", tag);
+  DrawPlot("TPtSubLeading",       cut, chan, 10, 0, 200,  "Pt (GeV)", "PtSubLeading", tag);
+  DrawPlot("TPtSubSubLeading",    cut, chan, 10, 0, 200,  "Pt (GeV)", "PtSubSubLeading", tag);
+  DrawPlot("TPtSubSubSubLeading", cut, chan, 10, 0, 200,  "Pt (GeV)", "PtSubSubLeading", tag);
+  DrawPlot("TPtVector",           cut, chan, 10, 0, 200,  "Pt (GeV)", "PtVector", tag);
+  DrawPlot("TMET",                cut, chan, 10, 0, 400,  "MET (GeV)", "MET", tag);
+  DrawPlot("TMHT",                cut, chan, 10, 0, 1000, "MHT (GeV)", "MHT", tag);
+  DrawPlot("THT",                 cut, chan, 10, 0, 1000, "HT (GeV)", "HT", tag);
+  DrawPlot("TMETLD",              cut, chan, 10, 0, 2,    "METLD (GeV)", "METLD", tag);
+  DrawPlot("TCS",                 cut, chan, 7, -3.5, 3.5,"Sum of charges", "CS", tag);
+  DrawPlot("TMass",               cut, chan, 10, 0, 400,  "Invariant mass (GeV)", "Mass", tag);
 }
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name, TString tag = "0"){
