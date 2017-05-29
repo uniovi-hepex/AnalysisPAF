@@ -63,6 +63,7 @@ void ttHAnalysis::InsideLoop() {
   CalculateWeight(); 
   
   // Set branches and fill minitree
+  if (TCat == 0)        return;
   fTree->Fill();  
 }
 
