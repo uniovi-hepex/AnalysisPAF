@@ -113,6 +113,7 @@ class ttHAnalysis : public PAFChainItemSelector {
     Float_t   TPtLeading;
     Float_t   TPtSubLeading;
     Float_t   TPtSubSubLeading;
+    Float_t   TPtSubSubSubLeading;
     Int_t     TCS;
     Float_t   TMass;
     Long64_t  Tevt;
