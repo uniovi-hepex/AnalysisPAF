@@ -99,6 +99,7 @@ void ttHAnalysis::SetLeptonBranches() {
   fTree->Branch("TPtLeading",       &TPtLeading,        "TPtLeading/F");
   fTree->Branch("TPtSubLeading",    &TPtSubLeading,     "TPtSubLeading/F");
   fTree->Branch("TPtSubSubLeading", &TPtSubSubLeading,  "TPtSubSubLeading/F");
+  fTree->Branch("TPtSubSubSubLeading",&TPtSubSubSubLeading,"TPtSubSubSubLeading/F");
   fTree->Branch("TPtVector", 				&TPtVector);
 }
 
@@ -138,9 +139,10 @@ void ttHAnalysis::SetMiniTreeVariables() {
   else if (Is3lEvent())         TCat  = 3;
   else if (Is4lEvent())         TCat  = 4;
   
-  if (nTightLepton >= 1) TPtLeading       = TightLepton.at(0).Pt();
-  if (nTightLepton >= 2) TPtSubLeading    = TightLepton.at(1).Pt();
-  if (nTightLepton > 2)  TPtSubSubLeading = TightLepton.at(2).Pt();
+  if (nTightLepton >= 1) TPtLeading           = TightLepton.at(0).Pt();
+  if (nTightLepton >= 2) TPtSubLeading        = TightLepton.at(1).Pt();
+  if (nTightLepton >= 3) TPtSubSubLeading     = TightLepton.at(2).Pt();
+  if (nTightLepton >= 4) TPtSubSubSubLeading  = TightLepton.at(3).Pt();
   
   TCS             = getCS(TightLepton);
   TMass           = (TightLepton.at(0).p+TightLepton.at(1).p).M();
@@ -257,6 +259,7 @@ void ttHAnalysis::InitialiseVariables() {
   TPtLeading          = 0;
   TPtSubLeading       = 0;
   TPtSubSubLeading    = 0;
+  TPtSubSubSubLeading = 0;
   TCS                 = 0;
   TMass               = 0;
   Tevt                = 0;
@@ -334,6 +337,7 @@ void ttHAnalysis::GetEventVariables() {
   TPtLeading      = 0;
   TPtSubLeading   = 0;
   TPtSubSubLeading= 0;
+  TPtSubSubSubLeading= 0;
   TCS             = 0;
   TMass           = 0;
 
