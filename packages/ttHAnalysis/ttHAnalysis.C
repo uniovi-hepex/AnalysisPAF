@@ -127,6 +127,8 @@ void ttHAnalysis::SetEventBranches() {
 void ttHAnalysis::SetSystBranches() {
   fTree->Branch("TWeight_PUUp",         &EventWeight_PUUp,    "EventWeight_PUUp/F");
   fTree->Branch("TWeight_PUDown",       &EventWeight_PUDown,  "EventWeight_PUDown/F");
+  fTree->Branch("TWeight_TrigUp",       &EventWeight_TrigUp,  "EventWeight_TrigUp/F");
+  fTree->Branch("TWeight_TrigDown",     &EventWeight_TrigDown,"EventWeight_TrigDown/F");
   fTree->Branch("TWeight_ElecEffUp",    &EventWeight_ElecUp,  "EventWeight_ElecUp/F");
   fTree->Branch("TWeight_ElecEffDown",  &EventWeight_ElecDown,"EventWeight_ElecDown/F");
   fTree->Branch("TWeight_MuonEffUp",    &EventWeight_MuonUp,  "EventWeight_MuonUp/F");
@@ -265,6 +267,8 @@ void ttHAnalysis::InitialiseVariables() {
   EventWeight           = 0;
   EventWeight_PUUp      = 0;
   EventWeight_PUDown    = 0;
+  EventWeight_TrigUp    = 0;
+  EventWeight_TrigDown  = 0;
   EventWeight_ElecUp    = 0;
   EventWeight_ElecDown  = 0;
   EventWeight_MuonUp    = 0;
@@ -369,27 +373,18 @@ void ttHAnalysis::CalculateWeight() {
   EventWeight           = 1;
   EventWeight_PUUp      = 1;
   EventWeight_PUDown    = 1;
+  EventWeight_TrigUp    = 1;
+  EventWeight_TrigDown  = 1;
   EventWeight_ElecUp    = 1;
   EventWeight_ElecDown  = 1;
   EventWeight_MuonUp    = 1;
   EventWeight_MuonDown  = 1;
   
   if (!gIsData) {
-    // First: normalization and PU weight.
-    EventWeight           *= gWeight*PUSF;
-    EventWeight_PUUp      *= gWeight*PUSF_Up;
-    EventWeight_PUDown    *= gWeight*PUSF_Down;
-    EventWeight_ElecUp    *= gWeight*PUSF;
-    EventWeight_ElecDown  *= gWeight*PUSF;
-    EventWeight_MuonUp    *= gWeight*PUSF;
-    EventWeight_MuonDown  *= gWeight*PUSF;
-    
-    // Second: leptons weight.
+    Float_t ElecSF = 1; Float_t MuonSF = 1;
+    Float_t ElecSF_Up = 1; Float_t ElecSF_Down = 1;
+    Float_t MuonSF_Up = 1; Float_t MuonSF_Down = 1;
     if (nTightLepton != 0) {
-      Float_t ElecSF = 1; Float_t MuonSF = 1;
-      Float_t ElecSF_Up = 1; Float_t ElecSF_Down = 1;
-      Float_t MuonSF_Up = 1; Float_t MuonSF_Down = 1;
-      
       for (UInt_t i = 0; i < nTightLepton; i++) {
         if (TightLepton.at(i).isMuon) {
           MuonSF      *= TightLepton.at(i).GetSF( 0);
@@ -402,20 +397,48 @@ void ttHAnalysis::CalculateWeight() {
           ElecSF_Down *= TightLepton.at(i).GetSF(-1);
         }
       }
-      
-      EventWeight           *= ElecSF*MuonSF;
-      EventWeight_PUUp      *= ElecSF*MuonSF;
-      EventWeight_PUDown    *= ElecSF*MuonSF;
-      EventWeight_ElecUp    *= ElecSF_Up*MuonSF;
-      EventWeight_ElecDown  *= ElecSF_Down*MuonSF;
-      EventWeight_MuonUp    *= ElecSF*MuonSF_Up;
-      EventWeight_MuonDown  *= ElecSF*MuonSF_Down;
     }
+    
+    Float_t Trig = 1; Float_t Trig_Up = 1; Float_t Trig_Down = 1;
+    if (nTightLepton <= 2) {
+      if      (gChannel == iElec) {
+        Trig      = 1.01;
+        Trig_Up   = 1.03;
+        Trig_Down = 0.99;
+      }
+      else if (gChannel == iMuon) {
+        Trig      = 1.00;
+        Trig_Up   = 1.01;
+        Trig_Down = 0.99;
+    }
+      else if (gChannel == iElMu) {
+        Trig      = 1.01;
+        Trig_Up   = 1.02;
+        Trig_Down = 1.00;
+    }
+    else {
+      Trig      = 1.00;
+      Trig_Up   = 1.03;
+      Trig_Down = 0.97;      
+    }
+    
+    EventWeight           *= gWeight*Trig*PUSF*ElecSF*MuonSF;
+    EventWeight_PUUp      *= gWeight*Trig*PUSF_Up*ElecSF*MuonSF;
+    EventWeight_PUDown    *= gWeight*Trig*PUSF_Down*ElecSF*MuonSF;
+    EventWeight_TrigUp    *= gWeight*Trig_Up*PUSF*ElecSF*MuonSF;
+    EventWeight_TrigDown  *= gWeight*Trig_Down*PUSF*ElecSF*MuonSF;
+    EventWeight_ElecUp    *= gWeight*Trig*PUSF*ElecSF_Up*MuonSF;
+    EventWeight_ElecDown  *= gWeight*Trig*PUSF*ElecSF_Down*MuonSF;
+    EventWeight_MuonUp    *= gWeight*Trig*PUSF*ElecSF*MuonSF_Up;
+    EventWeight_MuonDown  *= gWeight*Trig*PUSF*ElecSF*MuonSF_Down;
+    
     
     if (gIsMCatNLO) {
       EventWeight           *= genWeight;
       EventWeight_PUUp      *= genWeight;
       EventWeight_PUDown    *= genWeight;
+      EventWeight_TrigUp    *= genWeight;
+      EventWeight_TrigDown  *= genWeight;
       EventWeight_ElecUp    *= genWeight;
       EventWeight_ElecDown  *= genWeight;
       EventWeight_MuonUp    *= genWeight;

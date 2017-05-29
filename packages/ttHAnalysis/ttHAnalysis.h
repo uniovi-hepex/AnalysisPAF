@@ -99,6 +99,8 @@ class ttHAnalysis : public PAFChainItemSelector {
     Float_t EventWeight;
 		Float_t EventWeight_PUUp;
 		Float_t EventWeight_PUDown;
+		Float_t EventWeight_TrigUp;
+		Float_t EventWeight_TrigDown;
 		Float_t EventWeight_ElecUp;
 		Float_t EventWeight_ElecDown;
 		Float_t EventWeight_MuonUp;
