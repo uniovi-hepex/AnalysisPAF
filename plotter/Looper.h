@@ -19,8 +19,7 @@
 enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, i2l1tau, i2l2taus, i2lss_fake, iTriLep_fake, iElEl, iMumu, nTotalDefinedChannels};
 const Int_t nLHEweights = 112;
 
-TString CraftFormula(TString cut, TString chan, TString sys, TString options = "");
-TString CraftVar(TString varstring, TString sys);
+std::vector<TString> GetAllVars(TString varstring); 
 TH1D* loadSumOfLHEweights(TString pathToHeppyTrees = "/pool/ciencias/HeppyTreesSummer16/v2/", TString sampleName = "TTbar_PowhegLHE");
 TH1F* hLHE[nLHEweights];
 
@@ -52,6 +51,9 @@ class Looper{
      if(FormulasLHE)  delete FormulasLHE;
      //if(Hist) delete Hist;
    };
+
+   TString CraftFormula(TString cut, TString chan, TString sys, TString options = "");
+   TString CraftVar(TString varstring, TString sys);
 
    void SetCut(    TString t){cut  = t;}
    void SetVar(    TString t){var  = t;}
