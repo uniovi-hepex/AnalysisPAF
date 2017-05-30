@@ -446,7 +446,7 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
     
   	if (lep.isMuon) {
   	  passEta 			     = (abs(eta) < 2.4);
-  	  passPt	 		       = (pt > 15);
+  	  passPt	 		       = (pt > 10);
   	  passVertex		     = getGoodVertex(iTight);
   	  passSIP			       = getSIPcut(8);
   	  passIso			       = getminiRelIso(iTight);
@@ -459,7 +459,7 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
   	}
   	if (lep.isElec) {
   	  passEta 			     = (abs(eta) < 2.5);
-  	  passPt	 		       = (pt > 15);
+  	  passPt	 		       = (pt > 10);
   	  passVertex		     = getGoodVertex(iTight);
   	  passSIP			       = getSIPcut(8);
   	  passIso			       = getminiRelIso(iTight);
@@ -533,7 +533,7 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
     Bool_t passptRatio; Bool_t passSegComp;
   	if (lep.isMuon) {
   	  passEta 		      = (abs(eta) < 2.4);
-  	  passPt	 		      = (pt > 15);
+  	  passPt	 		      = (pt > 10);
   	  passVertex	      = getGoodVertex(iMedium);
   	  passSIP			      = getSIPcut(8);
   	  passIso			      = getminiRelIso(iLoose);
@@ -552,7 +552,7 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
   	}
   	if (lep.isElec) {
   	  passEta 		       = (abs(eta) < 2.5);
-  	  passPt	 		       = (pt > 15);
+  	  passPt	 		       = (pt > 10);
   	  passVertex	       = getGoodVertex(iMedium);
   	  passSIP			       = getSIPcut(8);
   	  passIso			       = getminiRelIso(iLoose);

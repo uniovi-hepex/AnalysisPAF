@@ -68,6 +68,7 @@ class ttHAnalysis : public PAFChainItemSelector {
     void    GetEventVariables();
     void    GetJESJetVariables();
     void    InitialiseVariables();
+    void    ResetVariables();    
     void    Initialise3l4lLeptonSF();
     void    Reset3l4lLeptonSF();
     void    CalculateWeight();
