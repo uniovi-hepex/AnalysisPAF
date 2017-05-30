@@ -135,6 +135,20 @@ void ttHAnalysis::SetSystBranches() {
   fTree->Branch("TWeight_ElecEffDown",  &EventWeight_ElecDown,"EventWeight_ElecDown/F");
   fTree->Branch("TWeight_MuonEffUp",    &EventWeight_MuonUp,  "EventWeight_MuonUp/F");
   fTree->Branch("TWeight_MuonEffDown",  &EventWeight_MuonDown,"EventWeight_MuonDown/F");
+  fTree->Branch("THTJESUp",             &THTJESUp,            "THTJESUp/F");
+  fTree->Branch("THTJESDown",           &THTJESDown,          "THTJESDown/F");
+  fTree->Branch("TMHTJESUp",            &TMHTJESUp,           "TMHTJESUp/F");
+  fTree->Branch("TMHTJESDown",          &TMHTJESDown,         "TMHTJESDown/F");
+  fTree->Branch("TMETJESUp",            &TMETJESUp,           "TMETJESUp/F");
+  fTree->Branch("TMETJESDown",          &TMETJESDown,         "TMETJESDown/F");
+  fTree->Branch("TMETLDJESUp",          &TMETLDJESUp,         "TMETLDJESUp/F");
+  fTree->Branch("TMETLDJESDown",        &TMETLDJESDown,       "TMETLDJESDown/F");
+  fTree->Branch("TnJetsJESUp",          &TnJetsJESUp,         "TnJetsJESUp/F");
+  fTree->Branch("TnJetsJESDown",        &TnJetsJESDown,       "TnJetsJESDown/F");
+  fTree->Branch("TnLooseBTagsJESUp",    &TnLooseBTagsJESUp,   "TnLooseBTagsJESUp/F");
+  fTree->Branch("TnLooseBTagsJESDown",  &TnLooseBTagsJESDown, "TnLooseBTagsJESDown/F");
+  fTree->Branch("TnMediumBTagsJESUp",   &TnMediumBTagsJESUp,  "TnMediumBTagsJESUp/F");
+  fTree->Branch("TnMediumBTagsJESDown", &TnMediumBTagsJESDown,"TnMediumBTagsJESDown/F");
 }
 
 void ttHAnalysis::SetMiniTreeVariables() {
@@ -240,6 +254,7 @@ void ttHAnalysis::InitialiseVariables() {
   LooseLepton.clear();
   Tau.clear();
   Jets.clear();
+  Jets15.clear();
   TPtVector.clear();
   
   nTightLepton        = 0;
@@ -247,6 +262,7 @@ void ttHAnalysis::InitialiseVariables() {
   nLooseLepton        = 0;
   nTaus               = 0;
   nJets               = 0;
+  nJets15             = 0;
   nMediumBTags        = 0;
   nLooseBTags         = 0;
   gChannel            = 0;
@@ -267,6 +283,21 @@ void ttHAnalysis::InitialiseVariables() {
   TMass               = 0;
   Tevt                = 0;
   Trun                = 0;
+  
+  THTJESUp            = 0;
+  THTJESDown          = 0;
+  TMHTJESUp           = 0;
+  TMHTJESDown         = 0;
+  TMETJESUp           = 0;
+  TMETJESDown         = 0;
+  TMETLDJESUp         = 0;
+  TMETLDJESDown       = 0;
+  TnJetsJESUp         = 0;
+  TnJetsJESDown       = 0;
+  TnLooseBTagsJESUp   = 0;
+  TnLooseBTagsJESDown = 0;
+  TnMediumBTagsJESUp  = 0;
+  TnMediumBTagsJESDown= 0;
   
   EventWeight           = 0;
   EventWeight_PUUp      = 0;
@@ -321,6 +352,7 @@ void ttHAnalysis::GetEventVariables() {
   LooseLepton.clear();
   Tau.clear();
   Jets.clear();
+  Jets15.clear();
   TPtVector.clear();
   
   nTightLepton    = 0;
@@ -328,6 +360,7 @@ void ttHAnalysis::GetEventVariables() {
   nLooseLepton    = 0;
   nTaus           = 0;
   nJets           = 0;
+  nJets15         = 0;
   nMediumBTags    = 0;
   nLooseBTags     = 0;
   gChannel        = 0;
@@ -346,18 +379,35 @@ void ttHAnalysis::GetEventVariables() {
   TCS             = 0;
   TMass           = 0;
 
+  THTJESUp            = 0;
+  THTJESDown          = 0;
+  TMHTJESUp           = 0;
+  TMHTJESDown         = 0;
+  TMETJESUp           = 0;
+  TMETJESDown         = 0;
+  TMETLDJESUp         = 0;
+  TMETLDJESDown       = 0;
+  TnJetsJESUp         = 0;
+  TnJetsJESDown       = 0;
+  TnLooseBTagsJESUp   = 0;
+  TnLooseBTagsJESDown = 0;
+  TnMediumBTagsJESUp  = 0;
+  TnMediumBTagsJESDown= 0;
+
   // Import event-dependent variables
   TightLepton     = GetParam<vector<Lepton>>("selLeptons");
   FakeableLepton  = GetParam<vector<Lepton>>("vetoLeptons");
   LooseLepton     = GetParam<vector<Lepton>>("looseLeptons");
   Tau             = GetParam<vector<Lepton>>("selTaus");
   Jets            = GetParam<vector<Jet>>("selJets");
+  Jets15          = GetParam<vector<Jet>>("Jets15");
 
   nTightLepton    = GetParam<UInt_t>("nSelLeptons");
   nFakeableLepton = GetParam<UInt_t>("nVetoLeptons");
   nLooseLepton    = GetParam<UInt_t>("nLooseLeptons");
   nTaus           = GetParam<UInt_t>("nSelTaus");
   nJets           = GetParam<UInt_t>("nSelJets");
+  nJets15         = GetParam<UInt_t>("nJets15");
 
   gChannel        = GetParam<Int_t>("gChannel");
   PUSF         	  =	GetParam<Float_t>("PUSF");
@@ -366,11 +416,17 @@ void ttHAnalysis::GetEventVariables() {
   passTrigger     = GetParam<Bool_t>("passTrigger");
   isSS            = GetParam<Bool_t>("isSS");
   
-  nMediumBTags    = GetnMediumBTags();
-  nLooseBTags     = GetnLooseBTags();
+  TMETJESUp       = GetParam<Float_t>("MET_JESUp");
+  TMETJESDown     = GetParam<Float_t>("MET_JESDown");
+  
+  // Obtain the rest of the needed variables
+  nMediumBTags    = GetnMediumBTags(Jets);
+  nLooseBTags     = GetnLooseBTags(Jets);
   MHT             = getMHT(FakeableLepton,Jets);
   HT              = getHT(Jets);
   METLD           = getMETLD(MET,MHT);
+  
+  GetJESJetVariables();
 }
 
 
@@ -453,19 +509,19 @@ void ttHAnalysis::CalculateWeight() {
 }
 
 
-UInt_t ttHAnalysis::GetnMediumBTags() {
+UInt_t ttHAnalysis::GetnMediumBTags(vector<Jet> jets) {
   UInt_t nmediumbtag = 0;
-  for(UInt_t i = 0; i < nJets; i++) {
-    if (Jets.at(i).csv > 0.8484) nmediumbtag++;
+  for(UInt_t i = 0; i < jets.size(); i++) {
+    if (jets.at(i).csv > 0.8484) nmediumbtag++;
   }
   return nmediumbtag;
 }
 
 
-UInt_t ttHAnalysis::GetnLooseBTags() {
+UInt_t ttHAnalysis::GetnLooseBTags(vector<Jet> jets) {
   UInt_t nloosebtag = 0;
-  for(UInt_t i = 0; i < nJets; i++) {
-    if (Jets.at(i).csv > 0.5426) nloosebtag++;
+  for(UInt_t i = 0; i < jets.size(); i++) {
+    if (jets.at(i).csv > 0.5426) nloosebtag++;
   }
   return nloosebtag;
 }
@@ -482,3 +538,34 @@ Bool_t ttHAnalysis::PassesTightChargeCuts() {
   }
   return true;
 }
+
+void ttHAnalysis::GetJESJetVariables() {
+  std::vector<Jet> tmp_JetsJESUp;
+  std::vector<Jet> tmp_JetsJESDown;
+  tmp_JetsJESUp.clear();
+  tmp_JetsJESDown.clear();
+  
+  for(UInt_t i = 0; i < nJets15; i++) {
+    if (Jets15.at(i).pTJESUp > 25) {
+      tmp_JetsJESUp.push_back(Jets15.at(i));
+      tmp_JetsJESUp.back().p.SetPtEtaPhiE(tmp_JetsJESUp.back().pTJESUp,tmp_JetsJESUp.back().p.Eta(),tmp_JetsJESUp.back().Phi(),tmp_JetsJESUp.back().E());
+    }
+    if (Jets15.at(i).pTJESDown > 25) {
+      tmp_JetsJESDown.push_back(Jets15.at(i));
+      tmp_JetsJESDown.back().p.SetPtEtaPhiE(tmp_JetsJESDown.back().pTJESDown,tmp_JetsJESDown.back().p.Eta(),tmp_JetsJESDown.back().Phi(),tmp_JetsJESDown.back().E());
+    }
+  }
+  TnJetsJESUp         = tmp_JetsJESUp.size();
+  TnJetsJESDown       = tmp_JetsJESDown.size();
+  TnLooseBTagsJESUp   = GetnLooseBTags(tmp_JetsJESUp);
+  TnLooseBTagsJESUp   = GetnLooseBTags(tmp_JetsJESDown);
+  TnMediumBTagsJESUp  = GetnMediumBTags(tmp_JetsJESUp);
+  TnMediumBTagsJESUp  = GetnMediumBTags(tmp_JetsJESDown);
+  TMHTJESUp           = getMHT(FakeableLepton,tmp_JetsJESUp);
+  TMHTJESDown         = getMHT(FakeableLepton,tmp_JetsJESDown);
+  TMETLDJESUp         = getMETLD(TMETJESUp,TMHTJESUp);
+  TMETLDJESDown       = getMETLD(TMETJESDown,TMHTJESDown);
+  THTJESUp            = getHT(tmp_JetsJESUp);
+  THTJESDown          = getHT(tmp_JetsJESDown);
+}
+

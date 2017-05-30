@@ -66,13 +66,14 @@ class ttHAnalysis : public PAFChainItemSelector {
     ////////////////////////////////////////////////////////////////////////
     void 	  GetParameters();
     void    GetEventVariables();
+    void    GetJESJetVariables();
     void    InitialiseVariables();
     void    Initialise3l4lLeptonSF();
     void    Reset3l4lLeptonSF();
     void    CalculateWeight();
     
-    UInt_t  GetnMediumBTags();
-    UInt_t  GetnLooseBTags();
+    UInt_t  GetnMediumBTags(vector<Jet> jets);
+    UInt_t  GetnLooseBTags(vector<Jet> jets);
     
     Bool_t 	PassesTightChargeCuts();
 
@@ -119,6 +120,21 @@ class ttHAnalysis : public PAFChainItemSelector {
     Long64_t  Tevt;
     Long64_t  Trun;
     std::vector<Float_t>  TPtVector;
+    
+    Float_t   THTJESUp;
+    Float_t   THTJESDown;
+    Float_t   TMHTJESUp;
+    Float_t   TMHTJESDown;
+    Float_t   TMETJESUp;
+    Float_t   TMETJESDown;
+    Float_t   TMETLDJESUp;
+    Float_t   TMETLDJESDown;
+    Float_t   TnJetsJESUp;
+    Float_t   TnJetsJESDown;
+    Float_t   TnLooseBTagsJESUp;
+    Float_t   TnLooseBTagsJESDown;
+    Float_t   TnMediumBTagsJESUp;
+    Float_t   TnMediumBTagsJESDown;
 
     //	Input variables and vectors
     //----------------------------------------------------------------------
@@ -127,6 +143,7 @@ class ttHAnalysis : public PAFChainItemSelector {
     UInt_t 	nLooseLepton;
     UInt_t 	nTaus;
     UInt_t 	nJets;
+    UInt_t 	nJets15;
     UInt_t 	nMediumBTags;
     UInt_t 	nLooseBTags;
 
@@ -135,7 +152,8 @@ class ttHAnalysis : public PAFChainItemSelector {
     std::vector<Lepton> TightLepton;
     std::vector<Lepton> Tau;
     std::vector<Jet>    Jets;
-
+    std::vector<Jet>    Jets15;
+    
     Float_t MET;
     Float_t METLD;
     Float_t MHT;
