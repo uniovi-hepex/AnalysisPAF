@@ -55,10 +55,10 @@ class ttHAnalysis : public PAFChainItemSelector {
     ////////////////////////////////////////////////////////////////////////
     //	   Events selection
     ////////////////////////////////////////////////////////////////////////
-    Bool_t 	PassesPreCuts();
+    Bool_t 	PassesPreCuts(UInt_t njets, UInt_t nloosebtag, UInt_t nmediumbtag);
     
-    Bool_t 	Is2lSSEvent();
-    Bool_t 	Is3lEvent();
+    Bool_t 	Is2lSSEvent(UInt_t njets, Float_t metld);
+    Bool_t 	Is3lEvent(UInt_t njets, Float_t metld);
     Bool_t 	Is4lEvent();
 
     ////////////////////////////////////////////////////////////////////////
@@ -112,6 +112,8 @@ class ttHAnalysis : public PAFChainItemSelector {
     //	Minitree variables needed
     //----------------------------------------------------------------------
     Int_t     TCat;
+    Int_t     TCatJESUp;
+    Int_t     TCatJESDown;
     Float_t   TPtLeading;
     Float_t   TPtSubLeading;
     Float_t   TPtSubSubLeading;
