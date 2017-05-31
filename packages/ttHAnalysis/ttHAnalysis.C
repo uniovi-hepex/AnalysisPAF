@@ -209,8 +209,8 @@ Bool_t ttHAnalysis::Is2lSSEvent() {
   if (nJets < 4)                                  return false;
 
   if (gChannel == iElec) {
-    if (abs(ClosestMlltoZ(TightLepton) - Zm) < 10)  return false;
-    if (METLD < 0.2)                                return false;
+    if (abs(ClosestMlltoZ(TightLepton) - Zm) < 10)return false;
+    if (METLD < 0.2)                              return false;
   }
   
   return true;
@@ -227,11 +227,11 @@ Bool_t ttHAnalysis::Is3lEvent() {
   if (has2OSSFwMlmm(LooseLepton, 140))            return false;
   
   if (nJets < 4) {
-    if (!hasOSSF(TightLepton)) {
-      if (METLD < 0.2) return false;
+    if (!hasOSSF(LooseLepton)) {
+      if (METLD < 0.2)                            return false;
     } 
     else {
-      if (METLD < 0.3) return false;
+      if (METLD < 0.3)                            return false;
     }
   }
   
