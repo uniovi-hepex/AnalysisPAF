@@ -538,16 +538,16 @@ void ttHAnalysis::GetJESJetVariables() {
     }
   }
   
-  TnJetsJESUp         = tmp_JetsJESUp.size();
-  TnJetsJESDown       = tmp_JetsJESDown.size();
-  TnLooseBTagsJESUp   = GetnLooseBTags(tmp_JetsJESUp);
-  TnLooseBTagsJESUp   = GetnLooseBTags(tmp_JetsJESDown);
-  TnMediumBTagsJESUp  = GetnMediumBTags(tmp_JetsJESUp);
-  TnMediumBTagsJESUp  = GetnMediumBTags(tmp_JetsJESDown);
-  TMHTJESUp           = getMHT(FakeableLepton,tmp_JetsJESUp);
-  TMHTJESDown         = getMHT(FakeableLepton,tmp_JetsJESDown);
-  TMETLDJESUp         = getMETLD(TMETJESUp,TMHTJESUp);
-  TMETLDJESDown       = getMETLD(TMETJESDown,TMHTJESDown);
-  THTJESUp            = getHT(tmp_JetsJESUp);
-  THTJESDown          = getHT(tmp_JetsJESDown);
+  TnJetsJESUp           = tmp_JetsJESUp.size();
+  TnJetsJESDown         = tmp_JetsJESDown.size();
+  TnLooseBTagsJESUp     = GetnLooseBTags(tmp_JetsJESUp);
+  TnLooseBTagsJESDown   = GetnLooseBTags(tmp_JetsJESDown);
+  TnMediumBTagsJESUp    = GetnMediumBTags(tmp_JetsJESUp);
+  TnMediumBTagsJESDown  = GetnMediumBTags(tmp_JetsJESDown);
+  TMHTJESUp             = getMHT(FakeableLepton,tmp_JetsJESUp);
+  TMHTJESDown           = getMHT(FakeableLepton,tmp_JetsJESDown);
+  TMETLDJESUp           = getMETLD(TMETJESUp,TMHTJESUp);
+  TMETLDJESDown         = getMETLD(TMETJESDown,TMHTJESDown);
+  THTJESUp              = getHT(tmp_JetsJESUp);
+  THTJESDown            = getHT(tmp_JetsJESDown);
 }
