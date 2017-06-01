@@ -55,20 +55,25 @@ void ttHAnalysis::InsideLoop() {
   GetTreeVariables();
   GetEventVariables();
   
-  // Check trigger and precuts
+  // Check trigger
+  if (!passTrigger)                                                             return;
+  
+  // Filter events that never pass the precuts
   if (!PassesPreCuts(nJets, nLooseBTags, nMediumBTags) && 
       !PassesPreCuts(TnJetsJESUp, TnLooseBTagsJESUp, TnMediumBTagsJESUp) && 
       !PassesPreCuts(TnJetsJESDown, TnLooseBTagsJESDown, TnMediumBTagsJESDown)) return;
-  if (!passTrigger)     return;
   
+  // Get minitree variables, specifically the event selection
   SetMiniTreeVariables();
   
-  if (TCat == 0 && TCatJESUp == 0 && TCatJESDown == 0)        return; // (Only the selected events will appear in the minitree)
+  // Filter events that are never selected.
+  if (TCat == 0 && TCatJESUp == 0 && TCatJESDown == 0)                          return;
   
+  // Set SF for 3l and 4l categories, and get the correct weight
   Reset3l4lLeptonSF();
   CalculateWeight(); 
   
-  // Set branches and fill minitree
+  // Fill minitree
   fTree->Fill();  
 }
 
@@ -166,17 +171,23 @@ void ttHAnalysis::SetSystBranches() {
 
 
 void ttHAnalysis::SetMiniTreeVariables() {
-  if      (Is2lSSEvent(nJets, METLD))                 TCat        = 2;
-  else if (Is3lEvent  (nJets, METLD))                 TCat        = 3;
-  else if (Is4lEvent())                               TCat        = 4;
+  if (PassesPreCuts(nJets, nLooseBTags, nMediumBTags) {
+    if      (Is2lSSEvent(nJets, METLD))                 TCat        = 2;
+    else if (Is3lEvent  (nJets, METLD))                 TCat        = 3;
+    else if (Is4lEvent())                               TCat        = 4;
+  }
   
-  if      (Is2lSSEvent(TnJetsJESUp, TMETLDJESUp))     TCatJESUp   = 2;
-  else if (Is3lEvent  (TnJetsJESUp, TMETLDJESUp))     TCatJESUp   = 3;
-  else if (Is4lEvent())                               TCatJESUp   = 4;
+  if (PassesPreCuts(TnJetsJESUp, TnLooseBTagsJESUp, TnMediumBTagsJESUp)) {
+    if      (Is2lSSEvent(TnJetsJESUp, TMETLDJESUp))     TCatJESUp   = 2;
+    else if (Is3lEvent  (TnJetsJESUp, TMETLDJESUp))     TCatJESUp   = 3;
+    else if (Is4lEvent())                               TCatJESUp   = 4;
+  }
   
-  if      (Is2lSSEvent(TnJetsJESDown, TMETLDJESDown)) TCatJESDown = 2;
-  else if (Is3lEvent  (TnJetsJESDown, TMETLDJESDown)) TCatJESDown = 3;
-  else if (Is4lEvent())                               TCatJESDown = 4;
+  if (PassesPreCuts(TnJetsJESDown, TnLooseBTagsJESDown, TnMediumBTagsJESDown)) {
+    if      (Is2lSSEvent(TnJetsJESDown, TMETLDJESDown)) TCatJESDown = 2;
+    else if (Is3lEvent  (TnJetsJESDown, TMETLDJESDown)) TCatJESDown = 3;
+    else if (Is4lEvent())                               TCatJESDown = 4;
+  }
   
   if (nTightLepton >= 1) TPtLeading           = TightLepton.at(0).Pt();
   if (nTightLepton >= 2) TPtSubLeading        = TightLepton.at(1).Pt();
