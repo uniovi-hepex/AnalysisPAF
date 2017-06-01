@@ -51,6 +51,7 @@ class WWAnalysis : public PAFChainItemSelector{
 		Float_t TMT;
 		Float_t TMTprime;
 		Float_t TDeltaPhi;
+		Float_t TDeltaEta;
 
 		Int_t   TNVetoLeps;
 		Int_t   TNSelLeps;
