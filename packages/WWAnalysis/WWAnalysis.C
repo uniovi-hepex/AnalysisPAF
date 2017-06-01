@@ -15,7 +15,7 @@ WWAnalysis::WWAnalysis() : PAFChainItemSelector() {
 	TMETJESUp = 0; TMETJESDown = 0; TMT2llJESUp = 0; TMT2llJESDown = 0; TMT2 = 0; TMT = 0; TMTprime = 0;
 	TWeight_LepEffUp = 0; TWeight_LepEffDown = 0; TWeight_TrigUp = 0; TWeight_TrigDown = 0;
 	TWeight_FSUp = 0; TWeight_FSDown = 0; TWeight_PUDown = 0; TWeight_PUUp = 0;  TNVetoJets = 0;
-	TDeltaPhi = 0;
+	TDeltaPhi = 0; TDeltaEta = 0;
 	
 	for(Int_t i = 0; i < 10; i++){
 		TLep_Pt[i] = 0;  
@@ -111,20 +111,24 @@ void WWAnalysis::InsideLoop(){
 			// ===================================================================================================================
 			// utilizando minitrees aquí pongo el nivel más básico de seleccion de eventos. Será en el plotter donde escogeremos más a fondo.
 			
-						
-						
-						// analisis de cosas básicas de Top:
+//==============================// analisis de cosas básicas de Top:
 			//if( ((selLeptons.at(0).p +selLeptons.at(1).p).M() > 20) // mll > 20 GeV
 				//&& (gChannel == 1 || (TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15)  )//  Z Veto in ee, µµ
 				//&& TNJets > 1      
 				//&& TNBtags > 0 ){      
 				//fTree->Fill();
 			//};
-						// analisis de cosas básicas de WW:
+          
+//=============================// analisis de cosas básicas de WW
 			if( ((selLeptons.at(0).p +selLeptons.at(1).p).M() > 12) // mll > 12 GeV
 				&& (gChannel == 1 || (TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15))){ //Channel e mu y con Z Veto in ee, µµ
 				fTree->Fill();
 			};
+//============================// analisis de cosas básicas de DY inclusivo (con pico Z para quitarlo con el plot)			
+		    //if( ((selLeptons.at(0).p + selLeptons.at(1).p).M() > 0) && (!TIsSS)){ // mll > 12 GeV y signo opuesto
+		      //fTree->Fill();
+		    //};
+		    
 		};
 	};
 };
@@ -148,6 +152,8 @@ void WWAnalysis::SetLeptonVariables(){
 	fTree->Branch("TMT2",      &TMT2,      "TMT2/F");
 	fTree->Branch("TMT",       &TMT,        "TMT/F");
 	fTree->Branch("TMTprime",    &TMTprime,    "TMTprime/F");
+	fTree->Branch("TDeltaPhi",   &TDeltaPhi,    "TDeltaPhi/F");
+	fTree->Branch("TDeltaEta",   &TDeltaEta,    "TDeltaEta/F");
 };
 
 void WWAnalysis::SetJetVariables(){
@@ -217,14 +223,11 @@ void WWAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<
 	TMll = (selLeptons.at(0).p + selLeptons.at(1).p).M();    
 	TPtdil = (selLeptons.at(0).p + selLeptons.at(1).p).Pt(); 
 	TMT2 = getMT2ll(selLeptons.at(0), selLeptons.at(1), Get<Float_t>("met_pt"), Get<Float_t>("met_phi") ); 
-	
-	
-	
-
+	TDeltaPhi = (selLeptons.at(0).p.DeltaPhi(selLeptons.at(1).p));
+	TDeltaEta = TMath::Abs(TMath::Abs(selLeptons.at(0).p.Eta()) - TMath::Abs(selLeptons.at(1).p.Eta()));
 	TLorentzVector met;
 	met.SetPtEtaPhiM(Get<Float_t>("met_pt"), 0, Get<Float_t>("met_phi"), 0);
 	TMT = getMT(selLeptons.at(0).p + selLeptons.at(1).p, met);
-	
 	//defincion directa con el TLorentzVector:
 	TMTprime = (selLeptons.at(0).p + selLeptons.at(1).p).Mt();
   }
