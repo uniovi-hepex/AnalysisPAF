@@ -171,7 +171,7 @@ void ttHAnalysis::SetSystBranches() {
 
 
 void ttHAnalysis::SetMiniTreeVariables() {
-  if (PassesPreCuts(nJets, nLooseBTags, nMediumBTags) {
+  if (PassesPreCuts(nJets, nLooseBTags, nMediumBTags)) {
     if      (Is2lSSEvent(nJets, METLD))                 TCat        = 2;
     else if (Is3lEvent  (nJets, METLD))                 TCat        = 3;
     else if (Is4lEvent())                               TCat        = 4;
