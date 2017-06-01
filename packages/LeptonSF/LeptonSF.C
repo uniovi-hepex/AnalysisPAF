@@ -158,15 +158,15 @@ void LeptonSF::loadHisto(Int_t iHisto, Int_t wp){
   }
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>> Triggers
   else if(iHisto == iTrigDoubleMuon){
-    filename = ""; histoname = "";
+    filename = "TriggerSF_mumu2016_pt"; histoname = "lepton_pt_2D_sf";
     fDoubleMuSF = GetHistogramFromFileF(path_to_SF_histos + filename + ".root", histoname, "fDoubleMuSF"); 
   }
   else if(iHisto == iTrigDoubleElec){
-    filename = ""; histoname = "";
+    filename = "TriggerSF_ee2016_pt"; histoname = "lepton_pt_2D_sf";
     fDoubleElSF = GetHistogramFromFileF(path_to_SF_histos + filename + ".root", histoname, "fDoubleElSF"); 
   }
   else if(iHisto == iTrigElMu){
-    filename = ""; histoname = "";
+    filename = "TriggerSF_emu2016_pt"; histoname = "lepton_pt_2D_sf";
     fMuEGSF = GetHistogramFromFileF(path_to_SF_histos + filename + ".root", histoname, "fMuEGSF"); 
   }
   std::cout << " [Lepton SF] : Loaded histogram " << histoname << " from file " << path_to_SF_histos + filename + ".root" << std::endl;
@@ -308,7 +308,7 @@ Float_t LeptonSF::GetTrigDoubleElSF(Float_t eta1, Float_t eta2) const { // binne
   eta2 = TMath::Abs(eta2);
   return fDoubleElSF->GetBinContent(fDoubleElSF->FindBin(eta1, eta2));
 }
-Float_t LeptonSF::GetTrigElMuGSF(Float_t eta1, Float_t eta2) const { // binned in eta1, eta2
+Float_t LeptonSF::GetTrigElMuSF(Float_t eta1, Float_t eta2) const { // binned in eta1, eta2
   eta1 = TMath::Abs(eta1);
   eta2 = TMath::Abs(eta2);
   return fMuEGSF->GetBinContent(fMuEGSF->FindBin(eta1, eta2) );

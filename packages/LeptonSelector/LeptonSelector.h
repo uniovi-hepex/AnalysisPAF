@@ -13,7 +13,7 @@ class LeptonSelector : public PAFChainItemSelector{
   public:
 
     LeptonSelector(); 
-    virtual ~LeptonSelector() {}
+    virtual ~LeptonSelector() {delete LepSF;}
     virtual void InsideLoop();
     virtual void Initialise();
     virtual void Summary();
@@ -31,16 +31,20 @@ class LeptonSelector : public PAFChainItemSelector{
     Int_t gSelection;
     TString localPath;
 
+    // Trigger     
+    Float_t TriggerSF;
+    Float_t TriggerSFerr;
+
     // LepGood
     Lepton tL;
     Int_t nLep;
     TLorentzVector tP; 
     Float_t pt;
     Float_t eta;
-    Int_t charge; 
-    Int_t type;
-    Int_t tightVar;
-    Int_t mediumMuonId;
+    Int_t 	charge; 
+    Int_t 	type;
+    Int_t 	tightVar;
+    Int_t 	mediumMuonId;
     Float_t etaSC;
     Float_t RelIso03;
     Float_t RelIso04;
@@ -58,6 +62,14 @@ class LeptonSelector : public PAFChainItemSelector{
     Float_t dz; 
     Float_t sip;
     Float_t SF;
+    Float_t MVATTH;
+    Int_t	TightCharge;
+    Float_t MVAID;
+    Float_t jetBTagCSV;
+    Float_t SegComp;
+    Int_t isGlobalMuon;
+    Int_t isTrackerMuon;
+    
     // genLeptons
     Int_t ngenLep;
     Int_t ngenLepFromTau;
@@ -67,15 +79,20 @@ class LeptonSelector : public PAFChainItemSelector{
     Int_t nSelLeptons;
     Int_t nGenLeptons;
     Int_t nVetoLeptons;
+    Int_t nLooseLeptons;
 
     void GetLeptonVariables(Int_t i);
+    void GetDiscLeptonVariables(Int_t i);
     void GetGenLeptonVariables(Int_t i);
     void GetGenLepFromTauVariables(Int_t i);
     Bool_t getSIPcut(Float_t cut); 
     Bool_t getGoodVertex(Int_t wp); 
     Bool_t getRelIso03POG(Int_t wp); 
     Bool_t getRelIso04POG(Int_t wp);
+    Bool_t getminiRelIso(Int_t wp);
     Bool_t getMuonId(Int_t wp);
+    Bool_t getElecMVA(Int_t wp);
+    Bool_t getElecMVAId(Int_t wp, Lepton lep); 
     Bool_t getElecCutBasedId(Int_t wp); 
     Bool_t getMultiIso(Int_t wp);
     Bool_t isGoodLepton(Lepton lep);

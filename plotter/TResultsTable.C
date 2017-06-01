@@ -27,7 +27,7 @@ void TResultsTableRow::SetNColumns(unsigned int ncols) {
 // TResultsTable
 TResultsTable::TResultsTable(unsigned int nrows, 
 			     unsigned int ncol,
-			     bool witherrors,
+			     Int_t witherrors,
 			     bool automaticerrors):
   fNColumns(ncol),
   fNRows(nrows),
@@ -38,6 +38,11 @@ TResultsTable::TResultsTable(unsigned int nrows,
   fDrawVLines(false),
   fColumnWidth(11) {
 
+  formatNum = TString("%1.2f");
+  VSeparations = "";
+  //colorRow[20] = {"#0099cc", "#ff9966", "#99ff99", "#ff66ff", "#99cc00", "#0099cc", "#ff9966", "#99ff99", "#ff66ff", "#99cc00", "#0099cc", "#ff9966", "#99ff99", "#ff66ff", "#99cc00", "#0099cc", "#ff9966", "#99ff99", "#ff66ff", "#99cc00"};
+  //color[20]    = {"#ccffff", "#ffffcc", "#ccffcc", "#ffccff", "#ccff99", "#ccffff", "#ffffcc", "#ccffcc", "#ffccff", "#ccff99", "#ccffff", "#ffffcc", "#ccffcc", "#ffccff", "#ccff99", "#ccffff", "#ffffcc", "#ccffcc", "#ffccff", "#ccff99"};
+
   fRows = new TResultsTableRow[fNRows];
 
   fRowTitle = new TString[fNRows];
@@ -47,8 +52,8 @@ TResultsTable::TResultsTable(unsigned int nrows,
     fRows[i].SetNColumns(fNColumns);
   }
 
-  if (fWithErrors)
-    fColumnWidth=2*fColumnWidth+3;
+  //if (fWithErrors > 0) fColumnWidth=2*fColumnWidth+3;
+  if (fWithErrors > 0) fColumnWidth=(1+fWithErrors)*fColumnWidth+3*fWithErrors;
 
   if (fAutomaticErrors)
     std::cerr << "WARNING: Automatic errors not yet implemented" << std::endl;
@@ -63,7 +68,7 @@ TString TResultsTable::FixWidth(const TString& s, unsigned int width, bool prepe
     return val;
 }
 
-void TResultsTable::Print(ETResultsTableOutputFormat format, ostream& os) const {
+void TResultsTable::Print(ETResultsTableOutputFormat format, ostream& os) const{
 
   if (format == kCSV) {
     std::cerr << "WARNING: The CSV format is not yet supported by TResultsTable!" << std::endl;
@@ -76,8 +81,8 @@ void TResultsTable::Print(ETResultsTableOutputFormat format, ostream& os) const 
     
   // Widths
   unsigned int colwidth = fColumnWidth;
-  if (fWithErrors)
-    colwidth=(colwidth/2)-3;
+  //if (fWithErrors > 0) colwidth=(colwidth/2)-3;
+  if (fWithErrors > 0) colwidth=(colwidth/(1+fWithErrors))-3*fWithErrors;
 
   unsigned int firstcolw = GetRowTitleHeader().Length();
   for (unsigned int i = 0; i < fNRows; i++) {
@@ -123,8 +128,8 @@ void TResultsTable::Print(ETResultsTableOutputFormat format, ostream& os) const 
     if (fDrawHLines) {
       singleline = TString().Prepend('-',firstcolw); 
       for (unsigned int i = 0; i < fNColumns; i++) {
-	singleline += "+-";
-	singleline += TString().Prepend('-',fColumnWidth);
+        singleline += "+-";
+        singleline += TString().Prepend('-',fColumnWidth);
       }
     }
     singleline += "+\n";
@@ -140,9 +145,9 @@ void TResultsTable::Print(ETResultsTableOutputFormat format, ostream& os) const 
     rowend          = "</tr>";
     cellstart       = "<td>";
     cellend         = "</td>";
-    cellcoltitstart = "<th bgcolor=\"lightblue\">";
+    cellcoltitstart = "<th bgcolor=\"lightcoral\">";
     cellcoltitend   = "</th>";
-    cellrowtitstart = "<th align=\"right\" bgcolor=\"lightblue\">";
+    cellrowtitstart = "<th align=\"right\" bgcolor=\"blue\">";
     cellrowtitend   = "</th>";
     plusminus       = "&plusmn;";
   }
@@ -171,6 +176,7 @@ void TResultsTable::Print(ETResultsTableOutputFormat format, ostream& os) const 
 
 
   //Start table
+  iColor = 0;
   os << tablestart << std::endl;
 
 
@@ -190,23 +196,42 @@ void TResultsTable::Print(ETResultsTableOutputFormat format, ostream& os) const 
 
   //Content
   for (unsigned int i = 0; i < GetNRows(); i++) {
+    if(format == kHTML) cellrowtitstart = getCellColor(-1);
     os << rowstart << cellrowtitstart << FixWidth(fRowTitle[i],firstcolw) << cellrowtitend;
     for (unsigned int j = 0; j < GetNColumns(); j++) {
+    if(format == kHTML) cellstart = getCellColor(j);
       os << cellstart;
       os.width(colwidth);
-      os << fRows[i][j];
+      if     (formatNum.Contains("fix") ) os << KeepAllErrorDecimals(fRows[i][j].Content(), fRows[i][j].Error());
+      else if(formatNum.Contains("auto")) os << KeepOneDecimal(      fRows[i][j].Content(), fRows[i][j].Error());
+      else    os << Form(formatNum,fRows[i][j].Content());
 
-      if (fWithErrors) {
-	os.width(colwidth);
-	os << plusminus << fRows[i][j].Error();
+      if (fWithErrors == 1) {
+        os.width(colwidth);
+        os << plusminus; 
+        if     (formatNum.Contains("fix") ) os << KeepAllErrorDecimals(fRows[i][j].Error(), 0);
+        else if(formatNum.Contains("auto")) os << KeepOneDecimal(      fRows[i][j].Error(), 0);
+        else os << Form(formatNum, fRows[i][j].Error());
       }
-      
-      if (format != kLaTeX || j != GetNColumns()-1)
-	os<< cellend;
+      else if (fWithErrors > 1) {
+        os.width(colwidth);
+        os << plusminus; 
+        if     (formatNum.Contains("fix") ) os << KeepAllErrorDecimals(fRows[i][j].StatError(), 0);
+        else if(formatNum.Contains("auto")) os << KeepOneDecimal(      fRows[i][j].StatError(), 0);
+        else os << Form(formatNum, fRows[i][j].StatError());
+
+        os.width(colwidth);
+        os << plusminus; 
+        if     (formatNum.Contains("fix") ) os << KeepAllErrorDecimals(fRows[i][j].Error(), 0);
+        else if(formatNum.Contains("auto")) os << KeepOneDecimal(      fRows[i][j].Error(), 0);
+        else os << Form(formatNum, fRows[i][j].Error());
+      }
+
+      if (format != kLaTeX || j != GetNColumns()-1) os << cellend;
     }
     os << rowend << std::endl;
-    if (fDrawHLines && i != GetNRows()-1)
-      os << singleline;
+    if(VSeparations.Contains(TString(Form("l%i,", i)))){ os << doubleline; iColor++;}
+    else if (fDrawHLines && i != GetNRows()-1) os << singleline;
   }
 
   os << doubleline;
@@ -230,5 +255,48 @@ void TResultsTable::SaveAs(const TString& filename) const {
     std::cerr << "         Saving as plain text." << std::endl;
     Print(kPlain, os);
   }  
+}
+
+TString TResultsTable::getCellColor(Int_t col) const{
+  TString out = "";
+  if(col < 0){ // title
+    out = TString("<th align=\"right\" bgcolor=\"") + colorRow[iColor] + TString("\">");
+  }
+  else{ // normal
+    out = TString("<td bgcolor=\"") + color[iColor] + TString("\">");
+  }
+  return out;
+}
+
+TString KeepAllErrorDecimals(Float_t number, Float_t error){
+  Int_t d = 6;
+  TString f;
+  if(error == 0) f = Form("%1.6f", number);
+  else           f = Form("%1.6f", error);
+  for(Int_t i = f.Sizeof()-2; i > f.First('.'); i--){
+    if(f[i] == '0') d--;
+    else break;
+  }
+  TString format = TString("%1.") + TString(Form("%i", d)) + TString("f");
+  return Form(format, number);
+}
+
+TString KeepOneDecimal(Float_t number, Float_t error){
+  if(number < 0.000001) return TString(Form("%g", number));
+  Int_t d = 1;
+  TString f;
+  if     (error == 0){
+    if(number > 0) return(Form("%1.0f", number));
+    else f = Form("%1.6f", number);
+  }
+  else if(error > 0.) return(Form("%1.0f", number));
+  else                f = Form("%1.6f", error);
+  for(Int_t i = f.First('.') +1; i < f.Sizeof(); i++){
+    if(f[i] == '0') d++;
+    else break;
+  }
+  if(d == 7) d = 0;
+  TString format = TString("%1.") + TString(Form("%i", d)) + TString("f");
+  return Form(format, number);
 }
 

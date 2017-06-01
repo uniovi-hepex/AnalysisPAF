@@ -4,6 +4,7 @@
 #include "Lepton.h"
 #include "Jet.h"
 #include "TTree.h"
+#include "TRandom3.h"
 #include <iostream>
 #include <vector>
 
@@ -17,9 +18,11 @@ enum iSFs{
   nfiles
 };
 
-enum wps{iVeto, iLoose, iMedium, iTight, iVeryTight, iExtreamlyTight, iWPforStop};
+enum wps{iVeto, iVeryLoose, iLoose, iMedium, iTight, iVeryTight, iExtreamlyTight, iWPforStop, iLooseWPforStop};
 
-enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec};
+enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec, iWZSelec, i4tSelec};
+
+enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, i2l1tau, i2l2taus, i2lss_fake, iTriLep_fake, iElEl, iMuMu, nTotalDefinedChannels};
 
 enum sys{iNom, 
   iJesUp, iJesDown, iJERUp, iJERDown, 
@@ -31,8 +34,9 @@ enum sys{iNom,
   nSys
 };
 
-const Int_t nLHEWeight = 248;
+const Int_t nLHEWeight = 254;
 //enum eChannel{iElMu, iElec, iMuon, nChannels};
+
 
 bool LepMomentumComparator(Lepton i, Lepton j);
 bool JetMomentumComparator(Jet i   , Jet    j);
@@ -55,5 +59,11 @@ Float_t getMT2(TLorentzVector plep1, TLorentzVector plep2, TLorentzVector pmet, 
 Float_t getMT2ll(Lepton l1, Lepton l2, Float_t met, Float_t met_phi);
 Float_t getMeff(Lepton l1, Lepton l2, vector<Jet> vjets, Float_t met);
 TLorentzVector getPtllb(Lepton l1, Lepton l2, Float_t met, Float_t met_phi);
+Float_t getISRJetsWeight(Int_t nISRJet);
+Bool_t IsOnZ(vector<Lepton> leptons);
+Bool_t PassLowInvMass(vector<Lepton> leptons, Float_t Mll_max = 12);
+Bool_t hasOSSF(vector<Lepton> leptons);
+Float_t ClosestMlltoZ(vector<Lepton> leptons);
+Bool_t IsThereSSpair(vector<Lepton> leptons);
 
 #endif

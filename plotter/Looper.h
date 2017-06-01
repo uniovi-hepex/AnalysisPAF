@@ -12,12 +12,16 @@
 #include "TCut.h"
 #include "TTreeFormula.h"
 #include "Histo.h"
+#include "TH2F.h"
 #include "TSystem.h"
+#include "../InputFiles/for4t/fake_rates.h"
 
+enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, i2l1tau, i2l2taus, i2lss_fake, iTriLep_fake, iElEl, iMumu, nTotalDefinedChannels};
+const Int_t nLHEweights = 112;
 
-TString CraftFormula(TString var, TString cut, TString chan, TString sys);
-TString CraftVar(TString varstring, TString sys);
+std::vector<TString> GetAllVars(TString varstring); 
 TH1D* loadSumOfLHEweights(TString pathToHeppyTrees = "/pool/ciencias/HeppyTreesSummer16/v2/", TString sampleName = "TTbar_PowhegLHE");
+TH1F* hLHE[nLHEweights];
 
 class Looper{
   public:
@@ -48,6 +52,9 @@ class Looper{
      //if(Hist) delete Hist;
    };
 
+   TString CraftFormula(TString cut, TString chan, TString sys, TString options = "");
+   TString CraftVar(TString varstring, TString sys);
+
    void SetCut(    TString t){cut  = t;}
    void SetVar(    TString t){var  = t;}
    void SetChannel(TString t){chan = t;}
@@ -60,10 +67,13 @@ class Looper{
    }
    Bool_t doSysPDF = false;
    Bool_t doSysScale = false;
+   Bool_t doISRweight = false;
    Int_t numberInstance;
    void SetSampleName(TString t){sampleName   = t;}
 	 void SetTreeName(  TString t){treeName     = t;}
 	 void SetPath(      TString t){path         = t;}
+
+   void loadHisto2D(TString Path_to_histo, TString histo_name);
 
    Float_t GetPDFweight(TString sys = "PDF");
    Float_t GetScaleWeight(TString sys = "Scale");
@@ -72,6 +82,9 @@ class Looper{
 	 void SetFormulas(TString sys = "0"); 
 	 void CreateHisto(TString sys = "0"); 
    void Loop(TString sys = "");
+   Float_t getLHEweight(Int_t i);
+   void SetOptions(TString p){options = p;}
+   TTreeFormula *GetFormula(TString name, TString var);
 
  // protected:
    Histo* Hist;
@@ -94,11 +107,28 @@ class Looper{
    TString path;
    TString treeName;
    TString cut; TString chan; TString var;
-
+   TString options = "";
    TString sampleName;
+
+   TH2F* hWeights;
 
    void loadTree();
    TTree* tree;
+
+   Int_t nLeps; 
+   Int_t nFakeLeps; 
+   Float_t FLepPt; 
+   Float_t FLepEta; 
+   Float_t FLepCharge; 
+   Float_t LepCharge; 
+   Int_t   FLepPdgId; 
+
+   TTreeFormula *ForFLepPt;
+   TTreeFormula *ForFLepEta; 
+   TTreeFormula *ForFLepPdgId;
+   TTreeFormula *ForLepChar;
+   TTreeFormula *FornSelLep;
+   TTreeFormula *FornFakeLep;
 
 };
 

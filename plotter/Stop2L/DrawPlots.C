@@ -1,5 +1,6 @@
 R__LOAD_LIBRARY(Histo.C+)
 R__LOAD_LIBRARY(Looper.C+)
+R__LOAD_LIBRARY(TResultsTable.C+)
 R__LOAD_LIBRARY(Plot.C+)
 #include "Histo.h"
 #include "Looper.h"
@@ -11,14 +12,16 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 TString NameOfTree = "tree";
 TString BaselineCut = "TMET > 50 && TNJets > 1 && TNBtags > 0 && !TIsSS && TNVetoLeps < 3";
 TString SScut = "TMT2 > 0 && TMET > 50 && TNJets > 1 && TNBtags > 0 && TIsSS && TNVetoLeps < 3";
+TString ThirdLep = "TMT2 > 0 && TMET > 50 && TNJets > 1 && TNBtags > 0 && TIsSS && TNVetoLeps > 2";
 TString Dilepton    = "!TIsSS && TNVetoLeps < 3";
 TString VarNBtagsNJets = "TNBtags + (TNJets == 1) + (TNJets == 2)*3 + (TNJets == 3)*6 + (TNJets >= 4)*10";
 
 // Baseline
 
-//TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/StopTrees/mar16/Baseline/";
-//void DrawPlots(TString chan = "ElMu"){
-  //DrawPlot("TMT2", SScut, chan, 40, 0, 200, "M_{T2} [GeV]", "MT2_SS");
+TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/StopTrees/mar16/Baseline/";
+void DrawPlots(TString chan = "ElMu"){
+  DrawPlot("TMT2", BaselineCut, chan, 40, 0, 200, "M_{T2} [GeV]", "MT2_SS");
+//  DrawPlot("TMT2", ThirdLep, chan, 20, 0, 120, "M_{T2} [GeV]", "MT2_3Lep");
 //  DrawPlot("TMT2", "TNJets > 1 && TNBtags > 0 && !TIsSS && TNVetoLeps < 3", chan, 40, 0, 200, "M_{T2} [GeV]", "MT2_bl");
 //  DrawPlot("TDeltaPhi", BaselineCut, "ElMu", 30, -3.15, 3.15, "#Delta#varphi_{e#mu} [rad]", "DeltaPhi_bl");
 //  DrawPlot("TDeltaEta", BaselineCut, chan, 30, 0, 2.4, "#Delta#eta_{e#mu} [rad]", "DeltaEta_bl");
@@ -32,17 +35,19 @@ TString VarNBtagsNJets = "TNBtags + (TNJets == 1) + (TNJets == 2)*3 + (TNJets ==
 //  DrawPlot("TJet_Pt[0]", BaselineCut, chan, 27, 30, 300, "Leading jet p_T [GeV]", "Jet0Pt_bl");
  // DrawPlot("TJet_Pt[1]", BaselineCut, chan, 30, 0, 300, "Subleading jet p_T [GeV]", "Jet1Pt_bl");
  // DrawPlot("TMll", BaselineCut, chan, 40, 0, 600, "M_{e#mu} [GeV]", "InvMass_bl");
-//}
+}
 
 //Dilepton
 
-TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/StopTrees/mar16/Dilepton/";
-void DrawPlots(TString chan = "ElMu"){
-  DrawPlot("TMET","!TIsSS && TNVetoLeps < 3 && (TChannel == 1 || (TMll<76 || TMll > 106))", chan, 20, 0, 200, "MET [GeV]", "TMET200");
-  DrawPlot("TMET","!TIsSS && TNVetoLeps < 3 && (TChannel == 1 || (TMll<76 || TMll > 106))", chan, 40, 0, 400, "MET [GeV]", "TMET400");
-  DrawPlot("TMET","!TIsSS && TNVetoLeps < 3 && (TChannel == 1 || (TMll<76 || TMll > 106))", chan, 80, 0, 800, "MET [GeV]", "TMET800");
-//  DrawPlot("TLep_Pt[0]", Dilepton, chan, 30, 0, 200, "Leading lepton p_T [GeV]", "Lep0Pt_dil");
-}
+//TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/StopTrees/mar16/Dilepton/";
+//void DrawPlots(TString chan = "ElMu"){
+  //DrawPlot("TMET","!TIsSS", chan, 20, 0, 200, "MET [GeV]", "TMET_AllDilep");
+  //DrawPlot("TNJets","!TIsSS", chan, 9, -0.5, 8.5, "Jet Multiplicity", "NJet_Dilep");
+  //DrawPlot("TMET","!TIsSS && TNVetoLeps < 3 && (TChannel == 1 || (TMll<76 || TMll > 106))", chan, 20, 0, 200, "MET [GeV]", "TMET200");
+  //DrawPlot("TMET","!TIsSS && TNVetoLeps < 3 && (TChannel == 1 || (TMll<76 || TMll > 106))", chan, 40, 0, 400, "MET [GeV]", "TMET400");
+  //DrawPlot("TMET","!TIsSS && TNVetoLeps < 3 && (TChannel == 1 || (TMll<76 || TMll > 106))", chan, 80, 0, 800, "MET [GeV]", "TMET800");
+//  DrawPlot("TLep_Pt[0]", Dilepton, chan, 25, 0, 250, "Leading lepton p_T [GeV]", "Lep0Pt_dil");
+//}
 /*  DrawPlot("TMT2", Dilepton, chan, 40, 0, 200, "M_{T2} [GeV]", "MT2_dil");
   DrawPlot("TMET",Dilepton, chan, 40, 0, 800, "MET [GeV]", "TMET_dil");
   DrawPlot("TDeltaPhi", Dilepton, chan, 30, -3.15, 3.15, "#Delta#varphi_{e#mu} [rad]", "DeltaPhi_dil");
@@ -59,18 +64,18 @@ void DrawPlots(TString chan = "ElMu"){
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name){
   Plot* p = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
-  p->SetPathSignal(pathToTree + "T2tt/");
-  p->verbose = false;
+  p->SetPathSignal(pathToTree + "T2tt_noSkim/");
+  p->verbose = true;
   //p->doData = false;
-  //p->doStackSignal = true;
   if(name != "") p->SetVarName(name);
   //p->doData = false;
 
   p->AddSample("WZ", "VV", itBkg, kYellow-10, 0.50);
   p->AddSample("WW", "VV", itBkg);
   p->AddSample("ZZ", "VV", itBkg);
+  //p->AddSample("T2tt_200_50_FS_summer", "S_200_50", itSignal, kBlue+2, 0.1); 
   //p->AddSample("WJetsToLNu_aMCatNLO", "WJets", itBkg, kGray, 0.5);
-  p->AddSample("WJetsToLNu_MLM", "WJets", itBkg, kGray, 0.5);
+  //p->AddSample("WJetsToLNu_MLM", "WJets", itBkg, kGray, 0.5);
 	p->AddSample("TTWToLNu", "ttV", itBkg, kOrange-3, 0.5);
 	p->AddSample("TTWToQQ", "ttV", itBkg);
 	p->AddSample("TTZToQQ", "ttV", itBkg);
@@ -83,21 +88,36 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 	p->AddSample("MuonEG", "Data", itData);
 	p->AddSample("SingleMuon", "Data", itData);
 	p->AddSample("SingleElec", "Data", itData);
-	p->AddSample("DoubleEG", "Data", itData);
-	p->AddSample("DoubleMuon", "Data", itData);
- // p->AddSample("T2tt_mStop175_mLsp1", "T2tt_175_1", itSignal, kGreen+1, 0.1); 
- // p->AddSample("T2tt_mStop250_mLsp75", "T2tt_250_75", itSignal, kAzure-2, 0.1); 
-  p->AddSample("T2tt_200_50_FS_summer", "S_200_50", itSignal, kBlue+2, 0.1); 
-  p->AddSample("T2tt_225_50_FS_summer", "S_225_50", itSignal, kPink-1, 0.1); 
-  p->AddSample("T2tt_250_50_FS_summer", "S_250_50", itSignal, kGreen+2, 0.1); 
+ //	p->AddSample("DoubleEG", "Data", itData);
+//	p->AddSample("DoubleMuon", "Data", itData);
+  //p->AddSample("T2tt_mStop175_mLsp1", "T2tt_175_1", itSignal, kGreen+1, 0.1, "0", "isrweight"); 
+ // p->AddSample("T2tt_mStop250_mLsp75", "T2tt_250_75", itSignal, kAzure-2, 0.1, "0", "isrweight"); 
+//  p->AddSample("T2tt_200_50_FS_summer", "S_200_50", itSignal, kPink-1,  0.1, "0", "isrweight"); 
+//  p->AddSample("T2tt_225_50_FS_summer", "S_225_50", itSignal, kPink-1,  0.1, "0", "isrweight"); 
+//  p->AddSample("T2tt_250_50_FS_summer", "S_250_50", itSignal, kGreen+2, 0.1, "0", "isrweight"); 
+  p->AddSample("T2tt_225_50_FS_summer", "S_225_50", itSignal, kPink-1,  0.1, "0"); 
 
-//  p->AddSystematic("JES,Btag,MisTag,LepEff,PU");
+  /*Plot* isr = new Plot(var, "TISRweight*(" + cut + ")", chan, nbins, bin0, binN, "Title", Xtitle);
+  isr->SetPath(pathToTree); isr->SetTreeName(NameOfTree); isr->SetPathSignal(pathToTree + "T2tt_noSkim/");
+  isr->AddSample("T2tt_225_50_FS_summer", "S_225_50", itSignal, kPink-1, 0.1); 
+  isr->AddSample("T2tt_250_50_FS_summer", "S_250_50", itSignal, kGreen+2, 0.1); 
+  Histo* S_225_50 = isr->GetHisto("S_225_50");
+  Histo* S_250_50 = isr->GetHisto("S_250_50");
+  p->AddToHistos(S_225_50);
+  p->AddToHistos(S_250_50);
+*/
+  //p->SetSignalProcess("T2tt_175_1");
+  p->SetSignalStyle("");
+
+  //p->AddSystematic("JES,Btag,MisTag,LepEff,PU");
+  //p->AddSystematic("stat");
   p->PrintYields();
-  p->doSetLogy = false;
-  p->DrawStack("0", 1);
-  p->doSetLogy = true;
-  p->DrawStack("0_log", 1);
-  p->PrintSystYields();
+  //p->PrintSamples();
+  //p->doSetLogy = false;
+  //p->DrawStack("prueba", 1);
+  //p->doSetLogy = true;
+  //p->DrawStack("prueba_log", 1);
+  //p->PrintSystYields();
   delete p;
 }
 
