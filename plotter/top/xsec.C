@@ -42,38 +42,38 @@ void xsec(){
   //p->doData = false;
   //p->doStackSignal = true;
 
-  p->AddSample("WZ, WW, ZZ",                                            "VV",    itBkg, kYellow-10, 0.30);
+  p->AddSample("WZ, WW, ZZ",                                            "VV",    itBkg, kYellow-10);
   //p->AddSample("TTbar_Powheg_Semilep, WJetsToLNu_aMCatNLO",             "NonWZ", itBkg, kGreen+1,   0.30);
-  p->AddSample("TTbar_Powheg_Semilep, WJetsToLNu_MLM",                  "NonWZ", itBkg, kGreen+1,   0.30);
-	p->AddSample("TTWToLNu, TTWToQQ, TTZToQQ, TTZToQQ",                   "ttV",   itBkg, kOrange-3,  0.30);
-	p->AddSample("TW, TbarW",                                             "tW",    itBkg, kMagenta,   0.30);
-  p->AddSample("DYJetsToLL_M50_aMCatNLO",                               "DY",    itBkg, kAzure-8,   0.15);
-  //p->AddSample("DYJetsToLL_M50_MLM, DYJetsToLL_M5to50_MLM,",            "DY",    itBkg, kAzure-8,   0.15);
-  p->AddSample("TTbar_Powheg",                                          "ttbar", itBkg, kRed+1,     0.00);
+  p->AddSample("TTbar_Powheg_Semilep, WJetsToLNu_MLM",                  "NonWZ", itBkg, kGreen+1);
+	p->AddSample("TTWToLNu, TTWToQQ, TTZToQQ, TTZToQQ",                   "ttV",   itBkg, kOrange-3);
+	p->AddSample("TW, TbarW",                                             "tW",    itBkg, kMagenta);
+  p->AddSample("DYJetsToLL_M50_aMCatNLO",                               "DY",    itBkg, kAzure-8);
+  //p->AddSample("DYJetsToLL_M50_MLM, DYJetsToLL_M5to50_MLM,",            "DY",    itBkg, kAzure-8);
+  p->AddSample("TTbar_Powheg",                                          "ttbar", itBkg, kRed+1);
   p->AddSample("MuonEG, DoubleEG, DoubleMuon, SingleMuon, SingleElec",  "Data",  itData);
 
-  p->AddSample("TTbar_Powheg_ueUp",      "ttbar", itSys, 1, 0, "ueUp"     );
-  p->AddSample("TTbar_Powheg_ueDown",    "ttbar", itSys, 1, 0, "ueDown"   );
-  p->AddSample("TTbar_Powheg_hdampUp",   "ttbar", itSys, 1, 0, "hdampUp"  );
-  p->AddSample("TTbar_Powheg_hdampDown", "ttbar", itSys, 1, 0, "hdampDown");
-  p->AddSample("TTbar_Powheg_isrUp",     "ttbar", itSys, 1, 0, "isrUp"    );
-  p->AddSample("TTbar_Powheg_isrDown",   "ttbar", itSys, 1, 0, "isrDown"  );
-  p->AddSample("TTbar_Powheg_fsrUp",     "ttbar", itSys, 1, 0, "fsrUp"    );
-  p->AddSample("TTbar_Powheg_fsrDown",   "ttbar", itSys, 1, 0, "fsrDown"  );
+  p->AddSample("TTbar_Powheg_ueUp",      "ttbar", itSys, 1, "ueUp"     );
+  p->AddSample("TTbar_Powheg_ueDown",    "ttbar", itSys, 1, "ueDown"   );
+  p->AddSample("TTbar_Powheg_hdampUp",   "ttbar", itSys, 1, "hdampUp"  );
+  p->AddSample("TTbar_Powheg_hdampDown", "ttbar", itSys, 1, "hdampDown");
+  p->AddSample("TTbar_Powheg_isrUp",     "ttbar", itSys, 1, "isrUp"    );
+  p->AddSample("TTbar_Powheg_isrDown",   "ttbar", itSys, 1, "isrDown"  );
+  p->AddSample("TTbar_Powheg_fsrUp",     "ttbar", itSys, 1, "fsrUp"    );
+  p->AddSample("TTbar_Powheg_fsrDown",   "ttbar", itSys, 1, "fsrDown"  );
 
-  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, 0, "ScaleUp"    );
-  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, 0, "ScaleDown"  );
-  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, 0, "pdfUp"      );
-  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, 0, "pdfDown"    );
+  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "ScaleUp"    );
+  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "ScaleDown"  );
+  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "pdfUp"      );
+  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "pdfDown"    );
   
-  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, 0, "JERUp"      );
-  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, 0, "JERDown"    );
+  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "JERUp"      );
+  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "JERDown"    );
 
-  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, 0, "ElecEffUp"  );
-  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, 0, "ElecEffDown");
+  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "ElecEffUp"  );
+  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "ElecEffDown");
 
-  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, 0, "MuonEffUp"  );
-  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, 0, "MuonEffDown");
+  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "MuonEffUp"  );
+  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "MuonEffDown");
 
 //  p->AddSample("TTJets_aMCatNLO", "ttbar", itSys, 1, 0, "nloUp");
 //  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, 0, "nloDown");
@@ -121,6 +121,11 @@ void xsec(){
   Float_t diff = TMath::Abs(x->GetYield("ttbar") - x->GetUnc("FSR scale"));
   x->SetUnc("FSR scale", x->GetYield("ttbar")-diff/TMath::Sqrt(2));
   x->SetUnc("FSR scale", x->GetYield("ttbar"));
+  x->SetUnc("Drell-Yan", 0.15);
+  x->SetUnc("NonWZ",     0.30);
+  x->SetUnc("Dibosons",  0.30);
+  x->SetUnc("tW",        0.30);
+  x->SetUnc("ttV",       0.30);
   x->SetMembers();
 
   x->SetOutputFolder("./top/xsec/");
@@ -137,16 +142,10 @@ void xsec(){
   x->SetYield("NonWZ", NonWZ_DD); 
   Float_t DYunc   = x->GetUnc("Drell-Yan");
   Float_t NonWunc = x->GetUnc("NonWZ");
-  cout << "Initial unc for DY   = " << DYunc   << endl;
-  cout << "Initial unc for NonW = " << NonWunc << endl;
-  cout << "Stat unc for DY   = " << DYSF_err     << endl;
-  cout << "Stat unc for NonW = " << NonWZ_DD_err << endl;
   DYunc   = TMath::Sqrt(DYunc*DYunc     + DYSF_err*DYSF_err);
   NonWunc = TMath::Sqrt(NonWunc*NonWunc + NonWZ_DD_err*NonWZ_DD_err);
   x->SetUnc("Drell-Yan", DYunc  );
   x->SetUnc("NonWZ",     NonWunc);
-  cout << "Final unc for DY   = " << DYunc   << endl;
-  cout << "Final unc for NonW = " << NonWunc << endl;
 
   x->SetMembers();
 
