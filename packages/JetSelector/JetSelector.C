@@ -204,7 +204,6 @@ void JetSelector::InsideLoop(){
 
   // Loop over the jets
   nJet = Get<Int_t>("nJet");
-  cout << "nJet = " << nJet << endl;
   for(Int_t i = 0; i < nJet; i++){
     GetJetVariables(i);
     tJ = Jet(tpJ, csv, jetId, flavmc);
@@ -242,7 +241,7 @@ void JetSelector::InsideLoop(){
       tJ = Jet(tpJ, csv, jetId, flavmc);
       tJ.isBtag = IsBtag(tJ);
       
-      if(tJ.id > 0 && Cleaning(tJ, Leptons, minDR) && (TMath::Abs(tJ.p.Eta()) < jet_MaxEta)){
+      if(tJ.id > 0 && Cleaning(tJ, Leptons, minDR)){
         SetSystematics(&tJ);
         tJ.isBtag = IsBtag(tJ);
         if (TMath::Abs(tJ.p.Eta()) < jet_MaxEta){
