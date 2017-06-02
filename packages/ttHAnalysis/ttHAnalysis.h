@@ -120,8 +120,8 @@ class ttHAnalysis : public PAFChainItemSelector {
     Float_t   TPtSubSubSubLeading;
     Int_t     TCS;
     Float_t   TMass;
-    Long64_t  Tevt;
-    Long64_t  Trun;
+    ULong64_t Tevt;
+    UInt_t    Trun;
     std::vector<Float_t>  TPtVector;
     
     Float_t   THTJESUp;

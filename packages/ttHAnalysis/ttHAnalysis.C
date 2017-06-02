@@ -98,8 +98,8 @@ void ttHAnalysis::GetTreeVariables() {
   }
 
   MET       = Get<Float_t>("met_pt");
-  Tevt      = Get<Long_t>("evt");
-  Trun      = Get<Long_t>("run");
+  Tevt      = Get<ULong64_t>("evt");
+  Trun      = Get<UInt_t>("run");
 }
 
 
