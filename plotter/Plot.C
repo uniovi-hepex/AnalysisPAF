@@ -450,7 +450,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   hStack->Draw("hist");
   hStack->GetYaxis()->SetTitle("Number of Events");
   hStack->GetYaxis()->SetTitleSize(0.06);
-  hStack->GetYaxis()->SetTitleOffset(0.8);
+  hStack->GetYaxis()->SetTitleOffset(0.5);
   hStack->GetYaxis()->SetNdivisions(505);
   hStack->GetXaxis()->SetLabelSize(0.0);
 
@@ -490,18 +490,6 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   texlumi->Draw("same");  // The luminosity
 
   // Set ratio
-<<<<<<< HEAD
-	pratio->cd();
-	hratio = (TH1F*)hData->Clone("hratio");
-	hratio->Divide(hAllBkg);
-	SetHRatio();
-	hratio->Draw("same");
-	hratioerr->Draw("same,e2");
-	hratio->Draw("same");
-
-	if(sav){ // Save the histograms
-		TString dir = plotFolder + "WWplots/";
-=======
   pratio->cd();
   TLine *hline = nullptr;
   if(RatioOptions == "S/B"){
@@ -539,15 +527,9 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   }
 
   if(sav){ // Save the histograms
-<<<<<<< HEAD
-    TString dir = plotFolder + "StopPlots/";
->>>>>>> origin/master
-    TString plotname = (outputName == "")? varname + "_" + chan + "_" + tag : outputName;
-=======
     TString dir = plotFolder;
     TString plotname = (outputName == "")? varname + "_" + tag : outputName;
->>>>>>> origin/master
-	  	
+
     gSystem->mkdir(dir, kTRUE);
     c->Print( dir + plotname + ".pdf", "pdf");
     c->Print( dir + plotname + ".png", "png");
