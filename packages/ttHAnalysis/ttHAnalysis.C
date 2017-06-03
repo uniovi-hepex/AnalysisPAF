@@ -106,10 +106,10 @@ void ttHAnalysis::GetTreeVariables() {
 // Minitree methods
 //------------------------------------------------------------------------------
 void ttHAnalysis::SetLeptonBranches() {
-  fTree->Branch("TnTightLepton",        &nTightLepton,        "nTightLepton/I");
-  fTree->Branch("TnFakeableLepton",     &nFakeableLepton,     "nFakeableLepton/I");
-  fTree->Branch("TnLooseLepton",        &nLooseLepton,        "nLooseLepton/I");
-  fTree->Branch("TnTaus",               &nTaus,               "nTaus/I");
+  fTree->Branch("TnTightLepton",        &nTightLepton,        "nTightLepton/i");
+  fTree->Branch("TnFakeableLepton",     &nFakeableLepton,     "nFakeableLepton/i");
+  fTree->Branch("TnLooseLepton",        &nLooseLepton,        "nLooseLepton/i");
+  fTree->Branch("TnTaus",               &nTaus,               "nTaus/i");
   fTree->Branch("TPtLeading",           &TPtLeading,          "TPtLeading/F");
   fTree->Branch("TPtSubLeading",        &TPtSubLeading,       "TPtSubLeading/F");
   fTree->Branch("TPtSubSubLeading",     &TPtSubSubLeading,    "TPtSubSubLeading/F");
@@ -119,9 +119,9 @@ void ttHAnalysis::SetLeptonBranches() {
 
 
 void ttHAnalysis::SetJetBranches() {
-  fTree->Branch("TnMediumBTags" ,   &nMediumBTags,      "nMediumBTags/I");
-  fTree->Branch("TnLooseBTags",     &nLooseBTags,       "nLooseBTags/I");
-  fTree->Branch("TnJets",           &nJets,             "nJets/I");
+  fTree->Branch("TnMediumBTags" ,   &nMediumBTags,      "nMediumBTags/i");
+  fTree->Branch("TnLooseBTags",     &nLooseBTags,       "nLooseBTags/i");
+  fTree->Branch("TnJets",           &nJets,             "nJets/i");
 }
 
 
@@ -137,8 +137,8 @@ void ttHAnalysis::SetEventBranches() {
   fTree->Branch("TCS",              &TCS,               "TCS/I");
   fTree->Branch("TMass",            &TMass,             "TMass/F");
   fTree->Branch("TWeight",          &EventWeight,       "EventWeight/F");
-  fTree->Branch("Tevt",             &Tevt,              "Tevt/L");
-  fTree->Branch("Trun",             &Trun,              "Trun/L");
+  fTree->Branch("Tevt",             &Tevt,              "Tevt/l");
+  fTree->Branch("Trun",             &Trun,              "Trun/i");
 }
 
 
