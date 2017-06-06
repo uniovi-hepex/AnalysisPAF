@@ -2,6 +2,7 @@ R__LOAD_LIBRARY(Histo.C+)
 R__LOAD_LIBRARY(Looper.C+)
 R__LOAD_LIBRARY(TResultsTable.C+)
 R__LOAD_LIBRARY(Plot.C+)
+R__LOAD_LIBRARY(CrossSection.C+)
 #include "Histo.h"
 #include "Looper.h"
 #include "Plot.h"
@@ -221,24 +222,39 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->SetScaleMax(1.7);
   p->SetRatioMin(0);
   p->SetRatioMax(2);
-  //if (!githead.Contains("test")) {
-  //  p->SetSignalStyle("Fill");
-  //}
   p->doSetLogy = false;
   
   // Errors ====================================================================
   p->AddSystematic("stat,Trig,PU,MuonEff,ElecEff,JES");
   
-  // Yields table settings and printing ========================================
+  // Yields table and cross section settings, histograms plotting ==============
   if (counter == 0) {
+    // Yields
     p->SetTableFormats("%1.4f");
     p->SetYieldsTableName("Yields_"+chan+"_"+tag);
     p->PrintYields("","","","txt");
+    
+    // Cross section
+    p->SetSignalStyle("xsec");
+    CrossSection *x = new CrossSection(p, "ttH");
+    x->SetTheoXsec(0.5085);
+    x->SetChannelTag("chan");
+    x->SetLevelTag("1btag");
+    
+    x->SetEfficiencySyst("Trig, PU, MuonEff, ElecEff, JES");
+    x->SetAcceptanceSyst("stat");
+    
+    x->SetOutputFolder(outputpath);
+    x->SetXsecTableName("Xsec_"+chan+"_"+tag);
+    x->SetTableName("Xsec_unc_"+chan+"_"+tag);
+    
+    x->PrintSystematicTable("txt");
+    x->PrintCrossSection("txt");
+    
   }
-  
-  // Plotting ==================================================================
-  if (counter != 0) p->DrawStack(tag, 1);
-	
+  else {
+    p->DrawStack(tag, 1);
+  }
   
   if (counter == 0) counter = 1;
   delete p;
