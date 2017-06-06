@@ -398,7 +398,6 @@ Bool_t EventBuilder::Trig3l4l() {
   Bool_t pass = false;
   Int_t ne    = 0;
   Int_t nm    = 0;
-  UInt_t lim  = 0;
   
   for (UInt_t i = 0; i < selLeptons.size(); i++) {
     if (selLeptons.at(i).isMuon)  nm++;
