@@ -87,6 +87,7 @@ class ttHAnalysis : public PAFChainItemSelector {
     TString gSampleName;
     TString gLocalPath;
     Bool_t  gIsData;
+    Bool_t  gIsLHE;
     Bool_t  gIsMCatNLO;
     Float_t gWeight;
     Float_t gPUSF;
@@ -138,6 +139,8 @@ class ttHAnalysis : public PAFChainItemSelector {
     Float_t   TnLooseBTagsJESDown;
     Float_t   TnMediumBTagsJESUp;
     Float_t   TnMediumBTagsJESDown;
+
+    Float_t   TLHEWeight[254];
 
     //	Input variables and vectors
     //----------------------------------------------------------------------

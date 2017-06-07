@@ -92,6 +92,8 @@ void ttHAnalysis::GetTreeVariables() {
   Tevt      = 0;
   Trun      = 0;
   genWeight = 1;
+  for (UInt_t i = 0; i < 254; i++) TLHEWeight[i] = 0;
+  
   
   if (!gIsData){
     genWeight   = Get<Float_t>("genWeight");
@@ -100,6 +102,9 @@ void ttHAnalysis::GetTreeVariables() {
   MET       = Get<Float_t>("met_pt");
   Tevt      = Get<ULong64_t>("evt");
   Trun      = Get<UInt_t>("run");
+  if (gIsLHE) {
+    for (UInt_t i = 0; i < Get<UInt_t>("nLHEweight"); i++) TLHEWeight[i] = Get<Float_t>("LHEweight_wgt", i);
+  }
 }
 
 
@@ -167,6 +172,7 @@ void ttHAnalysis::SetSystBranches() {
   fTree->Branch("TnMediumBTagsJESDown", &TnMediumBTagsJESDown,"TnMediumBTagsJESDown/F");
   fTree->Branch("TCatJESUp",            &TCatJESUp,           "TCatJESUp/I");
   fTree->Branch("TCatJESDown",          &TCatJESDown,         "TCatJESDown/I");
+  fTree->Branch("TLHEWeight",           &TLHEWeight,          "TLHEWeight[254]/F");
 }
 
 
@@ -283,6 +289,8 @@ void ttHAnalysis::InitialiseVariables() {
   Tevt                  = 0;
   Trun                  = 0;
   MET                   = 0;
+  for (UInt_t i = 0; i < 254; i++) TLHEWeight[i] = 0;
+  
   
   EventWeight           = 0;
   EventWeight_PUUp      = 0;
@@ -376,9 +384,14 @@ void ttHAnalysis::Reset3l4lLeptonSF() {
 void ttHAnalysis::GetParameters() {
   // Import essential and global variables of the execution
   gIsData     =	GetParam<Bool_t>("IsData");
+  gSampleName =	GetParam<TString>("sampleName");
   gWeight     =	GetParam<Float_t>("weight"); // cross section / events in the sample
   gIsMCatNLO  =	GetParam<Bool_t>("IsMCatNLO");
   gLocalPath  = GetParam<TString>("WorkingDir");
+  
+  gIsLHE       = false;
+  if (gSampleName.Contains("TTWToLNu1") || gSampleName.Contains("TTWToQQ") ||
+      gSampleName.Contains("TTZToLLNuNu1") || gSampleName.Contains("TTZToQQ")) gIsLHE = true;
 }
 
 
