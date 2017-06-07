@@ -264,7 +264,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     d->SetPathToFile(outputpath);
     d->SetRootFileName("Histos_"+chan+"_"+tag);
     d->GetParamsFromFile();
-    d->PrintDatacard(outputpath+"Datacard_"+chan+"_"+tag)  
+    d->PrintDatacard(outputpath+"Datacard_"+chan+"_"+tag+".txt");
   }
   else {
     p->DrawStack(tag, 1);
