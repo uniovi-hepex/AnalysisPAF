@@ -41,7 +41,7 @@ void DrawPlots(TString chan = "ElMu", TString tag = "0"){
   else if (chan == "3l")  cut = "(TCat == 3)";
   else if (chan == "4l")  cut = "(TCat == 4)";
   
-  DrawPlot("TCat",                cut, chan, 3, 2, 5,     "nTightLep (#)", "nTightLepton", tag); // This one is only for getting yields.
+  DrawPlot("TCat",                cut, chan, 3, 2, 5,     "Category", "Categories", tag); // This one is only for getting yields.
   DrawPlot("TnTightLepton",       cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag);
   DrawPlot("TnFakeableLepton",    cut, chan, 5, 0, 5,     "nFakeLep (#)", "nFakeLepton", tag);
   DrawPlot("TnLooseLepton",       cut, chan, 5, 0, 5,     "nLooseLep (#)", "nLooseLepton", tag);
