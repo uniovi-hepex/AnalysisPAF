@@ -376,7 +376,51 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm){
   TLegend* leg = SetLegend();
   leg->SetTextSize(0.041);
   leg->Draw("same");
+  
+  if(gof!="")
+    {
 
+      cout << "WARNING: at the moment, only the GoF between the first and the second plot is supported. If you plot more than two plots, the remaining ones will be ignored. Further functionality will be added later." << endl;
+      
+      double pvalue(-999.);
+      TString theComp("");
+      if(nsamples>1)
+        {
+          if(gof=="chi2")
+            {
+              pvalue=VSignals.at(0)->Chi2Test(VSignals.at(1), "WW CHI2/NDF");
+              theComp="#frac{#chi^2}{NDOF}";
+              cout << "WARNING: this is good for comparisons between Weighted-Weighted histograms, i.e. for comparisons between MonteCarlos. Todo: add switch for comparing data w/ MC or data w/ data." << endl;
+            }
+          else if(gof=="ks")
+            {
+              pvalue=VSignals.at(0)->KolmogorovTest(VSignals.at(1), "X");
+              theComp="p-value (KS)";
+              cout << "WARNING: this does not include comparison of normalization. Todo: add switch for that. Also, this runs pseudoexperiments, and will fail in case of negative bin contents. In case of negative weights, please rebin them to elimitate any negative bin content." << endl;
+            }
+          else if(gof=="ad")
+            {
+              pvalue=VSignals.at(0)->AndersonDarlingTest(VSignals.at(1));
+              theComp="p-value (AD)";
+              cout << "WARNING: the Anderson Darling test does not work for bins with negative content, at least in the ROOT implementation" << endl;
+            }
+          else
+            {
+              cout << "ERROR: this GoF test does not exist or is not currently implemented. What a cruel world." << endl;
+            }
+        }
+      else
+        cout << "ERROR: only one sample is selected. How can I compare it with another one?" << endl;
+     
+      TText *t = new TText(.7,.7,Form("%s: %f", theComp.Data(), pvalue));
+      t->SetTextAlign(22);
+      t->SetTextColor(kRed+2);
+      t->SetTextFont(43);
+      t->SetTextSize(40);
+      t->SetTextAngle(45);
+      t->Draw("same");
+    }
+  
   pratio->cd();
   vector<TH1F*> ratios;
   TH1F* htemp = NULL;
@@ -630,6 +674,17 @@ void Plot::SaveHistograms(){
 //================================================================================
 // Other estetics and style
 //================================================================================
+
+void Plot::SetGoF(TString thegof)
+{
+  if(thegof=="" || thegof=="chi2" || thegof=="ks" || thegof=="ad")
+    gof = thegof;
+  else
+    {
+      cout << "Warning: unknown goodness of fit test. Defaulting to chi2" << endl;
+      gof="chi2";
+    }
+}
 
 void Plot::SetTexChan(TString cuts){
   TString t = "";
