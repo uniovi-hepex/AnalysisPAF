@@ -32,7 +32,7 @@ class CrossSection{
         if(signalTag ==  p->VBkgs.at(i)->GetProcess()) continue;
         AddBkgTag(p->VBkgs.at(i)->GetProcess());
         AddBkg(p->VBkgs.at(i)->GetYield());
-        AddBkgUnc(p->VBkgs.at(i)->GetSysNorm());
+        AddBkgUnc(1);
         AddBkgStatUnc( (p->GetYield(p->VBkgs.at(i)->GetProcess(), "stat") - p->VBkgs.at(i)->GetYield())/p->VBkgs.at(i)->GetYield() );
       }
       Int_t nSys = p->VSystLabel.size();
