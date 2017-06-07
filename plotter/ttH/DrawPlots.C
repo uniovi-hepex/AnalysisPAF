@@ -263,7 +263,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     Datacard *d = new Datacard("ttH",Bkgs,Sys,chan);
     d->SetPathToFile(outputpath);
     d->SetRootFileName("Histos_"+chan+"_"+tag);
-    d->GetParamsFromFile();
+    d->GetParamsFormFile();
     d->PrintDatacard(outputpath+"Datacard_"+chan+"_"+tag+".txt");
   }
   else {
