@@ -2,6 +2,7 @@
 #define datac_h 1
 
 #include "TH1F.h"
+#include "TFile.h"
 #include "TString.h"
 #include <iostream>
 
