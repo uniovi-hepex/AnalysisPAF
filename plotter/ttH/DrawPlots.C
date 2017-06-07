@@ -301,7 +301,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     x->SetLevelTag("1btag");
     
     x->SetEfficiencySyst("Trig, PU, MuonEff, ElecEff, JES");
-    x->SetAcceptanceSyst("stat, scale, pdf");
+    x->SetAcceptanceSyst("stat, Scale, pdf");
     
     x->SetOutputFolder(outputpath);
     x->SetXsecTableName("Xsec_"+chan+"_"+tag);
@@ -311,9 +311,9 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     x->PrintCrossSection("txt");
     
     // Datacard
-    const TString Bkgs      = "TTW,   TTZ,  WZ, Convs,  Fakes,  Rares";
-    const TString BkgsNorm  = "1.12,  1.10, 1,  1,      1,      1";
-    const TString Sys       = "Trig, PU, MuonEff, ElecEff, JES";
+    const TString Bkgs      = "TTW,   TTZ,    WZ,   Convs,  Fakes,  Rares";
+    const TString BkgsNorm  = "1.12,  1.10,   1,    1,      1,      1";
+    const TString Sys       = "Trig, PU, MuonEff, ElecEff, JES, Scale, pdf";
     Datacard *d = new Datacard("ttH",Bkgs,Sys,chan);
     
     d->SetPathToFile(outputpath);
@@ -321,7 +321,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     d->SetNormUnc(BkgsNorm);
     d->SetRootFileName("Histos_"+chan+"_"+tag);
     d->GetParamsFormFile();
-    d->PrintDatacard(outputpath+"Datacard_"+chan+"_"+tag+".txt");
+    d->PrintDatacard(outputpath+"Datacard_"+name+"_"+chan+"_"+tag+".txt");
   }
   else {
     p->DrawStack(tag, 1);
