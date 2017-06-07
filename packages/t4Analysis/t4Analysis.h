@@ -66,6 +66,7 @@ class t4Analysis : public PAFChainItemSelector{
     Int_t   TNFakeableLeps;
     Int_t   TNSelLeps;
     Int_t   TChannel;
+    Int_t   TPassTrigger;
     Float_t TLep_Pt[10];
     Float_t TLep_Eta[10];
     Float_t TLep_Phi[10];
