@@ -7,6 +7,8 @@ R__LOAD_LIBRARY(Datacard.C+)
 #include "Histo.h"
 #include "Looper.h"
 #include "Plot.h"
+#include "TResultsTable.h"
+#include "Datacard.h"
 #include <iostream>
 #include <fstream>
 
