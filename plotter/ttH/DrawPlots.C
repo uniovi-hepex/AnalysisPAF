@@ -3,6 +3,7 @@ R__LOAD_LIBRARY(Looper.C+)
 R__LOAD_LIBRARY(TResultsTable.C+)
 R__LOAD_LIBRARY(Plot.C+)
 R__LOAD_LIBRARY(CrossSection.C+)
+R__LOAD_LIBRARY(Datacard.C+)
 #include "Histo.h"
 #include "Looper.h"
 #include "Plot.h"
@@ -234,6 +235,9 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     p->SetYieldsTableName("Yields_"+chan+"_"+tag);
     p->PrintYields("","","","txt");
     
+    p->SetOutputName("Histos_"+chan+"_"+tag);
+    p->SaveHistograms();
+    
     // Cross section
     p->SetSignalStyle("xsec");
     CrossSection *x = new CrossSection(p, "ttH");
@@ -251,6 +255,14 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     x->PrintSystematicTable("txt");
     x->PrintCrossSection("txt");
     
+    // Datacard
+    const TString Bkgs    = "TTW,TTZ,TTbar,WJets,ST,DY,Di&Tri&Cuatriboson";
+    const TString Sys     = "Trig, PU, MuonEff, ElecEff, JES";
+    Datacard *d = new Datacard("ttH",Bkgs,Sys,chan);
+    d->SetPathToFile(outputpath);
+    d->SetRootFileName("Histos_"+chan+"_"+tag);
+    d->GetParamsFromFile();
+    d->PrintDatacard(outputpath+"Datacard_"+chan+"_"+tag)  
   }
   else {
     p->DrawStack(tag, 1);
