@@ -46,9 +46,10 @@ TString Looper::CraftFormula(TString cuts, TString chan, TString sys, TString op
     if(tree->GetBranchStatus(AllVars.at(i) + sys)) 
       cuts = ( ((TString) cuts).ReplaceAll(AllVars.at(i), AllVars.at(i)+sys));
 
-  TString formula = TString("(") + cuts + TString(")*(") + schan + TString(")*") + weight;
-  if(options.Contains("Fake") || options.Contains("fake")) formula = TString("(") + cuts + TString(")*") + weight;
-  if(options.Contains("isr") || options.Contains("ISR")) formula = "TISRweight*(" + formula + ")";
+  TString                                                  formula = TString("(") + cuts + TString(")*(") + schan + TString(")*") + weight;
+  if(options.Contains("Fake") || options.Contains("fake")) formula = TString("(") + cuts + TString(")");
+  if(options.Contains("isr") || options.Contains("ISR"))   formula = "TISRweight*(" + formula + ")";
+  if(options.Contains("noWeight"))                         formula = TString("(") + cuts + TString(")*(") + schan + TString(")");
   return formula;
 }
 
@@ -134,7 +135,7 @@ void Looper::Loop(TString sys){
     }
 
     if(options.Contains("Fake") || options.Contains("fake")){
-      f = 1;
+      f = 1; weight = 1;
       ForFLepPt   ->GetNdata();
       ForFLepEta  ->GetNdata();
       ForFLepPdgId->GetNdata();
@@ -150,15 +151,13 @@ void Looper::Loop(TString sys){
         FLepPt    = ForFLepPt ->EvalInstance(i);
         FLepEta   = ForFLepEta->EvalInstance(i);
         FLepPdgId = ForFLepPdgId->EvalInstance(i);
-        //cout << "[pt, eta, pdgId] = [" << FLepPt << ", " << FLepEta << ", " << FLepPdgId << "]" << endl;
         if(FLepPdgId == 11) f *= electronFakeRate(FLepPt, FLepEta);
         if(FLepPdgId == 13) f *=     muonFakeRate(FLepPt, FLepEta);
       }
-      if(f == 1) continue;
+      if(f >= 1) continue;
       weight *= f/(1-f);
       if(options.Contains("Sub") || options.Contains("sub")) weight *= -1;
     }
-
 
     Float_t nom = 0; Float_t var = 0; Float_t ext = 0; Float_t env = 0;
     if(doSysScale){ // Get envelope!!
@@ -250,17 +249,18 @@ Histo* Looper::GetHisto(TString sample, TString sys){
   return Hist;
 }
 
-//TH1F* loadSumOfLHEweights(TString pathToHeppy, TString sampleName){
 TH1D* loadSumOfLHEweights(TString pathToHeppyTrees, TString sampleName){
-  Int_t nFiles = (gSystem->GetFromPipe("ls " + pathToHeppyTrees + "/Tree_" + sampleName +"_[0-9].root | wc -l")).Atoi(); 
+  vector<TString> files = GetAllFiles(pathToHeppyTrees, sampleName);
+  Int_t nFiles = files.size();
   //cout << "Number of files = " << nFiles << endl;
   TFile* f; TH1D* hSumOfLHEweights; TH1D* htemp;
 
-  f = TFile::Open(pathToHeppyTrees + "Tree_" + sampleName + "_0.root");
+  f = TFile::Open(files.at(0));
   f->GetObject("CountLHE", hSumOfLHEweights);
 
   for(Int_t k = 1; k < nFiles; k++){
-    f = TFile::Open(pathToHeppyTrees + "Tree_" + sampleName + Form("_%i", k) + TString(".root"));
+    f = TFile::Open(files.at(k));
+    //cout << "Opening: " << files.at(k) << endl;
     f->GetObject("CountLHE", htemp);
     hSumOfLHEweights->Add(htemp);
   }

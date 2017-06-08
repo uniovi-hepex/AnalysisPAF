@@ -66,6 +66,7 @@ class t4Analysis : public PAFChainItemSelector{
     Int_t   TNFakeableLeps;
     Int_t   TNSelLeps;
     Int_t   TChannel;
+    Int_t   TPassTrigger;
     Float_t TLep_Pt[10];
     Float_t TLep_Eta[10];
     Float_t TLep_Phi[10];
@@ -103,8 +104,8 @@ class t4Analysis : public PAFChainItemSelector{
     Int_t   TNBtagsJESUp;
     Int_t   TNBtagsJESDown;
     Int_t   TNJetsJER;
-    Int_t   TNBtagsUp;
-    Int_t   TNBtagsDown;
+    Int_t   TNBtagsBtagUp;
+    Int_t   TNBtagsBtagDown;
     Int_t   TNBtagsMisTagUp;
     Int_t   TNBtagsMisTagDown;
     Float_t TJetJESUp_Pt[20];

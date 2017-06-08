@@ -52,6 +52,7 @@ vector<Jet>       SortJetsByPt(vector<Jet>   & Jets);
 Float_t JEStoMET(vector<Jet> vjets, Float_t met, Float_t met_phi, Int_t dir = 0);
 Float_t getJetJERpt(Jet jet);
 Float_t p2(Float_t x);
+Jet GetMatchedJet(Jet origJet, std::vector<Jet> jetCollection, Float_t etaRange = 0.3, Float_t ptRange = 10000);
 
 Float_t getDeltaPhillJet(Lepton lep1, Lepton lep2, Jet jet);
 Float_t getDPhiClosestJet(vector<Jet> vJet, TLorentzVector lep);
@@ -76,5 +77,6 @@ Float_t ClosestMlltoZ(vector<Lepton> leptons);
 Bool_t IsThereSSpair(vector<Lepton> leptons);
 
 Int_t   getCS(vector<Lepton> lepton);
+void co(TString out, TString co);
 
 #endif

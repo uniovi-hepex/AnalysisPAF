@@ -12,6 +12,7 @@
 class JetSelector : public PAFChainItemSelector{
 
   public:
+    TString taggerName;
     TString stringWP;
     JetSelector();
     virtual ~JetSelector();
