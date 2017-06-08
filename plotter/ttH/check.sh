@@ -50,8 +50,9 @@ checker=0
 
 ttz="Tree_TTZToLLNuNu1.root"
 ttw="Tree_TTWToLNu1.root"
-$ttz=$plotspath$slash$ttz
-$ttw=$plotspath$slash$ttw
+ttz=$plotspath$slash$ttz
+ttw=$plotspath$slash$ttw
+
 
 while [ $allok != ${#samples[@]} ]; do
   checker=$(($checker+1))
