@@ -201,7 +201,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   	  p->AddSample(Convsmc[isample], "Convs", itBkg, kYellow);
     }
     for (UInt_t isample = 0; isample < sizeof(Fakesmc)/sizeof(*Fakesmc); isample++) {
-  	  p->AddSample(Fakesmc[isample], "Fakes", itBkg, kOrange);
+  	  p->AddSample(Fakesmc[isample], "Fakes", itBkg, kGray);
     }
     for (UInt_t isample = 0; isample < sizeof(Raresmc)/sizeof(*Raresmc); isample++) {
   	  p->AddSample(Raresmc[isample], "Rares", itBkg, kAzure-9);
@@ -216,6 +216,11 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     } else {
       p->AddSample(Signalmc[0], "ttH", itBkg, kRed);
     }
+        
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "NormttHUp");
+    p->ScaleSys("ttH_NormttHUp", 1.058);
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "NormttHDown");
+    p->ScaleSys("ttH_NormttHDown", 1.092);
   }
   else {
     for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
@@ -257,7 +262,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   	  p->AddSample(Convsmc[isample], "Convs", itBkg, kYellow, "0", "AllInstances");
     }
     for (UInt_t isample = 0; isample < sizeof(Fakesmc)/sizeof(*Fakesmc); isample++) {
-  	  p->AddSample(Fakesmc[isample], "Fakes", itBkg, kOrange, "0", "AllInstances");
+  	  p->AddSample(Fakesmc[isample], "Fakes", itBkg, kGray, "0", "AllInstances");
     }
     for (UInt_t isample = 0; isample < sizeof(Raresmc)/sizeof(*Raresmc); isample++) {
   	  p->AddSample(Raresmc[isample], "Rares", itBkg, kAzure-9, "0", "AllInstances");
@@ -271,7 +276,12 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
       }
     } else {
       p->AddSample(Signalmc[0], "ttH", itBkg, kRed, "0", "AllInstances");
-    }    
+    }
+    
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "NormttHUp", "AllInstances");
+    p->ScaleSys("ttH_NormttHUp", 1.058);
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "NormttHDown", "AllInstances");
+    p->ScaleSys("ttH_NormttHDown", 1.092);
   }
   // Histogram settings ========================================================
   p->SetScaleMax(1.7);
@@ -296,9 +306,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     // Cross section
     p->SetSignalStyle("xsec");
     CrossSection *x = new CrossSection(p, "ttH");
-    x->SetTheoXsec(0.5085);
+    x->SetTheoXsec(0.2150955);
     x->SetChannelTag("chan");
-    x->SetLevelTag("1btag");
     
     x->SetEfficiencySyst("Trig, PU, MuonEff, ElecEff, JES");
     x->SetAcceptanceSyst("stat, Scale, pdf");
@@ -311,8 +320,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     x->PrintCrossSection("txt");
     
     // Datacard
-    const TString Bkgs      = "TTW,   TTZ,    WZ,   Convs,  Fakes,  Rares";
-    const TString BkgsNorm  = "1.12,  1.10,   1,    1,      1,      1";
+    const TString Bkgs      = " TTW,  TTZ,    WZ,   Convs,  Fakes,  Rares";
+    const TString BkgsNorm  = "1.12, 1.10,   1.3,     1.3,    1.3,    1.3";
     const TString Sys       = "Trig, PU, MuonEff, ElecEff, JES, Scale, pdf";
     Datacard *d = new Datacard("ttH",Bkgs,Sys,chan);
     
