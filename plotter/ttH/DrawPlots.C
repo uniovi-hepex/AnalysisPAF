@@ -201,7 +201,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   	  p->AddSample(Convsmc[isample], "Convs", itBkg, kYellow);
     }
     for (UInt_t isample = 0; isample < sizeof(Fakesmc)/sizeof(*Fakesmc); isample++) {
-  	  p->AddSample(Fakesmc[isample], "Fakes", itBkg, kGray);
+  	  p->AddSample(Fakesmc[isample], "Fakes", itBkg, kOrange-7);
     }
     for (UInt_t isample = 0; isample < sizeof(Raresmc)/sizeof(*Raresmc); isample++) {
   	  p->AddSample(Raresmc[isample], "Rares", itBkg, kAzure-9);
@@ -262,7 +262,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   	  p->AddSample(Convsmc[isample], "Convs", itBkg, kYellow, "0", "AllInstances");
     }
     for (UInt_t isample = 0; isample < sizeof(Fakesmc)/sizeof(*Fakesmc); isample++) {
-  	  p->AddSample(Fakesmc[isample], "Fakes", itBkg, kGray, "0", "AllInstances");
+  	  p->AddSample(Fakesmc[isample], "Fakes", itBkg, kOrange-7, "0", "AllInstances");
     }
     for (UInt_t isample = 0; isample < sizeof(Raresmc)/sizeof(*Raresmc); isample++) {
   	  p->AddSample(Raresmc[isample], "Rares", itBkg, kAzure-9, "0", "AllInstances");
