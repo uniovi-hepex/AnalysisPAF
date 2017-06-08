@@ -64,7 +64,7 @@ while [ $allok != ${#samples[@]} ]; do
     echo " "
     cd $plotspath
     cp Tree_TTZToLLNuNu1.root Tree_TTZToLLNuNu.root
-    rm Tree_TTZToLLNuNu1.root
+    rm Tree_TTZToLLNuNu.root
     cd $workingpath
   fi
   if [ -e $ttw ]; then
