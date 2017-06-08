@@ -115,11 +115,11 @@ void JetSelector::Initialise(){
   TString BTagSFPath = Form("%s/packages/BTagSFUtil", pwd.Data());
   
 
-  fBTagSFnom = new BTagSFUtil(MeasType, BTagSFPath, taggerName, stringWP,  0);
-  fBTagSFbUp = new BTagSFUtil(MeasType, BTagSFPath, taggerName, stringWP,  1);
-  fBTagSFbDo = new BTagSFUtil(MeasType, BTagSFPath, taggerName, stringWP, -1);
-  fBTagSFlUp = new BTagSFUtil(MeasType, BTagSFPath, taggerName, stringWP,  3);
-  fBTagSFlDo = new BTagSFUtil(MeasType, BTagSFPath, taggerName, stringWP, -3);
+  fBTagSFnom = new BTagSFUtil(MeasType, BTagSFPath, taggerName.Data(), stringWP,  0);
+  fBTagSFbUp = new BTagSFUtil(MeasType, BTagSFPath, taggerName.Data(), stringWP,  1);
+  fBTagSFbDo = new BTagSFUtil(MeasType, BTagSFPath, taggerName.Data(), stringWP, -1);
+  fBTagSFlUp = new BTagSFUtil(MeasType, BTagSFPath, taggerName.Data(), stringWP,  3);
+  fBTagSFlDo = new BTagSFUtil(MeasType, BTagSFPath, taggerName.Data(), stringWP, -3);
 
   Leptons  = std::vector<Lepton>();
   selJets  = std::vector<Jet>();
