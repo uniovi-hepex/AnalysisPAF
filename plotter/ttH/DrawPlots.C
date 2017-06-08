@@ -216,12 +216,16 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     } else {
       p->AddSample(Signalmc[0], "ttH", itBkg, kRed);
     }
-        
+    
     p->AddSample(Signalmc[0], "ttH", itSys, 1, "NormttHUp");
     p->ScaleSys("ttH_NormttHUp", 1.058);
     p->AddSample(Signalmc[0], "ttH", itSys, 1, "NormttHDown");
     p->ScaleSys("ttH_NormttHDown", 1.092);
-  }
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "ScaleUp");
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "ScaleDown");
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfUp");
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfDown");
+    
   else {
     for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
       p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5, "0", "AllInstances");
@@ -282,6 +286,11 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     p->ScaleSys("ttH_NormttHUp", 1.058);
     p->AddSample(Signalmc[0], "ttH", itSys, 1, "NormttHDown", "AllInstances");
     p->ScaleSys("ttH_NormttHDown", 1.092);
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "ScaleUp", "AllInstances");
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "ScaleDown", "AllInstances");
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfUp", "AllInstances");
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfDown", "AllInstances");
+    
   }
   // Histogram settings ========================================================
   p->SetScaleMax(1.7);
