@@ -83,8 +83,8 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
   DatasetManager* dm = DatasetManager::GetInstance();
 
   // Tab in the spreadsheet https://docs.google.com/spreadsheets/d/1b4qnWfZrimEGYc1z4dHl21-A9qyJgpqNUbhOlvCzjbE
-  //dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2");
-  dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2_noSkim");
+  dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2");
+  //dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2_noSkim");
   
   TString pathToFiles = dataPath + dm->FindLocalFolder();
   // Deal with data samples
@@ -196,6 +196,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	if(sampleName.BeginsWith("T2tt")) outputDir += "/T2tt/";
 	gSystem->mkdir(outputDir, kTRUE);
 	if(sampleName.Contains("_ext2")) sampleName.ReplaceAll("_ext2",""); 
+	if(sampleName.Contains("_ext1")) sampleName.ReplaceAll("_ext1",""); 
 	if(sampleName.Contains("_ext"))  sampleName.ReplaceAll("_ext",""); 
         
 	//if     (nEvents > 0 && FirstEvent == 0) myProject->SetNEvents(nEvents);
