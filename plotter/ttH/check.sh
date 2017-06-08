@@ -75,7 +75,7 @@ while [ $allok != ${#samples[@]} ]; do
     echo " "
     cd $plotspath
     cp Tree_TTWToLNu1.root Tree_TTWToLNu.root
-    rm Tree_TTWToLNu1.root
+    rm Tree_TTWToLNu.root
     cd $workingpath
   fi
   
