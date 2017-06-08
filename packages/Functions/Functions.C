@@ -174,6 +174,19 @@ Float_t getISRJetsWeight(Int_t nISRJet){
   return SF;
 }
 
+Jet GetMatchedJet(Jet origJet, std::vector<Jet> jetCollection, Float_t etaRange, Float_t ptRange){
+  Float_t mieta = origJet.p.Eta();
+  Float_t mipt  = origJet.p.Pt();
+  Int_t nJet = jetCollection.size();
+  Float_t eta = 0; Float_t pt = 0;
+  for(Int_t i = 0; i < nJet; i++){
+    eta = jetCollection.at(i).Eta();
+    pt  = jetCollection.at(i).Pt();
+    if(TMath::Abs(eta - mieta) > etaRange && TMath::Abs(pt - mipt) > ptRange) return jetCollection.at(i);
+  }
+  return Jet(TLorentzVector(0,0,0,0), 0, 0, 0);
+}
+
 // ==================================================================
 // ========================== Other ================================
 // ==================================================================
@@ -275,4 +288,9 @@ Bool_t IsThereSSpair(vector<Lepton> leptons){
     }
   }
   return false;
+}
+
+
+void co(TString out, TString co = "1;30"){
+  std::cout << "\033[" << co << "m" << out << "\033[0m" << endl;
 }

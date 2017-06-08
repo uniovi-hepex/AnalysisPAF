@@ -154,7 +154,7 @@ public:
   void SetGoF(TString thegof="chi2");
   
   void DrawStack(TString tag, bool sav);
-  void DrawComp(TString tag = "0", bool sav = 1, bool doNorm = 0);
+  void DrawComp(TString tag = "0", bool sav = 1, bool doNorm = 0, TString style = "pe");
   void SaveHistograms();
   TString GetStatUncDatacard(Int_t iSignal = 0);
 	TString GetShapeUncLines();
@@ -218,6 +218,8 @@ public:
 	void PrintSystYields();
 	Float_t GetYield(TString pr = "ttbar", TString systag = "0");
 	Histo* GetHisto(TString pr = "ttbar", TString systag = "0");
+  Histo* GetSymmetricHisto(TString pr = "ttbar", TString systag = "0");
+  void AddSymmetricHisto(TString pr, TString systag);
   Float_t GetData();
   Histo* GetHData();
   Float_t GetTotalSystematic(TString pr);

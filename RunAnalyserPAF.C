@@ -12,6 +12,7 @@ Bool_t IsMCatNLO(TString sampleName);
 void GetCount(vector<TString> Files, Bool_t IsData = false);
 void RunAnalyserPAF(TString sampleName  = "TTbar_Powheg", TString Selection = "StopDilep", Int_t nSlots = 1, Long64_t nEvents = 0, Long64_t FirstEvent = 0, Float_t uxsec = 1.0, Int_t stopMass = 0, Int_t lspMass  = 0);
 Float_t GetSMSnorm(Int_t mStop, Int_t mLsp);
+Float_t GetISRweight(Int_t mStop, Int_t mLsp);
 Double_t GetStopXSec(Int_t StopMass);
 vector<TString> GetAllFiles(TString path, TString  filename = "");
 void CheckTreesInDir(TString path, TString treeName = "tree", Int_t verbose = 0);
@@ -23,6 +24,7 @@ Double_t SumOfWeights;
 Long64_t Count;
 Long64_t nTrueEntries;
 Float_t xsec;
+Float_t NormISRweights;
 Bool_t verbose = true;
 const Int_t nLHEWeight = 248;
 
@@ -48,6 +50,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	Count = 0;
 	nTrueEntries = 0;
 	xsec = 0;
+  NormISRweights = 0;
   //Float_t arr[nLHEWeight]; Float_t *CountLHE;
 
 
@@ -80,8 +83,8 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
   DatasetManager* dm = DatasetManager::GetInstance();
 
   // Tab in the spreadsheet https://docs.google.com/spreadsheets/d/1b4qnWfZrimEGYc1z4dHl21-A9qyJgpqNUbhOlvCzjbE
-  dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2");
-  //dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2_noSkim");
+  //dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2");
+  dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2_noSkim");
   
   TString pathToFiles = dataPath + dm->FindLocalFolder();
   // Deal with data samples
@@ -132,8 +135,10 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 			sampleName = Form("T2tt_mStop%i_mLsp%i",stopMass, lspMass);
 			G_IsFastSim = true;
       xsec = GetStopXSec(stopMass);
-      nTrueEntries = GetSMSnorm(stopMass, lspMass);
-			G_Event_Weight = xsec/nTrueEntries;
+      if(theSample == "T2tt_mStop160to210mLSP1to20")  xsec *= (3*0.108)*(3*0.108); // Dileptonic sample
+      Count = GetSMSnorm(stopMass, lspMass);
+      NormISRweights = GetISRweight(stopMass, lspMass);
+			G_Event_Weight = xsec/Count;
 		} 
 		else{ // Use dataset manager
 			Float_t sumNorm = 1; long double totalXSec = 0; long double totalNorm = 0;
@@ -264,13 +269,19 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	myProject->SetInputParam("iSelection",        sel              );
 	myProject->SetInputParam("WorkingDir",        WorkingDir       );
 	myProject->SetInputParam("pathToHeppyTrees",  pathToFiles);
+	//myProject->SetInputParam("nEntries",  nTrueEntries);
+	//myProject->SetInputParam("nEvents",  nEvents);
+	//myProject->SetInputParam("FirstEvent",  FirstEvent);
+	//myProject->SetInputParam("Count",  Count);
+	//myProject->SetInputParam("xsec",  xsec);
 	//myProject->SetInputParam("CountLHE ",  CountLHE);
 
 	// EXTRA PARAMETERS
-	myProject->SetInputParam("IsFastSim"    , G_IsFastSim);
-	myProject->SetInputParam("stopMass"     , stopMass         );
-	myProject->SetInputParam("lspMass"      , lspMass          );
-	myProject->SetInputParam("doSyst"       , G_DoSystematics  ); 
+	myProject->SetInputParam("IsFastSim"      , G_IsFastSim);
+	myProject->SetInputParam("stopMass"       , stopMass         );
+	myProject->SetInputParam("lspMass"        , lspMass          );
+	myProject->SetInputParam("NormISRweights" , NormISRweights   );
+	myProject->SetInputParam("doSyst"         , G_DoSystematics  ); 
 
 
 	// Name of analysis class
@@ -340,7 +351,7 @@ void GetCount(std::vector<TString> Files, Bool_t IsData){
 }
 
 Float_t GetSMSnorm(Int_t mStop, Int_t mLsp){
-  cout << Form("\033[1;36m >>> Searching for normalization factor for stop point with masses [%i, %i]...\033[0m\n", mStop, mLsp);
+  cout << Form("\033[1;36m >>> Searching for normalization factor for stop point with masses [%i, %i]... ", mStop, mLsp);
 	Int_t nFiles = Files.size(); TFile *f;
 	TH3D *hcount; Float_t val = 0; Float_t ms = 0; Float_t mn = 0;
   Float_t count = 0;
@@ -360,8 +371,35 @@ Float_t GetSMSnorm(Int_t mStop, Int_t mLsp){
 			}
 		}
 	}
+  cout << Form("Total number of entries: %2.4f\033[0m\n", count);
   return count;
 }
+
+Float_t GetISRweight(Int_t mStop, Int_t mLsp){
+  cout << Form("\033[1;36m >>> Searching for normalization factor for ISR Jets reweighting for stop point with masses [%i, %i]... ", mStop, mLsp);
+	Int_t nFiles = Files.size(); TFile *f;
+  Float_t weight = 0; Float_t nEntries = 0; Float_t nWeightedEntries = 0; Float_t TotalWeightedEntries = 0; Float_t TotalEntries;
+  TTree* t;
+	TH1F *hcount;
+	for(Int_t k = 0; k < nFiles; k++){
+    f = TFile::Open(Files.at(k));
+    f -> GetObject("tree", t);
+    TString strweight = "((nISRJet30==0) + (nISRJet30==1)*0.920 + (nISRJet30==2)*0.821 + (nISRJet30==3)*0.715 + (nISRJet30==4)*0.652 + (nISRJet30==5)*0.561 + (nISRJet30>5)*0.511)";
+    TString strpoint  = Form("(GenSusyMStop == %i && GenSusyMNeutralino == %i)", Int_t(mStop), Int_t(mLsp));
+    hcount = new TH1F("hcount", "hcount", 1, 0, 2); 
+    t->Project("hcount", "1", strweight + "*" + strpoint);
+
+    nEntries = hcount->GetEntries();
+    nWeightedEntries = hcount->GetBinContent(1);
+    TotalEntries += nEntries;
+    TotalWeightedEntries += nWeightedEntries;
+    //cout << Form("nFile = %i, nEntries = %f, nWent = %f",k, nEntries, nWeightedEntries) << endl;
+	}
+  weight = TotalWeightedEntries/TotalEntries; 
+  cout << Form("NormWeight = %1.4f\033[0m\n", weight);
+  return weight;
+}
+
 
 
 Double_t GetStopXSec(Int_t StopMass){
