@@ -63,8 +63,8 @@ while [ $allok != ${#samples[@]} ]; do
     echo "Renaming..."
     echo " "
     cd $plotspath
-    cp Tree_TTZToLLNuNu1.root Tree_TTZToLLNuNu.root
-    rm Tree_TTZToLLNuNu.root
+    cp "Tree_TTZToLLNuNu1.root" "Tree_TTZToLLNuNu.root"
+    rm "Tree_TTZToLLNuNu1.root"
     cd $workingpath
   fi
   if [ -e $ttw ]; then
@@ -74,8 +74,8 @@ while [ $allok != ${#samples[@]} ]; do
     echo "Renaming..."
     echo " "
     cd $plotspath
-    cp Tree_TTWToLNu1.root Tree_TTWToLNu.root
-    rm Tree_TTWToLNu.root
+    cp "Tree_TTWToLNu1.root" "Tree_TTWToLNu.root"
+    rm "Tree_TTWToLNu1.root"
     cd $workingpath
   fi
   
