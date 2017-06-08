@@ -103,8 +103,8 @@ class t4Analysis : public PAFChainItemSelector{
     Int_t   TNBtagsJESUp;
     Int_t   TNBtagsJESDown;
     Int_t   TNJetsJER;
-    Int_t   TNBtagsUp;
-    Int_t   TNBtagsDown;
+    Int_t   TNBtagsBtagUp;
+    Int_t   TNBtagsBtagDown;
     Int_t   TNBtagsMisTagUp;
     Int_t   TNBtagsMisTagDown;
     Float_t TJetJESUp_Pt[20];
