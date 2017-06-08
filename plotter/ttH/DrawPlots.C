@@ -13,8 +13,8 @@ R__LOAD_LIBRARY(Datacard.C)
 #include <fstream>
 
 const TString Signalmc[]  = {"TTHNonbb"};                                 // ttH
-const TString TTWmc[] 	  = {"TTWToLNu1", "TTWToQQ"};		                  // TTW
-const TString TTZmc[] 	  = {"TTZToLLNuNu1", "TTZToQQ"};                  // TTZ
+const TString TTWmc[] 	  = {"TTWToLNu", "TTWToQQ"};		                  // TTW
+const TString TTZmc[] 	  = {"TTZToLLNuNu", "TTZToQQ"};                  // TTZ
 const TString WZmc[] 	    = {"WZTo3LNu"};                                 // WZ
 const TString Convsmc[]   = {"WGToLNuG", "ZGTo2LG", "TGJets", "TTGJets"}; // Convs
 const TString Fakesmc[]   = {"TTbar_Powheg", "WJetsToLNu_MLM", "TW", 
