@@ -390,8 +390,8 @@ void ttHAnalysis::GetParameters() {
   gLocalPath  = GetParam<TString>("WorkingDir");
   
   gIsLHE       = false;
-  if (gSampleName.Contains("TTWToLNu1") || gSampleName.Contains("TTWToQQ") ||
-      gSampleName.Contains("TTZToLLNuNu1") || gSampleName.Contains("TTZToQQ")) gIsLHE = true;
+  if (gSampleName.Contains("TTWToLNu") || gSampleName.Contains("TTWToQQ") ||
+      gSampleName.Contains("TTZToLLNuNu") || gSampleName.Contains("TTZToQQ")) gIsLHE = true;
 }
 
 
