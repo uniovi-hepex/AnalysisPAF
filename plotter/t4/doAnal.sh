@@ -11,6 +11,7 @@ elif [ "$1" == "plots" ]; then
     cd plotter
     root -l -b t4/DrawPlots.C\(\"CRT\"\)
     root -l -b t4/DrawPlots.C\(\"SR9\"\)
+    root -l -b t4/DrawPlots.C\(\"SR10\"\)
     cd -
 else
     echo "Es que no me hás dicho que hacer, así que mejor si me duermo."
