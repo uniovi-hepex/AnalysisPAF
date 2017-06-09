@@ -172,7 +172,7 @@ void ttHAnalysis::SetSystBranches() {
   fTree->Branch("TnMediumBTagsJESDown", &TnMediumBTagsJESDown,"TnMediumBTagsJESDown/F");
   fTree->Branch("TCatJESUp",            &TCatJESUp,           "TCatJESUp/I");
   fTree->Branch("TCatJESDown",          &TCatJESDown,         "TCatJESDown/I");
-  fTree->Branch("TLHEWeight",           &TLHEWeight,           "TLHEWeight[254]/F");
+  fTree->Branch("TLHEWeight",           TLHEWeight,           "TLHEWeight[254]/F");
 }
 
 
