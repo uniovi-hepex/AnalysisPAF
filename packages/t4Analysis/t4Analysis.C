@@ -7,9 +7,9 @@ t4Analysis::t4Analysis() : PAFChainItemSelector() {
   TrigSF = 0; TrigSF_Up = 0; TrigSF_Down = 0; PUSF = 0; PUSF_Up = 0; PUSF_Down = 0;
   gChannel = 0; passMETfilters = 0; passTrigger = 0; isSS = 0;  NormWeight = 0; TWeight = 0; TIsOnZ = 0;
   TIsSS = false; TMZ = 0; TM3l = 0; TMll = 0;  TMET = 0; TMET_Phi = 0; TMT2 = 0; TNTaus = 0; TNJets = 0; TNBtags = 0; THT = 0; 
-  TNFakeableLeps = 0; TNSelLeps = 0; TChannel = 0; 
+  TNFakeableLeps = 0; TNSelLeps = 0; TChannel = 0; TPassTrigger = 0;
   TNJetsJESUp = 0; TNJetsJESDown = 0; TNJetsJER = 0; TNBtagsJESUp = 0; TNBtagsJESDown = 0;
-  TNBtagsUp = 0; TNBtagsDown = 0; TNBtagsMisTagUp = 0; TNBtagsMisTagDown = 0;
+  TNBtagsBtagUp = 0; TNBtagsBtagDown = 0; TNBtagsMisTagUp = 0; TNBtagsMisTagDown = 0;
   THTJESUp = 0; THTJESDown = 0; TNISRJets = 0; TMETJESUp = 0; TMETJESDown = 0;
   TWeight_LepEffUp = 0; TWeight_LepEffDown = 0; TWeight_TrigUp = 0; TWeight_TrigDown = 0;
   TWeight_FSUp = 0; TWeight_FSDown = 0; TWeight_PUDown = 0; TWeight_PUUp = 0;
@@ -109,7 +109,7 @@ void t4Analysis::InsideLoop(){
   passMETfilters = GetParam<Bool_t>("METfilters");
   passTrigger    = GetParam<Bool_t>("passTrigger");
   isSS           = GetParam<Bool_t>("isSS");
-
+  
   // Leptons and Jets
   GetTauVariables(selTaus);
   GetLeptonVariables(selLeptons);
@@ -248,8 +248,8 @@ void t4Analysis::SetJetVariables(){
   fTree->Branch("TNBtagsJESDown",   &TNBtagsJESDown,    "TNBtagsJESDown/I");
   fTree->Branch("TNJetsJER",        &TNJetsJER,         "TNJetsJER/I");
 
-  fTree->Branch("TNBtagsUp",           &TNBtagsUp,         "TNBtagsUp/I");
-  fTree->Branch("TNBtagsDown",         &TNBtagsDown,       "TNBtagsDown/I");
+  fTree->Branch("TNBtagsBtagUp",       &TNBtagsBtagUp,     "TNBtagsBtagUp/I");
+  fTree->Branch("TNBtagsBtagDown",     &TNBtagsBtagDown,   "TNBtagsBtagDown/I");
   fTree->Branch("TNBtagsMisTagUp",     &TNBtagsMisTagUp,   "TNBtagsMisTagUp/I");
   fTree->Branch("TNBtagsMisTagDown",   &TNBtagsMisTagDown, "TNBtagsMisTagDown/I");
 
@@ -359,7 +359,7 @@ void t4Analysis::GetFakeableLeptonVariables(std::vector<Lepton> vetoLeptons){
 
 void t4Analysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut){
   TNJets = selJets.size(); THT = 0;
-  TNBtags = 0; TNBtagsUp = 0; TNBtagsDown = 0;
+  TNBtags = 0; TNBtagsBtagUp = 0; TNBtagsBtagDown = 0;
   TNBtagsMisTagUp = 0;  TNBtagsMisTagDown = 0;
   for(Int_t i = 0; i < 20; i++){
     if(i < TNJets){
@@ -381,8 +381,8 @@ void t4Analysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> clea
   }
   if(gIsData) return;  // For systematics...
   for(Int_t i = 0; i < TNJets; i++){
-    if(selJets.at(i).isBtag_BtagUp    ) TNBtagsUp++;
-    if(selJets.at(i).isBtag_BtagDown  ) TNBtagsDown++;
+    if(selJets.at(i).isBtag_BtagUp    ) TNBtagsBtagUp++;
+    if(selJets.at(i).isBtag_BtagDown  ) TNBtagsBtagDown++;
     if(selJets.at(i).isBtag_MisTagUp  ) TNBtagsMisTagUp++;
     if(selJets.at(i).isBtag_MisTagDown) TNBtagsMisTagDown++;
   }

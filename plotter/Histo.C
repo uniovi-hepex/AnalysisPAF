@@ -88,12 +88,15 @@ void Histo::SetColor(Int_t c){
 void Histo::AddToLegend(TLegend* leg, Bool_t doyi){
   TH1F* h2 = (TH1F*) Clone("toLeg");
   TString op = "f";
-  if      (type == itSignal){
-    if(GetFillColor() == 0) op = "l";
-    else op = "f";
+  if(DrawStyle != "") op = DrawStyle;
+  else{
+    if      (type == itSignal){
+      if(GetFillColor() == 0) op = "l";
+      else op = "f";
+    }
+    else if (type == itData)   op = "pe";
+    else if (type == itCompare)op = "pe";
   }
-  else if (type == itData)   op = "pe";
-  else if (type == itCompare)op = "pe";
   if(doyi) leg->AddEntry(h2, Form(process + ": %1.0f", yield), op);
   else leg->AddEntry(h2, tag, op);
 }

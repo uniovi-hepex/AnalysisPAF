@@ -41,6 +41,7 @@ BTagSFUtil::BTagSFUtil(const string& MeasurementType,
     if (TaggerName=="CSV") TaggerCut = 0.244;
     //if (TaggerName=="CSVv2") TaggerCut = 0.605;
     if (TaggerName=="CSVv2") TaggerCut = 0.5426; // for Moriond17
+    if (TaggerName=="DeepCSV") TaggerCut = 0.2219; // post-Moriond (2017-06-08)
     reader_b = new BTagCalibrationReader(BTagEntry::OP_LOOSE, "central", sysTypes);
     reader_b -> load(calib, BTagEntry::FLAV_B, MeasurementType);
     reader_c = new BTagCalibrationReader(BTagEntry::OP_LOOSE, "central", sysTypes);
@@ -53,6 +54,7 @@ BTagSFUtil::BTagSFUtil(const string& MeasurementType,
     //if (TaggerName=="CSVv2") TaggerCut = 0.890; // for 74X
     //if (TaggerName=="CSVv2") TaggerCut = 0.800; // for 76X
     if (TaggerName=="CSVv2") TaggerCut = 0.8484; // for Moriond17
+    if (TaggerName=="DeepCSV") TaggerCut = 0.6324; // post-Moriond (2017-06-08)
     reader_b = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central", sysTypes);
     reader_b -> load(calib, BTagEntry::FLAV_B, MeasurementType);
     reader_c = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central", sysTypes);
@@ -65,6 +67,7 @@ BTagSFUtil::BTagSFUtil(const string& MeasurementType,
     if (TaggerName=="TCHP") TaggerCut = 3.41;
     //if (TaggerName=="CSVv2") TaggerCut = 0.970;
     if (TaggerName=="CSVv2") TaggerCut = 0.9535; // for Moriond17
+    if (TaggerName=="DeepCSV") TaggerCut = 0.8958; // post-Moriond (2017-06-08)
     reader_b = new BTagCalibrationReader(BTagEntry::OP_TIGHT, "central", sysTypes);
     reader_b -> load(calib, BTagEntry::FLAV_B, MeasurementType);
     reader_c = new BTagCalibrationReader(BTagEntry::OP_TIGHT, "central", sysTypes);

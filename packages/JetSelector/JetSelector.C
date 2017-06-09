@@ -44,11 +44,10 @@ void JetSelector::Initialise(){
 
   //---- Select your wp for b-tagging and pt, eta for the jets
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-  if      (gSelection == iStopSelec || gSelection == iTopSelec || gSelection == ittDMSelec || gSelection == iTWSelec || gSelection == ittHSelec || gSelection == i4tSelec)  stringWP = "Medium";
-  else if (gSelection == iWWSelec)    stringWP = "Loose";
-  else if (gSelection == iWZSelec)    stringWP = "Loose";
-  else                                stringWP = "Medium";
+  
   if     (gSelection == iStopSelec || gSelection == iTopSelec || gSelection == ittDMSelec){
+    taggerName="CSVv2";
+    stringWP = "Medium";
     jet_MaxEta = 2.4;
     jet_MinPt  = 30;
     vetoJet_minPt = 20;
@@ -56,6 +55,8 @@ void JetSelector::Initialise(){
     minDR = 0.4;
   }
   else if (gSelection == i4tSelec){
+    taggerName="CSVv2"; // Soon to be: taggerName="DeepCSV" 
+    stringWP = "Medium";
     jet_MaxEta = 2.4;
     jet_MinPt  = 40;
     vetoJet_minPt = 25;
@@ -63,6 +64,8 @@ void JetSelector::Initialise(){
     minDR = 0.4;
   }
   else if (gSelection == iTWSelec){
+    taggerName="CSVv2";
+    stringWP = "Medium";
     jet_MaxEta = 2.4;
     jet_MinPt  = 30;
     vetoJet_minPt = 20;
@@ -70,6 +73,8 @@ void JetSelector::Initialise(){
     minDR = 0.4;
   }
   else if(gSelection == iWWSelec){
+    taggerName="CSVv2";
+    stringWP = "Loose";
     jet_MaxEta = 4.7;
     jet_MinPt  = 30;
     vetoJet_minPt = 20;
@@ -77,6 +82,8 @@ void JetSelector::Initialise(){
     minDR = 0.4;
   }
   else if(gSelection == iWZSelec){
+    taggerName="CSVv2";
+    stringWP = "Loose";
     jet_MaxEta = 2.4;
     jet_MinPt  = 30;
     vetoJet_minPt = 20;
@@ -84,13 +91,17 @@ void JetSelector::Initialise(){
     minDR = 0.4;
   }
   else if (gSelection == ittHSelec) {
-		jet_MaxEta 			= 2.4;
-    jet_MinPt  			= 25;
-    vetoJet_maxEta 	= 2.4;
-    vetoJet_minPt 	= 25;
-    minDR 					= 0.4;
-	}
+    taggerName="CSVv2";
+    stringWP = "Medium";
+    jet_MaxEta 	   = 2.4;
+    jet_MinPt  	   = 25;
+    vetoJet_maxEta = 2.4;
+    vetoJet_minPt  = 25;
+    minDR          = 0.4;
+  }
   else{
+    taggerName="CSVv2";
+    stringWP = "Medium";
     jet_MaxEta = 2.4;
     vetoJet_maxEta = 2.4;
     jet_MinPt  = 30;
@@ -104,11 +115,11 @@ void JetSelector::Initialise(){
   TString BTagSFPath = Form("%s/packages/BTagSFUtil", pwd.Data());
   
 
-  fBTagSFnom = new BTagSFUtil(MeasType, BTagSFPath, "CSVv2", stringWP,  0);
-  fBTagSFbUp = new BTagSFUtil(MeasType, BTagSFPath, "CSVv2", stringWP,  1);
-  fBTagSFbDo = new BTagSFUtil(MeasType, BTagSFPath, "CSVv2", stringWP, -1);
-  fBTagSFlUp = new BTagSFUtil(MeasType, BTagSFPath, "CSVv2", stringWP,  3);
-  fBTagSFlDo = new BTagSFUtil(MeasType, BTagSFPath, "CSVv2", stringWP, -3);
+  fBTagSFnom = new BTagSFUtil(MeasType, BTagSFPath, taggerName.Data(), stringWP,  0);
+  fBTagSFbUp = new BTagSFUtil(MeasType, BTagSFPath, taggerName.Data(), stringWP,  1);
+  fBTagSFbDo = new BTagSFUtil(MeasType, BTagSFPath, taggerName.Data(), stringWP, -1);
+  fBTagSFlUp = new BTagSFUtil(MeasType, BTagSFPath, taggerName.Data(), stringWP,  3);
+  fBTagSFlDo = new BTagSFUtil(MeasType, BTagSFPath, taggerName.Data(), stringWP, -3);
 
   Leptons  = std::vector<Lepton>();
   selJets  = std::vector<Jet>();

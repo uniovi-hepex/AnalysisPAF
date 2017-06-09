@@ -54,15 +54,14 @@ public:
  // Histo* hSignal = NULL; // For a default signal if needed
 
   Int_t nBkgs = 0;
-	TPad* plot = NULL; TPad* pratio = NULL;
-	TLatex* texlumi = NULL;
-	TLatex* texcms = NULL;
-	TLatex* texchan = NULL;
-	TH1F* hratio = NULL;
+  TPad* plot = NULL; TPad* pratio = NULL;
+  TLatex* texlumi = NULL;
+  TLatex* texcms = NULL;
+  TLatex* texchan = NULL;
+  TH1F* hratio = NULL;
   Float_t* TotalSysUp = NULL;
   Float_t* TotalSysDown = NULL;
   TString sys = "0";
-
   Float_t sys_lumi = 0.026;
 
 	Plot(){
@@ -145,15 +144,17 @@ public:
   void SetTexChan(TString cuts); // To be updated
   void SetHRatio(); // To be updated
 
-	void SetData();
-	void GetStack();
-	void GetAllBkg();
+  void SetData();
+  void GetStack();
+  void GetAllBkg();
   void AllBkgSyst();
-
+  
   void SetPlotStyle();
+
+  void SetGoF(TString thegof="chi2");
   
   void DrawStack(TString tag, bool sav);
-  void DrawComp(TString tag = "0", bool sav = 1, bool doNorm = 0);
+  void DrawComp(TString tag = "0", bool sav = 1, bool doNorm = 0, TString style = "pe");
   void SaveHistograms();
   TString GetStatUncDatacard(Int_t iSignal = 0);
 	TString GetShapeUncLines();
@@ -168,6 +169,7 @@ public:
   TString GetSignal(){ return signal;}
   Float_t GetLumi(){ return Lumi;}
   Float_t GetLumiUnc(){ return sys_lumi;}
+  TString GetGoF(){ return gof;}
   void SetVar(TString variable){ var = variable; if(varname == "") varname = variable;}
   void SetVarName(TString variable){ varname = variable;}
   void SetChan(TString ch){chan = ch;}
@@ -216,6 +218,8 @@ public:
 	void PrintSystYields();
 	Float_t GetYield(TString pr = "ttbar", TString systag = "0");
 	Histo* GetHisto(TString pr = "ttbar", TString systag = "0");
+  Histo* GetSymmetricHisto(TString pr = "ttbar", TString systag = "0");
+  void AddSymmetricHisto(TString pr, TString systag);
   Float_t GetData();
   Histo* GetHData();
   Float_t GetTotalSystematic(TString pr);
@@ -247,6 +251,8 @@ protected:
   TString outputName = "";
   TString YieldsTableName = "yields";
   TString tableFormats = "%1.2f";
+  TString gof = "";
+
   Int_t nSignalSamples;
   
   // Maximum and minimum value of the ratio plot

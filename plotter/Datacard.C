@@ -188,7 +188,6 @@ TString Datacard::GetFileString(){
   if(!IsShapeDatacard) return "## It's not a shape datacard";
   TString shapes("shapes * ");
   shapes += binName + " ";
-  if(pathToFile != "") shapes += pathToFile;
   shapes += rootFileName;
   shapes += " $PROCESS $PROCESS_$SYSTEMATIC\n";
   return shapes;
@@ -199,8 +198,8 @@ void Datacard::PrintDatacard(TString f){
   TString t = text.GetText();
   if(f == "") cout << t;
   else{
-    ofstream outputfile;
     if(!f.EndsWith(".txt")) f += ".txt";
+    std::ofstream outputfile;
     outputfile.open(f);
     outputfile << t;
     outputfile.close();
@@ -358,8 +357,8 @@ void TextDatacard::PrintDatacard(TString f){
   TString t = GetText();
   if(f == "") cout << t;
   else{
-    ofstream outputfile;
     if(!f.EndsWith(".txt")) f += ".txt";
+    std::ofstream outputfile;
     outputfile.open(f);
     outputfile << t;
     outputfile.close();
