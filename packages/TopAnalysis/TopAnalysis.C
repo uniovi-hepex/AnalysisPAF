@@ -188,7 +188,7 @@ void TopAnalysis::InsideLoop(){
       else{
         ElecSF   *= selLeptons.at(1).GetSF( 0);
         ElecSFUp *= selLeptons.at(1).GetSF( 1);
-        ElecSFDo *= selLeptons.at(0).GetSF(-1);
+        ElecSFDo *= selLeptons.at(1).GetSF(-1);
       }
     }
     TWeight             = NormWeight*ElecSF*MuonSF*TrigSF*PUSF;
