@@ -225,7 +225,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     p->AddSample(Signalmc[0], "ttH", itSys, 1, "ScaleDown");
     p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfUp");
     p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfDown");
-    
+  
+  }
   else {
     for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
       p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5, "0", "AllInstances");
