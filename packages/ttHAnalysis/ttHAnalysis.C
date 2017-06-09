@@ -392,6 +392,7 @@ void ttHAnalysis::GetParameters() {
   gIsLHE       = false;
   if (gSampleName.Contains("TTWToLNu") || gSampleName.Contains("TTWToQQ") ||
       gSampleName.Contains("TTZToLLNuNu") || gSampleName.Contains("TTZToQQ")) gIsLHE = true;
+  if (gIsLHE) cout << "+ The sample is tagged for pdf and scale systs" << endl;
 }
 
 
