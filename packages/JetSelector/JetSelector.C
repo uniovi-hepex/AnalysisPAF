@@ -196,6 +196,13 @@ void JetSelector::InsideLoop(){
   nBtagJetsJECUp = 0;
   nBtagJetsJECDown = 0;
   Leptons.clear();
+
+  BtagSF           = 1.;
+  BtagSFBtagUp     = 1.;
+  BtagSFBtagDown   = 1.;
+  BtagSFMistagUp   = 1.;
+  BtagSFMistagDown = 1.;
+
   if (gSelection == ittHSelec) Leptons = GetParam<vector<Lepton>>("vetoLeptons");
   else                         Leptons = GetParam<vector<Lepton>>("selLeptons"); 
 
@@ -227,7 +234,16 @@ void JetSelector::InsideLoop(){
         if      (gSelection == iWWSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
         else if (gSelection == iWZSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
         else if (gSelection == i4tSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
-        else if (gSelection == iTWSelec)                vetoJets.push_back(tJ);
+        else if (gSelection == iTWSelec){
+	  vetoJets.push_back(tJ);
+	  if (!gIsData){
+	    BtagSF           *= fBTagSFnom->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
+	    BtagSFBtagUp     *= fBTagSFbUp->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
+	    BtagSFBtagDown   *= fBTagSFbDo->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
+	    BtagSFMistagUp   *= fBTagSFlUp->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
+	    BtagSFMistagDown *= fBTagSFlDo->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
+	  }
+	}
         else                                            vetoJets.push_back(tJ);
       }
     }
@@ -370,6 +386,12 @@ void JetSelector::InsideLoop(){
   SetParam("nSelBJets",  nBtagJets);
   SetParam("nSelBJetsJECUp",  nBtagJetsJECUp);
   SetParam("nSelBJetsJECDown",  nBtagJetsJECDown);
+  SetParam("BtagSF"          , BtagSF          );
+  SetParam("BtagSFBtagUp"    , BtagSFBtagUp    );
+  SetParam("BtagSFBtagDown"  , BtagSFBtagDown  );
+  SetParam("BtagSFMistagUp"  , BtagSFMistagUp  );
+  SetParam("BtagSFMistagDown", BtagSFMistagDown);
+
 
   // Propagate JES to MET
   Float_t met_pt  = Get<Float_t>("met_pt");
@@ -388,6 +410,8 @@ Bool_t JetSelector::IsBtag(Jet j){
   if(j.Pt() < 20) return false;
   Bool_t isbtag;
   if(gIsData) isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
+  // using "weights" as scale factors in the tW analysis :)
+  else if(gSelection == iTWSelec) isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
   else if(stringWP == "Loose") isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
   else                         isbtag = fBTagSFnom->IsTagged(j.csv,j.flavmc, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
   return isbtag;
