@@ -48,6 +48,13 @@ class JetSelector : public PAFChainItemSelector{
     Float_t MET_JESUp; 
     Float_t MET_JESDown;
 
+    Float_t BtagSF;
+    Float_t BtagSFBtagUp;
+    Float_t BtagSFBtagDown;
+    Float_t BtagSFMistagUp;
+    Float_t BtagSFMistagDown;
+    
+
   protected:
 
     BTagSFUtil *fBTagSFnom ;
