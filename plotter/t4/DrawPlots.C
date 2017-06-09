@@ -50,7 +50,7 @@ void DrawPlots(TString cutName){
  else if(cutName == "SR9") cut = SR9;
  else {cout << "Wrong name!!" << endl; return;}
 
- DrawPlot("TChannel",  cut, NoFake, 1, 0, 15, "Count", cutName);
+ DrawPlot("TChannel",  cut, (cutName=="SR9" || cutName=="CRT") ? "1" : NoFake, 1, 0, 15, "Count", cutName);
 /*  DrawPlot("TNJets", "TNSelLeps == 2  && "  + baseline, "SS",       6, 2, 8, "Jet Multiplicity", "nJets");
   DrawPlot("TNJets", "TNSelLeps >  2  && "  + baseline, "MultiLep", 6, 2, 8, "Jet Multiplicity", "nJets");
   DrawPlot("TNJets",                          baseline, "All"     , 6, 2, 8, "Jet Multiplicity", "nJets");
