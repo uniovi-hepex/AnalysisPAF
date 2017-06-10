@@ -6,18 +6,54 @@ R__LOAD_LIBRARY(Plot.C+)
 #include "Looper.h"
 #include "Plot.h"
 
+
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name = "");
-//TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/StopTrees/mar16/Dilepton/";
-//TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/Stop_temp/Baseline/";
 TString NameOfTree = "tree";
-//TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/may11_RA7objects/";
-TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/may20_withSFs/";
+TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/may29/";
+//TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/tttt_temp/";
 
 // Baseline
-TString baseline = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2";
-//enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, i2l1tau, i2l2taus, i2lss_fake, iTriLep_fake, nTotalDefinedChannels};
+//TString baseline = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TNTaus == 0 && !TIsOnZ";
+//TString CRZ      = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TNTaus == 0 && TIsOnZ";
+TString baseline = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && !TIsOnZ";
+//TString tauVeto  = "&& TNTaus==0 ";
+TString tauVeto  = "&& 1 ";
+TString CRZ      = tauVeto + "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TIsOnZ";
+TString CRW      = baseline + tauVeto + "&& TNSelLeps >= 2 && TNBtags == 2 && TNJets <= 5";
+TString CRT      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 0 && TNJets >1";
+TString SR1      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 2 && TNJets == 6";
+TString SR2      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 2 && TNJets == 7";
+TString SR3      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 2 && TNJets >= 8";
+TString SR4      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 3 && (TNJets == 5 || TNJets == 6)";
+TString SR5      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 3 && TNJets >= 7";
+TString SR6      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 3 && TNJets >= 5";
+TString SR7      = baseline + tauVeto + "&& TNSelLeps == 3 && TNBtags == 2 && TNJets >= 5";
+TString SR8      = baseline + tauVeto + "&& TNSelLeps == 3 && TNBtags >= 3 && TNJets >= 4";
+TString SR9      = baseline + "&& TNSelLeps == 2 && TNBtags == 2 && TNJets >=5 && TNTaus==1";
+TString SR10     = baseline + "&& TNSelLeps == 2 && TNBtags == 3 && TNJets >=5 && TNTaus==1";
 
-void DrawPlots(TString chan = "ElMu"){
+
+TString NoFake   = Form("TChannel == %i || TChannel == %i", i2lss, iTriLep);
+
+void DrawPlots(TString cutName){
+ TString cut;
+ if     (cutName == "CRW" ) cut = CRW ;
+ else if(cutName == "CRZ" ) cut = CRZ ;
+ else if(cutName == "CRT" ) cut = CRT ;
+ else if(cutName == "SR1" ) cut = SR1 ;
+ else if(cutName == "SR2" ) cut = SR2 ;
+ else if(cutName == "SR3" ) cut = SR3 ;
+ else if(cutName == "SR4" ) cut = SR4 ;
+ else if(cutName == "SR5" ) cut = SR5 ;
+ else if(cutName == "SR6" ) cut = SR6 ;
+ else if(cutName == "SR7" ) cut = SR7 ;
+ else if(cutName == "SR8" ) cut = SR8 ;
+ else if(cutName == "SR9" ) cut = SR9 ;
+ else if(cutName == "SR10") cut = SR10;
+ else {cout << "Wrong name!!" << endl; return;}
+
+ NoFake = (cutName=="SR9" || cutName=="SR10" || cutName=="CRT") ? "1" : NoFake; 
+ DrawPlot("TChannel",  cut, NoFake , 1, 0, 15, "Count", cutName);
 /*  DrawPlot("TNJets", "TNSelLeps == 2  && "  + baseline, "SS",       6, 2, 8, "Jet Multiplicity", "nJets");
   DrawPlot("TNJets", "TNSelLeps >  2  && "  + baseline, "MultiLep", 6, 2, 8, "Jet Multiplicity", "nJets");
   DrawPlot("TNJets",                          baseline, "All"     , 6, 2, 8, "Jet Multiplicity", "nJets");
@@ -29,8 +65,13 @@ void DrawPlots(TString chan = "ElMu"){
   DrawPlot("THT",                             baseline, "All"     ,  16, 0, 1600, "HT [GeV]", "HT");
   DrawPlot("TMET", "TNSelLeps == 2  && "    + baseline, "SS",       15, 0, 600, "MET [GeV]", "MET");
   DrawPlot("TMET", "TNSelLeps >  2  && "    + baseline, "MultiLep", 15, 0, 600, "MET [GeV]", "MET");
-*/  DrawPlot("TMET", "THT > 300 && TMET > 50",   Form("TChannel == %i || TChannel == %i", i2lss, iTriLep)     , 15, 0, 600, "MET [GeV]", "MET");
+*/  
+ // DrawPlot("TMET", "THT > 300 && TMET > 50 && TNTaus == 0",   Form("TChannel == %i || TChannel == %i", i2lss, iTriLep)     , 15, 0, 600, "MET [GeV]", "MET");
+  //DrawPlot("TMll", "THT > 300 && TMET > 50 && TNTaus == 0 && TNBtags >= 2 && TNJets >= 2",   Form("TChannel == %i || TChannel == %i", i2lss, iTriLep)     , 15, 0, 300, "InvMass [GeV]", "InvMass");
+
  // DrawPlot("TMET", "TNJets >= 2",  "TChannel == 3"  , 15, 0, 600, "MET [GeV]", "MET");
+
+ gApplication->Terminate();
 }
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name){
@@ -40,77 +81,46 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 //  p->doData = false;
   if(name != "") p->SetVarName(name);
 
-  // WZ
-  p->AddSample("WZTo3LNu", "WZ", itBkg, kOrange, 0.50);
-
-  // WW
-  p->AddSample("WWTo2L2Nu",            "WW", itBkg, kOrange-3, 0.50);
-  p->AddSample("WpWpJJ",               "WW", itBkg);
-  p->AddSample("WWTo2L2Nu_DoubleScat", "WW", itBkg);
-
-  // X+gamma
-  p->AddSample("TGJets",   "X+#gamma", itBkg, kViolet+2, 0.50);
-  p->AddSample("TTGJets",  "X+#gamma", itBkg);
-  p->AddSample("WGToLNuG", "X+#gamma", itBkg);
-  p->AddSample("ZGTo2LG",  "X+#gamma", itBkg);
-  //"WZG_amcatnlo" "WWG_amcatnlo"
   
-   // RareSM
-  p->AddSample("WWW",                "Rare SM", itBkg, kMagenta-7, 0.50);
-  p->AddSample("WWZ",                "Rare SM", itBkg);
-  p->AddSample("WZZ",                "Rare SM", itBkg);
-  p->AddSample("ZZZ",                "Rare SM", itBkg);
-  p->AddSample("ZZTo4L",             "Rare SM", itBkg);
-  p->AddSample("VHToNonbb_amcatnlo", "Rare SM", itBkg);
+  //p->AddSample("WZTo3LNu",                                        "WZ",       itBkg, kOrange);    // WZ
+  //p->AddSample("WWTo2L2Nu, WpWpJJ, WWTo2L2Nu_DoubleScat",         "WW",       itBkg, kOrange-3);  // WW
+  p->AddSample("TGJets, TTGJets, WGToLNuG, ZGTo2LG",                "X+#gamma", itBkg, kViolet+2);  // X+gamma //"WZG_amcatnlo" "WWG_amcatnlo"
+  p->AddSample("WWW, WWZ, WZZ, ZZZ, ZZTo4L, VHToNonbb_amcatnlo, tZq_ll",    "Rare SM",  itBkg, kMagenta-7); // RareSM
+  p->AddSample("WZTo3LNu, WWTo2L2Nu, WpWpJJ, WWTo2L2Nu_DoubleScat", "Rare SM",  itBkg, kMagenta-7); // RareSM
+  // Nonprompt from MC
+  p->AddSample("WJetsToLNu_MLM, DYJetsToLL_M5to50_MLM, DYJetsToLL_M50_MLM",                                 "Nonprompt", itBkg, kGray);
+  p->AddSample("TTbar_Powheg, TW_noFullyHadr, TbarW_noFullyHadr, T_tch, Tbar_tch, TToLeptons_sch_amcatnlo", "Nonprompt", itBkg);
+
+  // Nonprompt from data
+	//p->AddSample("MuonEG, DoubleEG, DoubleMuon",     "Nonprompt", itBkg, kGray, "0", "Fake");
+	// Fake subs 
+  //p->AddSample("WZTo3LNu, WWTo2L2Nu,WpWpJJ,WWTo2L2Nu_DoubleScat,TGJets,TTGJets, WGToLNuG, ZGTo2LG,WWW, WWZ, WZZ, ZZZ, ZZTo4L, VHToNonbb_amcatnlo,TTZToLLNuNu, TTZToLL_M1to10, TTHNonbb, tZq_ll,TTWToLNu", "Nonprompt", itBkg, kGray, "0", "Fakesubs");
 
   // Charge misID
+  
+  p->AddSample("TTHNonbb",                                         "ttH",   itBkg,    kTeal+2);  // ttH
+  p->AddSample("TTZToLLNuNu, TTZToLL_M1to10",                      "ttZ",   itBkg,    kTeal+2);  // ttZ
+  p->AddSample("TTWToLNu",                                         "ttW",   itBkg,    kGreen+4); // ttW
+  p->AddSample("TTTT",                                             "tttt",  itSignal, kRed+1);   // tttt signal
+	p->AddSample("MuonEG, DoubleEG, DoubleMuon",                     "Data",  itData);             // Data
 
-  // Nonprompt
-  p->AddSample("WJetsToLNu_MLM", "Nonprompt", itBkg, kGray, 0.50);
-  p->AddSample("DYJetsToLL_M5to50_MLM", "Nonprompt", itBkg);
-  p->AddSample("DYJetsToLL_M50_MLM", "Nonprompt", itBkg);
-  p->AddSample("TTbar_Powheg", "Nonprompt", itBkg);
-  p->AddSample("TbarW_noFullyHadr, TW_noFullyHadr", "Nonprompt", itBkg);
-  //p->AddSample("TbarW, TW" , "Nonprompt", itBkg);
-  p->AddSample("T_tch", "Nonprompt", itBkg);
-  p->AddSample("Tbar_tch", "Nonprompt", itBkg);
-  p->AddSample("TToLeptons_sch_amcatnlo", "Nonprompt", itBkg);
-
-	//p->AddSample("MuonEG",     "Nonprompt", itBkg, kGray, 0.50, "0", "Fake");
- 	//p->AddSample("DoubleEG",   "Nonprompt", itBkg, kGray, 0.50, "0", "Fake");
-	//p->AddSample("DoubleMuon", "Nonprompt", itBkg, kGray, 0.50, "0", "Fake");
-
- 
-  // ttZ/H
-  p->AddSample("TTZToLLNuNu",    "ttZ/H", itBkg, kTeal+2);
-  p->AddSample("TTZToLL_M1to10", "ttZ/H", itBkg);
-  p->AddSample("TTHNonbb",       "ttZ/H", itBkg);
-  p->AddSample("tZq_ll",         "ttZ/H", itBkg);
-
-  // ttW
-  p->AddSample("TTWToLNu",       "ttW", itBkg, kGreen+4, 0.50);
-
-  p->AddSample("TTTT", "tttt", itSignal, kRed+1, 0.50);
-
-	p->AddSample("MuonEG",     "Data", itData);
- 	p->AddSample("DoubleEG", "Data", itData);
-	p->AddSample("DoubleMuon", "Data", itData);
-
-  //p->SetSignalProcess("tttt");
-  //p->ScaleSignal(10);
+  p->SetSignalProcess("tttt");
+  p->ScaleSignal(10);
   p->SetSignalStyle("SM");
 
   p->SetRatioMin(0.2);
   p->SetRatioMax(1.8);
 
   //p->AddSystematic("JES,Btag,MisTag,LepEff,PU");
-  //p->AddSystematic("stat");
-  //p->PrintYields();
+  p->AddSystematic("stat");
+  cout << "Selection = " << name << endl;
+  cout << "Corresponding to cut: " << cut << endl;
+  p->PrintYields();
   //p->PrintSamples();
-  p->doSetLogy = false;
-  p->DrawStack("0", 1);
-  p->doSetLogy = true;
-  p->DrawStack("log", 1);
+  //p->doSetLogy = false;
+  //p->DrawStack("0", 1);
+  //p->doSetLogy = true;
+  //p->DrawStack("log", 1);
   //p->PrintSystYields();
   delete p;
 }

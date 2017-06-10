@@ -161,14 +161,14 @@ Float_t getJetJERpt(Jet jet){
   Float_t jerScale(1.), genpt(1.), pt(1.), factor1(0.), factor2(0.), sigmaMC(1.), rdm(1.);
   jerScale     = getJERscale(jet, 0);    
   genpt = jet.mcp.Pt(); pt = jet.p.Pt();
+  sigmaMC  = getJetPtErr(jet)/pt;
 
   // Using JER SF 
   factor1  = TMath::Max(Float_t(0.0), genpt + jerScale*(pt - genpt))/pt;
-  if(jet.mcp.DeltaR(jet.p) > 0.2) factor1 = -1; // Check matching
+  if(jet.mcp.DeltaR(jet.p) > 0.2 || TMath::Abs(pt - genpt) > 3*pt*sigmaMC) factor1 = -1; // Check matching
 
   // smearing...
   TRandom3 *fRand3 = new TRandom3(50);
-  sigmaMC  = getJetPtErr(jet)/pt;
   rdm  = fRand3->Gaus(0., sigmaMC ); //smear
   //rdm  = fRand3->Gaus(1., TMath::Sqrt(jerScale*jerScale -1.) * sigmaMC ); //smear
   factor2 = 1 + rdm*TMath::Sqrt(TMath::Max(Float_t(0.0), jerScale*jerScale - 1));
