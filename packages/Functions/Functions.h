@@ -66,6 +66,7 @@ Bool_t PassLowInvMass(vector<Lepton> leptons, Float_t Mll_max = 12);
 Bool_t hasOSSF(vector<Lepton> leptons);
 Float_t ClosestMlltoZ(vector<Lepton> leptons);
 Bool_t IsThereSSpair(vector<Lepton> leptons);
+Bool_t ByPt(Jet, Jet);
 
 void co(TString out, TString co);
 

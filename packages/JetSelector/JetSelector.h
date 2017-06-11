@@ -24,12 +24,11 @@ class JetSelector : public PAFChainItemSelector{
     std::vector<Jet> selJets;
     std::vector<Jet> selJetsJecUp;
     std::vector<Jet> selJetsJecDown;
+    std::vector<Jet> selJetsJER;
     std::vector<Jet> Jets15;
     std::vector<Jet> genJets;
     std::vector<Jet> mcJets;
     std::vector<Jet> vetoJets;
-    std::vector<Jet> vetoJetsJECUp;
-    std::vector<Jet> vetoJetsJECDown;
 
     Int_t nSelJets;
     Int_t nGenJets;
@@ -38,6 +37,7 @@ class JetSelector : public PAFChainItemSelector{
     Int_t nBtagJets;
     Int_t nBtagJetsJECUp;
     Int_t nBtagJetsJECDown;
+    Int_t nBtagJetsJER;
 
     Float_t minDR;
     Float_t jet_MaxEta;
