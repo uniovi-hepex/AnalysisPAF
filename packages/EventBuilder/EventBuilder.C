@@ -271,10 +271,8 @@ void EventBuilder::InsideLoop(){
   }
   
   if(gSelection == ittHSelec && selLeptons.size() > 2){
-    if (selLeptons.at(2).Pt() > 10) {
-      if      (selLeptons.size() == 3) gChannel = iTriLep;
-      else if (selLeptons.size() >= 4) gChannel = iFourLep;
-    }
+    if      (selLeptons.size() == 3) gChannel = iTriLep;
+    else if (selLeptons.size() >= 4) gChannel = iFourLep;
   }
 
   passTrigger = false;
@@ -400,12 +398,21 @@ Bool_t EventBuilder::TrigElMu(){
 
 Bool_t EventBuilder::Trig3l4l() {
   Bool_t pass = false;
+  Int_t ne    = 0;
+  Int_t nm    = 0;
+  
+  for (UInt_t i = 0; i < selLeptons.size(); i++) {
+    if (selLeptons.at(i).isMuon)  nm++;
+    else                          ne++;
+  }
+  
   pass = PassesThreelFourlTrigger();
+  
   if(gIsData) {
-   if (gIsSingleMuon      && (PassesElMuTrigger() || PassesDoubleMuonTrigger() || PassesDoubleElecTrigger())) pass = false;
-   else if (gIsSingleElec && (PassesElMuTrigger() || PassesDoubleMuonTrigger() || PassesDoubleElecTrigger())) pass = false;
-   else if (gIsDoubleMuon && PassesElMuTrigger()) pass = false;
-   else if (gIsDoubleElec && PassesElMuTrigger()) pass = false;
+    if      (gIsSingleMuon && ((nm+ne != nm) || (nm + ne != ne))) pass = false;
+    else if (gIsSingleElec && ((nm+ne != nm) || (nm + ne != ne))) pass = false;
+    else if (gIsDoubleMuon) pass = false;
+    else if (gIsDoubleElec) pass = false;
   }
   return pass;
 }
@@ -427,4 +434,3 @@ Bool_t EventBuilder::PassesMETfilters(){
     ) return true;
   else return false;
 }
-
