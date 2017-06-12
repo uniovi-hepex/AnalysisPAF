@@ -1,5 +1,5 @@
 #include "TWAnalysis.h"
-
+//#define   doingTraining
 ClassImp(TWAnalysis);
 
 bool GreaterThan(float i, float j){ return (i > j);}
@@ -10,6 +10,7 @@ TWAnalysis::TWAnalysis() : PAFChainItemSelector() {
   passMETfilters = 0;
   passTrigger    = 0;
   isSS           = 0;
+  
 
   for(Int_t i = 0; i < 254; i++) TLHEWeight[i] = 0;
   
@@ -82,6 +83,7 @@ void TWAnalysis::Initialise(){
   selJets = std::vector<Jet>();
   selJetsJecUp = std::vector<Jet>();
   selJetsJecDown = std::vector<Jet>();
+  selJetsJER     = std::vector<Jet>();
   Jets15  = std::vector<Jet>();
   genJets = std::vector<Jet>();
   mcJets  = std::vector<Jet>();
@@ -89,6 +91,7 @@ void TWAnalysis::Initialise(){
 }
 
 void TWAnalysis::InsideLoop(){
+
   ReSetTWVariables();
   // Vectors with the objects
   genLeptons  = GetParam<vector<Lepton>>("genLeptons");
@@ -97,6 +100,7 @@ void TWAnalysis::InsideLoop(){
   selJets     = GetParam<vector<Jet>>("selJets");
   selJetsJecUp   = GetParam<vector<Jet>>("selJetsJecUp");
   selJetsJecDown = GetParam<vector<Jet>>("selJetsJecDown");
+  selJetsJER     = GetParam<vector<Jet>>("selJetsJER");
   Jets15      = GetParam<vector<Jet>>("Jets15");
   vetoJets    = GetParam<vector<Jet>>("vetoJets");
   genJets     = GetParam<vector<Jet>>("genJets");
@@ -108,6 +112,11 @@ void TWAnalysis::InsideLoop(){
   PUSF         = GetParam<Float_t>("PUSF");
   PUSF_Up      = GetParam<Float_t>("PUSF_Up");
   PUSF_Down    = GetParam<Float_t>("PUSF_Down");
+  BtagSF           = GetParam<Float_t>("BtagSF"          );
+  BtagSFBtagUp     = GetParam<Float_t>("BtagSFBtagUp"    );
+  BtagSFBtagDown   = GetParam<Float_t>("BtagSFBtagDown"  );
+  BtagSFMistagUp   = GetParam<Float_t>("BtagSFMistagUp"  );
+  BtagSFMistagDown = GetParam<Float_t>("BtagSFMistagDown");
 
   // Event variables
   gChannel       = GetParam<Int_t>("gChannel");
@@ -188,18 +197,25 @@ void TWAnalysis::InsideLoop(){
       else{
         ElecSF   *= selLeptons.at(1).GetSF( 0);
         ElecSFUp *= selLeptons.at(1).GetSF( 1);
-        ElecSFDo *= selLeptons.at(0).GetSF(-1);
+        ElecSFDo *= selLeptons.at(1).GetSF(-1);
       }
     }
-    TWeight             = NormWeight*ElecSF*MuonSF*TrigSF*PUSF;
-    TWeight_ElecEffUp   = NormWeight*ElecSFUp*MuonSF*TrigSF*PUSF;
-    TWeight_ElecEffDown = NormWeight*ElecSFDo*MuonSF*TrigSF*PUSF;
-    TWeight_MuonEffUp   = NormWeight*ElecSF*MuonSFUp*TrigSF*PUSF;
-    TWeight_MuonEffDown = NormWeight*ElecSF*MuonSFDo*TrigSF*PUSF;
-    TWeight_TrigUp     = NormWeight*lepSF*(TrigSF+TrigSFerr)*PUSF;
-    TWeight_TrigDown   = NormWeight*lepSF*(TrigSF-TrigSFerr)*PUSF;
-    TWeight_PUDown     = NormWeight*lepSF*TrigSF*PUSF_Up;
-    TWeight_PUUp       = NormWeight*lepSF*TrigSF*PUSF_Down;
+
+    TWeight             = NormWeight*ElecSF  *MuonSF*TrigSF*PUSF   *  BtagSF;
+    TWeight_ElecEffUp   = NormWeight*ElecSFUp*MuonSF*TrigSF*PUSF   *  BtagSF;
+    TWeight_ElecEffDown = NormWeight*ElecSFDo*MuonSF*TrigSF*PUSF   *  BtagSF;
+    TWeight_MuonEffUp   = NormWeight*ElecSF*MuonSFUp*TrigSF*PUSF   *  BtagSF;
+    TWeight_MuonEffDown = NormWeight*ElecSF*MuonSFDo*TrigSF*PUSF   *  BtagSF;
+    TWeight_TrigUp     = NormWeight*lepSF*(TrigSF+TrigSFerr)*PUSF  *  BtagSF;
+    TWeight_TrigDown   = NormWeight*lepSF*(TrigSF-TrigSFerr)*PUSF  *  BtagSF;
+    TWeight_PUDown     = NormWeight*lepSF*TrigSF*PUSF_Up           *  BtagSF;
+    TWeight_PUUp       = NormWeight*lepSF*TrigSF*PUSF_Down         *  BtagSF          ;
+    TWeight_BtagUp     =  NormWeight*ElecSF*MuonSF*TrigSF*PUSF     *  BtagSFBtagUp    ; 
+    TWeight_BtagDown   =  NormWeight*ElecSF*MuonSF*TrigSF*PUSF     *  BtagSFBtagDown  ; 
+    TWeight_MistagUp   =  NormWeight*ElecSF*MuonSF*TrigSF*PUSF     *  BtagSFMistagUp  ; 
+    TWeight_MistagDown =  NormWeight*ElecSF*MuonSF*TrigSF*PUSF     *  BtagSFMistagDown; 
+
+
     if(gIsData) TWeight = 1;
     // Event Selection
     // ===================================================================================================================
@@ -250,15 +266,22 @@ void TWAnalysis::InsideLoop(){
 	  }
         }
       }
+#ifndef doingTraining
       if(TChannel == iElMu || ((TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15))){
         if(TChannel == iElMu || TMET > 40){   // MET > 40 in ee, µµ
-          if (TNBtags > 0 || TNBtagsUp > 0 || TNBtagsDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0){
+          if (TNBtags > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0 || TNBtagsJER > 0) {
 	    CalculateTWVariables();
             fTree->Fill();
           }
         }
       }
-    }   
+#else
+      if (TNBtags == 1 && TNJets == 1 && TIsSS == 0){
+	CalculateTWVariables();
+	fTree->Fill();
+      }
+#endif//
+    }
   }
 }
 
@@ -298,9 +321,8 @@ void TWAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<
 
 void TWAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut){
   TNJets = selJets.size(); THT = 0;
-  TNBtags = 0; TNBtagsUp = 0; TNBtagsDown = 0;
-  TNBtagsMisTagUp = 0;  TNBtagsMisTagDown = 0;
-  THTJESUp = 0; THTJESDown = 0;
+  TNBtags = 0;
+  THTJESUp = 0; THTJESDown = 0; 
   for(Int_t i = 0; i < TNJets; i++){
     TJet_Pt[i]     = selJets.at(i).Pt();
     TJet_Eta[i]    = selJets.at(i).Eta();
@@ -313,17 +335,19 @@ void TWAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> clea
   SetParam("THT",THT);
 
   if(gIsData) return;  // For systematics...
-  for(Int_t i = 0; i < TNJets; i++){
-    if(selJets.at(i).isBtag_BtagUp    ) TNBtagsUp++;
-    if(selJets.at(i).isBtag_BtagDown  ) TNBtagsDown++;
-    if(selJets.at(i).isBtag_MisTagUp  ) TNBtagsMisTagUp++;
-    if(selJets.at(i).isBtag_MisTagDown) TNBtagsMisTagDown++;
-  }
+  // for(Int_t i = 0; i < TNJets; i++){
+  //   if(selJets.at(i).isBtag_BtagUp    ) TNBtagsUp++;
+  //   if(selJets.at(i).isBtag_BtagDown  ) TNBtagsDown++;
+  //   if(selJets.at(i).isBtag_MisTagUp  ) TNBtagsMisTagUp++;
+  //   if(selJets.at(i).isBtag_MisTagDown) TNBtagsMisTagDown++;
+  // }
   TNJetsJESUp    = 0;
   TNJetsJESDown  = 0;
   TNBtagsJESUp    = 0;
   TNBtagsJESDown  = 0;
+  TNBtagsJER     = 0;
   TNJetsJER      = 0;  
+
   for(Int_t i = 0; i < (Int_t) cleanedJets15.size(); i++){
     if(cleanedJets15.at(i).pTJESUp > ptCut){
       THTJESUp += cleanedJets15.at(i).pTJESUp;
@@ -337,10 +361,16 @@ void TWAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> clea
       if(cleanedJets15.at(i).isBtag) TNBtagsJESDown++;
       TJetJESDown_Pt[i] = cleanedJets15.at(i).pTJESDown;
     }
-    if(cleanedJets15.at(i).pTJERUp > ptCut){
-      TNJetsJER++;
-      TJetJER_Pt[i] = cleanedJets15.at(i).pTJERUp;
-    }
+    // if(cleanedJets15.at(i).pTJERUp > ptCut){
+    //   TNJetsJER++;
+    //   TJetJER_Pt[i] = cleanedJets15.at(i).pTJERUp;
+    //   if(cleanedJets15.at(i).isBtag) TNBtagsJER++;
+
+    // }
+  }
+  TNJetsJER = selJetsJER.size();
+  for (auto& jet : selJetsJER){
+    if (jet.isBtag) TNBtagsJER++;
   }
 
 }
@@ -360,6 +390,17 @@ void TWAnalysis::GetMET(){
     if(gIsData) return;
     TMETJESUp   = Get<Float_t>("met_jecUp_pt"  );
     TMETJESDown = Get<Float_t>("met_jecDown_pt");
+    TMET_PhiJESUp   = Get<Float_t>("met_jecUp_phi"  );
+    TMET_PhiJESDown = Get<Float_t>("met_jecDown_phi");
+    Float_t  diff_MET_JER_phi = GetParam<Float_t>("diff_MET_JER_phi");
+    Float_t  diff_MET_JER_pt  = GetParam<Float_t>("diff_MET_JER_pt");
+
+      TLorentzVector diff_MET_JER; diff_MET_JER.SetPtEtaPhiM(diff_MET_JER_pt, 0.,diff_MET_JER_phi, 0.);
+    TLorentzVector vMET; vMET.SetPtEtaPhiM(TMET, 0., TMET_Phi, 0);
+
+    TMET_PhiJER     = (vMET + diff_MET_JER).Phi();
+    TMETJER         = (vMET + diff_MET_JER).Pt();
+
     TGenMET     = Get<Float_t>("met_genPt");
   if(gIsLHE)  for(Int_t i = 0; i < Get<Int_t>("nLHEweight"); i++)   TLHEWeight[i] = Get<Float_t>("LHEweight_wgt", i);
 }
@@ -497,63 +538,63 @@ void TWAnalysis::FillHistos(Int_t ch, Int_t cut){
 }
 
 void TWAnalysis::SetLeptonVariables(){
-  // fTree->Branch("TNVetoLeps",     &TNVetoLeps,     "TNVetoLeps/I");
-  // fTree->Branch("TNSelLeps",     &TNSelLeps,     "TNSelLeps/I");
-  // fTree->Branch("TLep_Pt",     TLep_Pt,     "TLep_Pt[TNSelLeps]/F");
-  // fTree->Branch("TLep_Eta",     TLep_Eta,     "TLep_Eta[TNSelLeps]/F");
+#ifndef doingTraining
+  fTree->Branch("TNSelLeps",     &TNSelLeps,     "TNSelLeps/I");
+  fTree->Branch("TLep_Pt",     TLep_Pt,     "TLep_Pt[TNSelLeps]/F");
+  fTree->Branch("TLep_Eta",     TLep_Eta,     "TLep_Eta[TNSelLeps]/F");
+  fTree->Branch("TChannel",      &TChannel,      "TChannel/I");
+  fTree->Branch("TIsSS",      &TIsSS,      "TIsSS/B");
+#endif
   // fTree->Branch("TLep_Phi",     TLep_Phi,     "TLep_Phi[TNSelLeps]/F");
   // fTree->Branch("TLep_E" ,     TLep_E ,     "TLep_E[TNSelLeps]/F");
   // fTree->Branch("TLep_Charge",  TLep_Charge, "TLep_Charge[TNSelLeps]/F");
-  fTree->Branch("TChannel",      &TChannel,      "TChannel/I");
-  fTree->Branch("TIsSS",      &TIsSS,      "TIsSS/B");
+  // fTree->Branch("TNVetoLeps",     &TNVetoLeps,     "TNVetoLeps/I");
   // fTree->Branch("TMll",      &TMll,      "TMll/F");
 }
 
 void TWAnalysis::SetJetVariables(){
   fTree->Branch("TNJets",           &TNJets,         "TNJets/I");
   fTree->Branch("TNBtags",       &TNBtags,     "TNBtags/I");
-  if (!gIsTW){
-  //   fTree->Branch("TJet_isBJet",       TJet_isBJet,       "TJet_isBJet[TNJets]/I");
-    fTree->Branch("TJet_Pt",           TJet_Pt,           "TJet_Pt[TNJets]/F");
-  //   fTree->Branch("TJet_Eta",           TJet_Eta,           "TJet_Eta[TNJets]/F");
-  //   fTree->Branch("TJet_Phi",           TJet_Phi,           "TJet_Phi[TNJets]/F");
-  //   fTree->Branch("TJet_E",            TJet_E,            "TJet_E[TNJets]/F");
-  }
+#ifndef doingTraining
+  fTree->Branch("TJet_Pt",           TJet_Pt,           "TJet_Pt[TNJets]/F");
+  fTree->Branch("TJet_Eta",           TJet_Eta,           "TJet_Eta[TNJets]/F");
+  
   fTree->Branch("TNJetsJESUp",           &TNJetsJESUp,         "TNJetsJESUp/I");
   fTree->Branch("TNJetsJESDown",           &TNJetsJESDown,         "TNJetsJESDown/I");
-  fTree->Branch("TNJetsJER",           &TNJetsJER,         "TNJetsJER/I");
+  fTree->Branch("TNJetsJERUp",           &TNJetsJER,         "TNJetsJERUp/I");
 
-  fTree->Branch("TNBtagsUp",     &TNBtagsUp,   "TNBtagsUp/I");
-  fTree->Branch("TNBtagsDown",   &TNBtagsDown, "TNBtagsDown/I");
-  fTree->Branch("TNBtagsMisTagUp",     &TNBtagsMisTagUp,   "TNBtagsMisTagUp/I");
-  fTree->Branch("TNBtagsMisTagDown",   &TNBtagsMisTagDown, "TNBtagsMisTagDown/I");
 
-  fTree->Branch("TNBtagsJESUp",   &TNBtagsJESUp, "TNBtagsJESUp/I");
+  fTree->Branch("TNBtagsJESUp"  ,  &TNBtagsJESUp  , "TNBtagsJESUp/I"  );
   fTree->Branch("TNBtagsJESDown",  &TNBtagsJESDown, "TNBtagsJESDown/I");
-
+  fTree->Branch("TNBtagsJERUp"    ,  &TNBtagsJER    , "TNBtagsJERUp/I"    );
+#endif
   // fTree->Branch("TJetJESUp_Pt",      TJetJESUp_Pt,      "TJetJESUp_Pt[TNJetsJESUp]/F");
   // fTree->Branch("TJetJESDown_Pt",    TJetJESDown_Pt,    "TJetJESDown_Pt[TNJetsJESDown]/F");
   // fTree->Branch("TJetJER_Pt",        TJetJER_Pt,        "TJetJER_Pt[TNJetsJER]/F");
-
-  fTree->Branch("THT",          &THT,          "THT/F");
   // fTree->Branch("THTJESUp",     &THTJESUp,     "THTJESUp/F");
   // fTree->Branch("THTJESDown",   &THTJESDown,   "THTJESDown/F");
 }
 
 void TWAnalysis::SetEventVariables(){
   fTree->Branch("TWeight",      &TWeight,      "TWeight/F");
+#ifndef doingTraining
   fTree->Branch("TWeight_LepEffUp",      &TWeight_LepEffUp,      "TWeight_LepEffUp/F");
   fTree->Branch("TWeight_LepEffDown",    &TWeight_LepEffDown,    "TWeight_LepEffDown/F");
-  fTree->Branch("TWeight_ElecEffUp",      &TWeight_ElecEffUp,      "TWeight_ElecEffUp/F");
-  fTree->Branch("TWeight_ElecEffDown",    &TWeight_ElecEffDown,    "TWeight_ElecEffDown/F");
-  fTree->Branch("TWeight_MuonEffUp",      &TWeight_MuonEffUp,      "TWeight_MuonEffUp/F");
-  fTree->Branch("TWeight_MuonEffDown",    &TWeight_MuonEffDown,    "TWeight_MuonEffDown/F");
+  fTree->Branch("TWeight_ElecEffUp",     &TWeight_ElecEffUp,      "TWeight_ElecEffUp/F");
+  fTree->Branch("TWeight_ElecEffDown",   &TWeight_ElecEffDown,    "TWeight_ElecEffDown/F");
+  fTree->Branch("TWeight_MuonEffUp",     &TWeight_MuonEffUp,      "TWeight_MuonEffUp/F");
+  fTree->Branch("TWeight_MuonEffDown",   &TWeight_MuonEffDown,    "TWeight_MuonEffDown/F");
   fTree->Branch("TWeight_TrigUp",        &TWeight_TrigUp,        "TWeight_TrigUp/F");
   fTree->Branch("TWeight_TrigDown",      &TWeight_TrigDown,      "TWeight_TrigDown/F");
-  fTree->Branch("TWeight_PUUp",        &TWeight_PUUp,        "TWeight_PUUp/F");
-  fTree->Branch("TWeight_PUDown",        &TWeight_PUDown,        "TWeight_PUDown/F");
-
+  fTree->Branch("TWeight_PUUp",          &TWeight_PUUp,        "TWeight_PUUp/F");
+  fTree->Branch("TWeight_PUDown",        &TWeight_PUDown     ,        "TWeight_PUDown/F");
+  fTree->Branch("TWeight_MistagUp"   ,   &TWeight_MistagUp   ,"TWeight_MistagUp/F"  );
+  fTree->Branch("TWeight_MistagDown" ,   &TWeight_MistagDown ,"TWeight_MistagDown/F");
+  fTree->Branch("TWeight_BtagUp"   ,     &TWeight_BtagUp     ,"TWeight_BtagUp/F"    );
+  fTree->Branch("TWeight_BtagDown" ,     &TWeight_BtagDown   ,"TWeight_BtagDown/F"  );
+   
   fTree->Branch("TLHEWeight",        TLHEWeight,         "TLHEWeight[254]/F");
+#endif
   // fTree->Branch("TMET",         &TMET,         "TMET/F");
   // fTree->Branch("TGenMET",         &TGenMET,         "TGenMET/F");
   // fTree->Branch("TMET_Phi",     &TMET_Phi,     "TMET_Phi/F");
@@ -572,35 +613,43 @@ void TWAnalysis::SetTWVariables()
   // fTree->Branch("DR_j_bllmet", &DR_j_bllmet , "DR_j_bllmet/F" );
   // fTree->Branch("M_l1_j"     , &M_l1_j      , "M_l1_j/F"      );
   // fTree->Branch("M_l2_j"     , &M_l2_j      , "M_l2_j/F"      );
-  // fTree->Branch("DilepPt"    , &DilepPt     , "DilepPt/F"     );
   // fTree->Branch("JetPt "     , &JetPt       , "JetPt/F"       );
   // fTree->Branch("BPt"        , &BPt         , "BPt/F"         );
   // fTree->Branch("DR_j_b"     , &DR_j_b      , "DR_j_b/F"      );
 
   // for signal extraction
+
+#ifndef doingTraining
   fTree->Branch("TBDTada"            , &TBDTada           , "TBDTada/F"           );
   fTree->Branch("TBDTadaJESUp"       , &TBDTadaJESUp      , "TBDTadaJESUp/F"      );
   fTree->Branch("TBDTadaJESDown"     , &TBDTadaJESDown    , "TBDTadaJESDown/F"    );
+  fTree->Branch("TBDTJadaERUp"       , &TBDTadaJER        , "TBDTadaJERUp/F"    );
   fTree->Branch("TBDTgrad"            , &TBDTgrad           , "TBDTgrad/F"           );
   fTree->Branch("TBDTgradJESUp"       , &TBDTgradJESUp      , "TBDTgradJESUp/F"      );
   fTree->Branch("TBDTgradJESDown"     , &TBDTgradJESDown    , "TBDTgradJESDown/F"    );
+  fTree->Branch("TBDTgradJERUp"       , &TBDTgradJER        , "TBDTgradJERUp/F"    );
+#endif
   //fTree->Branch("TBDTJER"         , &TBDTJER        , "TBDTJER/F"        );
   // for bdt training
   fTree->Branch("DilepMETJetPt"   , &DilepMETJetPt  , "DilepMETJetPt/F"  );
   fTree->Branch("DilepMETJet1Pz"  , &DilepMETJet1Pz , "DilepMETJet1Pz/F" );
   fTree->Branch("nLooseCentral"   , &nLooseCentral  , "nLooseCentral/F"  );
   fTree->Branch("nLooseFwd"       , &nLooseFwd      , "nLooseFwd/F"      );
-  fTree->Branch("nBLooseCentral"  , &nBLooseCentral , "nBLooseCentral/F" );
-  fTree->Branch("nBLooseFwd"      , &nBLooseFwd     , "nBLooseFwd/F"     );
+  fTree->Branch("nBTotal"         , &nBTotal        , "nBTotal/F"        );
   fTree->Branch("MSys"            , &MSys           , "MSys/F"           );
   fTree->Branch("TJetLoosept"     , &TJetLoosept    , "TJetLoosept/F"    ); // loose jet pt
   fTree->Branch("C_jll"           , &C_jll          , "C_jll/F"          );
   fTree->Branch("DilepJetPt"      , &DilepJetPt     , "DilepJetPt/F"     );
   fTree->Branch("TJet1_pt"        , &TJet1_pt       , "TJet1_pt/F"       );
   fTree->Branch("HTLepOverHT"     , &HTLepOverHT    , "HTLepOverHT/F"    );
-  fTree->Branch("THTtot"          , &THTtot         , "THTtot/F"    );
+  fTree->Branch("THTtot"          , &THTtot         , "THTtot/F"         );
+  fTree->Branch("TDilepPt"        , &TDilepPt       , "TDilepPt/F"       );
+  fTree->Branch("THTtot2j"        , &THTtot2j       , "THTtot2j/F"       );
+  // fTree->Branch("nBLooseCentral"  , &nBLooseCentral , "nBLooseCentral/F" );
+  // fTree->Branch("nBLooseFwd"      , &nBLooseFwd     , "nBLooseFwd/F"     );
 
   // 2j1t
+#ifndef doingTraining
   fTree->Branch("TDilepMETPt"    ,  &TDilepMETPt     , "TDilepMETPt/F");
   fTree->Branch("TETSys"         ,  &TETSys          , "TETSys/F");
   fTree->Branch("TET_LLJetMET"   ,  &TET_LLJetMET    , "TET_LLJetMET/F");
@@ -609,6 +658,9 @@ void TWAnalysis::SetTWVariables()
   fTree->Branch("TDR_L1_J1"      ,  &TDR_L1_J1       , "TDR_L1_J1/F");
   fTree->Branch("TDR_L1L2_J1J2"  ,  &TDR_L1L2_J1J2   , "TDR_L1L2_J1J2/F");
   fTree->Branch("TDR_L1L2_J1J2MET" , &TDR_L1L2_J1J2MET, "TDR_L1L2_J1J2MET/F");
+  fTree->Branch("THtRejJ2"       , &THtRejJ2         , "THtRejJ2/F");
+  fTree->Branch("TBDT2j1t"       , &TBDT2j1t         , "TBDT2j1t/F");
+#endif
 }
 
 
@@ -644,7 +696,8 @@ void TWAnalysis::CalculateTWVariables()
 {
 
   get20Jets();
-  if (TNJets == 1 && ( TNBtags == 1 || TNBtagsUp == 1 || TNBtagsDown == 1 || TNBtagsMisTagUp == 1 ||TNBtagsMisTagUp == 1)){
+  if (TNJets == 1 && TNBtags == 1){
+    // cout << "1j1b NOM"<< endl;
     DilepMETJetPt    =  getDilepMETJetPt()   ;
     DilepJetPt       =  getDilepJetPt()      ;
     Lep1METJetPt     =  getLep1METJetPt()    ;
@@ -657,7 +710,7 @@ void TWAnalysis::CalculateTWVariables()
     C_jll = (selJets[0].p + selLeptons[0].p + selLeptons[1].p).Et() / (selJets[0].p + selLeptons[0].p + selLeptons[1].p).E();
     TJet1_pt           = selJets.at(0).p.Pt();
     nBTotal            = nBLooseCentral + nBLooseFwd;  
-    DilepmetjetOverHT  = DilepMETJetPt/THT          ;
+    DilepmetjetOverHT  = DilepMETJetPt/THTtot          ;
     MSys               = getSysM();
     THTtot             = getHTtot();
     HTLepOverHT        = (selLeptons.at(0).p.Pt() + selLeptons.at(1).p.Pt())/THTtot    ;
@@ -680,76 +733,117 @@ void TWAnalysis::CalculateTWVariables()
     THTtot           =  -99.;
   }
 
-
-  if (TNJetsJESUp == 1 && TNBtagsJESUp == 1){
-    DilepMETJetPtJESUp   =  getDilepMETJetPt("JESUp")   ;
-    DilepJetPtJESUp      =  getDilepJetPt("JESUp")      ;
-    Lep1METJetPtJESUp    =  getLep1METJetPt("JESUp")    ;
-    DPtDilep_JetMETJESUp =  getDPtDilep_JetMET("JESUp") ;
-    DPtDilep_METJESUp    =  getDPtDilep_MET("JESUp")    ;
-    DPtLep1_METJESUp     =  getDPtLep1_MET("JESUp")     ;    
-    DilepMETJet1PzJESUp  =  getDilepMETJet1Pz("JESUp")  ;
-    TLorentzVector met; met.SetPtEtaPhiE(TMETJESUp,0,TMET_Phi,TMETJESUp);
-    C_jllJESUp = (selJetsJecUp[0].p + selLeptons[0].p + selLeptons[1].p).Et() / (selJetsJecUp[0].p + selLeptons[0].p + selLeptons[1].p).E();
-    TJet1_ptJESUp           = selJetsJecUp.at(0).p.Pt();
-    nBTotalJESUp            = nBLooseCentralJESUp + nBLooseFwdJESUp;  
-    DilepmetjetOverHTJESUp  = DilepMETJetPtJESUp/THTJESUp          ;
-    MSysJESUp               = getSysM("JESUp");
-    THTtotJESUp             = getHTtot("JESUp");
-    HTLepOverHTJESUp        = (selLeptons.at(0).p.Pt() + selLeptons.at(1).p.Pt())/THTtotJESUp    ;
-  }
-  else{
-    DilepMETJetPtJESUp   = -99.;
-    DilepJetPtJESUp      = -99.;
-    Lep1METJetPtJESUp    = -99.;
-    DPtDilep_JetMETJESUp = -99.;
-    DPtDilep_METJESUp    = -99.;
-    DPtLep1_METJESUp     = -99.;
-    DilepMETJet1PzJESUp  = -99.;
-    C_jllJESUp           = -99.;
-    TJet1_ptJESUp           = -99.;
-    nBTotalJESUp            = -99.;
-    DilepmetjetOverHTJESUp  = -99.;
-    HTLepOverHTJESUp        = -99.;
-    MSysJESUp               = -99.;
-    THTtotJESUp             = -99.; 
-  }
-
-  if (TNJetsJESDown == 1 && TNBtagsJESDown == 1){
-    DilepMETJetPtJESDown   =  getDilepMETJetPt("JESDown")   ;
-    DilepJetPtJESDown      =  getDilepJetPt("JESDown")      ;
-    Lep1METJetPtJESDown    =  getLep1METJetPt("JESDown")    ;
-    DPtDilep_JetMETJESDown =  getDPtDilep_JetMET("JESDown") ;
-    DPtDilep_METJESDown    =  getDPtDilep_MET("JESDown")    ;
-    DPtLep1_METJESDown     =  getDPtLep1_MET("JESDown")     ;    
-    DilepMETJet1PzJESDown  =  getDilepMETJet1Pz("JESDown")  ;
-    TLorentzVector met; met.SetPtEtaPhiE(TMETJESDown,0,TMET_Phi,TMETJESDown);
-    C_jllJESDown = (selJetsJecDown[0].p + selLeptons[0].p + selLeptons[1].p).Et() / (selJetsJecDown[0].p + selLeptons[0].p + selLeptons[1].p).E();
-    TJet1_ptJESDown           = selJetsJecDown.at(0).p.Pt();
-    nBTotalJESDown            = nBLooseCentralJESDown + nBLooseFwdJESDown;  
-    DilepmetjetOverHTJESDown  = DilepMETJetPtJESDown/THTJESDown          ;
+  if (!gIsData){
+    if (TNJetsJESUp == 1 && TNBtagsJESUp == 1){
+      // cout << "1j1b Up" << endl;
+      DilepMETJetPtJESUp   =  getDilepMETJetPt(1)   ;
+      DilepJetPtJESUp      =  getDilepJetPt("JESUp")      ;
+      Lep1METJetPtJESUp    =  getLep1METJetPt("JESUp")    ;
+      DPtDilep_JetMETJESUp =  getDPtDilep_JetMET("JESUp") ;
+      DPtDilep_METJESUp    =  getDPtDilep_MET("JESUp")    ;
+      DPtLep1_METJESUp     =  getDPtLep1_MET("JESUp")     ;    
+      DilepMETJet1PzJESUp  =  getDilepMETJet1Pz("JESUp")  ;
+      TLorentzVector met; met.SetPtEtaPhiE(TMETJESUp,0,TMET_PhiJESUp,TMETJESUp);
+      C_jllJESUp = (selJetsJecUp[0].p + selLeptons[0].p + selLeptons[1].p).Et() / (selJetsJecUp[0].p + selLeptons[0].p + selLeptons[1].p).E();
+      TJet1_ptJESUp           = selJetsJecUp.at(0).p.Pt();
+      nBTotalJESUp            = nBLooseCentralJESUp + nBLooseFwdJESUp;  
+      DilepmetjetOverHTJESUp  = DilepMETJetPtJESUp/THTtotJESUp          ;
+      MSysJESUp               = getSysM("JESUp");
+      THTtotJESUp             = getHTtot("JESUp");
+      HTLepOverHTJESUp        = (selLeptons.at(0).p.Pt() + selLeptons.at(1).p.Pt())/THTtotJESUp    ;
+    }
+    else{
+      DilepMETJetPtJESUp   = -99.;
+      DilepJetPtJESUp      = -99.;
+      Lep1METJetPtJESUp    = -99.;
+      DPtDilep_JetMETJESUp = -99.;
+      DPtDilep_METJESUp    = -99.;
+      DPtLep1_METJESUp     = -99.;
+      DilepMETJet1PzJESUp  = -99.;
+      C_jllJESUp           = -99.;
+      TJet1_ptJESUp           = -99.;
+      nBTotalJESUp            = -99.;
+      DilepmetjetOverHTJESUp  = -99.;
+      HTLepOverHTJESUp        = -99.;
+      MSysJESUp               = -99.;
+      THTtotJESUp             = -99.; 
+    }
+    
+    if (TNJetsJESDown == 1 && TNBtagsJESDown == 1){
+      // cout << "1j1b Down"<< endl;
+      DilepMETJetPtJESDown   =  getDilepMETJetPt(-1)   ;
+      DilepJetPtJESDown      =  getDilepJetPt("JESDown")      ;
+      Lep1METJetPtJESDown    =  getLep1METJetPt("JESDown")    ;
+      DPtDilep_JetMETJESDown =  getDPtDilep_JetMET("JESDown") ;
+      DPtDilep_METJESDown    =  getDPtDilep_MET("JESDown")    ;
+      DPtLep1_METJESDown     =  getDPtLep1_MET("JESDown")     ;    
+      DilepMETJet1PzJESDown  =  getDilepMETJet1Pz("JESDown")  ;
+      TLorentzVector met; met.SetPtEtaPhiE(TMETJESDown,0,TMET_PhiJESDown,TMETJESDown);
+      C_jllJESDown = (selJetsJecDown[0].p + selLeptons[0].p + selLeptons[1].p).Et() / (selJetsJecDown[0].p + selLeptons[0].p + selLeptons[1].p).E();
+      TJet1_ptJESDown           = selJetsJecDown.at(0).p.Pt();
+      nBTotalJESDown            = nBLooseCentralJESDown + nBLooseFwdJESDown;  
+      DilepmetjetOverHTJESDown  = DilepMETJetPtJESDown/THTtotJESDown          ;
     THTtotJESDown             = getHTtot("JESDown");
     HTLepOverHTJESDown        = (selLeptons.at(0).p.Pt() + selLeptons.at(1).p.Pt())/ THTtotJESDown    ;
     MSysJESDown               = getSysM("JESDown");
 
-  }
-  else{
-    DilepMETJetPtJESDown   = -99.;
-    DilepJetPtJESDown      = -99.;
-    Lep1METJetPtJESDown    = -99.;
-    DPtDilep_JetMETJESDown = -99.;
-    DPtDilep_METJESDown    = -99.;
-    DPtLep1_METJESDown     = -99.;
-    DilepMETJet1PzJESDown  = -99.;
-    C_jllJESDown             = -99.;
-    TJet1_ptJESDown          = -99.;
-    nBTotalJESDown           = -99.;
-    DilepmetjetOverHTJESDown = -99.;
-    HTLepOverHTJESDown       = -99.;
-    MSysJESDown              = -99.;
-    THTtotJESDown            = -99.;
-  }
+    }
+    else{
+      DilepMETJetPtJESDown   = -99.;
+      DilepJetPtJESDown      = -99.;
+      Lep1METJetPtJESDown    = -99.;
+      DPtDilep_JetMETJESDown = -99.;
+      DPtDilep_METJESDown    = -99.;
+      DPtLep1_METJESDown     = -99.;
+      DilepMETJet1PzJESDown  = -99.;
+      C_jllJESDown             = -99.;
+      TJet1_ptJESDown          = -99.;
+      nBTotalJESDown           = -99.;
+      DilepmetjetOverHTJESDown = -99.;
+      HTLepOverHTJESDown       = -99.;
+      MSysJESDown              = -99.;
+      THTtotJESDown            = -99.;
+    }
+    
+    
+    if (TNJetsJER == 1 && TNBtagsJER == 1){
+      // cout << "1j1b JER"<< endl;
+      DilepMETJetPtJER   =  getDilepMETJetPt(-2)   ; // -2 is JER :D
+      DilepJetPtJER      =  getDilepJetPt("JER")      ;
+      Lep1METJetPtJER    =  getLep1METJetPt("JER")    ;
+      DPtDilep_JetMETJER =  getDPtDilep_JetMET("JER") ;
+      DPtDilep_METJER    =  getDPtDilep_MET("JER")    ;
+      DPtLep1_METJER     =  getDPtLep1_MET("JER")     ;    
+      DilepMETJet1PzJER  =  getDilepMETJet1Pz("JER")  ;
+      TLorentzVector met; met.SetPtEtaPhiE(TMETJER,0,TMET_PhiJER,TMETJER);
+      C_jllJER = (selJetsJER[0].p + selLeptons[0].p + selLeptons[1].p).Et() / (selJetsJER[0].p + selLeptons[0].p + selLeptons[1].p).E();
+      TJet1_ptJER           = selJetsJER.at(0).p.Pt();
+      nBTotalJER            = nBLooseCentralJER + nBLooseFwdJER;  
+      DilepmetjetOverHTJER  = DilepMETJetPtJER/THTtotJER          ;
+      THTtotJER             = getHTtot("JER");
+      HTLepOverHTJER        = (selLeptons.at(0).p.Pt() + selLeptons.at(1).p.Pt())/ THTtotJER    ;
+      MSysJER               = getSysM("JER");
 
+    }
+    else{
+      DilepMETJetPtJER   = -99.;
+      DilepJetPtJER      = -99.;
+      Lep1METJetPtJER    = -99.;
+      DPtDilep_JetMETJER = -99.;
+      DPtDilep_METJER    = -99.;
+      DPtLep1_METJER     = -99.;
+      DilepMETJet1PzJER  = -99.;
+      C_jllJER             = -99.;
+      TJet1_ptJER          = -99.;
+      nBTotalJER           = -99.;
+      DilepmetjetOverHTJER = -99.;
+      HTLepOverHTJER       = -99.;
+      MSysJER              = -99.;
+      THTtotJER            = -99.;
+    }
+
+
+  }
   // if (TNJets == 2 && TNBtags == 1){
   //   // b is the b jet, j is the light jet
   //   // DR_j_bllmet = getDR_j_bllmet(); 
@@ -787,9 +881,26 @@ void TWAnalysis::CalculateTWVariables()
 
   // }
 
+  // cout << "The Comp " << TNJets << " " << TNJetsJER << endl;
+  // if (TNJets == 1 && TNJetsJER == 1 && TNBtags == 1 && TNBtagsJER == 1){
+  //   cout << "nLooseCentral"      << "   "<< nLooseCentral      << "   "<< nLooseCentralJER     << endl;
+  //   cout << "nLooseFwd"          << "   "<< nLooseFwd          << "   "<< nLooseFwdJER         << endl;
+  //   cout << "nBTotal"            << "   "<< nBTotal            << "   "<< nBTotalJER           << endl;
+  //   cout << "DilepMETJetPt"      << "   "<< DilepMETJetPt      << "   "<< DilepMETJetPtJER     << endl;
+  //   cout << "THT"                << "   "<< THT                << "   "<< THTJER               << endl;
+  //   cout << "TJet1_pt"           << "   "<< TJet1_pt           << "   "<< TJet1_ptJER          << endl;
+  //   cout << "TJetLoosept"        << "   "<< TJetLoosept        << "   "<< TJetLooseptJER       << endl;
+  //   cout << "DilepmetjetOverHT"  << "   "<< DilepmetjetOverHT  << "   "<< DilepmetjetOverHTJER << endl;
+  //   cout << "MSys"               << "   "<< MSys               << "   "<< MSysJER              << endl;
+  //   cout << "C_jll"              << "   "<< C_jll              << "   "<< C_jllJER             << endl;
+  //   cout << "HTLepOverHT"        << "   "<< HTLepOverHT        << "   "<< HTLepOverHTJER       << endl;
+  //   cout << "DilepJetPt"         << "   "<< DilepJetPt         << "   "<< DilepJetPtJER        << endl;
 
-  if (TNJets == 1 && ( TNBtags == 1 || TNBtagsUp == 1 || TNBtagsDown == 1 || TNBtagsMisTagUp == 1 || TNBtagsMisTagUp == 1)){
+  // }
 
+  TDilepPt                 = getDilepPt();      
+
+  if (TNJets == 1 && TNBtags == 1 ){
     TBDTada = BDTada->EvaluateMVA("BDTada");
     TBDTgrad = BDTgrad->EvaluateMVA("BDTgrad");
   }
@@ -797,39 +908,53 @@ void TWAnalysis::CalculateTWVariables()
     TBDTada = -99.;    
     TBDTgrad = -99.;
   }
-
-  if (TNJetsJESUp == 1 && TNBtagsJESUp == 1){
-    TBDTadaJESUp = BDTada_JESUp->EvaluateMVA("BDTada_JESUp");
-    TBDTgradJESUp = BDTgrad_JESUp->EvaluateMVA("BDTgrad_JESUp");
+  if (!gIsData){
+    if (TNJetsJESUp == 1 && TNBtagsJESUp == 1){
+      TBDTadaJESUp = BDTada_JESUp->EvaluateMVA("BDTada_JESUp");
+      TBDTgradJESUp = BDTgrad_JESUp->EvaluateMVA("BDTgrad_JESUp");
+    }
+    else{
+      TBDTadaJESUp = -99.;
+      TBDTgradJESUp = -99.;
+    }
+    
+    if (TNJetsJESDown == 1 && TNBtagsJESDown == 1){
+      TBDTadaJESDown = BDTada_JESDown->EvaluateMVA("BDTada_JESDown");
+      TBDTgradJESDown = BDTgrad_JESDown->EvaluateMVA("BDTgrad_JESDown");
+    }
+    else{
+      TBDTadaJESDown = -99.;
+      TBDTgradJESDown = -99.;
+    }
+   if (TNJetsJER == 1 && TNBtagsJER == 1){
+      TBDTadaJER = BDTada_JER->EvaluateMVA("BDTada_JER");
+      TBDTgradJER = BDTgrad_JER->EvaluateMVA("BDTgrad_JER");
+    }
+    else{
+      TBDTadaJER = -99.;
+      TBDTgradJER = -99.;
+    }
   }
-  else{
-    TBDTadaJESUp = -99.;
-    TBDTgradJESUp = -99.;
-  }
-
-  if (TNJetsJESDown == 1 && TNBtagsJESDown == 1){
-    TBDTadaJESDown = BDTada_JESDown->EvaluateMVA("BDTada_JESDown");
-    TBDTgradJESDown = BDTgrad_JESDown->EvaluateMVA("BDTgrad_JESDown");
-  }
-  else{
-    TBDTadaJESDown = -99.;
-    TBDTgradJESDown = -99.;
-  }
-
-  if (TNJets == 2 && (TNBtags == 1 || TNBtagsUp == 1  || TNBtagsDown == 1  || TNBtagsMisTagUp == 1 || TNBtagsMisTagDown == 1)){
-    TDilepPt        = getDilepPt();      
+  if (TNJets == 2 && TNBtags == 1){
+    // cout << "Nominal " << endl;
     TDilepMETPt     = getDilepMETPt();
     TETSys          = getETSys(); // faltan los systs!
     TET_LLJetMET    = getET_LLJetMET(); // faltan los systs!
+    THtRejJ2        = selLeptons.at(0).Pt() + selLeptons.at(1).Pt() +  selJets.at(0).Pt() + TMET;
     TDPtL1_L2       = selLeptons.at(0).Pt() - selLeptons.at(1).Pt();
     TDPtJ2_L2       = selJets.at(1).Pt()    - selLeptons.at(1).Pt();
     TDR_L1_J1       = getDeltaRLep1_Jet1();
     TDR_L1L2_J1J2   = getDeltaRDilep_Jets12();
-    TDR_L1L2_J1J2MET= getDeltaRDilep_Jets12();
-    
+    TDR_L1L2_J1J2MET= getDeltaRDilep_METJets12();
+    LeadingLeptPt_    = selLeptons.at(0).Pt();
+    LeadingLeptEta_   = selLeptons.at(0).Eta();
+    jetPtSubLeading_  = selJets.at(1).Pt();
+    jetEtaSubLeading_ = selJets.at(1).Eta();
+    THTtot2j          = getHTtot2j();
+    // cout << "evaluating 2j1b" << endl;
+    TBDT2j1t = BDT2j1t->EvaluateMVA("2j1b");
   }
   else{
-    TDilepPt         = -99;
     TDilepMETPt      = -99;
     TETSys           = -99.;
     TET_LLJetMET     = -99.;
@@ -838,9 +963,161 @@ void TWAnalysis::CalculateTWVariables()
     TDR_L1_J1        = -99.;
     TDR_L1L2_J1J2    = -99.;
     TDR_L1L2_J1J2MET = -99.;
-
+    THtRejJ2         = -99.;
+    THTtot2j         = -99.;
+    TBDT2j1t         = -99.;       
   }
-		      
+	
+  if (!gIsData){
+
+    if (TNJetsJESUp == 2 && TNBtagsJESUp == 1){
+      // cout << "Up " << endl;
+      TDilepMETPtJESUp       = getDilepMETPt(+1);
+      TETSysJESUp            = getETSys(+1); // faltan los systs!
+      TET_LLJetMETJESUp      = getET_LLJetMET(+1); // faltan los systs!
+      THtRejJ2JESUp          = selLeptons.at(0).Pt() + selLeptons.at(1).Pt() +  selJetsJecUp.at(0).Pt() + TMETJESUp;
+      TDPtL1_L2JESUp         = selLeptons.at(0).Pt() - selLeptons.at(1).Pt();
+      TDPtJ2_L2JESUp         = selJetsJecUp.at(1).Pt()    - selLeptons.at(1).Pt();
+      TDR_L1_J1JESUp         = getDeltaRLep1_Jet1(1);
+      TDR_L1L2_J1J2JESUp     = getDeltaRDilep_Jets12(1);
+      TDR_L1L2_J1J2METJESUp  = getDeltaRDilep_METJets12(1);
+      LeadingLeptPt_JESUp    = selLeptons.at(0).Pt();
+      LeadingLeptEta_JESUp   = selLeptons.at(0).Eta();
+      jetPtSubLeading_JESUp  = selJetsJecUp.at(1).Pt();
+      jetEtaSubLeading_JESUp = selJetsJecUp.at(1).Eta();
+      THTtot2jJESUp          = getHTtot2j("JESUp");
+      // cout << "evaluating 2j1b" << endl;
+      TBDT2j1tJESUp          = BDT2j1tJESUp->EvaluateMVA("2j1b");
+    }
+    else{
+      TDilepMETPtJESUp       = -99.;
+      TETSysJESUp            = -99.;
+      TET_LLJetMETJESUp      = -99.;
+      THtRejJ2JESUp          = -99.;
+      TDPtL1_L2JESUp         = -99.;
+      TDPtJ2_L2JESUp         = -99.;
+      TDR_L1_J1JESUp         = -99.;
+      TDR_L1L2_J1J2JESUp     = -99.;
+      TDR_L1L2_J1J2METJESUp  = -99.;
+      LeadingLeptPt_JESUp    = -99.;
+      LeadingLeptEta_JESUp   = -99.;
+      jetPtSubLeading_JESUp  = -99.;
+      jetEtaSubLeading_JESUp = -99.;
+      THTtot2jJESUp          = -99.;
+      TBDT2j1tJESUp          = -99.;   
+    }
+    
+    if (TNJetsJESDown == 2 && TNBtagsJESDown == 1){
+      // cout << "Down " << endl;
+      TDilepMETPtJESDown       = getDilepMETPt(-1);
+      TETSysJESDown            = getETSys(-1); // faltan los systs!
+      TET_LLJetMETJESDown      = getET_LLJetMET(-1); // faltan los systs!
+      THtRejJ2JESDown          = selLeptons.at(0).Pt() + selLeptons.at(1).Pt() +  selJetsJecDown.at(0).Pt() + TMETJESDown;
+      TDPtL1_L2JESDown         = selLeptons.at(0).Pt() - selLeptons.at(1).Pt();
+      TDPtJ2_L2JESDown         = selJetsJecDown.at(1).Pt()    - selLeptons.at(1).Pt();
+      TDR_L1_J1JESDown         = getDeltaRLep1_Jet1(-1);
+      TDR_L1L2_J1J2JESDown     = getDeltaRDilep_Jets12(-1);
+      TDR_L1L2_J1J2METJESDown  = getDeltaRDilep_METJets12(-1);
+      LeadingLeptPt_JESDown    = selLeptons.at(0).Pt();
+      LeadingLeptEta_JESDown   = selLeptons.at(0).Eta();
+      jetPtSubLeading_JESDown  = selJetsJecDown.at(1).Pt();
+      jetEtaSubLeading_JESDown = selJetsJecDown.at(1).Eta();
+      THTtot2jJESDown          = getHTtot2j("JESDown");
+      // cout << "evaluating 2j1b" << endl;
+      TBDT2j1tJESDown = BDT2j1tJESDown->EvaluateMVA("2j1b");
+    }
+    else{
+      TDilepMETPtJESDown       = -99.;
+      TETSysJESDown            = -99.;
+      TET_LLJetMETJESDown      = -99.;
+      THtRejJ2JESDown          = -99.;
+      TDPtL1_L2JESDown         = -99.;
+      TDPtJ2_L2JESDown         = -99.;
+      TDR_L1_J1JESDown         = -99.;
+      TDR_L1L2_J1J2JESDown     = -99.;
+      TDR_L1L2_J1J2METJESDown  = -99.;
+      LeadingLeptPt_JESDown    = -99.;
+      LeadingLeptEta_JESDown   = -99.;
+      jetPtSubLeading_JESDown  = -99.;
+      jetEtaSubLeading_JESDown = -99.;
+      THTtot2jJESDown          = -99.;
+      TBDT2j1tJESDown          = -99.;   
+    }
+
+    if (TNJetsJER == 2 && TNBtagsJER == 1){
+      // cout << "JER " << endl;
+      TDilepMETPtJER       = getDilepMETPt(-2);
+      // cout << "check A " << endl;
+      TETSysJER            = getETSys(-2); // faltan los systs!
+      // cout << "check B " << endl;
+      TET_LLJetMETJER      = getET_LLJetMET(-2); // faltan los systs!
+      // cout << "check C " << endl;
+      THtRejJ2JER          = selLeptons.at(0).Pt() + selLeptons.at(1).Pt() +  selJetsJER.at(0).Pt() + TMETJER;
+      // cout << "check D " << endl;
+      TDPtL1_L2JER         = selLeptons.at(0).Pt() - selLeptons.at(1).Pt();
+      // cout << "check E " << endl;
+      TDPtJ2_L2JER         = selJetsJER.at(1).Pt() - selLeptons.at(1).Pt();
+      // cout << "check F " << endl;
+      TDR_L1_J1JER         = getDeltaRLep1_Jet1(-2);
+      // cout << "check G " << endl;
+      TDR_L1L2_J1J2JER     = getDeltaRDilep_Jets12(-2);
+      // cout << "check H " << endl;
+      TDR_L1L2_J1J2METJER  = getDeltaRDilep_METJets12(-2);
+      // cout << "check I " << endl;
+      LeadingLeptPt_JER    = selLeptons.at(0).Pt();
+      // cout << "check J " << endl;
+      LeadingLeptEta_JER   = selLeptons.at(0).Eta();
+      // cout << "check K " << endl;
+      jetPtSubLeading_JER  = selJetsJER.at(1).Pt();
+      // cout << "check L " << endl;
+      jetEtaSubLeading_JER = selJetsJER.at(1).Eta();
+      THTtot2jJER          = getHTtot2j("JER");
+      // cout << "evaluating 2j1b" << endl;
+      TBDT2j1tJER = BDT2j1tJER->EvaluateMVA("2j1b");
+    }
+    else{
+      TDilepMETPtJER       = -99.;
+      TETSysJER            = -99.;
+      TET_LLJetMETJER      = -99.;
+      THtRejJ2JER          = -99.;
+      TDPtL1_L2JER         = -99.;
+      TDPtJ2_L2JER         = -99.;
+      TDR_L1_J1JER         = -99.;
+      TDR_L1L2_J1J2JER     = -99.;
+      TDR_L1L2_J1J2METJER  = -99.;
+      LeadingLeptPt_JER    = -99.;
+      LeadingLeptEta_JER   = -99.;
+      jetPtSubLeading_JER  = -99.;
+      jetEtaSubLeading_JER = -99.;
+      THTtot2jJER          = -99.;
+      TBDT2j1tJER          = -99.;   
+    }
+  }
+
+  // if (TNJetsJER == 2 && TNBtagsJER == 1 && TNJetsJESUp == 2 && TNBtagsJESUp == 1){
+    
+  //   cout << "TDilepMETPt       " << TDilepMETPt        << "  " << TDilepMETPtJER        << endl;
+  //   cout << "TETSys            " << TETSys             << "  " << TETSysJER             << endl;
+  //   cout << "TET_LLJetMET      " << TET_LLJetMET       << "  " << TET_LLJetMETJER       << endl;
+  //   cout << "THtRejJ2          " << THtRejJ2           << "  " << THtRejJ2JER           << endl;
+  //   cout << "TDPtL1_L2         " << TDPtL1_L2          << "  " << TDPtL1_L2JER          << endl;
+  //   cout << "TDPtJ2_L2         " << TDPtJ2_L2          << "  " << TDPtJ2_L2JER          << endl;
+  //   cout << "TDR_L1_J1         " << TDR_L1_J1          << "  " << TDR_L1_J1JER          << endl;
+  //   cout << "TDR_L1L2_J1J2     " << TDR_L1L2_J1J2      << "  " << TDR_L1L2_J1J2JER      << endl;
+  //   cout << "TDR_L1L2_J1J2MET  " << TDR_L1L2_J1J2MET   << "  " << TDR_L1L2_J1J2METJER   << endl;
+  //   cout << "LeadingLeptPt_    " << LeadingLeptPt_     << "  " << LeadingLeptPt_JER     << endl;
+  //   cout << "LeadingLeptEta_   " << LeadingLeptEta_    << "  " << LeadingLeptEta_JER    << endl;
+  //   cout << "jetPtSubLeading_  " << jetPtSubLeading_   << "  " << jetPtSubLeading_JER   << endl;
+  //   cout << "jetEtaSubLeading_ " << jetEtaSubLeading_  << "  " << jetEtaSubLeading_JER  << endl;
+  //   cout << "THTtot2j          " << THTtot2j           << "  " << THTtot2jJER           << endl;
+
+  // }
+
+
+
+
+
+
 
 
   return;
@@ -854,15 +1131,15 @@ void TWAnalysis::get20Jets()
   vector<float> looseJetPt;
   vector<float> looseJetPtJESUp;
   vector<float> looseJetPtJESDown;
-  // vector<float> looseJetPtJER;
+  vector<float> looseJetPtJER;
 
   
-  nLooseCentral  = 0.;   nLooseCentralJESUp  = 0.; nLooseCentralJESDown  = 0.; // nLooseCentralJER  = 0.; 
-  nLooseFwd      = 0.;   nLooseFwdJESUp      = 0.; nLooseFwdJESDown      = 0.; // nLooseFwdJER      = 0.; 
-  nBLooseCentral = 0.;   nBLooseCentralJESUp = 0.; nBLooseCentralJESDown = 0.; // nBLooseCentralJER = 0.; 
-  nBLooseFwd     = 0.;   nBLooseFwdJESUp     = 0.; nBLooseFwdJESDown     = 0.; // nBLooseFwdJER     = 0.; 
-  TJet2csv       = 0.;   TJet2csvJESUp       = 0.; TJet2csvJESDown       = 0.; // TJet2csvJER       = 0.; 
-  TJetLoosept    = 0.;   TJetLooseptJESUp    = 0.; TJetLooseptJESDown    = 0.; // TJetLooseptJER    = 0.; 
+  nLooseCentral  = 0.;   nLooseCentralJESUp  = 0.; nLooseCentralJESDown  = 0.;  nLooseCentralJER  = 0.; 
+  nLooseFwd      = 0.;   nLooseFwdJESUp      = 0.; nLooseFwdJESDown      = 0.;  nLooseFwdJER      = 0.; 
+  nBLooseCentral = 0.;   nBLooseCentralJESUp = 0.; nBLooseCentralJESDown = 0.;  nBLooseCentralJER = 0.; 
+  nBLooseFwd     = 0.;   nBLooseFwdJESUp     = 0.; nBLooseFwdJESDown     = 0.;  nBLooseFwdJER     = 0.; 
+  TJet2csv       = 0.;   TJet2csvJESUp       = 0.; TJet2csvJESDown       = 0.;  TJet2csvJER       = 0.; 
+  TJetLoosept    = 0.;   TJetLooseptJESUp    = 0.; TJetLooseptJESDown    = 0.;  TJetLooseptJER    = 0.; 
 
   for (unsigned int j = 0; j < vetoJets.size(); ++j){
     if (vetoJets.at(j).p.Pt() > 20.){
@@ -894,6 +1171,16 @@ void TWAnalysis::get20Jets()
 	else nBLooseFwdJESDown++;
       }
     }
+
+    if (vetoJets.at(j).pTJERUp > 20.){
+      looseJetPtJER.push_back( vetoJets.at(j).pTJERUp );
+      if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nLooseCentralJER++;
+      else nLooseFwdJER++;
+      if (vetoJets.at(j).isBtag){
+	if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentralJER++;
+	else nBLooseFwdJER++;
+      }
+    }
     // if (vetoJets.at(j).pTJER > 20.){
     //   looseJetPtJER.push_back( vetoJets.at(j).pTJER );
     //   if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nLooseCentralJER++;
@@ -908,6 +1195,8 @@ void TWAnalysis::get20Jets()
   std::sort( looseJetPt.begin()       , looseJetPt.end()       , GreaterThan);
   std::sort( looseJetPtJESUp.begin()  , looseJetPtJESUp.end()  , GreaterThan);
   std::sort( looseJetPtJESDown.begin(), looseJetPtJESDown.end(), GreaterThan);
+  std::sort( looseJetPtJER.begin()    , looseJetPtJER.end()    , GreaterThan);
+
   // std::sort( looseJetPtJER.begin()    , looseJetPtJER.end()    , GreaterThan);
 
   
@@ -923,10 +1212,10 @@ void TWAnalysis::get20Jets()
     TJet2csvJESDown = TMath::Max( vetoJets.at(1).csv   , 0.);
     TJetLooseptJESDown = looseJetPtJESDown.at(1);
   }
-  // if (nLooseFwdJER + nLooseCentralJER > 1){
-  //   TJet2csvJER = TMath::Max( vetoJets.at(1).csv   , 0.);
-  //   TJetLooseptJER = looseJetPtJER.at(1);
-  // }
+  if (nLooseFwdJER + nLooseCentralJER > 1){
+    TJet2csvJER = TMath::Max( vetoJets.at(1).csv   , 0.);
+    TJetLooseptJER = looseJetPtJER.at(1);
+  }
 
 
   return;
@@ -941,6 +1230,25 @@ Double_t TWAnalysis::getHTtot(const TString& sys)
     return selLeptons.at(0).p.Pt() + selLeptons.at(1).p.Pt() + TMETJESUp + selJetsJecUp.at(0).p.Pt();
   else if (sys == "JESDown")
     return selLeptons.at(0).p.Pt() + selLeptons.at(1).p.Pt() + TMETJESDown + selJetsJecDown.at(0).p.Pt();
+  else if (sys == "JER")
+    return selLeptons.at(0).p.Pt() + selLeptons.at(1).p.Pt() + TMETJER     + selJetsJER.at(0).p.Pt();
+  else{
+    cout << "Unset systematic" << endl;
+    return -99.;
+  }
+}
+
+
+Double_t TWAnalysis::getHTtot2j(const TString& sys)
+{
+  if (sys == "Norm")
+    return selLeptons.at(0).p.Pt() + selLeptons.at(1).p.Pt() + TMET + selJets.at(0).p.Pt() + selJets.at(1).p.Pt();
+  else if (sys == "JESUp")
+    return selLeptons.at(0).p.Pt() + selLeptons.at(1).p.Pt() + TMETJESUp + selJetsJecUp.at(0).p.Pt() + selJetsJecUp.at(1).p.Pt();
+  else if (sys == "JESDown")
+    return selLeptons.at(0).p.Pt() + selLeptons.at(1).p.Pt() + TMETJESDown + selJetsJecDown.at(0).p.Pt() + selJetsJecDown.at(1).p.Pt();
+  else if (sys == "JER")
+    return selLeptons.at(0).p.Pt() + selLeptons.at(1).p.Pt() + TMETJER + selJetsJER.at(0).p.Pt() + selJetsJER.at(1).p.Pt();
   else{
     cout << "Unset systematic" << endl;
     return -99.;
@@ -948,22 +1256,26 @@ Double_t TWAnalysis::getHTtot(const TString& sys)
 }
 
 // 1j1b
-Double_t TWAnalysis::getDilepMETJetPt(const TString& sys)
+Double_t TWAnalysis::getDilepMETJetPt(int sys)
 {
   TLorentzVector vSystem[4];
   vSystem[0] = selLeptons.at(0).p;                               // lep1
   vSystem[1] = selLeptons.at(1).p;                               // lep2
-  if (sys == "Norm"){
+  if (sys == 0){
     vSystem[2].SetPtEtaPhiE(TMET,0,TMET_Phi,TMET); // met
     vSystem[3] = selJets.at(0).p;                                    // jet 1
   }
-  else if (sys == "JESUp"){
-    vSystem[2].SetPtEtaPhiE(TMETJESUp,0,TMET_Phi,TMETJESUp); // met
+  else if (sys > 0){
+    vSystem[2].SetPtEtaPhiE(TMETJESUp,0,TMET_PhiJESUp,TMETJESUp); // met
     vSystem[3] = selJetsJecUp.at(0).p;
   }
-  else if (sys == "JESDown"){
-    vSystem[2].SetPtEtaPhiE(TMETJESDown,0,TMET_Phi,TMETJESDown); // met
+  else if (sys == -1){
+    vSystem[2].SetPtEtaPhiE(TMETJESDown,0,TMET_PhiJESDown,TMETJESDown); // met
     vSystem[3] = selJetsJecDown.at(0).p;
+  }
+  else if (sys == -2){
+    vSystem[2].SetPtEtaPhiE(TMETJER,0,TMET_Phi,TMETJER); // met
+    vSystem[3] = selJetsJER.at(0).p;
   }
   else{
     cout << "Wrong systematic in TWAnalysis::getDilepMETJetPt" << endl;
@@ -976,19 +1288,22 @@ Double_t TWAnalysis::getDilepMETJetPt(const TString& sys)
 }
 
 
-Double_t TWAnalysis::getDilepMETPt(const TString& sys)
+Double_t TWAnalysis::getDilepMETPt(int sys)
 {
   TLorentzVector vSystem[3];
   vSystem[0] = selLeptons.at(0).p;                               // lep1
   vSystem[1] = selLeptons.at(1).p;                               // lep2
-  if (sys == "Norm"){
+  if (sys == 0){
     vSystem[2].SetPtEtaPhiE(TMET,0,TMET_Phi,TMET); // met
   }
-  else if (sys == "JESUp"){
-    vSystem[2].SetPtEtaPhiE(TMETJESUp,0,TMET_Phi,TMETJESUp); // met
+  else if (sys > 0){
+    vSystem[2].SetPtEtaPhiE(TMETJESUp,0,TMET_PhiJESUp,TMETJESUp); // met
   }
-  else if (sys == "JESDown"){
-    vSystem[2].SetPtEtaPhiE(TMETJESDown,0,TMET_Phi,TMETJESDown); // met
+  else if (sys == -1){
+    vSystem[2].SetPtEtaPhiE(TMETJESDown,0,TMET_PhiJESDown,TMETJESDown); // met
+  }
+  else if (sys == -2){
+    vSystem[2].SetPtEtaPhiE(TMETJER,0,TMET_PhiJER,TMETJER); // met
   }
   else{
     cout << "Wrong systematic in TWAnalysis::getDilepMETJetPt" << endl;
@@ -1011,6 +1326,8 @@ Double_t TWAnalysis::getDilepJetPt(const TString& sys)
     vSystem[2] = selJetsJecUp[0].p;                                    // jet 1
   else if (sys == "JESDown")
     vSystem[2] = selJetsJecDown[0].p;                                    // jet 1
+  else if (sys == "JER")
+    vSystem[2] = selJetsJER[0].p;                                    // jet 1
   else{
     cout << "Wrong systematic in TWAnalysis::getDilepJetPt" << endl;
     return -9999.;
@@ -1031,12 +1348,16 @@ Double_t TWAnalysis::getLep1METJetPt(const TString& sys)
     vSystem[2] = selJets[0].p;
   }
   else if (sys == "JESUp"){
-    vSystem[1].SetPtEtaPhiE(TMETJESUp,0,TMET_Phi,TMETJESUp); // met
+    vSystem[1].SetPtEtaPhiE(TMETJESUp,0,TMET_PhiJESUp,TMETJESUp); // met
     vSystem[2] = selJetsJecUp[0].p;
   }
   else if (sys == "JESDown"){
-    vSystem[1].SetPtEtaPhiE(TMETJESDown,0,TMET_Phi,TMETJESDown); // met
+    vSystem[1].SetPtEtaPhiE(TMETJESDown,0,TMET_PhiJESDown,TMETJESDown); // met
     vSystem[2] = selJetsJecDown[0].p;
+  }  
+  else if (sys == "JER"){
+    vSystem[1].SetPtEtaPhiE(TMETJER,0,TMET_PhiJER,TMETJER); // met
+    vSystem[2] = selJetsJER[0].p;
   }  
   else{
     cout << "Wrong systematic in TWAnalysis::getLep1METJetPt" << endl;
@@ -1068,12 +1389,16 @@ Double_t TWAnalysis::getDilepMETJet1Pz(const TString& sys)
     vSystem[3] = selJets[0].p;                                    // jet 1
   }
   else if (sys == "JESUp"){
-    vSystem[2].SetPtEtaPhiE(TMETJESUp,0,TMET_Phi,TMETJESUp); // met
+    vSystem[2].SetPtEtaPhiE(TMETJESUp,0,TMET_PhiJESUp,TMETJESUp); // met
     vSystem[3] = selJetsJecUp[0].p;                                    // jet 1
   }
   else if (sys == "JESDown"){
-    vSystem[2].SetPtEtaPhiE(TMETJESDown,0,TMET_Phi,TMETJESDown); // met
+    vSystem[2].SetPtEtaPhiE(TMETJESDown,0,TMET_PhiJESDown,TMETJESDown); // met
     vSystem[3] = selJetsJecDown[0].p;                                    // jet 1
+  }
+  else if (sys == "JER"){
+    vSystem[2].SetPtEtaPhiE(TMETJER,0,TMET_PhiJER,TMETJER); // met
+    vSystem[3] = selJetsJER[0].p;                                    // jet 1
   }
   else{
     cout << "Wrong systematic in TWAnalysis::getDilepMETJet1Pz" << endl;
@@ -1108,11 +1433,15 @@ Double_t TWAnalysis::getDPtDilep_JetMET(const TString& sys)
   }
   else if (sys == "JESUp"){
     col2.push_back(selJetsJecUp.at(0).p);
-    met.SetPtEtaPhiE(TMETJESUp,0,TMET_Phi,TMETJESUp);
+    met.SetPtEtaPhiE(TMETJESUp,0,TMET_PhiJESUp,TMETJESUp);
   }
   else if (sys == "JESDown"){
     col2.push_back(selJetsJecDown.at(0).p);
-    met.SetPtEtaPhiE(TMETJESDown,0,TMET_Phi,TMETJESDown);
+    met.SetPtEtaPhiE(TMETJESDown,0,TMET_PhiJESDown,TMETJESDown);
+  }
+  else if (sys == "JER"){
+    col2.push_back(selJetsJER.at(0).p);
+    met.SetPtEtaPhiE(TMETJER,0,TMET_PhiJER,TMETJER);
   }
   else{
     cout << "Wrong systematic in getDPtDilep_JetMET" << endl;
@@ -1152,9 +1481,11 @@ Double_t TWAnalysis::getDPtDilep_MET(const TString& sys)
   if (sys == "Norm")
     met.SetPtEtaPhiE(TMET,0,TMET_Phi,TMET);
   else if (sys == "JESUp")
-    met.SetPtEtaPhiE(TMETJESUp,0,TMET_Phi,TMETJESUp);
+    met.SetPtEtaPhiE(TMETJESUp,0,TMET_PhiJESUp,TMETJESUp);
   else if (sys == "JESDown")
-    met.SetPtEtaPhiE(TMETJESDown,0,TMET_Phi,TMETJESDown);
+    met.SetPtEtaPhiE(TMETJESDown,0,TMET_PhiJESDown,TMETJESDown);
+  else if (sys == "JER")
+    met.SetPtEtaPhiE(TMETJER,0,TMET_PhiJER,TMETJER);
   else{
     cout << "Wrong systematic in TWAnalysis::getDPtDilep_MET" << endl;
     return -9999.;
@@ -1175,9 +1506,11 @@ Double_t TWAnalysis::getDPtLep1_MET(const TString& sys)
   if (sys == "Norm")
     met.SetPtEtaPhiE(TMET,0,TMET_Phi,TMET);
   else if (sys == "JESUp")
-    met.SetPtEtaPhiE(TMETJESUp,0,TMET_Phi,TMETJESUp);
+    met.SetPtEtaPhiE(TMETJESUp,0,TMET_PhiJESUp,TMETJESUp);
   else if (sys == "JESDown")
-    met.SetPtEtaPhiE(TMETJESDown,0,TMET_Phi,TMETJESDown);
+    met.SetPtEtaPhiE(TMETJESDown,0,TMET_PhiJESDown,TMETJESDown);
+  else if (sys == "JER")
+    met.SetPtEtaPhiE(TMETJER,0,TMET_PhiJER,TMETJER);
   else{
     cout << "Wrong systematic in TWAnalysis::getDPtDilep_MET" << endl;
     return -9999.;
@@ -1253,12 +1586,16 @@ Double_t TWAnalysis::getSysM(const TString& sys)
     col.push_back(selJets.at(0).p);
   }
   else if (sys == "JESUp"){
-    met.SetPtEtaPhiE(TMETJESUp,0,TMET_Phi,TMETJESUp);
+    met.SetPtEtaPhiE(TMETJESUp,0,TMET_PhiJESUp,TMETJESUp);
     col.push_back(selJetsJecUp.at(0).p);
   }
   else if (sys == "JESDown"){
-    met.SetPtEtaPhiE(TMETJESDown,0,TMET_Phi,TMETJESDown);
+    met.SetPtEtaPhiE(TMETJESDown,0,TMET_PhiJESDown,TMETJESDown);
     col.push_back(selJetsJecDown.at(0).p);
+  }
+  else if (sys == "JER"){
+    met.SetPtEtaPhiE(TMETJER,0,TMET_PhiJER,TMETJER);
+    col.push_back(selJetsJER.at(0).p);
   }
   else{
     return -9999.;
@@ -1307,36 +1644,89 @@ Double_t TWAnalysis::getDilepPt()
 // }
 
 
-Double_t TWAnalysis::getDeltaRDilep_METJets12()
+Double_t TWAnalysis::getDeltaRDilep_METJets12(int sys)
 {
   vector<TLorentzVector>  col1;
   vector<TLorentzVector>  col2;
   col1.push_back(selLeptons[0].p);
   col1.push_back(selLeptons[1].p);
-  col2.push_back(selJets[0].p);
-  col2.push_back(selJets[1].p);
-  TLorentzVector met;
-  met.SetPtEtaPhiE(TMET,0,TMET_Phi,TMET);
-  col2.push_back(met);
+  if (sys == 0){
+    col2.push_back(selJets[0].p);
+    col2.push_back(selJets[1].p);
+    TLorentzVector met;
+    met.SetPtEtaPhiE(TMET,0,TMET_Phi,TMET);
+    col2.push_back(met);
+  }
+  else if (sys > 0){
+    col2.push_back(selJetsJecUp.at(0).p);
+    col2.push_back(selJetsJecUp.at(1).p);
+    TLorentzVector met;
+    met.SetPtEtaPhiE(TMETJESUp,0,TMET_PhiJESUp,TMETJESUp);
+    col2.push_back(met);
+  }
+  else if (sys == -1){
+    col2.push_back(selJetsJecDown.at(0).p);
+    col2.push_back(selJetsJecDown.at(1).p);
+    TLorentzVector met;
+    met.SetPtEtaPhiE(TMETJESDown,0,TMET_PhiJESDown,TMETJESDown);
+    col2.push_back(met);
+  }
+  else if (sys == -2){
+    col2.push_back(selJetsJER.at(0).p);
+    col2.push_back(selJetsJER.at(1).p);
+    TLorentzVector met;
+    met.SetPtEtaPhiE(TMETJER,0,TMET_PhiJER,TMETJER);
+    col2.push_back(met);
+  }
+
+
   return getDeltaR(col1,col2);
 }
-Double_t TWAnalysis::getDeltaRDilep_Jets12()
+Double_t TWAnalysis::getDeltaRDilep_Jets12(int sys)
 {
   vector<TLorentzVector>  col1;
   vector<TLorentzVector>  col2;
-  col1.push_back(selLeptons[0].p);
-  col1.push_back(selLeptons[1].p);
-  col2.push_back(selJets[0].p);
-  col2.push_back(selJets[1].p);
+  col1.push_back(selLeptons.at(0).p);
+  col1.push_back(selLeptons.at(1).p);
+  if (sys == 0){
+    col2.push_back(selJets.at(0).p);
+    col2.push_back(selJets.at(1).p);
+  }
+  else if (sys > 0){
+    col2.push_back(selJetsJecUp.at(0).p);
+    col2.push_back(selJetsJecUp.at(1).p);
+  }
+  else if (sys == -1){
+    col2.push_back(selJetsJecDown.at(0).p);
+    col2.push_back(selJetsJecDown.at(1).p);
+  }
+  else if (sys == -2){
+    col2.push_back(selJetsJER.at(0).p);
+    col2.push_back(selJetsJER.at(1).p);
+  }
+  else{
+    cout << "Sys not set" << endl; return -999;
+  }
   return getDeltaR(col1,col2);
 }
 
-Double_t TWAnalysis::getDeltaRLep1_Jet1()
+Double_t TWAnalysis::getDeltaRLep1_Jet1(int sys)
 {
   vector<TLorentzVector>  col1;
   vector<TLorentzVector>  col2;
-  col1.push_back(selLeptons[0].p);
-  col2.push_back(selJets[0].p);
+  col1.push_back(selLeptons.at(0).p);
+  if (sys == 0)
+    col2.push_back(selJets.at(0).p);
+  else if (sys > 0)
+    col2.push_back(selJetsJecUp.at(0).p);
+  else if (sys == -1)
+    col2.push_back(selJetsJecDown.at(0).p);
+  else if (sys == -2)
+    col2.push_back(selJetsJER.at(0).p);
+  else{
+    cout << "Sys not set" << endl; return -999;
+  }
+
   return getDeltaR(col1,col2);
 }
 
@@ -1366,110 +1756,231 @@ void TWAnalysis::setTWBDT()
   BDTada = new TMVA::Reader();
   BDTada->AddVariable( "nLooseCentral"                 , &nLooseCentral      );
   BDTada->AddVariable( "nLooseFwd"                     , &nLooseFwd          ); 
-  BDTada->AddVariable( "nBLooseCentral+nBLooseFwd"     , &nBTotal            );  
+  BDTada->AddVariable( "nBTotal"                       , &nBTotal            );  
   BDTada->AddVariable( "DilepMETJetPt"                 , &DilepMETJetPt      );
-  BDTada->AddVariable( "THT"                           , &THT                );    
+  BDTada->AddVariable( "THTtot"                        , &THTtot             );    
   BDTada->AddVariable( "TJet1_pt"                      , &TJet1_pt           );
   BDTada->AddVariable( "TJetLoosept"                   , &TJetLoosept        );
-  BDTada->AddVariable( "DilepMETJetPt/THT"             , &DilepmetjetOverHT  );
+  BDTada->AddVariable( "DilepMETJetPt/THTtot"          , &DilepmetjetOverHT  );
   BDTada->AddVariable( "MSys"                          , &MSys               );
   BDTada->AddVariable( "C_jll"                         , &C_jll              ); 
   BDTada->AddVariable( "HTLepOverHT"                   , &HTLepOverHT        );
   BDTada->AddVariable( "DilepJetPt"                    , &DilepJetPt         );       
 
-  BDTada->BookMVA("BDTada","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/StableWeights/may18/bdtForTWv2/weights/TMVAClassification_AdaBoost_1000_0.1_3.weights.xml");
+  BDTada->BookMVA("BDTada","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/StableWeights/jun5/bdtForTWv2/weights/TMVAClassification_AdaBoost_1000_0.1_3.weights.xml");
   
   BDTada_JESUp = new TMVA::Reader();
-  BDTada_JESUp->AddVariable( "nLooseCentral"                 , &nLooseCentralJESUp      );
-  BDTada_JESUp->AddVariable( "nLooseFwd"                     , &nLooseFwdJESUp          ); 
-  BDTada_JESUp->AddVariable( "nBLooseCentral+nBLooseFwd"     , &nBTotalJESUp            );  
-  BDTada_JESUp->AddVariable( "DilepMETJetPt"                 , &DilepMETJetPtJESUp      );
-  BDTada_JESUp->AddVariable( "THT"                           , &THTJESUp                );    
-  BDTada_JESUp->AddVariable( "TJet1_pt"                      , &TJet1_ptJESUp           );
-  BDTada_JESUp->AddVariable( "TJetLoosept"                   , &TJetLooseptJESUp        );
-  BDTada_JESUp->AddVariable( "DilepMETJetPt/THT"             , &DilepmetjetOverHTJESUp  );
-  BDTada_JESUp->AddVariable( "MSys"                          , &MSysJESUp               );
-  BDTada_JESUp->AddVariable( "C_jll"                         , &C_jllJESUp              ); 
-  BDTada_JESUp->AddVariable( "HTLepOverHT"                   , &HTLepOverHTJESUp        );
-  BDTada_JESUp->AddVariable( "DilepJetPt"                    , &DilepJetPtJESUp         );       
-  BDTada_JESUp->BookMVA("BDTada_JESUp","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/StableWeights/may18/bdtForTWv2/weights/TMVAClassification_AdaBoost_1000_0.1_3.weights.xml");
+  BDTada_JESUp->AddVariable( "nLooseCentral"            , &nLooseCentralJESUp      );
+  BDTada_JESUp->AddVariable( "nLooseFwd"                , &nLooseFwdJESUp          ); 
+  BDTada_JESUp->AddVariable( "nBTotal"                  , &nBTotalJESUp            );  
+  BDTada_JESUp->AddVariable( "DilepMETJetPt"            , &DilepMETJetPtJESUp      );
+  BDTada_JESUp->AddVariable( "THTtot"                   , &THTtotJESUp             );    
+  BDTada_JESUp->AddVariable( "TJet1_pt"                 , &TJet1_ptJESUp           );
+  BDTada_JESUp->AddVariable( "TJetLoosept"              , &TJetLooseptJESUp        );
+  BDTada_JESUp->AddVariable( "DilepMETJetPt/THTtot"     , &DilepmetjetOverHTJESUp  );
+  BDTada_JESUp->AddVariable( "MSys"                     , &MSysJESUp               );
+  BDTada_JESUp->AddVariable( "C_jll"                    , &C_jllJESUp              ); 
+  BDTada_JESUp->AddVariable( "HTLepOverHT"              , &HTLepOverHTJESUp        );
+  BDTada_JESUp->AddVariable( "DilepJetPt"               , &DilepJetPtJESUp         );       
+  BDTada_JESUp->BookMVA("BDTada_JESUp","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/StableWeights/jun5/bdtForTWv2/weights/TMVAClassification_AdaBoost_1000_0.1_3.weights.xml");
 
   BDTada_JESDown = new TMVA::Reader();
-  BDTada_JESDown->AddVariable( "nLooseCentral"                 , &nLooseCentralJESDown      );
-  BDTada_JESDown->AddVariable( "nLooseFwd"                     , &nLooseFwdJESDown          ); 
-  BDTada_JESDown->AddVariable( "nBLooseCentral+nBLooseFwd"     , &nBTotalJESDown            );  
-  BDTada_JESDown->AddVariable( "DilepMETJetPt"                 , &DilepMETJetPtJESDown      );
-  BDTada_JESDown->AddVariable( "THT"                           , &THTJESDown                );    
-  BDTada_JESDown->AddVariable( "TJet1_pt"                      , &TJet1_ptJESDown           );
-  BDTada_JESDown->AddVariable( "TJetLoosept"                   , &TJetLooseptJESDown        );
-  BDTada_JESDown->AddVariable( "DilepMETJetPt/THT"             , &DilepmetjetOverHTJESDown  );
-  BDTada_JESDown->AddVariable( "MSys"                          , &MSysJESDown               );
-  BDTada_JESDown->AddVariable( "C_jll"                         , &C_jllJESDown              ); 
-  BDTada_JESDown->AddVariable( "HTLepOverHT"                   , &HTLepOverHTJESDown        );
-  BDTada_JESDown->AddVariable( "DilepJetPt"                    , &DilepJetPtJESDown         );       
-  BDTada_JESDown->BookMVA("BDTada_JESDown","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/StableWeights/may18/bdtForTWv2/weights/TMVAClassification_AdaBoost_1000_0.1_3.weights.xml");
+  BDTada_JESDown->AddVariable( "nLooseCentral"            , &nLooseCentralJESDown      );
+  BDTada_JESDown->AddVariable( "nLooseFwd"                , &nLooseFwdJESDown          ); 
+  BDTada_JESDown->AddVariable( "nBTotal"                  , &nBTotalJESDown            );  
+  BDTada_JESDown->AddVariable( "DilepMETJetPt"            , &DilepMETJetPtJESDown      );
+  BDTada_JESDown->AddVariable( "THTtot"                   , &THTtotJESDown             );    
+  BDTada_JESDown->AddVariable( "TJet1_pt"                 , &TJet1_ptJESDown           );
+  BDTada_JESDown->AddVariable( "TJetLoosept"              , &TJetLooseptJESDown        );
+  BDTada_JESDown->AddVariable( "DilepMETJetPt/THTtot"     , &DilepmetjetOverHTJESDown  );
+  BDTada_JESDown->AddVariable( "MSys"                     , &MSysJESDown               );
+  BDTada_JESDown->AddVariable( "C_jll"                    , &C_jllJESDown              ); 
+  BDTada_JESDown->AddVariable( "HTLepOverHT"              , &HTLepOverHTJESDown        );
+  BDTada_JESDown->AddVariable( "DilepJetPt"               , &DilepJetPtJESDown         );       
+  BDTada_JESDown->BookMVA("BDTada_JESDown","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/StableWeights/jun5/bdtForTWv2/weights/TMVAClassification_AdaBoost_1000_0.1_3.weights.xml");
+
+  BDTada_JER = new TMVA::Reader();
+  BDTada_JER->AddVariable( "nLooseCentral"            , &nLooseCentralJER      );
+  BDTada_JER->AddVariable( "nLooseFwd"                , &nLooseFwdJER          ); 
+  BDTada_JER->AddVariable( "nBTotal"                  , &nBTotalJER            );  
+  BDTada_JER->AddVariable( "DilepMETJetPt"            , &DilepMETJetPtJER      );
+  BDTada_JER->AddVariable( "THTtot"                   , &THTtotJER             );    
+  BDTada_JER->AddVariable( "TJet1_pt"                 , &TJet1_ptJER           );
+  BDTada_JER->AddVariable( "TJetLoosept"              , &TJetLooseptJER        );
+  BDTada_JER->AddVariable( "DilepMETJetPt/THTtot"     , &DilepmetjetOverHTJER  );
+  BDTada_JER->AddVariable( "MSys"                     , &MSysJER               );
+  BDTada_JER->AddVariable( "C_jll"                    , &C_jllJER              ); 
+  BDTada_JER->AddVariable( "HTLepOverHT"              , &HTLepOverHTJER        );
+  BDTada_JER->AddVariable( "DilepJetPt"               , &DilepJetPtJER         );       
+  BDTada_JER->BookMVA("BDTada_JER","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/StableWeights/jun5/bdtForTWv2/weights/TMVAClassification_AdaBoost_1000_0.1_3.weights.xml");
 
   // nominal
   BDTgrad = new TMVA::Reader();
-  BDTgrad->AddVariable( "nLooseCentral"                 , &nLooseCentral      );
-  BDTgrad->AddVariable( "nLooseFwd"                     , &nLooseFwd          ); 
-  BDTgrad->AddVariable( "nBLooseCentral+nBLooseFwd"     , &nBTotal            );  
-  BDTgrad->AddVariable( "DilepMETJetPt"                 , &DilepMETJetPt      );
-  BDTgrad->AddVariable( "THT"                           , &THT                );    
-  BDTgrad->AddVariable( "TJet1_pt"                      , &TJet1_pt           );
-  BDTgrad->AddVariable( "TJetLoosept"                   , &TJetLoosept        );
-  BDTgrad->AddVariable( "DilepMETJetPt/THT"             , &DilepmetjetOverHT  );
-  BDTgrad->AddVariable( "MSys"                          , &MSys               );
-  BDTgrad->AddVariable( "C_jll"                         , &C_jll              ); 
-  BDTgrad->AddVariable( "HTLepOverHT"                   , &HTLepOverHT        );
-  BDTgrad->AddVariable( "DilepJetPt"                    , &DilepJetPt         );       
+  BDTgrad->AddVariable( "nLooseCentral"            , &nLooseCentral      );
+  BDTgrad->AddVariable( "nLooseFwd"                , &nLooseFwd          ); 
+  BDTgrad->AddVariable( "nBTotal"                  , &nBTotal            );  
+  BDTgrad->AddVariable( "DilepMETJetPt"            , &DilepMETJetPt      );
+  BDTgrad->AddVariable( "THTtot"                   , &THTtot             );    
+  BDTgrad->AddVariable( "TJet1_pt"                 , &TJet1_pt           );
+  BDTgrad->AddVariable( "TJetLoosept"              , &TJetLoosept        );
+  BDTgrad->AddVariable( "DilepMETJetPt/THTtot"     , &DilepmetjetOverHT  );
+  BDTgrad->AddVariable( "MSys"                     , &MSys               );
+  BDTgrad->AddVariable( "C_jll"                    , &C_jll              ); 
+  BDTgrad->AddVariable( "HTLepOverHT"              , &HTLepOverHT        );
+  BDTgrad->AddVariable( "DilepJetPt"               , &DilepJetPt         );       
 
-  BDTgrad->BookMVA("BDTgrad","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/StableWeights/may18/bdtForTWv2/weights/TMVAClassification_GradBoost_2000_0.01.weights.xml");
+  BDTgrad->BookMVA("BDTgrad","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/StableWeights/jun5/bdtForTWv2/weights/TMVAClassification_GradBoost_2000_0.01.weights.xml");
   
   BDTgrad_JESUp = new TMVA::Reader();
-  BDTgrad_JESUp->AddVariable( "nLooseCentral"                 , &nLooseCentralJESUp      );
-  BDTgrad_JESUp->AddVariable( "nLooseFwd"                     , &nLooseFwdJESUp          ); 
-  BDTgrad_JESUp->AddVariable( "nBLooseCentral+nBLooseFwd"     , &nBTotalJESUp            );  
-  BDTgrad_JESUp->AddVariable( "DilepMETJetPt"                 , &DilepMETJetPtJESUp      );
-  BDTgrad_JESUp->AddVariable( "THT"                           , &THTJESUp                );    
-  BDTgrad_JESUp->AddVariable( "TJet1_pt"                      , &TJet1_ptJESUp           );
-  BDTgrad_JESUp->AddVariable( "TJetLoosept"                   , &TJetLooseptJESUp        );
-  BDTgrad_JESUp->AddVariable( "DilepMETJetPt/THT"             , &DilepmetjetOverHTJESUp  );
-  BDTgrad_JESUp->AddVariable( "MSys"                          , &MSysJESUp               );
-  BDTgrad_JESUp->AddVariable( "C_jll"                         , &C_jllJESUp              ); 
-  BDTgrad_JESUp->AddVariable( "HTLepOverHT"                   , &HTLepOverHTJESUp        );
-  BDTgrad_JESUp->AddVariable( "DilepJetPt"                    , &DilepJetPtJESUp         );       
-  BDTgrad_JESUp->BookMVA("BDTgrad_JESUp","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/StableWeights/may18/bdtForTWv2/weights/TMVAClassification_GradBoost_2000_0.01.weights.xml");
+  BDTgrad_JESUp->AddVariable( "nLooseCentral"            , &nLooseCentralJESUp      );
+  BDTgrad_JESUp->AddVariable( "nLooseFwd"                , &nLooseFwdJESUp          ); 
+  BDTgrad_JESUp->AddVariable( "nBTotal"                  , &nBTotalJESUp            );  
+  BDTgrad_JESUp->AddVariable( "DilepMETJetPt"            , &DilepMETJetPtJESUp      );
+  BDTgrad_JESUp->AddVariable( "THTtot"                   , &THTtotJESUp             );    
+  BDTgrad_JESUp->AddVariable( "TJet1_pt"                 , &TJet1_ptJESUp           );
+  BDTgrad_JESUp->AddVariable( "TJetLoosept"              , &TJetLooseptJESUp        );
+  BDTgrad_JESUp->AddVariable( "DilepMETJetPt/THTtot"     , &DilepmetjetOverHTJESUp  );
+  BDTgrad_JESUp->AddVariable( "MSys"                     , &MSysJESUp               );
+  BDTgrad_JESUp->AddVariable( "C_jll"                    , &C_jllJESUp              ); 
+  BDTgrad_JESUp->AddVariable( "HTLepOverHT"              , &HTLepOverHTJESUp        );
+  BDTgrad_JESUp->AddVariable( "DilepJetPt"               , &DilepJetPtJESUp         );       
+  BDTgrad_JESUp->BookMVA("BDTgrad_JESUp","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/StableWeights/jun5/bdtForTWv2/weights/TMVAClassification_GradBoost_2000_0.01.weights.xml");
 
   BDTgrad_JESDown = new TMVA::Reader();
-  BDTgrad_JESDown->AddVariable( "nLooseCentral"                 , &nLooseCentralJESDown      );
-  BDTgrad_JESDown->AddVariable( "nLooseFwd"                     , &nLooseFwdJESDown          ); 
-  BDTgrad_JESDown->AddVariable( "nBLooseCentral+nBLooseFwd"     , &nBTotalJESDown            );  
-  BDTgrad_JESDown->AddVariable( "DilepMETJetPt"                 , &DilepMETJetPtJESDown      );
-  BDTgrad_JESDown->AddVariable( "THT"                           , &THTJESDown                );    
-  BDTgrad_JESDown->AddVariable( "TJet1_pt"                      , &TJet1_ptJESDown           );
-  BDTgrad_JESDown->AddVariable( "TJetLoosept"                   , &TJetLooseptJESDown        );
-  BDTgrad_JESDown->AddVariable( "DilepMETJetPt/THT"             , &DilepmetjetOverHTJESDown  );
-  BDTgrad_JESDown->AddVariable( "MSys"                          , &MSysJESDown               );
-  BDTgrad_JESDown->AddVariable( "C_jll"                         , &C_jllJESDown              ); 
-  BDTgrad_JESDown->AddVariable( "HTLepOverHT"                   , &HTLepOverHTJESDown        );
-  BDTgrad_JESDown->AddVariable( "DilepJetPt"                    , &DilepJetPtJESDown         );       
-  BDTgrad_JESDown->BookMVA("BDTgrad_JESDown","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/StableWeights/may18/bdtForTWv2/weights/TMVAClassification_GradBoost_2000_0.01.weights.xml");
+  BDTgrad_JESDown->AddVariable( "nLooseCentral"            , &nLooseCentralJESDown      );
+  BDTgrad_JESDown->AddVariable( "nLooseFwd"                , &nLooseFwdJESDown          ); 
+  BDTgrad_JESDown->AddVariable( "nBTotal"                  , &nBTotalJESDown            );  
+  BDTgrad_JESDown->AddVariable( "DilepMETJetPt"            , &DilepMETJetPtJESDown      );
+  BDTgrad_JESDown->AddVariable( "THTtot"                   , &THTtotJESDown             );    
+  BDTgrad_JESDown->AddVariable( "TJet1_pt"                 , &TJet1_ptJESDown           );
+  BDTgrad_JESDown->AddVariable( "TJetLoosept"              , &TJetLooseptJESDown        );
+  BDTgrad_JESDown->AddVariable( "DilepMETJetPt/THTtot"     , &DilepmetjetOverHTJESDown  );
+  BDTgrad_JESDown->AddVariable( "MSys"                     , &MSysJESDown               );
+  BDTgrad_JESDown->AddVariable( "C_jll"                    , &C_jllJESDown              ); 
+  BDTgrad_JESDown->AddVariable( "HTLepOverHT"              , &HTLepOverHTJESDown        );
+  BDTgrad_JESDown->AddVariable( "DilepJetPt"               , &DilepJetPtJESDown         );       
+  BDTgrad_JESDown->BookMVA("BDTgrad_JESDown","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/StableWeights/jun5/bdtForTWv2/weights/TMVAClassification_GradBoost_2000_0.01.weights.xml");
+
+  BDTgrad_JER = new TMVA::Reader();
+  BDTgrad_JER->AddVariable( "nLooseCentral"            , &nLooseCentralJER      );
+  BDTgrad_JER->AddVariable( "nLooseFwd"                , &nLooseFwdJER          ); 
+  BDTgrad_JER->AddVariable( "nBTotal"                  , &nBTotalJER            );  
+  BDTgrad_JER->AddVariable( "DilepMETJetPt"            , &DilepMETJetPtJER      );
+  BDTgrad_JER->AddVariable( "THTtot"                   , &THTtotJER             );    
+  BDTgrad_JER->AddVariable( "TJet1_pt"                 , &TJet1_ptJER           );
+  BDTgrad_JER->AddVariable( "TJetLoosept"              , &TJetLooseptJER        );
+  BDTgrad_JER->AddVariable( "DilepMETJetPt/THTtot"     , &DilepmetjetOverHTJER  );
+  BDTgrad_JER->AddVariable( "MSys"                     , &MSysJER               );
+  BDTgrad_JER->AddVariable( "C_jll"                    , &C_jllJER              ); 
+  BDTgrad_JER->AddVariable( "HTLepOverHT"              , &HTLepOverHTJER        );
+  BDTgrad_JER->AddVariable( "DilepJetPt"               , &DilepJetPtJER         );       
+  BDTgrad_JER->BookMVA("BDTgrad_JER","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/StableWeights/jun5/bdtForTWv2/weights/TMVAClassification_GradBoost_2000_0.01.weights.xml");
+
+
+  BDT2j1t = new TMVA::Reader();
+  BDT2j1t->AddVariable("LeadingLeptPt_"      , &LeadingLeptPt_    );
+  BDT2j1t->AddVariable("LeadingLeptEta_"     , &LeadingLeptEta_   );
+  BDT2j1t->AddVariable("jetPtSubLeading_"    , &jetPtSubLeading_  );
+  BDT2j1t->AddVariable("jetEtaSubLeading_"   , &jetEtaSubLeading_ ); 
+  BDT2j1t->AddVariable("ptL1L2_"	     , &TDilepPt );
+  BDT2j1t->AddVariable("ptsysL1L2met_"	     , &TDilepMETPt );
+  BDT2j1t->AddVariable("Etsys_"		     , &TETSys );
+  BDT2j1t->AddVariable("EtsysRejJ2_"	     , &TET_LLJetMET );
+  BDT2j1t->AddVariable("Ht_"		     , &THTtot2j );
+  BDT2j1t->AddVariable("HtRejJ2_"	     , &THtRejJ2 );
+  BDT2j1t->AddVariable("deltaPtl1_l2_"	     , &TDPtL1_L2 );
+  BDT2j1t->AddVariable("deltaPtl2_J2_"	     , &TDPtJ2_L2 );
+  BDT2j1t->AddVariable("deltaRL1_J1_"	     , &TDR_L1_J1 );
+  BDT2j1t->AddVariable("deltaRL1L2_J1J2_"    , &TDR_L1L2_J1J2 );
+  BDT2j1t->AddVariable("deltaRL1L2_metJ1J2_" , &TDR_L1L2_J1J2MET );
+  
+  BDT2j1t->BookMVA("2j1b","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/StableWeights/jun3/weights/TMVAClassification_BDT.weights.xml");
+
+
+  BDT2j1tJESUp = new TMVA::Reader();
+  BDT2j1tJESUp->AddVariable("LeadingLeptPt_"         , &LeadingLeptPt_JESUp    );
+  BDT2j1tJESUp->AddVariable("LeadingLeptEta_"        , &LeadingLeptEta_JESUp   );
+  BDT2j1tJESUp->AddVariable("jetPtSubLeading_"       , &jetPtSubLeading_JESUp  );
+  BDT2j1tJESUp->AddVariable("jetEtaSubLeading_"      , &jetEtaSubLeading_JESUp ); 
+  BDT2j1tJESUp->AddVariable("ptL1L2_"	             , &TDilepPt );
+  BDT2j1tJESUp->AddVariable("ptsysL1L2met_"	     , &TDilepMETPtJESUp );
+  BDT2j1tJESUp->AddVariable("Etsys_"		     , &TETSysJESUp );
+  BDT2j1tJESUp->AddVariable("EtsysRejJ2_"	     , &TET_LLJetMETJESUp );
+  BDT2j1tJESUp->AddVariable("Ht_"		     , &THTtot2jJESUp );
+  BDT2j1tJESUp->AddVariable("HtRejJ2_"	             , &THtRejJ2JESUp );
+  BDT2j1tJESUp->AddVariable("deltaPtl1_l2_"	     , &TDPtL1_L2JESUp );
+  BDT2j1tJESUp->AddVariable("deltaPtl2_J2_"	     , &TDPtJ2_L2JESUp );
+  BDT2j1tJESUp->AddVariable("deltaRL1_J1_"	     , &TDR_L1_J1JESUp );
+  BDT2j1tJESUp->AddVariable("deltaRL1L2_J1J2_"       , &TDR_L1L2_J1J2JESUp );
+  BDT2j1tJESUp->AddVariable("deltaRL1L2_metJ1J2_"    , &TDR_L1L2_J1J2METJESUp );
+  BDT2j1tJESUp->BookMVA("2j1b","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/StableWeights/jun3/weights/TMVAClassification_BDT.weights.xml");
+  
+  BDT2j1tJESDown = new TMVA::Reader();
+  BDT2j1tJESDown->AddVariable("LeadingLeptPt_"         , &LeadingLeptPt_JESDown    );
+  BDT2j1tJESDown->AddVariable("LeadingLeptEta_"        , &LeadingLeptEta_JESDown   );
+  BDT2j1tJESDown->AddVariable("jetPtSubLeading_"       , &jetPtSubLeading_JESDown  );
+  BDT2j1tJESDown->AddVariable("jetEtaSubLeading_"      , &jetEtaSubLeading_JESDown ); 
+  BDT2j1tJESDown->AddVariable("ptL1L2_"	             , &TDilepPt );
+  BDT2j1tJESDown->AddVariable("ptsysL1L2met_"	     , &TDilepMETPtJESDown );
+  BDT2j1tJESDown->AddVariable("Etsys_"		     , &TETSysJESDown );
+  BDT2j1tJESDown->AddVariable("EtsysRejJ2_"	     , &TET_LLJetMETJESDown );
+  BDT2j1tJESDown->AddVariable("Ht_"		     , &THTtot2jJESDown );
+  BDT2j1tJESDown->AddVariable("HtRejJ2_"	             , &THtRejJ2JESDown );
+  BDT2j1tJESDown->AddVariable("deltaPtl1_l2_"	     , &TDPtL1_L2JESDown );
+  BDT2j1tJESDown->AddVariable("deltaPtl2_J2_"	     , &TDPtJ2_L2JESDown );
+  BDT2j1tJESDown->AddVariable("deltaRL1_J1_"	     , &TDR_L1_J1JESDown );
+  BDT2j1tJESDown->AddVariable("deltaRL1L2_J1J2_"       , &TDR_L1L2_J1J2JESDown );
+  BDT2j1tJESDown->AddVariable("deltaRL1L2_metJ1J2_"    , &TDR_L1L2_J1J2METJESDown );
+  BDT2j1tJESDown->BookMVA("2j1b","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/StableWeights/jun3/weights/TMVAClassification_BDT.weights.xml");
+
+  BDT2j1tJER = new TMVA::Reader();
+  BDT2j1tJER->AddVariable("LeadingLeptPt_"         , &LeadingLeptPt_JER    );
+  BDT2j1tJER->AddVariable("LeadingLeptEta_"        , &LeadingLeptEta_JER   );
+  BDT2j1tJER->AddVariable("jetPtSubLeading_"       , &jetPtSubLeading_JER  );
+  BDT2j1tJER->AddVariable("jetEtaSubLeading_"      , &jetEtaSubLeading_JER ); 
+  BDT2j1tJER->AddVariable("ptL1L2_"	             , &TDilepPt );
+  BDT2j1tJER->AddVariable("ptsysL1L2met_"	     , &TDilepMETPtJER );
+  BDT2j1tJER->AddVariable("Etsys_"		     , &TETSysJER );
+  BDT2j1tJER->AddVariable("EtsysRejJ2_"	     , &TET_LLJetMETJER );
+  BDT2j1tJER->AddVariable("Ht_"		     , &THTtot2jJER );
+  BDT2j1tJER->AddVariable("HtRejJ2_"	             , &THtRejJ2JER );
+  BDT2j1tJER->AddVariable("deltaPtl1_l2_"	     , &TDPtL1_L2JER );
+  BDT2j1tJER->AddVariable("deltaPtl2_J2_"	     , &TDPtJ2_L2JER );
+  BDT2j1tJER->AddVariable("deltaRL1_J1_"	     , &TDR_L1_J1JER );
+  BDT2j1tJER->AddVariable("deltaRL1L2_J1J2_"       , &TDR_L1L2_J1J2JER );
+  BDT2j1tJER->AddVariable("deltaRL1L2_metJ1J2_"    , &TDR_L1L2_J1J2METJER );
+  BDT2j1tJER->BookMVA("2j1b","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/StableWeights/jun3/weights/TMVAClassification_BDT.weights.xml");
+
 
 }
 
 
 
-Double_t TWAnalysis::getETSys()
+Double_t TWAnalysis::getETSys(int sys)
 {
 
-  return selJets.at(0).p.Et() + selJets.at(1).p.Et() + selLeptons.at(0).p.Et() + selLeptons.at(1).p.Et() + TMET;
-
+  if (sys == 0)
+    return selJets.at(0).p.Et() + selJets.at(1).p.Et() + selLeptons.at(0).p.Et() + selLeptons.at(1).p.Et() + TMET;
+  else if (sys > 0)
+    return selJetsJecUp.at(0).p.Et() + selJetsJecUp.at(1).p.Et() + selLeptons.at(0).p.Et() + selLeptons.at(1).p.Et() + TMETJESUp;
+  else if (sys == -1)
+    return selJetsJecDown.at(0).p.Et() + selJetsJecDown.at(1).p.Et() + selLeptons.at(0).p.Et() + selLeptons.at(1).p.Et() + TMETJESDown;
+  else if (sys == -2){
+    return selJetsJER.at(0).p.Et() + selJetsJER.at(1).p.Et() + selLeptons.at(0).p.Et() + selLeptons.at(1).p.Et() + TMETJER;
+  }
+  else 
+    return -999;
 }
 
-Double_t TWAnalysis::getET_LLJetMET()
+Double_t TWAnalysis::getET_LLJetMET(int sys)
 {
-
-  return selJets.at(0).p.Et() + selJets.at(1).p.Et() + selLeptons.at(0).p.Et() + selLeptons.at(1).p.Et() + TMET;
-
+  if (sys == 0)
+    return selJets.at(0).p.Et()  + selLeptons.at(0).p.Et() + selLeptons.at(1).p.Et() + TMET;
+  else if (sys > 0)
+    return selJetsJecUp.at(0).p.Et()  + selLeptons.at(0).p.Et() + selLeptons.at(1).p.Et() + TMETJESUp;
+  else if (sys == -1)
+    return selJetsJecDown.at(0).p.Et()  + selLeptons.at(0).p.Et() + selLeptons.at(1).p.Et() + TMETJESDown;
+  else if (sys == -2)
+    return selJetsJER.at(0).p.Et()  + selLeptons.at(0).p.Et() + selLeptons.at(1).p.Et() + TMETJER;
+  else return -999;
 }

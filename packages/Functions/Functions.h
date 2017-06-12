@@ -75,6 +75,7 @@ Bool_t hasOSSF(vector<Lepton> leptons);
 Bool_t  has2OSSFwMlmm(vector<Lepton> lepton, Float_t mm);
 Float_t ClosestMlltoZ(vector<Lepton> leptons);
 Bool_t IsThereSSpair(vector<Lepton> leptons);
+Bool_t ByPt(Jet, Jet);
 
 Int_t   getCS(vector<Lepton> lepton);
 void co(TString out, TString co);

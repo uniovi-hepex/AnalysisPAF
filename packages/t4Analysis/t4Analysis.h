@@ -53,6 +53,10 @@ class t4Analysis : public PAFChainItemSelector{
     Bool_t  gIsFastSim = false;
   
     // Tree Variables
+
+    UInt_t TRun;
+    UInt_t TLumi;
+    UInt_t TEvent;
     Float_t TWeight;   // Total nominal weight
     Float_t TMll;      // Invariant mass
     Float_t TM3l;

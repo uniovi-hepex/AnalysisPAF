@@ -281,14 +281,14 @@ void EventBuilder::InsideLoop(){
     gChannel = -1; 
     if(selLeptons.size() < 2 && vetoLeptons.size() >= 2){ 
       if( (vetoLeptons[0].charge*vetoLeptons[1].charge) > 0){  // fakes of 2lss
-        gChannel = i2lss; isSS = true;
+        gChannel = i2lss_fake; isSS = true;
       }
     }
     else if(selLeptons.size() == 2){ 
       if( (selLeptons[0].charge*selLeptons[1].charge) > 0){ // 2lss
         gChannel = i2lss; isSS = true;
       }
-      else if(vetoLeptons.size() > 2) gChannel = iTriLep; // fakes of 3 leptons 
+      else if(vetoLeptons.size() > 2) gChannel = iTriLep_fake; // fakes of 3 leptons 
     }
     else if(selLeptons.size() == 3) gChannel = iTriLep; // 3 leptons
     else if(selLeptons.size() >= 4) gChannel = iFourLep; // 4 leptons
@@ -307,23 +307,25 @@ void EventBuilder::InsideLoop(){
       nLepForCharge++;
     }
     if(gChannel == -1) pdgIdsum = -1;
-/*    if(pdgIdsum != -1 && pdgIdsum != 22 && pdgIdsum != 24 && pdgIdsum != 26) cout << "[EventBuilder] Error with channel definition!!\n";
-    else{
-      if(pdgIdsum == 22){ gIsDoubleElec = true;  gIsDoubleMuon = false; gIsMuonEG = false;}
-      if(pdgIdsum == 24){ gIsDoubleElec = false; gIsDoubleMuon = false; gIsMuonEG = true; }
-      if(pdgIdsum == 26){ gIsDoubleElec = false; gIsDoubleMuon = true;  gIsMuonEG = false;}
+    if(gIsData){
+      if(gIsMuonEG){
+        if     (pdgIdsum == 24) passTrigger = PassesElMuHTTrigger()       || PassesPFJet450Trigger();
+        else if(pdgIdsum == 26) passTrigger = !PassesPFJet450Trigger() && !PassesDoubleMuonHTTrigger() && (PassesElMuHTTrigger() || PassesDoubleElecHTTrigger());
+        else if(pdgIdsum == 22) passTrigger = !PassesPFJet450Trigger() && !PassesDoubleElecHTTrigger() && (PassesElMuHTTrigger() || PassesDoubleMuonHTTrigger());
+        else                    passTrigger = false;
+      }
+      if(gIsDoubleMuon){
+        if     (pdgIdsum == 26) passTrigger = PassesDoubleMuonHTTrigger() || PassesPFJet450Trigger();
+        else                    passTrigger = false;
+      }
+      if(gIsDoubleElec){
+        if     (pdgIdsum == 22) passTrigger = PassesDoubleElecHTTrigger() || PassesPFJet450Trigger();
+        else                    passTrigger = false;
+      }
     }
-
-    if     (gIsMuonEG)      passTrigger = PassesElMuHTTrigger()       || PassesPFJet450Trigger();
-    else if(gIsDoubleMuon)  passTrigger = PassesDoubleMuonHTTrigger() || PassesPFJet450Trigger();
-    else if(gIsDoubleElec)  passTrigger = PassesDoubleElecHTTrigger() || PassesPFJet450Trigger();
-    else                    passTrigger = false;
-*/
-    if     (gIsMuonEG     && pdgIdsum == 24)  passTrigger = PassesElMuHTTrigger()       || PassesPFJet450Trigger();
-    else if(gIsDoubleMuon && pdgIdsum == 26)  passTrigger = PassesDoubleMuonHTTrigger() || PassesPFJet450Trigger();
-    else if(gIsDoubleElec && pdgIdsum == 22)  passTrigger = PassesDoubleElecHTTrigger() || PassesPFJet450Trigger();
     else                    passTrigger = PassesElMuHTTrigger() || PassesDoubleMuonHTTrigger() || PassesDoubleElecHTTrigger() || PassesPFJet450Trigger();
   }
+
   else{
     if      (gChannel == iElMu && TrigElMu()) passTrigger = true;
     else if (gChannel == iMuon && TrigMuMu()) passTrigger = true;
