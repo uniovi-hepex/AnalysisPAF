@@ -76,6 +76,14 @@ class EventBuilder : public PAFChainItemSelector{
     TString gSampleName;
     TString gPathToHeppyTrees;
     Bool_t  gIsMCatNLO;
+    
+    Int_t nEntries;
+    Int_t FirstEvent;
+    Int_t nEvents;
+    Int_t Count;
+    Float_t xsec;
+    Int_t nProcessedEvents;
+  
 
     void SetCountLHE();
 
