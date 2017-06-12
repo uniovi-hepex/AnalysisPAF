@@ -62,9 +62,14 @@ void DrawPlots(TString chan = "ElMu", TString tag = "0"){
   DrawPlot("TMass",               cut, chan, 10, 0, 400,  "Invariant mass (GeV)", "Mass", tag);
 }
 
-void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name, TString tag = "0"){
-  if (chan == "2lSS") Plot* p     = new Plot(var, cut, "All", nbins, bin0, binN, "Title", Xtitle);
-  else                Plot* p     = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
+void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name, TString tag = "0") {
+  Plot* p = NULL;
+  if (chan == "2lSS") {
+    p     = new Plot(var, cut, "All", nbins, bin0, binN, "Title", Xtitle);
+  }
+  else {
+    p     = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
+  }
   p->verbose  = true;
   
   
