@@ -70,6 +70,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   else {
     p     = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
   }
+  
   p->verbose  = true;
   
   
@@ -85,7 +86,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   path      = path(0,path.Index("AnalysisPAF/")+12);
   path      += "ttH_temp/";
   
-  /*if (githead.Contains("lepidcomparison")) {
+  if (githead.Contains("lepidcomparison")) {
     if (counter == 0){
       cout << endl;
       cout << "+ Branch LEPIDCOMPARISON chosen" << endl;
@@ -147,9 +148,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
       cout << "+ Branch MASTER chosen" << endl;
       cout << endl;
     }
-  }*/
+  }
   
-  outputpath  += "test2/";
   if (counter == 0) {
     cout << "+ Path to the root files: " << path << endl;
     cout << "+ Output path: " << outputpath << endl;
@@ -164,13 +164,12 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   // Minitree settings =========================================================
   p->SetTreeName("MiniTree");
   if (chan == "Elec" || chan == "Muon" || chan == "ElMu") name = name+"_2lSS";
-  //p->SetVarName(name+"_"+chan);
-  p->SetVarName("PRUEBA"+name+"_"+chan);
+  p->SetVarName(name+"_"+chan);
   
     
   // Samples import ============================================================
   if (var != "TPtVector") {
-    /*for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
+    for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
       p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5);
     }
     for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
@@ -200,11 +199,11 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     }
     for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
   	  p->AddSample(TTZmc[isample], "TTZ", itSys, 1, "pdfDown");
-    }*/
+    }
     
     for (UInt_t isample = 0; isample < sizeof(WZmc)/sizeof(*WZmc); isample++) {
   	  p->AddSample(WZmc[isample], "WZ", itBkg, kViolet+10);
-    }/*
+    }
     for (UInt_t isample = 0; isample < sizeof(Convsmc)/sizeof(*Convsmc); isample++) {
   	  p->AddSample(Convsmc[isample], "Convs", itBkg, kYellow);
     }
@@ -233,9 +232,9 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     p->AddSample(Signalmc[0], "ttH", itSys, 1, "ScaleDown");
     p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfUp");
     p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfDown");
-  */
+  
   }
-  else {/*
+  else {
     for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
       p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5, "0", "AllInstances");
     }
@@ -266,11 +265,11 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     }
     for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
   	  p->AddSample(TTZmc[isample], "TTZ", itSys, 1, "pdfDown", "AllInstances");
-    }*/
+    }
     
     for (UInt_t isample = 0; isample < sizeof(WZmc)/sizeof(*WZmc); isample++) {
   	  p->AddSample(WZmc[isample], "WZ", itBkg, kViolet+10, "0", "AllInstances");
-    }/*
+    }
     for (UInt_t isample = 0; isample < sizeof(Convsmc)/sizeof(*Convsmc); isample++) {
   	  p->AddSample(Convsmc[isample], "Convs", itBkg, kYellow, "0", "AllInstances");
     }
@@ -299,7 +298,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     p->AddSample(Signalmc[0], "ttH", itSys, 1, "ScaleDown", "AllInstances");
     p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfUp", "AllInstances");
     p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfDown", "AllInstances");
-    */
+    
   }
   // Histogram settings ========================================================
   p->SetScaleMax(1.7);
@@ -316,7 +315,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     p->SetTableFormats("%1.4f");
     p->SetYieldsTableName("Yields_"+chan+"_"+tag);
     p->PrintYields("","","","txt");
-    /*
+    
     
     p->SetLimitFolder(outputpath);
     p->SetOutputName("Histos_"+chan+"_"+tag);
@@ -349,7 +348,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     d->SetNormUnc(BkgsNorm);
     d->SetRootFileName("Histos_"+chan+"_"+tag);
     d->GetParamsFormFile();
-    d->PrintDatacard(outputpath+"Datacard_"+name+"_"+chan+"_"+tag+".txt");*/
+    d->PrintDatacard(outputpath+"Datacard_"+name+"_"+chan+"_"+tag+".txt");
   }
   else {
     p->DrawStack(tag, 1);

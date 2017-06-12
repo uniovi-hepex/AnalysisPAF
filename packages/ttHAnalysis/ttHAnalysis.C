@@ -233,6 +233,8 @@ void ttHAnalysis::SetSystBranches() {
     fTree->Branch("THLT_Ele25_eta2p1_WPTight_Gsf_v",          &THLT_Ele25_eta2p1_WPTight_Gsf_v, "THLT_Ele25_eta2p1_WPTight_Gsf_v/B");
     fTree->Branch("THLT_Ele27_eta2p1_WPLoose_Gsf_v",          &THLT_Ele27_eta2p1_WPLoose_Gsf_v, "THLT_Ele27_eta2p1_WPLoose_Gsf_v/B");
   }
+  fTree->Branch("Tcuts",          &Tcuts,         "Tcuts/i");
+  fTree->Branch("Tdummy",         &Tdummy,        "Tdummy/i");
 }
 
 
@@ -241,6 +243,7 @@ void ttHAnalysis::SetMiniTreeVariables() {
     if      (Is2lSSEvent(nJets, METLD))                 TCat        = 2;
     else if (Is3lEvent  (nJets, METLD))                 TCat        = 3;
     else if (Is4lEvent())                               TCat        = 4;
+    if (Is2lSSEvent(nJets, METLD) || Is3lEvent  (nJets, METLD) || Is4lEvent()) Tdummy = 1;
   }
   
   if (PassesPreCuts(TnJetsJESUp, TnLooseBTagsJESUp, TnMediumBTagsJESUp)) {
@@ -280,10 +283,15 @@ void ttHAnalysis::SetMiniTreeVariables() {
 ////////////////////////////////////////////////////////////////////////////////
 Bool_t ttHAnalysis::PassesPreCuts(UInt_t njets, UInt_t nloosebtag, UInt_t nmediumbtag) {
   if (nTightLepton < 2)                           return false;
+  Tcuts = 1;
   if (nTaus != 0)                                 return false;
+  Tcuts = 2;
   if (!PassesLowMassLimit(LooseLepton,12))        return false;
+  Tcuts = 3;
   if (njets < 2)                                  return false;
+  Tcuts = 4;
   if ((nloosebtag < 2) && (nmediumbtag < 1))      return false;
+  Tcuts = 5;
   
   return true;
 }
@@ -308,19 +316,28 @@ Bool_t ttHAnalysis::Is2lSSEvent(UInt_t njets, Float_t metld) {
 
 Bool_t ttHAnalysis::Is3lEvent(UInt_t njets, Float_t metld) {
   if (nTightLepton != 3)                          return false;
+  Tcuts = 6;
   if (TightLepton.at(0).Pt() < 25)                return false;
+  Tcuts = 7;
   if (TightLepton.at(1).Pt() < 15)                return false;
+  Tcuts = 8;
   if (TightLepton.at(2).Pt() < 15)                return false;
+  Tcuts = 9;
   if (abs(ClosestMlltoZ(LooseLepton) - Zm) < 10)  return false;
+  Tcuts = 10;
   if (abs(getCS(TightLepton)) != 1)               return false;
+  Tcuts = 11;
   if (has2OSSFwMlmm(LooseLepton, 140))            return false;
+  Tcuts = 12;
   
   if (njets < 4) {
     if (!hasOSSF(LooseLepton)) {
       if (metld < 0.2)                            return false;
+      Tcuts = 13;
     } 
     else {
       if (metld < 0.3)                            return false;
+      Tcuts = 14;
     }
   }
   
@@ -432,6 +449,8 @@ void ttHAnalysis::ResetVariables() {
   TnMediumBTagsJESDown= 0;
   TCatJESUp           = 0;
   TCatJESDown         = 0;
+  Tcuts               = 0;
+  Tdummy              = 0;
 }
 
 
@@ -569,8 +588,7 @@ void ttHAnalysis::CalculateWeight() {
       Trig_Down = 0.97;      
     }
     
-    EventWeight           *= gWeight;
-    //EventWeight           *= gWeight*Trig*PUSF*ElecSF*MuonSF;
+    EventWeight           *= gWeight*Trig*PUSF*ElecSF*MuonSF;
     EventWeight_PUUp      *= gWeight*Trig*PUSF_Up*ElecSF*MuonSF;
     EventWeight_PUDown    *= gWeight*Trig*PUSF_Down*ElecSF*MuonSF;
     EventWeight_TrigUp    *= gWeight*Trig_Up*PUSF*ElecSF*MuonSF;
