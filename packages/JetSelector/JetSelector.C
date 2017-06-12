@@ -378,8 +378,8 @@ void JetSelector::InsideLoop(){
       }
     }
     
-    SetParam("diff_MET_JER_pt" , diffMET.Pt() );
-    SetParam("diff_MET_JER_phi" , diffMET.Phi() );
+    SetParam("diff_MET_JER_pt" , Float_t(diffMET.Pt()) );
+    SetParam("diff_MET_JER_phi" , Float_t(diffMET.Phi()) );
     std::sort( selJetsJER.begin(), selJetsJER.end(), ByPt);
   }
 
