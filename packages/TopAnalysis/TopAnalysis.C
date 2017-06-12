@@ -237,7 +237,7 @@ void TopAnalysis::InsideLoop(){
       }
       if(TChannel == iElMu || ((TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15))){
         if(TChannel == iElMu || TMET > 40){   // MET > 40 in ee, µµ
-          if (TNBtags > 0 || TNBtagsUp > 0 || TNBtagsDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0){
+          if (TNBtags > 0 || TNBtagsBtagUp > 0 || TNBtagsBtagDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0){
 	    //CalculateTWVariables();
             fTree->Fill();
           }
@@ -283,7 +283,7 @@ void TopAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector
 
 void TopAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut){
   TNJets = selJets.size(); THT = 0;
-  TNBtags = 0; TNBtagsUp = 0; TNBtagsDown = 0;
+  TNBtags = 0; TNBtagsBtagUp = 0; TNBtagsBtagDown = 0;
   TNBtagsMisTagUp = 0;  TNBtagsMisTagDown = 0;
   THTJESUp = 0; THTJESDown = 0;
   for(Int_t i = 0; i < TNJets; i++){
@@ -299,8 +299,8 @@ void TopAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cle
 
   if(gIsData) return;  // For systematics...
   for(Int_t i = 0; i < TNJets; i++){
-    if(selJets.at(i).isBtag_BtagUp    ) TNBtagsUp++;
-    if(selJets.at(i).isBtag_BtagDown  ) TNBtagsDown++;
+    if(selJets.at(i).isBtag_BtagUp    ) TNBtagsBtagUp++;
+    if(selJets.at(i).isBtag_BtagDown  ) TNBtagsBtagDown++;
     if(selJets.at(i).isBtag_MisTagUp  ) TNBtagsMisTagUp++;
     if(selJets.at(i).isBtag_MisTagDown) TNBtagsMisTagDown++;
   }
@@ -507,8 +507,8 @@ void TopAnalysis::SetJetVariables(){
   fTree->Branch("TNJetsJESDown",           &TNJetsJESDown,         "TNJetsJESDown/I");
   fTree->Branch("TNJetsJER",           &TNJetsJER,         "TNJetsJER/I");
 
-  fTree->Branch("TNBtagsUp",     &TNBtagsUp,   "TNBtagsUp/I");
-  fTree->Branch("TNBtagsDown",   &TNBtagsDown, "TNBtagsDown/I");
+  fTree->Branch("TNBtagsBtagUp",     &TNBtagsBtagUp,   "TNBtagsBtagUp/I");
+  fTree->Branch("TNBtagsBtagDown",   &TNBtagsBtagDown, "TNBtagsBtagDown/I");
   fTree->Branch("TNBtagsMisTagUp",     &TNBtagsMisTagUp,   "TNBtagsMisTagUp/I");
   fTree->Branch("TNBtagsMisTagDown",   &TNBtagsMisTagDown, "TNBtagsMisTagDown/I");
 

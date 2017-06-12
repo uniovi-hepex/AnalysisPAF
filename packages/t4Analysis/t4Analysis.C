@@ -13,6 +13,7 @@ t4Analysis::t4Analysis() : PAFChainItemSelector() {
   THTJESUp = 0; THTJESDown = 0; TNISRJets = 0; TMETJESUp = 0; TMETJESDown = 0;
   TWeight_LepEffUp = 0; TWeight_LepEffDown = 0; TWeight_TrigUp = 0; TWeight_TrigDown = 0;
   TWeight_FSUp = 0; TWeight_FSDown = 0; TWeight_PUDown = 0; TWeight_PUUp = 0;
+  TRun = 0; TLumi = 0; TEvent = 0;
   for(Int_t i = 0; i < 20; i++){
     TJet_Pt[i] = 0;
     TJet_Eta[i] = 0;
@@ -265,6 +266,10 @@ void t4Analysis::SetEventVariables(){
   fTree->Branch("TMT2",         &TMT2,         "TMT2/F");
   fTree->Branch("TIsOnZ",       &TIsOnZ,       "TIsOnZ/I");
 
+  fTree->Branch("TRun",        &TRun,      "TRun/I");
+  fTree->Branch("TLumi",       &TLumi,     "TLumi/I");
+  fTree->Branch("TEvent",      &TEvent,    "TEvent/I");
+
   if(gIsData) return;
   fTree->Branch("TWeight_LepEffUp",      &TWeight_LepEffUp,      "TWeight_LepEffUp/F");
   fTree->Branch("TWeight_LepEffDown",    &TWeight_LepEffDown,    "TWeight_LepEffDown/F");
@@ -333,6 +338,9 @@ void t4Analysis::GetLeptonVariables(std::vector<Lepton> selLeptons){
   TM3l = TNSelLeps < 3 ? 0 : (selLeptons.at(0).p + selLeptons.at(1).p + selLeptons.at(2).p).M();      
   TMZ    = ClosestMlltoZ(zLeptons);
   TIsOnZ = IsOnZ(zLeptons);
+  TRun   = Get<UInt_t>("run");
+  TLumi  = Get<UInt_t>("lumi");
+  TEvent = Get<ULong64_t>("evt");
 }
 
 void t4Analysis::GetFakeableLeptonVariables(std::vector<Lepton> vetoLeptons){

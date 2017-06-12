@@ -88,12 +88,14 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample("WWW, WWZ, WZZ, ZZZ, ZZTo4L, VHToNonbb_amcatnlo, tZq_ll",    "Rare SM",  itBkg, kMagenta-7); // RareSM
   p->AddSample("WZTo3LNu, WWTo2L2Nu, WpWpJJ, WWTo2L2Nu_DoubleScat", "Rare SM",  itBkg, kMagenta-7); // RareSM
   // Nonprompt from MC
-  p->AddSample("WJetsToLNu_MLM, DYJetsToLL_M5to50_MLM, DYJetsToLL_M50_MLM",                                 "Nonprompt", itBkg, kGray);
-  p->AddSample("TTbar_Powheg, TW_noFullyHadr, TbarW_noFullyHadr, T_tch, Tbar_tch, TToLeptons_sch_amcatnlo", "Nonprompt", itBkg);
+  //p->AddSample("WJetsToLNu_MLM, DYJetsToLL_M5to50_MLM, DYJetsToLL_M50_MLM",                                 "Nonprompt", itBkg, kGray);
+  //p->AddSample("TTbar_Powheg, TW_noFullyHadr, TbarW_noFullyHadr, T_tch, Tbar_tch, TToLeptons_sch_amcatnlo", "Nonprompt", itBkg);
 
   // Nonprompt from data
-	//p->AddSample("MuonEG, DoubleEG, DoubleMuon",     "Nonprompt", itBkg, kGray, "0", "Fake");
+	p->AddSample("MuonEG, DoubleEG, DoubleMuon",     "Nonprompt", itBkg, kGray, "0", "Fake");
 	// Fake subs 
+  //p->AddSample("WZTo3LNu, WWTo2L2Nu,WpWpJJ,WWTo2L2Nu_DoubleScat,TGJets", "Nonprompt", itBkg, kGray, "0", "Fakesubs");
+  p->AddSample("WZTo3LNu, WWTo2L2Nu,WpWpJJ,WWTo2L2Nu_DoubleScat, WWW, WWZ, WZZ, ZZZ, ZZTo4L, VHToNonbb_amcatnlo,TTZToLLNuNu, TTZToLL_M1to10, TTHNonbb, tZq_ll,TTWToLNu", "Nonprompt", itBkg, kGray, "0", "Fakesubs");
   //p->AddSample("WZTo3LNu, WWTo2L2Nu,WpWpJJ,WWTo2L2Nu_DoubleScat,TGJets,TTGJets, WGToLNuG, ZGTo2LG,WWW, WWZ, WZZ, ZZZ, ZZTo4L, VHToNonbb_amcatnlo,TTZToLLNuNu, TTZToLL_M1to10, TTHNonbb, tZq_ll,TTWToLNu", "Nonprompt", itBkg, kGray, "0", "Fakesubs");
 
   // Charge misID
