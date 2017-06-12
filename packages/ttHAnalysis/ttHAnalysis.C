@@ -569,7 +569,8 @@ void ttHAnalysis::CalculateWeight() {
       Trig_Down = 0.97;      
     }
     
-    EventWeight           *= gWeight*Trig*PUSF*ElecSF*MuonSF;
+    EventWeight           *= gWeight;
+    //EventWeight           *= gWeight*Trig*PUSF*ElecSF*MuonSF;
     EventWeight_PUUp      *= gWeight*Trig*PUSF_Up*ElecSF*MuonSF;
     EventWeight_PUDown    *= gWeight*Trig*PUSF_Down*ElecSF*MuonSF;
     EventWeight_TrigUp    *= gWeight*Trig_Up*PUSF*ElecSF*MuonSF;
