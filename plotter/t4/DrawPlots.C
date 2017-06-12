@@ -6,6 +6,7 @@ R__LOAD_LIBRARY(Plot.C+)
 #include "Looper.h"
 #include "Plot.h"
 
+
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name = "");
 TString NameOfTree = "tree";
 TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/may29/";
@@ -15,33 +16,44 @@ TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/may29/";
 //TString baseline = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TNTaus == 0 && !TIsOnZ";
 //TString CRZ      = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TNTaus == 0 && TIsOnZ";
 TString baseline = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && !TIsOnZ";
-TString CRZ      = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TIsOnZ";
-TString CRW      = baseline + "&& TNSelLeps >= 2 && TNBtags == 2 && TNJets <= 5";
-TString SR1      = baseline + "&& TNSelLeps == 2 && TNBtags == 2 && TNJets == 6";
-TString SR2      = baseline + "&& TNSelLeps == 2 && TNBtags == 2 && TNJets == 7";
-TString SR3      = baseline + "&& TNSelLeps == 2 && TNBtags == 2 && TNJets >= 8";
-TString SR4      = baseline + "&& TNSelLeps == 2 && TNBtags == 3 && (TNJets == 5 || TNJets == 6)";
-TString SR5      = baseline + "&& TNSelLeps == 2 && TNBtags == 3 && TNJets >= 7";
-TString SR6      = baseline + "&& TNSelLeps == 2 && TNBtags == 3 && TNJets >= 5";
-TString SR7      = baseline + "&& TNSelLeps == 3 && TNBtags == 2 && TNJets >= 5";
-TString SR8      = baseline + "&& TNSelLeps == 3 && TNBtags >= 3 && TNJets >= 4";
+//TString tauVeto  = "&& TNTaus==0 ";
+TString tauVeto  = "&& 1 ";
+TString CRZ      = tauVeto + "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TIsOnZ";
+TString CRW      = baseline + tauVeto + "&& TNSelLeps >= 2 && TNBtags == 2 && TNJets <= 5";
+TString CRT      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 0 && TNJets >1";
+TString SR1      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 2 && TNJets == 6";
+TString SR2      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 2 && TNJets == 7";
+TString SR3      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 2 && TNJets >= 8";
+TString SR4      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 3 && (TNJets == 5 || TNJets == 6)";
+TString SR5      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 3 && TNJets >= 7";
+TString SR6      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 3 && TNJets >= 5";
+TString SR7      = baseline + tauVeto + "&& TNSelLeps == 3 && TNBtags == 2 && TNJets >= 5";
+TString SR8      = baseline + tauVeto + "&& TNSelLeps == 3 && TNBtags >= 3 && TNJets >= 4";
+TString SR9      = baseline + "&& TNSelLeps == 2 && TNBtags == 2 && TNJets >=5 && TNTaus==1";
+TString SR10     = baseline + "&& TNSelLeps == 2 && TNBtags == 3 && TNJets >=5 && TNTaus==1";
+
+
 TString NoFake   = Form("TChannel == %i || TChannel == %i", i2lss, iTriLep);
 
 void DrawPlots(TString cutName){
  TString cut;
- if     (cutName == "CRW") cut = CRW;
- else if(cutName == "CRZ") cut = CRZ;
- else if(cutName == "SR1") cut = SR1;
- else if(cutName == "SR2") cut = SR2;
- else if(cutName == "SR3") cut = SR3;
- else if(cutName == "SR4") cut = SR4;
- else if(cutName == "SR5") cut = SR5;
- else if(cutName == "SR6") cut = SR6;
- else if(cutName == "SR7") cut = SR7;
- else if(cutName == "SR8") cut = SR8;
+ if     (cutName == "CRW" ) cut = CRW ;
+ else if(cutName == "CRZ" ) cut = CRZ ;
+ else if(cutName == "CRT" ) cut = CRT ;
+ else if(cutName == "SR1" ) cut = SR1 ;
+ else if(cutName == "SR2" ) cut = SR2 ;
+ else if(cutName == "SR3" ) cut = SR3 ;
+ else if(cutName == "SR4" ) cut = SR4 ;
+ else if(cutName == "SR5" ) cut = SR5 ;
+ else if(cutName == "SR6" ) cut = SR6 ;
+ else if(cutName == "SR7" ) cut = SR7 ;
+ else if(cutName == "SR8" ) cut = SR8 ;
+ else if(cutName == "SR9" ) cut = SR9 ;
+ else if(cutName == "SR10") cut = SR10;
  else {cout << "Wrong name!!" << endl; return;}
 
- DrawPlot("TChannel",  cut, NoFake, 1, 0, 15, "Count", cutName);
+ NoFake = (cutName=="SR9" || cutName=="SR10" || cutName=="CRT") ? "1" : NoFake; 
+ DrawPlot("TChannel",  cut, NoFake , 1, 0, 15, "Count", cutName);
 /*  DrawPlot("TNJets", "TNSelLeps == 2  && "  + baseline, "SS",       6, 2, 8, "Jet Multiplicity", "nJets");
   DrawPlot("TNJets", "TNSelLeps >  2  && "  + baseline, "MultiLep", 6, 2, 8, "Jet Multiplicity", "nJets");
   DrawPlot("TNJets",                          baseline, "All"     , 6, 2, 8, "Jet Multiplicity", "nJets");
@@ -58,6 +70,8 @@ void DrawPlots(TString cutName){
   //DrawPlot("TMll", "THT > 300 && TMET > 50 && TNTaus == 0 && TNBtags >= 2 && TNJets >= 2",   Form("TChannel == %i || TChannel == %i", i2lss, iTriLep)     , 15, 0, 300, "InvMass [GeV]", "InvMass");
 
  // DrawPlot("TMET", "TNJets >= 2",  "TChannel == 3"  , 15, 0, 600, "MET [GeV]", "MET");
+
+ gApplication->Terminate();
 }
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name){
@@ -102,6 +116,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   //p->AddSystematic("JES,Btag,MisTag,LepEff,PU");
   p->AddSystematic("stat");
   cout << "Selection = " << name << endl;
+  cout << "Corresponding to cut: " << cut << endl;
   p->PrintYields();
   //p->PrintSamples();
   //p->doSetLogy = false;

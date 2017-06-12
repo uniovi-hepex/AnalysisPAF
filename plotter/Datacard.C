@@ -1,4 +1,5 @@
 #include "Datacard.h"
+#include <fstream>
 
 // =======================================================================
 // For Datacard class
@@ -15,7 +16,7 @@ Datacard::Datacard(TString sigName, TString bkgNames, TString nuiNames, TString 
 } 
 
 // Constructor from TString vectors
-Datacard::Datacard(TString sigName, vector<TString> bkgNames, vector<TString> nuiNames, TString bin = ""){
+Datacard::Datacard(TString sigName, vector<TString> bkgNames, vector<TString> nuiNames, TString bin){
   for(Int_t i = 0; i < (Int_t) bkgNames.size(); i++) processes.push_back(bkgNames.at(i));
   processes.push_back(signalName);
   for(Int_t i = 0; i < (Int_t) nuiNames.size();  i++) nuisName.push_back(nuisName.at(i));
