@@ -63,7 +63,8 @@ void DrawPlots(TString chan = "ElMu", TString tag = "0"){
 }
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name, TString tag = "0"){
-  Plot* p     = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
+  if (chan == "2lSS") Plot* p     = new Plot(var, cut, "All", nbins, bin0, binN, "Title", Xtitle);
+  else                Plot* p     = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
   p->verbose  = true;
   
   
