@@ -450,7 +450,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   hStack->Draw("hist");
   hStack->GetYaxis()->SetTitle("Number of Events");
   hStack->GetYaxis()->SetTitleSize(0.06);
-  hStack->GetYaxis()->SetTitleOffset(0.5);
+  hStack->GetYaxis()->SetTitleOffset(0.8);
   hStack->GetYaxis()->SetNdivisions(505);
   hStack->GetXaxis()->SetLabelSize(0.0);
 
