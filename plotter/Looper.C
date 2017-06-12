@@ -34,7 +34,7 @@ TString Looper::CraftFormula(TString cuts, TString chan, TString sys, TString op
   else if(chan == "3l")    schan = (Form("(TChannel == %i)", iTriLep));
   else if(chan == "4l")    schan = (Form("(TChannel == %i)", iFourLep));
   else if(chan == "SF" || chan == "sameF") schan = (Form("(TChannel != %i)", iElMu));
-  else if(chan == "All" || chan == "2lSS") schan = ("1");
+  else if(chan == "All")   schan = ("1");
   else schan = chan;
 
   TString weight = TString("TWeight");
