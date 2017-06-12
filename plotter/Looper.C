@@ -46,7 +46,10 @@ TString Looper::CraftFormula(TString cuts, TString chan, TString sys, TString op
       cuts = ( ((TString) cuts).ReplaceAll(AllVars.at(i), AllVars.at(i)+sys));
 
   TString                                                  formula = TString("(") + cuts + TString(")*(") + schan + TString(")*") + weight;
-  if(options.Contains("Fake") || options.Contains("fake")) formula = TString("(") + cuts + TString(")");
+  if((options.Contains("Fake") || options.Contains("fake"))){
+    if(!options.Contains("sub") && !options.Contains("Sub"))  formula = TString("(") + cuts + TString(")");
+    else                                                       formula = TString("(") + cuts + TString(")*") + weight;
+  }
   if(options.Contains("isr") || options.Contains("ISR"))   formula = "TISRweight*(" + formula + ")";
   if(options.Contains("noWeight"))                         formula = TString("(") + cuts + TString(")*(") + schan + TString(")");
   return formula;
@@ -134,7 +137,9 @@ void Looper::Loop(TString sys){
     }
 
     if(options.Contains("Fake") || options.Contains("fake")){
-      f = 1; weight = 1;
+      f = 1; 
+      if(options.Contains("Sub") || options.Contains("sub")) weight *= -1;
+      else weight = 1;
       ForFLepPt   ->GetNdata();
       ForFLepEta  ->GetNdata();
       ForFLepPdgId->GetNdata();
@@ -155,7 +160,6 @@ void Looper::Loop(TString sys){
       }
       if(f >= 1) continue;
       weight *= f/(1-f);
-      if(options.Contains("Sub") || options.Contains("sub")) weight *= -1;
     }
 
     Float_t nom = 0; Float_t var = 0; Float_t ext = 0; Float_t env = 0;
