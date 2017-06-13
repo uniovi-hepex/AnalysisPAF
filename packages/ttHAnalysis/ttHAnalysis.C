@@ -239,13 +239,6 @@ void ttHAnalysis::SetSystBranches() {
 
 
 void ttHAnalysis::SetMiniTreeVariables() {
-  if (PassesPreCuts(nJets, nLooseBTags, nMediumBTags)) {
-    if      (Is2lSSEvent(nJets, METLD))                 TCat        = 2;
-    else if (Is3lEvent  (nJets, METLD))                 TCat        = 3;
-    else if (Is4lEvent())                               TCat        = 4;
-    if (Is2lSSEvent(nJets, METLD) || Is3lEvent  (nJets, METLD) || Is4lEvent()) Tdummy = 1;
-  }
-  
   if (PassesPreCuts(TnJetsJESUp, TnLooseBTagsJESUp, TnMediumBTagsJESUp)) {
     if      (Is2lSSEvent(TnJetsJESUp, TMETLDJESUp))     TCatJESUp   = 2;
     else if (Is3lEvent  (TnJetsJESUp, TMETLDJESUp))     TCatJESUp   = 3;
@@ -256,6 +249,13 @@ void ttHAnalysis::SetMiniTreeVariables() {
     if      (Is2lSSEvent(TnJetsJESDown, TMETLDJESDown)) TCatJESDown = 2;
     else if (Is3lEvent  (TnJetsJESDown, TMETLDJESDown)) TCatJESDown = 3;
     else if (Is4lEvent())                               TCatJESDown = 4;
+  }
+  Tcortes = 0;
+  if (PassesPreCuts(nJets, nLooseBTags, nMediumBTags)) {
+    if      (Is2lSSEvent(nJets, METLD))                 TCat        = 2;
+    else if (Is3lEvent  (nJets, METLD))                 TCat        = 3;
+    else if (Is4lEvent())                               TCat        = 4;
+    if (Is2lSSEvent(nJets, METLD) || Is3lEvent  (nJets, METLD) || Is4lEvent()) Tdummy = 1;
   }
   
   if (nTightLepton >= 1) TPtLeading           = TightLepton.at(0).Pt();
