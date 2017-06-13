@@ -92,28 +92,7 @@ void ttHAnalysis::GetTreeVariables() {
   Tevt      = 0;
   Trun      = 0;
   genWeight = 1;
-  for (UInt_t i = 0; i < 254; i++) TLHEWeight[i] = 0;
-  if (gSampleName == "MuonEG") {
-    THLT_DiMu9_Ele9_CaloIdL_TrackIdL_v                   = 0;
-    THLT_Mu8_DiEle12_CaloIdL_TrackIdL_v                  = 0;
-    THLT_TripleMu_12_10_5_v                              = 0;
-    THLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v             = 0;
-    THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v    = 0;
-    THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v = 0;
-    THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v    = 0;
-    THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v = 0;
-    THLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v         = 0;
-    THLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v               = 0;
-    THLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v             = 0;
-    THLT_IsoMu22_v                                       = 0;
-    THLT_IsoTkMu22_v                                     = 0;
-    THLT_IsoMu24_v                                       = 0;
-    THLT_IsoTkMu24_v                                     = 0;
-    THLT_Ele27_WPTight_Gsf_v                             = 0;
-    THLT_Ele25_eta2p1_WPTight_Gsf_v                      = 0;
-    THLT_Ele27_eta2p1_WPLoose_Gsf_v                      = 0;
-  }
-  
+  for (UInt_t i = 0; i < 254; i++) TLHEWeight[i] = 0;  
   
   if (!gIsData){
     genWeight   = Get<Float_t>("genWeight");
@@ -124,26 +103,6 @@ void ttHAnalysis::GetTreeVariables() {
   Trun      = Get<UInt_t>("run");
   if (gIsLHE) {
     for (UInt_t i = 0; i < Get<UInt_t>("nLHEweight"); i++) TLHEWeight[i] = Get<Float_t>("LHEweight_wgt", i);
-  }
-  if (gSampleName == "MuonEG") {
-    THLT_DiMu9_Ele9_CaloIdL_TrackIdL_v                   = Get<Bool_t>("HLT_BIT_HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v");
-    THLT_Mu8_DiEle12_CaloIdL_TrackIdL_v                  = Get<Bool_t>("HLT_BIT_HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v");
-    THLT_TripleMu_12_10_5_v                              = Get<Bool_t>("HLT_BIT_HLT_TripleMu_12_10_5_v");
-    THLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v             = Get<Bool_t>("HLT_BIT_HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v");
-    THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v    = Get<Bool_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v");
-    THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v = Get<Bool_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v");
-    THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v    = Get<Bool_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v");
-    THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v = Get<Bool_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v");
-    THLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v         = Get<Bool_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
-    THLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v               = Get<Bool_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");
-    THLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v             = Get<Bool_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v");
-    THLT_IsoMu22_v                                       = Get<Bool_t>("HLT_BIT_HLT_IsoMu22_v");
-    THLT_IsoTkMu22_v                                     = Get<Bool_t>("HLT_BIT_HLT_IsoTkMu22_v");
-    THLT_IsoMu24_v                                       = Get<Bool_t>("HLT_BIT_HLT_IsoMu24_v");
-    THLT_IsoTkMu24_v                                     = Get<Bool_t>("HLT_BIT_HLT_IsoTkMu24_v");
-    THLT_Ele27_WPTight_Gsf_v                             = Get<Bool_t>("HLT_BIT_HLT_Ele27_WPTight_Gsf_v");
-    THLT_Ele25_eta2p1_WPTight_Gsf_v                      = Get<Bool_t>("HLT_BIT_HLT_Ele25_eta2p1_WPTight_Gsf_v");
-    THLT_Ele27_eta2p1_WPLoose_Gsf_v                      = Get<Bool_t>("HLT_BIT_HLT_Ele27_eta2p1_WPLoose_Gsf_v");
   }
 }
 
@@ -213,28 +172,6 @@ void ttHAnalysis::SetSystBranches() {
   fTree->Branch("TCatJESUp",            &TCatJESUp,           "TCatJESUp/I");
   fTree->Branch("TCatJESDown",          &TCatJESDown,         "TCatJESDown/I");
   fTree->Branch("TLHEWeight",           TLHEWeight,           "TLHEWeight[254]/F");
-  if (gSampleName == "MuonEG") {
-    fTree->Branch("THLT_DiMu9_Ele9_CaloIdL_TrackIdL_v",       &THLT_DiMu9_Ele9_CaloIdL_TrackIdL_v, "THLT_DiMu9_Ele9_CaloIdL_TrackIdL_v/B");
-    fTree->Branch("THLT_Mu8_DiEle12_CaloIdL_TrackIdL_v",      &THLT_Mu8_DiEle12_CaloIdL_TrackIdL_v, "THLT_Mu8_DiEle12_CaloIdL_TrackIdL_v/B");
-    fTree->Branch("THLT_TripleMu_12_10_5_v",                  &THLT_TripleMu_12_10_5_v, "THLT_TripleMu_12_10_5_v/B");
-    fTree->Branch("THLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v", &THLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v, "THLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v/B");
-    fTree->Branch("THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v", &THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v, "THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v/B");
-    fTree->Branch("THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v", &THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v, "THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v/B");
-    fTree->Branch("THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v", &THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v, "THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v/B");
-    fTree->Branch("THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v", &THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v, "THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v/B");
-    fTree->Branch("THLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v", &THLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v, "THLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v/B");
-    fTree->Branch("THLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",   &THLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v,   "THLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v/B");
-    fTree->Branch("THLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v", &THLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v, "THLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v/B");
-    fTree->Branch("THLT_IsoMu22_v",                           &THLT_IsoMu22_v,    "THLT_IsoMu22_v/B");
-    fTree->Branch("THLT_IsoTkMu22_v",                         &THLT_IsoTkMu22_v,  "THLT_IsoTkMu22_v/B");
-    fTree->Branch("THLT_IsoMu24_v",                           &THLT_IsoMu24_v,    "THLT_IsoMu24_v/B");
-    fTree->Branch("THLT_IsoTkMu24_v",                         &THLT_IsoTkMu24_v,  "THLT_IsoTkMu24_v/B");
-    fTree->Branch("THLT_Ele27_WPTight_Gsf_v",                 &THLT_Ele27_WPTight_Gsf_v,        "THLT_Ele27_WPTight_Gsf_v/B");
-    fTree->Branch("THLT_Ele25_eta2p1_WPTight_Gsf_v",          &THLT_Ele25_eta2p1_WPTight_Gsf_v, "THLT_Ele25_eta2p1_WPTight_Gsf_v/B");
-    fTree->Branch("THLT_Ele27_eta2p1_WPLoose_Gsf_v",          &THLT_Ele27_eta2p1_WPLoose_Gsf_v, "THLT_Ele27_eta2p1_WPLoose_Gsf_v/B");
-  }
-  fTree->Branch("Tcuts",          &Tcuts,         "Tcuts/i");
-  fTree->Branch("Tdummy",         &Tdummy,        "Tdummy/i");
 }
 
 
@@ -250,12 +187,11 @@ void ttHAnalysis::SetMiniTreeVariables() {
     else if (Is3lEvent  (TnJetsJESDown, TMETLDJESDown)) TCatJESDown = 3;
     else if (Is4lEvent())                               TCatJESDown = 4;
   }
-  Tcortes = 0;
+  
   if (PassesPreCuts(nJets, nLooseBTags, nMediumBTags)) {
     if      (Is2lSSEvent(nJets, METLD))                 TCat        = 2;
     else if (Is3lEvent  (nJets, METLD))                 TCat        = 3;
     else if (Is4lEvent())                               TCat        = 4;
-    if (Is2lSSEvent(nJets, METLD) || Is3lEvent  (nJets, METLD) || Is4lEvent()) Tdummy = 1;
   }
   
   if (nTightLepton >= 1) TPtLeading           = TightLepton.at(0).Pt();
@@ -283,15 +219,10 @@ void ttHAnalysis::SetMiniTreeVariables() {
 ////////////////////////////////////////////////////////////////////////////////
 Bool_t ttHAnalysis::PassesPreCuts(UInt_t njets, UInt_t nloosebtag, UInt_t nmediumbtag) {
   if (nTightLepton < 2)                           return false;
-  Tcuts = 1;
   if (nTaus != 0)                                 return false;
-  Tcuts = 2;
   if (!PassesLowMassLimit(LooseLepton,12))        return false;
-  Tcuts = 3;
   if (njets < 2)                                  return false;
-  Tcuts = 4;
   if ((nloosebtag < 2) && (nmediumbtag < 1))      return false;
-  Tcuts = 5;
   
   return true;
 }
@@ -316,28 +247,19 @@ Bool_t ttHAnalysis::Is2lSSEvent(UInt_t njets, Float_t metld) {
 
 Bool_t ttHAnalysis::Is3lEvent(UInt_t njets, Float_t metld) {
   if (nTightLepton != 3)                          return false;
-  Tcuts = 6;
   if (TightLepton.at(0).Pt() < 25)                return false;
-  Tcuts = 7;
   if (TightLepton.at(1).Pt() < 15)                return false;
-  Tcuts = 8;
   if (TightLepton.at(2).Pt() < 15)                return false;
-  Tcuts = 9;
   if (abs(ClosestMlltoZ(LooseLepton) - Zm) < 10)  return false;
-  Tcuts = 10;
   if (abs(getCS(TightLepton)) != 1)               return false;
-  Tcuts = 11;
   if (has2OSSFwMlmm(LooseLepton, 140))            return false;
-  Tcuts = 12;
   
   if (njets < 4) {
     if (!hasOSSF(LooseLepton)) {
       if (metld < 0.2)                            return false;
-      Tcuts = 13;
     } 
     else {
       if (metld < 0.3)                            return false;
-      Tcuts = 14;
     }
   }
   
@@ -379,24 +301,6 @@ void ttHAnalysis::InitialiseVariables() {
   EventWeight_MuonUp    = 0;
   EventWeight_MuonDown  = 0;
   genWeight             = 0;
-  THLT_DiMu9_Ele9_CaloIdL_TrackIdL_v                   = 0;
-  THLT_Mu8_DiEle12_CaloIdL_TrackIdL_v                  = 0;
-  THLT_TripleMu_12_10_5_v                              = 0;
-  THLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v             = 0;
-  THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v    = 0;
-  THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v = 0;
-  THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v    = 0;
-  THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v = 0;
-  THLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v         = 0;
-  THLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v               = 0;
-  THLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v             = 0;
-  THLT_IsoMu22_v                                       = 0;
-  THLT_IsoTkMu22_v                                     = 0;
-  THLT_IsoMu24_v                                       = 0;
-  THLT_IsoTkMu24_v                                     = 0;
-  THLT_Ele27_WPTight_Gsf_v                             = 0;
-  THLT_Ele25_eta2p1_WPTight_Gsf_v                      = 0;
-  THLT_Ele27_eta2p1_WPLoose_Gsf_v                      = 0;
 }
 
 
@@ -449,8 +353,6 @@ void ttHAnalysis::ResetVariables() {
   TnMediumBTagsJESDown= 0;
   TCatJESUp           = 0;
   TCatJESDown         = 0;
-  Tcuts               = 0;
-  Tdummy              = 0;
 }
 
 
