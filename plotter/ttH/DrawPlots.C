@@ -231,11 +231,11 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     } else {
       p->AddSample(Signalmc[0], "ttH", itBkg, kRed);
     }
-    
+    /*
     p->AddSample(Signalmc[0], "ttH", itSys, 1, "NormttHUp");
     p->ScaleSys("ttH_NormttHUp", 1.058);
     p->AddSample(Signalmc[0], "ttH", itSys, 1, "NormttHDown");
-    p->ScaleSys("ttH_NormttHDown", 1.092);/*
+    p->ScaleSys("ttH_NormttHDown", 0.902);
     p->AddSample(Signalmc[0], "ttH", itSys, 1, "ScaleUp");
     p->AddSample(Signalmc[0], "ttH", itSys, 1, "ScaleDown");
     p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfUp");
@@ -297,11 +297,11 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     } else {
       p->AddSample(Signalmc[0], "ttH", itBkg, kRed, "0", "AllInstances");
     }
-    
+    /*
     p->AddSample(Signalmc[0], "ttH", itSys, 1, "NormttHUp", "AllInstances");
     p->ScaleSys("ttH_NormttHUp", 1.058);
     p->AddSample(Signalmc[0], "ttH", itSys, 1, "NormttHDown", "AllInstances");
-    p->ScaleSys("ttH_NormttHDown", 1.092);/*
+    p->ScaleSys("ttH_NormttHDown", 0.902);
     p->AddSample(Signalmc[0], "ttH", itSys, 1, "ScaleUp", "AllInstances");
     p->AddSample(Signalmc[0], "ttH", itSys, 1, "ScaleDown", "AllInstances");
     p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfUp", "AllInstances");
@@ -348,7 +348,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     
     // Datacard
     const TString Bkgs      = " TTW,  TTZ,    WZ,   Convs,  Fakes,  Rares";
-    const TString BkgsNorm  = "1.12, 1.10,   1.3,     1.3,    1.3,    1.3";
+    //const TString BkgsNorm  = "1.12, 1.10,   1.3,     1.3,    1.3,    1.3";
+    const TString BkgsNorm  = "1.12, 1.10,   1.3,     1.3,    1.3,    1.3,   1.098";
     //const TString Sys       = "Trig, PU, MuonEff, ElecEff, JES, Scale, pdf";
     const TString Sys       = "Trig, PU, MuonEff, ElecEff, JES";
     Datacard *d = new Datacard("ttH",Bkgs,Sys,chan);
