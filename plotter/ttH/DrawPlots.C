@@ -42,13 +42,13 @@ void DrawPlots(TString chan = "ElMu", TString tag = "0"){
   else if (chan == "4l")  cut = "(TCat == 4)";
   
   DrawPlot("TCat",                cut, chan, 3, 2, 5,     "Category", "Categories", tag); // This one is only for getting yields and for the Datacard.
-  DrawPlot("TnTightLepton",       cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag);
-  DrawPlot("TnFakeableLepton",    cut, chan, 5, 0, 5,     "nFakeLep (#)", "nFakeLepton", tag);
-  DrawPlot("TnLooseLepton",       cut, chan, 5, 0, 5,     "nLooseLep (#)", "nLooseLepton", tag);
-  DrawPlot("TnTaus",              cut, chan, 3, 0, 3,     "nTaus (#)", "nTaus", tag);
-  DrawPlot("TnJets",              cut, chan, 10, 0, 10,   "nJets (#)", "nJets", tag);
-  DrawPlot("TnMediumBTags",       cut, chan, 6, 0, 6,     "nMediumBTags (#)", "nMediumBTags", tag);
-  DrawPlot("TnLooseBTags",        cut, chan, 6, 0, 6,     "nLooseBTags (#)", "nLooseBTags", tag);
+  DrawPlot("TnTightLepton",       cut, chan, 6, -0.5, 5.5,"nTightLep (#)", "nTightLepton", tag);
+  DrawPlot("TnFakeableLepton",    cut, chan, 5, -0.5, 5.5,"nFakeLep (#)", "nFakeLepton", tag);
+  DrawPlot("TnLooseLepton",       cut, chan, 5, -0.5, 5.5,"nLooseLep (#)", "nLooseLepton", tag);
+  DrawPlot("TnTaus",              cut, chan, 3, -0.5, 2.5,"nTaus (#)", "nTaus", tag);
+  DrawPlot("TnJets",              cut, chan, 10, -0.5, 9.5,"nJets (#)", "nJets", tag);
+  DrawPlot("TnMediumBTags",       cut, chan, 6, -0.5, 5.5,"nMediumBTags (#)", "nMediumBTags", tag);
+  DrawPlot("TnLooseBTags",        cut, chan, 6, -0.5, 5.5,"nLooseBTags (#)", "nLooseBTags", tag);
   DrawPlot("TPtLeading",          cut, chan, 10, 0, 200,  "Pt (GeV)", "PtLeading", tag);
   DrawPlot("TPtSubLeading",       cut, chan, 10, 0, 200,  "Pt (GeV)", "PtSubLeading", tag);
   DrawPlot("TPtSubSubLeading",    cut, chan, 10, 0, 200,  "Pt (GeV)", "PtSubSubLeading", tag);
