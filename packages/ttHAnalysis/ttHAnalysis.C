@@ -118,7 +118,7 @@ void ttHAnalysis::SetLeptonBranches() {
   fTree->Branch("TPtSubLeading",        &TPtSubLeading,       "TPtSubLeading/F");
   fTree->Branch("TPtSubSubLeading",     &TPtSubSubLeading,    "TPtSubSubLeading/F");
   fTree->Branch("TPtSubSubSubLeading",  &TPtSubSubSubLeading, "TPtSubSubSubLeading/F");
-  fTree->Branch("TPtVector",            &TPtVector);
+  fTree->Branch("TPtVector",            TPtVector,            "TPtVector[TnTightLepton]/F");
 }
 
 
@@ -201,15 +201,9 @@ void ttHAnalysis::SetMiniTreeVariables() {
   
   TCS             = getCS(TightLepton);
   TMass           = (TightLepton.at(0).p+TightLepton.at(1).p).M();
-  if (nTightLepton >= 2) {
-    TPtVector.push_back(TightLepton.at(0).Pt());
-    TPtVector.push_back(TightLepton.at(1).Pt());
-  }
-  if (nTightLepton >= 3) {
-    TPtVector.push_back(TightLepton.at(2).Pt());
-  }
-  if (nTightLepton >= 4) {
-    TPtVector.push_back(TightLepton.at(3).Pt());
+  
+  for (UInt_t i = 0; i < nTightLepton; i++) {
+    TPtVector[i] = TightLepton.at(i).Pt();
   }
 }
 
@@ -311,7 +305,8 @@ void ttHAnalysis::ResetVariables() {
   Tau.clear();
   Jets.clear();
   Jets15.clear();
-  TPtVector.clear();
+  
+  for (UInt_t i = 0; i < 20; i++) TPtVector[i] = 0; 
   
   nTightLepton        = 0;
   nFakeableLepton     = 0;
