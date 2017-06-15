@@ -252,6 +252,7 @@ void JetSelector::InsideLoop(){
         else if (gSelection == iTWSelec){
 	  vetoJets.push_back(tJ);
 	  if (!gIsData){
+	    if ( tJ.p.Pt() < 20.) continue;
 	    BtagSF           *= fBTagSFnom->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
 	    BtagSFBtagUp     *= fBTagSFbUp->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
 	    BtagSFBtagDown   *= fBTagSFbDo->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
