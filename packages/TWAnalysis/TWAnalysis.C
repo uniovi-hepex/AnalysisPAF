@@ -157,7 +157,7 @@ void TWAnalysis::InsideLoop(){
   }
   //if((Int_t) genLeptons.size() >=2 && TNSelLeps >= 2 && passTrigger && passMETfilters){ // dilepton event, 2 leptons // && !isSS
   // if (gSelection == iTopSelec){
-  if (gIsTTbar && genLeptons.size() < 2) return; // Dilepton selection for ttbar!!!
+  if (gIsTTbar && genLeptons.size() > 1) return; // Dilepton selection for ttbar!!!
   // }
   // else if (gSelection == iTWSelec){
   //   if (gIsTW && genLeptons.size() < 2) return; // Dilepton selection for tw!!
@@ -638,6 +638,7 @@ void TWAnalysis::SetTWVariables()
   fTree->Branch("nBTotal"         , &nBTotal        , "nBTotal/F"        );
   fTree->Branch("MSys"            , &MSys           , "MSys/F"           );
   fTree->Branch("TJetLoosept"     , &TJetLoosept    , "TJetLoosept/F"    ); // loose jet pt
+  fTree->Branch("TJetLooseCentralpt"     , &TJetLooseCentralpt    , "TJetLooseCentralpt/F"    ); // loose jet pt
   fTree->Branch("C_jll"           , &C_jll          , "C_jll/F"          );
   fTree->Branch("DilepJetPt"      , &DilepJetPt     , "DilepJetPt/F"     );
   fTree->Branch("TJet1_pt"        , &TJet1_pt       , "TJet1_pt/F"       );
@@ -660,6 +661,9 @@ void TWAnalysis::SetTWVariables()
   fTree->Branch("TDR_L1L2_J1J2MET" , &TDR_L1L2_J1J2MET, "TDR_L1L2_J1J2MET/F");
   fTree->Branch("THtRejJ2"       , &THtRejJ2         , "THtRejJ2/F");
   fTree->Branch("TBDT2j1t"       , &TBDT2j1t         , "TBDT2j1t/F");
+  fTree->Branch("TBDT2j1tJESUp"  , &TBDT2j1tJESUp    , "TBDT2j1tJESUp/F");
+  fTree->Branch("TBDT2j1tJESDown", &TBDT2j1tJESDown  , "TBDT2j1tJESDown/F");
+  fTree->Branch("TBDT2j1tJER"    , &TBDT2j1tJER      , "TBDT2j1tJER/F");
 #endif
 }
 
@@ -680,6 +684,7 @@ void TWAnalysis::ReSetTWVariables()
   TJet2csv       = -99;
   MSys           = -99;
   TJetLoosept    = -99;
+  TJetLooseCentralpt = -99;
   C_jll          = -99;
   DilepJetPt     = -99;
 
@@ -1133,6 +1138,10 @@ void TWAnalysis::get20Jets()
   vector<float> looseJetPtJESDown;
   vector<float> looseJetPtJER;
 
+  vector<float> looseJetCentralPt;
+  vector<float> looseJetCentralPtJESUp;
+  vector<float> looseJetCentralPtJESDown;
+  vector<float> looseJetCentralPtJER;
   
   nLooseCentral  = 0.;   nLooseCentralJESUp  = 0.; nLooseCentralJESDown  = 0.;  nLooseCentralJER  = 0.; 
   nLooseFwd      = 0.;   nLooseFwdJESUp      = 0.; nLooseFwdJESDown      = 0.;  nLooseFwdJER      = 0.; 
@@ -1140,11 +1149,16 @@ void TWAnalysis::get20Jets()
   nBLooseFwd     = 0.;   nBLooseFwdJESUp     = 0.; nBLooseFwdJESDown     = 0.;  nBLooseFwdJER     = 0.; 
   TJet2csv       = 0.;   TJet2csvJESUp       = 0.; TJet2csvJESDown       = 0.;  TJet2csvJER       = 0.; 
   TJetLoosept    = 0.;   TJetLooseptJESUp    = 0.; TJetLooseptJESDown    = 0.;  TJetLooseptJER    = 0.; 
+  TJetLooseCentralpt           = 0.;  TJetLooseCentralptJESUp    = 0.;
+  TJetLooseCentralptJESDown    = 0.;  TJetLooseCentralptJER      = 0.; 
 
   for (unsigned int j = 0; j < vetoJets.size(); ++j){
     if (vetoJets.at(j).p.Pt() > 20.){
       looseJetPt.push_back( vetoJets.at(j).p.Pt() );
-      if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nLooseCentral++;
+      if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4){
+	nLooseCentral++;
+	looseJetCentralPt.push_back(vetoJets.at(j).p.Pt());
+      }
       else nLooseFwd++;
       if (vetoJets.at(j).isBtag){
 	if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentral++;
@@ -1154,7 +1168,10 @@ void TWAnalysis::get20Jets()
 
     if (vetoJets.at(j).pTJESUp > 20.){
       looseJetPtJESUp.push_back( vetoJets.at(j).pTJESUp );
-      if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nLooseCentralJESUp++;
+      if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4){
+	nLooseCentralJESUp++;
+	looseJetCentralPtJESUp.push_back(vetoJets.at(j).pTJESUp);
+      }
       else nLooseFwdJESUp++;
       if (vetoJets.at(j).isBtag){
 	if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentralJESUp++;
@@ -1164,7 +1181,10 @@ void TWAnalysis::get20Jets()
 
     if (vetoJets.at(j).pTJESDown > 20.){
       looseJetPtJESDown.push_back( vetoJets.at(j).pTJESDown );
-      if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nLooseCentralJESDown++;
+      if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4){
+	nLooseCentralJESDown++;
+	looseJetCentralPtJESDown.push_back(vetoJets.at(j).pTJESDown);
+      }
       else nLooseFwdJESDown++;
       if (vetoJets.at(j).isBtag){
 	if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentralJESDown++;
@@ -1174,7 +1194,10 @@ void TWAnalysis::get20Jets()
 
     if (vetoJets.at(j).pTJERUp > 20.){
       looseJetPtJER.push_back( vetoJets.at(j).pTJERUp );
-      if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nLooseCentralJER++;
+      if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4){
+	nLooseCentralJER++;
+	looseJetCentralPtJER.push_back(vetoJets.at(j).pTJERUp);
+      }
       else nLooseFwdJER++;
       if (vetoJets.at(j).isBtag){
 	if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentralJER++;
@@ -1197,7 +1220,10 @@ void TWAnalysis::get20Jets()
   std::sort( looseJetPtJESDown.begin(), looseJetPtJESDown.end(), GreaterThan);
   std::sort( looseJetPtJER.begin()    , looseJetPtJER.end()    , GreaterThan);
 
-  // std::sort( looseJetPtJER.begin()    , looseJetPtJER.end()    , GreaterThan);
+  std::sort( looseJetCentralPt.begin()       , looseJetCentralPt.end()       , GreaterThan);
+  std::sort( looseJetCentralPtJESUp.begin()  , looseJetCentralPtJESUp.end()  , GreaterThan);
+  std::sort( looseJetCentralPtJESDown.begin(), looseJetCentralPtJESDown.end(), GreaterThan);
+  std::sort( looseJetCentralPtJER.begin()    , looseJetCentralPtJER.end()    , GreaterThan);
 
   
   if (nLooseFwd + nLooseCentral > 1){
@@ -1216,6 +1242,16 @@ void TWAnalysis::get20Jets()
     TJet2csvJER = TMath::Max( vetoJets.at(1).csv   , 0.);
     TJetLooseptJER = looseJetPtJER.at(1);
   }
+
+
+  if (nLooseCentral > 1)
+    TJetLooseCentralpt = looseJetCentralPt.at(1);
+
+  if (nLooseCentralJESUp > 1)
+    TJetLooseCentralptJESUp = looseJetCentralPtJESUp.at(1);
+
+  if (nLooseCentralJESDown > 1)
+    TJetLooseCentralptJESDown = looseJetCentralPtJESDown.at(1);
 
 
   return;

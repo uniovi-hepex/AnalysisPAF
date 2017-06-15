@@ -215,6 +215,7 @@ class TWAnalysis : public PAFChainItemSelector{
     Float_t  TJet2csv       , TJet2csvJESUp       , TJet2csvJESDown       , TJet2csvJER       ;
     Float_t  MSys           , MSysJESUp           , MSysJESDown           , MSysJER           ;
     Float_t  TJetLoosept    , TJetLooseptJESUp    , TJetLooseptJESDown    , TJetLooseptJER    ;
+    Float_t  TJetLooseCentralpt, TJetLooseCentralptJESUp    , TJetLooseCentralptJESDown    , TJetLooseCentralptJER    ;
     Float_t  C_jll          , C_jllJESUp          , C_jllJESDown          , C_jllJER          ;
     Float_t  DilepJetPt     , DilepJetPtJESUp     , DilepJetPtJESDown     , DilepJetPtJER     ;
     Float_t  TBDTada        , TBDTadaJESUp        , TBDTadaJESDown        , TBDTadaJER        ;
