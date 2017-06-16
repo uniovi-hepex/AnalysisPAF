@@ -247,7 +247,7 @@ Histo* Plot::GetHisto(TString pr, TString systag){
 Histo* Plot::GetSymmetricHisto(TString pr, TString systag){
   Histo* nom = GetHisto(pr, "0");
   Histo* var = GetHisto(pr, systag);
-  Histo* sym = (Histo*) var->Clone();
+  Histo* sym = (Histo*) var->CloneHisto();
   Int_t nbins = nom->GetNbinsX();
   Float_t bindiff = 0; Float_t cont;
   for(Int_t i = 0; i <= nbins+1; i++){
@@ -263,6 +263,7 @@ Histo* Plot::GetSymmetricHisto(TString pr, TString systag){
   else newtag.ReplaceAll("Down", "Up");
   sym->SetTag(pr + "_" + newtag);
   sym->SetProcess(pr);
+  sym->SetName(pr + "_" + newtag);
   return sym;
 }
 

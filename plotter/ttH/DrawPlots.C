@@ -2,24 +2,32 @@ R__LOAD_LIBRARY(Histo.C+)
 R__LOAD_LIBRARY(Looper.C+)
 R__LOAD_LIBRARY(TResultsTable.C+)
 R__LOAD_LIBRARY(Plot.C+)
+R__LOAD_LIBRARY(CrossSection.C+)
+R__LOAD_LIBRARY(Datacard.C)
 #include "Histo.h"
 #include "Looper.h"
 #include "Plot.h"
+#include "TResultsTable.h"
+#include "Datacard.h"
 #include <iostream>
 #include <fstream>
 
-const TString Signalmc[]      = {"TTHNonbb"};                   // ttH
-const TString TTWmc[] 	      = {"TTWToLNu1", "TTWToQQ"};			  // TTW
-const TString TTZmc[] 	      = {"TTZToLLNuNu1", "TTZToQQ"};	    // TTZ
-const TString TTbarmc[] 	    = {"TTGJets", "TTbar_Powheg"}; // TTbar at LO (comment/uncomment as desired)
-//const TString TTbarmc[] 	    = {"TTGJets", "TTJets_aMCatNLO"}; // TTbar at NLO (comment/uncomment as desired)
-const TString WJetsmc[]       = {"WJetsToLNu_MLM"};             // WJets at LO  (comment/uncomment as desired)
-//const TString WJetsmc[]       = {"WJetsToLNu_aMCatNLO"};        // WJets at NLO (comment/uncomment as desired)
-const TString STmc[]    	    = {"TW", "TbarW", "T_tch", "Tbar_tch", "TToLeptons_sch_amcatnlo","TGJets"};// ST
-const TString DYmc[]          = {"DYJetsToLL_M50_MLM", "DYJetsToLL_M5to50_MLM"};                         // DY at LO   (comment/uncomment as desired)
-//const TString DYmc[2]          = {"DYJetsToLL_M50_aMCatNLO", "DYJetsToLL_M10to50_aMCatNLO"};              // DY at NLO (comment/uncomment as desired)
-const TString DiTriCuatrimc[] = {"WGToLNuG", "ZGTo2LG", "WpWpJJ", "WWW", "WWZ", "WZZ", "ZZZ", "WW", "tZq_ll", "TTTT", "WZTo3LNu_amcatnlo", "WWTo2L2Nu", "ZZ"}; // Di&Tri&Cuatriboson
-const TString Data[]          = {"MuonEG", "SingleMuon", "SingleElec", "DoubleEG", "DoubleMuon"};        // Data samples
+const TString Signalmc[]  = {"TTHNonbb"};                                 // ttH
+const TString TTWmc[] 	  = {"TTWToLNu", "TTWToQQ"};		                  // TTW
+const TString TTZmc[] 	  = {"TTZToLLNuNu", "TTZToQQ"};                  // TTZ
+const TString WZmc[] 	    = {"WZTo3LNu"};                                 // WZ
+const TString Convsmc[]   = {"WGToLNuG", "ZGTo2LG", "TGJets", "TTGJets"}; // Convs
+const TString Fakesmc[]   = {"TTbar_Powheg", "WJetsToLNu_MLM", "TW", 
+                             "TbarW", "T_tch", "Tbar_tch", 
+                             "TToLeptons_sch_amcatnlo", "DYJetsToLL_M50_MLM", 
+                             "DYJetsToLL_M5to50_MLM", "WW", "WWTo2L2Nu"}; // Fakes (ttbar with Powheg)
+/*const TString Fakesmc[]   = {"TTbar_aMCatNLO", "WJetsToLNu_MLM", "TW", 
+                             "TbarW", "T_tch", "Tbar_tch", 
+                             "TToLeptons_sch_amcatnlo", "DYJetsToLL_M50_MLM", 
+                             "DYJetsToLL_M5to50_MLM", "WW", "WWTo2L2Nu"}; // Fakes (ttbar with aMC@NLO)*/
+const TString Raresmc[]   = {"WWW", "WWZ", "WZZ", "ZZZ", "ZZ", "tZq_ll", 
+                             "TTTT"};                                     // Rares
+const TString Data[]      = {"MuonEG", "SingleMuon", "SingleElec", "DoubleEG", "DoubleMuon"};        // Data samples
 UInt_t counter = 0;
 
 
@@ -33,28 +41,30 @@ void DrawPlots(TString chan = "ElMu", TString tag = "0"){
   else if (chan == "3l")  cut = "(TCat == 3)";
   else if (chan == "4l")  cut = "(TCat == 4)";
   
-  DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag);
-  DrawPlot("TnTightLepton",    cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag);
-  DrawPlot("TnFakeableLepton", cut, chan, 5, 0, 5,     "nFakeLep (#)", "nFakeLepton", tag);
-  DrawPlot("TnLooseLepton",    cut, chan, 5, 0, 5,     "nLooseLep (#)", "nLooseLepton", tag);
-  DrawPlot("TnTaus",           cut, chan, 3, 0, 3,     "nTaus (#)", "nTaus", tag);
-  DrawPlot("TnJets",           cut, chan, 10, 0, 10,   "nJets (#)", "nJets", tag);
-  DrawPlot("TnMediumBTags",    cut, chan, 6, 0, 6,     "nMediumBTags (#)", "nMediumBTags", tag);
-  DrawPlot("TnLooseBTags",     cut, chan, 6, 0, 6,     "nLooseBTags (#)", "nLooseBTags", tag);
-  DrawPlot("TPtLeading",       cut, chan, 10, 0, 200,  "Pt (GeV)", "PtLeading", tag);
-  DrawPlot("TPtSubLeading",    cut, chan, 10, 0, 200,  "Pt (GeV)", "PtSubLeading", tag);
-  DrawPlot("TPtSubSubLeading", cut, chan, 10, 0, 200,  "Pt (GeV)", "PtSubSubLeading", tag);
-  DrawPlot("TPtVector",        cut, chan, 10, 0, 200,  "Pt (GeV)", "PtVector", tag);
-  DrawPlot("TMET",             cut, chan, 10, 0, 400,  "MET (GeV)", "MET", tag);
-  DrawPlot("TMHT",             cut, chan, 10, 0, 1000, "MHT (GeV)", "MHT", tag);
-  DrawPlot("THT",              cut, chan, 10, 0, 1000, "HT (GeV)", "HT", tag);
-  DrawPlot("TMETLD",           cut, chan, 10, 0, 2,    "METLD (GeV)", "METLD", tag);
-  DrawPlot("TCS",              cut, chan, 7, -3.5, 3.5,"Sum of charges", "CS", tag);
-  DrawPlot("TMass",            cut, chan, 10, 0, 400,  "Invariant mass (GeV)", "Mass", tag);
+  DrawPlot("TCat",                cut, chan, 3, 2, 5,     "Category", "Categories", tag); // This one is only for getting yields.
+  DrawPlot("TnTightLepton",       cut, chan, 6, 0, 6,     "nTightLep (#)", "nTightLepton", tag);
+  DrawPlot("TnFakeableLepton",    cut, chan, 5, 0, 5,     "nFakeLep (#)", "nFakeLepton", tag);
+  DrawPlot("TnLooseLepton",       cut, chan, 5, 0, 5,     "nLooseLep (#)", "nLooseLepton", tag);
+  DrawPlot("TnTaus",              cut, chan, 3, 0, 3,     "nTaus (#)", "nTaus", tag);
+  DrawPlot("TnJets",              cut, chan, 10, 0, 10,   "nJets (#)", "nJets", tag);
+  DrawPlot("TnMediumBTags",       cut, chan, 6, 0, 6,     "nMediumBTags (#)", "nMediumBTags", tag);
+  DrawPlot("TnLooseBTags",        cut, chan, 6, 0, 6,     "nLooseBTags (#)", "nLooseBTags", tag);
+  DrawPlot("TPtLeading",          cut, chan, 10, 0, 200,  "Pt (GeV)", "PtLeading", tag);
+  DrawPlot("TPtSubLeading",       cut, chan, 10, 0, 200,  "Pt (GeV)", "PtSubLeading", tag);
+  DrawPlot("TPtSubSubLeading",    cut, chan, 10, 0, 200,  "Pt (GeV)", "PtSubSubLeading", tag);
+  DrawPlot("TPtSubSubSubLeading", cut, chan, 10, 0, 200,  "Pt (GeV)", "PtSubSubLeading", tag);
+  DrawPlot("TPtVector",           cut, chan, 10, 0, 200,  "Pt (GeV)", "PtVector", tag);
+  DrawPlot("TMET",                cut, chan, 10, 0, 400,  "MET (GeV)", "MET", tag);
+  DrawPlot("TMHT",                cut, chan, 10, 0, 1000, "MHT (GeV)", "MHT", tag);
+  DrawPlot("THT",                 cut, chan, 10, 0, 1000, "HT (GeV)", "HT", tag);
+  DrawPlot("TMETLD",              cut, chan, 10, 0, 2,    "METLD (GeV)", "METLD", tag);
+  DrawPlot("TCS",                 cut, chan, 7, -3.5, 3.5,"Sum of charges", "CS", tag);
+  DrawPlot("TMass",               cut, chan, 10, 0, 400,  "Invariant mass (GeV)", "Mass", tag);
 }
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name, TString tag = "0"){
-  Plot* p     = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
+  if (chan == "2lSS") Plot* p     = new Plot(var, cut, "All", nbins, bin0, binN, "Title", Xtitle);
+  else                Plot* p     = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
   p->verbose  = true;
   
   
@@ -115,6 +125,17 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     }
     outputpath  += "test/";
   }
+  else if (githead.Contains("tauidcomparison")) {
+    if (counter == 0) {
+      cout << endl;
+      cout << "+ Branch TAUIDCOMPARISON chosen" << endl;
+      cout << endl;
+    }
+    path        += "tauidcomparison/";
+    outputpath  += "tauidcomparison/";
+    if      (tag == "tau")    path += "tau/";
+    else if (tag == "tth")    path += "tth/";
+  }
   else {
     if (counter == 0) {
       cout << endl;
@@ -137,64 +158,194 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   // Minitree settings =========================================================
   p->SetTreeName("MiniTree");
   if (chan == "Elec" || chan == "Muon" || chan == "ElMu") name = name+"_2lSS";
-  p->SetVarName(name);
+  p->SetVarName(name+"_"+chan);
   
     
   // Samples import ============================================================
-  for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
-    p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5);
-  }
-  for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
-	  p->AddSample(TTZmc[isample], "TTZ", itBkg, kSpring+2);
-  }
-  for (UInt_t isample = 0; isample < sizeof(TTbarmc)/sizeof(*TTbarmc); isample++) {
-	  p->AddSample(TTbarmc[isample], "TTbar", itBkg, kSpring+10);
-  }
-  for (UInt_t isample = 0; isample < sizeof(WJetsmc)/sizeof(*WJetsmc); isample++) {
-	  p->AddSample(WJetsmc[isample], "WJets", itBkg, kViolet+10);
-  }
-  for (UInt_t isample = 0; isample < sizeof(STmc)/sizeof(*STmc); isample++) {
-	  p->AddSample(STmc[isample], "ST", itBkg, kYellow);
-  }
-  for (UInt_t isample = 0; isample < sizeof(DYmc)/sizeof(*DYmc); isample++) {
-	  p->AddSample(DYmc[isample], "DY", itBkg, kOrange);
-  }
-  for (UInt_t isample = 0; isample < sizeof(DiTriCuatrimc)/sizeof(*DiTriCuatrimc); isample++) {
-	  p->AddSample(DiTriCuatrimc[isample], "Di&Tri&Cuatriboson", itBkg, kAzure-9);
-  }
-  for (UInt_t isample = 0; isample < sizeof(Data)/sizeof(*Data); isample++) {
-	  p->AddSample(Data[isample], "Data", itData,kBlack);
-  }
-  if (counter == 0) {
-    for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
-	    p->AddSample(Signalmc[isample], "ttH", itSignal, kRed);
+  if (var != "TPtVector") {
+    for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
+      p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5);
     }
-  } else {
-    p->AddSample(Signalmc[0], "ttH", itBkg, kRed);
-  }
+    for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
+  	  p->AddSample(TTZmc[isample], "TTZ", itBkg, kSpring+2);
+    }
+    
+    for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
+      p->AddSample(TTWmc[isample], "TTW", itSys, 1, "ScaleUp");
+    }
+    for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
+  	  p->AddSample(TTZmc[isample], "TTZ", itSys, 1, "ScaleUp");
+    }
+    for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
+      p->AddSample(TTWmc[isample], "TTW", itSys, 1, "ScaleDown");
+    }
+    for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
+  	  p->AddSample(TTZmc[isample], "TTZ", itSys, 1, "ScaleDown");
+    }
+    for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
+      p->AddSample(TTWmc[isample], "TTW", itSys, 1, "pdfUp");
+    }
+    for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
+  	  p->AddSample(TTZmc[isample], "TTZ", itSys, 1, "pdfUp");
+    }
+    for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
+      p->AddSample(TTWmc[isample], "TTW", itSys, 1, "pdfDown");
+    }
+    for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
+  	  p->AddSample(TTZmc[isample], "TTZ", itSys, 1, "pdfDown");
+    }
+    
+    for (UInt_t isample = 0; isample < sizeof(WZmc)/sizeof(*WZmc); isample++) {
+  	  p->AddSample(WZmc[isample], "WZ", itBkg, kViolet+10);
+    }
+    for (UInt_t isample = 0; isample < sizeof(Convsmc)/sizeof(*Convsmc); isample++) {
+  	  p->AddSample(Convsmc[isample], "Convs", itBkg, kYellow);
+    }
+    for (UInt_t isample = 0; isample < sizeof(Fakesmc)/sizeof(*Fakesmc); isample++) {
+  	  p->AddSample(Fakesmc[isample], "Fakes", itBkg, kOrange-7);
+    }
+    for (UInt_t isample = 0; isample < sizeof(Raresmc)/sizeof(*Raresmc); isample++) {
+  	  p->AddSample(Raresmc[isample], "Rares", itBkg, kAzure-9);
+    }
+    for (UInt_t isample = 0; isample < sizeof(Data)/sizeof(*Data); isample++) {
+  	  p->AddSample(Data[isample], "Data", itData,kBlack);
+    }
+    if (counter == 0) {
+      for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
+  	    p->AddSample(Signalmc[isample], "ttH", itSignal, kRed);
+      }
+    } else {
+      p->AddSample(Signalmc[0], "ttH", itBkg, kRed);
+    }
+    
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "NormttHUp");
+    p->ScaleSys("ttH_NormttHUp", 1.058);
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "NormttHDown");
+    p->ScaleSys("ttH_NormttHDown", 1.092);
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "ScaleUp");
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "ScaleDown");
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfUp");
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfDown");
   
+  }
+  else {
+    for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
+      p->AddSample(TTWmc[isample], "TTW", itBkg, kGreen-5, "0", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
+  	  p->AddSample(TTZmc[isample], "TTZ", itBkg, kSpring+2, "0", "AllInstances");
+    }
+    
+    for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
+      p->AddSample(TTWmc[isample], "TTW", itSys, 1, "ScaleUp", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
+  	  p->AddSample(TTZmc[isample], "TTZ", itSys, 1, "ScaleUp", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
+      p->AddSample(TTWmc[isample], "TTW", itSys, 1, "ScaleDown", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
+  	  p->AddSample(TTZmc[isample], "TTZ", itSys, 1, "ScaleDown", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
+      p->AddSample(TTWmc[isample], "TTW", itSys, 1, "pdfUp", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
+  	  p->AddSample(TTZmc[isample], "TTZ", itSys, 1, "pdfUp", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
+      p->AddSample(TTWmc[isample], "TTW", itSys, 1, "pdfDown", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
+  	  p->AddSample(TTZmc[isample], "TTZ", itSys, 1, "pdfDown", "AllInstances");
+    }
+    
+    for (UInt_t isample = 0; isample < sizeof(WZmc)/sizeof(*WZmc); isample++) {
+  	  p->AddSample(WZmc[isample], "WZ", itBkg, kViolet+10, "0", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(Convsmc)/sizeof(*Convsmc); isample++) {
+  	  p->AddSample(Convsmc[isample], "Convs", itBkg, kYellow, "0", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(Fakesmc)/sizeof(*Fakesmc); isample++) {
+  	  p->AddSample(Fakesmc[isample], "Fakes", itBkg, kOrange-7, "0", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(Raresmc)/sizeof(*Raresmc); isample++) {
+  	  p->AddSample(Raresmc[isample], "Rares", itBkg, kAzure-9, "0", "AllInstances");
+    }
+    for (UInt_t isample = 0; isample < sizeof(Data)/sizeof(*Data); isample++) {
+  	  p->AddSample(Data[isample], "Data", itData,kBlack, "0", "AllInstances");
+    }
+    if (counter == 0) {
+      for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
+  	    p->AddSample(Signalmc[isample], "ttH", itSignal, kRed, "0", "AllInstances");
+      }
+    } else {
+      p->AddSample(Signalmc[0], "ttH", itBkg, kRed, "0", "AllInstances");
+    }
+    
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "NormttHUp", "AllInstances");
+    p->ScaleSys("ttH_NormttHUp", 1.058);
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "NormttHDown", "AllInstances");
+    p->ScaleSys("ttH_NormttHDown", 1.092);
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "ScaleUp", "AllInstances");
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "ScaleDown", "AllInstances");
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfUp", "AllInstances");
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfDown", "AllInstances");
+    
+  }
   // Histogram settings ========================================================
   p->SetScaleMax(1.7);
   p->SetRatioMin(0);
   p->SetRatioMax(2);
-  //if (!githead.Contains("test")) {
-  //  p->SetSignalStyle("Fill");
-  //}
   p->doSetLogy = false;
   
   // Errors ====================================================================
-  p->AddSystematic("stat,JES");
+  p->AddSystematic("stat,Trig,PU,MuonEff,ElecEff,JES");
   
-  // Yields table settings and printing ========================================
+  // Yields table and cross section settings, histograms plotting ==============
   if (counter == 0) {
+    // Yields
     p->SetTableFormats("%1.4f");
     p->SetYieldsTableName("Yields_"+chan+"_"+tag);
     p->PrintYields("","","","txt");
+    
+    p->SetLimitFolder(outputpath);
+    p->SetOutputName("Histos_"+chan+"_"+tag);
+    p->SaveHistograms();
+    
+    // Cross section
+    p->SetSignalStyle("xsec");
+    CrossSection *x = new CrossSection(p, "ttH");
+    x->SetTheoXsec(0.2150955);
+    x->SetChannelTag("chan");
+    
+    x->SetEfficiencySyst("Trig, PU, MuonEff, ElecEff, JES");
+    x->SetAcceptanceSyst("stat, Scale, pdf");
+    
+    x->SetOutputFolder(outputpath);
+    x->SetXsecTableName("Xsec_"+chan+"_"+tag);
+    x->SetTableName("Xsec_unc_"+chan+"_"+tag);
+    
+    x->PrintSystematicTable("txt");
+    x->PrintCrossSection("txt");
+    
+    // Datacard
+    const TString Bkgs      = " TTW,  TTZ,    WZ,   Convs,  Fakes,  Rares";
+    const TString BkgsNorm  = "1.12, 1.10,   1.3,     1.3,    1.3,    1.3";
+    const TString Sys       = "Trig, PU, MuonEff, ElecEff, JES, Scale, pdf";
+    Datacard *d = new Datacard("ttH",Bkgs,Sys,chan);
+    
+    d->SetPathToFile(outputpath);
+    d->SetLumiUnc(1+2.6/100);
+    d->SetNormUnc(BkgsNorm);
+    d->SetRootFileName("Histos_"+chan+"_"+tag);
+    d->GetParamsFormFile();
+    d->PrintDatacard(outputpath+"Datacard_"+name+"_"+chan+"_"+tag+".txt");
   }
-  
-  // Plotting ==================================================================
-  if (counter != 0) p->DrawStack(tag, 1);
-	
+  else {
+    p->DrawStack(tag, 1);
+  }
   
   if (counter == 0) counter = 1;
   delete p;

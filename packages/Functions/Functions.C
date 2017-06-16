@@ -6,7 +6,7 @@
 // ==================================================================
 Float_t getDPhiClosestJet(vector<Jet> vJet, TLorentzVector lep){
   Float_t minDphi = 9999.;
-  for (unsigned int i=0; i<vJet.size(); i++) {
+  for (UInt_t i=0; i<vJet.size(); i++) {
     if (minDphi > TMath::Abs(lep.DeltaPhi(vJet[i].p))) minDphi = TMath::Abs(lep.DeltaPhi(vJet[i].p));
   }
   return minDphi;
@@ -19,8 +19,25 @@ Float_t getDeltaPhillJet(Lepton lep1, Lepton lep2, Jet jet){
 
 Float_t getHT(vector<Jet> jet){
   Float_t ht(0);
-  for (unsigned int i=0; i<jet.size(); i++) ht+=jet[i].p.Pt();
+  for (UInt_t i=0; i < jet.size(); i++) ht += jet.at(i).p.Pt();
   return ht;
+}
+
+Float_t getMHT(vector<Lepton> lepton, vector<Jet> jet) { // (~MET but with selected objects)
+  Float_t mht = 0;
+  TLorentzVector vectemp(0.,0.,0.,0.);
+  for (UInt_t i = 0; i < jet.size(); i++)    vectemp += jet.at(i).p;
+  for (UInt_t i = 0; i < lepton.size(); i++) vectemp += lepton.at(i).p;
+  mht = vectemp.Pt();
+  
+  return mht;
+}
+
+Float_t getMETLD(Float_t MET, Float_t MHT) {
+  Float_t metld;
+  metld = MET * 0.00397 + MHT * 0.00265;
+  
+  return metld;
 }
 
 Float_t getMT(TLorentzVector v1, TLorentzVector v2){
@@ -120,6 +137,12 @@ Float_t getJERscale(Float_t jet_eta, Int_t dir = 0){
   else if(dir == -1) return SF - err;
   return SF;
 }
+
+Bool_t ByPt( Jet jet1, Jet jet2){
+  return (jet1.p.Pt() > jet2.p.Pt());
+}
+
+
 Float_t getJERscale(Jet jet, Int_t dir = 0){ return getJERscale(jet.p.Eta(), dir);}
 
 Float_t getJetPtErr(Jet jet){
@@ -149,15 +172,13 @@ Float_t getJetJERpt(Jet jet){
   // Using JER SF 
   factor1  = TMath::Max(Float_t(0.0), genpt + jerScale*(pt - genpt))/pt;
   if(jet.mcp.DeltaR(jet.p) > 0.2 || TMath::Abs(pt - genpt) > 3*pt*sigmaMC) factor1 = -1; // Check matching
-
   // smearing...
   TRandom3 *fRand3 = new TRandom3(50);
   rdm  = fRand3->Gaus(0., sigmaMC ); //smear
   //rdm  = fRand3->Gaus(1., TMath::Sqrt(jerScale*jerScale -1.) * sigmaMC ); //smear
   factor2 = 1 + rdm*TMath::Sqrt(TMath::Max(Float_t(0.0), jerScale*jerScale - 1));
   delete fRand3;
-
-  if(factor1 == -1) return pt;//*factor2;
+  if(factor1 == -1) return pt*factor2;
   return  pt*factor1;   
 }
 
@@ -224,7 +245,7 @@ Float_t ClosestMlltoZ(vector<Lepton> leptons){
       if(leptons.at(i).type == leptons.at(j).type){ // same flavour
         if(leptons.at(i).charge*leptons.at(j).charge < 1){ // opposite sign
           mll = (leptons.at(i).p + leptons.at(j).p).M(); if(best_mll = 0) best_mll = mll; 
-          if( TMath::Abs(mll - 91) < TMath::Abs(best_mll - 91) ) best_mll = mll;
+          if( TMath::Abs(mll - Zm) < TMath::Abs(best_mll - Zm) ) best_mll = mll;
         }
       }
     }
@@ -247,6 +268,39 @@ Bool_t hasOSSF(vector<Lepton> leptons){
   return false;
 }
 
+Bool_t has2OSSFwMlmm(vector<Lepton> lepton, Float_t mm) {
+  if (lepton.size() < 4) return false;
+  vector<TLorentzVector> OSSFpair;
+  vector<UInt_t> OSSFpair1;
+  vector<UInt_t> OSSFpair2;
+  OSSFpair	  = vector<TLorentzVector>();
+  OSSFpair1	  = vector<UInt_t>();
+  OSSFpair2	  = vector<UInt_t>();
+  
+  for (UInt_t i = 0; i < lepton.size(); i++) {
+    for (UInt_t j = i+1; j < lepton.size(); j++) {
+      if (lepton.at(i).type != lepton.at(j).type)      continue;
+      if (lepton.at(i).charge*lepton.at(j).charge > 0) continue;
+      OSSFpair.push_back(lepton.at(i).p+lepton.at(j).p);
+      OSSFpair1.push_back(i);
+      OSSFpair2.push_back(j);
+    }
+  }
+  
+  if (OSSFpair.size() < 2) return false;
+  for (UInt_t i = 0; i < OSSFpair.size(); i++) {
+    for (UInt_t j = i+1; j < OSSFpair.size(); j++) {
+      if ((OSSFpair1.at(i) == OSSFpair1.at(j)) || 
+          (OSSFpair1.at(i) == OSSFpair2.at(j)) || 
+          (OSSFpair2.at(i) == OSSFpair2.at(j)))         continue;
+      if ((OSSFpair.at(i) + OSSFpair.at(j)).M() < mm)   return true;
+    }
+  }
+  
+  return false;
+}
+
+
 Bool_t IsOnZ(vector<Lepton> leptons){
   Int_t nLeps = leptons.size();
   if(nLeps < 2) return false;
@@ -254,7 +308,7 @@ Bool_t IsOnZ(vector<Lepton> leptons){
     for(Int_t j = 0; j < i; j++){
       if(leptons.at(i).type == leptons.at(j).type){ // same flavour
         if(leptons.at(i).charge*leptons.at(j).charge < 1){ // opposite sign
-          if( TMath::Abs( (leptons.at(i).p + leptons.at(j).p).M() - 91) < 15){ // on Z
+          if( TMath::Abs( (leptons.at(i).p + leptons.at(j).p).M() - Zm) < 15){ // on Z
             return true;
           }
         }
@@ -279,6 +333,16 @@ Bool_t PassLowInvMass(vector<Lepton> leptons, Float_t Mll_max){
   return true;
 }
 
+Bool_t PassesLowMassLimit(vector<Lepton> lepton, Float_t mm_max) {
+  if(lepton.size() < 2) return false;
+  for(UInt_t i = 0; i < lepton.size(); i++) {
+    for(UInt_t j = i+1; j < lepton.size(); j++) {
+      if((lepton.at(i).p + lepton.at(j).p).M() < mm_max) return false;
+    }
+  }
+  return true;
+}
+
 Bool_t IsThereSSpair(vector<Lepton> leptons){
 //  return true;
   Int_t nLeps = leptons.size();
@@ -290,6 +354,12 @@ Bool_t IsThereSSpair(vector<Lepton> leptons){
   return false;
 }
 
+Int_t getCS(vector<Lepton> lepton) { // Get the sum of charges of a vector of Lepton objects.
+  Int_t cs = 0;
+  for (UInt_t i = 0; i < lepton.size(); i++) cs += lepton.at(i).charge;
+  
+  return cs;
+}
 
 void co(TString out, TString co = "1;30"){
   std::cout << "\033[" << co << "m" << out << "\033[0m" << endl;

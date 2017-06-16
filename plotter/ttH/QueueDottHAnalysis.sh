@@ -16,6 +16,7 @@ if [ "$1" == "an" ]; then
   echo ""
   echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Creating job..."
   An=$(qsub -q proof -l nodes=1:ppn=$2 -o $logpath -e $logpath -d $workingpath -F "an $2 $3" DottHAnalysis.sh)
+  echo $An
   qsub -q proof -l nodes=1:ppn=$2 -o $logpath -e $logpath -d $workingpath -W depend=afterany:$An -F "$2 $3" check.sh
 elif [ "$1" == "pl" ]; then
   echo ""
