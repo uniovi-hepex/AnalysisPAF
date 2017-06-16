@@ -115,10 +115,10 @@ void Looper::Loop(TString sys){
     ForFLepPt    = GetFormula("LepPt",    "TFLep_Pt");
     ForFLepEta   = GetFormula("LepEta",   "TFLep_Eta");
     ForFLepPdgId = GetFormula("LepPdgId", "TFLep_pdgId");
-    ForLepChar  = GetFormula("LepChar",  "TLep_Charge");
-    FornSelLep  = GetFormula("nSelLep",  "TNSelLeps");
-    FornFakeLep = GetFormula("nFakeLep", "TNFakeableLeps");
-
+    ForLepChar   = GetFormula("LepChar",  "TLep_Charge");
+    FornSelTau   = GetFormula("nSelTau",  "TNTaus");
+    FornSelLep   = GetFormula("nSelLep",  "TNSelLeps");
+    FornFakeLep  = GetFormula("nFakeLep", "TNFakeableLeps");
   }
 
   for (Long64_t jentry=0; jentry<nEntries; jentry++) {
@@ -143,23 +143,28 @@ void Looper::Loop(TString sys){
       ForFLepPt   ->GetNdata();
       ForFLepEta  ->GetNdata();
       ForFLepPdgId->GetNdata();
+      ForLepChar  ->GetNdata();
       nFakeLeps = FornFakeLep->EvalInstance();
       nLeps     = FornSelLep->EvalInstance();
-      if(nFakeLeps <= 0) continue;
-      if(nLeps >= 3)     continue;
-      if(nLeps == 2){ // If is SS, is not fake
+      nTaus     = FornSelTau->EvalInstance();
+      if(nFakeLeps <= 0)           continue;
+      if(nLeps >= 3)               continue;
+      if(nLeps == 2 && nTaus >= 1) continue;
+      if(nLeps == 2){ // If is SS, it's not fake
         if(ForLepChar->EvalInstance(0) == ForLepChar->EvalInstance(1)) continue;
       }
-      //cout << "nFakeLeps = " << nFakeLeps << ", nLeps = " << nLeps << endl;
-      for(Int_t i = 0; i < nFakeLeps; i++){
-        FLepPt    = ForFLepPt ->EvalInstance(i);
-        FLepEta   = ForFLepEta->EvalInstance(i);
-        FLepPdgId = ForFLepPdgId->EvalInstance(i);
-        if(FLepPdgId == 11) f *= electronFakeRate(FLepPt, FLepEta);
-        if(FLepPdgId == 13) f *=     muonFakeRate(FLepPt, FLepEta);
+      //if((nLeps == 2 && nTaus == 0)){
+      //if((nLeps == 2 && nTaus == 0) || nLeps == 1){
+        for(Int_t i = 0; i < nFakeLeps; i++){
+          FLepPt    = ForFLepPt ->EvalInstance(i);
+          FLepEta   = ForFLepEta->EvalInstance(i);
+          FLepPdgId = ForFLepPdgId->EvalInstance(i);
+          if(FLepPdgId == 11) f *= electronFakeRate(FLepPt, FLepEta);
+          if(FLepPdgId == 13) f *=     muonFakeRate(FLepPt, FLepEta);
+       // }
+        if(f >= 1) continue;
+        weight *= f/(1-f);
       }
-      if(f >= 1) continue;
-      weight *= f/(1-f);
     }
 
     Float_t nom = 0; Float_t var = 0; Float_t ext = 0; Float_t env = 0;
@@ -167,10 +172,10 @@ void Looper::Loop(TString sys){
       //cout << " Scale matrix element weights: \n";
       for(Int_t bin = 1; bin <= nbins; bin++){
         ext = 0; env = 0;
-        nom = hLHE[0]->GetBinContent(bin);
+        nom = hLHE[0]->GetBinContent(bin); // weight 0 is not nominal???????????????? 
         for(Int_t w = 1; w < 9; w++){
           var = hLHE[w]->GetBinContent(bin);  
-          if(sys.Contains("Up") || sys.Contains("up")){
+          if(sys.Contains("Down") || sys.Contains("down")){
             if(nom-var > ext){ ext = nom-var; env = var;}
           }
           else{
