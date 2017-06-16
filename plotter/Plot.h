@@ -142,7 +142,7 @@ public:
   TCanvas *SetCanvas();
   TLegend* SetLegend();
   void SetTexChan(TString cuts); // To be updated
-  void SetHRatio(); // To be updated
+  void SetHRatio(TH1F* h = nullptr); // To be updated
 
   void SetData();
   void GetStack();
@@ -218,6 +218,10 @@ public:
 	void PrintSystYields();
 	Float_t GetYield(TString pr = "ttbar", TString systag = "0");
 	Histo* GetHisto(TString pr = "ttbar", TString systag = "0");
+	void SetLineStyle(TString pr = "ttbar", Int_t s = 0){  Histo* h = GetHisto(pr, "0"); h->SetLineStyle(s);}
+	void SetLineColor(TString pr = "ttbar", Int_t s = 0){  Histo* h = GetHisto(pr, "0"); h->SetLineColor(s);}
+	void SetMarkerColor(TString pr = "ttbar", Int_t s = 0){  Histo* h = GetHisto(pr, "0"); h->SetMarkerColor(s);}
+	void SetMarkerStyle(TString pr = "ttbar", Int_t s = 0){  Histo* h = GetHisto(pr, "0"); h->SetMarkerStyle(s);}
   Histo* GetSymmetricHisto(TString pr = "ttbar", TString systag = "0");
   void AddSymmetricHisto(TString pr, TString systag);
   Float_t GetData();
