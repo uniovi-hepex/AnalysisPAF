@@ -10,7 +10,7 @@ R__LOAD_LIBRARY(DatasetManager/DatasetManager.C+)
 
 Bool_t IsMCatNLO(TString sampleName);
 void GetCount(vector<TString> Files, Bool_t IsData = false);
-void RunAnalyserPAF(TString sampleName  = "TTbar_Powheg", TString Selection = "StopDilep", Int_t nSlots = 1, Long64_t nEvents = 0, Long64_t FirstEvent = 0, Float_t uxsec = 1.0, Int_t stopMass = 0, Int_t lspMass  = 0);
+void RunAnalyserPAF(TString sampleName  = "TTbar_Powheg", TString Selection = "StopDilep", Int_t nSlots = 1, Long64_t nEvents = 0, Long64_t FirstEvent = 0, Float_t uxsec = 1.0, Int_t stopMass = 0, Int_t lspMass  = 0, TString option = "");
 Float_t GetSMSnorm(Int_t mStop, Int_t mLsp);
 Float_t GetISRweight(Int_t mStop, Int_t mLsp);
 Double_t GetStopXSec(Int_t StopMass);
@@ -31,7 +31,7 @@ const Int_t nLHEWeight = 248;
 enum             sel         {iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec, iWZSelec, i4tSelec, nSel};
 const TString tagSel[nSel] = {"Stop",         "Top",     "TW",     "WW",     "ttDM",     "ttH",   "WZ",    "tttt" };
 
-void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_t nEvents, Long64_t FirstEvent, Float_t uxsec,	Int_t stopMass, Int_t lspMass) {
+void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_t nEvents, Long64_t FirstEvent, Float_t uxsec,	Int_t stopMass, Int_t lspMass, TString options) {
 
   if(sampleName.BeginsWith("Check:")){
     verbose = false;
@@ -84,7 +84,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 
   // Tab in the spreadsheet https://docs.google.com/spreadsheets/d/1b4qnWfZrimEGYc1z4dHl21-A9qyJgpqNUbhOlvCzjbE
   dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2");
-  //dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2_noSkim");
+//  dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2_noSkim");
   
   TString pathToFiles = dataPath + dm->FindLocalFolder();
   // Deal with data samples
@@ -114,16 +114,20 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
   }
   else{ // Deal with MC samples           Double_t sumnormFromFiles = GetCount(path, dm->GetRealDataFiles(asample));
     G_IsData = false; 
+    if(options.Contains("IsData") || options.Constains("isData")) G_IsData = true;
     TString theSample = "";
 		if(sampleName.BeginsWith("LocalFile:")){ // LocalFile
 			theSample = sampleName.ReplaceAll("LocalFile:", ""); 
 			if(verbose) cout << " >>> Analysing a local sample: " << theSample << endl;
 			sampleName = TString( theSample(theSample.Last('/')+1, theSample.Sizeof())).ReplaceAll(".root", "").ReplaceAll("Tree_", "").ReplaceAll("_*", "").ReplaceAll("*", "");
+      TString searchsample = TString( theSample(theSample.Last('/') + 1, theSample.Sizeof()));
 			//Files.push_back(theSample);
-			Files = GetAllFiles(theSample);
+			theSample = theSample(0, theSample.Last('/'));
+			Files = GetAllFiles(theSample, searchsample);
       GetCount(Files, G_IsData);
       xsec = uxsec;
       G_Event_Weight = xsec/Count;
+			if(options.Contains("FastSim")) G_IsFastSim = true;
 		}
 		else if(sampleName.BeginsWith("Scan:")){ // T2tt sample
 			theSample = sampleName.ReplaceAll("Scan:", "");
@@ -400,8 +404,6 @@ Float_t GetISRweight(Int_t mStop, Int_t mLsp){
   cout << Form("NormWeight = %1.4f\033[0m\n", weight);
   return weight;
 }
-
-
 
 Double_t GetStopXSec(Int_t StopMass){
   if      (StopMass == 125) return 574.981;
