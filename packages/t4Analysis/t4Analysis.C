@@ -162,8 +162,15 @@ void t4Analysis::InsideLoop(){
     }
   }
   else if(TNTaus >= 1){
-    if(TNSelLeps >= 2) {
-      TChannel = i2l1tau;
+    if(TNSelLeps == 2 && TNTaus ==1) {
+      if (IsThereSSpair(xLeptons)) TChannel = iss2l1tau;
+      else                         TChannel = ios2l1tau;
+    }
+    else if(TNSelLeps == 1 && TNTaus == 2) {
+      TChannel = i1l2taus;
+    }
+    else if(TNSelLeps == 2 && TNTaus == 2){
+      TChannel = i2l2taus;
     }
   }
 
