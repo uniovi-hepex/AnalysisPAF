@@ -38,6 +38,7 @@ class LeptonSelector : public PAFChainItemSelector{
     // LepGood
     Lepton tL;
     Int_t nLep;
+    Int_t evt;
     TLorentzVector tP; 
     Float_t pt;
     Float_t eta;
