@@ -136,7 +136,7 @@ void t4Analysis::InsideLoop(){
   }
   else TrigSF = 1;
 
-  bool  tauFakesSelection(true);
+  bool  tauFakesSelection(false);
   Int_t nReqLeps (tauFakesSelection ? 1        :    2);
   bool  passJetReq(tauFakesSelection ? TNJets>0 : true);
 
