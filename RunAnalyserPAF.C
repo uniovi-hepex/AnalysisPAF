@@ -114,112 +114,112 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
   }
   else{ // Deal with MC samples           Double_t sumnormFromFiles = GetCount(path, dm->GetRealDataFiles(asample));
     G_IsData = false; 
-    if(options.Contains("IsData") || options.Constains("isData")) G_IsData = true;
+    if(options.Contains("IsData") || options.Contains("isData")) G_IsData = true;
     TString theSample = "";
-		if(sampleName.BeginsWith("LocalFile:")){ // LocalFile
-			theSample = sampleName.ReplaceAll("LocalFile:", ""); 
-			if(verbose) cout << " >>> Analysing a local sample: " << theSample << endl;
-			sampleName = TString( theSample(theSample.Last('/')+1, theSample.Sizeof())).ReplaceAll(".root", "").ReplaceAll("Tree_", "").ReplaceAll("_*", "").ReplaceAll("*", "");
+    if(sampleName.BeginsWith("LocalFile:")){ // LocalFile
+      theSample = sampleName.ReplaceAll("LocalFile:", ""); 
+      if(verbose) cout << " >>> Analysing a local sample: " << theSample << endl;
+      sampleName = TString( theSample(theSample.Last('/')+1, theSample.Sizeof())).ReplaceAll(".root", "").ReplaceAll("Tree_", "").ReplaceAll("_*", "").ReplaceAll("*", "");
       TString searchsample = TString( theSample(theSample.Last('/') + 1, theSample.Sizeof()));
-			//Files.push_back(theSample);
-			theSample = theSample(0, theSample.Last('/'));
-			Files = GetAllFiles(theSample, searchsample);
+      //Files.push_back(theSample);
+      theSample = theSample(0, theSample.Last('/'));
+      Files = GetAllFiles(theSample, searchsample);
       GetCount(Files, G_IsData);
       xsec = uxsec;
       G_Event_Weight = xsec/Count;
-			if(options.Contains("FastSim")) G_IsFastSim = true;
-		}
-		else if(sampleName.BeginsWith("Scan:")){ // T2tt sample
-			theSample = sampleName.ReplaceAll("Scan:", "");
-			if(verbose) cout << " >>> Analysing a scan... : " << theSample << endl;
-			//myProject->AddDataFiles(dm->GetRealDataFiles(theSample));
+      if(options.Contains("FastSim")) G_IsFastSim = true;
+    }
+    else if(sampleName.BeginsWith("Scan:")){ // T2tt sample
+      theSample = sampleName.ReplaceAll("Scan:", "");
+      if(verbose) cout << " >>> Analysing a scan... : " << theSample << endl;
+      //myProject->AddDataFiles(dm->GetRealDataFiles(theSample));
       std::vector<TString> tempFiles = dm->GetRealDataFiles(theSample);
       Files.insert(Files.end(), (tempFiles).begin(), (tempFiles).end());
       GetCount(Files);
-			sampleName = Form("T2tt_mStop%i_mLsp%i",stopMass, lspMass);
-			G_IsFastSim = true;
+      sampleName = Form("T2tt_mStop%i_mLsp%i",stopMass, lspMass);
+      G_IsFastSim = true;
       xsec = GetStopXSec(stopMass);
       if(theSample == "T2tt_mStop160to210mLSP1to20")  xsec *= (3*0.108)*(3*0.108); // Dileptonic sample
       Count = GetSMSnorm(stopMass, lspMass);
       NormISRweights = GetISRweight(stopMass, lspMass);
-			G_Event_Weight = xsec/Count;
-		} 
-		else{ // Use dataset manager
-			Float_t sumNorm = 1; long double totalXSec = 0; long double totalNorm = 0;
-			TString sampleChain = TString(sampleName);  
-			if(sampleName.Contains("&")) sampleName = TString(sampleName(0, sampleName.First('&'))); // For output file
+      G_Event_Weight = xsec/Count;
+    } 
+    else{ // Use dataset manager
+      Float_t sumNorm = 1; long double totalXSec = 0; long double totalNorm = 0;
+      TString sampleChain = TString(sampleName);  
+      if(sampleName.Contains("&")) sampleName = TString(sampleName(0, sampleName.First('&'))); // For output file
       sampleName.ReplaceAll(" ", "");
-			Int_t nFiles = sampleChain.CountChar('&') + 1;
-			for(Int_t k = 0; k < nFiles; k++){
-				if(sampleChain.Contains("&")){
-					theSample  = TString(sampleChain(0,sampleChain.First('&')));
-					sampleChain= TString(sampleChain(sampleChain.First('&')+1, sampleChain.Sizeof()));
-				}
-				else theSample  = sampleChain;
-				theSample.ReplaceAll(" ", "");
-				dm->LoadDataset(theSample);
-				//myProject->AddDataFiles(dm->GetFiles()); 
-				Files.insert(Files.end(), (dm->GetFiles()).begin(), (dm->GetFiles()).end());
-				xsec    = dm->GetCrossSection();
-				if(uxsec != 1) xsec    = uxsec;
-			}
-			GetCount(Files);
-			if(IsMCatNLO(sampleName)){
-				G_IsMCatNLO = true;
-				if(verbose) cout << " >>> This is an aMCatNLO sample!!" << endl;
-				G_Event_Weight = xsec/SumOfWeights;
-			}
-			else G_Event_Weight = xsec/Count;
-		}
-      if(sampleName.Contains("FastSim")) G_IsFastSim = true;
-	}
-	if(verbose){
-		//cout << "\033[1;30m=================================================\033[0m\n";
-		//for(Int_t i = 0; i < (Int_t) Files.size(); i++) cout << Form("\033[1;32m >>> Including file: %s \033[0m\n", Files.at(i).Data());
-		cout << "\033[1;30m-------------------------------------------------\033[0m\n";
-		if(!G_IsData)   cout << Form("\033[1;34m #### XSec             = %g \033[0m\n", xsec);
-		cout << Form("\033[1;34m #### Total Entries    = %lld \033[0m\n", nTrueEntries);
-		cout << Form("\033[1;34m #### Total gen events = %lld \033[0m\n", Count);
-		cout << Form("\033[1;34m #### Weight for norm  = %g \033[0m\n", G_Event_Weight);
-		if(G_IsMCatNLO) cout << Form("\033[1;34m #### Sum of weights   = %g \033[0m\n", SumOfWeights);
-		cout << "\033[1;30m=================================================\033[0m\n";
-	}
-        
-        // ------->>>>> Termporary solution:
-        //if(sampleName.Contains("PowhegLHE")) CountLHE = GetCountLHE(Files, arr);
-        
-        
-	// Output dir and tree name
-	//----------------------------------------------------------------------------
-	
-        TString username(gSystem->GetUserInfo(gSystem->GetUid())->fUser);
-        TString outPrefix("./");
-        if(username=="vischia") outPrefix="/pool/cienciasrw/userstorage/pietro/tttt/2l_skim_wmt2/";
-        // Insert here your conditional. Si no, por defecto es ./
-        TString outputDir = outPrefix + tagSel[sel] + "_temp";
-	if(sampleName.BeginsWith("T2tt")) outputDir += "/T2tt/";
-	gSystem->mkdir(outputDir, kTRUE);
-	if(sampleName.Contains("_ext2")) sampleName.ReplaceAll("_ext2",""); 
-	if(sampleName.Contains("_ext1")) sampleName.ReplaceAll("_ext1",""); 
-	if(sampleName.Contains("_ext"))  sampleName.ReplaceAll("_ext",""); 
-        
-	//if     (nEvents > 0 && FirstEvent == 0) myProject->SetNEvents(nEvents);
-        if(nEvents < 0 && FirstEvent == 0){ // Divide the sample
-          Int_t nChunks = TMath::Abs(nEvents);
-          Int_t firstEvent = 0;
-          cout << endl;
-          cout << Form("\033[0;97m >>> The sample is going to be divided in %i chunks!! \033[0m\n\n", nChunks);
-          for(Int_t i = 0; i < nChunks; i++){
-            firstEvent = (nTrueEntries/nChunks)*i+1;
-            nEvents = nTrueEntries/nChunks;
-            if(i == nChunks - 1) nEvents = nTrueEntries-firstEvent;
-            RunAnalyserPAF(orig_sampleName, Selection, nSlots, nEvents, firstEvent, i, stopMass , lspMass);
-            //gSystem->Exec("resetpaf -a");
-            //gSystem->Exec("resetpaf -a");
+      Int_t nFiles = sampleChain.CountChar('&') + 1;
+      for(Int_t k = 0; k < nFiles; k++){
+        if(sampleChain.Contains("&")){
+          theSample  = TString(sampleChain(0,sampleChain.First('&')));
+          sampleChain= TString(sampleChain(sampleChain.First('&')+1, sampleChain.Sizeof()));
+        }
+        else theSample  = sampleChain;
+        theSample.ReplaceAll(" ", "");
+        dm->LoadDataset(theSample);
+        //myProject->AddDataFiles(dm->GetFiles()); 
+        Files.insert(Files.end(), (dm->GetFiles()).begin(), (dm->GetFiles()).end());
+        xsec    = dm->GetCrossSection();
+        if(uxsec != 1) xsec    = uxsec;
+      }
+      GetCount(Files);
+      if(IsMCatNLO(sampleName)){
+        G_IsMCatNLO = true;
+        if(verbose) cout << " >>> This is an aMCatNLO sample!!" << endl;
+        G_Event_Weight = xsec/SumOfWeights;
+      }
+      else G_Event_Weight = xsec/Count;
     }
-          cout << "\033[1;31m >>> Merging trees... \n\033[0m";
-          TString haddCommand = "hadd " + outputDir + "/Tree_" + sampleName + ".root " + outputDir + "/Tree_" + sampleName + "_*.root";
-          gSystem->Exec(haddCommand);
+    if(sampleName.Contains("FastSim")) G_IsFastSim = true;
+  }
+  if(verbose){
+    //cout << "\033[1;30m=================================================\033[0m\n";
+    //for(Int_t i = 0; i < (Int_t) Files.size(); i++) cout << Form("\033[1;32m >>> Including file: %s \033[0m\n", Files.at(i).Data());
+    cout << "\033[1;30m-------------------------------------------------\033[0m\n";
+    if(!G_IsData)   cout << Form("\033[1;34m #### XSec             = %g \033[0m\n", xsec);
+    cout << Form("\033[1;34m #### Total Entries    = %lld \033[0m\n", nTrueEntries);
+    cout << Form("\033[1;34m #### Total gen events = %lld \033[0m\n", Count);
+    cout << Form("\033[1;34m #### Weight for norm  = %g \033[0m\n", G_Event_Weight);
+    if(G_IsMCatNLO) cout << Form("\033[1;34m #### Sum of weights   = %g \033[0m\n", SumOfWeights);
+    cout << "\033[1;30m=================================================\033[0m\n";
+  }
+  
+  // ------->>>>> Termporary solution:
+  //if(sampleName.Contains("PowhegLHE")) CountLHE = GetCountLHE(Files, arr);
+  
+  
+  // Output dir and tree name
+  //----------------------------------------------------------------------------
+	
+  TString username(gSystem->GetUserInfo(gSystem->GetUid())->fUser);
+  TString outPrefix("./");
+  if(username=="vischia") outPrefix="/pool/cienciasrw/userstorage/pietro/tttt/2l_skim_wmt2/";
+  // Insert here your conditional. Si no, por defecto es ./
+  TString outputDir = outPrefix + tagSel[sel] + "_temp";
+  if(sampleName.BeginsWith("T2tt")) outputDir += "/T2tt/";
+  gSystem->mkdir(outputDir, kTRUE);
+  if(sampleName.Contains("_ext2")) sampleName.ReplaceAll("_ext2",""); 
+  if(sampleName.Contains("_ext1")) sampleName.ReplaceAll("_ext1",""); 
+  if(sampleName.Contains("_ext"))  sampleName.ReplaceAll("_ext",""); 
+  
+  //if     (nEvents > 0 && FirstEvent == 0) myProject->SetNEvents(nEvents);
+  if(nEvents < 0 && FirstEvent == 0){ // Divide the sample
+    Int_t nChunks = TMath::Abs(nEvents);
+    Int_t firstEvent = 0;
+    cout << endl;
+    cout << Form("\033[0;97m >>> The sample is going to be divided in %i chunks!! \033[0m\n\n", nChunks);
+    for(Int_t i = 0; i < nChunks; i++){
+      firstEvent = (nTrueEntries/nChunks)*i+1;
+      nEvents = nTrueEntries/nChunks;
+      if(i == nChunks - 1) nEvents = nTrueEntries-firstEvent;
+      RunAnalyserPAF(orig_sampleName, Selection, nSlots, nEvents, firstEvent, i, stopMass , lspMass);
+      //gSystem->Exec("resetpaf -a");
+      //gSystem->Exec("resetpaf -a");
+    }
+    cout << "\033[1;31m >>> Merging trees... \n\033[0m";
+    TString haddCommand = "hadd " + outputDir + "/Tree_" + sampleName + ".root " + outputDir + "/Tree_" + sampleName + "_*.root";
+    gSystem->Exec(haddCommand);
     cout << "\033[1;37m================================================\n\033[0m";
     cout << "\033[1;37m >>>>> >>>> >>> >> > Finito! < << <<< <<<< <<<<<\n\033[0m";
     cout << "\033[1;37m================================================\n\033[0m";
@@ -227,11 +227,11 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
   }
   else if(FirstEvent != 0){
     if(FirstEvent == 1) FirstEvent = 0;
-		cout << Form("\033[1;36m >>> Running chunk number %i, starting in event %lli... will loop over %lli events (last event = %lli)\n\n\033[0m", iChunk, FirstEvent, nEvents, FirstEvent + nEvents);
+    cout << Form("\033[1;36m >>> Running chunk number %i, starting in event %lli... will loop over %lli events (last event = %lli)\n\n\033[0m", iChunk, FirstEvent, nEvents, FirstEvent + nEvents);
     sampleName += Form("_%i", iChunk);
   }
-
-
+  
+  
   // PAF mode selection (based on number of slots)
   //----------------------------------------------------------------------------
   PAFIExecutionEnvironment* pafmode = 0;
