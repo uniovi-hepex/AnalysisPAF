@@ -26,6 +26,7 @@ Long64_t nTrueEntries;
 Float_t xsec;
 Float_t NormISRweights;
 Bool_t verbose = true;
+Bool_t nukeIt = true;
 const Int_t nLHEWeight = 248;
 
 enum             sel         {iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec, iWZSelec, i4tSelec, nSel};
@@ -39,9 +40,11 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
     CheckTreesInDir(sampleName, Selection, nSlots);
     return;
   }
+  
+  if(options.Contains("noForcedHadd")) nukeIt=false;
 
-	Int_t iChunk = Int_t(uxsec);
-	if(FirstEvent != 0) verbose = false;
+  Int_t iChunk = Int_t(uxsec);
+  if(FirstEvent != 0) verbose = false;
   TString orig_sampleName = sampleName;
 
   vector<TString> tempfiles;
@@ -218,7 +221,8 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
       //gSystem->Exec("resetpaf -a");
     }
     cout << "\033[1;31m >>> Merging trees... \n\033[0m";
-    TString haddCommand = "hadd " + outputDir + "/Tree_" + sampleName + ".root " + outputDir + "/Tree_" + sampleName + "_*.root";
+    TString haddCommand = "hadd " + (nukeIt ? TString("-f ") : TString("") ) + outputDir + "/Tree_" + sampleName + ".root " + outputDir + "/Tree_" + sampleName + "_*.root";
+    //TString haddCommand = "hadd " + outputDir + "/Tree_" + sampleName + ".root " + outputDir + "/Tree_" + sampleName + "_*.root";
     gSystem->Exec(haddCommand);
     cout << "\033[1;37m================================================\n\033[0m";
     cout << "\033[1;37m >>>>> >>>> >>> >> > Finito! < << <<< <<<< <<<<<\n\033[0m";
