@@ -366,6 +366,7 @@ void co(TString out, TString co = "1;30"){
 }
 
 void DumpVar(Int_t evt, TString varname, Float_t val, Bool_t pass, Bool_t verbose){
+  if(!verbose) return;
   Int_t ee; Int_t i = 0;
   for(Int_t i = 0; i < nExploredEvents; i++){
     ee = ExploredEvents[i];
@@ -379,8 +380,9 @@ void DumpVar(Int_t evt, TString varname, Float_t val, Bool_t pass, Bool_t verbos
   }
 }
 
-void DumpEvent(Int_t evt, TString s){
-    Int_t ee; Int_t i = 0;
+void DumpEvent(Int_t evt, TString s, Bool_t verbose){
+  if(!verbose) return;
+  Int_t ee; Int_t i = 0;
   for(Int_t i = 0; i < nExploredEvents; i++){
     ee = ExploredEvents[i];
     if(evt == ee) cout << s << endl;
