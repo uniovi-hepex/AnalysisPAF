@@ -174,8 +174,8 @@ Bool_t LeptonSelector::getElecMVA(Int_t wp){
   if(wp == iLoose){
     if(aeta < 0.8){
       if     (pt > 10 && pt < 15) point = -0.48;
-      else if(pt > 15 && pt < 25) point = -0.48 + (-0.96+0.48)/10*(pt-15);
-      else if(pt > 25           ) point = -0.96;
+      else if(pt > 15 && pt < 25) point = -0.48 + (-0.85+0.48)/10*(pt-15);
+      else if(pt > 25           ) point = -0.85;
     }
     else if(aeta < 1.479){
       if     (pt > 10 && pt < 15) point = -0.67;
@@ -434,7 +434,7 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
       DumpVar(evt, "getElecMVA(iTight)", getElecMVA(iTight), getElecMVA(iTight));
       if(lep.p.Pt() < 20) return false;
       if(TMath::Abs(lep.p.Eta()) > 2.5) return false;
-      if(!getElecCutBasedId(iLoose)) return false;
+      //if(!getElecCutBasedId(iLoose)) return false;
       if(!convVeto) return false;
       if(lostHits != 0) return false;
       if(!getElecMVA(iTight)) return false;
@@ -519,19 +519,19 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
   }
   else if(gSelection == i4tSelec){
     if(lep.isMuon){
-      if(lep.p.Pt() < 15) return false;
+    if(lep.p.Pt() < 20) return false;
       if(TMath::Abs(lep.p.Eta()) > 2.4) return false;
       if(!isGlobalMuon && !isTrackerMuon) return false; 
       if(!getMuonId(iMedium)) return false;
       if(!getMultiIso(iLoose)) return false;
     }
     if(lep.isElec){
-      if(lep.p.Pt() < 15) return false;
+      if(lep.p.Pt() < 20) return false;
       if(TMath::Abs(lep.p.Eta()) > 2.5) return false;
-      if(!getElecCutBasedId(iLoose)) return false;
+      //if(!getElecCutBasedId(iLoose)) return false;
       if(!convVeto) return false;
       if(lostHits != 0) return false;
-      if(!getElecMVA(iVeryLoose)) return false;
+      if(!getElecMVA(iLoose)) return false;
       if(!getMultiIso(iLoose)) return false;
     }
     //if(!getminiRelIso(iLoose)) return false;
