@@ -6,7 +6,7 @@ R__LOAD_LIBRARY(Plot.C+)
 #include "Looper.h"
 #include "Plot.h"
 
-void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name = "");
+void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString varName="", TString cutName="", TString outFolder="");
 TString NameOfTree = "tree";
 TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/jun15/";
 
@@ -72,13 +72,14 @@ void DrawPlots(TString cutName){
  gApplication->Terminate();
 }
 
-void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name){
+void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString varName, TString cutName, TString outFolder){
   Plot* p = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
+  if(outFolder!="") p->SetPlotFolder(outFolder);
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
   p->verbose = false;
 //  p->doData = false;
-  if(name != "") p->SetVarName(name);
-
+  if(varName != "") p->SetVarName(varName);
+  if(cutName != "") p->SetOutputName(cutName);
   
   //p->AddSample("WZTo3LNu",                                        "WZ",       itBkg, kOrange);    // WZ
   //p->AddSample("WWTo2L2Nu, WpWpJJ, WWTo2L2Nu_DoubleScat",         "WW",       itBkg, kOrange-3);  // WW
@@ -113,14 +114,14 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 
   //p->AddSystematic("JES,Btag,MisTag,LepEff,PU");
   p->AddSystematic("stat");
-  cout << "Selection = " << name << endl;
+  cout << "Selection = " << varName << endl;
   cout << "Corresponding to cut: " << cut << endl;
   p->PrintYields();
   //p->PrintSamples();
   //p->doSetLogy = false;
   //p->DrawStack("0", 1);
-  //p->doSetLogy = true;
-  //p->DrawStack("log", 1);
+  p->doSetLogy = true;
+  p->DrawStack("log", 1);
   //p->PrintSystYields();
   delete p;
 }
