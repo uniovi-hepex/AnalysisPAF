@@ -175,6 +175,7 @@ void Looper::Loop(TString sys){
         ext = 0; env = 0;
         nom = hLHE[0]->GetBinContent(bin); // weight 0 is not nominal???????????????? 
         for(Int_t w = 1; w < 9; w++){
+          if(w==4 || w==6) continue; // Following numbering scheme in http://www.hep.uniovi.es/juanr/pdfWeights_feb17.txt (count from 0 instead of from 1)
           var = hLHE[w]->GetBinContent(bin);  
           if(sys.Contains("Down") || sys.Contains("down")){
             if(nom-var > ext){ ext = nom-var; env = var;}
