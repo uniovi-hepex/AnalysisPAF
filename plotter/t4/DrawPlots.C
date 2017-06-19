@@ -6,7 +6,7 @@ R__LOAD_LIBRARY(Plot.C+)
 #include "Looper.h"
 #include "Plot.h"
 
-void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name = "");
+void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString varName="", TString cutName="", TString outFolder="");
 TString NameOfTree = "tree";
 TString pathToTree = ""; // Moved set of the variable to the function at runtime
 
@@ -38,7 +38,9 @@ void DrawPlots(TString cutName){
   TString username(gSystem->GetUserInfo(gSystem->GetUid())->fUser);
   if(username=="vischia") pathToTree ="/pool/ciencias/userstorage/pietro/tttt/2l_skim_wmt2/tttt_temp/";
   else pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/may29/";
-  
+
+  TString outFolder("");
+  if(username=="vischia") outFolder="/nfs/fanae/user/vischia/www/t4/plots/";
   
   TString cut;
   if     (cutName == "CRW" ) cut = CRW ;
@@ -56,9 +58,15 @@ void DrawPlots(TString cutName){
   else if(cutName == "SR10") cut = SR10;
   else {cout << "Wrong name!!" << endl; return;}
   
-  NoFake = (cutName=="SR9" || cutName=="SR10" || cutName=="CRT") ? "1" : NoFake; 
-  DrawPlot("TChannel",  cut, NoFake , 1, 0, 15, "Count", cutName);
-  /*  DrawPlot("TNJets", "TNSelLeps == 2  && "  + baseline, "SS",       6, 2, 8, "Jet Multiplicity", "nJets");
+  //NoFake = (cutName=="SR9" || cutName=="SR10" || cutName=="CRT") ? "1" : NoFake;
+   DrawPlot("TChannel",  CRW , NoFake , 1, 0, 15, "Count", "Channel", "CRW" , outFolder);
+   DrawPlot("TChannel",  CRZ , NoFake , 1, 0, 15, "Count", "Channel", "CRZ" , outFolder);
+   DrawPlot("TChannel",  CRT , "1" , 1, 0, 15,    "Count", "Channel", "CRT" , outFolder);
+   DrawPlot("TChannel",  SR7 , NoFake , 1, 0, 15, "Count", "Channel", "SR7" , outFolder);
+   DrawPlot("TChannel",  SR8 , NoFake , 1, 0, 15, "Count", "Channel", "SR8" , outFolder);
+   DrawPlot("TChannel",  SR9 , "1" , 1, 0, 15,    "Count", "Channel", "SR9" , outFolder);
+   DrawPlot("TChannel",  SR10, "1" , 1, 0, 15,    "Count", "Channel", "SR10", outFolder);
+/*  DrawPlot("TNJets", "TNSelLeps == 2  && "  + baseline, "SS",       6, 2, 8, "Jet Multiplicity", "nJets");
       DrawPlot("TNJets", "TNSelLeps >  2  && "  + baseline, "MultiLep", 6, 2, 8, "Jet Multiplicity", "nJets");
       DrawPlot("TNJets",                          baseline, "All"     , 6, 2, 8, "Jet Multiplicity", "nJets");
       DrawPlot("TNBtags", "TNSelLeps == 2  && " + baseline, "SS",       7, 0, 7, "b-jet Multiplicity", "nBJets");
@@ -78,13 +86,14 @@ void DrawPlots(TString cutName){
  gApplication->Terminate();
 }
 
-void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name){
+void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString varName, TString cutName, TString outFolder){
   Plot* p = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
+  if(outFolder!="") p->SetPlotFolder(outFolder);
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
   p->verbose = false;
 //  p->doData = false;
-  if(name != "") p->SetVarName(name);
-
+  if(varName != "") p->SetVarName(varName);
+  if(cutName != "") p->SetOutputName(cutName);
   
   //p->AddSample("WZTo3LNu",                                        "WZ",       itBkg, kOrange);    // WZ
   //p->AddSample("WWTo2L2Nu, WpWpJJ, WWTo2L2Nu_DoubleScat",         "WW",       itBkg, kOrange-3);  // WW
@@ -96,7 +105,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   //p->AddSample("TTbar_Powheg, TW_noFullyHadr, TbarW_noFullyHadr, T_tch, Tbar_tch, TToLeptons_sch_amcatnlo", "Nonprompt", itBkg);
 
   // Nonprompt from data
-	p->AddSample("MuonEG, DoubleEG, DoubleMuon",     "Nonprompt", itBkg, kGray, "0", "Fake");
+	p->AddSample("MuonEG, DoubleEG, DoubleMuon",     "Nonprompt", itBkg, kGray, "0", "FakeLep");
 	// Fake subs 
   //p->AddSample("WZTo3LNu, WWTo2L2Nu,WpWpJJ,WWTo2L2Nu_DoubleScat,TGJets", "Nonprompt", itBkg, kGray, "0", "Fakesubs");
   p->AddSample("WZTo3LNu, WWTo2L2Nu,WpWpJJ,WWTo2L2Nu_DoubleScat, WWW, WWZ, WZZ, ZZZ, ZZTo4L, VHToNonbb_amcatnlo,TTZToLLNuNu, TTZToLL_M1to10, TTHNonbb, tZq_ll,TTWToLNu", "Nonprompt", itBkg, kGray, "0", "Fakesubs");
@@ -119,14 +128,14 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 
   //p->AddSystematic("JES,Btag,MisTag,LepEff,PU");
   p->AddSystematic("stat");
-  cout << "Selection = " << name << endl;
+  cout << "Selection = " << varName << endl;
   cout << "Corresponding to cut: " << cut << endl;
   p->PrintYields();
   //p->PrintSamples();
   //p->doSetLogy = false;
   //p->DrawStack("0", 1);
-  //p->doSetLogy = true;
-  //p->DrawStack("log", 1);
+  p->doSetLogy = true;
+  p->DrawStack("log", 1);
   //p->PrintSystYields();
   delete p;
 }
