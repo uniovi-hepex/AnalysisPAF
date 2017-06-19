@@ -220,6 +220,7 @@ void JetSelector::InsideLoop(){
   else                         Leptons = GetParam<vector<Lepton>>("selLeptons"); 
 
   evt = (UInt_t)Get<ULong64_t>("evt");
+  rho = Get<Float_t>("rho");
 
   // Loop over the jets
   nJet = Get<Int_t>("nJet");
@@ -367,7 +368,7 @@ void JetSelector::InsideLoop(){
       if(tJ.id > 0 && Cleaning(tJ, Leptons, minDR)){
 	SetSystematics(&tJ);
 	TLorentzVector tmp = tJ.p;
-	tJ.p.SetPtEtaPhiE( getJetJERpt(tJ), tJ.p.Eta(), tJ.p.Phi(), tJ.p.E() * getJetJERpt(tJ) / tJ.p.Pt());
+	tJ.p.SetPtEtaPhiE( getJetJERpt(tJ,rho), tJ.p.Eta(), tJ.p.Phi(), tJ.p.E() * getJetJERpt(tJ,rho) / tJ.p.Pt());
 	diffMET += (-tmp + tJ.p);
 	tJ.isBtag = IsBtag(tJ);
 	if (TMath::Abs(tJ.p.Eta()) < jet_MaxEta){
@@ -460,8 +461,8 @@ void JetSelector::SetSystematics(Jet *j){
   if(gIsData) return;
   j->pTJESUp     = rawPt*pt_corrUp;
   j->pTJESDown   = rawPt*pt_corrDown;
-  j->pTJERUp     = getJetJERpt(*j);
-  j->pTJERDown   = getJetJERpt(*j);
+  j->pTJERUp     = getJetJERpt(*j,rho);
+  j->pTJERDown   = getJetJERpt(*j,rho);
   j->isBtag_BtagUp      = fBTagSFbUp->IsTagged(_csv, _flavmc, _pt, _eta, evt+(UInt_t)_pt+1);
   j->isBtag_BtagDown    = fBTagSFbDo->IsTagged(_csv, _flavmc, _pt, _eta, evt+(UInt_t)_pt-1);
   j->isBtag_MisTagUp    = fBTagSFlUp->IsTagged(_csv, _flavmc, _pt, _eta, evt+(UInt_t)_pt+3);
