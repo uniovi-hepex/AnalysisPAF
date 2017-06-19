@@ -307,7 +307,7 @@ Float_t Plot::GetYield(TString pr, TString systag){
 }
 
 TLegend* Plot::SetLegend(){ // To be executed before using the legend
-  TLegend* leg = new TLegend(0.70,0.65,0.93,0.93);
+  TLegend* leg = new TLegend(fLegX1, fLegY1, fLegX2, fLegY2);
   leg->SetTextSize(0.035);
   leg->SetBorderSize(0);
   leg->SetFillColor(10);
@@ -349,6 +349,21 @@ TLegend* Plot::SetLegend(){ // To be executed before using the legend
     hData->AddToLegend(leg,doYieldsInLeg);
   }
   return leg;
+}
+
+void Plot::SetLegendPosition(TString pos)
+{
+  if (pos=="UR")
+    SetLegendPosition(0.70, 0.65, 0.93, 0.93);
+  else if (pos == "UL")
+    SetLegendPosition(0.15, 0.65, 0.38, 0.85);
+  else if (pos == "DL")
+    SetLegendPosition(0.15, 0.25, 0.38, 0.45);
+  else{
+    cout << "[Plot::SetLegendPosition] Sorry, position " << pos 
+	 << " is not yet implemented. Fucking do it yourself" <<endl;
+  }
+  
 }
 
 TCanvas* Plot::SetCanvas(){ // Returns the canvas
@@ -619,6 +634,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
     gSystem->mkdir(dir, kTRUE);
     c->Print( dir + plotname + ".pdf", "pdf");
     c->Print( dir + plotname + ".png", "png");
+    c->SaveAs( dir + plotname + ".root");
     delete c;
   }
   if(leg) delete leg; //if(hData) delete hData;
