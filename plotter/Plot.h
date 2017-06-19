@@ -109,6 +109,10 @@ public:
     TotalSysUp = NULL;
     TotalSysDown = NULL;
     nSignalSamples = 0;
+    fLegX1 = 0.70; 
+    fLegY1 = 0.65;
+    fLegX2 = 0.93; 
+    fLegY2 = 0.93;
   }
   Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Float_t* bins = 0, TString tit = "title", TString xtit = "VAR"){
     var    = variable;
@@ -183,6 +187,8 @@ public:
   Histo* GetH(TString sample = "TTbar_Powheg", TString s = "0", Int_t type = itBkg);
   TCanvas *SetCanvas();
   TLegend* SetLegend();
+  void SetLegendPosition(TString);
+  void SetLegendPosition(float x1, float y1, float x2, float y2){ fLegX1 = x1; fLegY1 = y1; fLegX2 = x2; fLegY2 = y2;}
   void SetTexChan(TString cuts); // To be updated
   void SetHRatio(TH1F* h = nullptr); // To be updated
 
@@ -330,6 +336,12 @@ protected:
   TString plotFolder;
   TString limitFolder;
   Bool_t ShowSystematics = false;
+
+  float fLegX1;
+  float fLegY1;
+  float fLegX2;
+  float fLegY2;
+  
 };
 
 #endif

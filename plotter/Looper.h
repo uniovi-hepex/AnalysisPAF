@@ -16,7 +16,7 @@
 #include "TSystem.h"
 #include "../InputFiles/for4t/fake_rates.h"
 
-enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau, iOS1tau, i2lss_fake, iTriLep_fake, i1Tau_emufake, iElEl, iMuMu, nTotalDefinedChannels};
+enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau, iOS1tau, i2lss_fake, iTriLep_fake, iElEl, iMuMu, i1Tau_emufake, nTotalDefinedChannels};
 const Int_t nLHEweights = 112;
 
 std::vector<TString> GetAllVars(TString varstring); 

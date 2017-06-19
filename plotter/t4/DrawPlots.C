@@ -6,11 +6,9 @@ R__LOAD_LIBRARY(Plot.C+)
 #include "Looper.h"
 #include "Plot.h"
 
-
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name = "");
 TString NameOfTree = "tree";
 TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/jun15/";
-//TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/tttt_temp/";
 
 // Baseline
 //TString baseline = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TNTaus == 0 && !TIsOnZ";
@@ -66,7 +64,7 @@ void DrawPlots(TString cutName){
   DrawPlot("TMET", "TNSelLeps == 2  && "    + baseline, "SS",       15, 0, 600, "MET [GeV]", "MET");
   DrawPlot("TMET", "TNSelLeps >  2  && "    + baseline, "MultiLep", 15, 0, 600, "MET [GeV]", "MET");
 */  
- // DrawPlot("TMET", "THT > 300 && TMET > 50 && TNTaus == 0",   Form("TChannel == %i || TChannel == %i", i2lss, iTriLep)     , 15, 0, 600, "MET [GeV]", "MET");
+  // DrawPlot("TMET", "THT > 300 && TMET > 50 && TNTaus == 0",   Form("TChannel == %i || TChannel == %i", i2lss, iTriLep)     , 15, 0, 600, "MET [GeV]", "MET");
   //DrawPlot("TMll", "THT > 300 && TMET > 50 && TNTaus == 0 && TNBtags >= 2 && TNJets >= 2",   Form("TChannel == %i || TChannel == %i", i2lss, iTriLep)     , 15, 0, 300, "InvMass [GeV]", "InvMass");
 
  // DrawPlot("TMET", "TNJets >= 2",  "TChannel == 3"  , 15, 0, 600, "MET [GeV]", "MET");
