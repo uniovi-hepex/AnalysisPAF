@@ -12,7 +12,10 @@ Histo* Plot::GetH(TString sample, TString sys, Int_t type){
     pathToMiniTree = sample(0, sample.Last('/')+1);
     sample = sample(sample.Last('/')+1, sample.Sizeof());
   }
-  Looper* ah = new Looper(pathToMiniTree, treeName, var, cut, chan, nb, x0, xN);
+  Looper* ah;
+  if(xN != x0) ah = new Looper(pathToMiniTree, treeName, var, cut, chan, nb, x0, xN);
+  else         ah = new Looper(pathToMiniTree, treeName, var, cut, chan, nb, vbins);
+
   ah->SetOptions(LoopOptions);
   Histo* h = ah->GetHisto(sample, sys);
   h->SetDirectory(0);
@@ -125,7 +128,8 @@ void Plot::SetData(){  // Returns histogram for Data
   if(hData) delete hData;
   if(gROOT->FindObject("HistoData")) delete gROOT->FindObject("HistoData");
   
-  hData = new Histo(TH1F("HistoData", "Data", nb, x0, xN));
+  if(x0 != xN) hData = new Histo(TH1F("HistoData", "Data", nb, x0, xN));
+  else         hData = new Histo(TH1F("HistoData", "Data", nb, vbins));
   if(VData.size() < 1) doData = false;
   TString p = "";
 
@@ -184,8 +188,14 @@ void Plot::GroupSystematics(){
     Histo* hsumSysUp = NULL; Histo* hsumSysDown = NULL; 
     if(gROOT->FindObject(tag + "_SystSumUp"))   delete gROOT->FindObject(tag + "_SystSumUp");
     if(gROOT->FindObject(tag + "_SystSumDown")) delete gROOT->FindObject(tag + "_SystSumDown");
-    hsumSysUp   = new Histo(TH1F(tag + "_SystSumUp",  tag + "_SystSumUp" ,   nb, x0, xN));
-    hsumSysDown = new Histo(TH1F(tag + "_SystSumDown",tag + "_SystSumDown" , nb, x0, xN));
+    if(x0 != xN){
+      hsumSysUp   = new Histo(TH1F(tag + "_SystSumUp",  tag + "_SystSumUp" ,   nb, x0, xN));
+      hsumSysDown = new Histo(TH1F(tag + "_SystSumDown",tag + "_SystSumDown" , nb, x0, xN));
+    }
+    else{
+      hsumSysUp   = new Histo(TH1F(tag + "_SystSumUp",  tag + "_SystSumUp" ,   nb, vbins));
+      hsumSysDown = new Histo(TH1F(tag + "_SystSumDown",tag + "_SystSumDown" , nb, vbins));
+    }
     for(Int_t i = 0; i < (Int_t) VSyst.size(); i++){
       tag =  VSyst.at(i)->GetTag();
       name = VSyst.at(i)->GetName();
