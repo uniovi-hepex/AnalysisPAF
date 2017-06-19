@@ -305,8 +305,8 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	else if (sel == ittHSelec )  myProject->AddSelectorPackage("ttHAnalysis");
 	else if (sel == i4tSelec)    myProject->AddSelectorPackage("t4Analysis");
 	else if (sel == iTWSelec  ){
-	  myProject->AddSelectorPackage("TopAnalysis");
-	  // myProject->AddSelectorPackage("TWAnalysis");
+	  //myProject->AddSelectorPackage("TopAnalysis");
+	  myProject->AddSelectorPackage("TWAnalysis");
 	}
 	else if (sel == iWWSelec  )  myProject->AddSelectorPackage("WWAnalysis");
 	else                         cout << " >>>>>>>> No selector found for this analysis!!!! " << endl;
