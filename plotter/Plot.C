@@ -484,7 +484,7 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString lineStyle){
   }
   if(sav){ // Save the histograms
     TString dir = plotFolder;
-    TString plotname = varname + "_" + tag + "_comp";
+    TString plotname = (outputName == "")? varname + "_" + tag : outputName + "_" + varname;
     gSystem->mkdir(dir, kTRUE);
     c->Print( dir + plotname + ".png", "png");
     c->Print( dir + plotname + ".pdf", "pdf");
@@ -616,11 +616,10 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
     hratioerr->Draw("same,e2");
     hratio->Draw("same");
   }
-
   if(sav){ // Save the histograms
     TString dir = plotFolder;
-    TString plotname = (outputName == "")? varname + "_" + tag : outputName;
-	  	
+    TString plotname = (outputName == "")? varname + "_" + tag : outputName + "_" + varname;
+    
     gSystem->mkdir(dir, kTRUE);
     c->Print( dir + plotname + ".pdf", "pdf");
     c->Print( dir + plotname + ".png", "png");
