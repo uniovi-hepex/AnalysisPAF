@@ -71,11 +71,14 @@ class t4Analysis : public PAFChainItemSelector{
     Int_t   TNSelLeps;
     Int_t   TChannel;
     Int_t   TPassTrigger;
+    Int_t   TPassMETFilters;
+    Int_t   TPassLowInvMass;
     Float_t TLep_Pt[10];
     Float_t TLep_Eta[10];
     Float_t TLep_Phi[10];
     Float_t TLep_E[10];
     Int_t   TLep_Charge[10];
+    Int_t   TLep_pdgId[10];
     Float_t TFLep_Pt[5];
     Float_t TFLep_Eta[5];
     Float_t TFLep_Phi[5];

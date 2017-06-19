@@ -425,8 +425,8 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString lineStyle){
   VSignals.at(0)->SetMaximum(themax*ScaleMax);
   VSignals.at(0)->SetMinimum(PlotMinimum);
   if(doSetLogy){
-    PlotMinimum = 1e-4;
-    signal->SetMaximum(themax);
+    PlotMinimum = 1e-2;
+    signal->SetMaximum(themax*80);
     //signal->SetMinimum(PlotMinimum + 0.1*(PlotMinimum + 1));
     signal->SetMinimum(PlotMinimum);
     plot->SetLogy();
@@ -484,12 +484,16 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString lineStyle){
   TH1F* htemp = NULL;
   hratio = (TH1F*)VSignals.at(0)->Clone("hratio_sig");
   SetHRatio();
-  hratio->SetMaximum(RatioMax);
-  hratio->SetMinimum(RatioMin);
   for(Int_t  i = 1; i < nsamples; i++){
-    htemp = (TH1F*)hratio->Clone("htemp");
-    htemp->Divide(VSignals.at(i)); 
+    //htemp = (TH1F*)hratio->Clone("htemp");
+    //htemp->Divide(VSignals.at(i)); 
+    htemp = (TH1F*)VSignals.at(i)->Clone("htemp");
+    htemp->Divide(hratio);
+    SetHRatio(htemp);
     htemp->SetLineColor(VSignals.at(i)->GetColor());
+    htemp->SetLineStyle(VSignals.at(i)->GetLineStyle());
+    htemp->SetMarkerColor(VSignals.at(i)->GetColor());
+    htemp->SetMarkerStyle(VSignals.at(i)->GetMarkerStyle());
     ratios.push_back(htemp);
     ratios.at(i-1)->Draw("hist,same");
   }
@@ -498,6 +502,7 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString lineStyle){
     TString plotname = varname + "_" + tag + "_comp";
     gSystem->mkdir(dir, kTRUE);
     c->Print( dir + plotname + ".png", "png");
+    c->Print( dir + plotname + ".pdf", "pdf");
     delete c;
   }
   if(htemp) delete htemp;
@@ -762,43 +767,44 @@ void Plot::SetTexChan(TString cuts){
   texchan->SetTextSizePixels(22);
 }
 
-void Plot::SetHRatio(){
-  hratio->SetTitle("");
-  if     (RatioOptions == "S/B"    )   hratio->GetYaxis()->SetTitle("S/B");
-  else if(RatioOptions == "S/sqrtB")   hratio->GetYaxis()->SetTitle("S/#sqrt{B}");
-  else if(RatioOptions == "S/sqrtSpB") hratio->GetYaxis()->SetTitle("S/#sqrt{S+B}");
-  else                                 hratio->GetYaxis()->SetTitle("Data/MC");
-  hratio->GetXaxis()->SetTitleSize(0.05);
-  hratio->GetYaxis()->CenterTitle();
-  hratio->GetYaxis()->SetTitleOffset(0.25);
-  hratio->GetYaxis()->SetTitleSize(0.1);
-  hratio->GetYaxis()->SetLabelSize(0.1);
-  hratio->GetYaxis()->SetNdivisions(402);
-  hratio->GetXaxis()->SetTitleOffset(0.9);
-  hratio->GetXaxis()->SetLabelSize(0.13);
-  hratio->GetXaxis()->SetTitleSize(0.16);
+void Plot::SetHRatio(TH1F* h){
+  if(h == nullptr) h = hratio;
+  h->SetTitle("");
+  if     (RatioOptions == "S/B"    )   h->GetYaxis()->SetTitle("S/B");
+  else if(RatioOptions == "S/sqrtB")   h->GetYaxis()->SetTitle("S/#sqrt{B}");
+  else if(RatioOptions == "S/sqrtSpB") h->GetYaxis()->SetTitle("S/#sqrt{S+B}");
+  else                                 h->GetYaxis()->SetTitle("Data/MC");
+  h->GetXaxis()->SetTitleSize(0.05);
+  h->GetYaxis()->CenterTitle();
+  h->GetYaxis()->SetTitleOffset(0.25);
+  h->GetYaxis()->SetTitleSize(0.1);
+  h->GetYaxis()->SetLabelSize(0.1);
+  h->GetYaxis()->SetNdivisions(402);
+  h->GetXaxis()->SetTitleOffset(0.9);
+  h->GetXaxis()->SetLabelSize(0.13);
+  h->GetXaxis()->SetTitleSize(0.16);
   if (varname == "NBtagsNJets") {  //change bin labels
-    hratio->GetXaxis()->SetBinLabel( 1, "(0, 0)");
-    hratio->GetXaxis()->SetBinLabel( 2, "(1, 0)");
-    hratio->GetXaxis()->SetBinLabel( 3, "(1, 1)");
-    hratio->GetXaxis()->SetBinLabel( 4, "(2, 0)");
-    hratio->GetXaxis()->SetBinLabel( 5, "(2, 1)");
-    hratio->GetXaxis()->SetBinLabel( 6, "(2, 2)");
-    hratio->GetXaxis()->SetBinLabel( 7, "(3, 0)");
-    hratio->GetXaxis()->SetBinLabel( 8, "(3, 1)");
-    hratio->GetXaxis()->SetBinLabel( 9, "(3, 2)");
-    hratio->GetXaxis()->SetBinLabel(10, "(3, 3)");
-    hratio->GetXaxis()->SetBinLabel(11, "(4, 0)");
-    hratio->GetXaxis()->SetBinLabel(12, "(4, 1)");
-    hratio->GetXaxis()->SetBinLabel(13, "(4, 2)");
-    hratio->GetXaxis()->SetBinLabel(14, "(4, 3)");
-    hratio->GetXaxis()->SetBinLabel(15, "(4, 4)");
-    hratio->GetXaxis()->SetLabelSize(0.14);
-    hratio->GetXaxis()->SetLabelOffset(0.02);
+    h->GetXaxis()->SetBinLabel( 1, "(0, 0)");
+    h->GetXaxis()->SetBinLabel( 2, "(1, 0)");
+    h->GetXaxis()->SetBinLabel( 3, "(1, 1)");
+    h->GetXaxis()->SetBinLabel( 4, "(2, 0)");
+    h->GetXaxis()->SetBinLabel( 5, "(2, 1)");
+    h->GetXaxis()->SetBinLabel( 6, "(2, 2)");
+    h->GetXaxis()->SetBinLabel( 7, "(3, 0)");
+    h->GetXaxis()->SetBinLabel( 8, "(3, 1)");
+    h->GetXaxis()->SetBinLabel( 9, "(3, 2)");
+    h->GetXaxis()->SetBinLabel(10, "(3, 3)");
+    h->GetXaxis()->SetBinLabel(11, "(4, 0)");
+    h->GetXaxis()->SetBinLabel(12, "(4, 1)");
+    h->GetXaxis()->SetBinLabel(13, "(4, 2)");
+    h->GetXaxis()->SetBinLabel(14, "(4, 3)");
+    h->GetXaxis()->SetBinLabel(15, "(4, 4)");
+    h->GetXaxis()->SetLabelSize(0.14);
+    h->GetXaxis()->SetLabelOffset(0.02);
   }
-  hratio->GetXaxis()->SetTitle(xtitle);
-  hratio->SetMinimum(RatioMin);
-  hratio->SetMaximum(RatioMax);
+  h->GetXaxis()->SetTitle(xtitle);
+  h->SetMinimum(RatioMin);
+  h->SetMaximum(RatioMax);
 }
 
 Int_t Plot::GetColorOfProcess(TString pr){
@@ -942,7 +948,7 @@ void Plot::PrintYields(TString cuts, TString labels, TString channels, TString o
   for(Int_t i = 0; i < nBkgs; i++) t.SetRowTitle(i, VBkgs.at(i)->GetProcess());
   t.SetRowTitle(nBkgs, "Total Background");
   for(Int_t i = nBkgs+1; i < nSignals+nBkgs+1; i++) t.SetRowTitle(i, VSignals.at(i-(nBkgs+1))->GetProcess());
-  t.SetRowTitle(nBkgs+1+nSignals, "Data");
+  if(doData) t.SetRowTitle(nBkgs+1+nSignals, "Data");
 
   // Set column titles
   for(Int_t k = 0; k < ncolumns; k++) t.SetColumnTitle(k, VLCut.at(k));

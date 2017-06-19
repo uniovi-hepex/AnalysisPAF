@@ -489,3 +489,27 @@ Int_t getCS(vector<Lepton> lepton) { // Get the sum of charges of a vector of Le
 void co(TString out, TString co = "1;30"){
   std::cout << "\033[" << co << "m" << out << "\033[0m" << endl;
 }
+
+void DumpVar(Int_t evt, TString varname, Float_t val, Bool_t pass, Bool_t verbose){
+  if(!verbose) return;
+  Int_t ee; Int_t i = 0;
+  for(Int_t i = 0; i < nExploredEvents; i++){
+    ee = ExploredEvents[i];
+
+    if(evt == ee){
+      if(pass){
+        if(verbose) cout << Form("[OK : %d] ", evt) << varname << Form(" = %2.5f\n", val);
+      }
+      if(!pass) cout << Form("[NO PASA : %d] ", evt) << varname << Form(" = %2.5f\n", val);
+    } 
+  }
+}
+
+void DumpEvent(Int_t evt, TString s, Bool_t verbose){
+  if(!verbose) return;
+  Int_t ee; Int_t i = 0;
+  for(Int_t i = 0; i < nExploredEvents; i++){
+    ee = ExploredEvents[i];
+    if(evt == ee) cout << s << endl;
+  }
+}

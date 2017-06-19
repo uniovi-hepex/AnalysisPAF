@@ -16,7 +16,7 @@
 #include "TSystem.h"
 #include "../InputFiles/for4t/fake_rates.h"
 
-enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, i2l1tau, i2l2taus, i2lss_fake, iTriLep_fake, iElEl, iMumu, nTotalDefinedChannels};
+enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau, iOS1tau, i2lss_fake, iTriLep_fake, iElEl, iMuMu, i1Tau_emufake, nTotalDefinedChannels};
 const Int_t nLHEweights = 112;
 
 std::vector<TString> GetAllVars(TString varstring); 
@@ -116,6 +116,7 @@ class Looper{
    TTree* tree;
 
    Int_t nLeps; 
+   Int_t nTaus; 
    Int_t nFakeLeps; 
    Float_t FLepPt; 
    Float_t FLepEta; 
@@ -128,6 +129,7 @@ class Looper{
    TTreeFormula *ForFLepPdgId;
    TTreeFormula *ForLepChar;
    TTreeFormula *FornSelLep;
+   TTreeFormula *FornSelTau;
    TTreeFormula *FornFakeLep;
 
 };
