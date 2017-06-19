@@ -8,12 +8,12 @@ R__LOAD_LIBRARY(Plot.C+)
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString varName="", TString cutName="", TString outFolder="");
 TString NameOfTree = "tree";
-TString pathToTree = ""; // Moved set of the variable to the function at runtime
+TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/jun15/";
 
 // Baseline
 //TString baseline = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TNTaus == 0 && !TIsOnZ";
 //TString CRZ      = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TNTaus == 0 && TIsOnZ";
-TString baseline = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && !TIsOnZ";
+TString baseline = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && !TIsOnZ && TPassTrigger && TPassMETFilters ";
 //TString tauVeto  = "&& TNTaus==0 ";
 TString tauVeto  = "&& 1 ";
 TString CRZ      = tauVeto + "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TIsOnZ";
@@ -34,49 +34,35 @@ TString SR10     = baseline + "&& TNSelLeps == 2 && TNBtags == 3 && TNJets >=5 &
 TString NoFake   = Form("TChannel == %i || TChannel == %i", i2lss, iTriLep);
 
 void DrawPlots(TString cutName){
-  
-  TString username(gSystem->GetUserInfo(gSystem->GetUid())->fUser);
-  if(username=="vischia") pathToTree ="/pool/ciencias/userstorage/pietro/tttt/2l_skim_wmt2/tttt_temp/";
-  else pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/may29/";
+ TString cut;
+ if     (cutName == "CRW" ) cut = CRW ;
+ else if(cutName == "CRZ" ) cut = CRZ ;
+ else if(cutName == "CRT" ) cut = CRT ;
+ else if(cutName == "SR1" ) cut = SR1 ;
+ else if(cutName == "SR2" ) cut = SR2 ;
+ else if(cutName == "SR3" ) cut = SR3 ;
+ else if(cutName == "SR4" ) cut = SR4 ;
+ else if(cutName == "SR5" ) cut = SR5 ;
+ else if(cutName == "SR6" ) cut = SR6 ;
+ else if(cutName == "SR7" ) cut = SR7 ;
+ else if(cutName == "SR8" ) cut = SR8 ;
+ else if(cutName == "SR9" ) cut = SR9 ;
+ else if(cutName == "SR10") cut = SR10;
+ else {cout << "Wrong name!!" << endl; return;}
 
-  TString outFolder("");
-  if(username=="vischia") outFolder="/nfs/fanae/user/vischia/www/t4/plots/";
-  
-  TString cut;
-  if     (cutName == "CRW" ) cut = CRW ;
-  else if(cutName == "CRZ" ) cut = CRZ ;
-  else if(cutName == "CRT" ) cut = CRT ;
-  else if(cutName == "SR1" ) cut = SR1 ;
-  else if(cutName == "SR2" ) cut = SR2 ;
-  else if(cutName == "SR3" ) cut = SR3 ;
-  else if(cutName == "SR4" ) cut = SR4 ;
-  else if(cutName == "SR5" ) cut = SR5 ;
-  else if(cutName == "SR6" ) cut = SR6 ;
-  else if(cutName == "SR7" ) cut = SR7 ;
-  else if(cutName == "SR8" ) cut = SR8 ;
-  else if(cutName == "SR9" ) cut = SR9 ;
-  else if(cutName == "SR10") cut = SR10;
-  else {cout << "Wrong name!!" << endl; return;}
-  
-  //NoFake = (cutName=="SR9" || cutName=="SR10" || cutName=="CRT") ? "1" : NoFake;
-   DrawPlot("TChannel",  CRW , NoFake , 1, 0, 15, "Count", "Channel", "CRW" , outFolder);
-   DrawPlot("TChannel",  CRZ , NoFake , 1, 0, 15, "Count", "Channel", "CRZ" , outFolder);
-   DrawPlot("TChannel",  CRT , "1" , 1, 0, 15,    "Count", "Channel", "CRT" , outFolder);
-   DrawPlot("TChannel",  SR7 , NoFake , 1, 0, 15, "Count", "Channel", "SR7" , outFolder);
-   DrawPlot("TChannel",  SR8 , NoFake , 1, 0, 15, "Count", "Channel", "SR8" , outFolder);
-   DrawPlot("TChannel",  SR9 , "1" , 1, 0, 15,    "Count", "Channel", "SR9" , outFolder);
-   DrawPlot("TChannel",  SR10, "1" , 1, 0, 15,    "Count", "Channel", "SR10", outFolder);
+ NoFake = (cutName=="SR9" || cutName=="SR10" || cutName=="CRT") ? "1" : NoFake; 
+ DrawPlot("TChannel",  cut, "PromptLep", 1, 0, 15, "Count", cutName);
 /*  DrawPlot("TNJets", "TNSelLeps == 2  && "  + baseline, "SS",       6, 2, 8, "Jet Multiplicity", "nJets");
-      DrawPlot("TNJets", "TNSelLeps >  2  && "  + baseline, "MultiLep", 6, 2, 8, "Jet Multiplicity", "nJets");
-      DrawPlot("TNJets",                          baseline, "All"     , 6, 2, 8, "Jet Multiplicity", "nJets");
-      DrawPlot("TNBtags", "TNSelLeps == 2  && " + baseline, "SS",       7, 0, 7, "b-jet Multiplicity", "nBJets");
-      DrawPlot("TNBtags", "TNSelLeps >  2  && " + baseline, "MultiLep", 7, 0, 7, "b-jet Multiplicity", "nBJets");
-      DrawPlot("TNBtags",                         baseline, "All"     , 7, 0, 7, "b-jet Multiplicity", "nBJets");
-      DrawPlot("THT", "TNSelLeps == 2  && "     + baseline, "SS",        16, 0, 1600, "HT [GeV]", "HT");
-      DrawPlot("THT", "TNSelLeps >  2  && "     + baseline, "MultiLep",  16, 0, 1600, "HT [GeV]", "HT");
-      DrawPlot("THT",                             baseline, "All"     ,  16, 0, 1600, "HT [GeV]", "HT");
-      DrawPlot("TMET", "TNSelLeps == 2  && "    + baseline, "SS",       15, 0, 600, "MET [GeV]", "MET");
-      DrawPlot("TMET", "TNSelLeps >  2  && "    + baseline, "MultiLep", 15, 0, 600, "MET [GeV]", "MET");
+  DrawPlot("TNJets", "TNSelLeps >  2  && "  + baseline, "MultiLep", 6, 2, 8, "Jet Multiplicity", "nJets");
+  DrawPlot("TNJets",                          baseline, "All"     , 6, 2, 8, "Jet Multiplicity", "nJets");
+  DrawPlot("TNBtags", "TNSelLeps == 2  && " + baseline, "SS",       7, 0, 7, "b-jet Multiplicity", "nBJets");
+  DrawPlot("TNBtags", "TNSelLeps >  2  && " + baseline, "MultiLep", 7, 0, 7, "b-jet Multiplicity", "nBJets");
+  DrawPlot("TNBtags",                         baseline, "All"     , 7, 0, 7, "b-jet Multiplicity", "nBJets");
+  DrawPlot("THT", "TNSelLeps == 2  && "     + baseline, "SS",        16, 0, 1600, "HT [GeV]", "HT");
+  DrawPlot("THT", "TNSelLeps >  2  && "     + baseline, "MultiLep",  16, 0, 1600, "HT [GeV]", "HT");
+  DrawPlot("THT",                             baseline, "All"     ,  16, 0, 1600, "HT [GeV]", "HT");
+  DrawPlot("TMET", "TNSelLeps == 2  && "    + baseline, "SS",       15, 0, 600, "MET [GeV]", "MET");
+  DrawPlot("TMET", "TNSelLeps >  2  && "    + baseline, "MultiLep", 15, 0, 600, "MET [GeV]", "MET");
 */  
   // DrawPlot("TMET", "THT > 300 && TMET > 50 && TNTaus == 0",   Form("TChannel == %i || TChannel == %i", i2lss, iTriLep)     , 15, 0, 600, "MET [GeV]", "MET");
   //DrawPlot("TMll", "THT > 300 && TMET > 50 && TNTaus == 0 && TNBtags >= 2 && TNJets >= 2",   Form("TChannel == %i || TChannel == %i", i2lss, iTriLep)     , 15, 0, 300, "InvMass [GeV]", "InvMass");
@@ -108,7 +94,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 	p->AddSample("MuonEG, DoubleEG, DoubleMuon",     "Nonprompt", itBkg, kGray, "0", "FakeLep");
 	// Fake subs 
   //p->AddSample("WZTo3LNu, WWTo2L2Nu,WpWpJJ,WWTo2L2Nu_DoubleScat,TGJets", "Nonprompt", itBkg, kGray, "0", "Fakesubs");
-  p->AddSample("WZTo3LNu, WWTo2L2Nu,WpWpJJ,WWTo2L2Nu_DoubleScat, WWW, WWZ, WZZ, ZZZ, ZZTo4L, VHToNonbb_amcatnlo,TTZToLLNuNu, TTZToLL_M1to10, TTHNonbb, tZq_ll,TTWToLNu", "Nonprompt", itBkg, kGray, "0", "Fakesubs");
+  //p->AddSample("WZTo3LNu, WWTo2L2Nu,WpWpJJ,WWTo2L2Nu_DoubleScat, WWW, WWZ, WZZ, ZZZ, ZZTo4L, VHToNonbb_amcatnlo,TTZToLLNuNu, TTZToLL_M1to10, TTHNonbb, tZq_ll,TTWToLNu", "Nonprompt", itBkg, kGray, "0", "Fakesubs");
   //p->AddSample("WZTo3LNu, WWTo2L2Nu,WpWpJJ,WWTo2L2Nu_DoubleScat,TGJets,TTGJets, WGToLNuG, ZGTo2LG,WWW, WWZ, WZZ, ZZZ, ZZTo4L, VHToNonbb_amcatnlo,TTZToLLNuNu, TTZToLL_M1to10, TTHNonbb, tZq_ll,TTWToLNu", "Nonprompt", itBkg, kGray, "0", "Fakesubs");
 
   // Charge misID

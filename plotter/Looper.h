@@ -25,6 +25,7 @@ TH1F* hLHE[nLHEweights];
 
 class Looper{
   public:
+    Looper(){};
     Looper(TString pathToTree, TString NameOfTree, TString _var = "TMET", TString _cut = "1", TString _chan = "ElMu", Int_t nb = 30, Float_t b0 = 0, Float_t bN = 300){
    Hist = NULL; 
    FormulasCuts = NULL;
@@ -43,6 +44,25 @@ class Looper{
 
    pathToHeppyTrees = "/pool/ciencias/HeppyTreesSummer16/v2/";
   }  
+    Looper(TString pathToTree, TString NameOfTree, TString _var = "TMET", TString _cut = "1", TString _chan = "ElMu", Int_t nb = 30, Float_t* bins = 0){
+   Hist = NULL; 
+   FormulasCuts = NULL;
+   FormulasVars = NULL;
+   FormulasLHE  = NULL;
+   tree = NULL;
+   path = pathToTree;
+   treeName = NameOfTree;
+   //loadTree();
+   nbins = nb;
+   bin0 = 0;
+   binN = 0;
+   vbins = bins;
+   var = _var;
+   cut = _cut;
+   chan = _chan;
+
+   pathToHeppyTrees = "/pool/ciencias/HeppyTreesSummer16/v2/";
+  } 
 
    ~Looper(){
 		 delete tree->GetCurrentFile();
@@ -94,6 +114,7 @@ class Looper{
    Int_t   nbins;
    Float_t bin0;
    Float_t binN;
+   Float_t *vbins;
    TString hname;
    TString xtit;
    TString stringcut; TString stringvar;

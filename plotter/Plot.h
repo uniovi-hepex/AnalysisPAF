@@ -70,7 +70,7 @@ public:
     Lumi = DefaultLumi;
     nSignalSamples = 0;
         }
-        Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Double_t bin0 = 0, Double_t binN = 0, TString tit = "title", TString xtit = "VAR"){
+  Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Double_t bin0 = 0, Double_t binN = 0, TString tit = "title", TString xtit = "VAR"){
     var    = variable;
     cut    = (cuts);
     chan   = channel;
@@ -114,6 +114,48 @@ public:
     fLegX2 = 0.93; 
     fLegY2 = 0.93;
   }
+  Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Float_t* bins = 0, TString tit = "title", TString xtit = "VAR"){
+    var    = variable;
+    cut    = (cuts);
+    chan   = channel;
+    nb     = nbins;
+    x0     = 0;
+    xN     = 0;
+    vbins  = bins;
+    title = tit;
+    xtitle = xtit;
+    varname = variable; if(variable.Contains(" ")) TString(variable(0,variable.First(" ")));
+
+    plotFolder = DefaultPlotfolder;
+    limitFolder = DefaultLimitFolder; 
+    Lumi = DefaultLumi;
+    VBkgs = std::vector<Histo*>();
+    VSignals = std::vector<Histo*>();
+    VSignalsErr = std::vector<Histo*>();
+    VData = std::vector<Histo*>();
+    VSyst = std::vector<Histo*>();
+		VSumHistoSystUp = std::vector<Histo*>();
+		VSumHistoSystDown =  std::vector<Histo*>();
+    VSystLabel = std::vector<TString>();
+    VTagSamples = std::vector<TString>();
+    VTagDataSamples = std::vector<TString>();
+    VTagProcesses = std::vector<TString>();
+    VTagOptions = std::vector<TString>();
+    hData = NULL;
+    hStack = NULL;
+    hAllBkg = NULL;
+    //hSignal = NULL; 
+
+    plot = NULL; pratio = NULL;
+    texlumi = NULL;
+    texcms = NULL;
+    texchan = NULL;
+    hratio = NULL;
+    TotalSysUp = NULL;
+    TotalSysDown = NULL;
+    nSignalSamples = 0;
+  }
+	
 	virtual ~Plot(){
 		//if(plot) delete plot;
 		//if(pratio) delete pratio;
@@ -279,7 +321,7 @@ protected:
   TString chan;
   TString signal;
   TString cut;
-  Int_t nb; Double_t x0; Double_t xN;
+  Int_t nb; Double_t x0; Double_t xN; Float_t *vbins;
   TString  title;
   TString xtitle;
  

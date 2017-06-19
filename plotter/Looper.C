@@ -34,6 +34,10 @@ TString Looper::CraftFormula(TString cuts, TString chan, TString sys, TString op
   else if(chan == "3l")    schan = (Form("(TChannel == %i)", iTriLep));
   else if(chan == "4l")    schan = (Form("(TChannel == %i)", iFourLep));
   else if(chan == "SF" || chan == "sameF") schan = (Form("(TChannel != %i)", iElMu));
+  else if(chan == "PromptLep") schan = Form("(TChannel == %i || TChannel == %i)", iTriLep, i2lss);
+  else if(chan == "PromptTau") schan = Form("(TChannel == %i || TChannel == %i)", iSS1tau, iOS1tau);
+  else if(chan == "SSTau") schan = Form("(TChannel == %i)", iSS1tau);
+  else if(chan == "OSTau") schan = Form("(TChannel == %i)", iOS1tau);
   else if(chan == "All")   schan = ("1");
   else schan = chan;
 
@@ -48,8 +52,10 @@ TString Looper::CraftFormula(TString cuts, TString chan, TString sys, TString op
 
   TString                                                  formula = TString("(") + cuts + TString(")*(") + schan + TString(")*") + weight;
   if((options.Contains("Fake") || options.Contains("fake"))){
-    if(!options.Contains("sub") && !options.Contains("Sub"))  formula = TString("(") + cuts + TString(")");
-    else                                                       formula = TString("(") + cuts + TString(")*") + weight;
+    if(chan.Contains("Lep")) schan = Form("(TChannel == %i || TChannel == %i)", i2lss_fake, iTriLep_fake);
+    if(chan.Contains("Tau")) schan = Form("(TChannel == %i)", i1Tau_emufake);
+    if(!options.Contains("sub") && !options.Contains("Sub"))  formula = TString("(") + cuts + TString(")*(") + schan + TString(")*") + weight;
+    else formula = TString("(") + cuts + TString(")*(") + schan + TString(")");
   }
   if(options.Contains("isr") || options.Contains("ISR"))   formula = "TISRweight*(" + formula + ")";
   if(options.Contains("noWeight"))                         formula = TString("(") + cuts + TString(")*(") + schan + TString(")");
@@ -87,10 +93,12 @@ void Looper::CreateHisto(TString sys){
   //Hist = new Histo(TH1F(sampleName+"_"+sys+"_"+var,sampleName+"_"+sys+"_"+var, nbins, bin0, binN));
   TString name = sampleName;
   if(sys != "0") name += "_" + sys;
-  Hist = new Histo(TH1F(name,sampleName+"_"+sys+"_"+var, nbins, bin0, binN));
+  if(bin0 != binN) Hist = new Histo(TH1F(name,sampleName+"_"+sys+"_"+var, nbins, bin0, binN));
+  else             Hist = new Histo(TH1F(name,sampleName+"_"+sys+"_"+var, nbins, vbins));
   if(doSysPDF || doSysScale){
     for(Int_t i = 0; i < nLHEweights; i++){
-      hLHE[i] = new TH1F(name+"_"+Form("%i", i),sampleName+"_"+sys+"_"+var+"_"+Form("%i",i), nbins, bin0, binN);
+      if(bin0 != binN) hLHE[i] = new TH1F(name+"_"+Form("%i", i),sampleName+"_"+sys+"_"+var+"_"+Form("%i",i), nbins, bin0, binN);
+      else             hLHE[i] = new TH1F(name+"_"+Form("%i", i),sampleName+"_"+sys+"_"+var+"_"+Form("%i",i), nbins, vbins);
     }
   }
 }
@@ -109,10 +117,8 @@ void Looper::Loop(TString sys){
   if(doSysPDF || doSysScale) hLHEweights = loadSumOfLHEweights(pathToHeppyTrees, sampleName);
 
   // For fake or flips from data
-  Float_t f;
+  Float_t f; Int_t nfakes;
   if(options.Contains("Fake") || options.Contains("fake")){
-    TString WorkingDir = gSystem->WorkingDirectory();
-
     ForFLepPt    = GetFormula("LepPt",    "TFLep_Pt");
     ForFLepEta   = GetFormula("LepEta",   "TFLep_Eta");
     ForFLepPdgId = GetFormula("LepPdgId", "TFLep_pdgId");
@@ -138,32 +144,34 @@ void Looper::Loop(TString sys){
     }
 
     if(options.Contains("Fake") || options.Contains("fake")){
-      f = 1; 
+      f = 1; nfakes = 0; 
       if(options.Contains("Sub") || options.Contains("sub")) weight *= -1;
-      else weight = 1;
       ForFLepPt   ->GetNdata();
       ForFLepEta  ->GetNdata();
       ForFLepPdgId->GetNdata();
       ForLepChar  ->GetNdata();
+      FornFakeLep->GetNdata();
+      FornSelLep->GetNdata();
+      FornSelTau->GetNdata();
       nFakeLeps = FornFakeLep->EvalInstance();
       nLeps     = FornSelLep->EvalInstance();
       nTaus     = FornSelTau->EvalInstance();
       if(nFakeLeps <= 0)           continue;
-      if(nLeps >= 3)               continue;
-      if(nLeps == 2 && nTaus >= 1) continue;
-      if(nLeps == 2){ // If is SS, it's not fake
-        if(ForLepChar->EvalInstance(0) == ForLepChar->EvalInstance(1)) continue;
-      }
+//      if(nLeps >= 3)               continue;
+//      if(nLeps == 2 && nTaus >= 1) continue;
+//      if(nLeps == 2){ // If is SS, it's not fake
+//        if(ForLepChar->EvalInstance(0) == ForLepChar->EvalInstance(1)) continue;
+//      }
       //if((nLeps == 2 && nTaus == 0)){
       //if((nLeps == 2 && nTaus == 0) || nLeps == 1){
-        for(Int_t i = 0; i < nFakeLeps; i++){
+        for(Int_t i = 0; i < nfakes; i++){
           FLepPt    = ForFLepPt ->EvalInstance(i);
           FLepEta   = ForFLepEta->EvalInstance(i);
           FLepPdgId = ForFLepPdgId->EvalInstance(i);
           if(FLepPdgId == 11) f *= electronFakeRate(FLepPt, FLepEta);
           if(FLepPdgId == 13) f *=     muonFakeRate(FLepPt, FLepEta);
        // }
-        if(f >= 1) continue;
+        if(f >= 0.99) continue;
         weight *= f/(1-f);
       }
     }
