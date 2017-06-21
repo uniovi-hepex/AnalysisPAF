@@ -10,12 +10,12 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 TString NameOfTree = "tree";
 TString pathToTree = "";
 
+bool doSync = true;
 // Baseline
 //TString baseline = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TNTaus == 0 && !TIsOnZ";
 //TString CRZ      = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TNTaus == 0 && TIsOnZ";
-TString baseline = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && !TIsOnZ && TPassTrigger && TPassMETFilters ";
-//TString tauVeto  = "&& TNTaus==0 ";
-TString tauVeto  = "&& 1 ";
+TString baseline = Form("TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && !TIsOnZ && TPassTrigger %s", doSync? "" : "&& TPassMETFilters ") ;
+TString tauVeto  = doSync ? " && 1 " : " && TNTaus==0 ";
 TString CRZ      = tauVeto + "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TIsOnZ";
 TString CRW      = baseline + tauVeto + "&& TNSelLeps >= 2 && TNBtags == 2 && TNJets <= 5";
 TString CRT      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 0 && TNJets >1";
@@ -38,6 +38,8 @@ void DrawPlots(TString cutName){
   TString username(gSystem->GetUserInfo(gSystem->GetUid())->fUser);
   if(username=="vischia") pathToTree ="/pool/ciencias/userstorage/pietro/tttt/2l_skim_wmt2/tttt_temp/";
   else pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/jun15/";
+
+   pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/jun15/";
   
   TString cut;
   if     (cutName == "CRW" ) cut = CRW ;
@@ -56,6 +58,8 @@ void DrawPlots(TString cutName){
   else {cout << "Wrong name!!" << endl; return;}
   
   NoFake = (cutName=="SR9" || cutName=="SR10" || cutName=="CRT") ? "1" : NoFake; 
+
+  cut=baseline;
   DrawPlot("TChannel",  cut, "PromptLep", 1, 0, 15, "Count", cutName);
   /*  DrawPlot("TNJets", "TNSelLeps == 2  && "  + baseline, "SS",       6, 2, 8, "Jet Multiplicity", "nJets");
       DrawPlot("TNJets", "TNSelLeps >  2  && "  + baseline, "MultiLep", 6, 2, 8, "Jet Multiplicity", "nJets");
@@ -123,10 +127,10 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   cout << "Corresponding to cut: " << cut << endl;
   p->PrintYields();
   //p->PrintSamples();
-  //p->doSetLogy = false;
-  //p->DrawStack("0", 1);
-  p->doSetLogy = true;
-  p->DrawStack("log", 1);
+  p->doSetLogy = false;
+  p->DrawStack("0", 1);
+  //p->doSetLogy = true;
+  //p->DrawStack("log", 1);
   //p->PrintSystYields();
   delete p;
 }
