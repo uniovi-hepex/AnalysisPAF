@@ -36,11 +36,10 @@ TString NoFake   = Form("TChannel == %i || TChannel == %i", i2lss, iTriLep);
 void DrawPlots(TString cutName){
   
   TString username(gSystem->GetUserInfo(gSystem->GetUid())->fUser);
-  ￼ +  if(username=="vischia") pathToTree ="/pool/ciencias/userstorage/pietro/tttt/2l_skim_wmt2/tttt_temp/";
-  ￼ +  else pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/jun15/";
-  ￼
-    
-    TString cut;
+  if(username=="vischia") pathToTree ="/pool/ciencias/userstorage/pietro/tttt/2l_skim_wmt2/tttt_temp/";
+  else pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/jun15/";
+  
+  TString cut;
   if     (cutName == "CRW" ) cut = CRW ;
   else if(cutName == "CRZ" ) cut = CRZ ;
   else if(cutName == "CRT" ) cut = CRT ;
