@@ -471,9 +471,23 @@ Bool_t PassesLowMassLimit(vector<Lepton> lepton, Float_t mm_max) {
 Bool_t IsThereSSpair(vector<Lepton> leptons){
 //  return true;
   Int_t nLeps = leptons.size();
+  if(nLeps < 2) return false;
   for(Int_t i = 0; i < nLeps; i++){
     for(Int_t j = 0; j < i; j++){
         if(leptons.at(i).charge*leptons.at(j).charge > 0) return true;
+    }
+  }
+  return false;
+}
+
+Bool_t IsThere3SS(vector<Lepton> leptons){
+  Int_t nLeps = leptons.size();
+  if(nLeps < 3) return false;
+  for(Int_t i = 2; i < nLeps; i++){
+    for(Int_t j = 1; j < i; j++){
+      for(Int_t k = 0; k < j; k++){
+        if( (leptons.at(i).charge == leptons.at(j).charge) && (leptons.at(k).charge == leptons.at(j).charge)) return true;
+      }
     }
   }
   return false;
