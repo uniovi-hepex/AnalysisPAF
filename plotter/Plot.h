@@ -113,6 +113,7 @@ public:
     fLegY1 = 0.65;
     fLegX2 = 0.93; 
     fLegY2 = 0.93;
+    SignalDrawStyle = "hist";
   }
   Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Float_t* bins = 0, TString tit = "title", TString xtit = "VAR"){
     var    = variable;
@@ -154,6 +155,11 @@ public:
     TotalSysUp = NULL;
     TotalSysDown = NULL;
     nSignalSamples = 0;
+    fLegX1 = 0.70; 
+    fLegY1 = 0.65;
+    fLegX2 = 0.93; 
+    fLegY2 = 0.93;
+    SignalDrawStyle = "hist";
   }
 	
 	virtual ~Plot(){
@@ -289,10 +295,13 @@ public:
   void SetTableFormats(TString t){ tableFormats = t;}
   void SetLoopOptions(TString t){LoopOptions = t;}
   void SetRatioOptions(TString t){RatioOptions = t;}
+  void SetSignalDrawStyle(TString t){ SignalDrawStyle = t;}
 
   void SetSignalProcess(TString p){ SignalProcess = p;}
   void SetSignalStyle(TString p){ SignalStyle = p;} 
   TString GetSignalProcess(){ return SignalProcess;}
+
+  void SetCMSlabel(TString t){ CMSlabel = t;}
 
 protected: 
   TString pathToHeppyTrees = "";
@@ -326,9 +335,11 @@ protected:
   TString xtitle;
  
   TString SignalProcess;
-  TString SignalStyle = "";
   TString LoopOptions = "";
   TString RatioOptions = "";
+  TString SignalStyle = "";
+  TString SignalDrawStyle;
+  TString CMSlabel = "CMS Preliminary";
 
   TString SystVar;
   Int_t iS;
