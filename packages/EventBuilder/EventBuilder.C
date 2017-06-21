@@ -278,24 +278,6 @@ void EventBuilder::InsideLoop(){
   passTrigger = false;
 
   if(gSelection == i4tSelec){
-    // The channel is computer in the t4Analysis...
-    /*gChannel = -1; 
-    if(selLeptons.size() < 2 && vetoLeptons.size() >= 2){ 
-      if( (vetoLeptons[0].charge*vetoLeptons[1].charge) > 0){  // fakes of 2lss
-        gChannel = i2lss_fake; isSS = true;
-      }
-    }
-    else if(selLeptons.size() == 2){ 
-      if( (selLeptons[0].charge*selLeptons[1].charge) > 0){ // 2lss
-        gChannel = i2lss; isSS = true;
-      }
-      else if(vetoLeptons.size() > 2) gChannel = iTriLep_fake; // fakes of 3 leptons 
-    }
-    else if(selLeptons.size() == 3) gChannel = iTriLep; // 3 leptons
-    else if(selLeptons.size() >= 4) gChannel = iFourLep; // 4 leptons
-    else gChannel = -1; // less than 2 leptons...
-
-    */
     Int_t nLepForCharge = 0;
     Int_t pdgIdsum = 0;
     for(Int_t i = 0; i < (Int_t) selLeptons.size(); i++){
