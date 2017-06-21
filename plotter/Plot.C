@@ -397,7 +397,7 @@ TCanvas* Plot::SetCanvas(){ // Returns the canvas
   texlumi->SetTextFont(42);
   texlumi->SetTextSize(0.045);
   texlumi->SetTextSizePixels(22);
-  texcms = new TLatex(0.,0., "CMS Preliminary");
+  texcms = new TLatex(0.,0., CMSlabel);
   texcms->SetNDC();
   texcms->SetTextAlign(12);
   texcms->SetX(0.15);
@@ -505,7 +505,7 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString lineStyle){
     htemp->SetMarkerColor(VSignals.at(i)->GetColor());
     htemp->SetMarkerStyle(VSignals.at(i)->GetMarkerStyle());
     ratios.push_back(htemp);
-    ratios.at(i-1)->Draw("hist,same");
+    ratios.at(i-1)->Draw("pe,same");
   }
   if(sav){ // Save the histograms
     TString dir = plotFolder;
@@ -571,7 +571,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   hStack->GetXaxis()->SetLabelSize(0.0);
 
   if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
-    for(Int_t  i = 0; i < nSignals; i++) VSignals.at(i)->Draw("lsame");
+    for(Int_t  i = 0; i < nSignals; i++) VSignals.at(i)->Draw(SignalDrawStyle + "same");
 
   // Draw systematics histo
   hAllBkg->SetFillStyle(3145);
