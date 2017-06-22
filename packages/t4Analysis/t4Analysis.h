@@ -26,6 +26,7 @@ class t4Analysis : public PAFChainItemSelector{
     std::vector<Lepton> zLeptons;
     std::vector<Lepton> xLeptons;
     std::vector<Jet>    selJets ;
+    std::vector<Jet>    selBTags;
     std::vector<Jet>    Jets15  ;
 
     void SetTauVariables();
