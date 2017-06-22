@@ -49,6 +49,7 @@ bool JetMomentumComparator(Jet i   , Jet    j);
 vector<Lepton> SortLeptonsByPt(vector<Lepton>& Leptons);
 vector<Jet>       SortJetsByPt(vector<Jet>   & Jets);
 
+Bool_t Cleaning(Jet j, vector<Lepton> vLep, Float_t minDR);
 Float_t JEStoMET(vector<Jet> vjets, Float_t met, Float_t met_phi, Int_t dir = 0);
 Float_t getJetJERpt(Jet jet, Float_t rho);
 Float_t p2(Float_t x);
