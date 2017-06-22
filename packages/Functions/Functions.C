@@ -369,7 +369,7 @@ Float_t ClosestMlltoZ(vector<Lepton> leptons){
     for(Int_t j = 0; j < i; j++){
       if(leptons.at(i).type == leptons.at(j).type){ // same flavour
         if(leptons.at(i).charge*leptons.at(j).charge < 1){ // opposite sign
-          mll = (leptons.at(i).p + leptons.at(j).p).M(); if(best_mll = 0) best_mll = mll; 
+          mll = (leptons.at(i).p + leptons.at(j).p).M(); if(best_mll == 0) best_mll = mll; 
           if( TMath::Abs(mll - Zm) < TMath::Abs(best_mll - Zm) ) best_mll = mll;
         }
       }
