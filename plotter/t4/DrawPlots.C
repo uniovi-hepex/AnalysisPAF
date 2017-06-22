@@ -17,7 +17,7 @@ bool doSync = true;
 TString baseline = Form("TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && !TIsOnZ && TPassTrigger %s", doSync? "" : "&& TPassMETFilters ") ;
 TString tauVeto  = doSync ? " && 1 " : " && TNTaus==0 ";
 TString CRZ      = tauVeto + "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TIsOnZ";
-TString CRW      = baseline + tauVeto + "&& TNSelLeps >= 2 && TNBtags == 2 && TNJets <= 5";
+TString CRW      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 2 && TNJets <= 5";
 TString CRT      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 0 && TNJets >1";
 TString SR1      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 2 && TNJets == 6";
 TString SR2      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 2 && TNJets == 7";

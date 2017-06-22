@@ -209,6 +209,7 @@ void JetSelector::InsideLoop(){
   nBtagJetsJECUp = 0;
   nBtagJetsJECDown = 0;
   Leptons.clear();
+  VetoLeptons.clear();
 
   BtagSF           = 1.;
   BtagSFBtagUp     = 1.;
@@ -218,6 +219,10 @@ void JetSelector::InsideLoop(){
 
   if (gSelection == ittHSelec) Leptons = GetParam<vector<Lepton>>("vetoLeptons");
   else                         Leptons = GetParam<vector<Lepton>>("selLeptons"); 
+  VetoLeptons = GetParam<vector<Lepton>>("vetoLeptons");
+  if (gSelection == i4tSelec){
+    for(Int_t i = 0; i < (Int_t) VetoLeptons.size(); i++) Leptons.push_back(VetoLeptons.at(i));
+  }
 
   evt = (UInt_t)Get<ULong64_t>("evt");
   rho = Get<Float_t>("rho");
@@ -469,10 +474,3 @@ void JetSelector::SetSystematics(Jet *j){
   j->isBtag_MisTagDown  = fBTagSFlDo->IsTagged(_csv, _flavmc, _pt, _eta, evt+(UInt_t)_pt-3);
 }
 
-Bool_t JetSelector::Cleaning(Jet j, vector<Lepton> vLep, Float_t minDR){
-  Int_t nLeps = vLep.size();
-  for(Int_t i = 0; i < nLeps; i++){
-    if(j.p.DeltaR(vLep[i].p) < minDR) return false;
-  }
-  return true;
-}

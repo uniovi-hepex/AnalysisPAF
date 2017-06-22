@@ -92,6 +92,13 @@ TLorentzVector getPtllb(Lepton l1, Lepton l2, Float_t met, Float_t met_phi){
   return pl1 + pl2 + pmet;
 }
 
+Bool_t Cleaning(Jet j, vector<Lepton> vLep, Float_t minDR){
+  Int_t nLeps = vLep.size();
+  for(Int_t i = 0; i < nLeps; i++){
+    if(j.p.DeltaR(vLep[i].p) < minDR) return false;
+  }
+  return true;
+}
 
 // ==================================================================
 // ========================== Systematics ===========================
@@ -450,7 +457,9 @@ Bool_t PassLowInvMass(vector<Lepton> leptons, Float_t Mll_max){
     for(Int_t j = 0; j < i; j++){
       if(leptons.at(i).type == leptons.at(j).type){ // same flavour
         if(leptons.at(i).charge*leptons.at(j).charge < 0){ // opposite sign
-          if( (leptons.at(i).p + leptons.at(j).p).M()  < Mll_max) return false;
+          if( (leptons.at(i).p + leptons.at(j).p).M()  < Mll_max){
+            return false;
+          }
         }
       }
     }
@@ -469,12 +478,14 @@ Bool_t PassesLowMassLimit(vector<Lepton> lepton, Float_t mm_max) {
 }
 
 Bool_t IsThereSSpair(vector<Lepton> leptons){
-//  return true;
+  //  return true;
   Int_t nLeps = leptons.size();
   if(nLeps < 2) return false;
   for(Int_t i = 0; i < nLeps; i++){
     for(Int_t j = 0; j < i; j++){
-        if(leptons.at(i).charge*leptons.at(j).charge > 0) return true;
+      if(leptons.at(i).charge*leptons.at(j).charge > 0){
+        return true;
+      }
     }
   }
   return false;
@@ -486,7 +497,9 @@ Bool_t IsThere3SS(vector<Lepton> leptons){
   for(Int_t i = 2; i < nLeps; i++){
     for(Int_t j = 1; j < i; j++){
       for(Int_t k = 0; k < j; k++){
-        if( (leptons.at(i).charge == leptons.at(j).charge) && (leptons.at(k).charge == leptons.at(j).charge)) return true;
+        if( (leptons.at(i).charge == leptons.at(j).charge) && (leptons.at(k).charge == leptons.at(j).charge)){
+          return true;
+        }
       }
     }
   }
