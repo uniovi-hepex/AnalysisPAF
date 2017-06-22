@@ -351,7 +351,7 @@ Bool_t LeptonSelector::getMultiIso(Int_t wp){
     DumpVar(evt, "(ptRatio > 0.76 || ptRel > 7.2)", ptRatio, (ptRatio > 0.76 || ptRel > 7.2));
     return (miniIso < 0.16 && (ptRatio > 0.76 || ptRel > 7.2));
   }
-  if(wp == iLoose    ) return (miniIso < 0.40 && (ptRatio > 0    || ptRel > 0  ));
+  if(wp == iLoose    ) return miniIso < 0.40;
   //if(wp == iLoose    ) return (miniIso < 0.20 && (ptRatio > 0.69 || ptRel > 6.0));
   if(wp == iVeto     ){
     if(type == 1)      return (miniIso < 0.40 && (ptRatio > 0.80 || ptRel > 7.2));
@@ -434,7 +434,7 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
       DumpVar(evt, "getElecMVA(iTight)", getElecMVA(iTight), getElecMVA(iTight));
       if(lep.p.Pt() < 20) return false;
       if(TMath::Abs(lep.p.Eta()) > 2.5) return false;
-      //if(!getElecCutBasedId(iLoose)) return false;
+      if(!getElecCutBasedId(iTight)) return false;
       if(!convVeto) return false;
       if(lostHits != 0) return false;
       if(!getElecMVA(iTight)) return false;
@@ -528,7 +528,7 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
     if(lep.isElec){
       if(lep.p.Pt() < 20) return false;
       if(TMath::Abs(lep.p.Eta()) > 2.5) return false;
-      //if(!getElecCutBasedId(iLoose)) return false;
+      if(!getElecCutBasedId(iLoose)) return false;
       if(!convVeto) return false;
       if(lostHits != 0) return false;
       if(!getElecMVA(iLoose)) return false;
