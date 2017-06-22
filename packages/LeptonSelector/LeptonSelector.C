@@ -54,7 +54,7 @@ void LeptonSelector::Initialise(){
     LepSF->loadHisto(iElecConvVetoM17ttH);
   }
   else if(gSelection == i4tSelec){
-
+    // Los tenemos en funciones, no en histogramas, entonces nos la pela de cargar histogramas
   }
   else if(gSelection == iWZSelec){
 
