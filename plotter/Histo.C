@@ -65,10 +65,12 @@ void Histo::SetStatUnc(){
 }
 
 void Histo::SetTag(TString t, TString p, TString x, TString c){
-	if(t != "") tag = t;
+
+  if(t != "") tag = t;
   if(p != "") process = p; 
-	if(x != "") xlabel = x;
-	if(c != "") cuts = c;
+  if(x != "") xlabel = x;
+  if(c != "") cuts = c;
+  return;
 }
 
 void Histo::SetProcess(TString p){
@@ -88,12 +90,15 @@ void Histo::SetColor(Int_t c){
 void Histo::AddToLegend(TLegend* leg, Bool_t doyi){
   TH1F* h2 = (TH1F*) Clone("toLeg");
   TString op = "f";
-  if      (type == itSignal){
-    if(GetFillColor() == 0) op = "l";
-    else op = "f";
+  if(DrawStyle != "") op = DrawStyle;
+  else{
+    if      (type == itSignal){
+      if(GetFillColor() == 0) op = "l";
+      else op = "f";
+    }
+    else if (type == itData)   op = "pe";
+    else if (type == itCompare)op = "pe";
   }
-  else if (type == itData)   op = "pe";
-  else if (type == itCompare)op = "pe";
   if(doyi) leg->AddEntry(h2, Form(process + ": %1.0f", yield), op);
   else leg->AddEntry(h2, tag, op);
 }
@@ -136,4 +141,14 @@ void Histo::SetBinsErrorFromSyst(){
     //max = vsysd[k] > vsysu[k] ? vsysd[k] : vsysu[k];
     SetBinError(k+1, TMath::Sqrt((vsysu[k]+vsysd[k])/2));
   }
+}
+
+
+
+Histo* Histo::CloneHisto(const char* newname) const
+{
+  TH1F* h = (TH1F*) Clone(newname);
+  return new Histo(*h);
+    
+
 }

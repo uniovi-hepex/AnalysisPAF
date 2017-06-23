@@ -54,15 +54,14 @@ public:
  // Histo* hSignal = NULL; // For a default signal if needed
 
   Int_t nBkgs = 0;
-	TPad* plot = NULL; TPad* pratio = NULL;
-	TLatex* texlumi = NULL;
-	TLatex* texcms = NULL;
-	TLatex* texchan = NULL;
-	TH1F* hratio = NULL;
+  TPad* plot = NULL; TPad* pratio = NULL;
+  TLatex* texlumi = NULL;
+  TLatex* texcms = NULL;
+  TLatex* texchan = NULL;
+  TH1F* hratio = NULL;
   Float_t* TotalSysUp = NULL;
   Float_t* TotalSysDown = NULL;
   TString sys = "0";
-
   Float_t sys_lumi = 0.026;
 
 	Plot(){
@@ -71,7 +70,7 @@ public:
     Lumi = DefaultLumi;
     nSignalSamples = 0;
         }
-        Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Double_t bin0 = 0, Double_t binN = 0, TString tit = "title", TString xtit = "VAR"){
+  Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Double_t bin0 = 0, Double_t binN = 0, TString tit = "title", TString xtit = "VAR"){
     var    = variable;
     cut    = (cuts);
     chan   = channel;
@@ -110,7 +109,59 @@ public:
     TotalSysUp = NULL;
     TotalSysDown = NULL;
     nSignalSamples = 0;
+    fLegX1 = 0.70; 
+    fLegY1 = 0.65;
+    fLegX2 = 0.93; 
+    fLegY2 = 0.93;
+    SignalDrawStyle = "hist";
   }
+  Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Float_t* bins = 0, TString tit = "title", TString xtit = "VAR"){
+    var    = variable;
+    cut    = (cuts);
+    chan   = channel;
+    nb     = nbins;
+    x0     = 0;
+    xN     = 0;
+    vbins  = bins;
+    title = tit;
+    xtitle = xtit;
+    varname = variable; if(variable.Contains(" ")) TString(variable(0,variable.First(" ")));
+
+    plotFolder = DefaultPlotfolder;
+    limitFolder = DefaultLimitFolder; 
+    Lumi = DefaultLumi;
+    VBkgs = std::vector<Histo*>();
+    VSignals = std::vector<Histo*>();
+    VSignalsErr = std::vector<Histo*>();
+    VData = std::vector<Histo*>();
+    VSyst = std::vector<Histo*>();
+		VSumHistoSystUp = std::vector<Histo*>();
+		VSumHistoSystDown =  std::vector<Histo*>();
+    VSystLabel = std::vector<TString>();
+    VTagSamples = std::vector<TString>();
+    VTagDataSamples = std::vector<TString>();
+    VTagProcesses = std::vector<TString>();
+    VTagOptions = std::vector<TString>();
+    hData = NULL;
+    hStack = NULL;
+    hAllBkg = NULL;
+    //hSignal = NULL; 
+
+    plot = NULL; pratio = NULL;
+    texlumi = NULL;
+    texcms = NULL;
+    texchan = NULL;
+    hratio = NULL;
+    TotalSysUp = NULL;
+    TotalSysDown = NULL;
+    nSignalSamples = 0;
+    fLegX1 = 0.70; 
+    fLegY1 = 0.65;
+    fLegX2 = 0.93; 
+    fLegY2 = 0.93;
+    SignalDrawStyle = "hist";
+  }
+	
 	virtual ~Plot(){
 		//if(plot) delete plot;
 		//if(pratio) delete pratio;
@@ -142,18 +193,22 @@ public:
   Histo* GetH(TString sample = "TTbar_Powheg", TString s = "0", Int_t type = itBkg);
   TCanvas *SetCanvas();
   TLegend* SetLegend();
+  void SetLegendPosition(TString);
+  void SetLegendPosition(float x1, float y1, float x2, float y2){ fLegX1 = x1; fLegY1 = y1; fLegX2 = x2; fLegY2 = y2;}
   void SetTexChan(TString cuts); // To be updated
-  void SetHRatio(); // To be updated
+  void SetHRatio(TH1F* h = nullptr); // To be updated
 
-	void SetData();
-	void GetStack();
-	void GetAllBkg();
+  void SetData();
+  void GetStack();
+  void GetAllBkg();
   void AllBkgSyst();
-
+  
   void SetPlotStyle();
+
+  void SetGoF(TString thegof="chi2");
   
   void DrawStack(TString tag, bool sav);
-  void DrawComp(TString tag = "0", bool sav = 1, bool doNorm = 0);
+  void DrawComp(TString tag = "0", bool sav = 1, bool doNorm = 0, TString style = "pe");
   void SaveHistograms();
   TString GetStatUncDatacard(Int_t iSignal = 0);
 	TString GetShapeUncLines();
@@ -168,6 +223,7 @@ public:
   TString GetSignal(){ return signal;}
   Float_t GetLumi(){ return Lumi;}
   Float_t GetLumiUnc(){ return sys_lumi;}
+  TString GetGoF(){ return gof;}
   void SetVar(TString variable){ var = variable; if(varname == "") varname = variable;}
   void SetVarName(TString variable){ varname = variable;}
   void SetChan(TString ch){chan = ch;}
@@ -216,6 +272,12 @@ public:
 	void PrintSystYields();
 	Float_t GetYield(TString pr = "ttbar", TString systag = "0");
 	Histo* GetHisto(TString pr = "ttbar", TString systag = "0");
+	void SetLineStyle(TString pr = "ttbar", Int_t s = 0){  Histo* h = GetHisto(pr, "0"); h->SetLineStyle(s);}
+	void SetLineColor(TString pr = "ttbar", Int_t s = 0){  Histo* h = GetHisto(pr, "0"); h->SetLineColor(s);}
+	void SetMarkerColor(TString pr = "ttbar", Int_t s = 0){  Histo* h = GetHisto(pr, "0"); h->SetMarkerColor(s);}
+	void SetMarkerStyle(TString pr = "ttbar", Int_t s = 0){  Histo* h = GetHisto(pr, "0"); h->SetMarkerStyle(s);}
+  Histo* GetSymmetricHisto(TString pr = "ttbar", TString systag = "0");
+  void AddSymmetricHisto(TString pr, TString systag);
   Float_t GetData();
   Histo* GetHData();
   Float_t GetTotalSystematic(TString pr);
@@ -233,10 +295,13 @@ public:
   void SetTableFormats(TString t){ tableFormats = t;}
   void SetLoopOptions(TString t){LoopOptions = t;}
   void SetRatioOptions(TString t){RatioOptions = t;}
+  void SetSignalDrawStyle(TString t){ SignalDrawStyle = t;}
 
   void SetSignalProcess(TString p){ SignalProcess = p;}
   void SetSignalStyle(TString p){ SignalStyle = p;} 
   TString GetSignalProcess(){ return SignalProcess;}
+
+  void SetCMSlabel(TString t){ CMSlabel = t;}
 
 protected: 
   TString pathToHeppyTrees = "";
@@ -247,6 +312,8 @@ protected:
   TString outputName = "";
   TString YieldsTableName = "yields";
   TString tableFormats = "%1.2f";
+  TString gof = "";
+
   Int_t nSignalSamples;
   
   // Maximum and minimum value of the ratio plot
@@ -263,14 +330,16 @@ protected:
   TString chan;
   TString signal;
   TString cut;
-  Int_t nb; Double_t x0; Double_t xN;
+  Int_t nb; Double_t x0; Double_t xN; Float_t *vbins;
   TString  title;
   TString xtitle;
  
   TString SignalProcess;
-  TString SignalStyle = "";
   TString LoopOptions = "";
   TString RatioOptions = "";
+  TString SignalStyle = "";
+  TString SignalDrawStyle;
+  TString CMSlabel = "CMS Preliminary";
 
   TString SystVar;
   Int_t iS;
@@ -278,6 +347,12 @@ protected:
   TString plotFolder;
   TString limitFolder;
   Bool_t ShowSystematics = false;
+
+  float fLegX1;
+  float fLegY1;
+  float fLegX2;
+  float fLegY2;
+  
 };
 
 #endif

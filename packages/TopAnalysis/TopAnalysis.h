@@ -124,8 +124,8 @@ class TopAnalysis : public PAFChainItemSelector{
     Int_t   TNJetsJESUp;
     Int_t   TNJetsJESDown;
     Int_t   TNJetsJER;
-    Int_t   TNBtagsUp;
-    Int_t   TNBtagsDown;
+    Int_t   TNBtagsBtagUp;
+    Int_t   TNBtagsBtagDown;
     Int_t   TNBtagsMisTagUp;
     Int_t   TNBtagsMisTagDown;
     Int_t   TNBtagsJESUp;

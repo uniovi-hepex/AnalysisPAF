@@ -271,31 +271,13 @@ void EventBuilder::InsideLoop(){
   }
   
   if(gSelection == ittHSelec && selLeptons.size() > 2){
-    if (selLeptons.at(2).Pt() > 10) {
-      if      (selLeptons.size() == 3) gChannel = iTriLep;
-      else if (selLeptons.size() >= 4) gChannel = iFourLep;
-    }
+    if      (selLeptons.size() == 3) gChannel = iTriLep;
+    else if (selLeptons.size() >= 4) gChannel = iFourLep;
   }
 
   passTrigger = false;
 
   if(gSelection == i4tSelec){
-    gChannel = -1; 
-    if(selLeptons.size() < 2 && vetoLeptons.size() >= 2){ 
-      if( (vetoLeptons[0].charge*vetoLeptons[1].charge) > 0){  // fakes of 2lss
-        gChannel = i2lss; isSS = true;
-      }
-    }
-    else if(selLeptons.size() == 2){ 
-      if( (selLeptons[0].charge*selLeptons[1].charge) > 0){ // 2lss
-        gChannel = i2lss; isSS = true;
-      }
-      else if(vetoLeptons.size() > 2) gChannel = iTriLep; // fakes of 3 leptons 
-    }
-    else if(selLeptons.size() == 3) gChannel = iTriLep; // 3 leptons
-    else if(selLeptons.size() >= 4) gChannel = iFourLep; // 4 leptons
-    else gChannel = -1; // less than 2 leptons...
-
     Int_t nLepForCharge = 0;
     Int_t pdgIdsum = 0;
     for(Int_t i = 0; i < (Int_t) selLeptons.size(); i++){
@@ -308,24 +290,26 @@ void EventBuilder::InsideLoop(){
       pdgIdsum = vetoLeptons.at(i).isElec? pdgIdsum + 11 : pdgIdsum + 13;
       nLepForCharge++;
     }
-    if(gChannel == -1) pdgIdsum = -1;
-/*    if(pdgIdsum != -1 && pdgIdsum != 22 && pdgIdsum != 24 && pdgIdsum != 26) cout << "[EventBuilder] Error with channel definition!!\n";
-    else{
-      if(pdgIdsum == 22){ gIsDoubleElec = true;  gIsDoubleMuon = false; gIsMuonEG = false;}
-      if(pdgIdsum == 24){ gIsDoubleElec = false; gIsDoubleMuon = false; gIsMuonEG = true; }
-      if(pdgIdsum == 26){ gIsDoubleElec = false; gIsDoubleMuon = true;  gIsMuonEG = false;}
+    if(nLepForCharge < 2) pdgIdsum = -1;
+    if(gIsData){
+      if(gIsMuonEG){
+        if     (pdgIdsum == 24) passTrigger = PassesElMuHTTrigger()       || PassesPFJet450Trigger();
+        else if(pdgIdsum == 26) passTrigger = !PassesPFJet450Trigger() && !PassesDoubleMuonHTTrigger() && (PassesElMuHTTrigger() || PassesDoubleElecHTTrigger());
+        else if(pdgIdsum == 22) passTrigger = !PassesPFJet450Trigger() && !PassesDoubleElecHTTrigger() && (PassesElMuHTTrigger() || PassesDoubleMuonHTTrigger());
+        else                    passTrigger = false;
+      }
+      if(gIsDoubleMuon){
+        if     (pdgIdsum == 26) passTrigger = PassesDoubleMuonHTTrigger() || PassesPFJet450Trigger();
+        else                    passTrigger = false;
+      }
+      if(gIsDoubleElec){
+        if     (pdgIdsum == 22) passTrigger = PassesDoubleElecHTTrigger() || PassesPFJet450Trigger();
+        else                    passTrigger = false;
+      }
     }
-
-    if     (gIsMuonEG)      passTrigger = PassesElMuHTTrigger()       || PassesPFJet450Trigger();
-    else if(gIsDoubleMuon)  passTrigger = PassesDoubleMuonHTTrigger() || PassesPFJet450Trigger();
-    else if(gIsDoubleElec)  passTrigger = PassesDoubleElecHTTrigger() || PassesPFJet450Trigger();
-    else                    passTrigger = false;
-*/
-    if     (gIsMuonEG     && pdgIdsum == 24)  passTrigger = PassesElMuHTTrigger()       || PassesPFJet450Trigger();
-    else if(gIsDoubleMuon && pdgIdsum == 26)  passTrigger = PassesDoubleMuonHTTrigger() || PassesPFJet450Trigger();
-    else if(gIsDoubleElec && pdgIdsum == 22)  passTrigger = PassesDoubleElecHTTrigger() || PassesPFJet450Trigger();
     else                    passTrigger = PassesElMuHTTrigger() || PassesDoubleMuonHTTrigger() || PassesDoubleElecHTTrigger() || PassesPFJet450Trigger();
   }
+
   else{
     if      (gChannel == iElMu && TrigElMu()) passTrigger = true;
     else if (gChannel == iMuon && TrigMuMu()) passTrigger = true;
@@ -398,12 +382,21 @@ Bool_t EventBuilder::TrigElMu(){
 
 Bool_t EventBuilder::Trig3l4l() {
   Bool_t pass = false;
+  Int_t ne    = 0;
+  Int_t nm    = 0;
+  
+  for (UInt_t i = 0; i < selLeptons.size(); i++) {
+    if (selLeptons.at(i).isMuon)  nm++;
+    else                          ne++;
+  }
+  
   pass = PassesThreelFourlTrigger();
+  
   if(gIsData) {
-   if (gIsSingleMuon      && (PassesElMuTrigger() || PassesDoubleMuonTrigger() || PassesDoubleElecTrigger())) pass = false;
-   else if (gIsSingleElec && (PassesElMuTrigger() || PassesDoubleMuonTrigger() || PassesDoubleElecTrigger())) pass = false;
-   else if (gIsDoubleMuon && PassesElMuTrigger()) pass = false;
-   else if (gIsDoubleElec && PassesElMuTrigger()) pass = false;
+    if      (gIsSingleMuon && ((nm+ne != nm) || (nm + ne != ne))) pass = false;
+    else if (gIsSingleElec && ((nm+ne != nm) || (nm + ne != ne))) pass = false;
+    else if (gIsDoubleMuon) pass = false;
+    else if (gIsDoubleElec) pass = false;
   }
   return pass;
 }
@@ -422,7 +415,7 @@ Bool_t EventBuilder::PassesMETfilters(){
         gIsFastSim || // no more MET filters for Fast Sim
         (!gIsData && Get<Int_t>("Flag_globalTightHalo2016Filter")) || // for MC
         ( gIsData && Get<Int_t>("Flag_globalTightHalo2016Filter") && Get<Int_t>("Flag_eeBadScFilter")) ) // for Data
+        //( gIsData && Get<Int_t>("Flag_globalTightHalo2016Filter")) ) // for Data
     ) return true;
   else return false;
 }
-

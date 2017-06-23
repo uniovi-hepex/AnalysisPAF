@@ -12,6 +12,7 @@
 class JetSelector : public PAFChainItemSelector{
 
   public:
+    TString taggerName;
     TString stringWP;
     JetSelector();
     virtual ~JetSelector();
@@ -20,15 +21,15 @@ class JetSelector : public PAFChainItemSelector{
     void Summary();
 
     std::vector<Lepton> Leptons;
+    std::vector<Lepton> VetoLeptons;
     std::vector<Jet> selJets;
     std::vector<Jet> selJetsJecUp;
     std::vector<Jet> selJetsJecDown;
+    std::vector<Jet> selJetsJER;
     std::vector<Jet> Jets15;
     std::vector<Jet> genJets;
     std::vector<Jet> mcJets;
     std::vector<Jet> vetoJets;
-    std::vector<Jet> vetoJetsJECUp;
-    std::vector<Jet> vetoJetsJECDown;
 
     Int_t nSelJets;
     Int_t nGenJets;
@@ -37,6 +38,7 @@ class JetSelector : public PAFChainItemSelector{
     Int_t nBtagJets;
     Int_t nBtagJetsJECUp;
     Int_t nBtagJetsJECDown;
+    Int_t nBtagJetsJER;
 
     Float_t minDR;
     Float_t jet_MaxEta;
@@ -46,6 +48,13 @@ class JetSelector : public PAFChainItemSelector{
 
     Float_t MET_JESUp; 
     Float_t MET_JESDown;
+
+    Float_t BtagSF;
+    Float_t BtagSFBtagUp;
+    Float_t BtagSFBtagDown;
+    Float_t BtagSFMistagUp;
+    Float_t BtagSFMistagDown;
+    
 
   protected:
 
@@ -74,6 +83,8 @@ class JetSelector : public PAFChainItemSelector{
     // genJet
     Int_t ngenJet;
 
+    Float_t rho;
+
     void GetDiscJetVariables(Int_t i);
     void GetJetVariables(Int_t i, const TString& jec = "");
     void GetJetFwdVariables(Int_t i);
@@ -81,7 +92,7 @@ class JetSelector : public PAFChainItemSelector{
     void GetmcJetVariables(Int_t i, const TString& jec = "");
     Bool_t IsBtag(Jet j); 
     void SetSystematics(Jet *j);
-    Bool_t Cleaning(Jet j, vector<Lepton> vLep, Float_t minDR = 0.4);
+//    Bool_t Cleaning(Jet j, vector<Lepton> vLep, Float_t minDR = 0.4);
 
     ClassDef(JetSelector, 0);
 };

@@ -25,7 +25,9 @@ class StopAnalysis : public PAFChainItemSelector{
     std::vector<Lepton> genLeptons ;
     std::vector<Jet> selJets ;
     std::vector<Jet> Jets15  ;
+    std::vector<Jet> genJets  ;
 
+    void ResetVariables();
     void SetLeptonVariables();
     void SetJetVariables();
     void SetEventVariables();
@@ -48,9 +50,8 @@ class StopAnalysis : public PAFChainItemSelector{
     Bool_t gIsFastSim = false;
     Int_t gStopMass;
     Int_t gLspMass;
+    Float_t NormISRweights;
 
-    Float_t normISRweight;
-  
     // Tree Variables
     Float_t TWeight;   // Total nominal weight
     Float_t TMll;      // Invariant mass
@@ -59,7 +60,6 @@ class StopAnalysis : public PAFChainItemSelector{
     Float_t TMT2;      // Invariant mass
     Float_t TMET;      // MET
     Float_t TMET_Phi;  // MET phi
-    Float_t TgenMET;   // MET_genPt
     Bool_t  TIsSS;
 
     Int_t   TNVetoLeps;
@@ -69,11 +69,13 @@ class StopAnalysis : public PAFChainItemSelector{
     Float_t TLep0_Eta;
     Float_t TLep0_Phi;
     Float_t TLep0_E;
+    Int_t   TLep0_Id;
     Float_t TLep0_Charge;
     Float_t TLep1_Pt;    
     Float_t TLep1_Eta;
     Float_t TLep1_Phi;
     Float_t TLep1_E;
+    Int_t   TLep1_Id;
     Float_t TLep1_Charge;
 
     Int_t TNJets;            // Jets...
@@ -91,8 +93,8 @@ class StopAnalysis : public PAFChainItemSelector{
     Int_t   TNBtagsJESUp;
     Int_t   TNBtagsJESDown;
     Int_t   TNJetsJER;
-    Int_t   TNBtagsUp;
-    Int_t   TNBtagsDown;
+    Int_t   TNBtagsBtagUp;
+    Int_t   TNBtagsBtagDown;
     Int_t   TNBtagsMisTagUp;
     Int_t   TNBtagsMisTagDown;
     Float_t TJetJESUp_Pt[20];
@@ -125,8 +127,27 @@ class StopAnalysis : public PAFChainItemSelector{
     Float_t TgenTop2Eta;
     Float_t TgenTop2Phi;
     Float_t TgenTop2M  ;
+    Float_t TgentopDeltaPhi; 
+    Float_t TgentopDeltaR;
 
+    Float_t TgenMET;   // MET_genPt
     Float_t TgenMETPhi;
+    Int_t   TNgenLeps;
+    Int_t   TgenLep0_Id;
+    Int_t   TgenLep1_Id;
+    Float_t TgenLep0_Pt;
+    Float_t TgenLep0_Eta;
+    Float_t TgenLep1_Pt;
+    Float_t TgenLep1_Eta;
+    Float_t TgenDeltaPhi;
+    Float_t TgenDeltaEta;
+    Float_t TgenMT2;
+    Int_t   TNgenJets;
+    Int_t   TNgenBtags; 
+    Float_t TgenJet_Pt[20];
+    Float_t TgenJet_Eta[20];
+    Float_t TgenHT;
+
   protected:
     Bool_t  gIsData;
     Bool_t  gIsLHE;
