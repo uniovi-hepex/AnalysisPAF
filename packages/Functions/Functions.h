@@ -26,7 +26,7 @@ enum wps{iVeto, iVeryLoose, iLoose, iMedium, iTight, iVeryTight, iExtreamlyTight
 
 enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec, iWZSelec, i4tSelec};
 
-enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, i2l1tau, i2l2taus, i2lss_fake, iTriLep_fake, iElEl, iMuMu, nTotalDefinedChannels};
+enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau, iOS1tau, i2lss_fake, iTriLep_fake, iElEl, iMuMu, i1Tau_emufake, nTotalDefinedChannels};
 
 enum sys{iNom, 
   iJesUp, iJesDown, iJERUp, iJERDown, 
@@ -49,8 +49,9 @@ bool JetMomentumComparator(Jet i   , Jet    j);
 vector<Lepton> SortLeptonsByPt(vector<Lepton>& Leptons);
 vector<Jet>       SortJetsByPt(vector<Jet>   & Jets);
 
+Bool_t Cleaning(Jet j, vector<Lepton> vLep, Float_t minDR);
 Float_t JEStoMET(vector<Jet> vjets, Float_t met, Float_t met_phi, Int_t dir = 0);
-Float_t getJetJERpt(Jet jet);
+Float_t getJetJERpt(Jet jet, Float_t rho);
 Float_t p2(Float_t x);
 Jet GetMatchedJet(Jet origJet, std::vector<Jet> jetCollection, Float_t etaRange = 0.3, Float_t ptRange = 10000);
 
@@ -75,9 +76,17 @@ Bool_t hasOSSF(vector<Lepton> leptons);
 Bool_t  has2OSSFwMlmm(vector<Lepton> lepton, Float_t mm);
 Float_t ClosestMlltoZ(vector<Lepton> leptons);
 Bool_t IsThereSSpair(vector<Lepton> leptons);
+Bool_t IsThere3SS(vector<Lepton> lepton);
 Bool_t ByPt(Jet, Jet);
 
 Int_t   getCS(vector<Lepton> lepton);
 void co(TString out, TString co);
+void DumpVar(Int_t evt, TString varname, Float_t val, Bool_t pass = false, Bool_t verbose = false);
+void DumpEvent(Int_t evt, TString s, Bool_t verbose = false);
+
+//const Int_t nExploredEvents = 140;
+//const Int_t ExploredEvents[nExploredEvents] = {1004830, 1027781, 1082281, 1122356, 1126764, 1129038, 1165159, 1278903, 1287498, 1302344, 1311746, 1342800, 13792, 1410767, 1420060, 1481974, 1530609, 1567745, 1569491, 157688, 1585171, 1602182, 1625235, 1637719, 1661741, 1691691, 1695279, 1706881, 1715192, 1722790, 1766127, 1816696, 1825084, 186035, 1883562, 1901547, 191569, 1919539, 1923141, 1933527, 1936852, 1943927, 1970319, 2063155, 2143242, 2143251, 2153584, 2160602, 2220866, 22382, 2262834, 2304890, 2315491, 231845, 2320568, 2368132, 2402573, 248883, 250897, 2529060, 2611239, 26202, 2650742, 2690212, 2696839, 2740198, 2808071, 2812534, 2868132, 2878073, 2975910, 298133, 2987804, 2993531, 3003409, 303164, 3080220, 3089130, 3114212, 3141384, 3142171, 317267, 3238101, 3249807, 3276724, 3293589, 3326851, 33515, 3380057, 3397894, 3410012, 3421593, 3422422, 342739, 3437639, 3459373, 3460867, 3488198, 352767, 3528344, 3545622, 3551792, 3561157, 3620059, 367642, 368995, 402510, 404254, 411625, 421731, 42924, 432544, 440083, 469319, 499765, 502665, 510694, 516036, 51857, 534972, 551479, 555177, 606403, 612619, 635318, 639001, 662479, 688695, 76172, 769964, 77804, 809962, 841257, 849025, 880010, 93217, 943912, 952900, 968189, 969379};
+const Int_t nExploredEvents = 0;
+const Int_t ExploredEvents[nExploredEvents] = {};
 
 #endif

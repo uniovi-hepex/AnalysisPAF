@@ -44,7 +44,7 @@ void JetSelector::Initialise(){
 
   //---- Select your wp for b-tagging and pt, eta for the jets
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-  
+
   if     (gSelection == iStopSelec || gSelection == iTopSelec || gSelection == ittDMSelec){
     taggerName="CSVv2";
     stringWP = "Medium";
@@ -209,6 +209,7 @@ void JetSelector::InsideLoop(){
   nBtagJetsJECUp = 0;
   nBtagJetsJECDown = 0;
   Leptons.clear();
+  VetoLeptons.clear();
 
   BtagSF           = 1.;
   BtagSFBtagUp     = 1.;
@@ -218,8 +219,13 @@ void JetSelector::InsideLoop(){
 
   if (gSelection == ittHSelec) Leptons = GetParam<vector<Lepton>>("vetoLeptons");
   else                         Leptons = GetParam<vector<Lepton>>("selLeptons"); 
+  VetoLeptons = GetParam<vector<Lepton>>("vetoLeptons");
+  if (gSelection == i4tSelec){
+    for(Int_t i = 0; i < (Int_t) VetoLeptons.size(); i++) Leptons.push_back(VetoLeptons.at(i));
+  }
 
   evt = (UInt_t)Get<ULong64_t>("evt");
+  rho = Get<Float_t>("rho");
 
   // Loop over the jets
   nJet = Get<Int_t>("nJet");
@@ -252,6 +258,7 @@ void JetSelector::InsideLoop(){
         else if (gSelection == iTWSelec){
 	  vetoJets.push_back(tJ);
 	  if (!gIsData){
+	    if ( tJ.p.Pt() < 20.) continue;
 	    BtagSF           *= fBTagSFnom->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
 	    BtagSFBtagUp     *= fBTagSFbUp->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
 	    BtagSFBtagDown   *= fBTagSFbDo->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
@@ -270,7 +277,7 @@ void JetSelector::InsideLoop(){
       GetDiscJetVariables(i);
       tJ = Jet(tpJ, csv, jetId, flavmc);
       tJ.isBtag = IsBtag(tJ);
-      // Fill the vectors
+      
       if(tJ.id > 0 && Cleaning(tJ, Leptons, minDR)){
         SetSystematics(&tJ);
         tJ.isBtag = IsBtag(tJ);
@@ -366,7 +373,7 @@ void JetSelector::InsideLoop(){
       if(tJ.id > 0 && Cleaning(tJ, Leptons, minDR)){
 	SetSystematics(&tJ);
 	TLorentzVector tmp = tJ.p;
-	tJ.p.SetPtEtaPhiE( getJetJERpt(tJ), tJ.p.Eta(), tJ.p.Phi(), tJ.p.E() * getJetJERpt(tJ) / tJ.p.Pt());
+	tJ.p.SetPtEtaPhiE( getJetJERpt(tJ,rho), tJ.p.Eta(), tJ.p.Phi(), tJ.p.E() * getJetJERpt(tJ,rho) / tJ.p.Pt());
 	diffMET += (-tmp + tJ.p);
 	tJ.isBtag = IsBtag(tJ);
 	if (TMath::Abs(tJ.p.Eta()) < jet_MaxEta){
@@ -446,7 +453,7 @@ void JetSelector::InsideLoop(){
 Bool_t JetSelector::IsBtag(Jet j){
   if(j.Pt() < 20) return false;
   Bool_t isbtag;
-  if(gIsData) isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
+  if(gIsData || gSelection == i4tSelec) isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
   // using "weights" as scale factors in the tW analysis :)
   else if(gSelection == iTWSelec) isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
   else if(stringWP == "Loose") isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
@@ -459,18 +466,11 @@ void JetSelector::SetSystematics(Jet *j){
   if(gIsData) return;
   j->pTJESUp     = rawPt*pt_corrUp;
   j->pTJESDown   = rawPt*pt_corrDown;
-  j->pTJERUp     = getJetJERpt(*j);
-  j->pTJERDown   = getJetJERpt(*j);
+  j->pTJERUp     = getJetJERpt(*j,rho);
+  j->pTJERDown   = getJetJERpt(*j,rho);
   j->isBtag_BtagUp      = fBTagSFbUp->IsTagged(_csv, _flavmc, _pt, _eta, evt+(UInt_t)_pt+1);
   j->isBtag_BtagDown    = fBTagSFbDo->IsTagged(_csv, _flavmc, _pt, _eta, evt+(UInt_t)_pt-1);
   j->isBtag_MisTagUp    = fBTagSFlUp->IsTagged(_csv, _flavmc, _pt, _eta, evt+(UInt_t)_pt+3);
   j->isBtag_MisTagDown  = fBTagSFlDo->IsTagged(_csv, _flavmc, _pt, _eta, evt+(UInt_t)_pt-3);
 }
 
-Bool_t JetSelector::Cleaning(Jet j, vector<Lepton> vLep, Float_t minDR){
-  Int_t nLeps = vLep.size();
-  for(Int_t i = 0; i < nLeps; i++){
-    if(j.p.DeltaR(vLep[i].p) < minDR) return false;
-  }
-  return true;
-}

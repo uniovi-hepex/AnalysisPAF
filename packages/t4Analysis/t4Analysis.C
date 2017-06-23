@@ -7,7 +7,7 @@ t4Analysis::t4Analysis() : PAFChainItemSelector() {
   TrigSF = 0; TrigSF_Up = 0; TrigSF_Down = 0; PUSF = 0; PUSF_Up = 0; PUSF_Down = 0;
   gChannel = 0; passMETfilters = 0; passTrigger = 0; isSS = 0;  NormWeight = 0; TWeight = 0; TIsOnZ = 0;
   TIsSS = false; TMZ = 0; TM3l = 0; TMll = 0;  TMET = 0; TMET_Phi = 0; TMT2 = 0; TNTaus = 0; TNJets = 0; TNBtags = 0; THT = 0; 
-  TNFakeableLeps = 0; TNSelLeps = 0; TChannel = 0; TPassTrigger = 0;
+  TNFakeableLeps = 0; TNSelLeps = 0; TChannel = 0; TPassTrigger = 0; TPassMETFilters = 0; TPassLowInvMass = 0;
   TNJetsJESUp = 0; TNJetsJESDown = 0; TNJetsJER = 0; TNBtagsJESUp = 0; TNBtagsJESDown = 0;
   TNBtagsBtagUp = 0; TNBtagsBtagDown = 0; TNBtagsMisTagUp = 0; TNBtagsMisTagDown = 0;
   THTJESUp = 0; THTJESDown = 0; TNISRJets = 0; TMETJESUp = 0; TMETJESDown = 0;
@@ -39,6 +39,7 @@ t4Analysis::t4Analysis() : PAFChainItemSelector() {
     TLep_Phi      [i] = 0;
     TLep_E        [i] = 0;
     TLep_Charge   [i] = 0;
+    TLep_pdgId    [i] = 0;
   }
   for(Int_t i = 0; i < 5; i++){
     TFLep_Pt       [i] = 0;
@@ -75,8 +76,9 @@ void t4Analysis::Initialise(){
   xLeptons     = std::vector<Lepton>();
   vetoLeptons  = std::vector<Lepton>();
   looseLeptons = std::vector<Lepton>();
-  selJets = std::vector<Jet>();
-  Jets15  = std::vector<Jet>();
+  selJets      = std::vector<Jet>();
+  selBTags     = std::vector<Jet>();
+  Jets15       = std::vector<Jet>();
 }
 
 
@@ -84,7 +86,7 @@ void t4Analysis::InsideLoop(){
   // Vectors with the objects
   selTaus.clear();
   selLeptons.clear(); vetoLeptons.clear(); looseLeptons.clear(); zLeptons.clear(); xLeptons.clear();
-  selJets.clear(); Jets15.clear();
+  selJets.clear(); Jets15.clear(); selBTags.clear();
 
   selTaus      = GetParam<vector<Lepton> >("selTaus"     );
   selLeptons   = GetParam<vector<Lepton> >("selLeptons"  );
@@ -136,39 +138,47 @@ void t4Analysis::InsideLoop(){
   }
   else TrigSF = 1;
 
-  bool  tauFakesSelection(true);
+  bool  tauFakesSelection(false);
   Int_t nReqLeps (tauFakesSelection ? 1        :    2);
   bool  passJetReq(tauFakesSelection ? TNJets>0 : true);
 
   TChannel = -1;
   if(TNTaus == 0){
-    if     (TNSelLeps == 0 && TNFakeableLeps >= 2){ // Fakes for 2lss
-      if(IsThereSSpair(xLeptons)) TChannel = i2lss_fake; 
+    if     ( (TNSelLeps == 0 && TNFakeableLeps >= 2) || (TNSelLeps == 1 && TNFakeableLeps == 1)){ // Fakes for 2lss
+      if(IsThereSSpair(xLeptons) && PassLowInvMass(xLeptons, 12))   TChannel = i2lss_fake; 
     }
-    else if(TNSelLeps == 1 && TNFakeableLeps >= 1){ // Fakes for 2lss
-      if   (IsThereSSpair(xLeptons))    TChannel = i2lss_fake; 
-      else if(TNFakeableLeps >= 2) TChannel = iTriLep_fake; // Fakes for 3L
+    else if(TNSelLeps == 1 && TNFakeableLeps >= 2){ // Fakes for 2lss
+      if(       IsThere3SS(   xLeptons)) TChannel = -1;
+      else if  (IsThereSSpair(xLeptons)) TChannel = i2lss_fake; 
+      else                               TChannel = iTriLep_fake; // Fakes for 3L
     }
     else if(TNSelLeps == 2 && TNFakeableLeps == 0){ // 2lss
       if(IsThereSSpair(selLeptons)) TChannel = i2lss;
     }
     else if(TNSelLeps == 2 && TNFakeableLeps >= 1){ // Fakes for 3L
-      TChannel = iTriLep_fake;
-      if(xLeptons.at(0).charge == xLeptons.at(1).charge && xLeptons.at(0).charge == xLeptons.at(2).charge) TChannel = -1; // Three leptons SS 
+      if(IsThereSSpair(selLeptons)) TChannel = i2lss;
+      else{  
+        if(IsThere3SS(xLeptons)) TChannel = -1;
+        else                     TChannel = iTriLep_fake;
+      }  
     } 
     else if(TNSelLeps >= 3){
       TChannel = iTriLep;
-      if(selLeptons.at(0).charge == selLeptons.at(1).charge && selLeptons.at(0).charge == selLeptons.at(2).charge) TChannel = -1; // Three leptons SS 
+      if(     IsThere3SS(   selLeptons)) TChannel = -1;
     }
   }
   else if(TNTaus >= 1){
-    if(TNSelLeps >= 2) {
-      TChannel = i2l1tau;
+    if(TNSelLeps >= 2){
+      if(IsThereSSpair(selLeptons)) TChannel = iSS1tau;
+      else                          TChannel = iOS1tau;
     }
+    if( (TNSelLeps == 1 && TNFakeableLeps >= 1) || (TNSelLeps == 0 && TNFakeableLeps >= 2) ) TChannel = i1Tau_emufake;
   }
+  if(TChannel == i2lss_fake || TChannel == iTriLep_fake || TChannel == i1Tau_emufake) if(!PassLowInvMass(xLeptons, 12)) TChannel = -1;
 
   //if( (TNSelLeps > nReqLeps || TNFakeableLeps > nReqLeps) && passJetReq && passTrigger && passMETfilters){
-  if(TChannel > 0 && passTrigger && passMETfilters){ // It's in some valid category and passes triggers and MET
+  //if(TChannel > 0 && passTrigger && passMETfilters){ // It's in some valid category and passes triggers and MET
+  if(TChannel > 0){ 
     // Deal with weights:
     Float_t lepSF = 1; Float_t lepSFUp = 1; Float_t lepSFDo = 0;
     if((Int_t) selLeptons.size() >= 2){
@@ -187,11 +197,12 @@ void t4Analysis::InsideLoop(){
 
     // Event Selection
     // ===================================================================================================================
-    if(PassLowInvMass(selLeptons, 12) && PassLowInvMass(xLeptons, 12)){ // mll > 12 GeV
+    //if(PassLowInvMass(xLeptons, 12)){ // mll > 12 GeV
       //if(TNJets >= 2 || TNJetsJESUp >= 2 || TNJetsJESDown >= 2 || TNJetsJER >= 2){ //At least 2 jets
+      if(xLeptons.at(0).p.Pt() > 25)
       fTree->Fill();
       //}
-    }
+    //}
   }
 }
 
@@ -218,7 +229,8 @@ void t4Analysis::SetLeptonVariables(){
   fTree->Branch("TLep_Eta"        ,TLep_Eta,        "TLep_Eta[TNSelLeps]/F");
   fTree->Branch("TLep_Phi"        ,TLep_Phi,        "TLep_Phi[TNSelLeps]/F");
   fTree->Branch("TLep_E"          ,TLep_E ,         "TLep_E[TNSelLeps]/F");
-  fTree->Branch("TLep_Charge"     ,TLep_Charge,     "TLep_Charge[TNSelLeps]/F");
+  fTree->Branch("TLep_Charge"     ,TLep_Charge,     "TLep_Charge[TNSelLeps]/I");
+  fTree->Branch("TLep_pdgId"      ,TLep_pdgId,      "TLep_pdgId[TNSelLeps]/I");
   fTree->Branch("TFLep_pdgId",     TFLep_pdgId,     "TFLep_pdgId[TNFakeableLeps]/I");
   fTree->Branch("TFLep_Pt"        ,TFLep_Pt,        "TFLep_Pt[TNFakeableLeps]/F");
   fTree->Branch("TFLep_Eta"       ,TFLep_Eta,       "TFLep_Eta[TNFakeableLeps]/F");
@@ -260,11 +272,14 @@ void t4Analysis::SetJetVariables(){
 }
 
 void t4Analysis::SetEventVariables(){
-  fTree->Branch("TWeight",      &TWeight,      "TWeight/F");
-  fTree->Branch("TMET",         &TMET,         "TMET/F");
-  fTree->Branch("TMET_Phi",     &TMET_Phi,     "TMET_Phi/F");
-  fTree->Branch("TMT2",         &TMT2,         "TMT2/F");
-  fTree->Branch("TIsOnZ",       &TIsOnZ,       "TIsOnZ/I");
+  fTree->Branch("TWeight",         &TWeight,         "TWeight/F");
+  fTree->Branch("TMET",            &TMET,            "TMET/F");
+  fTree->Branch("TMET_Phi",        &TMET_Phi,        "TMET_Phi/F");
+  fTree->Branch("TMT2",            &TMT2,            "TMT2/F");
+  fTree->Branch("TIsOnZ",          &TIsOnZ,          "TIsOnZ/I");
+  fTree->Branch("TPassTrigger",    &TPassTrigger,    "TPassTrigger/I");
+  fTree->Branch("TPassMETFilters", &TPassMETFilters, "TPassMETFilters/I");
+  fTree->Branch("TPassLowInvMass", &TPassLowInvMass, "TPassLowInvMass/I");
 
   fTree->Branch("TRun",        &TRun,      "TRun/I");
   fTree->Branch("TLumi",       &TLumi,     "TLumi/I");
@@ -283,14 +298,10 @@ void t4Analysis::SetEventVariables(){
   fTree->Branch("TMETJESDown",  &TMETJESDown,  "TMETJESDown/F");
 }
 
-void t4Analysis::GetTauVariables(std::vector<Lepton> selTaus)
-{
+void t4Analysis::GetTauVariables(std::vector<Lepton> selTaus){
   TNTaus = selTaus.size();
-
-  for(Int_t i=0; i<10; ++i)
-    {
-      if(i<TNTaus)
-        {
+  for(Int_t i=0; i<10; ++i){
+      if(i<TNTaus){
           TTau_Pt         [i] = selTaus.at(i).Pt();
           TTau_Eta        [i] = selTaus.at(i).Eta();
           TTau_Charge     [i] = selTaus.at(i).charge;
@@ -299,10 +310,8 @@ void t4Analysis::GetTauVariables(std::vector<Lepton> selTaus)
           TTau_IdMVA      [i] = selTaus.at(i).idMVA;      
           TTau_IdAntiE    [i] = selTaus.at(i).idAntiE;    
           TTau_IdAntiMu   [i] = selTaus.at(i).idAntiMu;   
-
         }
-      else
-        {
+      else{
           TTau_Pt         [i] = 0;
           TTau_Eta        [i] = 0;
           TTau_Charge     [i] = 0;
@@ -313,7 +322,6 @@ void t4Analysis::GetTauVariables(std::vector<Lepton> selTaus)
           TTau_IdAntiMu   [i] = 0;
         }
     }
-
 }
 
 void t4Analysis::GetLeptonVariables(std::vector<Lepton> selLeptons){
@@ -324,7 +332,7 @@ void t4Analysis::GetLeptonVariables(std::vector<Lepton> selLeptons){
       TLep_Eta[i]    = selLeptons.at(i).Eta();
       TLep_Phi[i]    = selLeptons.at(i).Phi();
       TLep_E[i]      = selLeptons.at(i).E();
-      TLep_Charge[i] = selLeptons.at(i).charge;
+      TLep_pdgId[i] = selLeptons.at(i).charge;
     }
     else{
       TLep_Pt[i]     = 0;
@@ -332,12 +340,14 @@ void t4Analysis::GetLeptonVariables(std::vector<Lepton> selLeptons){
       TLep_Phi[i]    = 0;
       TLep_E[i]      = 0;
       TLep_Charge[i] = 0;
+      TLep_pdgId[i] = 0;
     }
   }
   TMll = TNSelLeps < 2 ? 0 : (selLeptons.at(0).p + selLeptons.at(1).p).M();      
   TM3l = TNSelLeps < 3 ? 0 : (selLeptons.at(0).p + selLeptons.at(1).p + selLeptons.at(2).p).M();      
   TMZ    = ClosestMlltoZ(zLeptons);
   TIsOnZ = IsOnZ(zLeptons);
+  TPassLowInvMass = PassLowInvMass(selLeptons, 12);
   TRun   = Get<UInt_t>("run");
   TLumi  = Get<UInt_t>("lumi");
   TEvent = Get<ULong64_t>("evt");
@@ -369,6 +379,7 @@ void t4Analysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> clea
   TNJets = selJets.size(); THT = 0;
   TNBtags = 0; TNBtagsBtagUp = 0; TNBtagsBtagDown = 0;
   TNBtagsMisTagUp = 0;  TNBtagsMisTagDown = 0;
+  Int_t ntotalJets = cleanedJets15.size();
   for(Int_t i = 0; i < 20; i++){
     if(i < TNJets){
       TJet_Pt[i]     = selJets.at(i).Pt();
@@ -376,7 +387,7 @@ void t4Analysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> clea
       TJet_Phi[i]    = selJets.at(i).Phi();
       TJet_E[i]      = selJets.at(i).E();
       TJet_isBJet[i] = selJets.at(i).isBtag;
-      if(selJets.at(i).isBtag)            TNBtags++;
+      //if(selJets.at(i).isBtag)            TNBtags++;
     }
     else{
       TJet_Pt[i]     = 0;
@@ -387,12 +398,18 @@ void t4Analysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> clea
     }
     THT += TJet_Pt[i];
   }
+  for(Int_t i = 0; i < ntotalJets; i++) 
+    if(cleanedJets15.at(i).p.Pt() > 25 && cleanedJets15.at(i).isBtag) selBTags.push_back(cleanedJets15.at(i)); 
+  TNBtags = selBTags.size();
+  //TNBtags = GetParam<Int_t>("nVetoJets");
   if(gIsData) return;  // For systematics...
-  for(Int_t i = 0; i < TNJets; i++){
-    if(selJets.at(i).isBtag_BtagUp    ) TNBtagsBtagUp++;
-    if(selJets.at(i).isBtag_BtagDown  ) TNBtagsBtagDown++;
-    if(selJets.at(i).isBtag_MisTagUp  ) TNBtagsMisTagUp++;
-    if(selJets.at(i).isBtag_MisTagDown) TNBtagsMisTagDown++;
+  for(Int_t i = 0; i < ntotalJets; i++){
+    if(cleanedJets15.at(i).p.Pt() > 20){
+      if(cleanedJets15.at(i).isBtag_BtagUp    ) TNBtagsBtagUp++;
+      if(cleanedJets15.at(i).isBtag_BtagDown  ) TNBtagsBtagDown++;
+      if(cleanedJets15.at(i).isBtag_MisTagUp  ) TNBtagsMisTagUp++;
+      if(cleanedJets15.at(i).isBtag_MisTagDown) TNBtagsMisTagDown++;
+    }
   }
   TNJetsJESUp    = 0;
   TNJetsJESDown  = 0;
@@ -425,6 +442,8 @@ void t4Analysis::GetMET(){
   TMET_Phi    = Get<Float_t>("met_phi");  // MET phi
   TIsSS       = isSS;
   if(TNSelLeps>1)  TMT2 = getMT2ll(selLeptons.at(0), selLeptons.at(1), TMET,        TMET_Phi);
+  TPassTrigger = passTrigger;
+  TPassMETFilters = passMETfilters;
   if(gIsData) return;
   TMETJESUp   = GetParam<Float_t>("MET_JESUp");
   TMETJESDown = GetParam<Float_t>("MET_JESDown");

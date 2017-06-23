@@ -21,64 +21,66 @@ const TString DefaultTreeName = "MiniTree";
 
 
 class Histo : public TH1F{
-	public:
-		Histo(const char *name, const char *title, Int_t nbins, Double_t xlow, Double_t xup);
-		//Histo(const char *name, const char *title, Int_t nbins, const Float_t* xbins);
-		Histo(const TH1F &h, Int_t tipo = 0, Int_t c = 1){
-			((Histo&)h).Copy(*this);
-			cuts = "cut"; xlabel = "[GeV]"; sysNorm = 0.25;
-      SysTag = "";
-			SetType(tipo);
-			SetColor(c);
-			SetStyle();
-		}
-		~Histo(){
-			//if(vsysd) delete vsysd;
-			//if(vsysu) delete vsysu;
-		};
+ public:
+  Histo(const char *name, const char *title, Int_t nbins, Double_t xlow, Double_t xup);
+  //Histo(const char *name, const char *title, Int_t nbins, const Float_t* xbins);
+ Histo(const TH1F &h, Int_t tipo = 0, Int_t c = 1): tag(""), process(""){
+    ((Histo&)h).Copy(*this);
+    cuts = "cut"; xlabel = "[GeV]"; sysNorm = 0.25;
+    SysTag = "";
+    SetType(tipo);
+    SetColor(c);
+    SetStyle();
+  }
+  ~Histo(){
+    //if(vsysd) delete vsysd;
+    //if(vsysu) delete vsysu;
+  };
+  
+  void SetType(Int_t tipo = 0);
+  void SetColor(Int_t c);
+  void SetStyle();
+  void SetStatUnc();
+  Histo* CloneHisto(const char* newname=0) const;
 
-		void SetType(Int_t tipo = 0);
-		void SetColor(Int_t c);
-		void SetStyle();
-		void SetStatUnc();
 
-    TString GetTag(){return tag;}
-    Int_t GetType(){return type;}
-    Float_t GetYield(){return yield;}
-    Float_t GetMax(){return max;}
-    TString GetProcess(){return process;}
-    Float_t GetSysNorm(){return sysNorm;}
-    Int_t GetColor(){ return color;}
-		void StackOverflow(Bool_t doStackOverflow = 1);
-		void SetTag(TString p, TString t="", TString x = "", TString c = "");
-		void SetProcess(TString p);
-		void SetTitles(TString x, TString c = "");
-		void SetParams(Int_t tipo = 0, Int_t color = 1, Float_t s = 0.25, TString t = "", TString x = "", TString c = "");
-    void SetSysNorm(Float_t s){ sysNorm = s;}
-    void SetSysTag(TString s){ SysTag = s;}
-    TString GetSysTag(){return SysTag;}
-
-		void AddToLegend(TLegend* leg, Bool_t doyi = 1);
-		TH1F* GetVarHistoStatBin(Int_t bin = 0, TString dir = "Up");
-		void AddToSystematics(Histo* hsys, TString dir = "Down");
-    void SetBinsErrorFromSyst();
-    void SetDrawStyle(TString g){ DrawStyle = g;}
-    TString GetDrawStyle(){ return DrawStyle;}
-
-		Float_t *vsysu = NULL; 
-		Float_t *vsysd = NULL;
-
-	protected:
-		Int_t type; 
-    TString DrawStyle = "";
-		Int_t color;
-		TString tag = "0"; TString process="0"; TString cuts="0"; TString xlabel="0";
-		Float_t sysNorm;
-		Double_t yield;
-		Double_t max;
-		Float_t haveStyle = 0;
-		Bool_t IsStackOverflow = true;
-    TString SysTag = "0";
+  TString GetTag(){return tag;}
+  Int_t GetType(){return type;}
+  Float_t GetYield(){return yield;}
+  Float_t GetMax(){return max;}
+  TString GetProcess(){return process;}
+  Float_t GetSysNorm(){return sysNorm;}
+  Int_t GetColor(){ return color;}
+  void StackOverflow(Bool_t doStackOverflow = 1);
+  void SetTag(TString p, TString t="", TString x = "", TString c = "");
+  void SetProcess(TString p);
+  void SetTitles(TString x, TString c = "");
+  void SetParams(Int_t tipo = 0, Int_t color = 1, Float_t s = 0.25, TString t = "", TString x = "", TString c = "");
+  void SetSysNorm(Float_t s){ sysNorm = s;}
+  void SetSysTag(TString s){ SysTag = s;}
+  TString GetSysTag(){return SysTag;}
+  
+  void AddToLegend(TLegend* leg, Bool_t doyi = 1);
+  TH1F* GetVarHistoStatBin(Int_t bin = 0, TString dir = "Up");
+  void AddToSystematics(Histo* hsys, TString dir = "Down");
+  void SetBinsErrorFromSyst();
+  void SetDrawStyle(TString g){ DrawStyle = g;}
+  TString GetDrawStyle(){ return DrawStyle;}
+  
+  Float_t *vsysu = NULL; 
+  Float_t *vsysd = NULL;
+  
+ protected:
+  Int_t type; 
+  TString DrawStyle = "";
+  Int_t color;
+  TString tag = "0"; TString process="0"; TString cuts="0"; TString xlabel="0";
+  Float_t sysNorm;
+  Double_t yield;
+  Double_t max;
+  Float_t haveStyle = 0;
+  Bool_t IsStackOverflow = true;
+  TString SysTag = "0";
 
 };
 

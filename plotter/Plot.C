@@ -12,7 +12,10 @@ Histo* Plot::GetH(TString sample, TString sys, Int_t type){
     pathToMiniTree = sample(0, sample.Last('/')+1);
     sample = sample(sample.Last('/')+1, sample.Sizeof());
   }
-  Looper* ah = new Looper(pathToMiniTree, treeName, var, cut, chan, nb, x0, xN);
+  Looper* ah;
+  if(xN != x0) ah = new Looper(pathToMiniTree, treeName, var, cut, chan, nb, x0, xN);
+  else         ah = new Looper(pathToMiniTree, treeName, var, cut, chan, nb, vbins);
+
   ah->SetOptions(LoopOptions);
   Histo* h = ah->GetHisto(sample, sys);
   h->SetDirectory(0);
@@ -125,7 +128,8 @@ void Plot::SetData(){  // Returns histogram for Data
   if(hData) delete hData;
   if(gROOT->FindObject("HistoData")) delete gROOT->FindObject("HistoData");
   
-  hData = new Histo(TH1F("HistoData", "Data", nb, x0, xN));
+  if(x0 != xN) hData = new Histo(TH1F("HistoData", "Data", nb, x0, xN));
+  else         hData = new Histo(TH1F("HistoData", "Data", nb, vbins));
   if(VData.size() < 1) doData = false;
   TString p = "";
 
@@ -184,8 +188,14 @@ void Plot::GroupSystematics(){
     Histo* hsumSysUp = NULL; Histo* hsumSysDown = NULL; 
     if(gROOT->FindObject(tag + "_SystSumUp"))   delete gROOT->FindObject(tag + "_SystSumUp");
     if(gROOT->FindObject(tag + "_SystSumDown")) delete gROOT->FindObject(tag + "_SystSumDown");
-    hsumSysUp   = new Histo(TH1F(tag + "_SystSumUp",  tag + "_SystSumUp" ,   nb, x0, xN));
-    hsumSysDown = new Histo(TH1F(tag + "_SystSumDown",tag + "_SystSumDown" , nb, x0, xN));
+    if(x0 != xN){
+      hsumSysUp   = new Histo(TH1F(tag + "_SystSumUp",  tag + "_SystSumUp" ,   nb, x0, xN));
+      hsumSysDown = new Histo(TH1F(tag + "_SystSumDown",tag + "_SystSumDown" , nb, x0, xN));
+    }
+    else{
+      hsumSysUp   = new Histo(TH1F(tag + "_SystSumUp",  tag + "_SystSumUp" ,   nb, vbins));
+      hsumSysDown = new Histo(TH1F(tag + "_SystSumDown",tag + "_SystSumDown" , nb, vbins));
+    }
     for(Int_t i = 0; i < (Int_t) VSyst.size(); i++){
       tag =  VSyst.at(i)->GetTag();
       name = VSyst.at(i)->GetName();
@@ -247,7 +257,7 @@ Histo* Plot::GetHisto(TString pr, TString systag){
 Histo* Plot::GetSymmetricHisto(TString pr, TString systag){
   Histo* nom = GetHisto(pr, "0");
   Histo* var = GetHisto(pr, systag);
-  Histo* sym = (Histo*) var->Clone();
+  Histo* sym = (Histo*) var->CloneHisto();
   Int_t nbins = nom->GetNbinsX();
   Float_t bindiff = 0; Float_t cont;
   for(Int_t i = 0; i <= nbins+1; i++){
@@ -263,6 +273,7 @@ Histo* Plot::GetSymmetricHisto(TString pr, TString systag){
   else newtag.ReplaceAll("Down", "Up");
   sym->SetTag(pr + "_" + newtag);
   sym->SetProcess(pr);
+  sym->SetName(pr + "_" + newtag);
   return sym;
 }
 
@@ -306,7 +317,7 @@ Float_t Plot::GetYield(TString pr, TString systag){
 }
 
 TLegend* Plot::SetLegend(){ // To be executed before using the legend
-  TLegend* leg = new TLegend(0.70,0.65,0.93,0.93);
+  TLegend* leg = new TLegend(fLegX1, fLegY1, fLegX2, fLegY2);
   leg->SetTextSize(0.035);
   leg->SetBorderSize(0);
   leg->SetFillColor(10);
@@ -350,6 +361,21 @@ TLegend* Plot::SetLegend(){ // To be executed before using the legend
   return leg;
 }
 
+void Plot::SetLegendPosition(TString pos)
+{
+  if (pos=="UR")
+    SetLegendPosition(0.70, 0.65, 0.93, 0.93);
+  else if (pos == "UL")
+    SetLegendPosition(0.15, 0.65, 0.38, 0.85);
+  else if (pos == "DL")
+    SetLegendPosition(0.15, 0.25, 0.38, 0.45);
+  else{
+    cout << "[Plot::SetLegendPosition] Sorry, position " << pos 
+	 << " is not yet implemented. Fucking do it yourself" <<endl;
+  }
+  
+}
+
 TCanvas* Plot::SetCanvas(){ // Returns the canvas
   TCanvas* c= new TCanvas("c","c",10,10,800,600);
   c->Divide(1,2);
@@ -371,7 +397,7 @@ TCanvas* Plot::SetCanvas(){ // Returns the canvas
   texlumi->SetTextFont(42);
   texlumi->SetTextSize(0.045);
   texlumi->SetTextSizePixels(22);
-  texcms = new TLatex(0.,0., "CMS Preliminary");
+  texcms = new TLatex(0.,0., CMSlabel);
   texcms->SetNDC();
   texcms->SetTextAlign(12);
   texcms->SetX(0.15);
@@ -409,9 +435,9 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString lineStyle){
   VSignals.at(0)->SetMaximum(themax*ScaleMax);
   VSignals.at(0)->SetMinimum(PlotMinimum);
   if(doSetLogy){
-    PlotMinimum = 1e-4;
-    signal->SetMaximum(themax);
-    //signal->SetMinimum(PlotMinimum + 0.1*(PlotMinimum + 1));
+    PlotMinimum = PlotMinimum == -999? 1e-2 : PlotMinimum;
+    PlotMaximum = PlotMaximum == -999? themax*50 : PlotMaximum;
+    signal->SetMaximum(themax*80);
     signal->SetMinimum(PlotMinimum);
     plot->SetLogy();
   }
@@ -468,20 +494,25 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString lineStyle){
   TH1F* htemp = NULL;
   hratio = (TH1F*)VSignals.at(0)->Clone("hratio_sig");
   SetHRatio();
-  hratio->SetMaximum(RatioMax);
-  hratio->SetMinimum(RatioMin);
   for(Int_t  i = 1; i < nsamples; i++){
-    htemp = (TH1F*)hratio->Clone("htemp");
-    htemp->Divide(VSignals.at(i)); 
+    //htemp = (TH1F*)hratio->Clone("htemp");
+    //htemp->Divide(VSignals.at(i)); 
+    htemp = (TH1F*)VSignals.at(i)->Clone("htemp");
+    htemp->Divide(hratio);
+    SetHRatio(htemp);
     htemp->SetLineColor(VSignals.at(i)->GetColor());
+    htemp->SetLineStyle(VSignals.at(i)->GetLineStyle());
+    htemp->SetMarkerColor(VSignals.at(i)->GetColor());
+    htemp->SetMarkerStyle(VSignals.at(i)->GetMarkerStyle());
     ratios.push_back(htemp);
-    ratios.at(i-1)->Draw("hist,same");
+    ratios.at(i-1)->Draw("pe,same");
   }
   if(sav){ // Save the histograms
     TString dir = plotFolder;
-    TString plotname = varname + "_" + tag + "_comp";
+    TString plotname = (outputName == "")? varname + "_" + tag : outputName + "_" + varname;
     gSystem->mkdir(dir, kTRUE);
     c->Print( dir + plotname + ".png", "png");
+    c->Print( dir + plotname + ".pdf", "pdf");
     delete c;
   }
   if(htemp) delete htemp;
@@ -523,11 +554,15 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   float Max = maxMC > maxData? maxMC : maxData;
   if(doSetLogy){
     if(verbose) cout << "[Plot::DrawStack] Setting log scale..." << endl;
-    hStack->SetMaximum(Max*ScaleLog);
-    hStack->SetMinimum(PlotMinimum + 0.1*(PlotMinimum + 1));
+    PlotMinimum = PlotMinimum == -999? 0.1*(1) : PlotMinimum;
+    PlotMaximum = PlotMaximum == -999? Max*ScaleLog : PlotMaximum;
+    hStack->SetMaximum(PlotMaximum);
+    hStack->SetMinimum(PlotMinimum);
     plot->SetLogy();
   }
   else{
+    PlotMinimum = PlotMinimum == -999? 0 : PlotMinimum;
+    PlotMaximum = PlotMaximum == -999? Max*ScaleMax : PlotMaximum;
     hStack->SetMaximum(Max*ScaleMax);
     hStack->SetMinimum(PlotMinimum);
   }
@@ -535,12 +570,12 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   hStack->Draw("hist");
   hStack->GetYaxis()->SetTitle("Number of Events");
   hStack->GetYaxis()->SetTitleSize(0.06);
-  hStack->GetYaxis()->SetTitleOffset(0.5);
+  hStack->GetYaxis()->SetTitleOffset(0.8);
   hStack->GetYaxis()->SetNdivisions(505);
   hStack->GetXaxis()->SetLabelSize(0.0);
 
   if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
-    for(Int_t  i = 0; i < nSignals; i++) VSignals.at(i)->Draw("lsame");
+    for(Int_t  i = 0; i < nSignals; i++) VSignals.at(i)->Draw(SignalDrawStyle + "same");
 
   // Draw systematics histo
   hAllBkg->SetFillStyle(3145);
@@ -610,14 +645,15 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
     hratioerr->Draw("same,e2");
     hratio->Draw("same");
   }
-
   if(sav){ // Save the histograms
     TString dir = plotFolder;
-    TString plotname = (outputName == "")? varname + "_" + tag : outputName;
-	  	
+
+    TString plotname = (outputName == "")? varname + "_" + tag : outputName + "_" + varname;
+    
     gSystem->mkdir(dir, kTRUE);
     c->Print( dir + plotname + ".pdf", "pdf");
     c->Print( dir + plotname + ".png", "png");
+    c->SaveAs( dir + plotname + ".root");
     delete c;
   }
   if(leg) delete leg; //if(hData) delete hData;
@@ -745,43 +781,44 @@ void Plot::SetTexChan(TString cuts){
   texchan->SetTextSizePixels(22);
 }
 
-void Plot::SetHRatio(){
-  hratio->SetTitle("");
-  if     (RatioOptions == "S/B"    )   hratio->GetYaxis()->SetTitle("S/B");
-  else if(RatioOptions == "S/sqrtB")   hratio->GetYaxis()->SetTitle("S/#sqrt{B}");
-  else if(RatioOptions == "S/sqrtSpB") hratio->GetYaxis()->SetTitle("S/#sqrt{S+B}");
-  else                                 hratio->GetYaxis()->SetTitle("Data/MC");
-  hratio->GetXaxis()->SetTitleSize(0.05);
-  hratio->GetYaxis()->CenterTitle();
-  hratio->GetYaxis()->SetTitleOffset(0.25);
-  hratio->GetYaxis()->SetTitleSize(0.1);
-  hratio->GetYaxis()->SetLabelSize(0.1);
-  hratio->GetYaxis()->SetNdivisions(402);
-  hratio->GetXaxis()->SetTitleOffset(0.9);
-  hratio->GetXaxis()->SetLabelSize(0.13);
-  hratio->GetXaxis()->SetTitleSize(0.16);
+void Plot::SetHRatio(TH1F* h){
+  if(h == nullptr) h = hratio;
+  h->SetTitle("");
+  if     (RatioOptions == "S/B"    )   h->GetYaxis()->SetTitle("S/B");
+  else if(RatioOptions == "S/sqrtB")   h->GetYaxis()->SetTitle("S/#sqrt{B}");
+  else if(RatioOptions == "S/sqrtSpB") h->GetYaxis()->SetTitle("S/#sqrt{S+B}");
+  else                                 h->GetYaxis()->SetTitle("Data/MC");
+  h->GetXaxis()->SetTitleSize(0.05);
+  h->GetYaxis()->CenterTitle();
+  h->GetYaxis()->SetTitleOffset(0.25);
+  h->GetYaxis()->SetTitleSize(0.1);
+  h->GetYaxis()->SetLabelSize(0.1);
+  h->GetYaxis()->SetNdivisions(402);
+  h->GetXaxis()->SetTitleOffset(0.9);
+  h->GetXaxis()->SetLabelSize(0.13);
+  h->GetXaxis()->SetTitleSize(0.16);
   if (varname == "NBtagsNJets") {  //change bin labels
-    hratio->GetXaxis()->SetBinLabel( 1, "(0, 0)");
-    hratio->GetXaxis()->SetBinLabel( 2, "(1, 0)");
-    hratio->GetXaxis()->SetBinLabel( 3, "(1, 1)");
-    hratio->GetXaxis()->SetBinLabel( 4, "(2, 0)");
-    hratio->GetXaxis()->SetBinLabel( 5, "(2, 1)");
-    hratio->GetXaxis()->SetBinLabel( 6, "(2, 2)");
-    hratio->GetXaxis()->SetBinLabel( 7, "(3, 0)");
-    hratio->GetXaxis()->SetBinLabel( 8, "(3, 1)");
-    hratio->GetXaxis()->SetBinLabel( 9, "(3, 2)");
-    hratio->GetXaxis()->SetBinLabel(10, "(3, 3)");
-    hratio->GetXaxis()->SetBinLabel(11, "(4, 0)");
-    hratio->GetXaxis()->SetBinLabel(12, "(4, 1)");
-    hratio->GetXaxis()->SetBinLabel(13, "(4, 2)");
-    hratio->GetXaxis()->SetBinLabel(14, "(4, 3)");
-    hratio->GetXaxis()->SetBinLabel(15, "(4, 4)");
-    hratio->GetXaxis()->SetLabelSize(0.14);
-    hratio->GetXaxis()->SetLabelOffset(0.02);
+    h->GetXaxis()->SetBinLabel( 1, "(0, 0)");
+    h->GetXaxis()->SetBinLabel( 2, "(1, 0)");
+    h->GetXaxis()->SetBinLabel( 3, "(1, 1)");
+    h->GetXaxis()->SetBinLabel( 4, "(2, 0)");
+    h->GetXaxis()->SetBinLabel( 5, "(2, 1)");
+    h->GetXaxis()->SetBinLabel( 6, "(2, 2)");
+    h->GetXaxis()->SetBinLabel( 7, "(3, 0)");
+    h->GetXaxis()->SetBinLabel( 8, "(3, 1)");
+    h->GetXaxis()->SetBinLabel( 9, "(3, 2)");
+    h->GetXaxis()->SetBinLabel(10, "(3, 3)");
+    h->GetXaxis()->SetBinLabel(11, "(4, 0)");
+    h->GetXaxis()->SetBinLabel(12, "(4, 1)");
+    h->GetXaxis()->SetBinLabel(13, "(4, 2)");
+    h->GetXaxis()->SetBinLabel(14, "(4, 3)");
+    h->GetXaxis()->SetBinLabel(15, "(4, 4)");
+    h->GetXaxis()->SetLabelSize(0.14);
+    h->GetXaxis()->SetLabelOffset(0.02);
   }
-  hratio->GetXaxis()->SetTitle(xtitle);
-  hratio->SetMinimum(RatioMin);
-  hratio->SetMaximum(RatioMax);
+  h->GetXaxis()->SetTitle(xtitle);
+  h->SetMinimum(RatioMin);
+  h->SetMaximum(RatioMax);
 }
 
 Int_t Plot::GetColorOfProcess(TString pr){
@@ -925,7 +962,7 @@ void Plot::PrintYields(TString cuts, TString labels, TString channels, TString o
   for(Int_t i = 0; i < nBkgs; i++) t.SetRowTitle(i, VBkgs.at(i)->GetProcess());
   t.SetRowTitle(nBkgs, "Total Background");
   for(Int_t i = nBkgs+1; i < nSignals+nBkgs+1; i++) t.SetRowTitle(i, VSignals.at(i-(nBkgs+1))->GetProcess());
-  t.SetRowTitle(nBkgs+1+nSignals, "Data");
+  if(doData) t.SetRowTitle(nBkgs+1+nSignals, "Data");
 
   // Set column titles
   for(Int_t k = 0; k < ncolumns; k++) t.SetColumnTitle(k, VLCut.at(k));

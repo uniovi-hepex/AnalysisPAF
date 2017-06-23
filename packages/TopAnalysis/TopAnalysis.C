@@ -76,16 +76,16 @@ void TopAnalysis::Initialise(){
   //setTWBDT();
   InitHistos();
 
-  genLeptons  = std::vector<Lepton>();
-  selLeptons  = std::vector<Lepton>();
-  vetoLeptons = std::vector<Lepton>();
-  selJets = std::vector<Jet>();
-  selJetsJecUp = std::vector<Jet>();
-  selJetsJecDown = std::vector<Jet>();
-  Jets15  = std::vector<Jet>();
-  genJets = std::vector<Jet>();
-  mcJets  = std::vector<Jet>();
-  vetoJets = std::vector<Jet>();
+  // genLeptons  = std::vector<Lepton>();
+  // selLeptons  = std::vector<Lepton>();
+  // vetoLeptons = std::vector<Lepton>();
+  // selJets = std::vector<Jet>();
+  // selJetsJecUp = std::vector<Jet>();
+  // selJetsJecDown = std::vector<Jet>();
+  // Jets15  = std::vector<Jet>();
+  // genJets = std::vector<Jet>();
+  // mcJets  = std::vector<Jet>();
+  // vetoJets = std::vector<Jet>();
 }
 
 void TopAnalysis::InsideLoop(){

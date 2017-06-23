@@ -16,7 +16,7 @@
 #include "TSystem.h"
 #include "../InputFiles/for4t/fake_rates.h"
 
-enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, i2l1tau, i2l2taus, i2lss_fake, iTriLep_fake, iElEl, iMumu, nTotalDefinedChannels};
+enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau, iOS1tau, i2lss_fake, iTriLep_fake, iElEl, iMuMu, i1Tau_emufake, nTotalDefinedChannels};
 const Int_t nLHEweights = 112;
 
 std::vector<TString> GetAllVars(TString varstring); 
@@ -25,6 +25,7 @@ TH1F* hLHE[nLHEweights];
 
 class Looper{
   public:
+    Looper(){};
     Looper(TString pathToTree, TString NameOfTree, TString _var = "TMET", TString _cut = "1", TString _chan = "ElMu", Int_t nb = 30, Float_t b0 = 0, Float_t bN = 300){
    Hist = NULL; 
    FormulasCuts = NULL;
@@ -43,6 +44,25 @@ class Looper{
 
    pathToHeppyTrees = "/pool/ciencias/HeppyTreesSummer16/v2/";
   }  
+    Looper(TString pathToTree, TString NameOfTree, TString _var = "TMET", TString _cut = "1", TString _chan = "ElMu", Int_t nb = 30, Float_t* bins = 0){
+   Hist = NULL; 
+   FormulasCuts = NULL;
+   FormulasVars = NULL;
+   FormulasLHE  = NULL;
+   tree = NULL;
+   path = pathToTree;
+   treeName = NameOfTree;
+   //loadTree();
+   nbins = nb;
+   bin0 = 0;
+   binN = 0;
+   vbins = bins;
+   var = _var;
+   cut = _cut;
+   chan = _chan;
+
+   pathToHeppyTrees = "/pool/ciencias/HeppyTreesSummer16/v2/";
+  } 
 
    ~Looper(){
 		 delete tree->GetCurrentFile();
@@ -94,6 +114,7 @@ class Looper{
    Int_t   nbins;
    Float_t bin0;
    Float_t binN;
+   Float_t *vbins;
    TString hname;
    TString xtit;
    TString stringcut; TString stringvar;
@@ -116,6 +137,7 @@ class Looper{
    TTree* tree;
 
    Int_t nLeps; 
+   Int_t nTaus; 
    Int_t nFakeLeps; 
    Float_t FLepPt; 
    Float_t FLepEta; 
@@ -128,6 +150,7 @@ class Looper{
    TTreeFormula *ForFLepPdgId;
    TTreeFormula *ForLepChar;
    TTreeFormula *FornSelLep;
+   TTreeFormula *FornSelTau;
    TTreeFormula *FornFakeLep;
 
 };
