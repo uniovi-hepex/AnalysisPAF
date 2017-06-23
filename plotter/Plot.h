@@ -289,6 +289,7 @@ public:
   void SetScaleMax(Float_t s){ ScaleMax = s;}
   void SetScaleLog(Float_t s){ ScaleLog = s;}
   void SetPlotMinimum(Float_t p){ PlotMinimum = p;}
+  void SetPlotMaximum(Float_t p){ PlotMaximum = p;}
   void ScaleProcess(TString process, Float_t factor = 1);
   void ScaleSignal(Float_t factor = 1);
   void ScaleSys(TString processSys, Float_t factor = 1);
@@ -323,7 +324,8 @@ protected:
   // Factor to multiply the maximum of the plot to set the maximum
   Float_t ScaleMax = 1.2;
   Float_t ScaleLog = 500;
-  Float_t PlotMinimum = 0.;
+  Float_t PlotMinimum = -999;
+  Float_t PlotMaximum = -999;
 
   TString varname = "";
 	TString var;
