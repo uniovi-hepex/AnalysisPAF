@@ -15,23 +15,26 @@ class WWAnalysis : public PAFChainItemSelector{
 		virtual void Initialise();
 		virtual void Summary();
 		std::vector<Lepton> selLeptons  ;
+		std::vector<Lepton> genLeptons  ;
 		std::vector<Lepton> vetoLeptons ;
 		std::vector<Jet> selJets ;
 		std::vector<Jet> Jets15  ;
 		std::vector<Jet> vetoJets ;
 		Int_t nVetoJets;
-
+		
+		Float_t TLHEWeight[254];
 		void SetLeptonVariables();
 		void SetJetVariables();
 		void SetEventVariables();
 
 		void GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> VetoLeptons);
-		void GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut = 30);
+		void GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut = 20);
 		void GetMET();
 
 		Float_t TrigSF;
 		Float_t TrigSF_Up;
 		Float_t TrigSF_Down;
+    		Float_t TrigSFerr;
 		Float_t PUSF;
 		Float_t PUSF_Up;
 		Float_t PUSF_Down;
@@ -47,10 +50,12 @@ class WWAnalysis : public PAFChainItemSelector{
 		Float_t TPtdil;      // Dilepton pT
 		Float_t TMET;      // MET
 		Float_t TMET_Phi;  // MET phi
+		Float_t TgenMET;
 		Float_t TMT2;     // Invariant mass transverse 2
 		Float_t TMT;
 		Float_t TMTprime;
 		Float_t TDeltaPhi;
+		Float_t TDeltaEta;
 
 		Int_t   TNVetoLeps;
 		Int_t   TNSelLeps;
@@ -75,10 +80,12 @@ class WWAnalysis : public PAFChainItemSelector{
 		Int_t   TNJetsJESUp;
 		Int_t   TNJetsJESDown;
 		Int_t   TNJetsJER;
-		Int_t   TNBtagsUp;
-		Int_t   TNBtagsDown;
-		Int_t   TNBtagsMisTagUp;
-		Int_t   TNBtagsMisTagDown;
+    		Int_t   TNVetoJetsJESUp;
+    		Int_t   TNVetoJetsJESDown;
+		Int_t   TNVetoJetsBtagUp;
+		Int_t   TNVetoJetsBtagDown;
+		Int_t   TNVetoJetsMisTagUp;
+		Int_t   TNVetoJetsMisTagDown;
 		Float_t TJetJESUp_Pt[20];
 		Float_t TJetJESDown_Pt[20];
 		Float_t TJetJER_Pt[20];
@@ -92,8 +99,12 @@ class WWAnalysis : public PAFChainItemSelector{
 		Float_t TMT2llJESDown;
 
 
-		Float_t  TWeight_LepEffUp;
-		Float_t  TWeight_LepEffDown;
+ 		Float_t  TWeight_LepEffUp;
+    		Float_t  TWeight_LepEffDown;
+    		Float_t  TWeight_ElecEffUp;
+    		Float_t  TWeight_ElecEffDown;
+    		Float_t  TWeight_MuonEffUp;
+    		Float_t  TWeight_MuonEffDown;
 		Float_t  TWeight_TrigUp;
 		Float_t  TWeight_TrigDown;
 		Float_t  TWeight_FSUp;
@@ -107,6 +118,7 @@ class WWAnalysis : public PAFChainItemSelector{
 		Bool_t  gDoSyst;
 		Int_t   gSelection;
 		TString gSampleName;
+ 		Bool_t  gIsLHE;
 
 		ClassDef(WWAnalysis, 0);
 };

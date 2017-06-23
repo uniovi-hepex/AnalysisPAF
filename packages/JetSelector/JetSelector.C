@@ -44,7 +44,7 @@ void JetSelector::Initialise(){
 
   //---- Select your wp for b-tagging and pt, eta for the jets
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-  
+
   if     (gSelection == iStopSelec || gSelection == iTopSelec || gSelection == ittDMSelec){
     taggerName="CSVv2";
     stringWP = "Medium";
@@ -277,7 +277,7 @@ void JetSelector::InsideLoop(){
       GetDiscJetVariables(i);
       tJ = Jet(tpJ, csv, jetId, flavmc);
       tJ.isBtag = IsBtag(tJ);
-      // Fill the vectors
+      
       if(tJ.id > 0 && Cleaning(tJ, Leptons, minDR)){
         SetSystematics(&tJ);
         tJ.isBtag = IsBtag(tJ);
