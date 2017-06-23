@@ -116,6 +116,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
     //cout << "Will loop on total number of entries: " << nTrueEntries << endl;  
   }
   else{ // Deal with MC samples           Double_t sumnormFromFiles = GetCount(path, dm->GetRealDataFiles(asample));
+    
     G_IsData = false; 
     if(options.Contains("IsData") || options.Contains("isData")) G_IsData = true;
     TString theSample = "";
@@ -130,7 +131,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
       GetCount(Files, G_IsData);
       xsec = uxsec;
       G_Event_Weight = xsec/Count;
-      if(options.Contains("FastSim")) G_IsFastSim = true;
+        if(options.Contains("FastSim")) G_IsFastSim = true;
     }
     else if(sampleName.BeginsWith("Scan:")){ // T2tt sample
       theSample = sampleName.ReplaceAll("Scan:", "");
