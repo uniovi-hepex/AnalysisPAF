@@ -118,7 +118,7 @@ void ttHAnalysis::SetLeptonBranches() {
   fTree->Branch("TPtSubLeading",        &TPtSubLeading,       "TPtSubLeading/F");
   fTree->Branch("TPtSubSubLeading",     &TPtSubSubLeading,    "TPtSubSubLeading/F");
   fTree->Branch("TPtSubSubSubLeading",  &TPtSubSubSubLeading, "TPtSubSubSubLeading/F");
-  fTree->Branch("TPtVector",            TPtVector,            "TPtVector[TnTightLepton]/F");
+  fTree->Branch("TPtVector",            TPtVector,            "TPtVector[nTightLepton]/F");
 }
 
 
