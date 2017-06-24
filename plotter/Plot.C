@@ -433,11 +433,12 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString lineStyle){
     VSignals.at(i)->Draw(lineStyle + ",same");
   }
   VSignals.at(0)->SetMaximum(themax*ScaleMax);
+  if(!doSetLogy) PlotMinimum = PlotMinimum == -999? 0 : PlotMinimum;
   VSignals.at(0)->SetMinimum(PlotMinimum);
   if(doSetLogy){
     PlotMinimum = PlotMinimum == -999? 1e-2 : PlotMinimum;
     PlotMaximum = PlotMaximum == -999? themax*50 : PlotMaximum;
-    signal->SetMaximum(themax*80);
+    signal->SetMaximum(PlotMaximum);
     signal->SetMinimum(PlotMinimum);
     plot->SetLogy();
   }
@@ -564,7 +565,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
     PlotMinimum = PlotMinimum == -999? 0 : PlotMinimum;
     PlotMaximum = PlotMaximum == -999? Max*ScaleMax : PlotMaximum;
     hStack->SetMaximum(Max*ScaleMax);
-    hStack->SetMinimum(PlotMinimum);
+      hStack->SetMinimum(PlotMinimum);
   }
 
   hStack->Draw("hist");

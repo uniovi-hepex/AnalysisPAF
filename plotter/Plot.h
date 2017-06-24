@@ -194,7 +194,7 @@ public:
   TCanvas *SetCanvas();
   TLegend* SetLegend();
   void SetLegendPosition(TString);
-  void SetLegendPosition(float x1, float y1, float x2, float y2){ fLegX1 = x1; fLegY1 = y1; fLegX2 = x2; fLegY2 = y2;}
+  void SetLegendPosition(float x1 = 0.70, float y1 = 0.65, float x2 = 0.93, float y2 = 0.93){ fLegX1 = x1; fLegY1 = y1; fLegX2 = x2; fLegY2 = y2;}
   void SetTexChan(TString cuts); // To be updated
   void SetHRatio(TH1F* h = nullptr); // To be updated
 
