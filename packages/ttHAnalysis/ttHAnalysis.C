@@ -443,10 +443,15 @@ void ttHAnalysis::CalculateWeight() {
   EventWeight_MuonDown  = 1;
   
   if (!gIsData) {
-    Float_t ElecSF = 1; Float_t MuonSF = 1;
+    Float_t ElecSF    = 1; Float_t MuonSF      = 1;
     Float_t ElecSF_Up = 1; Float_t ElecSF_Down = 1;
     Float_t MuonSF_Up = 1; Float_t MuonSF_Down = 1;
+    UInt_t  tmp_limit = 0;
+    
     if (nTightLepton != 0) {
+      if (nTightLepton > 4) tmp_limit = 4;
+      else                  tmp_limit = nTightLepton;
+      
       for (UInt_t i = 0; i < nTightLepton; i++) {
         if (TightLepton.at(i).isMuon) {
           MuonSF      *= TightLepton.at(i).GetSF( 0);
