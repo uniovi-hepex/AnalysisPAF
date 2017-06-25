@@ -46,6 +46,7 @@ class JetSelector : public PAFChainItemSelector{
     Float_t vetoJet_minPt;
     Float_t vetoJet_maxEta;
 
+    Float_t MET_JERUp; 
     Float_t MET_JESUp; 
     Float_t MET_JESDown;
 

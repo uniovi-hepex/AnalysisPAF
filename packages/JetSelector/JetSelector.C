@@ -438,12 +438,15 @@ void JetSelector::InsideLoop(){
   // Propagate JES to MET
   Float_t met_pt  = Get<Float_t>("met_pt");
   Float_t met_phi = Get<Float_t>("met_phi");
+  MET_JERUp   = met_pt;
   MET_JESUp   = met_pt;
   MET_JESDown = met_pt;
   if(nSelJets > 0){
+    MET_JERUp   = JERtoMET(selJets, met_pt, met_phi);
     MET_JESUp   = JEStoMET(selJets, met_pt, met_phi,  1);
     MET_JESDown = JEStoMET(selJets, met_pt, met_phi, -1);
   }
+  SetParam("MET_JERUp",   MET_JERUp);
   SetParam("MET_JESUp",   MET_JESUp);
   SetParam("MET_JESDown", MET_JESDown);
 
