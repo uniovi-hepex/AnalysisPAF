@@ -36,11 +36,9 @@ TString NoFake   = Form("TChannel == %i || TChannel == %i", i2lss, iTriLep);
 void DrawPlots(TString cutName){
   
   TString username(gSystem->GetUserInfo(gSystem->GetUid())->fUser);
-  if(username=="vischia") pathToTree ="/pool/ciencias/userstorage/pietro/tttt/2l_skim_wmt2/tttt_temp/";
+  if(username=="vischia") pathToTree ="/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/jun15/";
   else pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/jun15/";
 
-   pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/jun15/";
-  
   TString cut;
   if     (cutName == "CRW" ) cut = CRW ;
   else if(cutName == "CRZ" ) cut = CRZ ;
@@ -103,7 +101,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 	p->AddSample("MuonEG, DoubleEG, DoubleMuon",     "Nonprompt", itBkg, kGray, "0", "FakeLep");
 	// Fake subs 
 //  p->AddSample("WZTo3LNu, WWTo2L2Nu,WpWpJJ,WWTo2L2Nu_DoubleScat,TGJets", "Nonprompt", itBkg, kGray, "0", "FakeLepsubs");
-  p->AddSample("WZTo3LNu, WWTo2L2Nu,WpWpJJ,WWTo2L2Nu_DoubleScat, WWW, WWZ, WZZ, ZZZ, ZZTo4L, VHToNonbb_amcatnlo,TTZToLLNuNu, TTZToLL_M1to10, TTHNonbb, tZq_ll,TTWToLNu", "Nonprompt", itBkg, kGray, "0", "FakesubsLeo");
+        p->AddSample("WZTo3LNu, WWTo2L2Nu,WpWpJJ,WWTo2L2Nu_DoubleScat, WWW, WWZ, WZZ, ZZZ, ZZTo4L, VHToNonbb_amcatnlo,TTZToLLNuNu, TTZToLL_M1to10, TTHNonbb, tZq_ll,TTWToLNu", "Nonprompt", itBkg, kGray, "0", "FakesubsLep");
   //p->AddSample("WZTo3LNu, WWTo2L2Nu,WpWpJJ,WWTo2L2Nu_DoubleScat,TGJets,TTGJets, WGToLNuG, ZGTo2LG,WWW, WWZ, WZZ, ZZZ, ZZTo4L, VHToNonbb_amcatnlo,TTZToLLNuNu, TTZToLL_M1to10, TTHNonbb, tZq_ll,TTWToLNu", "Nonprompt", itBkg, kGray, "0", "Fakesubs");
 
   // Charge misID
