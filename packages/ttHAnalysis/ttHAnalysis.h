@@ -28,7 +28,7 @@ class ttHAnalysis : public PAFChainItemSelector {
     ////////////////////////////////////////////////////////////////////////
     // Constructor and destructor
     ttHAnalysis();
-    virtual ~ttHAnalysis() {}
+    virtual ~ttHAnalysis() {delete Lep3l4lSF;}
 
     // Core PAF-analysis methods
     virtual void Initialise();
