@@ -90,6 +90,7 @@ class Looper{
    Bool_t doISRweight = false;
    Int_t numberInstance;
    void SetSampleName(TString t){sampleName   = t;}
+   void SetHeppySampleName(TString t){HeppySampleName   = t;}
 	 void SetTreeName(  TString t){treeName     = t;}
 	 void SetPath(      TString t){path         = t;}
 
@@ -130,6 +131,7 @@ class Looper{
    TString cut; TString chan; TString var;
    TString options = "";
    TString sampleName;
+   TString HeppySampleName;
 
    TH2F* hWeights;
 
@@ -159,6 +161,21 @@ class Looper{
 // GET ALL FILES IN PATH
 vector<TString> GetAllFiles(TString path, TString  filename) {
   vector<TString> theFiles;
+  if(filename.Contains("&")){
+    filename.ReplaceAll(" ", "");
+    TString partial;
+    vector<TString> a;
+    while(filename.Contains("&")){
+      a.clear();
+      partial =  filename(0, filename.First("&"));
+      a = GetAllFiles(path, partial);
+      theFiles.insert(theFiles.end(), a.begin(), a.end());
+      filename = filename(filename.First("&")+1, filename.Sizeof());
+    } 
+    a = GetAllFiles(path, filename);
+    theFiles.insert(theFiles.end(), a.begin(), a.end());
+    return theFiles;
+  }
 
   TString command("ls ");
   if(filename != "")

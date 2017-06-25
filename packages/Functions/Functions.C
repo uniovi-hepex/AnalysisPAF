@@ -123,6 +123,21 @@ Float_t JEStoMET(vector<Jet> vjets, Float_t met, Float_t met_phi, Int_t dir){
   return (vmet+nomJets-varJets).Pt();
 }
 
+Float_t JERtoMET(vector<Jet> vjets, Float_t met, Float_t met_phi){
+  TLorentzVector vmet    = TLorentzVector();
+  vmet.SetPtEtaPhiM(met, 0, met_phi, 0);
+  TLorentzVector nomJets = TLorentzVector(0,0,0,0);
+  TLorentzVector varJets = TLorentzVector(0,0,0,0);
+  TLorentzVector temp = TLorentzVector(0,0,0,0);
+
+  for(Int_t i = 0; i < (Int_t) vjets.size(); i++){
+    nomJets += vjets.at(i).p;
+    temp.SetPtEtaPhiM(vjets[i].pTJERUp,   vjets[i].p.Eta(), vjets[i].p.Phi(), vjets[i].p.M());
+    varJets += temp;
+  }
+  return (vmet+nomJets-varJets).Pt();
+}
+
 Float_t getJERscale(Float_t jet_eta, Int_t dir = 0){
   // SFs for 80DX https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetResolution#JER_Uncertainty
   Float_t eta = TMath::Abs(jet_eta);

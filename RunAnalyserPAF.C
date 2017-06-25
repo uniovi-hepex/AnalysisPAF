@@ -52,6 +52,7 @@ Float_t NormISRweights;
 Bool_t verbose = true;
 Bool_t nukeIt = true;
 const Int_t nLHEWeight = 248;
+Bool_t G_IsFastSim = false;
 //
 //=============================================================================
 
@@ -107,7 +108,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   Bool_t  G_IsData        = false;       
   Bool_t  G_IsMCatNLO     = false;
   Bool_t  G_DoSystematics = false;
-  Bool_t  G_IsFastSim     = false;
+  G_IsFastSim     = false;
 
   // Selection
   ESelector sel = iStopSelec;
@@ -222,6 +223,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
         if(uxsec != 1) xsec    = uxsec;
       }
       GetCount(Files);
+      if(options.Contains("ISR") || options.Contains("isr")) NormISRweights = GetISRweight(stopMass, lspMass);
       if(IsMCatNLO(sampleName)){
         G_IsMCatNLO = true;
         if(verbose) cout << " >>> This is an aMCatNLO sample!!" << endl;
@@ -311,9 +313,11 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   myProject = new PAFProject(pafmode); 
   
   // Add TMVA library for TMVA Analysis
-  TString tmvalibpath = gSystem->Getenv("ROOTSYS");
-  tmvalibpath += "lib/libTMVA.so";
-  myProject->AddLibrary(tmvalibpath);
+  if(sel == ittDMSelec){
+    TString tmvalibpath = gSystem->Getenv("ROOTSYS");
+    tmvalibpath += "lib/libTMVA.so";
+    myProject->AddLibrary(tmvalibpath);
+  }
   
   // Add the input data files
   myProject->AddDataFiles(Files); 
@@ -463,9 +467,15 @@ Float_t GetISRweight(Int_t mStop, Int_t mLsp){
     f = TFile::Open(Files.at(k));
     f -> GetObject("tree", t);
     TString strweight = "((nISRJet30==0) + (nISRJet30==1)*0.920 + (nISRJet30==2)*0.821 + (nISRJet30==3)*0.715 + (nISRJet30==4)*0.652 + (nISRJet30==5)*0.561 + (nISRJet30>5)*0.511)";
-    TString strpoint  = Form("(GenSusyMStop == %i && GenSusyMNeutralino == %i)", Int_t(mStop), Int_t(mLsp));
     hcount = new TH1F("hcount", "hcount", 1, 0, 2); 
-    t->Project("hcount", "1", strweight + "*" + strpoint);
+    if(G_IsFastSim){ 
+      TString strpoint  = Form("(GenSusyMStop == %i && GenSusyMNeutralino == %i)", Int_t(mStop), Int_t(mLsp));
+      t->Project("hcount", "1", strweight + "*" + strpoint);
+    }
+    else {
+      t->Project("hcount", "1", strweight);
+    }
+
 
     nEntries = hcount->GetEntries();
     nWeightedEntries = hcount->GetBinContent(1);

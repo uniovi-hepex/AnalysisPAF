@@ -51,6 +51,7 @@ vector<Jet>       SortJetsByPt(vector<Jet>   & Jets);
 
 Bool_t Cleaning(Jet j, vector<Lepton> vLep, Float_t minDR);
 Float_t JEStoMET(vector<Jet> vjets, Float_t met, Float_t met_phi, Int_t dir = 0);
+Float_t JERtoMET(vector<Jet> vjets, Float_t met, Float_t met_phi);
 Float_t getJetJERpt(Jet jet, Float_t rho);
 Float_t p2(Float_t x);
 Jet GetMatchedJet(Jet origJet, std::vector<Jet> jetCollection, Float_t etaRange = 0.3, Float_t ptRange = 10000);
