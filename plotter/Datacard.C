@@ -25,6 +25,15 @@ Datacard::Datacard(TString sigName, vector<TString> bkgNames, vector<TString> nu
   InitialiseParams();      
 }
 
+void Datacard::SetParams(){
+  if(rate) delete rate;
+  if(normUnc) delete normUnc;
+  if(doLumi) delete doLumi;
+  if(doNuis) delete doNuis;
+  if(isShape) delete isShape;
+  InitialiseParams();
+}
+
 // Initialise all params from a datacard
 void Datacard::InitialiseParams(){
   nProcesses = processes.size();
@@ -34,6 +43,7 @@ void Datacard::InitialiseParams(){
   doLumi  = new Bool_t[nProcesses];
   doStat  = new Bool_t[nProcesses];
   doNuis  = new Float_t*[nNuisances];
+  isShape = new Bool_t[nNuisances];
   for(Int_t i = 0; i < nProcesses; i++){
     rate[i] = 0;
     normUnc[i] = 1;
@@ -42,6 +52,7 @@ void Datacard::InitialiseParams(){
   }
   for(Int_t i = 0; i < nNuisances; i++)  {
     doNuis[i] = new Float_t[nProcesses];
+    isShape[i] = true;
     for(Int_t j = 0; j < nProcesses; j++) doNuis[i][j] = 1;
   }
   dataRate = 0;
@@ -63,6 +74,7 @@ void Datacard::GetParamsFormFile(TString options){
 
   // Getting rates
   for(Int_t i = 0; i < nProcesses; i++){
+   if(! !f->GetListOfKeys()->Contains(processes.at(i)) ) continue;
     f->GetObject(processes.at(i), h); 
     rate[i] = h->Integral();
     //h->SetDirectory();
@@ -83,10 +95,12 @@ void Datacard::GetParamsFormFile(TString options){
 }
 
 void Datacard::SetStatDatacard(Bool_t activate){
+  // Activate all stat unc for all bkgs
   for(Int_t i = 0; i < nProcesses; i++) doStat[i] = activate;
 }
 
 void Datacard::SetStatProcess(TString p, Float_t activate){
+  // Activate the stat unc for a single process
   TString process = "";
   for(Int_t i = 0; i < nProcesses; i++){
     process = processes.at(i);
@@ -99,6 +113,7 @@ void Datacard::SetStatProcess(TString p, Float_t activate){
 }
 
 void Datacard::SetNuisanceProcess(TString p, TString nuisname, Float_t activate){
+  // Activate a nuisance for a process
   TString process; TString sys;
   for(Int_t i = 0; i < nProcesses; i++){
     process = processes.at(i);
@@ -115,6 +130,7 @@ void Datacard::SetNuisanceProcess(TString p, TString nuisname, Float_t activate)
 }
 
 void Datacard::SetNuisancesToProcess(TString p, TString nuisance, Float_t val){
+  // Activate a nuisace ONLY for ONE process, deativate for other processes
   if(nuisance.Contains(",")){
     nuisance.ReplaceAll(" ", "");
     TString first = nuisance(0, nuisance.First(","));
@@ -138,7 +154,19 @@ void Datacard::SetNuisancesToProcess(TString p, TString nuisance, Float_t val){
   cout << "[Datacard::SetNuisancesToProcess] Warning: process " << p << "or nuisance name " << nuisance << " not found\n";
 }
 
+void Datacard::SetNuisancesToAllProcesses(TString nuisance, Float_t val){
+  TString sys;
+  for(Int_t j = 0; j < nNuisances; j++){
+    sys = nuisName.at(j);
+    if(sys == nuisance){
+      for(Int_t i = 0; i < nProcesses; i++) doNuis[j][i] = val;
+      return;
+    }
+  }
+}
+
 void Datacard::SetRateProcess(TString p, Float_t v){
+  // Change the rate for a given process
   if(p.CountChar(',')+1 == nProcesses){
     TString num;
     for(Int_t i = 0; i < nProcesses-1; i++){
@@ -162,6 +190,7 @@ void Datacard::SetRateProcess(TString p, Float_t v){
 }
 
 void Datacard::SetNormUnc(TString p, Float_t v){
+  // Set the norm uncertainty for a given process
   if(p.CountChar(',')+1 == nProcesses){
     TString num;
     p.ReplaceAll(" ", "");
@@ -313,7 +342,8 @@ TextDatacard::TextDatacard(Datacard *datacard){
   }
 
   for(Int_t i = 0; i < nNuisances; i++){
-    systUnc[i].SetTitle(datacard->GetNuisName(i) + " shape");
+    if  (datacard->IsShape(i)) systUnc[i].SetTitle(datacard->GetNuisName(i) + " shape");
+    else                       systUnc[i].SetTitle(datacard->GetNuisName(i) + " lnN");
     systUnc[i].SetElementsFromArray(datacard->GetDoNuis(i));
   }
 }
