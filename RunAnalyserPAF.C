@@ -511,19 +511,23 @@ Double_t GetStopXSec(Int_t StopMass){
   else if (StopMass == 875) return 0.015625;
   else if (StopMass == 900) return 0.0128895;
   else if (StopMass == 925) return 0.0106631;
-	else if (StopMass == 950) return 0.00883465;
-	else if (StopMass == 975) return 0.00735655;
-	else{ 
-		cout << Form(" >>> No Cross Section for that mass!! (mStop = %i) Extrapolating...\n", StopMass);
-		Float_t v0 = GetStopXSec(StopMass - StopMass%25);
-		Float_t vf = GetStopXSec(StopMass - StopMass%25 + 25);
-		Float_t x  = float(StopMass%25)/25;
-		return v0 + (vf-v0)*x;
-	}
+  else if (StopMass == 950) return 0.00883465;
+  else if (StopMass == 975) return 0.00735655;
+  else{ 
+    PAF_WARN("GetStopXSec", 
+	     Form("No Cross Section for that mass!! (mStop = %i) Extrapolating...", StopMass));
+    Float_t v0 = GetStopXSec(StopMass - StopMass%25);
+    Float_t vf = GetStopXSec(StopMass - StopMass%25 + 25);
+    Float_t x  = float(StopMass%25)/25;
+    return v0 + (vf-v0)*x;
+  }
 }
 
 vector<TString> GetAllFiles(TString path, TString  filename) {
-  if(verbose) cout << "[GetAllFiles] Obtaining files of form " << filename << " in folder " << path << endl;  
+  if(verbose) 
+    PAF_DEBUG("GetAllFiles", Form("Obtaining files of form %s in folder %s", 
+				  filename.Data(), path.Data()));
+
   vector<TString> theFiles;
 
   TString command("ls ");
@@ -539,14 +543,14 @@ vector<TString> GetAllFiles(TString path, TString  filename) {
   else command += path;
 
   command += " 2> /dev/null";
-  if(verbose) cout << "[GetAllFiles] Executing command: " << command << endl;
+  if(verbose) PAF_DEBUG("GetAllFiles", Form("Executing command: %s", command.Data()));
 
   //We cannot use GetFromPipe because it is too verbose, so we implement
   //the full code
   //    TString result=gSystem->GetFromPipe(command);
   TString result;
   FILE *pipe = gSystem->OpenPipe(command, "r");
-  if (!pipe) cerr << "ERROR: in GetAllFiles. Cannot run command \"" << command << "\"" << endl;
+  if (!pipe) PAF_ERROR("GetAllFiles", Form("Cannot run command \"%s\"", command.Data()));
   else {
     TString line;
     while (line.Gets(pipe)) {
@@ -558,7 +562,8 @@ vector<TString> GetAllFiles(TString path, TString  filename) {
   
   if (result != "" ) {
     TObjArray* filesfound = result.Tokenize(TString('\n'));
-    if (!filesfound) cerr << "ERROR: in GetAllFiles. Could not parse output while finding files" << endl;
+    if (!filesfound) 
+      PAF_ERROR("GetAllFiles","Could not parse output while finding files");
     else {
       for (int i = 0; i < filesfound->GetEntries(); i++) theFiles.push_back(filesfound->At(i)->GetName());
       filesfound->Clear();
@@ -566,7 +571,8 @@ vector<TString> GetAllFiles(TString path, TString  filename) {
     }
   }
 
-  if (theFiles.size() == 0) cerr << "ERROR: in GetAllFiles. Could not find data!" << endl;
+  if (theFiles.size() == 0) 
+    PAF_ERROR("GetAllFiles", "Could not find data!");
   return theFiles;
 }
 
