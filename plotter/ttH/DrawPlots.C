@@ -41,7 +41,7 @@ void DrawPlots(TString chan = "ElMu", TString tag = "0"){
   else if (chan == "3l")  cut = "(TCat == 3)";
   else if (chan == "4l")  cut = "(TCat == 4)";
   
-  DrawPlot("TCat",                cut, chan, 1, 2, 5,       "Category",         "Categories", tag); // This one is only for getting yields and for the Datacard.
+  DrawPlot("TCat",                cut, chan, 3, 2, 5,       "Category",         "Categories", tag); // This one is only for getting yields and for the Datacard.
   DrawPlot("TCat",                cut, chan, 1, 2, 5,       "Category",         "Categories", tag); // This one is only for obtaining the xsection.
   DrawPlot("TnTightLepton",       cut, chan, 6, -0.5, 5.5,  "nTightLep (#)",    "nTightLepton", tag);
   DrawPlot("TnFakeableLepton",    cut, chan, 6, -0.5, 5.5,  "nFakeLep (#)",     "nFakeLepton", tag);
@@ -180,8 +180,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   if (counter < 2) {                                                               // FOR YIELDS, XSEC & DATACARDS
     for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {   // ttW
       p->AddSample(TTWmc[isample], "ttW", itBkg, kGreen-5);
-      p->AddSample(TTWmc[isample], "ttW", itSys, 1, "ScaleUp");
-      p->AddSample(TTWmc[isample], "ttW", itSys, 1, "ScaleDown");
+      //p->AddSample(TTWmc[isample], "ttW", itSys, 1, "ScaleUp");
+      //p->AddSample(TTWmc[isample], "ttW", itSys, 1, "ScaleDown");
       if (counter != 1) {
     	  p->AddSample(TTWmc[isample], "ttW", itSys, 1, "NormttWUp");
     	  p->AddSample(TTWmc[isample], "ttW", itSys, 1, "NormttWDown");
@@ -191,16 +191,16 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
       p->ScaleSys("ttW_NormttWUp",    1.12);
       p->ScaleSys("ttW_NormttWDown",  0.88);
     }
-    p->AddSample("TTWToLNu",    "ttW", itSys, 1, "pdfUp", "HeppySampleName: TTWToLNu_ext1 & TTWToLNu_ext2");
+    /*p->AddSample("TTWToLNu",    "ttW", itSys, 1, "pdfUp", "HeppySampleName: TTWToLNu_ext1 & TTWToLNu_ext2");
     p->AddSample("TTWToQQ",     "ttW", itSys, 1, "pdfUp");
     p->AddSample("TTWToLNu",    "ttW", itSys, 1, "pdfDown", "HeppySampleName: TTWToLNu_ext1 & TTWToLNu_ext2");
-    p->AddSample("TTWToQQ",     "ttW", itSys, 1, "pdfDown");
+    p->AddSample("TTWToQQ",     "ttW", itSys, 1, "pdfDown");*/
     
     
     for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {   // ttZ
       p->AddSample(TTZmc[isample], "ttZ", itBkg, kSpring+2);
-      p->AddSample(TTZmc[isample], "ttZ", itSys, 1, "ScaleUp");
-      p->AddSample(TTZmc[isample], "ttZ", itSys, 1, "ScaleDown");
+      //p->AddSample(TTZmc[isample], "ttZ", itSys, 1, "ScaleUp");
+      //p->AddSample(TTZmc[isample], "ttZ", itSys, 1, "ScaleDown");
       if (counter != 1) {
         p->AddSample(TTZmc[isample], "ttZ", itSys, 1, "NormttZUp");
         p->AddSample(TTZmc[isample], "ttZ", itSys, 1, "NormttZDown");
@@ -210,10 +210,10 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
       p->ScaleSys("ttZ_NormttZUp",    1.10);
       p->ScaleSys("ttZ_NormttZDown",  0.90);
     }
-    p->AddSample("TTZToLLNuNu", "ttZ", itSys, 1, "pdfUp", "HeppySampleName: TTZToLLNuNu_ext1 & TTZToLLNuNu_ext2");
+    /*p->AddSample("TTZToLLNuNu", "ttZ", itSys, 1, "pdfUp", "HeppySampleName: TTZToLLNuNu_ext1 & TTZToLLNuNu_ext2");
     p->AddSample("TTZToQQ",     "ttZ", itSys, 1, "pdfUp");
     p->AddSample("TTZToLLNuNu", "ttZ", itSys, 1, "pdfDown", "HeppySampleName: TTZToLLNuNu_ext1 & TTZToLLNuNu_ext2");
-    p->AddSample("TTZToQQ",     "ttZ", itSys, 1, "pdfDown");
+    p->AddSample("TTZToQQ",     "ttZ", itSys, 1, "pdfDown");*/
     
     
     for (UInt_t isample = 0; isample < sizeof(WZmc)/sizeof(*WZmc); isample++) {   // WZ
@@ -275,8 +275,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     
     for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
 	    p->AddSample(Signalmc[isample], "ttH", itSignal, kRed);
-      p->AddSample(Signalmc[isample], "ttH", itSys, 1, "ScaleUp");
-      p->AddSample(Signalmc[isample], "ttH", itSys, 1, "ScaleDown");
+      //p->AddSample(Signalmc[isample], "ttH", itSys, 1, "ScaleUp");
+      //p->AddSample(Signalmc[isample], "ttH", itSys, 1, "ScaleDown");
       if (counter != 1) {
         p->AddSample(Signalmc[isample], "ttH", itSys, 1, "NormttHUp");
         p->AddSample(Signalmc[isample], "ttH", itSys, 1, "NormttHDown");
@@ -286,8 +286,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
       p->ScaleSys("ttH_NormttHUp", 1.058);
       p->ScaleSys("ttH_NormttHDown", 0.902);
     }
-    p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfUp");
-    p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfDown");
+    //p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfUp");
+    //p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfDown");
   }
   else {
     if (var != "TPtVector") {
@@ -369,8 +369,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     //const TString BkgsNorm  = "1.12,  1.10,   1.3,  1.3,    1.3,    1.3,   1.098";
     const TString BkgsNorm  = "1.12,  1.10,   1.3,  1.3,    1.3,    1.3,   1";
     //const TString Sys       = "Trig, PU, MuonEff, ElecEff, JES, Scale, pdf";
-    const TString Sys       = "Trig, PU, MuonEff, ElecEff, JES, Scale, pdf, NormttH";
-    //const TString Sys       = "Trig, PU, MuonEff, ElecEff, JES";
+    //const TString Sys       = "Trig, PU, MuonEff, ElecEff, JES, Scale, pdf, NormttH";
+    const TString Sys       = "Trig, PU, MuonEff, ElecEff, JES, NormttH";
     Datacard *d = new Datacard("ttH",Bkgs,Sys,chan);
     
     d->SetPathToFile(outputpath);
@@ -395,8 +395,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     x->SetUnc("Rares",  0.30);
     
     x->SetEfficiencySyst("Trig, PU, MuonEff, ElecEff, JES");
-    x->SetAcceptanceSyst("stat, Scale, pdf");
-    //x->SetAcceptanceSyst("stat");
+    //x->SetAcceptanceSyst("stat, Scale, pdf");
+    x->SetAcceptanceSyst("stat");
     
     x->SetOutputFolder(outputpath);
     x->SetXsecTableName("Xsec_"+chan+"_"+tag);
