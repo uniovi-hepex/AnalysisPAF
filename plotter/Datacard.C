@@ -74,7 +74,7 @@ void Datacard::GetParamsFormFile(TString options){
 
   // Getting rates
   for(Int_t i = 0; i < nProcesses; i++){
-   if(! !f->GetListOfKeys()->Contains(processes.at(i)) ) continue;
+   if(!f->GetListOfKeys()->Contains(processes.at(i)) ) continue;
     f->GetObject(processes.at(i), h); 
     rate[i] = h->Integral();
     //h->SetDirectory();
