@@ -42,6 +42,7 @@ void DrawPlots(TString chan = "ElMu", TString tag = "0"){
   else if (chan == "4l")  cut = "(TCat == 4)";
   
   DrawPlot("TCat",                cut, chan, 1, 2, 5,       "Category",         "Categories", tag); // This one is only for getting yields and for the Datacard.
+  DrawPlot("TCat",                cut, chan, 1, 2, 5,       "Category",         "Categories", tag); // This one is only for obtaining the xsection.
   DrawPlot("TnTightLepton",       cut, chan, 6, -0.5, 5.5,  "nTightLep (#)",    "nTightLepton", tag);
   DrawPlot("TnFakeableLepton",    cut, chan, 6, -0.5, 5.5,  "nFakeLep (#)",     "nFakeLepton", tag);
   DrawPlot("TnLooseLepton",       cut, chan, 6, -0.5, 5.5,  "nLooseLep (#)",    "nLooseLepton", tag);
@@ -176,92 +177,120 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   
     
   // Samples import ============================================================
-  if (var != "TPtVector") {
-    if (counter == 0) {                                                               // FOR YIELDS, XSEC & DATACARDS
-      for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {   // ttW
-        p->AddSample(TTWmc[isample], "ttW", itBkg, kGreen-5);
-        p->AddSample(TTWmc[isample], "ttW", itSys, 1, "ScaleUp");
-        p->AddSample(TTWmc[isample], "ttW", itSys, 1, "ScaleDown");
+  if (counter < 2) {                                                               // FOR YIELDS, XSEC & DATACARDS
+    for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {   // ttW
+      p->AddSample(TTWmc[isample], "ttW", itBkg, kGreen-5);
+      p->AddSample(TTWmc[isample], "ttW", itSys, 1, "ScaleUp");
+      p->AddSample(TTWmc[isample], "ttW", itSys, 1, "ScaleDown");
+      if (counter != 1) {
     	  p->AddSample(TTWmc[isample], "ttW", itSys, 1, "NormttWUp");
     	  p->AddSample(TTWmc[isample], "ttW", itSys, 1, "NormttWDown");
       }
+    }
+    if (counter != 1) {
       p->ScaleSys("ttW_NormttWUp",    1.12);
       p->ScaleSys("ttW_NormttWDown",  0.88);
-      p->AddSample("TTWToLNu",    "ttW", itSys, 1, "pdfUp", "HeppySampleName: TTWToLNu_ext1 & TTWToLNu_ext2");
-      p->AddSample("TTWToQQ",     "ttW", itSys, 1, "pdfUp");
-      p->AddSample("TTWToLNu",    "ttW", itSys, 1, "pdfDown", "HeppySampleName: TTWToLNu_ext1 & TTWToLNu_ext2");
-      p->AddSample("TTWToQQ",     "ttW", itSys, 1, "pdfDown");
-      
-      
-      for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {   // ttZ
-        p->AddSample(TTZmc[isample], "ttZ", itBkg, kSpring+2);
-        p->AddSample(TTZmc[isample], "ttZ", itSys, 1, "ScaleUp");
-        p->AddSample(TTZmc[isample], "ttZ", itSys, 1, "ScaleDown");
+    }
+    p->AddSample("TTWToLNu",    "ttW", itSys, 1, "pdfUp", "HeppySampleName: TTWToLNu_ext1 & TTWToLNu_ext2");
+    p->AddSample("TTWToQQ",     "ttW", itSys, 1, "pdfUp");
+    p->AddSample("TTWToLNu",    "ttW", itSys, 1, "pdfDown", "HeppySampleName: TTWToLNu_ext1 & TTWToLNu_ext2");
+    p->AddSample("TTWToQQ",     "ttW", itSys, 1, "pdfDown");
+    
+    
+    for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {   // ttZ
+      p->AddSample(TTZmc[isample], "ttZ", itBkg, kSpring+2);
+      p->AddSample(TTZmc[isample], "ttZ", itSys, 1, "ScaleUp");
+      p->AddSample(TTZmc[isample], "ttZ", itSys, 1, "ScaleDown");
+      if (counter != 1) {
         p->AddSample(TTZmc[isample], "ttZ", itSys, 1, "NormttZUp");
         p->AddSample(TTZmc[isample], "ttZ", itSys, 1, "NormttZDown");
       }
+    }
+    if (counter != 1) {
       p->ScaleSys("ttZ_NormttZUp",    1.10);
       p->ScaleSys("ttZ_NormttZDown",  0.90);
-      p->AddSample("TTZToLLNuNu", "ttZ", itSys, 1, "pdfUp", "HeppySampleName: TTZToLLNuNu_ext1 & TTZToLLNuNu_ext2");
-      p->AddSample("TTZToQQ",     "ttZ", itSys, 1, "pdfUp");
-      p->AddSample("TTZToLLNuNu", "ttZ", itSys, 1, "pdfDown", "HeppySampleName: TTZToLLNuNu_ext1 & TTZToLLNuNu_ext2");
-      p->AddSample("TTZToQQ",     "ttZ", itSys, 1, "pdfDown");
-      
-      
-      for (UInt_t isample = 0; isample < sizeof(WZmc)/sizeof(*WZmc); isample++) {   // WZ
-        p->AddSample(WZmc[isample], "WZ", itBkg, kViolet+10);
+    }
+    p->AddSample("TTZToLLNuNu", "ttZ", itSys, 1, "pdfUp", "HeppySampleName: TTZToLLNuNu_ext1 & TTZToLLNuNu_ext2");
+    p->AddSample("TTZToQQ",     "ttZ", itSys, 1, "pdfUp");
+    p->AddSample("TTZToLLNuNu", "ttZ", itSys, 1, "pdfDown", "HeppySampleName: TTZToLLNuNu_ext1 & TTZToLLNuNu_ext2");
+    p->AddSample("TTZToQQ",     "ttZ", itSys, 1, "pdfDown");
+    
+    
+    for (UInt_t isample = 0; isample < sizeof(WZmc)/sizeof(*WZmc); isample++) {   // WZ
+      p->AddSample(WZmc[isample], "WZ", itBkg, kViolet+10);
+      if (counter != 1) {
         p->AddSample(WZmc[isample], "WZ", itSys, 1, "NormWZUp");
         p->AddSample(WZmc[isample], "WZ", itSys, 1, "NormWZDown");
       }
+    }
+    if (counter != 1) {
       p->ScaleSys("WZ_NormWZUp",    1.30);
       p->ScaleSys("WZ_NormWZDown",  0.70);
-      
-      
-      for (UInt_t isample = 0; isample < sizeof(Convsmc)/sizeof(*Convsmc); isample++) {
-    	  p->AddSample(Convsmc[isample], "Convs", itBkg, kYellow);
+    }
+    
+    
+    for (UInt_t isample = 0; isample < sizeof(Convsmc)/sizeof(*Convsmc); isample++) {
+  	  p->AddSample(Convsmc[isample], "Convs", itBkg, kYellow);
+      if (counter != 1) {
         p->AddSample(Convsmc[isample], "Convs", itSys, 1, "NormConvsUp");
         p->AddSample(Convsmc[isample], "Convs", itSys, 1, "NormConvsDown");
       }
+    }
+    if (counter != 1) {
       p->ScaleSys("Convs_NormConvsUp",    1.30);
       p->ScaleSys("Convs_NormConvsDown",  0.70);
-      
-      
-      for (UInt_t isample = 0; isample < sizeof(Fakesmc)/sizeof(*Fakesmc); isample++) {
-    	  p->AddSample(Fakesmc[isample], "Fakes", itBkg, kOrange-7);
+    }
+    
+    
+    for (UInt_t isample = 0; isample < sizeof(Fakesmc)/sizeof(*Fakesmc); isample++) {
+  	  p->AddSample(Fakesmc[isample], "Fakes", itBkg, kOrange-7);
+      if (counter != 1) {
         p->AddSample(Fakesmc[isample], "Fakes", itSys, 1, "NormFakesUp");
         p->AddSample(Fakesmc[isample], "Fakes", itSys, 1, "NormFakesDown");
       }
+    }
+    if (counter != 1) {
       p->ScaleSys("Fakes_NormFakesUp",    1.30);
       p->ScaleSys("Fakes_NormFakesDown",  0.70);
-      
-      
-      for (UInt_t isample = 0; isample < sizeof(Raresmc)/sizeof(*Raresmc); isample++) {
-    	  p->AddSample(Raresmc[isample], "Rares", itBkg, kAzure-9);
+    }
+    
+    
+    for (UInt_t isample = 0; isample < sizeof(Raresmc)/sizeof(*Raresmc); isample++) {
+  	  p->AddSample(Raresmc[isample], "Rares", itBkg, kAzure-9);
+      if (counter != 1) {
         p->AddSample(Raresmc[isample], "Rares", itSys, 1, "NormRaresUp");
         p->AddSample(Raresmc[isample], "Rares", itSys, 1, "NormRaresDown");
       }
+    }
+    if (counter != 1) {
       p->ScaleSys("Rares_NormRaresUp",    1.30);
       p->ScaleSys("Rares_NormRaresDown",  0.70);
-      
-      
-      for (UInt_t isample = 0; isample < sizeof(Data)/sizeof(*Data); isample++) {
-    	  p->AddSample(Data[isample], "Data", itData, kBlack);
-      }
-      
-      
-      for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
-  	    p->AddSample(Signalmc[isample], "ttH", itSignal, kRed);
-        p->AddSample(Signalmc[isample], "ttH", itSys, 1, "ScaleUp");
-        p->AddSample(Signalmc[isample], "ttH", itSys, 1, "ScaleDown");
+    }
+    
+    
+    for (UInt_t isample = 0; isample < sizeof(Data)/sizeof(*Data); isample++) {
+  	  p->AddSample(Data[isample], "Data", itData, kBlack);
+    }
+    
+    
+    for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
+	    p->AddSample(Signalmc[isample], "ttH", itSignal, kRed);
+      p->AddSample(Signalmc[isample], "ttH", itSys, 1, "ScaleUp");
+      p->AddSample(Signalmc[isample], "ttH", itSys, 1, "ScaleDown");
+      if (counter != 1) {
         p->AddSample(Signalmc[isample], "ttH", itSys, 1, "NormttHUp");
         p->AddSample(Signalmc[isample], "ttH", itSys, 1, "NormttHDown");
       }
+    }
+    if (counter != 1) {
       p->ScaleSys("ttH_NormttHUp", 1.058);
       p->ScaleSys("ttH_NormttHDown", 0.902);
-      p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfUp");
-      p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfDown");
     }
-    else {
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfUp");
+    p->AddSample(Signalmc[0], "ttH", itSys, 1, "pdfDown");
+  }
+  else {
+    if (var != "TPtVector") {
       for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
         p->AddSample(TTWmc[isample], "t#bar{t}W", itBkg, kGreen-5);
       }
@@ -287,31 +316,31 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
         p->AddSample(Signalmc[isample], "t#bar{t}H", itBkg, kRed);
       }
     }
-  }
-  else {
-    for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
-      p->AddSample(TTWmc[isample], "t#bar{t}W", itBkg, kGreen-5, "0", "AllInstances");
-    }
-    for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
-  	  p->AddSample(TTZmc[isample], "t#bar{t}Z", itBkg, kSpring+2, "0", "AllInstances");
-    }    
-    for (UInt_t isample = 0; isample < sizeof(WZmc)/sizeof(*WZmc); isample++) {
-  	  p->AddSample(WZmc[isample], "WZ", itBkg, kViolet+10, "0", "AllInstances");
-    }
-    for (UInt_t isample = 0; isample < sizeof(Convsmc)/sizeof(*Convsmc); isample++) {
-  	  p->AddSample(Convsmc[isample], "Convs", itBkg, kYellow, "0", "AllInstances");
-    }
-    for (UInt_t isample = 0; isample < sizeof(Fakesmc)/sizeof(*Fakesmc); isample++) {
-  	  p->AddSample(Fakesmc[isample], "Fakes", itBkg, kOrange-7, "0", "AllInstances");
-    }
-    for (UInt_t isample = 0; isample < sizeof(Raresmc)/sizeof(*Raresmc); isample++) {
-  	  p->AddSample(Raresmc[isample], "Rares", itBkg, kAzure-9, "0", "AllInstances");
-    }
-    for (UInt_t isample = 0; isample < sizeof(Data)/sizeof(*Data); isample++) {
-  	  p->AddSample(Data[isample], "Data", itData,kBlack, "0", "AllInstances");
-    }
-    for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
-      p->AddSample(Signalmc[isample], "t#bar{t}H", itBkg, kRed, "0", "AllInstances");
+    else {
+      for (UInt_t isample = 0; isample < sizeof(TTWmc)/sizeof(*TTWmc); isample++) {
+        p->AddSample(TTWmc[isample], "t#bar{t}W", itBkg, kGreen-5, "0", "AllInstances");
+      }
+      for (UInt_t isample = 0; isample < sizeof(TTZmc)/sizeof(*TTZmc); isample++) {
+    	  p->AddSample(TTZmc[isample], "t#bar{t}Z", itBkg, kSpring+2, "0", "AllInstances");
+      }    
+      for (UInt_t isample = 0; isample < sizeof(WZmc)/sizeof(*WZmc); isample++) {
+    	  p->AddSample(WZmc[isample], "WZ", itBkg, kViolet+10, "0", "AllInstances");
+      }
+      for (UInt_t isample = 0; isample < sizeof(Convsmc)/sizeof(*Convsmc); isample++) {
+    	  p->AddSample(Convsmc[isample], "Convs", itBkg, kYellow, "0", "AllInstances");
+      }
+      for (UInt_t isample = 0; isample < sizeof(Fakesmc)/sizeof(*Fakesmc); isample++) {
+    	  p->AddSample(Fakesmc[isample], "Fakes", itBkg, kOrange-7, "0", "AllInstances");
+      }
+      for (UInt_t isample = 0; isample < sizeof(Raresmc)/sizeof(*Raresmc); isample++) {
+    	  p->AddSample(Raresmc[isample], "Rares", itBkg, kAzure-9, "0", "AllInstances");
+      }
+      for (UInt_t isample = 0; isample < sizeof(Data)/sizeof(*Data); isample++) {
+    	  p->AddSample(Data[isample], "Data", itData,kBlack, "0", "AllInstances");
+      }
+      for (UInt_t isample = 0; isample < sizeof(Signalmc)/sizeof(*Signalmc); isample++) {
+        p->AddSample(Signalmc[isample], "t#bar{t}H", itBkg, kRed, "0", "AllInstances");
+      }
     }
   }
   // Histogram settings ========================================================
@@ -324,17 +353,34 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSystematic("stat, Trig, PU, MuonEff, ElecEff, JES");
   
   // Yields table and cross section settings, histograms plotting ==============
-  if (counter == 0) {
+  if (counter == 0) { // YIELDS & DATACARDS 
     // Yields
     p->SetTableFormats("%1.4f");
     p->SetYieldsTableName("Yields_"+chan+"_"+tag);
     p->PrintYields("","","","txt");
     
-    
     p->SetLimitFolder(outputpath);
     p->SetOutputName("Histos_"+chan+"_"+tag);
     p->SaveHistograms();
     
+    
+    // Datacard
+    const TString Bkgs      = " ttW,  ttZ,    WZ,   Convs,  Fakes,  Rares";
+    //const TString BkgsNorm  = "1.12,  1.10,   1.3,  1.3,    1.3,    1.3,   1.098";
+    const TString BkgsNorm  = "1.12,  1.10,   1.3,  1.3,    1.3,    1.3,   1";
+    //const TString Sys       = "Trig, PU, MuonEff, ElecEff, JES, Scale, pdf";
+    const TString Sys       = "Trig, PU, MuonEff, ElecEff, JES, Scale, pdf, NormttH";
+    //const TString Sys       = "Trig, PU, MuonEff, ElecEff, JES";
+    Datacard *d = new Datacard("ttH",Bkgs,Sys,chan);
+    
+    d->SetPathToFile(outputpath);
+    d->SetLumiUnc(1+2.6/100);
+    d->SetNormUnc(BkgsNorm);
+    d->SetRootFileName("Histos_"+chan+"_"+tag);
+    d->GetParamsFormFile();
+    d->PrintDatacard(outputpath+"Datacard_"+name+"_"+chan+"_"+tag+".txt");
+  }
+  else if (counter == 1) {// CROSS SECTION
     // Cross section
     p->SetSignalStyle("xsec");
     CrossSection *x = new CrossSection(p, "ttH");
@@ -358,28 +404,12 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     
     x->PrintSystematicTable("txt");
     x->PrintCrossSection("txt");
-    
-    // Datacard
-    const TString Bkgs      = " ttW,  ttZ,    WZ,   Convs,  Fakes,  Rares";
-    //const TString BkgsNorm  = "1.12,  1.10,   1.3,  1.3,    1.3,    1.3,   1.098";
-    const TString BkgsNorm  = "1.12,  1.10,   1.3,  1.3,    1.3,    1.3,   1";
-    //const TString Sys       = "Trig, PU, MuonEff, ElecEff, JES, Scale, pdf";
-    const TString Sys       = "Trig, PU, MuonEff, ElecEff, JES, Scale, pdf, NormttH";
-    //const TString Sys       = "Trig, PU, MuonEff, ElecEff, JES";
-    Datacard *d = new Datacard("ttH",Bkgs,Sys,chan);
-    
-    d->SetPathToFile(outputpath);
-    d->SetLumiUnc(1+2.6/100);
-    d->SetNormUnc(BkgsNorm);
-    d->SetRootFileName("Histos_"+chan+"_"+tag);
-    d->GetParamsFormFile();
-    d->PrintDatacard(outputpath+"Datacard_"+name+"_"+chan+"_"+tag+".txt");
   }
-  else {
+  else {// PLOT - DRAWINGS
     p->SetCMSlabel("CMS Non-official");
     p->DrawStack(tag, 1);
   }
   
-  if (counter == 0) counter = 1;
+  counter++;
   delete p;
 }
