@@ -294,7 +294,6 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->SetRatioMin(0);
   p->SetRatioMax(2);
   p->doSetLogy = false;
-  p->SetCMSlabel("CMS Non-official");
   
   // Errors ====================================================================
   p->AddSystematic("stat,Trig,PU,MuonEff,ElecEff,JES");
@@ -344,6 +343,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     d->PrintDatacard(outputpath+"Datacard_"+name+"_"+chan+"_"+tag+".txt");
   }
   else {
+    p->SetCMSlabel("CMS Non-official");
     p->DrawStack(tag, 1);
   }
   
