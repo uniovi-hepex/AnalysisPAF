@@ -71,6 +71,14 @@ class TWAnalysis : public PAFChainItemSelector{
 
     Float_t TDilepPt;
 
+    Float_t TVetoJet1_Pt;
+    Float_t TVetoJet1_Eta;
+    Float_t TVetoJet2_Pt;
+    Float_t TVetoJet2_Eta;
+    Float_t TVetoJet3_Pt;
+    Float_t TVetoJet3_Eta;
+
+
 
     void InitHistos();
     void FillDYHistos(Int_t ch);
@@ -130,6 +138,7 @@ class TWAnalysis : public PAFChainItemSelector{
     Float_t TLep_Charge[10];
 
     Int_t TNJets;            // Jets...
+    Int_t TNVetoJets;            // Jets...
     Int_t TNBtags;
     Float_t TJet_Pt[20];
     Float_t TJet_Eta[20];
@@ -215,10 +224,12 @@ class TWAnalysis : public PAFChainItemSelector{
     Float_t  TJet2csv       , TJet2csvJESUp       , TJet2csvJESDown       , TJet2csvJER       ;
     Float_t  MSys           , MSysJESUp           , MSysJESDown           , MSysJER           ;
     Float_t  TJetLoosept    , TJetLooseptJESUp    , TJetLooseptJESDown    , TJetLooseptJER    ;
+    Float_t  TJetLooseCentralpt, TJetLooseCentralptJESUp    , TJetLooseCentralptJESDown    , TJetLooseCentralptJER    ;
     Float_t  C_jll          , C_jllJESUp          , C_jllJESDown          , C_jllJER          ;
     Float_t  DilepJetPt     , DilepJetPtJESUp     , DilepJetPtJESDown     , DilepJetPtJER     ;
     Float_t  TBDTada        , TBDTadaJESUp        , TBDTadaJESDown        , TBDTadaJER        ;
     Float_t  TBDTgrad       , TBDTgradJESUp       , TBDTgradJESDown       , TBDTgradJER       ;
+    Float_t  TBDT       , TBDTJESUp       , TBDTJESDown       , TBDTJER       ;
     Float_t  TBDT2j1t       , TBDT2j1tJESUp       , TBDT2j1tJESDown       , TBDT2j1tJER       ;
     /* Float_t  TBDTBTagUp     , TBDTBTagDown; */
     /* Float_t  TBDTMistagUp   , TBDTBMistagDown; */
@@ -299,6 +310,10 @@ class TWAnalysis : public PAFChainItemSelector{
     TMVA::Reader* BDTgrad_JESUp;
     TMVA::Reader* BDTgrad_JESDown;
     TMVA::Reader* BDTgrad_JER;
+    TMVA::Reader* BDT;
+    TMVA::Reader* BDT_JESUp;
+    TMVA::Reader* BDT_JESDown;
+    TMVA::Reader* BDT_JER;
     TMVA::Reader* BDT2j1t;
     TMVA::Reader* BDT2j1tJESUp;
     TMVA::Reader* BDT2j1tJESDown;

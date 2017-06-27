@@ -65,10 +65,12 @@ void Histo::SetStatUnc(){
 }
 
 void Histo::SetTag(TString t, TString p, TString x, TString c){
-	if(t != "") tag = t;
+
+  if(t != "") tag = t;
   if(p != "") process = p; 
-	if(x != "") xlabel = x;
-	if(c != "") cuts = c;
+  if(x != "") xlabel = x;
+  if(c != "") cuts = c;
+  return;
 }
 
 void Histo::SetProcess(TString p){
@@ -139,4 +141,14 @@ void Histo::SetBinsErrorFromSyst(){
     //max = vsysd[k] > vsysu[k] ? vsysd[k] : vsysu[k];
     SetBinError(k+1, TMath::Sqrt((vsysu[k]+vsysd[k])/2));
   }
+}
+
+
+
+Histo* Histo::CloneHisto(const char* newname) const
+{
+  TH1F* h = (TH1F*) Clone(newname);
+  return new Histo(*h);
+    
+
 }
