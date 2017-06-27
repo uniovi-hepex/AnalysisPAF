@@ -24,7 +24,7 @@ enum iSFs{
 
 enum wps{iVeto, iVeryLoose, iLoose, iMedium, iTight, iVeryTight, iExtreamlyTight, iWPforStop, iLooseWPforStop};
 
-enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec, iWZSelec, i4tSelec};
+enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, iHWWSelec, ittDMSelec, ittHSelec, iWZSelec, i4tSelec};
 
 enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau, iOS1tau, i2lss_fake, iTriLep_fake, iElEl, iMuMu, i1Tau_emufake, nTotalDefinedChannels};
 

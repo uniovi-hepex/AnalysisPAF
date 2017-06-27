@@ -66,6 +66,11 @@ const TString kTagSel[nSel] = {"Stop",     "Top",     "TW",     "WW",
 //
 //=============================================================================
 
+<<<<<<< HEAD
+enum             sel         {iStopSelec, iTopSelec, iTWSelec, iWWSelec, iHWWSelec, ittDMSelec, ittHSelec, iWZSelec, i4tSelec, nSel};
+const TString tagSel[nSel] = {"Stop",         "Top",     "TW",     "WW",   "HWW",    "ttDM",     "ttH",   "WZ",    "tttt" };
+=======
+>>>>>>> origin/master
 
 
 //=============================================================================
@@ -119,6 +124,12 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   else if(Selection == "ttH"       || Selection == "TTH"     ) sel = ittHSelec;
   else if(Selection == "tttt"      || Selection == "4t"      ) sel = i4tSelec;
   else if(Selection == "WW"                                  ) sel = iWWSelec;
+<<<<<<< HEAD
+  else if(Selection == "HWW"				     ) sel = iHWWSelec;
+  else{ cout << "\033[1;31m >>>> WRONG SELECTION <<<< \033[0m\n"; return;}
+	cout << "\n" << endl;
+  if(verbose) cout << Form("\033[1;35m >>> Analysis: %s \033[0m\n", tagSel[sel].Data());
+=======
   else { 
     PAF_ERROR("RunAnalyserPAF", Form("Wrong selection \"%s\".",
 				     Selection.Data()));
@@ -133,6 +144,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
 
   cout << "\n" << endl;
   if(verbose) cout << Form("\033[1;35m >>> Analysis: %s \033[0m\n", kTagSel[sel].Data());
+>>>>>>> origin/master
 
   // INPUT DATA SAMPLE
   //----------------------------------------------------------------------------
@@ -322,17 +334,60 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   // Add the input data files
   myProject->AddDataFiles(Files); 
 
-  // Deal with first and last event
-  if     (nEvents > 0 && FirstEvent == 0) myProject->SetNEvents(nEvents);
-  else if(FirstEvent != 0){
-    myProject->SetNEvents(nEvents);
-    myProject->SetFirstEvent(FirstEvent);
-  }
+	if     (nEvents > 0 && FirstEvent == 0) myProject->SetNEvents(nEvents);
+	else if(FirstEvent != 0){
+		myProject->SetNEvents(nEvents);
+		myProject->SetFirstEvent(FirstEvent);
+	}
+				
+	TString outputFile = outputDir + "/Tree_" + sampleName + ".root";
+	cout << Form("\033[1;33m >>> Output file = %s \n\033[0m", outputFile.Data());
+	cout << "\n" << endl;
+	myProject->SetOutputFile(outputFile);
 
-  // Set output file
-  TString outputFile = outputDir + "/Tree_" + sampleName + ".root";
-  PAF_INFO("RunAnalyserPAF", Form("Output file is \"%s\"\n\n",outputFile.Data()));
-  myProject->SetOutputFile(outputFile);
+	// Parameters for the analysis
+	//----------------------------------------------------------------------------
+	// COMMON PARAMETERS
+	myProject->SetInputParam("sampleName",        sampleName       );
+	myProject->SetInputParam("IsData",            G_IsData         );
+	myProject->SetInputParam("weight",            G_Event_Weight   );
+	myProject->SetInputParam("IsMCatNLO",         G_IsMCatNLO      );  
+	myProject->SetInputParam("iSelection",        sel              );
+	myProject->SetInputParam("WorkingDir",        WorkingDir       );
+	myProject->SetInputParam("pathToHeppyTrees",  pathToFiles);
+	//myProject->SetInputParam("nEntries",  nTrueEntries);
+	//myProject->SetInputParam("nEvents",  nEvents);
+	//myProject->SetInputParam("FirstEvent",  FirstEvent);
+	//myProject->SetInputParam("Count",  Count);
+	//myProject->SetInputParam("xsec",  xsec);
+	//myProject->SetInputParam("CountLHE ",  CountLHE);
+
+	// EXTRA PARAMETERS
+	myProject->SetInputParam("IsFastSim"      , G_IsFastSim);
+	myProject->SetInputParam("stopMass"       , stopMass         );
+	myProject->SetInputParam("lspMass"        , lspMass          );
+	myProject->SetInputParam("NormISRweights" , NormISRweights   );
+	myProject->SetInputParam("doSyst"         , G_DoSystematics  ); 
+
+
+	// Name of analysis class
+	//----------------------------------------------------------------------------
+	myProject->AddSelectorPackage("LeptonSelector");
+	if(sel == ittHSelec || sel == i4tSelec) myProject->AddSelectorPackage("TauSelector");
+	myProject->AddSelectorPackage("JetSelector");
+	myProject->AddSelectorPackage("EventBuilder");
+	if      (sel == iStopSelec)  myProject->AddSelectorPackage("StopAnalysis");
+	else if (sel == ittDMSelec)  myProject->AddSelectorPackage("ttDM");
+	else if (sel == iTopSelec )  myProject->AddSelectorPackage("TopAnalysis");
+	else if (sel == ittHSelec )  myProject->AddSelectorPackage("ttHAnalysis");
+	else if (sel == i4tSelec)    myProject->AddSelectorPackage("t4Analysis");
+	else if (sel == iTWSelec  ){
+	  myProject->AddSelectorPackage("TopAnalysis");
+	  // myProject->AddSelectorPackage("TWAnalysis");
+	}
+	else if (sel == iWWSelec  )  myProject->AddSelectorPackage("WWAnalysis");
+	else if (sel == iHWWSelec )  myProject->AddSelectorPackage("HWWAnalysis"); 
+	else                         cout << " >>>>>>>> No selector found for this analysis!!!! " << endl;
 
 
   // Parameters for the analysis

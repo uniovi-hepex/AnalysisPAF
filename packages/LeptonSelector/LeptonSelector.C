@@ -59,7 +59,7 @@ void LeptonSelector::Initialise(){
   else if(gSelection == iWZSelec){
 
   }
-  else if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
+  else if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iHWWSelec){
     LepSF->loadHisto(iTrigDoubleMuon);
     LepSF->loadHisto(iTrigDoubleElec);
     LepSF->loadHisto(iTrigElMu);
@@ -417,6 +417,21 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
     else return false;
     return false;
   }
+  else if(gSelection == iHWWSelec){
+    if(lep.isMuon){
+      passId  = getMuonId(iTight);
+      passIso = getRelIso04POG(iTight);
+    }
+    if(lep.isElec){
+      passId = getElecCutBasedId(iTight);
+      passIso = getRelIso03POG(iTight);
+      if(TMath::Abs(etaSC) > 1.4442 && TMath::Abs(etaSC) < 1.566) return false;
+    }
+    if(lep.p.Pt() < 10 || TMath::Abs(lep.p.Eta()) > 2.4) return false;
+    if(passId && passIso && getGoodVertex(iTight) && getSIPcut(4)) return true;
+    else return false;
+    return false;
+  }
   else if(gSelection == i4tSelec){
     if(lep.isMuon){
       DumpVar(evt, "!isGlobalMuon && !isTrackerMuon", isGlobalMuon || isTrackerMuon, isGlobalMuon || isTrackerMuon);
@@ -514,7 +529,7 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
   else if(gSelection == iTopSelec || gSelection == iTWSelec){
     return true;
   }
-  else if(gSelection == iWWSelec){
+  else if((gSelection == iWWSelec) || (gSelection == iHWWSelec)){
     return true;
   }
   else if(gSelection == i4tSelec){
