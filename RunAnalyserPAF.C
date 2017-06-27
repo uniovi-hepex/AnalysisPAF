@@ -28,8 +28,8 @@ Float_t NormISRweights;
 Bool_t verbose = true;
 const Int_t nLHEWeight = 248;
 
-enum             sel         {iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec, iWZSelec, i4tSelec, nSel};
-const TString tagSel[nSel] = {"Stop",         "Top",     "TW",     "WW",     "ttDM",     "ttH",   "WZ",    "tttt" };
+enum             sel         {iStopSelec, iTopSelec, iTWSelec, iWWSelec, iHWWSelec, ittDMSelec, ittHSelec, iWZSelec, i4tSelec, nSel};
+const TString tagSel[nSel] = {"Stop",         "Top",     "TW",     "WW",   "HWW",    "ttDM",     "ttH",   "WZ",    "tttt" };
 
 void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_t nEvents, Long64_t FirstEvent, Float_t uxsec,	Int_t stopMass, Int_t lspMass) {
 
@@ -72,6 +72,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
   else if(Selection == "ttH"       || Selection == "TTH"     ) sel = ittHSelec;
   else if(Selection == "tttt"      || Selection == "4t"      ) sel = i4tSelec;
   else if(Selection == "WW"                                  ) sel = iWWSelec;
+  else if(Selection == "HWW"				     ) sel = iHWWSelec;
   else{ cout << "\033[1;31m >>>> WRONG SELECTION <<<< \033[0m\n"; return;}
 	cout << "\n" << endl;
   if(verbose) cout << Form("\033[1;35m >>> Analysis: %s \033[0m\n", tagSel[sel].Data());
@@ -301,6 +302,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, Long64_
 	  // myProject->AddSelectorPackage("TWAnalysis");
 	}
 	else if (sel == iWWSelec  )  myProject->AddSelectorPackage("WWAnalysis");
+	else if (sel == iHWWSelec )  myProject->AddSelectorPackage("HWWAnalysis"); 
 	else                         cout << " >>>>>>>> No selector found for this analysis!!!! " << endl;
 
 	// Additional packages

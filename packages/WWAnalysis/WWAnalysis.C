@@ -159,7 +159,7 @@ void WWAnalysis::InsideLoop(){
 				//}
 			//}          
 //=============================// analisis de cosas básicas de WW
-			if( ((selLeptons.at(0).p +selLeptons.at(1).p).M() > 12) && gChannel == iElMu)// mll > 12 GeV
+			if( ((selLeptons.at(0).p +selLeptons.at(1).p).M() > 12) && gChannel == iMuon && TMET > 20 && TPtdil > 30)// mll > 12 GeV
 				//&& (gChannel == iElMu || (TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15))){ //Channel e mu y con Z Veto in ee, µµ
 				fTree->Fill();
 			//};
@@ -191,7 +191,7 @@ void WWAnalysis::SetLeptonVariables(){
   	fTree->Branch("TMll",      &TMll,      "TMll/F");
   	fTree->Branch("TMT2",      &TMT2,      "TMT2/F");
   	fTree->Branch("TDeltaPhi",      &TDeltaPhi,      "TDeltaPhi/F");
-  	fTree->Branch("TDeltaEta",      &TDeltaEta,      "TDeltaPhi/F");
+  	fTree->Branch("TDeltaEta",      &TDeltaEta,      "TDeltaEta/F");
 };
 
 

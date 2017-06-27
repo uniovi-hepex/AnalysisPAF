@@ -3,7 +3,7 @@
 #include "BTagSFUtil.h"
 #include "BTagCalibrationStandalone.cc"
 //#include "BTagEfficienciesTTbarSummer12.C" // Change this to your sample efficiency
-#include "BTagEfficienciesTTbarSummer15.C" // Change this to your sample efficiency
+#include "BTagEfficienciesTTbarSummer17.C" // Change this to your sample efficiency
 #include "FastSimCorrectionFactorsSummer12.C" // Change this to your sample efficiency
 #include "TSystem.h"
 
@@ -42,12 +42,14 @@ BTagSFUtil::BTagSFUtil(const string& MeasurementType,
     //if (TaggerName=="CSVv2") TaggerCut = 0.605;
     if (TaggerName=="CSVv2") TaggerCut = 0.5426; // for Moriond17
     if (TaggerName=="DeepCSV") TaggerCut = 0.2219; // post-Moriond (2017-06-08)
+
     reader_b = new BTagCalibrationReader(BTagEntry::OP_LOOSE, "central", sysTypes);
     reader_b -> load(calib, BTagEntry::FLAV_B, MeasurementType);
     reader_c = new BTagCalibrationReader(BTagEntry::OP_LOOSE, "central", sysTypes);
     reader_c -> load(calib, BTagEntry::FLAV_C, MeasurementType);
     reader_l = new BTagCalibrationReader(BTagEntry::OP_LOOSE, "central", sysTypes);
     reader_l -> load(calib, BTagEntry::FLAV_UDSG, "incl");
+
   } else if (OperatingPoint=="Medium")  {
     TaggerOP += "M";
     if (TaggerName=="CSV") TaggerCut = 0.679;
