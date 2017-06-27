@@ -132,4 +132,62 @@ class Looper{
 
 };
 
+
+// GET ALL FILES IN PATH
+vector<TString> GetAllFiles(TString path, TString  filename) {
+  vector<TString> theFiles;
+
+  TString command("ls ");
+  if(filename != "")
+    command += 
+      path + "/" + filename + " " +
+      path + "/" + filename + ".root " +
+      path + "/" + filename + "_[0-9].root " +
+      path + "/" + filename + "_[0-9][0-9].root " +
+      path + "/Tree_" + filename + ".root " +
+      path + "/Tree_" + filename + "_[0-9].root " +
+      path + "/Tree_" + filename + "_[0-9][0-9].root" +
+      path + "/" + filename + "_ext[0-9].root " +
+      path + "/" + filename + "_ext[0-9]_[0-9].root " +
+      path + "/" + filename + "_ext[0-9]_[0-9][0-9].root " +
+      path + "/Tree_" + filename + "_ext[0-9].root " +
+      path + "/Tree_" + filename + "_ext[0-9]_[0-9].root " +
+      path + "/Tree_" + filename + "_ext[0-9]_[0-9][0-9].root";
+  else command += path;
+
+  command += " 2> /dev/null";
+
+  //We cannot use GetFromPipe because it is too verbose, so we implement
+  //the full code
+  //    TString result=gSystem->GetFromPipe(command);
+  TString result;
+  FILE *pipe = gSystem->OpenPipe(command, "r");
+  if (!pipe) cerr << "ERROR: in GetAllFiles. Cannot run command \"" << command << "\"" << endl;
+  else {
+    TString line;
+    while (line.Gets(pipe)) {
+      if (result != "")	result += "\n";
+      result += line;
+    }
+    gSystem->ClosePipe(pipe);
+  }
+  
+  if (result != "" ) {
+    TObjArray* filesfound = result.Tokenize(TString('\n'));
+    if (!filesfound) cerr << "ERROR: in GetAllFiles. Could not parse output while finding files" << endl;
+    else {
+      for (int i = 0; i < filesfound->GetEntries(); i++) theFiles.push_back(filesfound->At(i)->GetName());
+      filesfound->Clear();
+      delete filesfound;
+    }
+  }
+  if (theFiles.size() == 0) cerr << "ERROR: in GetAllFiles. Could not find data!" << endl;
+  return theFiles;
+}
+
+
+
+
+
+
 #endif

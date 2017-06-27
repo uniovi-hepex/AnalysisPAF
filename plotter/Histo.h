@@ -62,12 +62,15 @@ class Histo : public TH1F{
 		TH1F* GetVarHistoStatBin(Int_t bin = 0, TString dir = "Up");
 		void AddToSystematics(Histo* hsys, TString dir = "Down");
     void SetBinsErrorFromSyst();
+    void SetDrawStyle(TString g){ DrawStyle = g;}
+    TString GetDrawStyle(){ return DrawStyle;}
 
 		Float_t *vsysu = NULL; 
 		Float_t *vsysd = NULL;
 
 	protected:
 		Int_t type; 
+    TString DrawStyle = "";
 		Int_t color;
 		TString tag = "0"; TString process="0"; TString cuts="0"; TString xlabel="0";
 		Float_t sysNorm;

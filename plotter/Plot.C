@@ -46,7 +46,8 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, TString sys
   Int_t n; Int_t i = 0;
   if(sys != "0") AddToSystematicLabels(sys);
 
-  if(type != itData)  h->Scale(Lumi*1000);
+  Bool_t isFakeFromData = (options.Contains("fake") || options.Contains("Fake")) && ! options.Contains("sub");
+  if(type != itData && !isFakeFromData)  h->Scale(Lumi*1000);
   if(p == "TTJets_aMCatNLO") h->Scale((1.08*0.9)*(1.08*0.9));
   if(type == itBkg){ // Backgrounds
     n = VBkgs.size();
@@ -220,22 +221,54 @@ Histo* Plot::GetHisto(TString pr, TString systag){
   Int_t nSyst = VSyst.size();
   Int_t nBkg = VBkgs.size();
   Int_t nSig = VSignals.size();
-  if(systag == "0"){
+  if(systag == "0" || systag == ""){
     for(Int_t i = 0; i < nBkg; i++) if(pr == VBkgs.at(i)   ->GetProcess()) return  VBkgs.at(i);
     for(Int_t i = 0; i < nSig; i++) if(pr == VSignals.at(i)->GetProcess()) return  VSignals.at(i);
     return 0;
   }
   else{  
-    Float_t nom = GetYield(pr, "0");
     for(int k = 0; k < nSyst; k++){ 
       ps = VSyst.at(k)->GetTag();
       if(!ps.BeginsWith(pr))   continue;
       if(!ps.Contains(systag)) continue;
       return VSyst.at(k);
     }
+    for(Int_t k = 0; k < nSig; k++){ 
+      ps = VSignals.at(k)->GetTag();
+      if(!ps.BeginsWith(pr))   continue;
+      if(!ps.Contains(systag)) continue;
+      return VSignals.at(k);
+    }
   }
   cout << "[Plot::GetHisto] WARNING: No systematic " << systag << " for process " << pr << "........... Returning nominal histo..." << endl;
   return GetHisto(pr, "0");
+}
+
+Histo* Plot::GetSymmetricHisto(TString pr, TString systag){
+  Histo* nom = GetHisto(pr, "0");
+  Histo* var = GetHisto(pr, systag);
+  Histo* sym = (Histo*) var->Clone();
+  Int_t nbins = nom->GetNbinsX();
+  Float_t bindiff = 0; Float_t cont;
+  for(Int_t i = 0; i <= nbins+1; i++){
+    cont    = nom->GetBinContent(i); 
+    bindiff = var->GetBinContent(i)-nom->GetBinContent(i);
+    sym->SetBinContent(i, cont - bindiff);
+  } 
+  sym->SetDirectory(0);
+  sym->SetType(var->GetType());
+  sym->SetColor(var->GetColor());
+  TString newtag = systag;
+  if(systag.Contains("Up")) newtag.ReplaceAll("Up", "Down");
+  else newtag.ReplaceAll("Down", "Up");
+  sym->SetTag(pr + "_" + newtag);
+  sym->SetProcess(pr);
+  return sym;
+}
+
+void Plot::AddSymmetricHisto(TString pr, TString systag){
+  Histo* h = GetSymmetricHisto(pr, systag);
+  AddToHistos(h);
 }
 
 Float_t Plot::GetYield(TString pr, TString systag){
@@ -348,7 +381,7 @@ TCanvas* Plot::SetCanvas(){ // Returns the canvas
   return c;
 }
 
-void Plot::DrawComp(TString tag, bool sav, bool doNorm){
+void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString lineStyle){
   TCanvas* c = SetCanvas();  plot->cd();
   int nsamples = VSignals.size();
   float themax = 0;
@@ -358,10 +391,12 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm){
   else signal = VSignals.at(0);
   yield = VSignals.at(0)->Integral();
   if(doNorm) signal->Scale(1/yield);
+  signal->SetDrawStyle("pe");
   signal->SetTitle("");
-  signal->SetLineWidth(2);
+  signal->SetLineWidth(3);
+  signal->SetMarkerStyle(24); signal->SetMarkerSize(1.8);
   signal->GetXaxis()->SetLabelSize(0.0);
-  signal->Draw("pe");
+  signal->Draw(signal->GetDrawStyle());
   float max = VSignals.at(0)->GetMaximum();
 
   for(Int_t  i = 1; i < nsamples; i++){
@@ -369,14 +404,65 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm){
     if(doNorm) VSignals.at(i)->Scale(1/yield);
     max = VSignals.at(i)->GetMaximum(); 
     if(max > themax) themax = max;
-    VSignals.at(i)->Draw("pesame");
+    VSignals.at(i)->Draw(lineStyle + ",same");
   }
   VSignals.at(0)->SetMaximum(themax*ScaleMax);
   VSignals.at(0)->SetMinimum(PlotMinimum);
+  if(doSetLogy){
+    PlotMinimum = 1e-4;
+    signal->SetMaximum(themax);
+    //signal->SetMinimum(PlotMinimum + 0.1*(PlotMinimum + 1));
+    signal->SetMinimum(PlotMinimum);
+    plot->SetLogy();
+  }
   TLegend* leg = SetLegend();
   leg->SetTextSize(0.041);
   leg->Draw("same");
+  
+  if(gof!="")
+    {
 
+      cout << "WARNING: at the moment, only the GoF between the first and the second plot is supported. If you plot more than two plots, the remaining ones will be ignored. Further functionality will be added later." << endl;
+      
+      double pvalue(-999.);
+      TString theComp("");
+      if(nsamples>1)
+        {
+          if(gof=="chi2")
+            {
+              pvalue=VSignals.at(0)->Chi2Test(VSignals.at(1), "WW CHI2/NDF");
+              theComp="#frac{#chi^2}{NDOF}";
+              cout << "WARNING: this is good for comparisons between Weighted-Weighted histograms, i.e. for comparisons between MonteCarlos. Todo: add switch for comparing data w/ MC or data w/ data." << endl;
+            }
+          else if(gof=="ks")
+            {
+              pvalue=VSignals.at(0)->KolmogorovTest(VSignals.at(1), "X");
+              theComp="p-value (KS)";
+              cout << "WARNING: this does not include comparison of normalization. Todo: add switch for that. Also, this runs pseudoexperiments, and will fail in case of negative bin contents. In case of negative weights, please rebin them to elimitate any negative bin content." << endl;
+            }
+          else if(gof=="ad")
+            {
+              pvalue=VSignals.at(0)->AndersonDarlingTest(VSignals.at(1));
+              theComp="p-value (AD)";
+              cout << "WARNING: the Anderson Darling test does not work for bins with negative content, at least in the ROOT implementation" << endl;
+            }
+          else
+            {
+              cout << "ERROR: this GoF test does not exist or is not currently implemented. What a cruel world." << endl;
+            }
+        }
+      else
+        cout << "ERROR: only one sample is selected. How can I compare it with another one?" << endl;
+     
+      TText *t = new TText(.7,.7,Form("%s: %f", theComp.Data(), pvalue));
+      t->SetTextAlign(22);
+      t->SetTextColor(kRed+2);
+      t->SetTextFont(43);
+      t->SetTextSize(40);
+      t->SetTextAngle(45);
+      t->Draw("same");
+    }
+  
   pratio->cd();
   vector<TH1F*> ratios;
   TH1F* htemp = NULL;
@@ -389,12 +475,11 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm){
     htemp->Divide(VSignals.at(i)); 
     htemp->SetLineColor(VSignals.at(i)->GetColor());
     ratios.push_back(htemp);
-    ratios.at(i-1)->Draw("same");
+    ratios.at(i-1)->Draw("hist,same");
   }
-
   if(sav){ // Save the histograms
     TString dir = plotFolder;
-    TString plotname = varname + "_" + tag + "_compare";
+    TString plotname = varname + "_" + tag + "_comp";
     gSystem->mkdir(dir, kTRUE);
     c->Print( dir + plotname + ".png", "png");
     delete c;
@@ -631,6 +716,17 @@ void Plot::SaveHistograms(){
 // Other estetics and style
 //================================================================================
 
+void Plot::SetGoF(TString thegof)
+{
+  if(thegof=="" || thegof=="chi2" || thegof=="ks" || thegof=="ad")
+    gof = thegof;
+  else
+    {
+      cout << "Warning: unknown goodness of fit test. Defaulting to chi2" << endl;
+      gof="chi2";
+    }
+}
+
 void Plot::SetTexChan(TString cuts){
   TString t = "";
   if (chan == "ElMu") t += "e^{#pm}#mu^{#mp}";
@@ -779,12 +875,9 @@ Float_t Plot::GetTotalSystematic(TString pr){
   Float_t sys2 = 0;
   Int_t nSys  = VSystLabel.size();
   Float_t nom = GetYield(pr);
-  cout << "Nom val = " << nom << endl;
   for(Int_t j = 0; j < nSys; j++){
-    cout << "Adding systematic: " << VSystLabel.at(j) << "... Val = " << GetYield(pr,VSystLabel.at(j)) << endl;
     sys2 += fabs((GetYield(pr,VSystLabel.at(j))-nom) * (GetYield(pr,VSystLabel.at(j))-nom));
   }
-  cout << "Returning: " << TMath::Sqrt(sys2) << endl;
   return TMath::Sqrt(sys2);
 }
 
