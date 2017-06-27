@@ -406,7 +406,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     x->PrintCrossSection("txt");
   }
   else {// PLOT - DRAWINGS
-    p->SetCMSlabel("CMS Non-official");
+    p->SetCMSlabel("CMS Academic");
     p->DrawStack(tag, 1);
   }
   
