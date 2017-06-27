@@ -92,28 +92,7 @@ void ttHAnalysis::GetTreeVariables() {
   Tevt      = 0;
   Trun      = 0;
   genWeight = 1;
-  for (UInt_t i = 0; i < 254; i++) TLHEWeight[i] = 0;
-  if (gSampleName == "MuonEG") {
-    THLT_DiMu9_Ele9_CaloIdL_TrackIdL_v                   = 0;
-    THLT_Mu8_DiEle12_CaloIdL_TrackIdL_v                  = 0;
-    THLT_TripleMu_12_10_5_v                              = 0;
-    THLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v             = 0;
-    THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v    = 0;
-    THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v = 0;
-    THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v    = 0;
-    THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v = 0;
-    THLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v         = 0;
-    THLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v               = 0;
-    THLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v             = 0;
-    THLT_IsoMu22_v                                       = 0;
-    THLT_IsoTkMu22_v                                     = 0;
-    THLT_IsoMu24_v                                       = 0;
-    THLT_IsoTkMu24_v                                     = 0;
-    THLT_Ele27_WPTight_Gsf_v                             = 0;
-    THLT_Ele25_eta2p1_WPTight_Gsf_v                      = 0;
-    THLT_Ele27_eta2p1_WPLoose_Gsf_v                      = 0;
-  }
-  
+  for (UInt_t i = 0; i < 254; i++) TLHEWeight[i] = 0;  
   
   if (!gIsData){
     genWeight   = Get<Float_t>("genWeight");
@@ -124,26 +103,6 @@ void ttHAnalysis::GetTreeVariables() {
   Trun      = Get<UInt_t>("run");
   if (gIsLHE) {
     for (UInt_t i = 0; i < Get<UInt_t>("nLHEweight"); i++) TLHEWeight[i] = Get<Float_t>("LHEweight_wgt", i);
-  }
-  if (gSampleName == "MuonEG") {
-    THLT_DiMu9_Ele9_CaloIdL_TrackIdL_v                   = Get<Bool_t>("HLT_BIT_HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v");
-    THLT_Mu8_DiEle12_CaloIdL_TrackIdL_v                  = Get<Bool_t>("HLT_BIT_HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v");
-    THLT_TripleMu_12_10_5_v                              = Get<Bool_t>("HLT_BIT_HLT_TripleMu_12_10_5_v");
-    THLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v             = Get<Bool_t>("HLT_BIT_HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v");
-    THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v    = Get<Bool_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v");
-    THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v = Get<Bool_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v");
-    THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v    = Get<Bool_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v");
-    THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v = Get<Bool_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v");
-    THLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v         = Get<Bool_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
-    THLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v               = Get<Bool_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");
-    THLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v             = Get<Bool_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v");
-    THLT_IsoMu22_v                                       = Get<Bool_t>("HLT_BIT_HLT_IsoMu22_v");
-    THLT_IsoTkMu22_v                                     = Get<Bool_t>("HLT_BIT_HLT_IsoTkMu22_v");
-    THLT_IsoMu24_v                                       = Get<Bool_t>("HLT_BIT_HLT_IsoMu24_v");
-    THLT_IsoTkMu24_v                                     = Get<Bool_t>("HLT_BIT_HLT_IsoTkMu24_v");
-    THLT_Ele27_WPTight_Gsf_v                             = Get<Bool_t>("HLT_BIT_HLT_Ele27_WPTight_Gsf_v");
-    THLT_Ele25_eta2p1_WPTight_Gsf_v                      = Get<Bool_t>("HLT_BIT_HLT_Ele25_eta2p1_WPTight_Gsf_v");
-    THLT_Ele27_eta2p1_WPLoose_Gsf_v                      = Get<Bool_t>("HLT_BIT_HLT_Ele27_eta2p1_WPLoose_Gsf_v");
   }
 }
 
@@ -159,7 +118,7 @@ void ttHAnalysis::SetLeptonBranches() {
   fTree->Branch("TPtSubLeading",        &TPtSubLeading,       "TPtSubLeading/F");
   fTree->Branch("TPtSubSubLeading",     &TPtSubSubLeading,    "TPtSubSubLeading/F");
   fTree->Branch("TPtSubSubSubLeading",  &TPtSubSubSubLeading, "TPtSubSubSubLeading/F");
-  fTree->Branch("TPtVector",            &TPtVector);
+  fTree->Branch("TPtVector",            TPtVector,            "TPtVector[nTightLepton]/F");
 }
 
 
@@ -213,36 +172,10 @@ void ttHAnalysis::SetSystBranches() {
   fTree->Branch("TCatJESUp",            &TCatJESUp,           "TCatJESUp/I");
   fTree->Branch("TCatJESDown",          &TCatJESDown,         "TCatJESDown/I");
   fTree->Branch("TLHEWeight",           TLHEWeight,           "TLHEWeight[254]/F");
-  if (gSampleName == "MuonEG") {
-    fTree->Branch("THLT_DiMu9_Ele9_CaloIdL_TrackIdL_v",       &THLT_DiMu9_Ele9_CaloIdL_TrackIdL_v, "THLT_DiMu9_Ele9_CaloIdL_TrackIdL_v/B");
-    fTree->Branch("THLT_Mu8_DiEle12_CaloIdL_TrackIdL_v",      &THLT_Mu8_DiEle12_CaloIdL_TrackIdL_v, "THLT_Mu8_DiEle12_CaloIdL_TrackIdL_v/B");
-    fTree->Branch("THLT_TripleMu_12_10_5_v",                  &THLT_TripleMu_12_10_5_v, "THLT_TripleMu_12_10_5_v/B");
-    fTree->Branch("THLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v", &THLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v, "THLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v/B");
-    fTree->Branch("THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v", &THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v, "THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v/B");
-    fTree->Branch("THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v", &THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v, "THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v/B");
-    fTree->Branch("THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v", &THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v, "THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v/B");
-    fTree->Branch("THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v", &THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v, "THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v/B");
-    fTree->Branch("THLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v", &THLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v, "THLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v/B");
-    fTree->Branch("THLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",   &THLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v,   "THLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v/B");
-    fTree->Branch("THLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v", &THLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v, "THLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v/B");
-    fTree->Branch("THLT_IsoMu22_v",                           &THLT_IsoMu22_v,    "THLT_IsoMu22_v/B");
-    fTree->Branch("THLT_IsoTkMu22_v",                         &THLT_IsoTkMu22_v,  "THLT_IsoTkMu22_v/B");
-    fTree->Branch("THLT_IsoMu24_v",                           &THLT_IsoMu24_v,    "THLT_IsoMu24_v/B");
-    fTree->Branch("THLT_IsoTkMu24_v",                         &THLT_IsoTkMu24_v,  "THLT_IsoTkMu24_v/B");
-    fTree->Branch("THLT_Ele27_WPTight_Gsf_v",                 &THLT_Ele27_WPTight_Gsf_v,        "THLT_Ele27_WPTight_Gsf_v/B");
-    fTree->Branch("THLT_Ele25_eta2p1_WPTight_Gsf_v",          &THLT_Ele25_eta2p1_WPTight_Gsf_v, "THLT_Ele25_eta2p1_WPTight_Gsf_v/B");
-    fTree->Branch("THLT_Ele27_eta2p1_WPLoose_Gsf_v",          &THLT_Ele27_eta2p1_WPLoose_Gsf_v, "THLT_Ele27_eta2p1_WPLoose_Gsf_v/B");
-  }
 }
 
 
 void ttHAnalysis::SetMiniTreeVariables() {
-  if (PassesPreCuts(nJets, nLooseBTags, nMediumBTags)) {
-    if      (Is2lSSEvent(nJets, METLD))                 TCat        = 2;
-    else if (Is3lEvent  (nJets, METLD))                 TCat        = 3;
-    else if (Is4lEvent())                               TCat        = 4;
-  }
-  
   if (PassesPreCuts(TnJetsJESUp, TnLooseBTagsJESUp, TnMediumBTagsJESUp)) {
     if      (Is2lSSEvent(TnJetsJESUp, TMETLDJESUp))     TCatJESUp   = 2;
     else if (Is3lEvent  (TnJetsJESUp, TMETLDJESUp))     TCatJESUp   = 3;
@@ -255,6 +188,12 @@ void ttHAnalysis::SetMiniTreeVariables() {
     else if (Is4lEvent())                               TCatJESDown = 4;
   }
   
+  if (PassesPreCuts(nJets, nLooseBTags, nMediumBTags)) {
+    if      (Is2lSSEvent(nJets, METLD))                 TCat        = 2;
+    else if (Is3lEvent  (nJets, METLD))                 TCat        = 3;
+    else if (Is4lEvent())                               TCat        = 4;
+  }
+  
   if (nTightLepton >= 1) TPtLeading           = TightLepton.at(0).Pt();
   if (nTightLepton >= 2) TPtSubLeading        = TightLepton.at(1).Pt();
   if (nTightLepton >= 3) TPtSubSubLeading     = TightLepton.at(2).Pt();
@@ -262,15 +201,9 @@ void ttHAnalysis::SetMiniTreeVariables() {
   
   TCS             = getCS(TightLepton);
   TMass           = (TightLepton.at(0).p+TightLepton.at(1).p).M();
-  if (nTightLepton >= 2) {
-    TPtVector.push_back(TightLepton.at(0).Pt());
-    TPtVector.push_back(TightLepton.at(1).Pt());
-  }
-  if (nTightLepton >= 3) {
-    TPtVector.push_back(TightLepton.at(2).Pt());
-  }
-  if (nTightLepton >= 4) {
-    TPtVector.push_back(TightLepton.at(3).Pt());
+  
+  for (UInt_t i = 0; i < nTightLepton; i++) {
+    TPtVector[i] = TightLepton.at(i).Pt();
   }
 }
 
@@ -362,24 +295,6 @@ void ttHAnalysis::InitialiseVariables() {
   EventWeight_MuonUp    = 0;
   EventWeight_MuonDown  = 0;
   genWeight             = 0;
-  THLT_DiMu9_Ele9_CaloIdL_TrackIdL_v                   = 0;
-  THLT_Mu8_DiEle12_CaloIdL_TrackIdL_v                  = 0;
-  THLT_TripleMu_12_10_5_v                              = 0;
-  THLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v             = 0;
-  THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v    = 0;
-  THLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v = 0;
-  THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v    = 0;
-  THLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v = 0;
-  THLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v         = 0;
-  THLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v               = 0;
-  THLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v             = 0;
-  THLT_IsoMu22_v                                       = 0;
-  THLT_IsoTkMu22_v                                     = 0;
-  THLT_IsoMu24_v                                       = 0;
-  THLT_IsoTkMu24_v                                     = 0;
-  THLT_Ele27_WPTight_Gsf_v                             = 0;
-  THLT_Ele25_eta2p1_WPTight_Gsf_v                      = 0;
-  THLT_Ele27_eta2p1_WPLoose_Gsf_v                      = 0;
 }
 
 
@@ -390,7 +305,8 @@ void ttHAnalysis::ResetVariables() {
   Tau.clear();
   Jets.clear();
   Jets15.clear();
-  TPtVector.clear();
+  
+  for (UInt_t i = 0; i < 20; i++) TPtVector[i] = 0; 
   
   nTightLepton        = 0;
   nFakeableLepton     = 0;
@@ -527,10 +443,15 @@ void ttHAnalysis::CalculateWeight() {
   EventWeight_MuonDown  = 1;
   
   if (!gIsData) {
-    Float_t ElecSF = 1; Float_t MuonSF = 1;
+    Float_t ElecSF    = 1; Float_t MuonSF      = 1;
     Float_t ElecSF_Up = 1; Float_t ElecSF_Down = 1;
     Float_t MuonSF_Up = 1; Float_t MuonSF_Down = 1;
+    UInt_t  tmp_limit = 0;
+    
     if (nTightLepton != 0) {
+      if (nTightLepton > 4) tmp_limit = 4;
+      else                  tmp_limit = nTightLepton;
+      
       for (UInt_t i = 0; i < nTightLepton; i++) {
         if (TightLepton.at(i).isMuon) {
           MuonSF      *= TightLepton.at(i).GetSF( 0);
