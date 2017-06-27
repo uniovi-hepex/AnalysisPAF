@@ -66,12 +66,8 @@ const TString kTagSel[nSel] = {"Stop",     "Top",     "TW",     "WW",
 //
 //=============================================================================
 
-<<<<<<< HEAD
 enum             sel         {iStopSelec, iTopSelec, iTWSelec, iWWSelec, iHWWSelec, ittDMSelec, ittHSelec, iWZSelec, i4tSelec, nSel};
 const TString tagSel[nSel] = {"Stop",         "Top",     "TW",     "WW",   "HWW",    "ttDM",     "ttH",   "WZ",    "tttt" };
-=======
->>>>>>> origin/master
-
 
 //=============================================================================
 // Main function
@@ -124,12 +120,10 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   else if(Selection == "ttH"       || Selection == "TTH"     ) sel = ittHSelec;
   else if(Selection == "tttt"      || Selection == "4t"      ) sel = i4tSelec;
   else if(Selection == "WW"                                  ) sel = iWWSelec;
-<<<<<<< HEAD
   else if(Selection == "HWW"				     ) sel = iHWWSelec;
   else{ cout << "\033[1;31m >>>> WRONG SELECTION <<<< \033[0m\n"; return;}
 	cout << "\n" << endl;
   if(verbose) cout << Form("\033[1;35m >>> Analysis: %s \033[0m\n", tagSel[sel].Data());
-=======
   else { 
     PAF_ERROR("RunAnalyserPAF", Form("Wrong selection \"%s\".",
 				     Selection.Data()));
@@ -144,7 +138,6 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
 
   cout << "\n" << endl;
   if(verbose) cout << Form("\033[1;35m >>> Analysis: %s \033[0m\n", kTagSel[sel].Data());
->>>>>>> origin/master
 
   // INPUT DATA SAMPLE
   //----------------------------------------------------------------------------
