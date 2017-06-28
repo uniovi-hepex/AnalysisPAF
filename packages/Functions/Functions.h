@@ -11,9 +11,11 @@
 using namespace std;
 
 // enum 
+
+
 enum iSFs{
   iMuonReco, iMuonId, iMuonIdSUSY, iMuonIsoTightId, iMuonIsoMediumId, iMuonIsoSUSY, iMuonIP2D, iMuonSIP3D, iMuonIdFastSim, iMuonIsoFastSim,
-  iElecReco, iElecId, iElecIdSUSY, iElecIso, iElecIsoSUSY, iElecIP2D, iElecSIP3D, iElecFastSim,
+  iElecReco, iElecId, iElecIdSUSY, iElecIso, iElecIsoSUSY, iElecIP2D, iElecSIP3D, iElecIdFastSim, iElecIsoFastSim,
   iTrigDoubleMuon, iTrigDoubleElec, iTrigElMu,
   iMuonlepMVA2lSSttH, iMuonlepMVA3l4lttH, 
   iMuonLooseTracksttH, iMuonLooseMiniIsottH, iMuonTightIP2DttH,
@@ -22,11 +24,22 @@ enum iSFs{
   nfiles
 };
 
+const TString SFTString[nfiles] = {
+  "iMuonReco", "iMuonId", "iMuonIdSUSY", "iMuonIsoTightId", "iMuonIsoMediumId", "iMuonIsoSUSY", "iMuonIP2D", "iMuonSIP3D", "iMuonIdFastSim", "iMuonIsoFastSim",
+  "iElecReco", "iElecId", "iElecIdSUSY", "iElecIso", "iElecIsoSUSY", "iElecIP2D", "iElecSIP3D", "iElecIdFastSim", "iElecIsoFastSim",
+  "iTrigDoubleMuon", "iTrigDoubleElec", "iTrigElMu",
+  "iMuonlepMVA2lSSttH", "iMuonlepMVA3l4lttH", 
+  "iMuonLooseTracksttH", "iMuonLooseMiniIsottH", "iMuonTightIP2DttH",
+  "iEleclepMVA2lSSttH", "iEleclepMVA3l4lttH", 
+  "iElecTightIP2DM17ttH", "iElecMini4M17ttH", "iElecConvVetoM17ttH"
+};
+
+
 enum wps{iVeto, iVeryLoose, iLoose, iMedium, iTight, iVeryTight, iExtreamlyTight, iWPforStop, iLooseWPforStop};
 
 enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec, iWZSelec, i4tSelec};
 
-enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau, iOS1tau, i2lss_fake, iTriLep_fake, iElEl, iMuMu, i1Tau_emufake, nTotalDefinedChannels};
+enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau, iOS1tau, i2lss_fake, iTriLep_fake, iElEl, iMuMu, ,i1Tau_emufakeOS ,i1Tau_emufakeSS, TotalDefinedChannels};
 
 enum sys{iNom, 
   iJesUp, iJesDown, iJERUp, iJERDown, 

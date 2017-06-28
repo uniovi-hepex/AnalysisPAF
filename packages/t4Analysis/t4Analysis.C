@@ -172,9 +172,12 @@ void t4Analysis::InsideLoop(){
       if(IsThereSSpair(selLeptons)) TChannel = iSS1tau;
       else                          TChannel = iOS1tau;
     }
-    if( (TNSelLeps == 1 && TNFakeableLeps >= 1) || (TNSelLeps == 0 && TNFakeableLeps >= 2) ) TChannel = i1Tau_emufake;
+    if( (TNSelLeps == 1 && TNFakeableLeps >= 1) || (TNSelLeps == 0 && TNFakeableLeps >= 2) ){
+      else if  (IsThereSSpair(xLeptons)) TChannel = i1Tau_emufakeSS; 
+      else  TChannel = i1Tau_emufakeOS;
+    }
   }
-  if(TChannel == i2lss_fake || TChannel == iTriLep_fake || TChannel == i1Tau_emufake) if(!PassLowInvMass(xLeptons, 12)) TChannel = -1;
+  if(TChannel == i2lss_fake || TChannel == iTriLep_fake || TChannel == i1Tau_emufakeOS || TChannel == i1Tau_emufakeSS) if(!PassLowInvMass(xLeptons, 12)) TChannel = -1;
 
   //if( (TNSelLeps > nReqLeps || TNFakeableLeps > nReqLeps) && passJetReq && passTrigger && passMETfilters){
   //if(TChannel > 0 && passTrigger && passMETfilters){ // It's in some valid category and passes triggers and MET
