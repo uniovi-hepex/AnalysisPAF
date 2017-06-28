@@ -121,7 +121,7 @@ void Looper::Loop(TString sys){
     if(hsn.Contains(",")) hsn = hsn(0, hsn.First(","));
     HeppySampleName = hsn;
   }
-  cout << HeppySampleName << endl;
+  //cout << HeppySampleName << endl;
   if(doSysPDF || doSysScale) hLHEweights = loadSumOfLHEweights(pathToHeppyTrees, HeppySampleName);
 
   // For fake or flips from data
@@ -253,10 +253,11 @@ void Looper::loadTree(){
 Histo* Looper::GetHisto(TString sample, TString sys){
   SetSampleName(sample); 
   loadTree();
+  doSysPDF = false; doSysScale = false;
 
   // For scale and PDF uncertainties
   // ----------------------------------------------------------------
-  if(sys.Contains("ME") || sys.Contains("Scale") || sys.Contains("scale") || sys.Contains("Q2") || sys.Contains("PDF") || sys.Contains("pdf")){ // Using LHE weights
+  if(sys.Contains("Scale") || sys.Contains("scale") || sys.Contains("Q2") || sys.Contains("PDF") || sys.Contains("pdf")){ // Using LHE weights
     if(tree->GetBranchStatus("TLHEWeight")){
       if(sys.Contains("PDF") || sys.Contains("pdf")) doSysPDF = true;
       else doSysScale = true;
@@ -272,7 +273,7 @@ Histo* Looper::GetHisto(TString sample, TString sys){
 TH1D* loadSumOfLHEweights(TString pathToHeppyTrees, TString sampleName){
   vector<TString> files = GetAllFiles(pathToHeppyTrees, sampleName);
   Int_t nFiles = files.size();
-  cout << "Number of files = " << nFiles << endl;
+  //cout << "Number of files = " << nFiles << endl;
   TFile* f; TH1D* hSumOfLHEweights; TH1D* htemp;
 
   f = TFile::Open(files.at(0));
@@ -280,7 +281,7 @@ TH1D* loadSumOfLHEweights(TString pathToHeppyTrees, TString sampleName){
 
   for(Int_t k = 1; k < nFiles; k++){
     f = TFile::Open(files.at(k));
-    cout << "Opening: " << files.at(k) << endl;
+    //cout << "Opening: " << files.at(k) << endl;
     f->GetObject("CountLHE", htemp);
     hSumOfLHEweights->Add(htemp);
   }

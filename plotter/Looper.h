@@ -18,6 +18,7 @@
 
 enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau, iOS1tau, i2lss_fake, iTriLep_fake, iElEl, iMuMu, i1Tau_emufake, nTotalDefinedChannels};
 const Int_t nLHEweights = 112;
+std::vector<TString> TStringToVector(TString t, char separator = ',');
 
 std::vector<TString> GetAllVars(TString varstring); 
 TH1D* loadSumOfLHEweights(TString pathToHeppyTrees = "/pool/ciencias/HeppyTreesSummer16/v2/", TString sampleName = "TTbar_PowhegLHE");
@@ -226,8 +227,19 @@ vector<TString> GetAllFiles(TString path, TString  filename) {
 }
 
 
-
-
+std::vector<TString> TStringToVector(TString t, char separator){
+  std::vector<TString> v;
+  t.ReplaceAll(" ", "");
+  Int_t n = t.CountChar(separator);
+  TString element;
+  for(Int_t i = 0; i < n; i++){
+    element = t(0, t.First(separator));
+    t = t(t.First(separator)+1, t.Sizeof());
+    v.push_back(element);
+  }
+  v.push_back(t);
+  return v;
+}
 
 
 #endif
