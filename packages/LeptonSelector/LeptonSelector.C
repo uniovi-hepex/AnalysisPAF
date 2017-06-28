@@ -37,9 +37,10 @@ void LeptonSelector::Initialise(){
     LepSF->loadHisto(iElecIdSUSY,   iWPforStop);
     LepSF->loadHisto(iElecIsoSUSY,   iWPforStop);
     if(gIsFastSim){
- //     LepSF->loadHisto(iElecFastSim);
- //     LepSF->loadHisto(iMuonIdFastSim);
- //     LepSF->loadHisto(iMuonIsoFastSim);
+      LepSF->loadHisto(iElecIdFastSim);
+      LepSF->loadHisto(iElecIsoFastSim);
+      LepSF->loadHisto(iMuonIdFastSim);
+      LepSF->loadHisto(iMuonIsoFastSim);
     }
   }
   else if(gSelection == ittHSelec){
