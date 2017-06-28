@@ -7,7 +7,6 @@
 #include <iostream>
 
 
-std::vector<TString> TStringToVector(TString t, char separator = ',');
 TString _separation("##-----------\n");
 
 class Datacard{
@@ -74,6 +73,7 @@ class Datacard{
 
     TString GetFileString();
     void PrintDatacard(TString fname = "");
+    std::vector<TString> TStringToVector(TString t, char separator = ',');
 
   private:
     TString signalName;
