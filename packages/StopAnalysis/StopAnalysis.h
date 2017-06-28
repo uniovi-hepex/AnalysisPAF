@@ -52,6 +52,7 @@ class StopAnalysis : public PAFChainItemSelector{
     Int_t gLspMass;
     Float_t NormISRweights;
 
+
     // Tree Variables
     Float_t TWeight;   // Total nominal weight
     Float_t TMll;      // Invariant mass
@@ -65,6 +66,7 @@ class StopAnalysis : public PAFChainItemSelector{
     Int_t   TNVetoLeps;
     Int_t   TNSelLeps;
     Int_t TChannel;
+    Int_t TPassTrigger;
     Float_t TLep0_Pt;    
     Float_t TLep0_Eta;
     Float_t TLep0_Phi;
@@ -92,7 +94,7 @@ class StopAnalysis : public PAFChainItemSelector{
     Int_t   TNJetsJESDown;
     Int_t   TNBtagsJESUp;
     Int_t   TNBtagsJESDown;
-    Int_t   TNJetsJER;
+    Int_t   TNJetsJERUp;
     Int_t   TNBtagsBtagUp;
     Int_t   TNBtagsBtagDown;
     Int_t   TNBtagsMisTagUp;
@@ -104,12 +106,21 @@ class StopAnalysis : public PAFChainItemSelector{
     Float_t THTJESDown;
 
     Int_t   TNISRJets;
+    Float_t TMETJERUp;
     Float_t TMETJESUp;
     Float_t TMETJESDown;
-    Float_t TMT2llJESUp;
-    Float_t TMT2llJESDown;
+    Float_t TMT2JERUp;
+    Float_t TMT2JESUp;
+    Float_t TMT2JESDown;
+    Float_t TMETMETUp;
+    Float_t TMETMETDown;
+    Float_t TMT2METUp;
+    Float_t TMT2METDown;
 
     Float_t  TISRweight;
+    Float_t  TISRweightUp;
+    Float_t  TISRweightDown;
+
     Float_t  TWeight_LepEffUp;
     Float_t  TWeight_LepEffDown;
     Float_t  TWeight_TrigUp;
@@ -118,6 +129,8 @@ class StopAnalysis : public PAFChainItemSelector{
     Float_t  TWeight_PUDown;
     Float_t  TWeight_PUUp;
     Float_t  TWeight_FSDown;
+    Float_t  TWeight_ISRUp;
+    Float_t  TWeight_ISRDown;
 
     Float_t TgenTop1Pt ;
     Float_t TgenTop1Eta;
@@ -151,9 +164,11 @@ class StopAnalysis : public PAFChainItemSelector{
   protected:
     Bool_t  gIsData;
     Bool_t  gIsLHE;
+    Bool_t  gIsTTbar;
     Bool_t  gDoSyst;
     Int_t   gSelection;
     TString gSampleName;
+    Bool_t  gDoISR;
 
     ClassDef(StopAnalysis, 0);
 };
