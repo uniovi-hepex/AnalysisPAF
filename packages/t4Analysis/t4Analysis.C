@@ -173,7 +173,7 @@ void t4Analysis::InsideLoop(){
       else                          TChannel = iOS1tau;
     }
     if( (TNSelLeps == 1 && TNFakeableLeps >= 1) || (TNSelLeps == 0 && TNFakeableLeps >= 2) ){
-      else if  (IsThereSSpair(xLeptons)) TChannel = i1Tau_emufakeSS; 
+      if  (IsThereSSpair(xLeptons)) TChannel = i1Tau_emufakeSS; 
       else  TChannel = i1Tau_emufakeOS;
     }
   }
