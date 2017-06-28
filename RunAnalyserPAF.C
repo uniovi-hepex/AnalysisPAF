@@ -59,13 +59,16 @@ Bool_t G_IsFastSim = false;
 
 //=============================================================================
 // Global Enums
-enum  ESelector               {iStopSelec, iTopSelec, iTWSelec, iWWSelec, iHWWSelec,
+enum  ESelector               {iStopSelec, iTopSelec, iTWSelec, iWWSelec, iHWWSelec, 
 			      ittDMSelec, ittHSelec, iWZSelec, i4tSelec, nSel};
-const TString kTagSel[nSel] = {"Stop",     "Top",     "TW",     "WW", "HWW",     
+const TString kTagSel[nSel] = {"Stop",     "Top",     "TW",     "WW",     
 			      "ttDM",     "ttH",     "WZ",     "tttt" };
 //
 //=============================================================================
 
+
+
+//=============================================================================
 // Main function
 void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots, 
 		    Long64_t nEvents, Long64_t FirstEvent,
@@ -116,10 +119,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   else if(Selection == "ttH"       || Selection == "TTH"     ) sel = ittHSelec;
   else if(Selection == "tttt"      || Selection == "4t"      ) sel = i4tSelec;
   else if(Selection == "WW"                                  ) sel = iWWSelec;
-  else if(Selection == "HWW"				     ) sel = iHWWSelec;
-  else{ cout << "\033[1;31m >>>> WRONG SELECTION <<<< \033[0m\n"; return;}
-	cout << "\n" << endl;
-  if(verbose) cout << Form("\033[1;35m >>> Analysis: %s \033[0m\n", tagSel[sel].Data());
+  else if(Selection == "HWW"                                 ) sel = iHWWSelec;
   else { 
     PAF_ERROR("RunAnalyserPAF", Form("Wrong selection \"%s\".",
 				     Selection.Data()));
@@ -323,16 +323,17 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   // Add the input data files
   myProject->AddDataFiles(Files); 
 
-	if     (nEvents > 0 && FirstEvent == 0) myProject->SetNEvents(nEvents);
-	else if(FirstEvent != 0){
-		myProject->SetNEvents(nEvents);
-		myProject->SetFirstEvent(FirstEvent);
-	}
-				
-	TString outputFile = outputDir + "/Tree_" + sampleName + ".root";
-	PAF_INFO("RunAnalyserPAF", Form("Output file is \"%s\"\n\n",outputFile.Data()));
-	myProject->SetOutputFile(outputFile);
+  // Deal with first and last event
+  if     (nEvents > 0 && FirstEvent == 0) myProject->SetNEvents(nEvents);
+  else if(FirstEvent != 0){
+    myProject->SetNEvents(nEvents);
+    myProject->SetFirstEvent(FirstEvent);
+  }
 
+  // Set output file
+  TString outputFile = outputDir + "/Tree_" + sampleName + ".root";
+  PAF_INFO("RunAnalyserPAF", Form("Output file is \"%s\"\n\n",outputFile.Data()));
+  myProject->SetOutputFile(outputFile);
 
 
   // Parameters for the analysis
@@ -376,6 +377,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
     myProject->AddSelectorPackage("TWAnalysis");
   }
   else if (sel == iWWSelec  )  myProject->AddSelectorPackage("WWAnalysis");
+  else if (sel == iHWWSelec )  myProject->AddSelectorPackage("HWWAnalysis");
   else                         PAF_FATAL("RunAnalyserPAF", "No selector defined for this analysis!!!!");
   
   // Additional packages
