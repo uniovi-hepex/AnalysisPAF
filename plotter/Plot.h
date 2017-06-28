@@ -208,7 +208,7 @@ public:
   void SetGoF(TString thegof="chi2");
   
   void DrawStack(TString tag, bool sav);
-  void DrawComp(TString tag = "0", bool sav = 1, bool doNorm = 0, TString style = "pe");
+  void DrawComp(TString tag = "0", bool sav = 1, bool doNorm = 0, TString options = "");
   void SaveHistograms();
   TString GetStatUncDatacard(Int_t iSignal = 0);
 	TString GetShapeUncLines();
@@ -241,7 +241,7 @@ public:
 
   void AddToHistos(Histo* p);
 	void AddVarHistos(TString sys);
-	void AddSystematic(TString s);
+	void AddSystematic(TString s, TString pr = "");
   void AddToSystematicLabels(TString sys){
     sys.ReplaceAll("Up", ""); sys.ReplaceAll("Down", "");
     for(Int_t i = 0; i < (Int_t) VSystLabel.size(); i++){
@@ -303,6 +303,7 @@ public:
   TString GetSignalProcess(){ return SignalProcess;}
 
   void SetCMSlabel(TString t){ CMSlabel = t;}
+//  void SetInfoText(TString t){ InfoText = t;}
 
 protected: 
   TString pathToHeppyTrees = "";
