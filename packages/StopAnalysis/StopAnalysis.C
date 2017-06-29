@@ -16,19 +16,21 @@ void StopAnalysis::ResetVariables(){
   gChannel = 0; passMETfilters = 0; passTrigger = 0; isSS = 0;  NormWeight = 0; TWeight = 0;
   TMT2 = 0; TMll = 0;  TMET = 0; TMET_Phi = 0; TgenMET = 0; TNJets = 0; TNBtags = 0; THT = 0; 
   TNVetoLeps = 0; TNSelLeps = 0; TChannel = 0; TDeltaPhi = 0; TDeltaEta = 0;
-  TNJetsJESUp = 0; TNJetsJESDown = 0; TNJetsJER = 0; TNBtagsJESUp = 0; TNBtagsJESDown = 0;
+  TNJetsJESUp = 0; TNJetsJESDown = 0; TNJetsJERUp = 0; TNBtagsJESUp = 0; TNBtagsJESDown = 0;
   TNBtagsBtagUp = 0; TNBtagsBtagDown = 0; TNBtagsMisTagUp = 0; TNBtagsMisTagDown = 0;
   THTJESUp = 0; THTJESDown = 0; TNISRJets = 0;
-  TMETJESUp = 0; TMETJESDown = 0; TMT2llJESUp = 0; TMT2llJESDown = 0;
+  TMETJERUp = 0; TMETJESUp = 0; TMETJESDown = 0; TMT2JERUp = 0; TMT2JESUp = 0; TMT2JESDown = 0;
   TWeight_LepEffUp = 0; TWeight_LepEffDown = 0; TWeight_TrigUp = 0; TWeight_TrigDown = 0;
   TWeight_FSUp = 0; TWeight_FSDown = 0; TWeight_PUDown = 0; TWeight_PUUp = 0;
-  TIsSS = false; TNLHEWeight = 0; TISRweight = 0; 
+  TIsSS = false; TNLHEWeight = 0; TISRweight = 0; TISRweightUp = 0; TISRweightDown = 0; TWeight_ISRUp = 0; TWeight_ISRDown = 0;
   TLep0_Pt = 0; TLep0_Eta = 0; TLep0_Phi = 0; TLep0_E = 0; TLep0_Charge = 0; TLep0_Id = 0;
   TLep1_Pt = 0; TLep1_Eta = 0; TLep1_Phi = 0; TLep1_E = 0; TLep1_Charge = 0; TLep1_Id = 0;
   TgenMETPhi = 0; TNgenLeps = 0;
   TgenLep0_Pt = 0; TgenLep0_Eta = 0; TgenLep1_Pt = 0; TgenLep1_Eta = 0; TgenLep0_Id = 0; TgenLep1_Id = 0;
   TgenDeltaPhi = 0; TgenDeltaEta = 0; TgenMT2 = 0; TNgenJets = 0;  TgenHT = 0;
   TgentopDeltaPhi = 0; TgentopDeltaR = 0;
+  TMETMETDown = 0; TMETMETUp = 0; TMT2METUp = 0; TMT2METDown = 0;
+  TPassTrigger = 0;
   for(Int_t i = 0; i < 20; i++){
     TJet_Pt[i] = 0;
     TJet_Eta[i] = 0;
@@ -63,12 +65,17 @@ void StopAnalysis::Initialise(){
     gLspMass  = GetParam<Int_t>("lspMass");
     NormISRweights = GetParam<Float_t>("NormISRweights");
   }
+  else if(gSampleName.BeginsWith("T2tt")) NormISRweights = GetParam<Float_t>("NormISRweights");
   fTree = CreateTree("tree","Created with PAF");
   fSumISRJets = CreateH1F("SumISRweights", "SumISRweights", 1 , 0, 2); 
   fISRJets =    CreateH1F(   "ISRweights",    "ISRweights", 6 , 0, 6); 
 
   gIsLHE = false;
   if(gSampleName == ("TTbar_Powheg")) gIsLHE = true;
+  if(gSampleName.Contains("TTbar")) gIsTTbar = true;
+  
+  gDoISR = false;
+  if(gSampleName.Contains("T2tt")) gDoISR = true;
 
   TNLHEWeight = 254; 
   SetLeptonVariables();
@@ -95,6 +102,9 @@ void StopAnalysis::InsideLoop(){
   selJets     = GetParam<vector<Jet>>("selJets");
   Jets15      = GetParam<vector<Jet>>("Jets15");
   genJets     = GetParam<vector<Jet>>("genJets");
+  if(gIsTTbar){
+    if(genLeptons.size() < 2) return;
+  }
 
   // Weights and SFs
   NormWeight   = GetParam<Float_t>("NormWeight");
@@ -118,11 +128,11 @@ void StopAnalysis::InsideLoop(){
 
   fSumISRJets->Fill(1, getISRJetsWeight(TNISRJets)); 
 
-  if(1){
-  //if(TNSelLeps == 2 && passTrigger && passMETfilters){ // 2 leptons, OS
-//  if(TNSelLeps == 2){ // 2 leptons, OS
-//  if(TNSelLeps == 2 && passTrigger && passMETfilters && !isSS){ // 2 leptons, OS
-   // if(TNVetoLeps < 3){  // Veto to 3rd lepton
+ // if(TNSelLeps == 2 && passMETfilters){ // 2 leptons, OS
+    //if(1){ 
+      if(TNSelLeps == 2){ // 2 leptons, OS
+    //if(TNSelLeps == 2 && passTrigger && passMETfilters && !isSS){ // 2 leptons, OS
+    //  if(TNVetoLeps < 3){  // Veto to 3rd lepton
     if(1){  // Veto to 3rd lepton
       // Deal with weights:
       Float_t lepSF = 1; Float_t lepSFUp = 0; Float_t lepSFDo = 0;
@@ -131,6 +141,7 @@ void StopAnalysis::InsideLoop(){
         lepSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1);
         lepSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1);
       }
+      if(gIsFastSim) TrigSF = 0.98;
       TWeight            = NormWeight*lepSF*TrigSF*PUSF;
       TWeight_LepEffUp   = NormWeight*lepSFUp*TrigSF*PUSF;
       TWeight_LepEffDown = NormWeight*lepSFDo*TrigSF*PUSF;
@@ -138,22 +149,24 @@ void StopAnalysis::InsideLoop(){
       TWeight_TrigDown   = NormWeight*lepSF*(TrigSF-TrigSFerr)*PUSF;
       TWeight_PUDown     = NormWeight*lepSF*TrigSF*PUSF_Up;
       TWeight_PUUp       = NormWeight*lepSF*TrigSF*PUSF_Down;
+      TWeight_ISRUp      = NormWeight*lepSF*TrigSF*PUSF*TISRweightUp;
+      TWeight_ISRDown    = NormWeight*lepSF*TrigSF*PUSF*TISRweightDown;
       if(gIsData) TWeight = 1;
 
       // Event Selection
       // ===================================================================================================================
-/*    if((selLeptons.at(0).p + selLeptons.at(1).p).M() > 20 && selLeptons.at(0).p.Pt() > 25){ // mll > 20 GeV
+    if((selLeptons.at(0).p + selLeptons.at(1).p).M() > 20 && selLeptons.at(0).p.Pt() > 25){ // mll > 20 GeV
         if(gChannel == iElMu || (TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15)  ){ //  Z Veto in ee, µµ
-          if(TNJets > 1 || TNJetsJESUp > 1 || TNJetsJESDown > 1 || TNJetsJER > 1){ //At least 2 jets
+          if(TNJets > 1 || TNJetsJESUp > 1 || TNJetsJESDown > 1 || TNJetsJERUp > 1){ //At least 2 jets
             if(TNBtags > 0 || TNBtagsBtagUp > 0 || TNBtagsBtagDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0){ // At least 1 b-tag
               fTree->Fill();
             }
           }
         }
-      }*/
+      }
     }
   }
-  if(TNgenLeps >= 2) fTree->Fill();
+  //if(TNgenLeps >= 2) fTree->Fill();
 }
 
 
@@ -177,6 +190,7 @@ void StopAnalysis::SetLeptonVariables(){
   fTree->Branch("TLep1_Charge",  &TLep1_Charge, "TLep1_Charge/F");
   fTree->Branch("TLep1_Id" ,     &TLep1_Id ,     "TLep1_Id/I");
   fTree->Branch("TChannel",      &TChannel,      "TChannel/I");
+  fTree->Branch("TPassTrigger",  &TPassTrigger,  "TPassTrigger/I");
   fTree->Branch("TMll",      &TMll,      "TMll/F");
   fTree->Branch("TMT2",      &TMT2,      "TMT2/F");
   fTree->Branch("TDeltaPhi",      &TDeltaPhi,      "TDeltaPhi/F");
@@ -210,7 +224,7 @@ void StopAnalysis::SetJetVariables(){
   fTree->Branch("TNJetsJESDown",    &TNJetsJESDown,         "TNJetsJESDown/I");
   fTree->Branch("TNBtagsJESUp",      &TNBtagsJESUp,         "TNBtagsJESUp/I");
   fTree->Branch("TNBtagsJESDown",    &TNBtagsJESDown,         "TNBtagsJESDown/I");
-  fTree->Branch("TNJetsJER",        &TNJetsJER,         "TNJetsJER/I");
+  fTree->Branch("TNJetsJERUp",        &TNJetsJERUp,         "TNJetsJERUp/I");
 
   fTree->Branch("TNBtagsBtagUp",           &TNBtagsBtagUp,   "TNBtagsBtagUp/I");
   fTree->Branch("TNBtagsBtagDown",         &TNBtagsBtagDown, "TNBtagsBtagDown/I");
@@ -219,7 +233,7 @@ void StopAnalysis::SetJetVariables(){
 
   fTree->Branch("TJetJESUp_Pt",      TJetJESUp_Pt,      "TJetJESUp_Pt[TNJetsJESUp]/F");
   fTree->Branch("TJetJESDown_Pt",    TJetJESDown_Pt,    "TJetJESDown_Pt[TNJetsJESDown]/F");
-  fTree->Branch("TJetJER_Pt",        TJetJER_Pt,        "TJetJER_Pt[TNJetsJER]/F");
+  fTree->Branch("TJetJER_Pt",        TJetJER_Pt,        "TJetJER_Pt[TNJetsJERUp]/F");
 
   fTree->Branch("TNgenJets",        &TNgenJets,       "TNgenJets/I");
   fTree->Branch("TNgenBtags",       &TNgenBtags,      "TNgenBtags/I");
@@ -246,10 +260,16 @@ void StopAnalysis::SetEventVariables(){
 
   //fTree->Branch("TNLHEWeight",        &TNLHEWeight,         "TNLHEWeight/I");
   fTree->Branch("TLHEWeight",        TLHEWeight,         "TLHEWeight[254]/F");
+  fTree->Branch("TMETJERUp",    &TMETJERUp,    "TMETJERUp/F");
   fTree->Branch("TMETJESUp",    &TMETJESUp,    "TMETJESUp/F");
   fTree->Branch("TMETJESDown",  &TMETJESDown,  "TMETJESDown/F");
-  fTree->Branch("TMT2llJESUp",    &TMT2llJESUp,    "TMT2llJESUp/F");
-  fTree->Branch("TMT2llJESDown",  &TMT2llJESDown,  "TMT2llJESDown/F");
+  fTree->Branch("TMT2JERUp",    &TMT2JERUp,    "TMT2JERUp/F");
+  fTree->Branch("TMT2JESUp",    &TMT2JESUp,    "TMT2JESUp/F");
+  fTree->Branch("TMT2JESDown",  &TMT2JESDown,  "TMT2JESDown/F");
+  fTree->Branch("TMETMETUp",    &TMETMETUp,    "TMETMETUp/F");
+  fTree->Branch("TMETMETDown",  &TMETMETDown,  "TMETMETDown/F");
+  fTree->Branch("TMT2METUp",    &TMT2METUp,    "TMT2METUp/F");
+  fTree->Branch("TMT2METDown",  &TMT2METDown,  "TMT2METDown/F");
 
   fTree->Branch("TgenMETPhi"  , &TgenMETPhi , "TgenMETPhi/F" ); 
   fTree->Branch("TgenTop1Pt"  , &TgenTop1Pt , "TgenTop1Pt/F" );
@@ -293,6 +313,7 @@ void StopAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vecto
     TDeltaPhi = (selLeptons.at(0).p.DeltaPhi(selLeptons.at(1).p));
     TDeltaEta = TMath::Abs(TMath::Abs(selLeptons.at(0).p.Eta()) - TMath::Abs(selLeptons.at(1).p.Eta()));
   }
+  TPassTrigger = passTrigger;
   if(gIsData) return;  
 }
 
@@ -330,7 +351,7 @@ void StopAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cl
   TNJetsJESDown  = 0;
   TNBtagsJESUp    = 0;
   TNBtagsJESDown  = 0;
-  TNJetsJER      = 0;  
+  TNJetsJERUp      = 0;  
   THTJESUp = 0; THTJESDown = 0;
   for(Int_t i = 0; i < (Int_t) cleanedJets15.size(); i++){
     if(cleanedJets15.at(i).pTJESUp > ptCut){
@@ -346,7 +367,7 @@ void StopAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cl
       THTJESDown += TJetJESUp_Pt[i];
     }
     if(cleanedJets15.at(i).pTJERUp > ptCut){
-      TNJetsJER++;
+      TNJetsJERUp++;
       TJetJER_Pt[i] = cleanedJets15.at(i).pTJERUp;
     }
   }
@@ -356,30 +377,37 @@ void StopAnalysis::GetMET(){
   TMET        = Get<Float_t>("met_pt");
   TMET_Phi    = Get<Float_t>("met_phi");  // MET phi
   TIsSS       = isSS;
+  if(TNSelLeps>1)  TMT2 = getMT2ll(selLeptons.at(0), selLeptons.at(1), TMET,        TMET_Phi);
+  if(gIsData) return;
+  TgenMET     = Get<Float_t>("met_genPt");
+  TMETMETUp = TMET; TMETMETDown = TMET;
+  TMT2METDown = TMT2; TMT2METUp = TMT2;
+  TMETJERUp   = GetParam<Float_t>("MET_JERUp");
+  TMETJESUp   = GetParam<Float_t>("MET_JESUp");
+  TMETJESDown = GetParam<Float_t>("MET_JESDown");
   if(gIsFastSim){
-  //if(1){
-    TgenMET     = Get<Float_t>("met_genPt");
     TMET = (TMET + TgenMET)/2;
     Float_t difMET = TMath::Abs(TMET-TgenMET)/2;
-    TMETJESUp   = TMET + difMET;
-    TMETJESDown = TMET - difMET;
-    if(TNSelLeps>1){
-      TMT2        = getMT2ll(selLeptons.at(0), selLeptons.at(1), TMET,        TMET_Phi);
-      TMT2llJESUp   = getMT2ll(selLeptons.at(0), selLeptons.at(1), TMETJESUp,   TMET_Phi);
-      TMT2llJESDown = getMT2ll(selLeptons.at(0), selLeptons.at(1), TMETJESDown, TMET_Phi);
+    TMETMETUp = TMET + difMET;
+    TMETMETDown = TMET - difMET;
+    TMETJERUp   = JERtoMET(selJets, TMET, TMET_Phi);
+    TMETJESUp   = JEStoMET(selJets, TMET, TMET_Phi,  1);
+    TMETJESDown = JEStoMET(selJets, TMET, TMET_Phi, -1);
+  }
+  if(TNSelLeps > 1){
+    TMT2JERUp   = getMT2ll(selLeptons.at(0), selLeptons.at(1), TMETJERUp,   TMET_Phi);
+    TMT2JESUp   = getMT2ll(selLeptons.at(0), selLeptons.at(1), TMETJESUp,   TMET_Phi);
+    TMT2JESDown = getMT2ll(selLeptons.at(0), selLeptons.at(1), TMETJESDown, TMET_Phi);
+    if(gIsFastSim){
+      TMT2METUp     = getMT2ll(selLeptons.at(0), selLeptons.at(1), TMETMETUp,   TMET_Phi);
+      TMT2METDown   = getMT2ll(selLeptons.at(0), selLeptons.at(1), TMETMETUp,   TMET_Phi);
     }
   }
-  else{
-    if(TNSelLeps>1)  TMT2 = getMT2ll(selLeptons.at(0), selLeptons.at(1), TMET,        TMET_Phi);
-    if(gIsData) return;
-    TMETJESUp   = GetParam<Float_t>("MET_JESUp");
-    TMETJESDown = GetParam<Float_t>("MET_JESDown");
-    if(TNSelLeps > 1){
-      TMT2llJESUp   = getMT2ll(selLeptons.at(0), selLeptons.at(1), TMETJESUp,   TMET_Phi);
-      TMT2llJESDown = getMT2ll(selLeptons.at(0), selLeptons.at(1), TMETJESDown, TMET_Phi);
-    }
-  }
-  TISRweight = getISRJetsWeight(TNISRJets)/NormISRweights;
+  TISRweight     = 1;
+  if(gDoISR) TISRweight = getISRJetsWeight(TNISRJets)/NormISRweights;
+  Float_t diff   = TMath::Abs(TISRweight - 1)/2;
+  TISRweightUp   = TISRweight + diff;
+  TISRweightDown = TISRweight - diff;
   if(gIsLHE) for(Int_t i = 0; i < Get<Int_t>("nLHEweight"); i++)   TLHEWeight[i] = Get<Float_t>("LHEweight_wgt", i);
 }
 

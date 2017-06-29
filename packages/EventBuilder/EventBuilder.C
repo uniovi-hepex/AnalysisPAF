@@ -382,8 +382,8 @@ Bool_t EventBuilder::TrigElMu(){
 
 Bool_t EventBuilder::Trig3l4l() {
   Bool_t pass = false;
-  Int_t ne    = 0;
-  Int_t nm    = 0;
+  UInt_t ne    = 0;
+  UInt_t nm    = 0;
   
   for (UInt_t i = 0; i < selLeptons.size(); i++) {
     if (selLeptons.at(i).isMuon)  nm++;
@@ -393,11 +393,12 @@ Bool_t EventBuilder::Trig3l4l() {
   pass = PassesThreelFourlTrigger();
   
   if(gIsData) {
-    if      (gIsSingleMuon && ((nm+ne != nm) || (nm + ne != ne))) pass = false;
-    else if (gIsSingleElec && ((nm+ne != nm) || (nm + ne != ne))) pass = false;
+    if      (gIsSingleMuon && (ne != 0 && nm != 0)) pass = false;
+    else if (gIsSingleElec && (ne != 0 && nm != 0)) pass = false;
     else if (gIsDoubleMuon) pass = false;
     else if (gIsDoubleElec) pass = false;
   }
+  
   return pass;
 }
 

@@ -423,7 +423,7 @@ TextDatacard TextDatacard::operator+(TextDatacard d){
 // =======================================================================
 // Other functions
 // =======================================================================
-std::vector<TString> TStringToVector(TString t, char separator){
+std::vector<TString> Datacard::TStringToVector(TString t, char separator){
   std::vector<TString> v;
   t.ReplaceAll(" ", "");
   Int_t n = t.CountChar(separator);
