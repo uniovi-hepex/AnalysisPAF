@@ -239,8 +239,9 @@ Float_t LeptonSF::GetLeptonSF(Float_t pt, Float_t ieta, Int_t type){
   Float_t SF = 1; Int_t id; Float_t pr = 1;
   //if(type == 1) cout << "================================= new Elec! [pt,eta] = [" << pt << "," << eta << "]..." << endl;
   //if(type == 0) cout << "================================= new Muon! [pt,eta] = [" << pt << "," << eta << "]..." << endl;
+  if(pt <= 20) pt = 20.01;
   for(Int_t i = 0; i < nSFs; i++){
-    pr = 1;
+    pr = 1; 
     id = loadedHistos[i];
     if(type == 0){
       if(pt > 120) pt = 119;
@@ -290,6 +291,7 @@ Float_t LeptonSF::GetLeptonSFerror(Float_t pt, Float_t ieta, Int_t type){
   float t = 0;
   Int_t nSFs = loadedHistos.size();
   Float_t err = 0; Int_t id;
+  if(pt <= 20) pt = 20.01;
   for(Int_t i = 0; i < nSFs; i++){
     id = loadedHistos[i];
     if(type == 0){
