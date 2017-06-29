@@ -427,7 +427,7 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
       passIso = getRelIso03POG(iTight);
       if(TMath::Abs(etaSC) > 1.4442 && TMath::Abs(etaSC) < 1.566) return false;
     }
-    if(lep.p.Pt() < 10 || TMath::Abs(lep.p.Eta()) > 2.4) return false;
+    if(lep.p.Pt() < 15 || TMath::Abs(lep.p.Eta()) > 2.4) return false;
     if(passId && passIso && getGoodVertex(iTight) && getSIPcut(4)) return true;
     else return false;
     return false;

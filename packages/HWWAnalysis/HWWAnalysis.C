@@ -146,7 +146,7 @@ void HWWAnalysis::InsideLoop(){
 			// utilizando minitrees aquí pongo el nivel más básico de seleccion de eventos. Será en el plotter donde escogeremos más a fondo.
 
 //=============================// analisis de cosas básicas de HWW
-			if((selLeptons.at(0).p.Pt() > 20 && selLeptons.at(1).p.Pt() > 10) && ((selLeptons.at(0).p +selLeptons.at(1).p).M() > 12) && (gChannel == iElMu) ){
+			if(((selLeptons.at(0).p + selLeptons.at(1).p).M() > 12) && (gChannel == iElMu) ){
 				fTree->Fill();
 			};
 		};

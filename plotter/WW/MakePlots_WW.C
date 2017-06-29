@@ -132,16 +132,17 @@ void Draw(TString var, TString cuts, TString chan, Int_t nbins, Int_t x0, Int_t 
 	p->AddSample("WWTo2L2Nu", "WW", itBkg, kBlue+1);
 	p->AddSample("GGWWTo2L2Nu", "WW", itBkg);
 	
-	p->AddSample("ggHWWTo2L2Nu", "H-WW", itSignal, kGreen);
+	//p->AddSample("ggHWWTo2L2Nu", "H-WW", itSignal, kGreen);
 	//esta es la señal
-	p->GetHisto("H-WW")->SetLineWidth(3);
+	//p->GetHisto("H-WW")->SetLineWidth(2);
    	//=================================================================
-
-	//p->SetCMSlabel(" bla bla bla en vez de CMS preliminary);
+	p->SetCMSlabel("CMS Academic");
 	//p->AddSystematic("JES,Btag,MisTag,PU,stat");
   	p->AddSystematic("stat");
 	//p->PrintYields();
 	//p->SetSignalStyle("BSM");
+	//p->SetSignalStyle("H");
+	//p->SetSignalDrawStyle("H");
 	p->doSetLogy = false;
 	p->DrawStack(tag, 1);
 	//p->doSetLogy = true;
@@ -248,9 +249,9 @@ void xsec(){
 void MakePlots_WW(){
   
 //==========================//Loops a todas las control region. 
-   //LoopDrawCR("CRSS");
-   //LoopDrawCR("CRttbar");
-   //LoopDrawCR("CRWW");
+   LoopDrawCR("CRSS");
+   LoopDrawCR("CRttbar");
+   LoopDrawCR("CRWW");
    //LoopDrawCR("CRDY");
    
 //los Loops a las regiones control Inclusivas:
@@ -270,7 +271,7 @@ void MakePlots_WW(){
 
 //=======================Plot Cross Section ==================================================================//
 
-   xsec();
+   //xsec();
 
 
 
