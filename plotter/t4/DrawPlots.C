@@ -10,7 +10,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 TString NameOfTree = "tree";
 TString pathToTree = "";
 
-bool doSync = true;
+bool doSync = false;
 // Baseline
 //TString baseline = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TNTaus == 0 && !TIsOnZ";
 //TString CRZ      = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TNTaus == 0 && TIsOnZ";
@@ -83,26 +83,24 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   Plot* p = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
   if(outFolder!="") p->SetPlotFolder(outFolder);
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
-  p->verbose = false;
+  p->verbose = true;
 //  p->doData = false;
   if(varName != "") p->SetVarName(varName);
   if(cutName != "") p->SetOutputName(cutName);
   
-  //p->AddSample("WZTo3LNu",                                        "WZ",       itBkg, kOrange);    // WZ
-  //p->AddSample("WWTo2L2Nu, WpWpJJ, WWTo2L2Nu_DoubleScat",         "WW",       itBkg, kOrange-3);  // WW
+  p->AddSample("WZTo3LNu",                                        "WZ",       itBkg, kOrange);    // WZ
+  p->AddSample("WWTo2L2Nu, WpWpJJ, WWTo2L2Nu_DoubleScat",         "WW",       itBkg, kOrange-3);  // WW
   p->AddSample("TGJets, TTGJets, WGToLNuG, ZGTo2LG",                "X+#gamma", itBkg, kViolet+2);  // X+gamma //"WZG_amcatnlo" "WWG_amcatnlo"
   p->AddSample("WWW, WWZ, WZZ, ZZZ, ZZTo4L, VHToNonbb_amcatnlo, tZq_ll",    "Rare SM",  itBkg, kMagenta-7); // RareSM
   p->AddSample("WZTo3LNu, WWTo2L2Nu, WpWpJJ, WWTo2L2Nu_DoubleScat", "Rare SM",  itBkg, kMagenta-7); // RareSM
+
   // Nonprompt from MC
   //p->AddSample("WJetsToLNu_MLM, DYJetsToLL_M5to50_MLM, DYJetsToLL_M50_MLM",                                 "Nonprompt", itBkg, kGray);
   //p->AddSample("TTbar_Powheg, TW_noFullyHadr, TbarW_noFullyHadr, T_tch, Tbar_tch, TToLeptons_sch_amcatnlo", "Nonprompt", itBkg);
 
   // Nonprompt from data
 	p->AddSample("MuonEG, DoubleEG, DoubleMuon",     "Nonprompt", itBkg, kGray, "0", "FakeLep");
-	// Fake subs 
-//  p->AddSample("WZTo3LNu, WWTo2L2Nu,WpWpJJ,WWTo2L2Nu_DoubleScat,TGJets", "Nonprompt", itBkg, kGray, "0", "FakeLepsubs");
-        p->AddSample("WZTo3LNu, WWTo2L2Nu,WpWpJJ,WWTo2L2Nu_DoubleScat, WWW, WWZ, WZZ, ZZZ, ZZTo4L, VHToNonbb_amcatnlo,TTZToLLNuNu, TTZToLL_M1to10, TTHNonbb, tZq_ll,TTWToLNu", "Nonprompt", itBkg, kGray, "0", "FakesubsLep");
-  //p->AddSample("WZTo3LNu, WWTo2L2Nu,WpWpJJ,WWTo2L2Nu_DoubleScat,TGJets,TTGJets, WGToLNuG, ZGTo2LG,WWW, WWZ, WZZ, ZZZ, ZZTo4L, VHToNonbb_amcatnlo,TTZToLLNuNu, TTZToLL_M1to10, TTHNonbb, tZq_ll,TTWToLNu", "Nonprompt", itBkg, kGray, "0", "Fakesubs");
+  p->AddSample("WZTo3LNu, WWTo2L2Nu,WpWpJJ,WWTo2L2Nu_DoubleScat, WWW, WWZ, WZZ, ZZZ, ZZTo4L, VHToNonbb_amcatnlo,TTZToLLNuNu, TTZToLL_M1to10, TTHNonbb, tZq_ll,TTWToLNu", "Nonprompt", itBkg, kGray, "0", "FakesubsLep");
 
   // Charge misID
   

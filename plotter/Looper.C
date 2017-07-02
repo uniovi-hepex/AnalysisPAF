@@ -54,7 +54,7 @@ TString Looper::CraftFormula(TString cuts, TString chan, TString sys, TString op
   if((options.Contains("Fake") || options.Contains("fake"))){
     if(chan.Contains("Lep")) schan = Form("(TChannel == %i || TChannel == %i)", i2lss_fake, iTriLep_fake);
     if(chan.Contains("Tau")) schan = Form("(TChannel == %i)", i1Tau_emufake);
-    if(!options.Contains("sub") && !options.Contains("Sub"))  formula = TString("(") + cuts + TString(")*(") + schan + TString(")*") + weight;
+    if(options.Contains("sub") || options.Contains("Sub"))  formula = TString("(") + cuts + TString(")*(") + schan + TString(")*") + weight;
     else formula = TString("(") + cuts + TString(")*(") + schan + TString(")");
   }
   if(options.Contains("isr") || options.Contains("ISR"))   formula = "TISRweight*(" + formula + ")";
