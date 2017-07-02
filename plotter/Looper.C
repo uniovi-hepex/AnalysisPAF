@@ -136,8 +136,10 @@ void Looper::Loop(TString sys){
     FornFakeLep  = GetFormula("nFakeLep", "TNFakeableLeps");
   }
 
+  Int_t counter = 0;
   for (Long64_t jentry=0; jentry<nEntries; jentry++) {
     tree->GetEntry(jentry);
+    counter ++;
     if(numberInstance != 0) FormulasVars->GetNdata();
     weight  = FormulasCuts->EvalInstance();
     val     = FormulasVars->EvalInstance(numberInstance);
@@ -165,7 +167,7 @@ void Looper::Loop(TString sys){
       nLeps     = FornSelLep->EvalInstance();
       nTaus     = FornSelTau->EvalInstance();
       if(nFakeLeps <= 0)           continue;
-      for(Int_t i = 0; i < nfakes; i++){
+      for(Int_t i = 0; i < nFakeLeps ; i++){
         FLepPt    = ForFLepPt ->EvalInstance(i);
         FLepEta   = ForFLepEta->EvalInstance(i);
         FLepPdgId = ForFLepPdgId->EvalInstance(i);
@@ -173,6 +175,7 @@ void Looper::Loop(TString sys){
         if(FLepPdgId == 13) f *=     muonFakeRate(FLepPt, FLepEta);
         if(f >= 0.99) continue;
         weight *= f/(1-f);
+        //if(weight != 0) cout << "[" << counter << "] nFakes = " << nFakeLeps << ", weight = " << weight << endl;
       }
     }
 
