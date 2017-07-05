@@ -313,10 +313,11 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   myProject = new PAFProject(pafmode); 
   
   // Add TMVA library for TMVA Analysis
-  if(sel == ittDMSelec){
+  if(sel == ittDMSelec || sel == iTWSelec){
     TString tmvalibpath = gSystem->Getenv("ROOTSYS");
-    tmvalibpath += "lib/libTMVA.so";
+    tmvalibpath += "/lib/libTMVA.so";
     myProject->AddLibrary(tmvalibpath);
+    cout << tmvalibpath << endl;
   }
   
   // Add the input data files
