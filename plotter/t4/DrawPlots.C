@@ -36,9 +36,8 @@ TString NoFake   = Form("TChannel == %i || TChannel == %i || TChannel == %i || T
 void DrawPlots(TString cutName){
   
   TString username(gSystem->GetUserInfo(gSystem->GetUid())->fUser);
-  if(username=="vischia") pathToTree ="/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/jun15/";
-  //else pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/jun15/";
-  else pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/tttt_temp/";
+  if(username=="vischia") pathToTree ="/nfs/fanae/user/juanr/AnalysisPAF/tttt_temp/";
+  else pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/jun15/";
 
   TString cut;
   if     (cutName == "CRW" ) cut = CRW ;
@@ -55,7 +54,7 @@ void DrawPlots(TString cutName){
   else if(cutName == "SR9" ) cut = SR9 ;
   else if(cutName == "SR10") cut = SR10;
   else {cout << "Wrong name!!" << endl; return;}
-  
+
   NoFake = (cutName=="SR9" || cutName=="SR10" || cutName=="CRT") ? "1" : NoFake; 
 
   cut=baseline;
@@ -88,6 +87,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 //  p->doData = false;
   if(varName != "") p->SetVarName(varName);
   if(cutName != "") p->SetOutputName(cutName);
+
+  if(cutName.Contains("SR")) p->doData=false;
   
   p->AddSample("WZTo3LNu",                                        "WZ",       itBkg, kOrange);    // WZ
   p->AddSample("WWTo2L2Nu, WpWpJJ, WWTo2L2Nu_DoubleScat",         "WW",       itBkg, kOrange-3);  // WW
