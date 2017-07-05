@@ -4,8 +4,6 @@
 #include "Functions.h"
 #include <iostream>
 #include <vector>
-#include "TMVA/Factory.h"
-#include "TMVA/Reader.h"
 
 //enum eChannels{iUnkChan, iElMu, iMuon, iElec, nChannels};
 const Int_t nChannels = 3;
@@ -37,7 +35,6 @@ class TopAnalysis : public PAFChainItemSelector{
     std::vector<Jet> vetoJets;
 
     TTree* fTree;
-    TTree* fTWTree;
     Float_t TLHEWeight[254];
     void SetLeptonVariables();
     void SetJetVariables();
@@ -67,10 +64,7 @@ class TopAnalysis : public PAFChainItemSelector{
     void FillDYHistos(Int_t ch);
     void FillHistos(Int_t ch, Int_t cut);
   
-    void CalculateTWVariables();
     void get20Jets();
-    void ReSetTWVariables();
-    void SetTWVariables();
     Double_t getDilepMETJetPt(const TString& sys = "Norm");
     Double_t getDilepJetPt(const TString& sys = "Norm");
     Double_t getLep1METJetPt(const TString& sys = "Norm");
@@ -123,7 +117,7 @@ class TopAnalysis : public PAFChainItemSelector{
     // For systematics...
     Int_t   TNJetsJESUp;
     Int_t   TNJetsJESDown;
-    Int_t   TNJetsJER;
+    Int_t   TNJetsJERUp;
     Int_t   TNBtagsBtagUp;
     Int_t   TNBtagsBtagDown;
     Int_t   TNBtagsMisTagUp;
@@ -228,12 +222,7 @@ class TopAnalysis : public PAFChainItemSelector{
     Int_t   gSelection;
     TString gSampleName;
     Bool_t  gIsTTbar;
-    Bool_t  gIsTW;
     Bool_t  gIsLHE;
-    void    setTWBDT();
-    TMVA::Reader* BDT;
-    TMVA::Reader* BDT_JESUp;
-    TMVA::Reader* BDT_JESDown;
 
     ClassDef(TopAnalysis, 0);
 };

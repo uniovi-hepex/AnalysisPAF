@@ -92,6 +92,13 @@ TLorentzVector getPtllb(Lepton l1, Lepton l2, Float_t met, Float_t met_phi){
   return pl1 + pl2 + pmet;
 }
 
+Bool_t Cleaning(Jet j, vector<Lepton> vLep, Float_t minDR){
+  Int_t nLeps = vLep.size();
+  for(Int_t i = 0; i < nLeps; i++){
+    if(j.p.DeltaR(vLep[i].p) < minDR) return false;
+  }
+  return true;
+}
 
 // ==================================================================
 // ========================== Systematics ===========================
@@ -111,6 +118,21 @@ Float_t JEStoMET(vector<Jet> vjets, Float_t met, Float_t met_phi, Int_t dir){
     nomJets += vjets[i].p;
     if(dir < 0) temp.SetPtEtaPhiM(vjets[i].pTJESDown, vjets[i].p.Eta(), vjets[i].p.Phi(), vjets[i].p.M());
     else if(dir > 0) temp.SetPtEtaPhiM(vjets[i].pTJESUp,   vjets[i].p.Eta(), vjets[i].p.Phi(), vjets[i].p.M());
+    varJets += temp;
+  }
+  return (vmet+nomJets-varJets).Pt();
+}
+
+Float_t JERtoMET(vector<Jet> vjets, Float_t met, Float_t met_phi){
+  TLorentzVector vmet    = TLorentzVector();
+  vmet.SetPtEtaPhiM(met, 0, met_phi, 0);
+  TLorentzVector nomJets = TLorentzVector(0,0,0,0);
+  TLorentzVector varJets = TLorentzVector(0,0,0,0);
+  TLorentzVector temp = TLorentzVector(0,0,0,0);
+
+  for(Int_t i = 0; i < (Int_t) vjets.size(); i++){
+    nomJets += vjets.at(i).p;
+    temp.SetPtEtaPhiM(vjets[i].pTJERUp,   vjets[i].p.Eta(), vjets[i].p.Phi(), vjets[i].p.M());
     varJets += temp;
   }
   return (vmet+nomJets-varJets).Pt();
@@ -369,7 +391,7 @@ Float_t ClosestMlltoZ(vector<Lepton> leptons){
     for(Int_t j = 0; j < i; j++){
       if(leptons.at(i).type == leptons.at(j).type){ // same flavour
         if(leptons.at(i).charge*leptons.at(j).charge < 1){ // opposite sign
-          mll = (leptons.at(i).p + leptons.at(j).p).M(); if(best_mll = 0) best_mll = mll; 
+          mll = (leptons.at(i).p + leptons.at(j).p).M(); if(best_mll == 0) best_mll = mll; 
           if( TMath::Abs(mll - Zm) < TMath::Abs(best_mll - Zm) ) best_mll = mll;
         }
       }
@@ -450,7 +472,9 @@ Bool_t PassLowInvMass(vector<Lepton> leptons, Float_t Mll_max){
     for(Int_t j = 0; j < i; j++){
       if(leptons.at(i).type == leptons.at(j).type){ // same flavour
         if(leptons.at(i).charge*leptons.at(j).charge < 0){ // opposite sign
-          if( (leptons.at(i).p + leptons.at(j).p).M()  < Mll_max) return false;
+          if( (leptons.at(i).p + leptons.at(j).p).M()  < Mll_max){
+            return false;
+          }
         }
       }
     }
@@ -469,11 +493,29 @@ Bool_t PassesLowMassLimit(vector<Lepton> lepton, Float_t mm_max) {
 }
 
 Bool_t IsThereSSpair(vector<Lepton> leptons){
-//  return true;
+  //  return true;
   Int_t nLeps = leptons.size();
+  if(nLeps < 2) return false;
   for(Int_t i = 0; i < nLeps; i++){
     for(Int_t j = 0; j < i; j++){
-        if(leptons.at(i).charge*leptons.at(j).charge > 0) return true;
+      if(leptons.at(i).charge*leptons.at(j).charge > 0){
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+Bool_t IsThere3SS(vector<Lepton> leptons){
+  Int_t nLeps = leptons.size();
+  if(nLeps < 3) return false;
+  for(Int_t i = 2; i < nLeps; i++){
+    for(Int_t j = 1; j < i; j++){
+      for(Int_t k = 0; k < j; k++){
+        if( (leptons.at(i).charge == leptons.at(j).charge) && (leptons.at(k).charge == leptons.at(j).charge)){
+          return true;
+        }
+      }
     }
   }
   return false;

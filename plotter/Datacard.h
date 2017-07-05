@@ -7,7 +7,6 @@
 #include <iostream>
 
 
-std::vector<TString> TStringToVector(TString t, char separator = ',');
 TString _separation("##-----------\n");
 
 class Datacard{
@@ -37,6 +36,7 @@ class Datacard{
     void SetCardName(TString g){cardName = g; if(!g.EndsWith(".txt")) cardName += ".txt";}
 
     void InitialiseParams();
+    void SetParams();
     Float_t GetYieldFromFile(TString histoname);
     void GetParamsFormFile(TString options = "");
 
@@ -44,6 +44,7 @@ class Datacard{
     void SetStatProcess(TString p, Float_t activate = 1);
     void SetNuisanceProcess(TString p, TString nuisname, Float_t activate = 1);
     void SetNuisancesToProcess(TString p, TString nuisance, Float_t val = 1);
+    void SetNuisancesToAllProcesses(TString nuisance, Float_t val = 1);
     void SetRateProcess(TString p, Float_t v = 0);
     void SetNormUnc(TString p, Float_t v = 1);
     void SetRateSignal(Float_t v){ SetRateProcess(signalName, v);} 
@@ -66,15 +67,20 @@ class Datacard{
     Bool_t  *GetDoStat(){return doStat;}
     Float_t GetNormUnc(Int_t i){ return normUnc[i];}
     Float_t *GetDoNuis(Int_t i){ return doNuis[i];}
+    Bool_t IsShape(Int_t i){ return isShape[i];}
+    void SetShape(TString name, Bool_t activate = true){ for(Int_t i = 0; i < nNuisances; i++){ if(name == nuisName.at(i)) isShape[i] = activate;}}
+    void AddNuis(TString nuis){nuisName.push_back(nuis); SetParams();}
 
     TString GetFileString();
     void PrintDatacard(TString fname = "");
+    std::vector<TString> TStringToVector(TString t, char separator = ',');
 
   private:
     TString signalName;
     TString binName;
     vector<TString> processes; // List with the name of the processes
     vector<TString> nuisName;  // Name of all nuisance parameters
+    Bool_t  *isShape;  
     Float_t *rate;
     Float_t *normUnc;
     Bool_t  *doLumi;

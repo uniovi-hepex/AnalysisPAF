@@ -70,7 +70,7 @@ public:
     Lumi = DefaultLumi;
     nSignalSamples = 0;
         }
-        Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Double_t bin0 = 0, Double_t binN = 0, TString tit = "title", TString xtit = "VAR"){
+  Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Double_t bin0 = 0, Double_t binN = 0, TString tit = "title", TString xtit = "VAR"){
     var    = variable;
     cut    = (cuts);
     chan   = channel;
@@ -113,7 +113,55 @@ public:
     fLegY1 = 0.65;
     fLegX2 = 0.93; 
     fLegY2 = 0.93;
+    SignalDrawStyle = "hist";
   }
+  Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Float_t* bins = 0, TString tit = "title", TString xtit = "VAR"){
+    var    = variable;
+    cut    = (cuts);
+    chan   = channel;
+    nb     = nbins;
+    x0     = 0;
+    xN     = 0;
+    vbins  = bins;
+    title = tit;
+    xtitle = xtit;
+    varname = variable; if(variable.Contains(" ")) TString(variable(0,variable.First(" ")));
+
+    plotFolder = DefaultPlotfolder;
+    limitFolder = DefaultLimitFolder; 
+    Lumi = DefaultLumi;
+    VBkgs = std::vector<Histo*>();
+    VSignals = std::vector<Histo*>();
+    VSignalsErr = std::vector<Histo*>();
+    VData = std::vector<Histo*>();
+    VSyst = std::vector<Histo*>();
+		VSumHistoSystUp = std::vector<Histo*>();
+		VSumHistoSystDown =  std::vector<Histo*>();
+    VSystLabel = std::vector<TString>();
+    VTagSamples = std::vector<TString>();
+    VTagDataSamples = std::vector<TString>();
+    VTagProcesses = std::vector<TString>();
+    VTagOptions = std::vector<TString>();
+    hData = NULL;
+    hStack = NULL;
+    hAllBkg = NULL;
+    //hSignal = NULL; 
+
+    plot = NULL; pratio = NULL;
+    texlumi = NULL;
+    texcms = NULL;
+    texchan = NULL;
+    hratio = NULL;
+    TotalSysUp = NULL;
+    TotalSysDown = NULL;
+    nSignalSamples = 0;
+    fLegX1 = 0.70; 
+    fLegY1 = 0.65;
+    fLegX2 = 0.93; 
+    fLegY2 = 0.93;
+    SignalDrawStyle = "hist";
+  }
+	
 	virtual ~Plot(){
 		//if(plot) delete plot;
 		//if(pratio) delete pratio;
@@ -146,7 +194,7 @@ public:
   TCanvas *SetCanvas();
   TLegend* SetLegend();
   void SetLegendPosition(TString);
-  void SetLegendPosition(float x1, float y1, float x2, float y2){ fLegX1 = x1; fLegY1 = y1; fLegX2 = x2; fLegY2 = y2;}
+  void SetLegendPosition(float x1 = 0.70, float y1 = 0.65, float x2 = 0.93, float y2 = 0.93){ fLegX1 = x1; fLegY1 = y1; fLegX2 = x2; fLegY2 = y2;}
   void SetTexChan(TString cuts); // To be updated
   void SetHRatio(TH1F* h = nullptr); // To be updated
 
@@ -160,7 +208,7 @@ public:
   void SetGoF(TString thegof="chi2");
   
   void DrawStack(TString tag, bool sav);
-  void DrawComp(TString tag = "0", bool sav = 1, bool doNorm = 0, TString style = "pe");
+  void DrawComp(TString tag = "0", bool sav = 1, bool doNorm = 0, TString options = "");
   void SaveHistograms();
   TString GetStatUncDatacard(Int_t iSignal = 0);
 	TString GetShapeUncLines();
@@ -193,7 +241,7 @@ public:
 
   void AddToHistos(Histo* p);
 	void AddVarHistos(TString sys);
-	void AddSystematic(TString s);
+	void AddSystematic(TString s, TString pr = "");
   void AddToSystematicLabels(TString sys){
     sys.ReplaceAll("Up", ""); sys.ReplaceAll("Down", "");
     for(Int_t i = 0; i < (Int_t) VSystLabel.size(); i++){
@@ -241,16 +289,21 @@ public:
   void SetScaleMax(Float_t s){ ScaleMax = s;}
   void SetScaleLog(Float_t s){ ScaleLog = s;}
   void SetPlotMinimum(Float_t p){ PlotMinimum = p;}
+  void SetPlotMaximum(Float_t p){ PlotMaximum = p;}
   void ScaleProcess(TString process, Float_t factor = 1);
   void ScaleSignal(Float_t factor = 1);
   void ScaleSys(TString processSys, Float_t factor = 1);
   void SetTableFormats(TString t){ tableFormats = t;}
   void SetLoopOptions(TString t){LoopOptions = t;}
   void SetRatioOptions(TString t){RatioOptions = t;}
+  void SetSignalDrawStyle(TString t){ SignalDrawStyle = t;}
 
   void SetSignalProcess(TString p){ SignalProcess = p;}
   void SetSignalStyle(TString p){ SignalStyle = p;} 
   TString GetSignalProcess(){ return SignalProcess;}
+
+  void SetCMSlabel(TString t){ CMSlabel = t;}
+//  void SetInfoText(TString t){ InfoText = t;}
 
 protected: 
   TString pathToHeppyTrees = "";
@@ -272,21 +325,24 @@ protected:
   // Factor to multiply the maximum of the plot to set the maximum
   Float_t ScaleMax = 1.2;
   Float_t ScaleLog = 500;
-  Float_t PlotMinimum = 0.;
+  Float_t PlotMinimum = -999;
+  Float_t PlotMaximum = -999;
 
   TString varname = "";
 	TString var;
   TString chan;
   TString signal;
   TString cut;
-  Int_t nb; Double_t x0; Double_t xN;
+  Int_t nb; Double_t x0; Double_t xN; Float_t *vbins;
   TString  title;
   TString xtitle;
  
   TString SignalProcess;
-  TString SignalStyle = "";
   TString LoopOptions = "";
   TString RatioOptions = "";
+  TString SignalStyle = "";
+  TString SignalDrawStyle;
+  TString CMSlabel = "CMS Preliminary";
 
   TString SystVar;
   Int_t iS;

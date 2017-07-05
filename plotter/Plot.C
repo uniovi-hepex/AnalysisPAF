@@ -12,7 +12,10 @@ Histo* Plot::GetH(TString sample, TString sys, Int_t type){
     pathToMiniTree = sample(0, sample.Last('/')+1);
     sample = sample(sample.Last('/')+1, sample.Sizeof());
   }
-  Looper* ah = new Looper(pathToMiniTree, treeName, var, cut, chan, nb, x0, xN);
+  Looper* ah;
+  if(xN != x0) ah = new Looper(pathToMiniTree, treeName, var, cut, chan, nb, x0, xN);
+  else         ah = new Looper(pathToMiniTree, treeName, var, cut, chan, nb, vbins);
+
   ah->SetOptions(LoopOptions);
   Histo* h = ah->GetHisto(sample, sys);
   h->SetDirectory(0);
@@ -125,7 +128,8 @@ void Plot::SetData(){  // Returns histogram for Data
   if(hData) delete hData;
   if(gROOT->FindObject("HistoData")) delete gROOT->FindObject("HistoData");
   
-  hData = new Histo(TH1F("HistoData", "Data", nb, x0, xN));
+  if(x0 != xN) hData = new Histo(TH1F("HistoData", "Data", nb, x0, xN));
+  else         hData = new Histo(TH1F("HistoData", "Data", nb, vbins));
   if(VData.size() < 1) doData = false;
   TString p = "";
 
@@ -156,7 +160,7 @@ void Plot::AddToHistos(Histo* p){ // Add the histogram to the right vector
 // Systematics
 //================================================================================
 
-void Plot::AddSystematic(TString var){
+void Plot::AddSystematic(TString var, TString pr){
   var.ReplaceAll(" ", "");
   if(var.Contains(",")){
     TString OneSyst;
@@ -167,10 +171,24 @@ void Plot::AddSystematic(TString var){
     AddSystematic(TheRest);
     return;
   }
-  for(Int_t i = 0; i < (Int_t) VTagSamples.size(); i++){
-    if(VTagOptions.at(i).Contains("Fake") || VTagOptions.at(i).Contains("fake")) continue;
-    AddSample(VTagSamples.at(i), VTagProcesses.at(i), itSys, 1, var+"Up", VTagOptions.at(i));
-    AddSample(VTagSamples.at(i), VTagProcesses.at(i), itSys, 1, var+"Down", VTagOptions.at(i));
+  if(pr == ""){
+    for(Int_t i = 0; i < (Int_t) VTagSamples.size(); i++){
+      if(VTagOptions.at(i).Contains("Fake") || VTagOptions.at(i).Contains("fake")) continue;
+      AddSample(VTagSamples.at(i), VTagProcesses.at(i), itSys, 1, var+"Up", VTagOptions.at(i));
+      AddSample(VTagSamples.at(i), VTagProcesses.at(i), itSys, 1, var+"Down", VTagOptions.at(i));
+    }
+  }
+  else{
+    vector<TString> vpr = TStringToVector(pr);
+    TString p;
+    for(Int_t k = 0; k < (Int_t) vpr.size(); k++){
+      p = vpr.at(k);
+      for(Int_t i = 0; i < (Int_t) VTagSamples.size(); i++){
+        if(p != VTagProcesses.at(i)) continue;
+        AddSample(VTagSamples.at(i), VTagProcesses.at(i), itSys, 1, var+"Up", VTagOptions.at(i));
+        AddSample(VTagSamples.at(i), VTagProcesses.at(i), itSys, 1, var+"Down", VTagOptions.at(i));
+      }
+    }
   }
   if(verbose) cout << "[Plot::AddSystematic] Systematic histograms added to the list for variation: " << var << endl;
 }
@@ -184,8 +202,14 @@ void Plot::GroupSystematics(){
     Histo* hsumSysUp = NULL; Histo* hsumSysDown = NULL; 
     if(gROOT->FindObject(tag + "_SystSumUp"))   delete gROOT->FindObject(tag + "_SystSumUp");
     if(gROOT->FindObject(tag + "_SystSumDown")) delete gROOT->FindObject(tag + "_SystSumDown");
-    hsumSysUp   = new Histo(TH1F(tag + "_SystSumUp",  tag + "_SystSumUp" ,   nb, x0, xN));
-    hsumSysDown = new Histo(TH1F(tag + "_SystSumDown",tag + "_SystSumDown" , nb, x0, xN));
+    if(x0 != xN){
+      hsumSysUp   = new Histo(TH1F(tag + "_SystSumUp",  tag + "_SystSumUp" ,   nb, x0, xN));
+      hsumSysDown = new Histo(TH1F(tag + "_SystSumDown",tag + "_SystSumDown" , nb, x0, xN));
+    }
+    else{
+      hsumSysUp   = new Histo(TH1F(tag + "_SystSumUp",  tag + "_SystSumUp" ,   nb, vbins));
+      hsumSysDown = new Histo(TH1F(tag + "_SystSumDown",tag + "_SystSumDown" , nb, vbins));
+    }
     for(Int_t i = 0; i < (Int_t) VSyst.size(); i++){
       tag =  VSyst.at(i)->GetTag();
       name = VSyst.at(i)->GetName();
@@ -387,7 +411,7 @@ TCanvas* Plot::SetCanvas(){ // Returns the canvas
   texlumi->SetTextFont(42);
   texlumi->SetTextSize(0.045);
   texlumi->SetTextSizePixels(22);
-  texcms = new TLatex(0.,0., "CMS Preliminary");
+  texcms = new TLatex(0.,0., CMSlabel);
   texcms->SetNDC();
   texcms->SetTextAlign(12);
   texcms->SetX(0.15);
@@ -397,7 +421,10 @@ TCanvas* Plot::SetCanvas(){ // Returns the canvas
   return c;
 }
 
-void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString lineStyle){
+void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString options){
+  TString drawstyle = "pe";
+  if(options.Contains("hist")) drawstyle = "hist";
+  if(options.Contains("style=l")) drawstyle = "l";
   TCanvas* c = SetCanvas();  plot->cd();
   int nsamples = VSignals.size();
   float themax = 0;
@@ -420,14 +447,15 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString lineStyle){
     if(doNorm) VSignals.at(i)->Scale(1/yield);
     max = VSignals.at(i)->GetMaximum(); 
     if(max > themax) themax = max;
-    VSignals.at(i)->Draw(lineStyle + ",same");
+    VSignals.at(i)->Draw(drawstyle + "same");
   }
   VSignals.at(0)->SetMaximum(themax*ScaleMax);
+  if(!doSetLogy) PlotMinimum = PlotMinimum == -999? 0 : PlotMinimum;
   VSignals.at(0)->SetMinimum(PlotMinimum);
   if(doSetLogy){
-    PlotMinimum = 1e-2;
-    signal->SetMaximum(themax*80);
-    //signal->SetMinimum(PlotMinimum + 0.1*(PlotMinimum + 1));
+    if(PlotMinimum == 0 || PlotMinimum == -999)  PlotMinimum = 1e-2;
+    PlotMaximum = PlotMaximum == -999? themax*50 : PlotMaximum;
+    signal->SetMaximum(PlotMaximum);
     signal->SetMinimum(PlotMinimum);
     plot->SetLogy();
   }
@@ -435,40 +463,30 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString lineStyle){
   leg->SetTextSize(0.041);
   leg->Draw("same");
   
-  if(gof!="")
-    {
-
+  if(gof!=""){
       cout << "WARNING: at the moment, only the GoF between the first and the second plot is supported. If you plot more than two plots, the remaining ones will be ignored. Further functionality will be added later." << endl;
       
       double pvalue(-999.);
       TString theComp("");
-      if(nsamples>1)
-        {
-          if(gof=="chi2")
-            {
+      if(nsamples>1){
+          if(gof=="chi2"){
               pvalue=VSignals.at(0)->Chi2Test(VSignals.at(1), "WW CHI2/NDF");
               theComp="#frac{#chi^2}{NDOF}";
               cout << "WARNING: this is good for comparisons between Weighted-Weighted histograms, i.e. for comparisons between MonteCarlos. Todo: add switch for comparing data w/ MC or data w/ data." << endl;
             }
-          else if(gof=="ks")
-            {
+          else if(gof=="ks"){
               pvalue=VSignals.at(0)->KolmogorovTest(VSignals.at(1), "X");
               theComp="p-value (KS)";
               cout << "WARNING: this does not include comparison of normalization. Todo: add switch for that. Also, this runs pseudoexperiments, and will fail in case of negative bin contents. In case of negative weights, please rebin them to elimitate any negative bin content." << endl;
             }
-          else if(gof=="ad")
-            {
+          else if(gof=="ad"){
               pvalue=VSignals.at(0)->AndersonDarlingTest(VSignals.at(1));
               theComp="p-value (AD)";
               cout << "WARNING: the Anderson Darling test does not work for bins with negative content, at least in the ROOT implementation" << endl;
             }
-          else
-            {
-              cout << "ERROR: this GoF test does not exist or is not currently implemented. What a cruel world." << endl;
-            }
+          else  cout << "ERROR: this GoF test does not exist or is not currently implemented. What a cruel world." << endl;
         }
-      else
-        cout << "ERROR: only one sample is selected. How can I compare it with another one?" << endl;
+      else cout << "ERROR: only one sample is selected. How can I compare it with another one?" << endl;
      
       TText *t = new TText(.7,.7,Form("%s: %f", theComp.Data(), pvalue));
       t->SetTextAlign(22);
@@ -484,22 +502,41 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString lineStyle){
   TH1F* htemp = NULL;
   hratio = (TH1F*)VSignals.at(0)->Clone("hratio_sig");
   SetHRatio();
-  for(Int_t  i = 1; i < nsamples; i++){
-    //htemp = (TH1F*)hratio->Clone("htemp");
-    //htemp->Divide(VSignals.at(i)); 
-    htemp = (TH1F*)VSignals.at(i)->Clone("htemp");
-    htemp->Divide(hratio);
-    SetHRatio(htemp);
-    htemp->SetLineColor(VSignals.at(i)->GetColor());
-    htemp->SetLineStyle(VSignals.at(i)->GetLineStyle());
-    htemp->SetMarkerColor(VSignals.at(i)->GetColor());
-    htemp->SetMarkerStyle(VSignals.at(i)->GetMarkerStyle());
-    ratios.push_back(htemp);
-    ratios.at(i-1)->Draw("hist,same");
+  if(options.Contains("ratiocolor")){
+    for(Int_t  i = 1; i < nsamples; i++){
+      if(VSignals.at(i)->GetColor() == VSignals.at(i-1)->GetColor()){
+        hratio = (TH1F*)VSignals.at(i-1)->Clone("hratio"); 
+        htemp  = (TH1F*)VSignals.at(i  )->Clone("htemp");
+        htemp->Divide(hratio);
+        SetHRatio(htemp);
+        htemp->SetLineColor(VSignals.at(i)->GetColor());
+        htemp->SetLineStyle(VSignals.at(i)->GetLineStyle());
+        htemp->SetMarkerColor(VSignals.at(i)->GetColor());
+        htemp->SetMarkerStyle(VSignals.at(i)->GetMarkerStyle());
+        ratios.push_back(htemp);
+        i++;
+      }        
+    }
+    for(Int_t k = 0; k < (Int_t) ratios.size(); k++) ratios.at(k)->Draw(drawstyle + "same");
+  }
+  else{
+    for(Int_t  i = 1; i < nsamples; i++){
+      //htemp = (TH1F*)hratio->Clone("htemp");
+      //htemp->Divide(VSignals.at(i)); 
+      htemp = (TH1F*)VSignals.at(i)->Clone("htemp");
+      htemp->Divide(hratio);
+      SetHRatio(htemp);
+      htemp->SetLineColor(VSignals.at(i)->GetColor());
+      htemp->SetLineStyle(VSignals.at(i)->GetLineStyle());
+      htemp->SetMarkerColor(VSignals.at(i)->GetColor());
+      htemp->SetMarkerStyle(VSignals.at(i)->GetMarkerStyle());
+      ratios.push_back(htemp);
+      ratios.at(i-1)->Draw(drawstyle + "same");
+    }
   }
   if(sav){ // Save the histograms
     TString dir = plotFolder;
-    TString plotname = varname + "_" + tag + "_comp";
+    TString plotname = (outputName == "")? varname + "_" + tag : outputName + "_" + varname;
     gSystem->mkdir(dir, kTRUE);
     c->Print( dir + plotname + ".png", "png");
     c->Print( dir + plotname + ".pdf", "pdf");
@@ -544,24 +581,28 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   float Max = maxMC > maxData? maxMC : maxData;
   if(doSetLogy){
     if(verbose) cout << "[Plot::DrawStack] Setting log scale..." << endl;
-    hStack->SetMaximum(Max*ScaleLog);
-    hStack->SetMinimum(PlotMinimum + 0.1*(PlotMinimum + 1));
+    if(PlotMinimum == 0 || PlotMinimum == -999)  PlotMinimum = 0.1;
+    PlotMaximum = PlotMaximum == -999? Max*ScaleLog : PlotMaximum;
+    hStack->SetMaximum(PlotMaximum);
+    hStack->SetMinimum(PlotMinimum);
     plot->SetLogy();
   }
   else{
+    PlotMinimum = PlotMinimum == -999? 0 : PlotMinimum;
+    PlotMaximum = PlotMaximum == -999? Max*ScaleMax : PlotMaximum;
     hStack->SetMaximum(Max*ScaleMax);
-    hStack->SetMinimum(PlotMinimum);
+      hStack->SetMinimum(PlotMinimum);
   }
 
   hStack->Draw("hist");
   hStack->GetYaxis()->SetTitle("Number of Events");
   hStack->GetYaxis()->SetTitleSize(0.06);
-  hStack->GetYaxis()->SetTitleOffset(0.5);
+  hStack->GetYaxis()->SetTitleOffset(0.8);
   hStack->GetYaxis()->SetNdivisions(505);
   hStack->GetXaxis()->SetLabelSize(0.0);
 
   if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
-    for(Int_t  i = 0; i < nSignals; i++) VSignals.at(i)->Draw("lsame");
+    for(Int_t  i = 0; i < nSignals; i++) VSignals.at(i)->Draw(SignalDrawStyle + "same");
 
   // Draw systematics histo
   hAllBkg->SetFillStyle(3145);
@@ -603,7 +644,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
     else{
       Float_t StoBmean = hSignal->GetYield()/hAllBkg->GetYield();
       hline = new TLine(0, StoBmean, 200, StoBmean); hline->SetLineColor(kOrange-2);
-      cout << "StoBmean = " << StoBmean << endl;
+      //cout << "StoBmean = " << StoBmean << endl;
       hratio = (TH1F*)hSignal->Clone("hratio");
       hratio->Divide(hAllBkg);
       Float_t rmax = hratio->GetMaximum()*1.15;
@@ -631,11 +672,11 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
     hratioerr->Draw("same,e2");
     hratio->Draw("same");
   }
-
   if(sav){ // Save the histograms
     TString dir = plotFolder;
-    TString plotname = (outputName == "")? varname + "_" + tag : outputName;
-	  	
+
+    TString plotname = (outputName == "")? varname + "_" + tag : outputName + "_" + varname;
+    
     gSystem->mkdir(dir, kTRUE);
     c->Print( dir + plotname + ".pdf", "pdf");
     c->Print( dir + plotname + ".png", "png");

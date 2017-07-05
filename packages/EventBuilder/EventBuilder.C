@@ -278,22 +278,6 @@ void EventBuilder::InsideLoop(){
   passTrigger = false;
 
   if(gSelection == i4tSelec){
-    gChannel = -1; 
-    if(selLeptons.size() < 2 && vetoLeptons.size() >= 2){ 
-      if( (vetoLeptons[0].charge*vetoLeptons[1].charge) > 0){  // fakes of 2lss
-        gChannel = i2lss_fake; isSS = true;
-      }
-    }
-    else if(selLeptons.size() == 2){ 
-      if( (selLeptons[0].charge*selLeptons[1].charge) > 0){ // 2lss
-        gChannel = i2lss; isSS = true;
-      }
-      else if(vetoLeptons.size() > 2) gChannel = iTriLep_fake; // fakes of 3 leptons 
-    }
-    else if(selLeptons.size() == 3) gChannel = iTriLep; // 3 leptons
-    else if(selLeptons.size() >= 4) gChannel = iFourLep; // 4 leptons
-    else gChannel = -1; // less than 2 leptons...
-
     Int_t nLepForCharge = 0;
     Int_t pdgIdsum = 0;
     for(Int_t i = 0; i < (Int_t) selLeptons.size(); i++){
@@ -306,7 +290,7 @@ void EventBuilder::InsideLoop(){
       pdgIdsum = vetoLeptons.at(i).isElec? pdgIdsum + 11 : pdgIdsum + 13;
       nLepForCharge++;
     }
-    if(gChannel == -1) pdgIdsum = -1;
+    if(nLepForCharge < 2) pdgIdsum = -1;
     if(gIsData){
       if(gIsMuonEG){
         if     (pdgIdsum == 24) passTrigger = PassesElMuHTTrigger()       || PassesPFJet450Trigger();
@@ -398,8 +382,8 @@ Bool_t EventBuilder::TrigElMu(){
 
 Bool_t EventBuilder::Trig3l4l() {
   Bool_t pass = false;
-  Int_t ne    = 0;
-  Int_t nm    = 0;
+  UInt_t ne    = 0;
+  UInt_t nm    = 0;
   
   for (UInt_t i = 0; i < selLeptons.size(); i++) {
     if (selLeptons.at(i).isMuon)  nm++;
@@ -409,11 +393,12 @@ Bool_t EventBuilder::Trig3l4l() {
   pass = PassesThreelFourlTrigger();
   
   if(gIsData) {
-    if      (gIsSingleMuon && ((nm+ne != nm) || (nm + ne != ne))) pass = false;
-    else if (gIsSingleElec && ((nm+ne != nm) || (nm + ne != ne))) pass = false;
+    if      (gIsSingleMuon && (ne != 0 && nm != 0)) pass = false;
+    else if (gIsSingleElec && (ne != 0 && nm != 0)) pass = false;
     else if (gIsDoubleMuon) pass = false;
     else if (gIsDoubleElec) pass = false;
   }
+  
   return pass;
 }
 
@@ -431,6 +416,7 @@ Bool_t EventBuilder::PassesMETfilters(){
         gIsFastSim || // no more MET filters for Fast Sim
         (!gIsData && Get<Int_t>("Flag_globalTightHalo2016Filter")) || // for MC
         ( gIsData && Get<Int_t>("Flag_globalTightHalo2016Filter") && Get<Int_t>("Flag_eeBadScFilter")) ) // for Data
+        //( gIsData && Get<Int_t>("Flag_globalTightHalo2016Filter")) ) // for Data
     ) return true;
   else return false;
 }

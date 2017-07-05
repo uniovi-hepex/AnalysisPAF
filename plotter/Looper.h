@@ -18,6 +18,7 @@
 
 enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau, iOS1tau, i2lss_fake, iTriLep_fake, iElEl, iMuMu, i1Tau_emufake, nTotalDefinedChannels};
 const Int_t nLHEweights = 112;
+std::vector<TString> TStringToVector(TString t, char separator = ',');
 
 std::vector<TString> GetAllVars(TString varstring); 
 TH1D* loadSumOfLHEweights(TString pathToHeppyTrees = "/pool/ciencias/HeppyTreesSummer16/v2/", TString sampleName = "TTbar_PowhegLHE");
@@ -25,6 +26,7 @@ TH1F* hLHE[nLHEweights];
 
 class Looper{
   public:
+    Looper(){};
     Looper(TString pathToTree, TString NameOfTree, TString _var = "TMET", TString _cut = "1", TString _chan = "ElMu", Int_t nb = 30, Float_t b0 = 0, Float_t bN = 300){
    Hist = NULL; 
    FormulasCuts = NULL;
@@ -43,6 +45,25 @@ class Looper{
 
    pathToHeppyTrees = "/pool/ciencias/HeppyTreesSummer16/v2/";
   }  
+    Looper(TString pathToTree, TString NameOfTree, TString _var = "TMET", TString _cut = "1", TString _chan = "ElMu", Int_t nb = 30, Float_t* bins = 0){
+   Hist = NULL; 
+   FormulasCuts = NULL;
+   FormulasVars = NULL;
+   FormulasLHE  = NULL;
+   tree = NULL;
+   path = pathToTree;
+   treeName = NameOfTree;
+   //loadTree();
+   nbins = nb;
+   bin0 = 0;
+   binN = 0;
+   vbins = bins;
+   var = _var;
+   cut = _cut;
+   chan = _chan;
+
+   pathToHeppyTrees = "/pool/ciencias/HeppyTreesSummer16/v2/";
+  } 
 
    ~Looper(){
 		 delete tree->GetCurrentFile();
@@ -70,6 +91,7 @@ class Looper{
    Bool_t doISRweight = false;
    Int_t numberInstance;
    void SetSampleName(TString t){sampleName   = t;}
+   void SetHeppySampleName(TString t){HeppySampleName   = t;}
 	 void SetTreeName(  TString t){treeName     = t;}
 	 void SetPath(      TString t){path         = t;}
 
@@ -94,6 +116,7 @@ class Looper{
    Int_t   nbins;
    Float_t bin0;
    Float_t binN;
+   Float_t *vbins;
    TString hname;
    TString xtit;
    TString stringcut; TString stringvar;
@@ -109,6 +132,7 @@ class Looper{
    TString cut; TString chan; TString var;
    TString options = "";
    TString sampleName;
+   TString HeppySampleName;
 
    TH2F* hWeights;
 
@@ -138,6 +162,21 @@ class Looper{
 // GET ALL FILES IN PATH
 vector<TString> GetAllFiles(TString path, TString  filename) {
   vector<TString> theFiles;
+  if(filename.Contains("&")){
+    filename.ReplaceAll(" ", "");
+    TString partial;
+    vector<TString> a;
+    while(filename.Contains("&")){
+      a.clear();
+      partial =  filename(0, filename.First("&"));
+      a = GetAllFiles(path, partial);
+      theFiles.insert(theFiles.end(), a.begin(), a.end());
+      filename = filename(filename.First("&")+1, filename.Sizeof());
+    } 
+    a = GetAllFiles(path, filename);
+    theFiles.insert(theFiles.end(), a.begin(), a.end());
+    return theFiles;
+  }
 
   TString command("ls ");
   if(filename != "")
@@ -188,8 +227,19 @@ vector<TString> GetAllFiles(TString path, TString  filename) {
 }
 
 
-
-
+std::vector<TString> TStringToVector(TString t, char separator){
+  std::vector<TString> v;
+  t.ReplaceAll(" ", "");
+  Int_t n = t.CountChar(separator);
+  TString element;
+  for(Int_t i = 0; i < n; i++){
+    element = t(0, t.First(separator));
+    t = t(t.First(separator)+1, t.Sizeof());
+    v.push_back(element);
+  }
+  v.push_back(t);
+  return v;
+}
 
 
 #endif

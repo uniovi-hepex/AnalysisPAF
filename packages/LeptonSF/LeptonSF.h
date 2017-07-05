@@ -54,7 +54,8 @@ class LeptonSF {
   TH2D*  fMuonSIP3DSF;     
   TH2D*  fMuonIsoFastSim;
   TH2D*  fMuonIdFastSim;
-  TH2D*  fElecFastSim;
+  TH2D*  fElecIsoFastSim;
+  TH2D*  fElecIdFastSim;
   TH2D*  fMuonlepMVA2lSSttH;
   TH2D*  fMuonlepMVA3l4lttH;
   TH2D*  fMuonLooseTracksttH;

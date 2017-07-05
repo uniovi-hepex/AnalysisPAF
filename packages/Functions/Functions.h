@@ -11,9 +11,11 @@
 using namespace std;
 
 // enum 
+
+
 enum iSFs{
   iMuonReco, iMuonId, iMuonIdSUSY, iMuonIsoTightId, iMuonIsoMediumId, iMuonIsoSUSY, iMuonIP2D, iMuonSIP3D, iMuonIdFastSim, iMuonIsoFastSim,
-  iElecReco, iElecId, iElecIdSUSY, iElecIso, iElecIsoSUSY, iElecIP2D, iElecSIP3D, iElecFastSim,
+  iElecReco, iElecId, iElecIdSUSY, iElecIso, iElecIsoSUSY, iElecIP2D, iElecSIP3D, iElecIdFastSim, iElecIsoFastSim,
   iTrigDoubleMuon, iTrigDoubleElec, iTrigElMu,
   iMuonlepMVA2lSSttH, iMuonlepMVA3l4lttH, 
   iMuonLooseTracksttH, iMuonLooseMiniIsottH, iMuonTightIP2DttH,
@@ -22,11 +24,22 @@ enum iSFs{
   nfiles
 };
 
+const TString SFTString[nfiles] = {
+  "iMuonReco", "iMuonId", "iMuonIdSUSY", "iMuonIsoTightId", "iMuonIsoMediumId", "iMuonIsoSUSY", "iMuonIP2D", "iMuonSIP3D", "iMuonIdFastSim", "iMuonIsoFastSim",
+  "iElecReco", "iElecId", "iElecIdSUSY", "iElecIso", "iElecIsoSUSY", "iElecIP2D", "iElecSIP3D", "iElecIdFastSim", "iElecIsoFastSim",
+  "iTrigDoubleMuon", "iTrigDoubleElec", "iTrigElMu",
+  "iMuonlepMVA2lSSttH", "iMuonlepMVA3l4lttH", 
+  "iMuonLooseTracksttH", "iMuonLooseMiniIsottH", "iMuonTightIP2DttH",
+  "iEleclepMVA2lSSttH", "iEleclepMVA3l4lttH", 
+  "iElecTightIP2DM17ttH", "iElecMini4M17ttH", "iElecConvVetoM17ttH"
+};
+
+
 enum wps{iVeto, iVeryLoose, iLoose, iMedium, iTight, iVeryTight, iExtreamlyTight, iWPforStop, iLooseWPforStop};
 
 enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, ittDMSelec, ittHSelec, iWZSelec, i4tSelec};
 
-enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau, iOS1tau, i2lss_fake, iTriLep_fake, iElEl, iMuMu, i1Tau_emufake, nTotalDefinedChannels};
+enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau, iOS1tau, i2lss_fake, iTriLep_fake, iElEl, iMuMu, i1Tau_emufakeOS ,i1Tau_emufakeSS, TotalDefinedChannels};
 
 enum sys{iNom, 
   iJesUp, iJesDown, iJERUp, iJERDown, 
@@ -49,7 +62,9 @@ bool JetMomentumComparator(Jet i   , Jet    j);
 vector<Lepton> SortLeptonsByPt(vector<Lepton>& Leptons);
 vector<Jet>       SortJetsByPt(vector<Jet>   & Jets);
 
+Bool_t Cleaning(Jet j, vector<Lepton> vLep, Float_t minDR);
 Float_t JEStoMET(vector<Jet> vjets, Float_t met, Float_t met_phi, Int_t dir = 0);
+Float_t JERtoMET(vector<Jet> vjets, Float_t met, Float_t met_phi);
 Float_t getJetJERpt(Jet jet, Float_t rho);
 Float_t p2(Float_t x);
 Jet GetMatchedJet(Jet origJet, std::vector<Jet> jetCollection, Float_t etaRange = 0.3, Float_t ptRange = 10000);
@@ -75,6 +90,7 @@ Bool_t hasOSSF(vector<Lepton> leptons);
 Bool_t  has2OSSFwMlmm(vector<Lepton> lepton, Float_t mm);
 Float_t ClosestMlltoZ(vector<Lepton> leptons);
 Bool_t IsThereSSpair(vector<Lepton> leptons);
+Bool_t IsThere3SS(vector<Lepton> lepton);
 Bool_t ByPt(Jet, Jet);
 
 Int_t   getCS(vector<Lepton> lepton);
