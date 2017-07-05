@@ -119,12 +119,12 @@ void TopAnalysis::InsideLoop(){
   // Number of events in fiducial region
   if(genLeptons.size() >= 2){ // MIND THE POSSIBLE SKIM (on reco leptons) IN THE SAMPLE!!
     Int_t GenChannel = -1;
-    if(genLeptons.at(0).isElec && genLeptons.at(0).isMuon) GenChannel = iElMu; 
-    if(genLeptons.at(0).isMuon && genLeptons.at(0).isElec) GenChannel = iElMu; 
-    if(genLeptons.at(0).isMuon && genLeptons.at(0).isMuon) GenChannel = iMuon; 
-    if(genLeptons.at(0).isElec && genLeptons.at(0).isElec) GenChannel = iElec; 
+    if(genLeptons.at(0).isElec && genLeptons.at(1).isMuon) GenChannel = iElMu; 
+    if(genLeptons.at(0).isMuon && genLeptons.at(1).isElec) GenChannel = iElMu; 
+    if(genLeptons.at(0).isMuon && genLeptons.at(1).isMuon) GenChannel = iMuon; 
+    if(genLeptons.at(0).isElec && genLeptons.at(1).isElec) GenChannel = iElec; 
     if( ( (genLeptons.at(0).p.Pt() > 25 && genLeptons.at(1).p.Pt() > 20) || (genLeptons.at(0).p.Pt() > 20 && genLeptons.at(1).p.Pt() > 25) )
-        && (TMath::Abs(genLeptons.at(0).p.Eta() < 2.4) && TMath::Abs(genLeptons.at(1).p.Eta() < 2.4)) 
+        && (TMath::Abs(genLeptons.at(0).p.Eta()) < 2.4 && TMath::Abs(genLeptons.at(1).p.Eta()) < 2.4) 
         && ( (genLeptons.at(0).p + genLeptons.at(1).p).M() > 20 ) ){
       fHFiduYields[GenChannel-1][0] -> Fill(idilepton);
       if(GenChannel == iElMu || (TMath::Abs((genLeptons.at(0).p + genLeptons.at(1).p).M() - 91) > 15) ){
@@ -150,6 +150,11 @@ void TopAnalysis::InsideLoop(){
     Float_t lepSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
     Float_t ElecSF = 1; Float_t MuonSF = 1;
     Float_t ElecSFUp = 1; Float_t ElecSFDo = 1; Float_t MuonSFUp = 1; Float_t MuonSFDo = 1;
+    Float_t stat = 0; 
+    //For muons
+    //https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonReferenceEffsRun2
+    //Additional 1% for ID + 0.5% for Isolation + 0.5% single muon triggers
+
     if(TChannel == iElec){
       ElecSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
       ElecSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1);
@@ -157,6 +162,7 @@ void TopAnalysis::InsideLoop(){
       MuonSFUp = 1; MuonSFDo = 1; MuonSF = 1;
     }
     else if(TChannel == iMuon){
+      MuonSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
       MuonSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1);
       MuonSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1);
       ElecSFUp = 1; ElecSFDo = 1; ElecSF = 1;
