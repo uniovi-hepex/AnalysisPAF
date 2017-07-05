@@ -14,7 +14,7 @@ bool doSync = false;
 // Baseline
 //TString baseline = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TNTaus == 0 && !TIsOnZ";
 //TString CRZ      = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TNTaus == 0 && TIsOnZ";
-TString baseline = Form("TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && !TIsOnZ && TPassTrigger %s", doSync? "" : "&& TPassMETFilters ") ;
+TString baseline = Form("TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 3 && !TIsOnZ && TPassTrigger %s", doSync? "" : "&& TPassMETFilters ") ;
 TString tauVeto  = doSync ? " && 1 " : " && TNTaus==0 ";
 TString CRZ      = tauVeto + "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TIsOnZ";
 TString CRW      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 2 && TNJets <= 5";
@@ -27,17 +27,18 @@ TString SR5      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 3 && TN
 TString SR6      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 3 && TNJets >= 5";
 TString SR7      = baseline + tauVeto + "&& TNSelLeps == 3 && TNBtags == 2 && TNJets >= 5";
 TString SR8      = baseline + tauVeto + "&& TNSelLeps == 3 && TNBtags >= 3 && TNJets >= 4";
-TString SR9      = baseline + "&& TNSelLeps == 2 && TNBtags == 2 && TNJets >=5 && TNTaus==1";
+TString SR9      = baseline + "&& TNSelLeps == 2 && TNTaus==1 && TChannel == iSS1tau && TNBtags >= 3";
 TString SR10     = baseline + "&& TNSelLeps == 2 && TNBtags == 3 && TNJets >=5 && TNTaus==1";
 
 
-TString NoFake   = Form("TChannel == %i || TChannel == %i", i2lss, iTriLep);
+TString NoFake   = Form("TChannel == %i || TChannel == %i || TChannel == %i || TChannel == %i", i2lss, iTriLep, iSS1tau, iOS1tau);
 
 void DrawPlots(TString cutName){
   
   TString username(gSystem->GetUserInfo(gSystem->GetUid())->fUser);
   if(username=="vischia") pathToTree ="/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/jun15/";
-  else pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/jun15/";
+  //else pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/jun15/";
+  else pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/tttt_temp/";
 
   TString cut;
   if     (cutName == "CRW" ) cut = CRW ;
@@ -58,7 +59,7 @@ void DrawPlots(TString cutName){
   NoFake = (cutName=="SR9" || cutName=="SR10" || cutName=="CRT") ? "1" : NoFake; 
 
   cut=baseline;
-  DrawPlot("TChannel",  cut, "PromptLep", 1, 0, 15, "Count", cutName);
+  DrawPlot("TChannel",  cut, "SSTau", 1, 0, 15, "Count", cutName);
   /*  DrawPlot("TNJets", "TNSelLeps == 2  && "  + baseline, "SS",       6, 2, 8, "Jet Multiplicity", "nJets");
       DrawPlot("TNJets", "TNSelLeps >  2  && "  + baseline, "MultiLep", 6, 2, 8, "Jet Multiplicity", "nJets");
       DrawPlot("TNJets",                          baseline, "All"     , 6, 2, 8, "Jet Multiplicity", "nJets");
