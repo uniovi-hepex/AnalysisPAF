@@ -741,7 +741,8 @@ void LeptonSelector::InsideLoop(){
       GetGenLeptonVariables(i);
       if(gpdgMId == 23 || gpdgMId == 24 || gpdgMId == 25){
         tL = Lepton(tP, charge, type);
-        if(tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta() < 2.4)) genLeptons.push_back(tL);
+        //if(tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta() < 2.4)) genLeptons.push_back(tL);
+        genLeptons.push_back(tL);
       }
     }
     for(Int_t i = 0; i < ngenLepFromTau; i++){
@@ -749,7 +750,8 @@ void LeptonSelector::InsideLoop(){
       if(gpdgMId == 23 || gpdgMId == 24 || gpdgMId == 25){
         tL = Lepton(tP, charge, type);
         nLeptonsFromTau++;
-        if(tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta() < 2.4)) genLeptons.push_back(tL);
+       // if(tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta() < 2.4)i) genLeptons.push_back(tL);
+        genLeptons.push_back(tL);
       }
     }
   }
@@ -759,19 +761,19 @@ void LeptonSelector::InsideLoop(){
   nGenLeptons  	= genLeptons.size();
 
   TriggerSF = 1; TriggerSFerr = 0;
-  if(gSelection == iTopSelec || gSelection == iStopSelec){
+  if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iStopSelec){
     if(nSelLeptons >= 2){
       if     (selLeptons.at(0).isMuon && selLeptons.at(1).isMuon){
-        LepSF->GetTrigDoubleMuSF(    selLeptons.at(0).p.Pt(), selLeptons.at(1).p.Pt());
-        LepSF->GetTrigDoubleMuSF_err(selLeptons.at(0).p.Pt(), selLeptons.at(1).p.Pt());
+        TriggerSF = LepSF->GetTrigDoubleMuSF(    selLeptons.at(0).p.Eta(), selLeptons.at(1).p.Eta());
+        TriggerSFerr = LepSF->GetTrigDoubleMuSF_err(selLeptons.at(0).p.Eta(), selLeptons.at(1).p.Eta());
       }
       else if(selLeptons.at(0).isElec && selLeptons.at(1).isElec){
-        LepSF->GetTrigDoubleElSF(    selLeptons.at(0).p.Pt(), selLeptons.at(1).p.Pt());
-        LepSF->GetTrigDoubleElSF_err(selLeptons.at(0).p.Pt(), selLeptons.at(1).p.Pt());
+        TriggerSF = LepSF->GetTrigDoubleElSF(    selLeptons.at(0).p.Eta(), selLeptons.at(1).p.Eta());
+        TriggerSFerr = LepSF->GetTrigDoubleElSF_err(selLeptons.at(0).p.Eta(), selLeptons.at(1).p.Eta());
       }
       else{
-        LepSF->GetTrigElMuSF(        selLeptons.at(0).p.Pt(), selLeptons.at(1).p.Pt());
-        LepSF->GetTrigElMuSF_err(    selLeptons.at(0).p.Pt(), selLeptons.at(1).p.Pt());
+        TriggerSF = LepSF->GetTrigElMuSF(        selLeptons.at(0).p.Eta(), selLeptons.at(1).p.Eta());
+        TriggerSFerr = LepSF->GetTrigElMuSF_err(    selLeptons.at(0).p.Eta(), selLeptons.at(1).p.Eta());
       }
     }
   }

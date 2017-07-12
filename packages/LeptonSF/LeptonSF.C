@@ -217,15 +217,18 @@ void LeptonSF::loadHisto(Int_t iHisto, Int_t wp){
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>> Triggers
   else if(iHisto == iTrigDoubleMuon){
-    filename = "TriggerSF_mumu2016_pt"; histoname = "lepton_pt_2D_sf";
+    //filename = "TriggerSF_mumu2016_pt"; histoname = "lepton_pt_2D_sf";
+    filename = "triggerSummary_mumu"; histoname = "scalefactor_eta2d_with_syst";
     fDoubleMuSF = GetHistogramFromFileF(path_to_SF_histos + filename + ".root", histoname, "fDoubleMuSF"); 
   }
   else if(iHisto == iTrigDoubleElec){
-    filename = "TriggerSF_ee2016_pt"; histoname = "lepton_pt_2D_sf";
+    //filename = "TriggerSF_ee2016_pt"; histoname = "lepton_pt_2D_sf";
+    filename = "triggerSummary_ee"; histoname = "scalefactor_eta2d_with_syst";
     fDoubleElSF = GetHistogramFromFileF(path_to_SF_histos + filename + ".root", histoname, "fDoubleElSF"); 
   }
   else if(iHisto == iTrigElMu){
-    filename = "TriggerSF_emu2016_pt"; histoname = "lepton_pt_2D_sf";
+    //filename = "TriggerSF_emu2016_pt"; histoname = "lepton_pt_2D_sf";
+    filename = "triggerSummary_emu"; histoname = "scalefactor_eta2d_with_syst";
     fMuEGSF = GetHistogramFromFileF(path_to_SF_histos + filename + ".root", histoname, "fMuEGSF"); 
   }
   std::cout << " [Lepton SF] : Loaded histogram " << histoname << " from file " << path_to_SF_histos + filename + ".root" << std::endl;
