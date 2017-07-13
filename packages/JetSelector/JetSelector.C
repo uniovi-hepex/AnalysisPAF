@@ -63,6 +63,15 @@ void JetSelector::Initialise(){
     vetoJet_maxEta = 2.4;
     minDR = 0.4;
   }
+  else if (gSelection == iWZSelec){
+    taggerName="CSVv2"; // Soon to be: taggerName="DeepCSV" 
+    stringWP = "Medium";
+    jet_MaxEta = 2.4;
+    jet_MinPt  = 40;
+    vetoJet_minPt = 25;
+    vetoJet_maxEta = 2.4;
+    minDR = 0.4;
+  }
   else if (gSelection == iTWSelec){
     taggerName="CSVv2";
     stringWP = "Medium";
@@ -255,6 +264,7 @@ void JetSelector::InsideLoop(){
         if      (gSelection == iWWSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
         else if (gSelection == iWZSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
         else if (gSelection == i4tSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
+        else if (gSelection == iWZSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
         else if (gSelection == iTWSelec){
 	  vetoJets.push_back(tJ);
 	  if (!gIsData){
@@ -456,7 +466,7 @@ void JetSelector::InsideLoop(){
 Bool_t JetSelector::IsBtag(Jet j){
   if(j.Pt() < 20) return false;
   Bool_t isbtag;
-  if(gIsData || gSelection == i4tSelec) isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
+  if(gIsData || gSelection == i4tSelec || gSelection == iWZSelec) isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
   // using "weights" as scale factors in the tW analysis :)
   else if(gSelection == iTWSelec) isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
   else if(stringWP == "Loose") isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
