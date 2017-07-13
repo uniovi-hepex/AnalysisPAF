@@ -54,7 +54,7 @@ void LeptonSelector::Initialise(){
     LepSF->loadHisto(iElecMini4M17ttH);
     LepSF->loadHisto(iElecConvVetoM17ttH);
   }
-  else if(gSelection == i4tSelec){
+  else if(gSelection == i4tSelec || gSelection == iWZSelec){
     // Los tenemos en funciones, no en histogramas, entonces nos la pela de cargar histogramas
   }
   else if(gSelection == iWZSelec){
@@ -87,7 +87,7 @@ Bool_t LeptonSelector::getSIPcut(Float_t cut){
 }
 
 Bool_t LeptonSelector::getGoodVertex(Int_t wp){
-  if (gSelection == ittHSelec || gSelection == i4tSelec) {
+  if (gSelection == ittHSelec || gSelection == i4tSelec || gSelection == iWZSelec) {
     if (wp == iTight || wp == iMedium || wp == iLoose){
       DumpVar(evt, "dxy", dxy, dxy < 0.05);
       DumpVar(evt, "dz",  dxy, dz  < 0.1);
@@ -312,6 +312,10 @@ Bool_t LeptonSelector::getElecCutBasedId(Int_t wp){
     }
     return true;
   }
+  else if(gSelection == iWZSelec)
+    {
+      return true; // Me la pela, porque selecciono IDs multiplos dentro del paquete de analisis
+    }
   else{
     if(wp == iTight   && tightVar < 3)     return false;
     if(wp == iMedium  && tightVar < 2)     return false;
@@ -449,21 +453,42 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
     if(TightCharge != 2) return false;
     return true;
   }
+  else if (gSelection == iWZSelec) // Todo lo que esta mas para alla de una seleccion basica se hace en el paquete de analisis
+    {
+      if(lep.isMuon){
+        DumpVar(evt, "!isGlobalMuon && !isTrackerMuon", isGlobalMuon || isTrackerMuon, isGlobalMuon || isTrackerMuon);
+        DumpVar(evt, "getMuonId(iMedium)", getMuonId(iMedium), getMuonId(iMedium));
+        if(lep.p.Pt() < 20) return false;
+        if(TMath::Abs(lep.p.Eta()) > 2.4) return false;
+      }
+      if(lep.isElec){
+        DumpVar(evt, "getElecCutBasedId(iLoose)", getElecCutBasedId(iLoose), getElecCutBasedId(iLoose));
+        DumpVar(evt, "convVeto", convVeto, convVeto);
+        DumpVar(evt, "lostHits", lostHits, lostHits == 0);
+        DumpVar(evt, "getElecMVA(iTight)", getElecMVA(iTight), getElecMVA(iTight));
+        if(lep.p.Pt() < 20) return false;
+        if(TMath::Abs(lep.p.Eta()) > 2.5) return false;
+      }
+      //if(!getminiRelIso(iLoose)) return false;
+      DumpVar(evt, "getSIPcut(4)", sip, getSIPcut(4)); 
+      DumpVar(evt, "TightCharge == 2", TightCharge, TightCharge == 2); 
+      return true;
+    }
   else if (gSelection == ittHSelec || gSelection == iWZSelec) {
-  	// 	Tight muons for multilepton ttH Analysis:
-  	// abs(eta)<0.4, Pt>15, abs(dxy)<0.05cm, abs(dz)<0.1cm, SIP3D<8, Imini<0.4,
-  	// isLooseMuon==1,jetCSV<0.8484,isMediumMuon==1,tight-charge,lepMVA>0.90.
-  	//
-  	// 	Tight electrons for multilepton ttH Analysis:
-  	// abs(eta)<0.5, Pt>15, abs(dxy)<0.05cm, abs(dz)<0.1cm, SIP3D<8, Imini<0.4,
-  	// jetCSV<0.8484,lepMVA>0.90,missinghits==0,conversion rej..
-  	// Furthermore, 3 regions in eta-phi space are defined: 0-0.8-1.479-2.5,
-  	// where: MVA ID>(0,0,0.7), sigmaietaieta<(0.011,0.011,0.031),
-  	// HoverE<(0.10,0.10,0.07), Deltaetain<(0.01,0.01,0.008),
+    // 	Tight muons for multilepton ttH Analysis:
+    // abs(eta)<0.4, Pt>15, abs(dxy)<0.05cm, abs(dz)<0.1cm, SIP3D<8, Imini<0.4,
+    // isLooseMuon==1,jetCSV<0.8484,isMediumMuon==1,tight-charge,lepMVA>0.90.
+    //
+    // 	Tight electrons for multilepton ttH Analysis:
+    // abs(eta)<0.5, Pt>15, abs(dxy)<0.05cm, abs(dz)<0.1cm, SIP3D<8, Imini<0.4,
+    // jetCSV<0.8484,lepMVA>0.90,missinghits==0,conversion rej..
+    // Furthermore, 3 regions in eta-phi space are defined: 0-0.8-1.479-2.5,
+    // where: MVA ID>(0,0,0.7), sigmaietaieta<(0.011,0.011,0.031),
+    // HoverE<(0.10,0.10,0.07), Deltaetain<(0.01,0.01,0.008),
   	// Deltaphiin<(0.04,0.04,0.07),-0.05<1/E-1/p<(0.01,0.01,0.005)
   	//
-  	Bool_t passVertex; Bool_t passEta; Bool_t passPt; Bool_t passSIP;
-  	Bool_t passCSV; Bool_t passLepMVA; Bool_t passElecCutBasedId;
+    Bool_t passVertex; Bool_t passEta; Bool_t passPt; Bool_t passSIP;
+    Bool_t passCSV; Bool_t passLepMVA; Bool_t passElecCutBasedId;
     Bool_t passptRatio;
     
   	if (lep.isMuon) {
@@ -539,6 +564,17 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
     if(!getGoodVertex(iTight)) return false;
     if(!getSIPcut(4)) return false;
     if(TightCharge != 2) return false;
+    return true;
+  }
+  else if(gSelection == iWZSelec){ // Todo lo que esta mas para alla se hace dentro del paquete de analisis
+    if(lep.isMuon){
+      if(lep.p.Pt() < 20) return false;
+      if(TMath::Abs(lep.p.Eta()) > 2.4) return false;
+    }
+    if(lep.isElec){
+      if(lep.p.Pt() < 20) return false;
+      if(TMath::Abs(lep.p.Eta()) > 2.5) return false;
+    }
     return true;
   }
   else if(gSelection == ittHSelec || gSelection == iWZSelec){
@@ -619,6 +655,17 @@ Bool_t LeptonSelector::isLooseLepton(Lepton lep){
     }
     //if(!getminiRelIso(iLoose)) return false;
     if(!getGoodVertex(iTight)) return false;
+    return true;
+  }
+  if(gSelection == iWZSelec){ // Todo lo que esta mas para alla se hace dentro del paquete de analisis
+    if(lep.isMuon){
+      if(lep.p.Pt() < 10) return false;
+      if(TMath::Abs(lep.p.Eta()) > 2.4) return false;
+    }
+    if(lep.isElec){
+      if(lep.p.Pt() < 15) return false;
+      if(TMath::Abs(lep.p.Eta()) > 2.5) return false;
+    }
     return true;
   }
   if(gSelection == ittHSelec || gSelection == iWZSelec){
