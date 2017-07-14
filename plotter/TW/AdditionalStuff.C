@@ -48,12 +48,20 @@ Float_t the2j1tBDt(Double_t BDT){
   // else if (BDT < 0.399538 ) return 5;
   // else                      return 6;
 
-  if      ( BDT < -0.22298  ) return 1;
-  else if ( BDT < -0.0288331) return 2;
-  else if ( BDT < 0.149631  ) return 3;
-  else if ( BDT < 0.352233  ) return 4;
-  else if ( BDT < 0.562698  ) return 5;
-  else                        return 6;
+  // if      ( BDT < -0.22298  ) return 1;
+  // else if ( BDT < -0.0288331) return 2;
+  // else if ( BDT < 0.149631  ) return 3;
+  // else if ( BDT < 0.352233  ) return 4;
+  // else if ( BDT < 0.562698  ) return 5;
+  // else                        return 6;
+
+
+  if      ( BDT < -0.176522  ) return 1;
+  else if ( BDT < -0.0798808 ) return 2;
+  else if ( BDT < -0.00888648) return 3;
+  else if ( BDT < 0.0427275  ) return 4;
+  else if ( BDT < 0.108243   ) return 5;
+  else                         return 6;
 
 
 }
