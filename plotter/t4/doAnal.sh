@@ -9,7 +9,7 @@ elif [ "$1" == "yields" ]; then
     root -l -b plotter/t4/yields.C\(\"~/www/t4/plots\"\)
 elif [ "$1" == "plots" ]; then
     cd plotter
-    root -l -b t4/DrawPlots.C\(\"CRT\"\)
+    #root -l -b t4/DrawPlots.C\(\"CRT\"\)
     root -l -b t4/DrawPlots.C\(\"SR9\"\)
     root -l -b t4/DrawPlots.C\(\"SR10\"\)
     cd -
