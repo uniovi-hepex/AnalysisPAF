@@ -161,7 +161,7 @@ void TWAnalysis::InsideLoop(){
   }
   //if((Int_t) genLeptons.size() >=2 && TNSelLeps >= 2 && passTrigger && passMETfilters){ // dilepton event, 2 leptons // && !isSS
   // if (gSelection == iTopSelec){
-  if (gIsTTbar && genLeptons.size() < 2 ) return; // Dilepton selection for ttbar!!!
+  if (gIsTTbar && genLeptons.size() > 1 ) return; // Dilepton selection for ttbar!!!
   // }
   // else if (gSelection == iTWSelec){
   //   if (gIsTW && genLeptons.size() < 2) return; // Dilepton selection for tw!!
@@ -208,8 +208,10 @@ void TWAnalysis::InsideLoop(){
     TWeight             = NormWeight*ElecSF  *MuonSF*TrigSF*PUSF   *  BtagSF;
     TWeight_ElecEffUp   = NormWeight*ElecSFUp*MuonSF*TrigSF*PUSF   *  BtagSF;
     TWeight_ElecEffDown = NormWeight*ElecSFDo*MuonSF*TrigSF*PUSF   *  BtagSF;
-    TWeight_MuonEffUp   = NormWeight*ElecSF*MuonSFUp*TrigSF*PUSF   *  BtagSF;
-    TWeight_MuonEffDown = NormWeight*ElecSF*MuonSFDo*TrigSF*PUSF   *  BtagSF;
+    TWeight_MuonEffUp   = NormWeight*ElecSF*
+      (MuonSF+TMath::Sqrt(TMath::Power(MuonSFUp-MuonSF,2)+TMath::Power(MuonSF*0.0122,2)))*TrigSF*PUSF*BtagSF;
+    TWeight_MuonEffDown = NormWeight*ElecSF*
+      (MuonSF-TMath::Sqrt(TMath::Power(MuonSFDo-MuonSF,2)+TMath::Power(MuonSF*0.0122,2)))*TrigSF*PUSF*BtagSF;
     TWeight_TrigUp     = NormWeight*lepSF*(TrigSF+TrigSFerr)*PUSF  *  BtagSF;
     TWeight_TrigDown   = NormWeight*lepSF*(TrigSF-TrigSFerr)*PUSF  *  BtagSF;
     TWeight_PUDown     = NormWeight*lepSF*TrigSF*PUSF_Up           *  BtagSF;
@@ -276,19 +278,19 @@ void TWAnalysis::InsideLoop(){
         if(TChannel == iElMu || TMET > 40){   // MET > 40 in ee, µµ
           if (TNBtags > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0 || TNBtagsJERUp > 0) {
 	    CalculateTWVariables();
-	    if (TNJets == 2 && TNBtags == 1 && TNJetsJESUp == 2 && TNBtagsJESUp == 1 && TNJetsJESDown == 2 && TNBtagsJESDown == 1){
-	      if ( (BDT2j1t - BDT2j1tJESUp) * (BDT2j1t - BDT2j1tJESDown) > 0){
-		cout << "##########" << endl;
-		cout << "ERRORRRRR" << endl;
-		cout << "ERRORRRRR" << endl;
-		cout << "ERRORRRRR" << endl;
-		cout << "ERRORRRRR" << endl;
-		cout << "ERRORRRRR" << endl;
-		cout << "TBDT " << TBDT2j1t << " " << TBDT2j1tJESUp-TBDT2j1t << " " << TBDT2j1tJESDown-TBDT2j1t << endl;
-		cout << "jetPtSubLeading_ " <<jetPtSubLeading_ <<  " " << jetPtSubLeading_JESUp << " " << jetPtSubLeading_JESDown << endl;
-		cout << "##########" << endl;	      
-		cout << "##########" << endl;
-	      }
+	    // if (TNJets == 2 && TNBtags == 1 && TNJetsJESUp == 2 && TNBtagsJESUp == 1 && TNJetsJESDown == 2 && TNBtagsJESDown == 1){
+	      // if ( (BDT2j1t - BDT2j1tJESUp) * (BDT2j1t - BDT2j1tJESDown) > 0){
+	      // 	cout << "##########" << endl;
+	      // 	cout << "ERRORRRRR" << endl;
+	      // 	cout << "ERRORRRRR" << endl;
+	      // 	cout << "ERRORRRRR" << endl;
+	      // 	cout << "ERRORRRRR" << endl;
+	      // 	cout << "ERRORRRRR" << endl;
+	      // 	cout << "TBDT " << TBDT2j1t << " " << TBDT2j1tJESUp-TBDT2j1t << " " << TBDT2j1tJESDown-TBDT2j1t << endl;
+	      // 	cout << "jetPtSubLeading_ " <<jetPtSubLeading_ <<  " " << jetPtSubLeading_JESUp << " " << jetPtSubLeading_JESDown << endl;
+	      // 	cout << "##########" << endl;	      
+	      // 	cout << "##########" << endl;
+	      // }
 	      // cout << "##########" << endl;
 	      // cout << "TBDT " << TBDT2j1t << " " << TBDT2j1tJESUp-TBDT2j1t << " " << TBDT2j1tJESDown-TBDT2j1t << endl;
 	      // cout << "jetPtSubLeading_ " <<jetPtSubLeading_ <<  " " << jetPtSubLeading_JESUp << " " << jetPtSubLeading_JESDown << endl;
@@ -297,7 +299,7 @@ void TWAnalysis::InsideLoop(){
 	      // cout << "TDR_L1L2_J1J2MET " <<TDR_L1L2_J1J2MET <<  " " << TDR_L1L2_J1J2METJESUp << " " << TDR_L1L2_J1J2METJESDown << endl;
 	      // cout << "##########" << endl;
 
-	    }
+	    // }
 	    fTree->Fill();
 	  }
         }
