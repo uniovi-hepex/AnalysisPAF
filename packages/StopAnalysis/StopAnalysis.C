@@ -15,7 +15,7 @@ void StopAnalysis::ResetVariables(){
   TrigSF = 0; TrigSFerr = 0; PUSF = 0; PUSF_Up = 0; PUSF_Down = 0;
   gChannel = 0; passMETfilters = 0; passTrigger = 0; isSS = 0;  NormWeight = 0; TWeight = 0;
   TMT2 = 0; TMll = 0;  TMET = 0; TMET_Phi = 0; TgenMET = 0; TNJets = 0; TNBtags = 0; THT = 0; 
-  TNVetoLeps = 0; TNSelLeps = 0; TChannel = 0; TDeltaPhi = 0; TDeltaEta = 0;
+  TNVetoLeps = 0; TNSelLeps = 0; TChannel = 0; TDeltaPhi = 0; TDeltaEta = 0; TBtagSFFS = 0;
   TNJetsJESUp = 0; TNJetsJESDown = 0; TNJetsJERUp = 0; TNBtagsJESUp = 0; TNBtagsJESDown = 0;
   TNBtagsBtagUp = 0; TNBtagsBtagDown = 0; TNBtagsMisTagUp = 0; TNBtagsMisTagDown = 0;
   THTJESUp = 0; THTJESDown = 0; TNISRJets = 0;
@@ -113,6 +113,7 @@ void StopAnalysis::InsideLoop(){
   PUSF         = GetParam<Float_t>("PUSF");
   PUSF_Up      = GetParam<Float_t>("PUSF_Up");
   PUSF_Down    = GetParam<Float_t>("PUSF_Down");
+  BtagSFFS    = GetParam<Float_t>("BtagSFFS");
 
   // Event variables
   gChannel        = GetParam<Int_t>("gChannel");
@@ -140,8 +141,16 @@ void StopAnalysis::InsideLoop(){
         lepSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
         lepSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1);
         lepSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1);
+        //For muons
+        //https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonReferenceEffsRun2
+        //Additional 1% for ID + 0.5% for Isolation + 0.5% single muon triggers
       }
-      if(gIsFastSim) TrigSF = 0.98;
+      if(gIsFastSim) TrigSF *= 0.98;
+      if(gIsFastSim){
+        PUSF = 1;
+        PUSF_Up  = 1;
+        PUSF_Down = 1;
+      }
       TWeight            = NormWeight*lepSF*TrigSF*PUSF;
       TWeight_LepEffUp   = NormWeight*lepSFUp*TrigSF*PUSF;
       TWeight_LepEffDown = NormWeight*lepSFDo*TrigSF*PUSF;
@@ -157,11 +166,11 @@ void StopAnalysis::InsideLoop(){
       // ===================================================================================================================
     if((selLeptons.at(0).p + selLeptons.at(1).p).M() > 20 && selLeptons.at(0).p.Pt() > 25){ // mll > 20 GeV
         if(gChannel == iElMu || (TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15)  ){ //  Z Veto in ee, µµ
-          if(TNJets > 1 || TNJetsJESUp > 1 || TNJetsJESDown > 1 || TNJetsJERUp > 1){ //At least 2 jets
-            if(TNBtags > 0 || TNBtagsBtagUp > 0 || TNBtagsBtagDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0){ // At least 1 b-tag
+          //if(TNJets > 1 || TNJetsJESUp > 1 || TNJetsJESDown > 1 || TNJetsJERUp > 1){ //At least 2 jets
+           // if(TNBtags > 0 || TNBtagsBtagUp > 0 || TNBtagsBtagDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0){ // At least 1 b-tag
               fTree->Fill();
-            }
-          }
+           // }
+         // }
         }
       }
     }
@@ -244,6 +253,7 @@ void StopAnalysis::SetJetVariables(){
 
 void StopAnalysis::SetEventVariables(){
   fTree->Branch("TWeight",      &TWeight,      "TWeight/F");
+  fTree->Branch("TBtagSFFS",    &TBtagSFFS,    "TBtagSFFS/F");
   fTree->Branch("TMET",         &TMET,         "TMET/F");
   fTree->Branch("TMET_Phi",     &TMET_Phi,     "TMET_Phi/F");
   fTree->Branch("TIsSS",        &TIsSS,        "TIsSS/B");  
@@ -318,6 +328,7 @@ void StopAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vecto
 }
 
 void StopAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut){
+  TBtagSFFS   = BtagSFFS;
   TNJets = selJets.size(); THT = 0;
   TNBtags = 0; TNBtagsBtagUp = 0; TNBtagsBtagDown = 0;
   TNBtagsMisTagUp = 0;  TNBtagsMisTagDown = 0;

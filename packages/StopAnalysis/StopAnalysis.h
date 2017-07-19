@@ -42,6 +42,7 @@ class StopAnalysis : public PAFChainItemSelector{
     Float_t PUSF;
     Float_t PUSF_Up;
     Float_t PUSF_Down;
+    Float_t BtagSFFS;
     Int_t gChannel;
     Bool_t passMETfilters;
     Bool_t passTrigger;
@@ -62,6 +63,7 @@ class StopAnalysis : public PAFChainItemSelector{
     Float_t TMET;      // MET
     Float_t TMET_Phi;  // MET phi
     Bool_t  TIsSS;
+    Float_t TBtagSFFS;
 
     Int_t   TNVetoLeps;
     Int_t   TNSelLeps;
