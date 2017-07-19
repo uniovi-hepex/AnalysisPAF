@@ -62,7 +62,7 @@ public:
   Float_t* TotalSysUp = NULL;
   Float_t* TotalSysDown = NULL;
   TString sys = "0";
-  Float_t sys_lumi = 0.026;
+  Float_t sys_lumi = 0.025;
 
 	Plot(){
 		plotFolder = DefaultPlotfolder; 
