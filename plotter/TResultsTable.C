@@ -27,12 +27,10 @@ void TResultsTableRow::SetNColumns(unsigned int ncols) {
 // TResultsTable
 TResultsTable::TResultsTable(unsigned int nrows, 
 			     unsigned int ncol,
-			     Int_t witherrors,
-			     bool automaticerrors):
+			     Int_t witherrors):
   fNColumns(ncol),
   fNRows(nrows),
   fWithErrors(witherrors),
-  fAutomaticErrors(automaticerrors),
   fRowTitleHeader(""),
   fDrawHLines(false),
   fDrawVLines(false),
@@ -54,10 +52,8 @@ TResultsTable::TResultsTable(unsigned int nrows,
 
   //if (fWithErrors > 0) fColumnWidth=2*fColumnWidth+3;
   if (fWithErrors > 0) fColumnWidth=(1+fWithErrors)*fColumnWidth+3*fWithErrors;
-
-  if (fAutomaticErrors)
-    std::cerr << "WARNING: Automatic errors not yet implemented" << std::endl;
 }
+
 
 TString TResultsTable::FixWidth(const TString& s, unsigned int width, bool prepend) const {
     TString val(s);

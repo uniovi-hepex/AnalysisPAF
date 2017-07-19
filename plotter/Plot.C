@@ -113,7 +113,7 @@ void Plot::GetStack(){ // Sets the histogram hStack
   hAllBkg = new Histo(*(TH1F*) hStack->GetStack()->Last(), 3);
   hAllBkg->SetStyle();
   hAllBkg->SetTag("TotalBkg");
-  hAllBkg->SetStatUnc();
+  //hAllBkg->SetStatUnc();
   if(verbose) cout << Form(" Adding %i systematic to sum of bkg...\n", (Int_t) VSumHistoSystUp.size());
   if(doSys) GroupSystematics();
   
@@ -121,10 +121,16 @@ void Plot::GetStack(){ // Sets the histogram hStack
     hAllBkg->AddToSystematics(VSumHistoSystUp.at(i));
     hAllBkg->AddToSystematics(VSumHistoSystDown.at(i));
   }
-  hAllBkg->SetBinsErrorFromSyst();
+  if(doSys) hAllBkg->SetBinsErrorFromSyst();
 }
 
 void Plot::SetData(){  // Returns histogram for Data
+  if(!doData){
+    GetStack();
+    if(hData) delete hData;
+    if(gROOT->FindObject("HistoData")) delete gROOT->FindObject("HistoData");
+    hData = hAllBkg;
+  }
   if(hData) delete hData;
   if(gROOT->FindObject("HistoData")) delete gROOT->FindObject("HistoData");
   
@@ -167,8 +173,8 @@ void Plot::AddSystematic(TString var, TString pr){
     TString TheRest;
     OneSyst = TString(var(0, var.First(",")));
     TheRest = TString(var(var.First(",")+1, var.Sizeof()));
-    AddSystematic(OneSyst);
-    AddSystematic(TheRest);
+    AddSystematic(OneSyst, pr);
+    AddSystematic(TheRest, pr);
     return;
   }
   if(pr == ""){
