@@ -803,7 +803,8 @@ void LeptonSelector::InsideLoop(){
 //## Get important variables
 //################################################################
 void LeptonSelector::GetLeptonVariables(Int_t i){ // Once per muon, get all the info
-  tP.SetPxPyPzE(Get<Float_t>("LepGood_px", i), Get<Float_t>("LepGood_py", i), Get<Float_t>("LepGood_pz", i), Get<Float_t>("LepGood_energy", i));
+  //tP.SetPxPyPzE(Get<Float_t>("LepGood_px", i), Get<Float_t>("LepGood_py", i), Get<Float_t>("LepGood_pz", i), Get<Float_t>("LepGood_energy", i));
+  tP.SetPtEtaPhiM(Get<Float_t>("LepGood_pt", i), Get<Float_t>("LepGood_eta", i), Get<Float_t>("LepGood_phi", i), Get<Float_t>("LepGood_mass", i));
   pt 						= tP.Pt();
   eta 					= tP.Eta();
   charge 				= Get<Int_t>("LepGood_charge", i);

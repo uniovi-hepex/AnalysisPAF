@@ -26,6 +26,7 @@ JetSelector::JetSelector() : PAFChainItemSelector() {
   jet_MaxEta = 0;
   jet_MinPt = 0;
   vetoJet_minPt = 0;
+  BtagSFFS = 1;
 }
 
 JetSelector::~JetSelector() {
@@ -41,6 +42,7 @@ void JetSelector::Summary(){}
 void JetSelector::Initialise(){
   gIsData    = GetParam<Bool_t>("IsData");
   gSelection = GetParam<Int_t>("iSelection");
+  gIsFastSim   = GetParam<Bool_t>("IsFastSim");
 
   //---- Select your wp for b-tagging and pt, eta for the jets
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -114,12 +116,13 @@ void JetSelector::Initialise(){
   TString pwd  = GetParam<TString>("WorkingDir");
   TString BTagSFPath = Form("%s/packages/BTagSFUtil", pwd.Data());
   
-
-  fBTagSFnom = new BTagSFUtil(MeasType, BTagSFPath, taggerName.Data(), stringWP,  0);
-  fBTagSFbUp = new BTagSFUtil(MeasType, BTagSFPath, taggerName.Data(), stringWP,  1);
-  fBTagSFbDo = new BTagSFUtil(MeasType, BTagSFPath, taggerName.Data(), stringWP, -1);
-  fBTagSFlUp = new BTagSFUtil(MeasType, BTagSFPath, taggerName.Data(), stringWP,  3);
-  fBTagSFlDo = new BTagSFUtil(MeasType, BTagSFPath, taggerName.Data(), stringWP, -3);
+  TString FastSimDataset = "";
+  if(gIsFastSim) FastSimDataset = "1";
+  fBTagSFnom = new BTagSFUtil(MeasType, BTagSFPath, taggerName.Data(), stringWP,  0, FastSimDataset);
+  fBTagSFbUp = new BTagSFUtil(MeasType, BTagSFPath, taggerName.Data(), stringWP,  1, FastSimDataset);
+  fBTagSFbDo = new BTagSFUtil(MeasType, BTagSFPath, taggerName.Data(), stringWP, -1, FastSimDataset);
+  fBTagSFlUp = new BTagSFUtil(MeasType, BTagSFPath, taggerName.Data(), stringWP,  3, FastSimDataset);
+  fBTagSFlDo = new BTagSFUtil(MeasType, BTagSFPath, taggerName.Data(), stringWP, -3, FastSimDataset);
 
   Leptons  = std::vector<Lepton>();
   selJets  = std::vector<Jet>();
@@ -134,7 +137,8 @@ void JetSelector::Initialise(){
 }
 
 void JetSelector::GetJetVariables(Int_t i, const TString& jec){
-  tpJ.SetPxPyPzE(Get<Float_t>("Jet"+jec+"_px",i), Get<Float_t>("Jet"+jec+"_py",i), Get<Float_t>("Jet"+jec+"_pz", i), Get<Float_t>("Jet"+jec+"_energy",i));
+  //tpJ.SetPxPyPzE(Get<Float_t>("Jet"+jec+"_px",i), Get<Float_t>("Jet"+jec+"_py",i), Get<Float_t>("Jet"+jec+"_pz", i), Get<Float_t>("Jet"+jec+"_energy",i));
+  tpJ.SetPtEtaPhiM(Get<Float_t>("Jet"+jec+"_pt",i), Get<Float_t>("Jet"+jec+"_eta",i), Get<Float_t>("Jet"+jec+"_phi", i), Get<Float_t>("Jet"+jec+"_mass",i));
   eta = tpJ.Eta();;
   pt = tpJ.Pt();
   rawPt       = Get<Float_t>("Jet"+jec+"_rawPt",i);
@@ -150,7 +154,7 @@ void JetSelector::GetJetVariables(Int_t i, const TString& jec){
 }
 
 void JetSelector::GetDiscJetVariables(Int_t i){
-  tpJ.SetPxPyPzE(Get<Float_t>("DiscJet_px",i), Get<Float_t>("DiscJet_py",i), Get<Float_t>("DiscJet_pz", i), Get<Float_t>("DiscJet_energy",i));
+  tpJ.SetPtEtaPhiM(Get<Float_t>("DiscJet_pt",i), Get<Float_t>("DiscJet_eta",i), Get<Float_t>("DiscJet_phi", i), Get<Float_t>("DiscJet_mass",i));
   eta = tpJ.Eta();;
   pt = tpJ.Pt();
   rawPt       = Get<Float_t>("DiscJet_rawPt",i);
@@ -211,6 +215,7 @@ void JetSelector::InsideLoop(){
   Leptons.clear();
   VetoLeptons.clear();
 
+  BtagSFFS         = 1.;
   BtagSF           = 1.;
   BtagSFBtagUp     = 1.;
   BtagSFBtagDown   = 1.;
@@ -433,6 +438,7 @@ void JetSelector::InsideLoop(){
   SetParam("BtagSFBtagDown"  , BtagSFBtagDown  );
   SetParam("BtagSFMistagUp"  , BtagSFMistagUp  );
   SetParam("BtagSFMistagDown", BtagSFMistagDown);
+  SetParam("BtagSFFS"        , BtagSFFS        );
 
 
   // Propagate JES to MET
@@ -461,6 +467,10 @@ Bool_t JetSelector::IsBtag(Jet j){
   else if(gSelection == iTWSelec) isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
   else if(stringWP == "Loose") isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
   else                         isbtag = fBTagSFnom->IsTagged(j.csv,j.flavmc, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
+  if(gIsFastSim && BtagSFFS == 1. && isbtag){  
+    BtagSFFS = fBTagSFnom->GetFastSimBtagSF(j.flavmc, j.p.Eta(), j.p.Pt(), j.csv);
+    //cout << "BtagSFFS = " << BtagSFFS << endl;
+  }
   return isbtag;
 }
 
