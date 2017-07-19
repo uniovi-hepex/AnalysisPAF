@@ -14,7 +14,22 @@
 
 ClassImp(EventBuilder);
 EventBuilder::EventBuilder() : PAFChainItemSelector() {}
-void EventBuilder::Summary(){}
+void EventBuilder::Summary(){
+/*  cout << " ========================================================= " << endl;
+  cout << " ====== Sample: " << gSampleName << " for selection: " << LabSelection[gSelection] << " ======\n";
+  cout << " -----------> Is data?.......... "; if(gIsData)    cout << "YES\n"; else cout << "NO\n";
+  cout << " -----------> Is aMCatNLO?...... "; if(gIsMCatNLO) cout << "YES\n"; else cout << "NO\n";
+  cout << " -----------> Is FastSim?-...... "; if(gIsFastSim) cout << "YES\n"; else cout << "NO\n";
+  cout << " >>> Number of gen events      : " << gCount           << endl;
+  cout << " >>> Number of events in sample: " << gNEntries        << endl;
+  cout << " >>> Number of processed events: " << nProcessedEvents << endl;
+  cout << " >>> Sum of gen weights        : " << gSumOfWeights    << endl;
+  cout << " >>> Cross section for norm    : " << gXSec            << endl;
+  cout << " >>> Total weight  for norm    : " << Weight           << endl;
+  cout << " >>> Processed events          : " << nProcessedEvents << endl;
+  cout << " ========================================================= " << endl;
+*/
+}
 
 
 // Select your triggers
@@ -218,7 +233,13 @@ void EventBuilder::Initialise(){
   gSampleName  = GetParam<TString>("sampleName");
   gIsMCatNLO   = GetParam<Bool_t>("IsMCatNLO");
   gIsFastSim   = GetParam<Bool_t>("IsFastSim");
+  gXSec        = GetParam<Float_t>("xsec");
+  gCount       = GetParam<Int_t>("Count");
+  gNEntries    = GetParam<Int_t>("nEntries");
+  gSumOfWeights= GetParam<Double_t>("SumOfWeights");
   gChannel = -1;
+  nProcessedEvents = 0; 
+  //if(gSelection == iTopSelec) gIsFastSim = true;
 
   selLeptons = std::vector<Lepton>();
   vetoLeptons = std::vector<Lepton>();
@@ -254,6 +275,7 @@ void EventBuilder::Initialise(){
 }
 
 void EventBuilder::InsideLoop(){
+  nProcessedEvents++;
   // >>>>>>>>>>>>>> Get selected leptons:
   selLeptons = GetParam<std::vector<Lepton>>("selLeptons");
   vetoLeptons = GetParam<std::vector<Lepton>>("vetoLeptons");
