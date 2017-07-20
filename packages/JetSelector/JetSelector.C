@@ -47,7 +47,7 @@ void JetSelector::Initialise(){
   //---- Select your wp for b-tagging and pt, eta for the jets
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-  if     (gSelection == iStopSelec || gSelection == iTopSelec || gSelection == ittDMSelec){
+  if     (gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == ittDMSelec){
     taggerName="CSVv2";
     stringWP = "Medium";
     jet_MaxEta = 2.4;
@@ -121,7 +121,7 @@ void JetSelector::Initialise(){
   }
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-  if (gSelection == iTopSelec || gSelection == iTWSelec) MeasType = "mujets";
+  if (gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec) MeasType = "mujets";
   TString pwd  = GetParam<TString>("WorkingDir");
   TString BTagSFPath = Form("%s/packages/BTagSFUtil", pwd.Data());
   

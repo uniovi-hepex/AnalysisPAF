@@ -84,6 +84,9 @@ class EventBuilder : public PAFChainItemSelector{
     Long64_t Count;
     Float_t xsec;
     Int_t nProcessedEvents;
+
+    TString gOptions;
+    Bool_t gIsData2017;
   
 
     void SetCountLHE();
