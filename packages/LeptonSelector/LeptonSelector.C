@@ -60,7 +60,7 @@ void LeptonSelector::Initialise(){
   else if(gSelection == iWZSelec){
 
   }
-  else if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
+  else if(gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
     LepSF->loadHisto(iTrigDoubleMuon);
     LepSF->loadHisto(iTrigDoubleElec);
     LepSF->loadHisto(iTrigElMu);
@@ -391,7 +391,7 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
     if(passId && passIso && getGoodVertex(iTight) && getSIPcut(4)) return true;
     else return false;
   }
-  else if(gSelection == iTopSelec || gSelection == iTWSelec){
+  else if(gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec){
     // Tight cut-based electrons, pT > 20, |eta| < 2.4, RelIso POG, tightIP2D, SIP3D > 4
     // Tight Muon ID, RelIso POG, tightIP2D, SIP3D > 4
     if(lep.isMuon){
@@ -537,7 +537,7 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
     } 
     return passId && passIso && getGoodVertex(iTight) && getSIPcut(4);
   }
-  else if(gSelection == iTopSelec || gSelection == iTWSelec){
+  else if(gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec){
     return true;
   }
   else if(gSelection == iWWSelec){
@@ -808,7 +808,7 @@ void LeptonSelector::InsideLoop(){
   nGenLeptons  	= genLeptons.size();
 
   TriggerSF = 1; TriggerSFerr = 0;
-  if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iStopSelec){
+  if(gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec || gSelection == iStopSelec){
     if(nSelLeptons >= 2){
       if     (selLeptons.at(0).isMuon && selLeptons.at(1).isMuon){
         TriggerSF = LepSF->GetTrigDoubleMuSF(    selLeptons.at(0).p.Eta(), selLeptons.at(1).p.Eta());

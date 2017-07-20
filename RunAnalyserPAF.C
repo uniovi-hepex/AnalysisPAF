@@ -24,7 +24,7 @@ R__LOAD_LIBRARY(DatasetManager/DatasetManager.C+)
 void RunAnalyserPAF(TString sampleName  = "TTbar_Powheg", TString Selection = "StopDilep", 
 		    Int_t nSlots = 1, Long64_t nEvents = 0, Long64_t FirstEvent = 0, 
 		    Float_t uxsec = 1.0, Int_t stopMass = 0, Int_t lspMass  = 0, 
-		    TString option = "");
+		    TString options = "");
 
 void            GetCount(vector<TString> Files, Bool_t IsData = false);
 Float_t         GetSMSnorm(Int_t mStop, Int_t mLsp);
@@ -342,6 +342,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   myProject->SetInputParam("nEntries",  nTrueEntries);
   myProject->SetInputParam("Count",  Count);
   myProject->SetInputParam("xsec",  xsec);
+  myProject->SetInputParam("_options",  options);
   
   // EXTRA PARAMETERS
   myProject->SetInputParam("IsFastSim"      , G_IsFastSim);
