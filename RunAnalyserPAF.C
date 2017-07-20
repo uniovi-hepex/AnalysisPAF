@@ -60,7 +60,7 @@ Bool_t G_IsFastSim = false;
 enum  ESelector               {iStopSelec, iTopSelec, iTWSelec, iWWSelec, 
 			      ittDMSelec, ittHSelec, iWZSelec, i4tSelec, iStopTopSelec, nSel};
 const TString kTagSel[nSel] = {"Stop",     "Top",     "TW",     "WW",     
-			      "ttDM",     "ttH",     "WZ",     "tttt", "StopTop" };
+"ttDM", "ttH", "WZ", "tttt", "StopTop" };
 //
 //=============================================================================
 
@@ -117,6 +117,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   else if(Selection == "tttt"      || Selection == "4t"      ) sel = i4tSelec;
   else if(Selection == "StopTop"   || Selection == "topSUSY" ) sel = iStopTopSelec;
   else if(Selection == "WW"                                  ) sel = iWWSelec;
+  else if(Selection == "HWW"                                 ) sel = iHWWSelec;
   else { 
     PAF_ERROR("RunAnalyserPAF", Form("Wrong selection \"%s\".",
 				     Selection.Data()));
@@ -369,6 +370,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
     myProject->AddSelectorPackage("TWAnalysis");
   }
   else if (sel == iWWSelec  )  myProject->AddSelectorPackage("WWAnalysis");
+  else if (sel == iHWWSelec )  myProject->AddSelectorPackage("HWWAnalysis");
   else                         PAF_FATAL("RunAnalyserPAF", "No selector defined for this analysis!!!!");
   
   // Additional packages

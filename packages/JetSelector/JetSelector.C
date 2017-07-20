@@ -83,7 +83,7 @@ void JetSelector::Initialise(){
     vetoJet_maxEta = 4.7;
     minDR = 0.4;
   }
-  else if(gSelection == iWWSelec){
+  else if(gSelection == iWWSelec || gSelection == iHWWSelec){
     taggerName="CSVv2";
     stringWP = "Loose";
     jet_MaxEta = 4.7;
@@ -266,7 +266,7 @@ void JetSelector::InsideLoop(){
         } 
       }
       if (tJ.p.Pt() > vetoJet_minPt && TMath::Abs(tJ.p.Eta()) < vetoJet_maxEta){
-        if      (gSelection == iWWSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
+        if      (gSelection == iWWSelec || gSelection == iHWWSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
         else if (gSelection == iWZSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
         else if (gSelection == i4tSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
         else if (gSelection == iWZSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
@@ -475,7 +475,7 @@ Bool_t JetSelector::IsBtag(Jet j){
   if(gIsData || gSelection == i4tSelec || gSelection == iWZSelec) isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
   // using "weights" as scale factors in the tW analysis :)
   else if(gSelection == iTWSelec) isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
-  else if(stringWP == "Loose") isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
+  //else if(stringWP == "Loose") isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
   else                         isbtag = fBTagSFnom->IsTagged(j.csv,j.flavmc, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
   if(gIsFastSim && BtagSFFS == 1. && isbtag){  
     BtagSFFS = fBTagSFnom->GetFastSimBtagSF(j.flavmc, j.p.Eta(), j.p.Pt(), j.csv);
