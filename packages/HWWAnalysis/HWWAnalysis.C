@@ -15,7 +15,8 @@ HWWAnalysis::HWWAnalysis() : PAFChainItemSelector() {
 	TMETJESUp = 0; TMETJESDown = 0; TMT2llJESUp = 0; TMT2llJESDown = 0; TMT2 = 0; TMT = 0; TMTprime = 0;
 	TWeight_LepEffUp = 0; TWeight_LepEffDown = 0; TWeight_TrigUp = 0; TWeight_TrigDown = 0;
 	TWeight_FSUp = 0; TWeight_FSDown = 0; TWeight_PUDown = 0; TWeight_PUUp = 0;  TNVetoJets = 0;
-	TDeltaPhi = 0; TDeltaEta = 0;
+	TDeltaPhi = 0; TDeltaEta = 0;   TLep0_Pt = 0; TLep0_Eta = 0; TLep0_Phi = 0; TLep0_E = 0; TLep0_Charge = 0;
+	TLep1_Pt = 0; TLep1_Eta = 0; TLep1_Phi = 0; TLep1_E = 0; TLep1_Charge = 0;
 	
 	for(Int_t i = 0; i < 20; i++){
 		TJet_Pt[i] = 0;
@@ -29,7 +30,6 @@ HWWAnalysis::HWWAnalysis() : PAFChainItemSelector() {
 	}
   	for(Int_t i = 0; i < 254; i++) TLHEWeight[i] = 0;
 }
-
 
 void HWWAnalysis::Summary(){}
 
@@ -146,7 +146,7 @@ void HWWAnalysis::InsideLoop(){
 			// utilizando minitrees aquí pongo el nivel más básico de seleccion de eventos. Será en el plotter donde escogeremos más a fondo.
 
 //=============================// analisis de cosas básicas de HWW
-			if(((selLeptons.at(0).p + selLeptons.at(1).p).M() > 12) && (gChannel == iElMu) ){
+			if(((selLeptons.at(0).p + selLeptons.at(1).p).M() > 12) && (gChannel == iElMu) && (selLeptons.at(0).p.Pt() > 25) && (selLeptons.at(1).p.Pt() > 15)  ){
 				fTree->Fill();
 			};
 		};
@@ -160,39 +160,44 @@ void HWWAnalysis::InsideLoop(){
 
 void HWWAnalysis::SetLeptonVariables(){
 	fTree->Branch("TNVetoLeps",     &TNVetoLeps,     "TNVetoLeps/I");
-  	fTree->Branch("TNSelLeps",     &TNSelLeps,     "TNSelLeps/I");
-  	fTree->Branch("TLep_Pt",     &TLep_Pt,     "TLep_Pt/F");
-  	fTree->Branch("TLep_Eta",     &TLep_Eta,     "TLep_Eta/F");
-  	fTree->Branch("TLep_Phi",     &TLep_Phi,     "TLep_Phi/F");
-  	fTree->Branch("TLep_E" ,     &TLep_E ,     "TLep_E/F");
-  	fTree->Branch("TLep_Charge", &TLep_Charge, "TLep_Charge/F");
-  	fTree->Branch("TChannel",      &TChannel,      "TChannel/I");
-	fTree->Branch("TPtdil",         &TPtdil ,       "TPtdil/F");
-	fTree->Branch("TMT",       &TMT,        "TMT/F");
-  	fTree->Branch("TMll",      &TMll,      "TMll/F");
-  	fTree->Branch("TMT2",      &TMT2,      "TMT2/F");
+  	fTree->Branch("TNSelLeps",      &TNSelLeps,      "TNSelLeps/I");
+  	fTree->Branch("TLep0_Pt",       &TLep0_Pt,       "TLep0_Pt/F");
+  	fTree->Branch("TLep0_Eta",      &TLep0_Eta,      "TLep0_Eta/F");
+  	fTree->Branch("TLep0_Phi",      &TLep0_Phi,      "TLep0_Phi/F");
+  	fTree->Branch("TLep0_E" ,       &TLep0_E ,       "TLep0_E/F");
+  	fTree->Branch("TLep0_Charge",   &TLep0_Charge,   "TLep0_Charge/F");
+  	fTree->Branch("TLep1_Pt",       &TLep1_Pt,       "TLep1_Pt/F");
+  	fTree->Branch("TLep1_Eta",      &TLep1_Eta,      "TLep1_Eta/F");
+  	fTree->Branch("TLep1_Phi",      &TLep1_Phi,      "TLep1_Phi/F");
+  	fTree->Branch("TLep1_E" ,       &TLep1_E ,       "TLep1_E/F");
+  	fTree->Branch("TLep1_Charge",   &TLep1_Charge,   "TLep1_Charge/F");
+  	fTree->Branch("TChannel",       &TChannel,        "TChannel/I");
+	fTree->Branch("TPtdil",         &TPtdil ,        "TPtdil/F");
+	fTree->Branch("TMT",            &TMT,            "TMT/F");
+  	fTree->Branch("TMll",           &TMll,           "TMll/F");
+  	fTree->Branch("TMT2",           &TMT2,           "TMT2/F");
   	fTree->Branch("TDeltaPhi",      &TDeltaPhi,      "TDeltaPhi/F");
   	fTree->Branch("TDeltaEta",      &TDeltaEta,      "TDeltaEta/F");
 };
 
 
 void HWWAnalysis::SetJetVariables(){
-  	fTree->Branch("TNJets",        &TNJets,         "TNJets/I");
-  	fTree->Branch("TNBtags",       &TNBtags,     "TNBtags/I");
-  	fTree->Branch("TJet_isBJet",   TJet_isBJet,       "TJet_isBJet[TNJets]/I");
-  	fTree->Branch("TJet_Pt",       TJet_Pt,           "TJet_Pt[TNJets]/F");
-  	fTree->Branch("TJet_Eta",      TJet_Eta,           "TJet_Eta[TNJets]/F");
-  	fTree->Branch("TJet_Phi",      TJet_Phi,           "TJet_Phi[TNJets]/F");
-  	fTree->Branch("TJet_E",        TJet_E,            "TJet_E[TNJets]/F");
-  	fTree->Branch("THT",          &THT,          "THT/F");
-  	fTree->Branch("TNVetoJets",     &TNVetoJets,     "TNVetoJets/I");
+  	fTree->Branch("TNJets",        &TNJets,       "TNJets/I");
+  	fTree->Branch("TNBtags",       &TNBtags,      "TNBtags/I");
+  	fTree->Branch("TJet_isBJet",   TJet_isBJet,   "TJet_isBJet[TNJets]/I");
+  	fTree->Branch("TJet_Pt",       TJet_Pt,       "TJet_Pt[TNJets]/F");
+  	fTree->Branch("TJet_Eta",      TJet_Eta,      "TJet_Eta[TNJets]/F");
+  	fTree->Branch("TJet_Phi",      TJet_Phi,      "TJet_Phi[TNJets]/F");
+  	fTree->Branch("TJet_E",        TJet_E,        "TJet_E[TNJets]/F");
+  	fTree->Branch("THT",           &THT,          "THT/F");
+  	fTree->Branch("TNVetoJets",    &TNVetoJets,   "TNVetoJets/I");
   
   	if(gIsData) return;
-  	fTree->Branch("TNJetsJESUp",      &TNJetsJESUp,       "TNJetsJESUp/I");
-  	fTree->Branch("TNJetsJESDown",    &TNJetsJESDown,     "TNJetsJESDown/I");
-  	fTree->Branch("TNJetsJER",        &TNJetsJER,         "TNJetsJER/I");
-  	fTree->Branch("TNVetoJetsJESUp",      &TNVetoJetsJESUp,         "TNVetoJetsJESUp/I");
-  	fTree->Branch("TNVetoJetsJESDown",    &TNVetoJetsJESDown,         "TNVetoJetsJESDown/I");
+  	fTree->Branch("TNJetsJESUp",          &TNJetsJESUp,       "TNJetsJESUp/I");
+  	fTree->Branch("TNJetsJESDown",        &TNJetsJESDown,     "TNJetsJESDown/I");
+  	fTree->Branch("TNJetsJER",            &TNJetsJER,         "TNJetsJER/I");
+  	fTree->Branch("TNVetoJetsJESUp",      &TNVetoJetsJESUp,   "TNVetoJetsJESUp/I");
+  	fTree->Branch("TNVetoJetsJESDown",    &TNVetoJetsJESDown, "TNVetoJetsJESDown/I");
 
   	fTree->Branch("TNVetoJetsBtagUp",       &TNVetoJetsBtagUp,     "TNVetoJetsBtagUp/I");
   	fTree->Branch("TNVetoJetsBtagDown",     &TNVetoJetsBtagDown,   "TNVetoJetsBtagDown/I");
@@ -212,22 +217,22 @@ void HWWAnalysis::SetEventVariables(){
 	fTree->Branch("TIsSS",        &TIsSS,        "TIsSS/B");
 	
 	if(gIsData) return;
-	fTree->Branch("TgenMET",         &TgenMET,         "TgenMET/F");
-	fTree->Branch("TWeight_LepEffUp",      &TWeight_LepEffUp,      "TWeight_LepEffUp/F");
-	fTree->Branch("TWeight_LepEffDown",    &TWeight_LepEffDown,    "TWeight_LepEffDown/F");
-	fTree->Branch("TWeight_ElecEffUp",      &TWeight_ElecEffUp,      "TWeight_ElecEffUp/F");
-  	fTree->Branch("TWeight_ElecEffDown",    &TWeight_ElecEffDown,    "TWeight_ElecEffDown/F");
-  	fTree->Branch("TWeight_MuonEffUp",      &TWeight_MuonEffUp,      "TWeight_MuonEffUp/F");
-  	fTree->Branch("TWeight_MuonEffDown",    &TWeight_MuonEffDown,    "TWeight_MuonEffDown/F");
-  	fTree->Branch("TWeight_TrigUp",        &TWeight_TrigUp,        "TWeight_TrigUp/F");
-  	fTree->Branch("TWeight_TrigDown",      &TWeight_TrigDown,      "TWeight_TrigDown/F");
-	fTree->Branch("TWeight_PUUp",          &TWeight_PUUp,          "TWeight_PUUp/F");
-	fTree->Branch("TWeight_PUDown",        &TWeight_PUDown,        "TWeight_PUDown/F");
-  	fTree->Branch("TLHEWeight",        TLHEWeight,         "TLHEWeight[254]/F");
-	fTree->Branch("TMETJESUp",    &TMETJESUp,    "TMETJESUp/F");
-	fTree->Branch("TMETJESDown",  &TMETJESDown,  "TMETJESDown/F");
-  	fTree->Branch("TMT2llJESUp",    &TMT2llJESUp,    "TMT2llJESUp/F");
-  	fTree->Branch("TMT2llJESDown",  &TMT2llJESDown,  "TMT2llJESDown/F");
+	fTree->Branch("TgenMET",                &TgenMET,             "TgenMET/F");
+	fTree->Branch("TWeight_LepEffUp",       &TWeight_LepEffUp,    "TWeight_LepEffUp/F");
+	fTree->Branch("TWeight_LepEffDown",     &TWeight_LepEffDown,  "TWeight_LepEffDown/F");
+	fTree->Branch("TWeight_ElecEffUp",      &TWeight_ElecEffUp,   "TWeight_ElecEffUp/F");
+  	fTree->Branch("TWeight_ElecEffDown",    &TWeight_ElecEffDown, "TWeight_ElecEffDown/F");
+  	fTree->Branch("TWeight_MuonEffUp",      &TWeight_MuonEffUp,   "TWeight_MuonEffUp/F");
+  	fTree->Branch("TWeight_MuonEffDown",    &TWeight_MuonEffDown, "TWeight_MuonEffDown/F");
+  	fTree->Branch("TWeight_TrigUp",         &TWeight_TrigUp,      "TWeight_TrigUp/F");
+  	fTree->Branch("TWeight_TrigDown",       &TWeight_TrigDown,    "TWeight_TrigDown/F");
+	fTree->Branch("TWeight_PUUp",           &TWeight_PUUp,        "TWeight_PUUp/F");
+	fTree->Branch("TWeight_PUDown",         &TWeight_PUDown,      "TWeight_PUDown/F");
+  	fTree->Branch("TLHEWeight",             TLHEWeight,           "TLHEWeight[254]/F");
+	fTree->Branch("TMETJESUp",              &TMETJESUp,           "TMETJESUp/F");
+	fTree->Branch("TMETJESDown",            &TMETJESDown,         "TMETJESDown/F");
+  	fTree->Branch("TMT2llJESUp",            &TMT2llJESUp,         "TMT2llJESUp/F");
+  	fTree->Branch("TMT2llJESDown",          &TMT2llJESDown,       "TMT2llJESDown/F");
 }
 
 
@@ -235,20 +240,21 @@ void HWWAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector
   TNSelLeps = selLeptons.size();
   Int_t nVetoLeptons = VetoLeptons.size();
   TNVetoLeps = (nVetoLeptons == 0) ? TNSelLeps : nVetoLeptons;
-  for(Int_t i = 0; i < TNSelLeps; i++){
-    TLep_Pt[i]     = selLeptons.at(i).Pt();    
-    TLep_Eta[i]    = selLeptons.at(i).Eta();    
-    TLep_Phi[i]    = selLeptons.at(i).Phi();    
-    TLep_E[i]      = selLeptons.at(i).E();    
-    TLep_Charge[i] = selLeptons.at(i).charge;    
+
+  if(TNSelLeps > 0){
+    	TLep0_Pt     = selLeptons.at(0).Pt();    
+    	TLep0_Eta    = selLeptons.at(0).Eta();    
+    	TLep0_Phi    = selLeptons.at(0).Phi();    
+    	TLep0_E      = selLeptons.at(0).E();    
+    	TLep0_Charge = selLeptons.at(0).charge;    
   }
-  if(TNSelLeps < 2) TChannel = -1;
-  else if(selLeptons.at(0).isMuon && selLeptons.at(1).isElec) TChannel = iElMu;
-  else if(selLeptons.at(0).isElec && selLeptons.at(1).isMuon) TChannel = iElMu;
-  else if(selLeptons.at(0).isMuon && selLeptons.at(1).isMuon) TChannel = iMuon;
-  else if(selLeptons.at(0).isElec && selLeptons.at(1).isElec) TChannel = iElec;
-  TChannel = gChannel;
   if(TNSelLeps > 1){
+  	TLep1_Pt     = selLeptons.at(1).Pt();    
+   	TLep1_Eta    = selLeptons.at(1).Eta();    
+   	TLep1_Phi    = selLeptons.at(1).Phi();    
+    	TLep1_E      = selLeptons.at(1).E();    
+    	TLep1_Charge = selLeptons.at(1).charge;
+ 
 	TMll = (selLeptons.at(0).p + selLeptons.at(1).p).M();    
 	TPtdil = (selLeptons.at(0).p + selLeptons.at(1).p).Pt(); 
 	TMT2 = getMT2ll(selLeptons.at(0), selLeptons.at(1), Get<Float_t>("met_pt"), Get<Float_t>("met_phi") ); 
@@ -260,6 +266,12 @@ void HWWAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector
 	//defincion directa con el TLorentzVector de TMT (predefinida)
 	TMTprime = (selLeptons.at(0).p + selLeptons.at(1).p).Mt();
   }
+  if(TNSelLeps < 2) TChannel = -1;
+  else if(selLeptons.at(0).isMuon && selLeptons.at(1).isElec) TChannel = iElMu;
+  else if(selLeptons.at(0).isElec && selLeptons.at(1).isMuon) TChannel = iElMu;
+  else if(selLeptons.at(0).isMuon && selLeptons.at(1).isMuon) TChannel = iMuon;
+  else if(selLeptons.at(0).isElec && selLeptons.at(1).isElec) TChannel = iElec;
+  TChannel = gChannel;
 }
 
 void HWWAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut){

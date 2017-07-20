@@ -20,20 +20,21 @@ Int_t XN;
 
 TString Path = "/nfs/fanae/user/dani/CERN/AnalysisPAF/WW_temp/NewSamplesSyst/";
 //TString Path("/nfs/fanae/user/dani/CERN/AnalysisPAF/WW_temp/DYInc(picoZdentro)/");  
-TString Var[nVar] = {"TMET", "TMll", "TMT", "TPtdil", "TLep_Pt[0]", "TJet_Pt[0]", "TLep_Pt[1]", "TJet_Pt[1]", "TNJets", "TNBtags", "TDeltaPhi"};
+TString Var[nVar] = {"TMET", "TMll", "TMT", "TPtdil", "TLep0_Pt", "TJet_Pt[0]", "TLep1_Pt", "TJet_Pt[1]", "TNJets", "TNBtags", "TDeltaPhi"};
 //TString Chan[nChan] = {"ElMu", "Muon", "Elec", "All"};
 TString Chan[nChan] = {"ElMu"};
 TString CR;
 TString Cuts;
 TString XLegend;
 TString Nobtag0jets    = "TMll > 12 && TMET > 20 && TPtdil > 30 && TNBtags == 0 && !TIsSS && TNJets == 0 && TNVetoJets == 0";
+TString Nobtag1jets    = "TMll > 12 && TMET > 20 && TPtdil > 30 && TNBtags == 0 && !TIsSS && TNJets == 1 && TNVetoJets == 0";
 
 //ttbar control region
 TString ttbarCut = "TNJets >= 2 && TNBtags >= 1 && !TIsSS"; // >= 2 jet y al menos un b-jets
 //Same sign control region
 TString SSCut = "TMET > 20 && TPtdil > 30 && TNBtags == 0 && TIsSS"; //se dividirá en 0 jets y 1 jets
 //WW signal control region
-TString WWCut = "TMll > 12 && TMET > 20 && TPtdil > 30 && TNBtags == 0 && !TIsSS"; //idem
+TString WWCut = "TMll > 12 && TMET > 20 && TPtdil > 30 && TNVetoJets == 0 && !TIsSS"; //idem
 //DY control region de 0 jets y 1 jets
 TString DYCut = "TMET > 20 && TPtdil > 30 && TNVetoJets == 0 && !TIsSS"; //idem
 
@@ -66,13 +67,13 @@ void LoopDrawCR(TString CR){
 				
 	for(Int_t i=0 ; i < nVar ; i++){
 		if     (Var[i] == "TMET")        NBins = 25 , X0 = 0 , XN = 250 , XLegend = "MET [GeV]";
-		else if(Var[i] == "TMll")        NBins = 34 , X0 = 0 , XN = 340 , XLegend = "InvMass [GeV]";
+		else if(Var[i] == "TMll")        NBins = 35 , X0 = 0 , XN = 350 , XLegend = "InvMass [GeV]";
 		else if(Var[i] == "TMT")         NBins = 30 , X0 = 0 , XN = 300 , XLegend = "M_{T} [GeV]";
 		else if(Var[i] == "TPtdil")      NBins = 20 , X0 = 0 , XN = 200 , XLegend = "P^{ll}_{T} [GeV]";
-		else if(Var[i] == "TLep_Pt[0]")  NBins = 20 , X0 = 0 , XN = 200 , XLegend = "Lep_Pt_0 [GeV]";
-		else if(Var[i] == "TLep_Pt[1]")  NBins = 20 , X0 = 0 , XN = 200 , XLegend = "Lep_Pt_1 [GeV]";
+		else if(Var[i] == "TLep0_Pt")    NBins = 20 , X0 =  0, XN = 140 , XLegend = "Pt^{l_{0}} [GeV]"; //XN =140 con un jet
+		else if(Var[i] == "TLep1_Pt")    NBins =  20, X0 = 0 , XN = 140 , XLegend = "Pt^{l_{1}} [GeV]";
 		else if(Var[i] == "TJet_Pt[0]")  NBins = 20 , X0 = 0 , XN = 200 , XLegend = "Jet_Pt_0 [GeV]";
-		else if(Var[i] == "TJet_Pt[1]")  NBins = 15 , X0 = 0 , XN = 150 , XLegend = "Jet_Pt_1 [GeV]";
+		else if(Var[i] == "TJet_Pt[1]")  NBins = 20 , X0 = 0 , XN = 200 , XLegend = "Jet_Pt_1 [GeV]";
 		else if(Var[i] == "TNJets")      NBins = 5  , X0 = 0 , XN = 5   , XLegend = "Number Jets";
 		else if(Var[i] == "TNBtags")     NBins = 5  , X0 = 0 , XN = 5   , XLegend = "Number b-Jets";
 		else if(Var[i] == "DeltaPhi")    NBins = 16 , X0 = -4 , XN = 4  , XLegend = "#Delta#phi";
@@ -139,6 +140,9 @@ void Draw(TString var, TString cuts, TString chan, Int_t nbins, Int_t x0, Int_t 
 	p->SetCMSlabel("CMS Academic");
 	//p->AddSystematic("JES,Btag,MisTag,PU,stat");
   	p->AddSystematic("stat");
+
+	//p->SetRatioMin(0);
+	//p->SetRatioMax(2);
 	//p->PrintYields();
 	//p->SetSignalStyle("BSM");
 	//p->SetSignalStyle("H");
@@ -188,8 +192,9 @@ void xsec(){
  	p->SetSignalStyle("xsec");
   	p->SetTableFormats("%2.4f");
 	p->PrintYields("", "", "", "txt, tex, html");
-
 	
+	p->SaveHistograms();
+		
 	CrossSection *x = new CrossSection(p, "WW");
   	
 	x->SetTheoXsec(120.3);
@@ -249,8 +254,8 @@ void xsec(){
 void MakePlots_WW(){
   
 //==========================//Loops a todas las control region. 
-   LoopDrawCR("CRSS");
-   LoopDrawCR("CRttbar");
+   //LoopDrawCR("CRSS");
+   //LoopDrawCR("CRttbar");
    LoopDrawCR("CRWW");
    //LoopDrawCR("CRDY");
    
@@ -261,12 +266,12 @@ void MakePlots_WW(){
    //LoopDrawCR("CRSSInc");
    
 //=========================//Plots simples por cortes (algunos ejemplos);=====================================//      
-   //Draw("TNVetoJets", "TMll > 12 && TMET > 20 && TPtdil > 30 && !TIsSS", "ElMu", 6, 0, 6, "N b-Jets", "number of b-jets", "./WWplots/");
+   //Draw("TNVetoJets", "TMll > 12 && TMET > 20 && TPtdil > 30 && !TIsSS", "ElMu", 6, 0, 6, "N b-Jets", "number of b-jets" , "./WWplots/");
    //Draw("TNJets", "TMll > 12 && TMET > 20 && TPtdil > 30 && !TIsSS && TNVetoJets == 0", "ElMu", 6, 0, 6, "N Jets", "number of jets", "./WWplots/");
-   //Draw("TPtdil", "TMll > 12 && TMET > 20 && !TIsSS", "ElMu", 30, 0, 250, "P_{T}^{ll}", "Momento dileptónico", "./WWplots/");
+   //Draw("TPtdil", "TMll > 12 && TMET > 20 && TPtdil > 30 && TNBtags == 0 && !TIsSS && TNJets == 0 && TNVetoJets == 0", "Momento dileptónico", "./WWplots/");
 
-   //Draw("TMath::Abs(TDeltaPhi)", "TMll > 12 && TMET > 20 && TPtdil > 30 && TNBtags == 0 && !TIsSS && TNJets == 0 && TNVetoJets == 0", "ElMu", 8, 0, 4, "#Delta#phi_{ll}", "0 jets", "./WWplots/");
-   //Draw("TMll", "TMll > 12 && TMET > 20 && TPtdil > 30 && !TIsSS && TNJets == 0 && TNVetoJets == 0", "ElMu", 35, 0, 350, "M_{ll}", "0jets", "./WWplots/");
+   //Draw("TMll", "TMll > 12 && TMET > 20 && TPtdil > 30 && TNBtags == 0 && !TIsSS && TNJets == 1 && TNVetoJets == 0", "ElMu", 25, 0, 300, "#Delta#phi_{ll}", "1 jets", "./WWplots/");
+   //Draw("TMll", "TMll > 12 && TMET > 20 && TPtdil > 30 && TNBtags == 0 && !TIsSS && TNJets == 0 && TNVetoJets == 0", "ElMu", 35, 0, 350, "M_{ll}", "0jets", "./WWplots/");
 
 
 //=======================Plot Cross Section ==================================================================//

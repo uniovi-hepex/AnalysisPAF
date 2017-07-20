@@ -465,7 +465,6 @@ Bool_t JetSelector::IsBtag(Jet j){
 }
 
 void JetSelector::SetSystematics(Jet *j){
-  if(Float_t _pt = j->p.Pt() < 20) return;
   Float_t _csv = j->csv; Int_t _flavmc = j->flavmc; Float_t _pt = j->p.Pt(); Float_t _eta = j->p.Eta();
   if(gIsData) return;
   j->pTJESUp     = rawPt*pt_corrUp;
