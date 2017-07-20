@@ -26,13 +26,12 @@ void RunAnalyserPAF(TString sampleName  = "TTbar_Powheg", TString Selection = "S
 		    Float_t uxsec = 1.0, Int_t stopMass = 0, Int_t lspMass  = 0, 
 		    TString option = "");
 
-Bool_t IsMCatNLO(TString sampleName);
-
 void            GetCount(vector<TString> Files, Bool_t IsData = false);
 Float_t         GetSMSnorm(Int_t mStop, Int_t mLsp);
 Float_t         GetISRweight(Int_t mStop, Int_t mLsp);
 Double_t        GetStopXSec(Int_t StopMass);
 vector<TString> GetAllFiles(TString path, TString  filename = "");
+TH1D* GetHistoFromFiles(vector<TString> Files, TString histoName);
 
 void CheckTreesInDir(TString path, TString treeName = "tree", Int_t verbose = 0);
 void CheckTree(TString filename, TString treeName = "tree", Int_t verbose = 0);
@@ -45,13 +44,12 @@ void CheckTree(TString filename, TString treeName = "tree", Int_t verbose = 0);
 //
 vector<TString> Files;
 Double_t SumOfWeights;
-Long64_t Count;
-Long64_t nTrueEntries;
+Int_t Count;
+Int_t nTrueEntries;
 Float_t xsec;
 Float_t NormISRweights;
 Bool_t verbose = true;
 Bool_t nukeIt = true;
-const Int_t nLHEWeight = 248;
 Bool_t G_IsFastSim = false;
 //
 //=============================================================================
@@ -59,10 +57,10 @@ Bool_t G_IsFastSim = false;
 
 //=============================================================================
 // Global Enums
-enum  ESelector               {iStopSelec, iTopSelec, iTWSelec, iWWSelec, iHWWSelec, 
-			      ittDMSelec, ittHSelec, iWZSelec, i4tSelec, nSel};
-const TString kTagSel[nSel] = {"Stop",     "Top",     "TW",     "WW",  "HWW",     
-			      "ttDM",     "ttH",     "WZ",     "tttt" };
+enum  ESelector               {iStopSelec, iTopSelec, iTWSelec, iWWSelec, 
+			      ittDMSelec, ittHSelec, iWZSelec, i4tSelec, iStopTopSelec, nSel};
+const TString kTagSel[nSel] = {"Stop",     "Top",     "TW",     "WW",     
+"ttDM", "ttH", "WZ", "tttt", "StopTop" };
 //
 //=============================================================================
 
@@ -98,7 +96,6 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
 	nTrueEntries = 0;
 	xsec = 0;
   NormISRweights = 0;
-  //Float_t arr[nLHEWeight]; Float_t *CountLHE;
 
 
   TString WorkingDir = gSystem->WorkingDirectory();
@@ -118,6 +115,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   else if(Selection == "ttDM"      || Selection == "ttMET"   ) sel = ittDMSelec;
   else if(Selection == "ttH"       || Selection == "TTH"     ) sel = ittHSelec;
   else if(Selection == "tttt"      || Selection == "4t"      ) sel = i4tSelec;
+  else if(Selection == "StopTop"   || Selection == "topSUSY" ) sel = iStopTopSelec;
   else if(Selection == "WW"                                  ) sel = iWWSelec;
   else if(Selection == "HWW"                                 ) sel = iHWWSelec;
   else { 
@@ -181,7 +179,6 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
       if(verbose) cout << " >>> Analysing a local sample: " << theSample << endl;
       sampleName = TString( theSample(theSample.Last('/')+1, theSample.Sizeof())).ReplaceAll(".root", "").ReplaceAll("Tree_", "").ReplaceAll("_*", "").ReplaceAll("*", "");
       TString searchsample = TString( theSample(theSample.Last('/') + 1, theSample.Sizeof()));
-      //Files.push_back(theSample);
       theSample = theSample(0, theSample.Last('/'));
       Files = GetAllFiles(theSample, searchsample);
       GetCount(Files, G_IsData);
@@ -192,7 +189,6 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
     else if(sampleName.BeginsWith("Scan:")){ // T2tt sample
       theSample = sampleName.ReplaceAll("Scan:", "");
       if(verbose) cout << " >>> Analysing a scan... : " << theSample << endl;
-      //myProject->AddDataFiles(dm->GetRealDataFiles(theSample));
       std::vector<TString> tempFiles = dm->GetRealDataFiles(theSample);
       Files.insert(Files.end(), (tempFiles).begin(), (tempFiles).end());
       GetCount(Files);
@@ -225,7 +221,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
       }
       GetCount(Files);
       if(options.Contains("ISR") || options.Contains("isr")) NormISRweights = GetISRweight(stopMass, lspMass);
-      if(IsMCatNLO(sampleName)){
+      if(SumOfWeights != Count){ // is aMCatNLO
         G_IsMCatNLO = true;
         if(verbose) cout << " >>> This is an aMCatNLO sample!!" << endl;
         G_Event_Weight = xsec/SumOfWeights;
@@ -239,16 +235,12 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
     //for(Int_t i = 0; i < (Int_t) Files.size(); i++) cout << Form("\033[1;32m >>> Including file: %s \033[0m\n", Files.at(i).Data());
     cout << "\033[1;30m-------------------------------------------------\033[0m\n";
     if(!G_IsData)   cout << Form("\033[1;34m #### XSec             = %g \033[0m\n", xsec);
-    cout << Form("\033[1;34m #### Total Entries    = %lld \033[0m\n", nTrueEntries);
-    cout << Form("\033[1;34m #### Total gen events = %lld \033[0m\n", Count);
+    cout << Form("\033[1;34m #### Total Entries    = %d \033[0m\n", nTrueEntries);
+    cout << Form("\033[1;34m #### Total gen events = %d \033[0m\n", Count);
     cout << Form("\033[1;34m #### Weight for norm  = %g \033[0m\n", G_Event_Weight);
     if(G_IsMCatNLO) cout << Form("\033[1;34m #### Sum of weights   = %g \033[0m\n", SumOfWeights);
     cout << "\033[1;30m=================================================\033[0m\n";
   }
-  
-  // ------->>>>> Termporary solution:
-  //if(sampleName.Contains("PowhegLHE")) CountLHE = GetCountLHE(Files, arr);
-  
   
   // Output dir and tree name
   //----------------------------------------------------------------------------
@@ -314,10 +306,11 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   myProject = new PAFProject(pafmode); 
   
   // Add TMVA library for TMVA Analysis
-  if(sel == ittDMSelec){
+  if(sel == ittDMSelec || sel == iTWSelec){
     TString tmvalibpath = gSystem->Getenv("ROOTSYS");
-    tmvalibpath += "lib/libTMVA.so";
+    tmvalibpath += "/lib/libTMVA.so";
     myProject->AddLibrary(tmvalibpath);
+    cout << tmvalibpath << endl;
   }
   
   // Add the input data files
@@ -346,12 +339,10 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   myProject->SetInputParam("iSelection",        (int) sel        );
   myProject->SetInputParam("WorkingDir",        WorkingDir       );
   myProject->SetInputParam("pathToHeppyTrees",  pathToFiles);
-  //myProject->SetInputParam("nEntries",  nTrueEntries);
-  //myProject->SetInputParam("nEvents",  nEvents);
-  //myProject->SetInputParam("FirstEvent",  FirstEvent);
-  //myProject->SetInputParam("Count",  Count);
-  //myProject->SetInputParam("xsec",  xsec);
-  //myProject->SetInputParam("CountLHE ",  CountLHE);
+  myProject->SetInputParam("SumOfWeights",  SumOfWeights);
+  myProject->SetInputParam("nEntries",  nTrueEntries);
+  myProject->SetInputParam("Count",  Count);
+  myProject->SetInputParam("xsec",  xsec);
   
   // EXTRA PARAMETERS
   myProject->SetInputParam("IsFastSim"      , G_IsFastSim);
@@ -367,11 +358,12 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   if(sel == ittHSelec || sel == i4tSelec) myProject->AddSelectorPackage("TauSelector");
   myProject->AddSelectorPackage("JetSelector");
   myProject->AddSelectorPackage("EventBuilder");
-  if      (sel == iStopSelec)  myProject->AddSelectorPackage("StopAnalysis");
-  else if (sel == ittDMSelec)  myProject->AddSelectorPackage("ttDM");
-  else if (sel == iTopSelec )  myProject->AddSelectorPackage("TopAnalysis");
-  else if (sel == ittHSelec )  myProject->AddSelectorPackage("ttHAnalysis");
-  else if (sel == i4tSelec)    myProject->AddSelectorPackage("t4Analysis");
+  if      (sel == iStopSelec)    myProject->AddSelectorPackage("StopAnalysis");
+  else if (sel == ittDMSelec)    myProject->AddSelectorPackage("ttDM");
+  else if (sel == iTopSelec )    myProject->AddSelectorPackage("TopAnalysis");
+  else if (sel == ittHSelec )    myProject->AddSelectorPackage("ttHAnalysis");
+  else if (sel == i4tSelec)      myProject->AddSelectorPackage("t4Analysis");
+  else if (sel == iStopTopSelec) myProject->AddSelectorPackage("StopTopAnalysis");
   else if (sel == iTWSelec  ){
     //myProject->AddSelectorPackage("TopAnalysis");
     myProject->AddSelectorPackage("TWAnalysis");
@@ -394,24 +386,61 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   // Let's rock!
   //----------------------------------------------------------------------------
   myProject->Run();
+  delete myProject;
+
+  //=============================================================================
+  //== Save info in files
+  //=============================================================================
+
+  //TFile* _file = TFile::Open(outputFile, "UPDATE");
+  
+//  TH1D* _count = GetHistoFromFiles(Files, "Count");
+  TH1D* _sow;
+  TH1D* _cLHE;
+  //if(!G_IsData) _sow   = GetHistoFromFiles(Files, "SumGenWeights");
+  //if(!G_IsData && !G_IsFastSim) _cLHE  = GetHistoFromFiles(Files, "CountLHE");
+  //TFile* _file = new TFile(outputFile, "UPDATE");
+  //_count->Write();
+  //if(!G_IsData) _cLHE ->Write();
+  //if(!G_IsData && !G_IsFastSim) _sow  ->Write();
 }
-//
-//=============================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+TH1D* GetHistoFromFiles(vector<TString> Files, TString histoName){
+  Int_t nFiles = Files.size(); TFile *f;
+  TH1D *h; TH1F *htemp;
+  for(Int_t i = 0; i < nFiles; i++){
+    cout << "Opening: " << Files.at(i) << endl;
+    f = TFile::Open(Files.at(i));
+    if(i == 0) {
+      f->GetObject(histoName, h); 
+    }
+    else{
+      f->GetObject(histoName, htemp); 
+      h->Add(htemp);
+    }
+  }
+  return h;
+}
+ 
+
+
 
 
 //=============================================================================
-// Auxiliary functions
-Bool_t IsMCatNLO(TString sampleName){
-	if(	sampleName.Contains("amcatnlo")  ||
-			sampleName.Contains("aMCatNLO")  || 
-			sampleName.BeginsWith("TTW") || 
-			sampleName.BeginsWith("TTZ") ||  
-			sampleName.BeginsWith("WWZ") || 
-			sampleName.BeginsWith("WZZ") || 
-			sampleName.BeginsWith("ZZZ") )
-		return true;
-	else return false;
-}
+//=== Auxiliary functions
+//=============================================================================
 
 void GetCount(std::vector<TString> Files, Bool_t IsData){
 	Int_t nFiles = Files.size(); TFile *f;
@@ -614,5 +643,3 @@ void CheckTreesInDir(TString path, TString treeName, Int_t verbose){
     CheckTree(AllFiles.at(i), treeName, verbose);
   }
 }
-//
-//=============================================================================

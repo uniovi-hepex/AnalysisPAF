@@ -10,11 +10,11 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 TString NameOfTree = "tree";
 TString pathToTree = "";
 
-bool doSync = true;
+bool doSync = false;
 // Baseline
 //TString baseline = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TNTaus == 0 && !TIsOnZ";
 //TString CRZ      = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TNTaus == 0 && TIsOnZ";
-TString baseline = Form("TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && !TIsOnZ && TPassTrigger %s", doSync? "" : "&& TPassMETFilters ") ;
+TString baseline = Form("TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 3 && !TIsOnZ && TPassTrigger %s", doSync? "" : "&& TPassMETFilters ") ;
 TString tauVeto  = doSync ? " && 1 " : " && TNTaus==0 ";
 TString CRZ      = tauVeto + "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TIsOnZ";
 TString CRW      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 2 && TNJets <= 5";
@@ -27,16 +27,16 @@ TString SR5      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 3 && TN
 TString SR6      = baseline + tauVeto + "&& TNSelLeps == 2 && TNBtags == 3 && TNJets >= 5";
 TString SR7      = baseline + tauVeto + "&& TNSelLeps == 3 && TNBtags == 2 && TNJets >= 5";
 TString SR8      = baseline + tauVeto + "&& TNSelLeps == 3 && TNBtags >= 3 && TNJets >= 4";
-TString SR9      = baseline + "&& TNSelLeps == 2 && TNBtags == 2 && TNJets >=5 && TNTaus==1";
+TString SR9      = baseline + "&& TNSelLeps == 2 && TNTaus==1 && TChannel == iSS1tau && TNBtags >= 3";
 TString SR10     = baseline + "&& TNSelLeps == 2 && TNBtags == 3 && TNJets >=5 && TNTaus==1";
 
 
-TString NoFake   = Form("TChannel == %i || TChannel == %i", i2lss, iTriLep);
+TString NoFake   = Form("TChannel == %i || TChannel == %i || TChannel == %i || TChannel == %i", i2lss, iTriLep, iSS1tau, iOS1tau);
 
 void DrawPlots(TString cutName){
   
   TString username(gSystem->GetUserInfo(gSystem->GetUid())->fUser);
-  if(username=="vischia") pathToTree ="/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/jun15/";
+  if(username=="vischia") pathToTree ="/nfs/fanae/user/juanr/AnalysisPAF/tttt_temp/";
   else pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/Trees4t/jun15/";
 
   TString cut;
@@ -54,11 +54,11 @@ void DrawPlots(TString cutName){
   else if(cutName == "SR9" ) cut = SR9 ;
   else if(cutName == "SR10") cut = SR10;
   else {cout << "Wrong name!!" << endl; return;}
-  
+
   NoFake = (cutName=="SR9" || cutName=="SR10" || cutName=="CRT") ? "1" : NoFake; 
 
   cut=baseline;
-  DrawPlot("TChannel",  cut, "PromptLep", 1, 0, 15, "Count", cutName);
+  DrawPlot("TChannel",  cut, "SSTau", 1, 0, 15, "Count", cutName);
   /*  DrawPlot("TNJets", "TNSelLeps == 2  && "  + baseline, "SS",       6, 2, 8, "Jet Multiplicity", "nJets");
       DrawPlot("TNJets", "TNSelLeps >  2  && "  + baseline, "MultiLep", 6, 2, 8, "Jet Multiplicity", "nJets");
       DrawPlot("TNJets",                          baseline, "All"     , 6, 2, 8, "Jet Multiplicity", "nJets");
@@ -83,26 +83,26 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   Plot* p = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
   if(outFolder!="") p->SetPlotFolder(outFolder);
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
-  p->verbose = false;
+  p->verbose = true;
 //  p->doData = false;
   if(varName != "") p->SetVarName(varName);
   if(cutName != "") p->SetOutputName(cutName);
+
+  if(cutName.Contains("SR")) p->doData=false;
   
-  //p->AddSample("WZTo3LNu",                                        "WZ",       itBkg, kOrange);    // WZ
-  //p->AddSample("WWTo2L2Nu, WpWpJJ, WWTo2L2Nu_DoubleScat",         "WW",       itBkg, kOrange-3);  // WW
+  p->AddSample("WZTo3LNu",                                        "WZ",       itBkg, kOrange);    // WZ
+  p->AddSample("WWTo2L2Nu, WpWpJJ, WWTo2L2Nu_DoubleScat",         "WW",       itBkg, kOrange-3);  // WW
   p->AddSample("TGJets, TTGJets, WGToLNuG, ZGTo2LG",                "X+#gamma", itBkg, kViolet+2);  // X+gamma //"WZG_amcatnlo" "WWG_amcatnlo"
   p->AddSample("WWW, WWZ, WZZ, ZZZ, ZZTo4L, VHToNonbb_amcatnlo, tZq_ll",    "Rare SM",  itBkg, kMagenta-7); // RareSM
   p->AddSample("WZTo3LNu, WWTo2L2Nu, WpWpJJ, WWTo2L2Nu_DoubleScat", "Rare SM",  itBkg, kMagenta-7); // RareSM
+
   // Nonprompt from MC
   //p->AddSample("WJetsToLNu_MLM, DYJetsToLL_M5to50_MLM, DYJetsToLL_M50_MLM",                                 "Nonprompt", itBkg, kGray);
   //p->AddSample("TTbar_Powheg, TW_noFullyHadr, TbarW_noFullyHadr, T_tch, Tbar_tch, TToLeptons_sch_amcatnlo", "Nonprompt", itBkg);
 
   // Nonprompt from data
 	p->AddSample("MuonEG, DoubleEG, DoubleMuon",     "Nonprompt", itBkg, kGray, "0", "FakeLep");
-	// Fake subs 
-//  p->AddSample("WZTo3LNu, WWTo2L2Nu,WpWpJJ,WWTo2L2Nu_DoubleScat,TGJets", "Nonprompt", itBkg, kGray, "0", "FakeLepsubs");
-        p->AddSample("WZTo3LNu, WWTo2L2Nu,WpWpJJ,WWTo2L2Nu_DoubleScat, WWW, WWZ, WZZ, ZZZ, ZZTo4L, VHToNonbb_amcatnlo,TTZToLLNuNu, TTZToLL_M1to10, TTHNonbb, tZq_ll,TTWToLNu", "Nonprompt", itBkg, kGray, "0", "FakesubsLep");
-  //p->AddSample("WZTo3LNu, WWTo2L2Nu,WpWpJJ,WWTo2L2Nu_DoubleScat,TGJets,TTGJets, WGToLNuG, ZGTo2LG,WWW, WWZ, WZZ, ZZZ, ZZTo4L, VHToNonbb_amcatnlo,TTZToLLNuNu, TTZToLL_M1to10, TTHNonbb, tZq_ll,TTWToLNu", "Nonprompt", itBkg, kGray, "0", "Fakesubs");
+  p->AddSample("WZTo3LNu, WWTo2L2Nu,WpWpJJ,WWTo2L2Nu_DoubleScat, WWW, WWZ, WZZ, ZZZ, ZZTo4L, VHToNonbb_amcatnlo,TTZToLLNuNu, TTZToLL_M1to10, TTHNonbb, tZq_ll,TTWToLNu", "Nonprompt", itBkg, kGray, "0", "FakesubsLep");
 
   // Charge misID
   

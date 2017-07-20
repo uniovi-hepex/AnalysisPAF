@@ -27,7 +27,7 @@ void CrossSection::SetMembers(){
   // For acceptance and efficiency...
   TotalAcceptance = 0; acceptance = 0; efficiency = 0; eff_err = 0; acc_err = 0;
   if(BR != 0 && nFiducialSignal != 0 && nSimulatedSignal != 0){
-    TotalAcceptance = y/(Lumi*thxsec)/BR;
+    TotalAcceptance = y/(Lumi*1000*thxsec)/BR;
     acceptance = nFiducialSignal/nSimulatedSignal/BR;
     efficiency = TotalAcceptance/acceptance;
     for(Int_t k = 0; k < nSyst; k++){
@@ -204,7 +204,7 @@ void CrossSection::PrintCrossSection(TString options){
   Int_t nrows = 5;
   Int_t ncolumns = 5;
   TResultsTable t(nrows, ncolumns, false); 
-  t.SetFormatNum("%1.2f");
+  t.SetFormatNum("%1.5f");
   t.AddVSeparation(0); t.AddVSeparation(3); 
 
   t.SetRowTitleHeader(" ");
@@ -221,9 +221,13 @@ void CrossSection::PrintCrossSection(TString options){
 
   t[0][0] = xsec; t[0][1] = xsec_stat_err; t[0][2] = xsec_syst_err; t[0][3] = xsec_lumi_err; t[0][4] = xsec_total_err;
   t[1][0] = BR;
-  t[2][0] = acceptance; t[2][4] = acc_err;
-  t[3][0] = efficiency; t[3][4] = eff_err;
-  t[4][0] = 0;
+  t[2][0] = efficiency; t[2][4] = acc_err;
+  t[3][0] = acceptance; t[3][4] = eff_err;
+  t[4][0] = xsec*acceptance;
+  t[4][1] = xsec_stat_err*acceptance; //stat
+  t[4][2] = xsec_syst_err*acceptance; //syst
+  t[4][3] = xsec_lumi_err*acceptance; //lumi
+  t[4][4] = xsec_total_err*acceptance; //total
 
 
   t.SetDrawHLines(true); t.SetDrawVLines(true); t.Print();

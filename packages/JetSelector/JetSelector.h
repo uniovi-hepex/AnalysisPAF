@@ -69,6 +69,7 @@ class JetSelector : public PAFChainItemSelector{
     UInt_t evt;
 
     Bool_t gIsData;
+    Bool_t gIsFastSim;
     Int_t gSelection;
 
     // Jets
@@ -83,6 +84,7 @@ class JetSelector : public PAFChainItemSelector{
     Float_t pt_corrUp; Float_t pt_corrDown; 
     // genJet
     Int_t ngenJet;
+    Float_t BtagSFFS;
 
     Float_t rho;
 

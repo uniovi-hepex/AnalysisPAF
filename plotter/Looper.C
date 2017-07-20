@@ -35,7 +35,9 @@ TString Looper::CraftFormula(TString cuts, TString chan, TString sys, TString op
   else if(chan == "4l")    schan = (Form("(TChannel == %i)", iFourLep));
   else if(chan == "SF" || chan == "sameF") schan = (Form("(TChannel != %i)", iElMu));
   else if(chan == "PromptLep") schan = Form("(TChannel == %i || TChannel == %i)", iTriLep, i2lss);
-  else if(chan == "PromptTau") schan = Form("(TChannel == %i || TChannel == %i)", iSS1tau, iOS1tau);
+  //else if(chan == "PromptTau") schan = Form("(TChannel == %i || TChannel == %i)", iSS1tau, iOS1tau);
+  else if(chan == "SSTau") schan = Form("(TChannel == %i)", iSS1tau);
+  else if(chan == "OSTau") schan = Form("(TChannel == %i)", iOS1tau);
   else if(chan == "SSTau") schan = Form("(TChannel == %i)", iSS1tau);
   else if(chan == "OSTau") schan = Form("(TChannel == %i)", iOS1tau);
   else if(chan == "All")   schan = ("1");
@@ -53,8 +55,8 @@ TString Looper::CraftFormula(TString cuts, TString chan, TString sys, TString op
   TString                                                  formula = TString("(") + cuts + TString(")*(") + schan + TString(")*") + weight;
   if((options.Contains("Fake") || options.Contains("fake"))){
     if(chan.Contains("Lep")) schan = Form("(TChannel == %i || TChannel == %i)", i2lss_fake, iTriLep_fake);
-    if(chan.Contains("Tau")) schan = Form("(TChannel == %i)", i1Tau_emufake);
-    if(!options.Contains("sub") && !options.Contains("Sub"))  formula = TString("(") + cuts + TString(")*(") + schan + TString(")*") + weight;
+    //if(chan.Contains("Tau")) schan = Form("(TChannel == %i)", i1Tau_emufake);
+    if(options.Contains("sub") || options.Contains("Sub"))  formula = TString("(") + cuts + TString(")*(") + schan + TString(")*") + weight;
     else formula = TString("(") + cuts + TString(")*(") + schan + TString(")");
   }
   if(options.Contains("isr") || options.Contains("ISR"))   formula = "TISRweight*(" + formula + ")";
@@ -136,8 +138,10 @@ void Looper::Loop(TString sys){
     FornFakeLep  = GetFormula("nFakeLep", "TNFakeableLeps");
   }
 
+  Int_t counter = 0;
   for (Long64_t jentry=0; jentry<nEntries; jentry++) {
     tree->GetEntry(jentry);
+    counter ++;
     if(numberInstance != 0) FormulasVars->GetNdata();
     weight  = FormulasCuts->EvalInstance();
     val     = FormulasVars->EvalInstance(numberInstance);
@@ -165,7 +169,7 @@ void Looper::Loop(TString sys){
       nLeps     = FornSelLep->EvalInstance();
       nTaus     = FornSelTau->EvalInstance();
       if(nFakeLeps <= 0)           continue;
-      for(Int_t i = 0; i < nfakes; i++){
+      for(Int_t i = 0; i < nFakeLeps ; i++){
         FLepPt    = ForFLepPt ->EvalInstance(i);
         FLepEta   = ForFLepEta->EvalInstance(i);
         FLepPdgId = ForFLepPdgId->EvalInstance(i);
@@ -173,6 +177,7 @@ void Looper::Loop(TString sys){
         if(FLepPdgId == 13) f *=     muonFakeRate(FLepPt, FLepEta);
         if(f >= 0.99) continue;
         weight *= f/(1-f);
+        //if(weight != 0) cout << "[" << counter << "] nFakes = " << nFakeLeps << ", weight = " << weight << endl;
       }
     }
 

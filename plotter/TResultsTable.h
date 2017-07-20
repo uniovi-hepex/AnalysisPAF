@@ -13,7 +13,7 @@ TString KeepOneDecimal(Float_t number, Float_t error = 0);
 class TResultsTableContent {
  public:
   //TResultsTableContent(double content = 0) {fContent = content; fError = 0; fStatError = 0;}
-  TResultsTableContent(double content = 0) {fContent = content; fError = 0; fStatError = 0;}
+  TResultsTableContent(double content = 0) {fContent = content; fError = 0; fStatError = 0; fString = ""; activate = true;}
 
   double Content() const {return fContent;}
   double& Content() {return fContent;}
@@ -21,10 +21,13 @@ class TResultsTableContent {
   double& Error() {return fError;}
   double StatError() const {return fStatError;}
   double& StatError() {return fStatError;}
+  TString& String() { return fString;}
 
   void SetContent(double c) {fContent = c;}
   void SetError(double e) {fError = e;}
   void SetStatError(double e) {fStatError = e;}
+  void SetString(TString t){ fString = t;}
+  void Activate(bool d = true){ activate = d;}
 
   operator double() const {return fContent;}
   operator double() {return fContent;}
@@ -33,6 +36,8 @@ class TResultsTableContent {
   double fContent;
   double fError;
   double fStatError;
+  TString fString;
+  bool activate;
 };
 
 class TResultsTableRow {
@@ -56,7 +61,7 @@ class TResultsTableRow {
 
 class TResultsTable {
  public:
-  TResultsTable(unsigned int nrows, unsigned int ncols, Int_t witherrors = 0, bool automaticerrors=true);
+  TResultsTable(unsigned int nrows, unsigned int ncols, Int_t witherrors = 0);
   ~TResultsTable() {if (fRows) delete[] fRows;}
 
   ////////////////////////////////////////////////////////////////////////////
@@ -133,7 +138,6 @@ class TResultsTable {
   //TString colorRow[20];
   //TString color[20]; 
   Int_t fWithErrors;
-  bool fAutomaticErrors;
   TString VSeparations;
 
   TResultsTableRow* fRows;    //The table rows (content)
