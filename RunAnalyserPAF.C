@@ -283,7 +283,8 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
     cout << Form("\033[1;36m >>> Running chunk number %i, starting in event %lli... will loop over %lli events (last event = %lli)\n\n\033[0m", iChunk, FirstEvent, nEvents, FirstEvent + nEvents);
     sampleName += Form("_%i", iChunk);
   }
-  
+ 
+  if(options.Contains("pretend")) return; 
   
   // PAF mode selection (based on number of slots)
   //----------------------------------------------------------------------------
