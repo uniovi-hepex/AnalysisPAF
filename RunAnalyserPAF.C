@@ -58,8 +58,8 @@ Bool_t G_IsFastSim = false;
 //=============================================================================
 // Global Enums
 enum  ESelector               {iStopSelec, iTopSelec, iTWSelec, iWWSelec, 
-			      ittDMSelec, ittHSelec, iWZSelec, i4tSelec, iStopTopSelec, nSel};
-const TString kTagSel[nSel] = {"Stop",     "Top",     "TW",     "WW",     
+			 iHWWSelec,  ittDMSelec, ittHSelec, iWZSelec, i4tSelec, iStopTopSelec, nSel};
+const TString kTagSel[nSel] = {"Stop",     "Top",     "TW",     "WW", "HWW",    
 "ttDM", "ttH", "WZ", "tttt", "StopTop" };
 //
 //=============================================================================
