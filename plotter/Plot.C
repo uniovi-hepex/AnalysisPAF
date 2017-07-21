@@ -596,11 +596,11 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   else{
     PlotMinimum = PlotMinimum == -999? 0 : PlotMinimum;
     PlotMaximum = PlotMaximum == -999? Max*ScaleMax : PlotMaximum;
-    hStack->SetMaximum(Max*ScaleMax);
+    hStack->SetMaximum(PlotMaximum);
       hStack->SetMinimum(PlotMinimum);
-  }
-
+  }  
   hStack->Draw("hist");
+
   hStack->GetYaxis()->SetTitle("Number of Events");
   hStack->GetYaxis()->SetTitleSize(0.06);
   hStack->GetYaxis()->SetTitleOffset(0.8);
