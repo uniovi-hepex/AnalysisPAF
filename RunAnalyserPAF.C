@@ -201,9 +201,11 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
       if(theSample == "T2tt_mStop160to210mLSP1to20")  xsec *= (3*0.108)*(3*0.108); // Dileptonic sample
       Count = GetSMSnorm(stopMass, lspMass);
       NormISRweights = GetISRweight(stopMass, lspMass);
+
       G_Event_Weight = xsec/Count;
     } 
     else{ // Use dataset manager
+      cout << "Using dataset manager " << endl;
       Float_t sumNorm = 1; long double totalXSec = 0; long double totalNorm = 0;
       TString sampleChain = TString(sampleName);  
       if(sampleName.Contains("&")) sampleName = TString(sampleName(0, sampleName.First('&'))); // For output file
@@ -220,16 +222,19 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
         //myProject->AddDataFiles(dm->GetFiles()); 
         Files.insert(Files.end(), (dm->GetFiles()).begin(), (dm->GetFiles()).end());
         xsec    = dm->GetCrossSection();
-        if(uxsec != 1) xsec    = uxsec;
+	cout << "xsec is " << xsec << endl;
+	cout << "uxsec is " << uxsec << endl;
+        // if(uxsec != 1) xsec    = uxsec;
       }
       GetCount(Files);
       if(options.Contains("ISR") || options.Contains("isr")) NormISRweights = GetISRweight(stopMass, lspMass);
       if(IsMCatNLO(sampleName)){
         G_IsMCatNLO = true;
         if(verbose) cout << " >>> This is an aMCatNLO sample!!" << endl;
+	cout << "Check B" << endl;
         G_Event_Weight = xsec/SumOfWeights;
       }
-      else G_Event_Weight = xsec/Count;
+      else{ cout << "Check A " << endl;  cout << xsec << " " << Count << endl; G_Event_Weight = xsec/Count;}
     }
     if(sampleName.Contains("FastSim")) G_IsFastSim = true;
   }
@@ -247,7 +252,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   
   // ------->>>>> Termporary solution:
   //if(sampleName.Contains("PowhegLHE")) CountLHE = GetCountLHE(Files, arr);
-  
+  cout << "Im here " << endl;
   
   // Output dir and tree name
   //----------------------------------------------------------------------------
@@ -341,6 +346,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   // COMMON PARAMETERS
   myProject->SetInputParam("sampleName",        sampleName       );
   myProject->SetInputParam("IsData",            G_IsData         );
+  cout << "But my weight is " << G_Event_Weight << endl;
   myProject->SetInputParam("weight",            G_Event_Weight   );
   myProject->SetInputParam("IsMCatNLO",         G_IsMCatNLO      );  
   myProject->SetInputParam("iSelection",        (int) sel        );
@@ -413,6 +419,7 @@ Bool_t IsMCatNLO(TString sampleName){
 }
 
 void GetCount(std::vector<TString> Files, Bool_t IsData){
+
 	Int_t nFiles = Files.size(); TFile *f;
 	TH1D *hcount; TH1D *hsum; TTree* tree;
 	if(verbose) cout << "\033[1;30m=================================================\033[0m\n";
@@ -430,31 +437,30 @@ void GetCount(std::vector<TString> Files, Bool_t IsData){
 		}
 		f->Close();    
 	}
-  //cout << "Count   = " << Count   << endl; cout << "nEvents = " << nTrueEntries << endl;
+
 }
 
 Float_t GetSMSnorm(Int_t mStop, Int_t mLsp){
   cout << Form("\033[1;36m >>> Searching for normalization factor for stop point with masses [%i, %i]... ", mStop, mLsp);
-	Int_t nFiles = Files.size(); TFile *f;
-	TH3D *hcount; Float_t val = 0; Float_t ms = 0; Float_t mn = 0;
+  Int_t nFiles = Files.size(); TFile *f;
+  TH3D *hcount; Float_t val = 0; Float_t ms = 0; Float_t mn = 0;
   Float_t count = 0;
-	for(Int_t k = 0; k < nFiles; k++){
+  for(Int_t k = 0; k < nFiles; k++){
     f = TFile::Open(Files.at(k));
     f -> GetObject("CountSMS", hcount);
-		Int_t nx = hcount->GetNbinsX();
-		Int_t ny = hcount->GetNbinsY();
-		for(Int_t i = 0; i < nx; i++){
-			for(Int_t j = 0; j < ny; j++){
+    Int_t nx = hcount->GetNbinsX();
+    Int_t ny = hcount->GetNbinsY();
+    for(Int_t i = 0; i < nx; i++){
+      for(Int_t j = 0; j < ny; j++){
         val = hcount->GetBinContent(i,j,1);
         if(val != 0){
           ms = hcount->GetXaxis()->GetBinCenter(i);
           mn = hcount->GetYaxis()->GetBinCenter(j);
           if(ms == mStop && mLsp == mn) count += hcount->GetBinContent(hcount->FindBin(ms, mn, 0));
         } 
-			}
-		}
-	}
-  cout << Form("Total number of entries: %2.4f\033[0m\n", count);
+      }
+    }
+  }
   return count;
 }
 
