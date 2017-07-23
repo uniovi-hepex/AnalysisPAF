@@ -35,7 +35,9 @@ TString Looper::CraftFormula(TString cuts, TString chan, TString sys, TString op
   else if(chan == "4l")    schan = (Form("(TChannel == %i)", iFourLep));
   else if(chan == "SF" || chan == "sameF") schan = (Form("(TChannel != %i)", iElMu));
   else if(chan == "PromptLep") schan = Form("(TChannel == %i || TChannel == %i)", iTriLep, i2lss);
-  else if(chan == "PromptTau") schan = Form("(TChannel == %i || TChannel == %i)", iSS1tau, iOS1tau);
+  //else if(chan == "PromptTau") schan = Form("(TChannel == %i || TChannel == %i)", iSS1tau, iOS1tau);
+  else if(chan == "SSTau") schan = Form("(TChannel == %i)", iSS1tau);
+  else if(chan == "OSTau") schan = Form("(TChannel == %i)", iOS1tau);
   else if(chan == "SSTau") schan = Form("(TChannel == %i)", iSS1tau);
   else if(chan == "OSTau") schan = Form("(TChannel == %i)", iOS1tau);
   else if(chan == "All")   schan = ("1");
@@ -53,7 +55,7 @@ TString Looper::CraftFormula(TString cuts, TString chan, TString sys, TString op
   TString                                                  formula = TString("(") + cuts + TString(")*(") + schan + TString(")*") + weight;
   if((options.Contains("Fake") || options.Contains("fake"))){
     if(chan.Contains("Lep")) schan = Form("(TChannel == %i || TChannel == %i)", i2lss_fake, iTriLep_fake);
-    if(chan.Contains("Tau")) schan = Form("(TChannel == %i)", i1Tau_emufake);
+    //if(chan.Contains("Tau")) schan = Form("(TChannel == %i)", i1Tau_emufake);
     if(options.Contains("sub") || options.Contains("Sub"))  formula = TString("(") + cuts + TString(")*(") + schan + TString(")*") + weight;
     else formula = TString("(") + cuts + TString(")*(") + schan + TString(")");
   }

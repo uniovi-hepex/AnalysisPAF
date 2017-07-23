@@ -10,7 +10,6 @@ R__LOAD_LIBRARY(CrossSection.C+)
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name = "");
 TString NameOfTree = "MiniTree";
-TString SScut = "TMT2 > 0 && TMET > 50 && TNJets > 1 && TNBtags > 0 && TIsSS && TNVetoLeps < 3";
 TString VarNBtagsNJets = "TNBtags + (TNJets == 1) + (TNJets == 2)*3 + (TNJets == 3)*6 + (TNJets >= 4)*10";
 
 //TString dilepton = "TLep_Charge[0]*TLep_Charge[1] < 0";
@@ -28,10 +27,12 @@ TString btag1SS    = "TIsSS && TNJets >= 2 && TNBtags > 0";
 
 // Baseline
 
-TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/TopTrees/may10/";
+//TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/TopTrees/may10/"; // For AN 18 may
+TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/TopTrees/jul7/";
 void xsec(){
 
   Float_t DYSF         = GetDYDD(  "ElMu", "1btag");
+  cout << "DDSF = " << DYSF << endl;
   Float_t NonWZ_DD     = GetNonWDD("ElMu", "1btag");
   Float_t DYSF_err     = GetDYDD(  "ElMu", "1btag", true)/DYSF;
   Float_t NonWZ_DD_err = GetNonWDD("ElMu", "1btag", true)/NonWZ_DD;
@@ -45,7 +46,7 @@ void xsec(){
   p->AddSample("WZ, WW, ZZ",                                            "VV",    itBkg, kYellow-10);
   //p->AddSample("TTbar_Powheg_Semilep, WJetsToLNu_aMCatNLO",             "NonWZ", itBkg, kGreen+1,   0.30);
   p->AddSample("TTbar_Powheg_Semilep, WJetsToLNu_MLM",                  "NonWZ", itBkg, kGreen+1);
-	p->AddSample("TTWToLNu, TTWToQQ, TTZToQQ, TTZToQQ",                   "ttV",   itBkg, kOrange-3);
+	p->AddSample("TTWToLNu, TTWToQQ, TTZToQQ, TTZToLLNuNu",               "ttV",   itBkg, kOrange-3);
 	p->AddSample("TW, TbarW",                                             "tW",    itBkg, kMagenta);
   p->AddSample("DYJetsToLL_M50_aMCatNLO",                               "DY",    itBkg, kAzure-8);
   //p->AddSample("DYJetsToLL_M50_MLM, DYJetsToLL_M5to50_MLM,",            "DY",    itBkg, kAzure-8);
@@ -67,7 +68,7 @@ void xsec(){
   p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "pdfDown"    );
   
   p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "JERUp"      );
-  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "JERDown"    );
+//  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "JERDown"    );
 
   p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "ElecEffUp"  );
   p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "ElecEffDown");
@@ -75,12 +76,9 @@ void xsec(){
   p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "MuonEffUp"  );
   p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "MuonEffDown");
 
-//  p->AddSample("TTJets_aMCatNLO", "ttbar", itSys, 1, 0, "nloUp");
-//  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, 0, "nloDown");
-//  p->AddSample("TTbar_Powheg_Herwig", "ttbar", itSys, 1, 0, "hadUp");
-//  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, 0, "hadDown");
 
-  p->AddSystematic("JES,Btag,MisTag,PU,stat");
+  p->AddSystematic("stat");
+  p->AddSystematic("Trig,JES,Btag,MisTag,PU", "ttbar");
   p->SetSignalStyle("xsec");
   p->SetTableFormats("2.4");
 
@@ -93,6 +91,9 @@ void xsec(){
   x->SetTheoXsec(831.8);
   x->SetChannelTag("ElMu");
   x->SetLevelTag("1btag");
+  x->SetBR(0.03263);
+  x->SetNFiducialEvents(1.15245e+06);
+  x->SetNSimulatedEvents(77229341);
 
   x->SetEfficiencySyst("JES, Btag, MisTag, ElecEff, MuonEff, LepEff, Trig, PU, JER");
   x->SetAcceptanceSyst("stat, ue, nlo, hdamp, scale, pdf, isr, fsr, q2, ME");
@@ -117,27 +118,35 @@ void xsec(){
   x->SwitchLabel("pdf", "PDF");
   x->SwitchLabel("stat", "MC stat");
 
+  Float_t y = x->GetYield("ttbar");
   // Scale FSR unc by sqrt
   Float_t diff = TMath::Abs(x->GetYield("ttbar") - x->GetUnc("FSR scale"));
   x->SetUnc("FSR scale", x->GetYield("ttbar")-diff/TMath::Sqrt(2));
-  x->SetUnc("FSR scale", x->GetYield("ttbar"));
+  //x->SetUnc("FSR scale", x->GetYield("ttbar"));
   x->SetUnc("Drell-Yan", 0.15);
   x->SetUnc("NonWZ",     0.30);
   x->SetUnc("Dibosons",  0.30);
   x->SetUnc("tW",        0.30);
   x->SetUnc("ttV",       0.30);
+
+  // Adding 0.5, 0.5, 1.0 muon efficiencies
+  Float_t stat =  TMath::Abs(x->GetUnc("Muon efficiencies") - y)/y;
+  Float_t MuonUnc = TMath::Sqrt(stat*stat + 0.005*0.005 + 0.005*0.005 + 0.01*0.01);
+  MuonUnc = MuonUnc*y + y;
+  x->SetUnc("Muon efficiencies",  MuonUnc);
   x->SetMembers();
 
   x->SetOutputFolder("./top/xsec/");
 
+  // Cross section from MC.............................................
   x->SetTableName("xsec_unc_MC");
   x->SetYieldsTableName("yields_MC");
   x->SetXsecTableName("xsec_MC");
-
   x->PrintSystematicTable("html,tex,txt");
   x->PrintYieldsTable("html,tex,txt");
   x->PrintCrossSection("html");
 
+  // Data driven........................................................
   x->SetYield("Drell-Yan", x->GetYield("Drell-Yan")*DYSF); 
   x->SetYield("NonWZ", NonWZ_DD); 
   Float_t DYunc   = x->GetUnc("Drell-Yan");
@@ -157,21 +166,5 @@ void xsec(){
   x->PrintYieldsTable("html,tex,txt");
   x->PrintCrossSection("html,tex,txt");
 
-  //x->SetBR();
-
-  //p->ScaleProcess("DY", DYSF);
-  //p->PrintYields();
-
-  //p->PrintSamples();
-  //p->PrintSystYields();
-  //p->PrintYields("TMET > 50, TMET > 50, TMET > 50", "ElMu, Elec, Muon", "ElMu, Elec, Muon");
-  //p->DrawStack("prueba", 1);
- 
-  //Plot* k = p->NewPlot("TMET", "TMET > 200");
-  //k->PrintYields();
-  //k->PrintSamples();
-  //k->PrintSystYields();
-
-  //delete p;
 }
 

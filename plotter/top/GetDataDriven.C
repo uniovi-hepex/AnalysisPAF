@@ -1,6 +1,8 @@
 //#include "DrawPlots.C"
+#include "../TResultsTable.h"
 
-TString path = "/nfs/fanae/user/juanr/AnalysisPAF/TopTrees/may10/";
+TString path = "/nfs/fanae/user/juanr/AnalysisPAF/TopTrees/jul7/";
+TString outputFolder = "/mnt_pool/ciencias_users/user/juanr/AnalysisPAF/plotter/top/xsec/";
 double getYield(TString sample, TString chan = "ElMu", TString level = "2jets", TString syst = "0", bool isSS = false);
 double yield(TString process, TString chan = "ElMu", TString level = "2jets", TString syst = "0", bool isSS = false);
 double getStatError(TString sample, TString chan, TString level, TString syst = "0", bool isSS = false);
@@ -10,6 +12,7 @@ TH1F* loadDYHisto(TString lab = "MC", TString ch = "ElMu", TString lev = "2jets"
 
 double GetDYDD(  TString ch = "ElMu", TString lev = "2jets", bool IsErr = false, bool docout = false);
 double GetNonWDD(TString ch = "ElMu", TString lev = "2jets", bool IsErr = false, bool docout = false);
+void PrintSFwithLevel();
 
 double Lumi = 35851.45088;
 TString Chan = "ElMu";
@@ -47,6 +50,35 @@ TH1F* loadDYHisto(TString lab, TString ch, TString lev){
   }
   h ->SetDirectory(0);
   return h;
+}
+
+void PrintSFwithLevel(){
+  TResultsTable t(3, 3, true);
+  t.SetFormatNum("%1.3f");
+  t.SetRowTitleHeader(" ");
+
+  t.SetColumnTitle(0, "$e^{+}e^{-}$");
+  t.SetColumnTitle(1, "$\\mu^{+}\\mu^{-}$");
+  t.SetColumnTitle(2, "$e^{\\pm}\\mu^{\\mp}$");
+
+  t.SetRowTitle(0, "$\\geq$ 1 b tag");
+  t.SetRowTitle(1, "$\\geq$ 2 jets");
+  t.SetRowTitle(2, "Dilepton");
+
+  t[0][0].SetContent(GetDYDD("Elec", "1btag", 0,0)); t[0][0].SetError(GetDYDD("Elec", "1btag", 1,0));
+  t[0][1].SetContent(GetDYDD("Muon", "1btag", 0,0)); t[0][1].SetError(GetDYDD("Muon", "1btag", 1,0));
+  t[0][2].SetContent(GetDYDD("ElMu", "1btag", 0,0)); t[0][2].SetError(GetDYDD("ElMu", "1btag", 1,0));
+  t[1][0].SetContent(GetDYDD("Elec", "2jets", 0,0)); t[1][0].SetError(GetDYDD("Elec", "2jets", 1,0));
+  t[1][1].SetContent(GetDYDD("Muon", "2jets", 0,0)); t[1][1].SetError(GetDYDD("Muon", "2jets", 1,0));
+  t[1][2].SetContent(GetDYDD("ElMu", "2jets", 0,0)); t[1][2].SetError(GetDYDD("ElMu", "2jets", 1,0));
+  t[2][0].SetContent(GetDYDD("Elec", "dilepton", 0,0)); t[1][0].SetError(GetDYDD("Elec", "dilepton", 1,0));
+  t[2][1].SetContent(GetDYDD("Muon", "dilepton", 0,0)); t[1][1].SetError(GetDYDD("Muon", "dilepton", 1,0));
+  t[2][2].SetContent(GetDYDD("ElMu", "dilepton", 0,0)); t[1][2].SetError(GetDYDD("ElMu", "dilepton", 1,0));
+
+  t.SetDrawHLines(true); t.SetDrawVLines(true); t.Print();
+  t.SaveAs(outputFolder + "/DYDD_AllLevels.tex");
+  t.SaveAs(outputFolder + "/DYDD_AllLevels.html");
+  t.SaveAs(outputFolder + "/DYDD_AllLevels.txt");
 }
 
 double GetDYDD(TString ch, TString lev, bool IsErr, bool docout){
@@ -147,7 +179,7 @@ double GetDYDD(TString ch, TString lev, bool IsErr, bool docout){
   SFem_err = 0.5*SFem*(SFel_err/SFel + SFmu_err/SFmu);
 
   if(docout){
-   cout << " DY DD estimation for " << lev << endl;
+/*   cout << " DY DD estimation for " << lev << endl;
    cout << "=============================================================================" << endl;
    cout << "                  |       El/El      |       Mu/Mu      |       El/Mu      ||" << endl;
 	 cout << "-----------------------------------------------------------------------------" << endl;
@@ -165,6 +197,63 @@ double GetDYDD(TString ch, TString lev, bool IsErr, bool docout){
 	 cout<< Form(" Drell-Yan (D)    | %7.2f +/- %4.2f | %7.2f +/- %4.2f | %7.2f +/- %4.2f ||", yield("DY", "Elec", lev)*SFel, getStatError("DY", "Elec", lev)*SFel, yield("DY", "Muon", lev)*SFmu, getStatError("DY", "Muon", lev)*SFmu, yield("DY", "ElMu", lev)*SFem, getStatError("DY", "ElMu", lev)*SFem) << endl;
    cout << "=============================================================================" << endl;
 	 cout<< endl;
+*/
+  TResultsTable a(9, 3, true);
+  a.SetFormatNum("%1.3f");
+  a.SetRowTitleHeader("Level: " + lev);
+  a.AddVSeparation(3); a.AddVSeparation(4); a.AddVSeparation(5);
+ 
+  a.SetColumnTitle(0, "$e^{+}e^{-}$");
+  a.SetColumnTitle(1, "$\\mu^{+}\\mu^{-}$");
+  a.SetColumnTitle(2, "$e^{\\pm}\\mu^{\\mp}$");
+
+  a.SetRowTitle(0, "$N_{in}$ (MC)");
+  a.SetRowTitle(1, "$n_{out}$ (MC)");
+  a.SetRowTitle(2, "$R_{out/in}$  (MC)");
+  a.SetRowTitle(3, "$k_{ll}$");
+  a.SetRowTitle(4, "$N_{in} (D)$");
+  a.SetRowTitle(5, "$N_{out}$");
+  a.SetRowTitle(6, "SF(D/MC)");
+  a.SetRowTitle(7, "Drell-Yan (MC)");
+  a.SetRowTitle(8, "Drell-Yan (D)");
+
+  a[0][0].SetContent(nin_ee); a[0][0].SetError(nin_err_ee);
+  a[0][1].SetContent(nin_mm); a[0][1].SetError(nin_err_mm);
+
+  a[1][0].SetContent(nout_ee); a[1][0].SetError(nout_err_ee);
+  a[1][1].SetContent(nout_mm); a[1][1].SetError(nout_err_mm);
+
+  a[2][0].SetContent(Re); a[2][0].SetError(R_erre);
+  a[2][1].SetContent(Rm); a[2][1].SetError(R_errm);
+
+  a[3][0].SetContent(k_lle); a[3][0].SetError(k_ll_erre);
+  a[3][1].SetContent(k_llm); a[3][1].SetError(k_ll_errm);
+
+  a[4][0].SetContent(N_ine); a[4][0].SetError(N_in_erre);
+  a[4][1].SetContent(N_inm); a[4][1].SetError(N_in_errm);
+  a[4][2].SetContent(N_inem); a[4][2].SetError(N_in_errem);
+
+  a[5][0].SetContent(N_oute); a[5][0].SetError(N_out_erre);
+  a[5][1].SetContent(N_outm); a[5][1].SetError(N_out_errm);
+
+  a[6][0].SetContent(SFel); a[6][0].SetError(SFel_err);
+  a[6][1].SetContent(SFmu); a[6][1].SetError(SFmu_err);
+  a[6][2].SetContent(SFem); a[6][2].SetError(SFem_err);
+
+  a[7][0].SetContent(yield("DY", "Elec", lev)); a[7][0].SetError(getStatError("DY", "Elec", lev));
+  a[7][1].SetContent(yield("DY", "Muon", lev)); a[7][1].SetError(getStatError("DY", "Muon", lev));
+  a[7][2].SetContent(yield("DY", "ElMu", lev)); a[7][2].SetError(getStatError("DY", "ElMu", lev));
+
+  a[8][0].SetContent(yield("DY", "Elec", lev)*SFel); a[8][0].SetError(getStatError("DY", "Elec", lev)*SFel);
+  a[8][1].SetContent(yield("DY", "Muon", lev)*SFmu); a[8][1].SetError(getStatError("DY", "Muon", lev)*SFmu);
+  a[8][2].SetContent(yield("DY", "ElMu", lev)*SFem); a[8][2].SetError(getStatError("DY", "ElMu", lev)*SFem);
+
+  a.SetDrawHLines(false); a.SetDrawVLines(true); a.Print();
+  a.SaveAs(outputFolder + "/DYDD_" + lev + ".tex");
+  a.SaveAs(outputFolder + "/DYDD_" + lev + ".html");
+  a.SaveAs(outputFolder + "/DYDD_" + lev + ".txt");
+
+
   }
 
   if(IsErr){
@@ -185,33 +274,35 @@ double GetDYDD(TString ch, TString lev, bool IsErr, bool docout){
 double GetNonWDD(TString ch, TString lev, bool IsErr, bool docout){
 //  ch = Chan;
 //  lev = Level;
-	double fake   = yield("fake", ch, lev, "0", 0);
-	double efake   = getStatError("fake", ch, lev, "0", 0);
+  double fake; double efake;
+  double fakeSS; double dataSS; double bkgSS;
+  double efakeSS; double edataSS; double ebkgSS;
+  double R; double eR;
+  double DDfake; double eDDfake; 
+  double SF; double eSF; 
 
-/*	if(ch == "Muon"){
-		if(IsErr) return efake;
-		else      return  fake;
-  }*/
+  fake   = yield("fake", ch, lev, "0", 0);
+  efake   = getStatError("fake", ch, lev, "0", 0);
 
-	double fakeSS = yield("fake", ch, lev, "0", 1);
-	double dataSS = yield("data", ch, lev, "0", 1);
-	double bkgSS  = yield("bkg",  ch, lev, "0", 1) - fakeSS;  // prompt MC in SS
+	fakeSS = yield("fake", ch, lev, "0", 1);
+	dataSS = yield("data", ch, lev, "0", 1);
+	bkgSS  = yield("bkg",  ch, lev, "0", 1) - fakeSS;  // prompt MC in SS
   
-	double efakeSS = getStatError("fake", ch, lev, "0", 1);
-	double edataSS = getStatError("data", ch, lev, "0", 1);
-	double ebkgSS  = getStatError("bkg",  ch, lev, "0", 1) - efakeSS;
+	efakeSS = getStatError("fake", ch, lev, "0", 1);
+	edataSS = getStatError("data", ch, lev, "0", 1);
+	ebkgSS  = getStatError("bkg",  ch, lev, "0", 1) - efakeSS;
   
-	double  R = fake/fakeSS; 
-  double eR = R*(efake/fake + efakeSS/fakeSS);
+	R = fake/fakeSS; 
+  eR = R*(efake/fake + efakeSS/fakeSS);
 
-  double  DDfake = R*(dataSS - bkgSS);
-  double eDDfake = DDfake*(eR/R  + (edataSS/dataSS - ebkgSS/bkgSS));
+  DDfake = R*(dataSS - bkgSS);
+  eDDfake = DDfake*(eR/R  + (edataSS/dataSS - ebkgSS/bkgSS));
 
-  double  SF = DDfake/fake;
-  double eSF = SF*(eDDfake/DDfake + efake/fake);
+  SF = DDfake/fake;
+  eSF = SF*(eDDfake/DDfake + efake/fake);
 
 	if(docout){
-   cout << "Yields for same-sign events after " << lev << " level of selection in " << ch << " channel:\n";
+   /*cout << "Yields for same-sign events after " << lev << " level of selection in " << ch << " channel:\n";
    cout << "===========================" << endl;
    cout << " tW           : " << yield("tW", ch, lev, "0", 1) << endl;
    cout << " Drell-Yan    : " << yield("DY", ch, lev, "0", 1) << endl;
@@ -235,7 +326,72 @@ double GetNonWDD(TString ch, TString lev, bool IsErr, bool docout){
    cout << Form(" DD fake estimate = R(DataSS-bkgSS)   = %2.2f ± %0.2f", DDfake , eDDfake )  << endl;
  //  cout << Form(" Scake Factor (DD/MC)                 = %2.2f ± %0.2f", SF , eSF )  << endl;
    cout <<      "==================================================================" << endl;
-   cout << endl;
+   cout << endl;*/
+
+    TResultsTable a(12, 3, true);
+    a.SetFormatNum("%1.1f");
+    a.SetRowTitleHeader("Source");
+    a.AddVSeparation(4); a.AddVSeparation(6); a.AddVSeparation(7); a.AddVSeparation(10);
+
+    a.SetColumnTitle(0, "$e^{+}e^{-}$");
+    a.SetColumnTitle(1, "$\\mu^{+}\\mu^{-}$");
+    a.SetColumnTitle(2, "$e^{\\pm}\\mu^{\\mp}$");
+
+    a.SetRowTitle(0, "\\ttbar dilepton (SS)");
+    a.SetRowTitle(1, "Drell-Yan (SS)");
+    a.SetRowTitle(2, "Single top quark (SS)");
+    a.SetRowTitle(3, "Dibosons (SS)");
+    a.SetRowTitle(4, "ttV (SS)");
+    a.SetRowTitle(5, "Total background (SS)");
+    a.SetRowTitle(6, "Data (SS)");
+    a.SetRowTitle(7, "SS data - bkg");
+    a.SetRowTitle(8, "Non W/Z lep (SS)");
+    a.SetRowTitle(9, "Non W/Z lep (OS)");
+    a.SetRowTitle(10, "R (OS/SS)");
+    a.SetRowTitle(11, "Non W/Z estimation");
+
+    TString channels[3] = {"Elec", "Muon", "ElMu"}; 
+    for(Int_t i = 0; i < 3; i++){
+      ch = channels[i];
+
+      fake   = yield("fake", ch, lev, "0", 0);
+      efake   = getStatError("fake", ch, lev, "0", 0);
+
+      fakeSS = yield("fake", ch, lev, "0", 1);
+      dataSS = yield("data", ch, lev, "0", 1);
+      bkgSS  = yield("bkg",  ch, lev, "0", 1) - fakeSS;  // prompt MC in SS
+
+      efakeSS = getStatError("fake", ch, lev, "0", 1);
+      edataSS = getStatError("data", ch, lev, "0", 1);
+      ebkgSS  = getStatError("bkg",  ch, lev, "0", 1) - efakeSS;
+
+      R = fake/fakeSS; 
+      eR = R*(efake/fake + efakeSS/fakeSS);
+
+      DDfake = R*(dataSS - bkgSS);
+      eDDfake = DDfake*(eR/R  + (edataSS/dataSS - ebkgSS/bkgSS));
+
+      SF = DDfake/fake;
+      eSF = SF*(eDDfake/DDfake + efake/fake);
+
+      a[0][i].SetContent(yield("ttbar", ch, lev, "0", 1)); 
+      a[1][i].SetContent(yield("DY", ch, lev, "0", 1)); 
+      a[2][i].SetContent(yield("tW", ch, lev, "0", 1)); 
+      a[3][i].SetContent(yield("VV", ch, lev, "0", 1)); 
+      a[4][i].SetContent(yield("ttV", ch, lev, "0", 1)); 
+      a[5][i].SetContent(bkgSS);  a[5][i].SetError(ebkgSS);
+      a[6][i].SetContent(dataSS); a[6][i].SetError(edataSS);
+      a[7][i].SetContent(dataSS - bkgSS);
+      a[8][i].SetContent(fakeSS);   a[8][i].SetError(efakeSS);
+      a[9][i].SetContent(fake);   a[9][i].SetError(efake);
+      a[10][i].SetContent(R);  a[10][i].SetError(eR);
+      a[11][i].SetContent(DDfake);  a[11][i].SetError(eDDfake);
+
+      a.SetDrawHLines(true); a.SetDrawVLines(true); a.Print();
+      a.SaveAs(outputFolder + "/NonWDD_" + lev + ".tex");
+      a.SaveAs(outputFolder + "/NonWDD_" + lev + ".html");
+      a.SaveAs(outputFolder + "/NonWDD_" + lev + ".txt");
+    }
 	}
 
 	if(IsErr) return eDDfake;

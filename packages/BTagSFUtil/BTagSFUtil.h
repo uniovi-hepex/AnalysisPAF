@@ -18,10 +18,13 @@ class BTagSFUtil{
 
   float GetJetSF(float JetDiscriminant, int JetFlavor, float JetPt, float JetEta);
   bool IsTagged(float JetDiscriminant, int JetFlavor, float JetPt, float JetEta, UInt_t Seed = 0);
+  void IsFastSim(Bool_t is = 1){ gIsFastSim = is;}
+  Float_t GetFastSimBtagSF(Int_t flav, Float_t eta, Float_t pt, Float_t csv, Float_t sys = 0);
 
  private:
 
-  BTagCalibrationReader *reader_b, *reader_c, *reader_l;
+  Bool_t gIsFastSim;
+  BTagCalibrationReader *reader_b, *reader_c, *reader_l, *FastSimReader_b, *FastSimReader_c, *FastSimReader_l;
 
   void GetBTagPayload(TString BTagAlgorithm, TString DataPeriod);
   void GetFastSimPayload(TString BTagAlgorithm, TString FastSimDataset);

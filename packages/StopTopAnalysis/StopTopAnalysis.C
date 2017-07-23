@@ -1,7 +1,7 @@
-#include "StopAnalysis.h"
+#include "StopTopAnalysis.h"
 
-ClassImp(StopAnalysis);
-StopAnalysis::StopAnalysis() : PAFChainItemSelector() {
+ClassImp(StopTopAnalysis);
+StopTopAnalysis::StopTopAnalysis() : PAFChainItemSelector() {
   fTree = 0;
   fSumISRJets = 0;  
   fISRJets = 0;  
@@ -9,9 +9,9 @@ StopAnalysis::StopAnalysis() : PAFChainItemSelector() {
 
 }
 
-void StopAnalysis::Summary(){}
+void StopTopAnalysis::Summary(){}
 
-void StopAnalysis::ResetVariables(){
+void StopTopAnalysis::ResetVariables(){
   TrigSF = 0; TrigSFerr = 0; PUSF = 0; PUSF_Up = 0; PUSF_Down = 0;
   gChannel = 0; passMETfilters = 0; passTrigger = 0; isSS = 0;  NormWeight = 0; TWeight = 0;
   TMT2 = 0; TMll = 0;  TMET = 0; TMET_Phi = 0; TgenMET = 0; TNJets = 0; TNBtags = 0; THT = 0; 
@@ -54,7 +54,7 @@ void StopAnalysis::ResetVariables(){
   selJets.clear(); Jets15.clear();
 }
 
-void StopAnalysis::Initialise(){
+void StopTopAnalysis::Initialise(){
   gIsData      = GetParam<Bool_t>("IsData");
   gSelection   = GetParam<Int_t>("iSelection");
   gSampleName  = GetParam<TString>("sampleName");
@@ -91,7 +91,7 @@ void StopAnalysis::Initialise(){
 }
 
 
-void StopAnalysis::InsideLoop(){
+void StopTopAnalysis::InsideLoop(){
   if(gIsFastSim) if(fabs(fabs((Get<Int_t>("GenSusyMStop"))- gStopMass)) > 1 || fabs((fabs(Get<Int_t>("GenSusyMNeutralino")) - gLspMass)) > 1) return;
 
   ResetVariables();
@@ -129,61 +129,93 @@ void StopAnalysis::InsideLoop(){
 
   fSumISRJets->Fill(1, getISRJetsWeight(TNISRJets)); 
 
- // if(TNSelLeps == 2 && passMETfilters){ // 2 leptons, OS
-    //if(1){ 
-      if(TNSelLeps == 2){ // 2 leptons, OS
+  // if(TNSelLeps == 2 && passMETfilters){ // 2 leptons, OS
+  //if(1){ 
+  if(TNSelLeps == 2){ // 2 leptons, OS
     //if(TNSelLeps == 2 && passTrigger && passMETfilters && !isSS){ // 2 leptons, OS
     //  if(TNVetoLeps < 3){  // Veto to 3rd lepton
-    if(1){  // Veto to 3rd lepton
-      // Deal with weights:
-      Float_t lepSF = 1; Float_t lepSFUp = 0; Float_t lepSFDo = 0;
-      if(TNSelLeps >= 2){
-        lepSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
-        lepSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1);
-        lepSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1);
-        //For muons
-        //https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonReferenceEffsRun2
-        //Additional 1% for ID + 0.5% for Isolation + 0.5% single muon triggers
+    // Deal with weights:
+    Float_t ElecSF = 1; Float_t MuonSF = 1;
+    Float_t ElecSFUp = 1; Float_t ElecSFDo = 1; Float_t MuonSFUp = 1; Float_t MuonSFDo = 1;
+    if(TNSelLeps >= 2){
+      //lepSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
+      //lepSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1);
+      //lepSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1);
+      if(TChannel == iElec){
+        ElecSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
+        ElecSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1);
+        ElecSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1);
+        MuonSFUp = 1; MuonSFDo = 1; MuonSF = 1;
       }
-      if(gIsFastSim) TrigSF *= 0.98;
+      else if(TChannel == iMuon){
+        MuonSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
+        MuonSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1);
+        MuonSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1);
+        ElecSFUp = 1; ElecSFDo = 1; ElecSF = 1;
+      }
+      else{
+        if(selLeptons.at(0).isMuon){
+          MuonSF   *= selLeptons.at(0).GetSF( 0);
+          MuonSFUp *= selLeptons.at(0).GetSF( 1);
+          MuonSFDo *= selLeptons.at(0).GetSF(-1);
+        }
+        else{
+          ElecSF   *= selLeptons.at(0).GetSF( 0);
+          ElecSFUp *= selLeptons.at(0).GetSF( 1);
+          ElecSFDo *= selLeptons.at(0).GetSF(-1);
+        }
+        if(selLeptons.at(1).isMuon){
+          MuonSF   *= selLeptons.at(1).GetSF( 0);
+          MuonSFUp *= selLeptons.at(1).GetSF( 1);
+          MuonSFDo *= selLeptons.at(1).GetSF(-1);
+        }
+        else{
+          ElecSF   *= selLeptons.at(1).GetSF( 0);
+          ElecSFUp *= selLeptons.at(1).GetSF( 1);
+          ElecSFDo *= selLeptons.at(1).GetSF(-1);
+        }
+      }
       if(gIsFastSim){
+        TrigSF *= 0.98; // trigg efficiency for FastSim
         PUSF = 1;
         PUSF_Up  = 1;
         PUSF_Down = 1;
       }
-      TWeight            = NormWeight*lepSF*TrigSF*PUSF;
-      TWeight_LepEffUp   = NormWeight*lepSFUp*TrigSF*PUSF;
-      TWeight_LepEffDown = NormWeight*lepSFDo*TrigSF*PUSF;
-      TWeight_TrigUp     = NormWeight*lepSF*(TrigSF+TrigSFerr)*PUSF;
-      TWeight_TrigDown   = NormWeight*lepSF*(TrigSF-TrigSFerr)*PUSF;
-      TWeight_PUDown     = NormWeight*lepSF*TrigSF*PUSF_Up;
-      TWeight_PUUp       = NormWeight*lepSF*TrigSF*PUSF_Down;
-      TWeight_ISRUp      = NormWeight*lepSF*TrigSF*PUSF*TISRweightUp;
-      TWeight_ISRDown    = NormWeight*lepSF*TrigSF*PUSF*TISRweightDown;
+      TWeight             = NormWeight*ElecSF*MuonSF*TrigSF*PUSF;
+      TWeight_ElecEffUp   = NormWeight*ElecSFUp*MuonSF*TrigSF*PUSF;
+      TWeight_ElecEffDown = NormWeight*ElecSFDo*MuonSF*TrigSF*PUSF;
+      TWeight_MuonEffUp   = NormWeight*ElecSF*MuonSFUp*TrigSF*PUSF;
+      TWeight_MuonEffDown = NormWeight*ElecSF*MuonSFDo*TrigSF*PUSF;
+      TWeight_TrigUp     = NormWeight*ElecSF*MuonSF*(TrigSF+TrigSFerr)*PUSF;
+      TWeight_TrigDown   = NormWeight*ElecSF*MuonSF*(TrigSF-TrigSFerr)*PUSF;
+      TWeight_PUDown     = NormWeight*ElecSF*MuonSF*TrigSF*PUSF_Up;
+      TWeight_PUUp       = NormWeight*ElecSF*MuonSF*TrigSF*PUSF_Down;
+      TWeight_ISRUp      = NormWeight*ElecSF*MuonSF*TrigSF*PUSF*TISRweightUp;
+      TWeight_ISRDown    = NormWeight*ElecSF*MuonSF*TrigSF*PUSF*TISRweightDown;
       if(gIsData) TWeight = 1;
 
       // Event Selection
       // ===================================================================================================================
-    if((selLeptons.at(0).p + selLeptons.at(1).p).M() > 20 && selLeptons.at(0).p.Pt() > 25){ // mll > 20 GeV
+      if((selLeptons.at(0).p + selLeptons.at(1).p).M() > 20 && selLeptons.at(0).p.Pt() > 25){ // mll > 20 GeV
         if(gChannel == iElMu || (TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15)  ){ //  Z Veto in ee, µµ
           //if(TNJets > 1 || TNJetsJESUp > 1 || TNJetsJESDown > 1 || TNJetsJERUp > 1){ //At least 2 jets
-           // if(TNBtags > 0 || TNBtagsBtagUp > 0 || TNBtagsBtagDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0){ // At least 1 b-tag
-              fTree->Fill();
-           // }
-         // }
+          // if(TNBtags > 0 || TNBtagsBtagUp > 0 || TNBtagsBtagDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0){ // At least 1 b-tag
+          fTree->Fill();
+          // }
+          // }
         }
       }
     }
   }
   //if(TNgenLeps >= 2) fTree->Fill();
-}
+  }
 
 
 //#####################################################################
 // Functions
 //------------------------------------------------------------------
 
-void StopAnalysis::SetLeptonVariables(){
+void StopTopAnalysis::SetLeptonVariables(){
   fTree->Branch("TNVetoLeps",     &TNVetoLeps,     "TNVetoLeps/I");
   fTree->Branch("TNSelLeps",     &TNSelLeps,     "TNSelLeps/I");
   fTree->Branch("TLep0_Pt",     &TLep0_Pt,     "TLep0_Pt/F");
@@ -218,7 +250,7 @@ void StopAnalysis::SetLeptonVariables(){
   fTree->Branch("TgenMT2",      &TgenMT2,      "TgenMT2/F");
 }
 
-void StopAnalysis::SetJetVariables(){
+void StopTopAnalysis::SetJetVariables(){
   fTree->Branch("TNJets",        &TNJets,         "TNJets/I");
   fTree->Branch("TNBtags",       &TNBtags,     "TNBtags/I");
   fTree->Branch("TJet_isBJet",   TJet_isBJet,       "TJet_isBJet[TNJets]/I");
@@ -251,7 +283,7 @@ void StopAnalysis::SetJetVariables(){
   fTree->Branch("TgenHT",           &TgenHT,          "TgenHT/F");
 }
 
-void StopAnalysis::SetEventVariables(){
+void StopTopAnalysis::SetEventVariables(){
   fTree->Branch("TWeight",      &TWeight,      "TWeight/F");
   fTree->Branch("TBtagSFFS",    &TBtagSFFS,    "TBtagSFFS/F");
   fTree->Branch("TMET",         &TMET,         "TMET/F");
@@ -292,7 +324,7 @@ void StopAnalysis::SetEventVariables(){
   fTree->Branch("TgenTop2M"   , &TgenTop2M  , "TgenTop2M/F"  ); 
 }
 
-void StopAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> VetoLeptons){
+void StopTopAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> VetoLeptons){
   TNSelLeps = selLeptons.size();
   Int_t nVetoLeptons = VetoLeptons.size();
   TNVetoLeps = (nVetoLeptons == 0) ? TNSelLeps : nVetoLeptons;
@@ -327,7 +359,7 @@ void StopAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vecto
   if(gIsData) return;  
 }
 
-void StopAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut){
+void StopTopAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut){
   TBtagSFFS   = BtagSFFS;
   TNJets = selJets.size(); THT = 0;
   TNBtags = 0; TNBtagsBtagUp = 0; TNBtagsBtagDown = 0;
@@ -384,7 +416,7 @@ void StopAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cl
   }
 }
 
-void StopAnalysis::GetMET(){
+void StopTopAnalysis::GetMET(){
   TMET        = Get<Float_t>("met_pt");
   TMET_Phi    = Get<Float_t>("met_phi");  // MET phi
   TIsSS       = isSS;
@@ -422,7 +454,7 @@ void StopAnalysis::GetMET(){
   if(gIsLHE) for(Int_t i = 0; i < Get<Int_t>("nLHEweight"); i++)   TLHEWeight[i] = Get<Float_t>("LHEweight_wgt", i);
 }
 
-void StopAnalysis::GetGenInfo(){
+void StopTopAnalysis::GetGenInfo(){
   if(gIsData) return; 
   TgenMETPhi = Get<Float_t>("met_genPhi");
 

@@ -113,7 +113,7 @@ void Plot::GetStack(){ // Sets the histogram hStack
   hAllBkg = new Histo(*(TH1F*) hStack->GetStack()->Last(), 3);
   hAllBkg->SetStyle();
   hAllBkg->SetTag("TotalBkg");
-  hAllBkg->SetStatUnc();
+  //hAllBkg->SetStatUnc();
   if(verbose) cout << Form(" Adding %i systematic to sum of bkg...\n", (Int_t) VSumHistoSystUp.size());
   if(doSys) GroupSystematics();
   
@@ -125,6 +125,12 @@ void Plot::GetStack(){ // Sets the histogram hStack
 }
 
 void Plot::SetData(){  // Returns histogram for Data
+  if(!doData){
+    GetStack();
+    if(hData) delete hData;
+    if(gROOT->FindObject("HistoData")) delete gROOT->FindObject("HistoData");
+    hData = hAllBkg;
+  }
   if(hData) delete hData;
   if(gROOT->FindObject("HistoData")) delete gROOT->FindObject("HistoData");
   
@@ -167,8 +173,8 @@ void Plot::AddSystematic(TString var, TString pr){
     TString TheRest;
     OneSyst = TString(var(0, var.First(",")));
     TheRest = TString(var(var.First(",")+1, var.Sizeof()));
-    AddSystematic(OneSyst);
-    AddSystematic(TheRest);
+    AddSystematic(OneSyst, pr);
+    AddSystematic(TheRest, pr);
     return;
   }
   if(pr == ""){
@@ -592,11 +598,11 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   else{
     PlotMinimum = PlotMinimum == -999? 0 : PlotMinimum;
     PlotMaximum = PlotMaximum == -999? Max*ScaleMax : PlotMaximum;
-    hStack->SetMaximum(Max*ScaleMax);
+    hStack->SetMaximum(PlotMaximum);
       hStack->SetMinimum(PlotMinimum);
-  }
-
+  }  
   hStack->Draw("hist");
+
   hStack->GetYaxis()->SetTitle("Number of Events");
   hStack->GetYaxis()->SetTitleSize(0.06);
   hStack->GetYaxis()->SetTitleOffset(0.8);

@@ -211,6 +211,7 @@ class TopAnalysis : public PAFChainItemSelector{
   TH1F* fHvertices[nChannels][nLevels][nSysts]; 
 
   TH1F* fhDummy;
+  TH1F*  fHWeightsFidu;
   TH1F*  fHyields[nChannels][nSysts];
   TH1F*  fHFiduYields[nChannels][nSysts];
   TH1F*  fHSSyields[nChannels][nSysts];

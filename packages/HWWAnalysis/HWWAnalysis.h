@@ -5,12 +5,12 @@
 #include <iostream>
 #include <vector>
 
-class WWAnalysis : public PAFChainItemSelector{
+class HWWAnalysis : public PAFChainItemSelector{
 	public:
     TTree* fTree;
 
-		WWAnalysis();
-		virtual ~WWAnalysis(){}
+		HWWAnalysis();
+		virtual ~HWWAnalysis(){}
 		virtual void InsideLoop();
 		virtual void Initialise();
 		virtual void Summary();
@@ -125,5 +125,5 @@ class WWAnalysis : public PAFChainItemSelector{
 		TString gSampleName;
  		Bool_t  gIsLHE;
 
-		ClassDef(WWAnalysis, 0);
+		ClassDef(HWWAnalysis, 0);
 };

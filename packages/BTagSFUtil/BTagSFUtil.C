@@ -3,7 +3,7 @@
 #include "BTagSFUtil.h"
 #include "BTagCalibrationStandalone.cc"
 //#include "BTagEfficienciesTTbarSummer12.C" // Change this to your sample efficiency
-#include "BTagEfficienciesTTbarSummer15.C" // Change this to your sample efficiency
+#include "BTagEfficienciesTTbarSummer17.C" // Change this to your sample efficiency
 #include "FastSimCorrectionFactorsSummer12.C" // Change this to your sample efficiency
 #include "TSystem.h"
 
@@ -12,9 +12,10 @@ using namespace std;
 BTagSFUtil::BTagSFUtil(const string& MeasurementType, 
 		       const TString& BTagSFPath, const string& BTagAlgorithm, 
 		       const TString& OperatingPoint, int SystematicIndex, TString FastSimDataset) {
-
+  gIsFastSim = FastSimDataset == ""? false : true;
   //rand_ = new TRandom3(Seed);
   TString CSVFileName = Form("%s/%s.csv", BTagSFPath.Data(), BTagAlgorithm.c_str());
+  //if(gIsFastSim) CSVFileName = Form("%s/%s_FastSim.csv", BTagSFPath.Data(), BTagAlgorithm.c_str());
   //  string CSVFileName = (string) pathtocsv.Data() + BTagAlgorithm + ".csv";
   cout << "PAF_INFO: [BTagSFUtil] BTag SF will be read from " << CSVFileName << endl;
   
@@ -36,52 +37,49 @@ BTagSFUtil::BTagSFUtil(const string& MeasurementType,
   TaggerName = BTagAlgorithm;
   TaggerOP = BTagAlgorithm;
 
+  BTagEntry::OperatingPoint op; 
+
   if (OperatingPoint=="Loose")  {
     TaggerOP += "L";
     if (TaggerName=="CSV") TaggerCut = 0.244;
-    //if (TaggerName=="CSVv2") TaggerCut = 0.605;
     if (TaggerName=="CSVv2") TaggerCut = 0.5426; // for Moriond17
     if (TaggerName=="DeepCSV") TaggerCut = 0.2219; // post-Moriond (2017-06-08)
-    reader_b = new BTagCalibrationReader(BTagEntry::OP_LOOSE, "central", sysTypes);
-    reader_b -> load(calib, BTagEntry::FLAV_B, MeasurementType);
-    reader_c = new BTagCalibrationReader(BTagEntry::OP_LOOSE, "central", sysTypes);
-    reader_c -> load(calib, BTagEntry::FLAV_C, MeasurementType);
-    reader_l = new BTagCalibrationReader(BTagEntry::OP_LOOSE, "central", sysTypes);
-    reader_l -> load(calib, BTagEntry::FLAV_UDSG, "incl");
+    op = BTagEntry::OP_LOOSE;
   } else if (OperatingPoint=="Medium")  {
     TaggerOP += "M";
     if (TaggerName=="CSV") TaggerCut = 0.679;
-    //if (TaggerName=="CSVv2") TaggerCut = 0.890; // for 74X
-    //if (TaggerName=="CSVv2") TaggerCut = 0.800; // for 76X
     if (TaggerName=="CSVv2") TaggerCut = 0.8484; // for Moriond17
     if (TaggerName=="DeepCSV") TaggerCut = 0.6324; // post-Moriond (2017-06-08)
-    reader_b = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central", sysTypes);
-    reader_b -> load(calib, BTagEntry::FLAV_B, MeasurementType);
-    reader_c = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central", sysTypes);
-    reader_c -> load(calib, BTagEntry::FLAV_C, MeasurementType);
-    reader_l = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central", sysTypes);
-    reader_l -> load(calib, BTagEntry::FLAV_UDSG, "incl");
+    op = BTagEntry::OP_MEDIUM;
   } else if (OperatingPoint=="Tight")  {
     TaggerOP += "T";
     if (TaggerName=="CSV") TaggerCut = 0.898;
     if (TaggerName=="TCHP") TaggerCut = 3.41;
-    //if (TaggerName=="CSVv2") TaggerCut = 0.970;
     if (TaggerName=="CSVv2") TaggerCut = 0.9535; // for Moriond17
     if (TaggerName=="DeepCSV") TaggerCut = 0.8958; // post-Moriond (2017-06-08)
-    reader_b = new BTagCalibrationReader(BTagEntry::OP_TIGHT, "central", sysTypes);
-    reader_b -> load(calib, BTagEntry::FLAV_B, MeasurementType);
-    reader_c = new BTagCalibrationReader(BTagEntry::OP_TIGHT, "central", sysTypes);
-    reader_c -> load(calib, BTagEntry::FLAV_C, MeasurementType);
-    reader_l = new BTagCalibrationReader(BTagEntry::OP_TIGHT, "central", sysTypes);
-    reader_l -> load(calib, BTagEntry::FLAV_UDSG, "incl");
-  } 
+    op = BTagEntry::OP_TIGHT;
+} 
+  reader_b = new BTagCalibrationReader(op, "central", sysTypes);
+  reader_c = new BTagCalibrationReader(op, "central", sysTypes);
+  reader_l = new BTagCalibrationReader(op, "central", sysTypes);
+  reader_b -> load(calib, BTagEntry::FLAV_B,    MeasurementType);
+  reader_c -> load(calib, BTagEntry::FLAV_C,    MeasurementType);
+  reader_l -> load(calib, BTagEntry::FLAV_UDSG, "incl");
+  if(gIsFastSim){
+    FastSimReader_b = new BTagCalibrationReader(op, "central", sysTypes);
+    FastSimReader_c = new BTagCalibrationReader(op, "central", sysTypes);
+    FastSimReader_l = new BTagCalibrationReader(op, "central", sysTypes);
+    FastSimReader_b -> load(calib, BTagEntry::FLAV_B,    "fastsim");
+    FastSimReader_c -> load(calib, BTagEntry::FLAV_C,    "fastsim");
+    FastSimReader_l -> load(calib, BTagEntry::FLAV_UDSG, "fastsim");
+  }
 
   if (TaggerCut<0) 
     cout << " " << TaggerName << " not supported for " << OperatingPoint << " WP" << endl;
 
   FastSimSystematic = 0;
   if (abs(SystematicIndex)>10) FastSimSystematic = SystematicIndex%10;
-  GetFastSimPayload(BTagAlgorithm, FastSimDataset);
+  //GetFastSimPayload(BTagAlgorithm, FastSimDataset);
 
   if (TaggerCut<0.) 
     cout << "BTagSFUtil: " << BTagAlgorithm << " not a supported b-tagging algorithm" << endl;
@@ -154,8 +152,8 @@ float BTagSFUtil::GetJetSF(float JetDiscriminant, int JetFlavor, float JetPt, fl
     Btag_SF = reader_c->eval_auto_bounds(SystematicFlagBC, BTagEntry::FLAV_C, JetEta, JetPt, JetDiscriminant);
   else Btag_SF = reader_l->eval_auto_bounds(SystematicFlagL, BTagEntry::FLAV_UDSG, JetEta, JetPt, JetDiscriminant);
   
-  if (IsFastSimDataset)
-    Btag_SF *= FastSimCorrectionFactor(JetFlavor, JetPt, JetEta);
+//  if (IsFastSimDataset)
+//    Btag_SF *= FastSimCorrectionFactor(JetFlavor, JetPt, JetEta);
   
   return Btag_SF;
 
@@ -198,3 +196,13 @@ bool BTagSFUtil::IsTagged(float JetDiscriminant, int JetFlavor, float JetPt, flo
 
 }
 
+Float_t BTagSFUtil::GetFastSimBtagSF(Int_t flav, Float_t eta, Float_t pt, Float_t csv, Float_t sys){
+  float FSSF = 1;
+  TString SystematicFlag  = "central";
+  if (sys <= -1) SystematicFlag = "down";
+  if (sys >=  1) SystematicFlag = "up";
+  if(      flav == 5)  FSSF = FastSimReader_b->eval_auto_bounds(SystematicFlag.Data(), BTagEntry::FLAV_B, eta, pt, csv);
+  else if (flav == 4)  FSSF = FastSimReader_b->eval_auto_bounds(SystematicFlag.Data(), BTagEntry::FLAV_C, eta, pt, csv);
+  else                 FSSF = FastSimReader_l->eval_auto_bounds(SystematicFlag.Data(), BTagEntry::FLAV_UDSG, eta, pt, csv);
+  return FSSF;
+}

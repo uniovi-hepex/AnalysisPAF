@@ -7,6 +7,7 @@ bool GreaterThan(float i, float j){ return (i > j);}
 TopAnalysis::TopAnalysis() : PAFChainItemSelector() {
   fTree = 0;
   fhDummy = 0;
+  fHWeightsFidu  = 0;
   passMETfilters = 0;
   passTrigger    = 0;
   isSS           = 0;
@@ -135,6 +136,11 @@ void TopAnalysis::InsideLoop(){
             fHFiduYields[GenChannel-1][0] -> Fill(i2jets);
             if(nFidubJets >= 1){ // At least 1 b-tag
               fHFiduYields[GenChannel-1][0] -> Fill(i1btag);
+
+              Int_t nWTree = Get<Int_t>("nLHEweight");
+              for(int i = 0; i<nWeights; i++){
+                fHWeightsFidu->Fill(i, Get<Float_t>("LHEweight_wgt", i));
+              }
             }
           }
         }
@@ -348,6 +354,7 @@ void TopAnalysis::GetMET(){
 
 void TopAnalysis::InitHistos(){
   fhDummy = CreateH1F("fhDummy", "fhDummy", 1, 0, 2);
+  fHWeightsFidu  = CreateH1F("hPDFweightsFidu","hPDFweightsFidu", nWeights, -0.5, nWeights - 0.5);
   for(Int_t ch = 0; ch < nChannels; ch++){
     fHyields[ch][0]     = CreateH1F("H_Yields_"+gChanLabel[ch],"", nLevels, -0.5, nLevels-0.5);
     fHFiduYields[ch][0]     = CreateH1F("H_FiduYields_"+gChanLabel[ch],"", nLevels, -0.5, nLevels-0.5);

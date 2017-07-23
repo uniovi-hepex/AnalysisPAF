@@ -6,7 +6,7 @@
 #include <vector>
 
 
-class StopAnalysis : public PAFChainItemSelector{
+class StopTopAnalysis : public PAFChainItemSelector{
   public:
     TTree* fTree;
 
@@ -15,8 +15,8 @@ class StopAnalysis : public PAFChainItemSelector{
     Int_t TNLHEWeight;
     Float_t TLHEWeight[254];
  
-    StopAnalysis();
-    virtual ~StopAnalysis(){}
+    StopTopAnalysis();
+    virtual ~StopTopAnalysis(){}
     virtual void InsideLoop();
     virtual void Initialise();
     virtual void Summary();
@@ -125,6 +125,10 @@ class StopAnalysis : public PAFChainItemSelector{
 
     Float_t  TWeight_LepEffUp;
     Float_t  TWeight_LepEffDown;
+    Float_t  TWeight_ElecEffUp;
+    Float_t  TWeight_ElecEffDown;
+    Float_t  TWeight_MuonEffUp;
+    Float_t  TWeight_MuonEffDown;
     Float_t  TWeight_TrigUp;
     Float_t  TWeight_TrigDown;
     Float_t  TWeight_FSUp;
@@ -172,5 +176,5 @@ class StopAnalysis : public PAFChainItemSelector{
     TString gSampleName;
     Bool_t  gDoISR;
 
-    ClassDef(StopAnalysis, 0);
+    ClassDef(StopTopAnalysis, 0);
 };
