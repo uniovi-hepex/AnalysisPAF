@@ -121,7 +121,7 @@ void Plot::GetStack(){ // Sets the histogram hStack
     hAllBkg->AddToSystematics(VSumHistoSystUp.at(i));
     hAllBkg->AddToSystematics(VSumHistoSystDown.at(i));
   }
-  hAllBkg->SetBinsErrorFromSyst();
+  if(doSys) hAllBkg->SetBinsErrorFromSyst();
 }
 
 void Plot::SetData(){  // Returns histogram for Data
@@ -460,7 +460,7 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString options){
     plot->SetLogy();
   }
   TLegend* leg = SetLegend();
-  leg->SetTextSize(0.041);
+  leg->SetTextSize(0.08);
   leg->Draw("same");
   
   if(gof!=""){
@@ -538,6 +538,8 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString options){
     TString dir = plotFolder;
     TString plotname = (outputName == "")? varname + "_" + tag : outputName + "_" + varname;
     gSystem->mkdir(dir, kTRUE);
+    plotname.ReplaceAll(" ","");
+    plotname.ReplaceAll("/","_");
     c->Print( dir + plotname + ".png", "png");
     c->Print( dir + plotname + ".pdf", "pdf");
     delete c;
@@ -604,6 +606,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
     for(Int_t  i = 0; i < nSignals; i++) VSignals.at(i)->Draw(SignalDrawStyle + "same");
 
+
   // Draw systematics histo
   hAllBkg->SetFillStyle(3145);
   hAllBkg->SetFillColor(kGray+2);
@@ -635,6 +638,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   leg->Draw("same");      
   texcms->Draw("same");   // CMS Preliminary
   texlumi->Draw("same");  // The luminosity
+
 
   // Set ratio
   pratio->cd();
@@ -678,6 +682,8 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
     TString plotname = (outputName == "")? varname + "_" + tag : outputName + "_" + varname;
     
     gSystem->mkdir(dir, kTRUE);
+    plotname.ReplaceAll(" ","");
+    plotname.ReplaceAll("/","_");
     c->Print( dir + plotname + ".pdf", "pdf");
     c->Print( dir + plotname + ".png", "png");
     c->SaveAs( dir + plotname + ".root");
@@ -719,7 +725,6 @@ void Plot::ScaleSys(TString pr, Float_t SF){
 // Save all the histograms into a root file (also bin-to-bin statistical uncertainties) 
 //=======================================================================================
 void Plot::SaveHistograms(){
-  TFile *f;
 
   TString filename =  varname;
   if(outputName != "") filename = outputName;
@@ -772,6 +777,7 @@ void Plot::SaveHistograms(){
   hData->SetTag("data_obs");
   hData->Write();
   hStack->Write();  
+
   cout << "All histograms saved in " << limitFolder + filename + ".root\n";
 }
 

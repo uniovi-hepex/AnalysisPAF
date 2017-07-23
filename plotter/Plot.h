@@ -80,6 +80,7 @@ public:
     title = tit;
     xtitle = xtit;
     varname = variable; if(variable.Contains(" ")) TString(variable(0,variable.First(" ")));
+    f = 0;
 
     plotFolder = DefaultPlotfolder;
     limitFolder = DefaultLimitFolder; 
@@ -109,10 +110,10 @@ public:
     TotalSysUp = NULL;
     TotalSysDown = NULL;
     nSignalSamples = 0;
-    fLegX1 = 0.70; 
-    fLegY1 = 0.65;
-    fLegX2 = 0.93; 
-    fLegY2 = 0.93;
+    fLegX1 = 0.66; 
+    fLegY1 = 0.42;
+    fLegX2 = 0.98; 
+    fLegY2 = 0.92;
     SignalDrawStyle = "hist";
   }
   Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Float_t* bins = 0, TString tit = "title", TString xtit = "VAR"){
@@ -125,7 +126,9 @@ public:
     vbins  = bins;
     title = tit;
     xtitle = xtit;
-    varname = variable; if(variable.Contains(" ")) TString(variable(0,variable.First(" ")));
+    f = 0;
+    varname = variable; if(variable.Contains(" ")) TString(variable(0,variable.First(" ")))
+						     ;
 
     plotFolder = DefaultPlotfolder;
     limitFolder = DefaultLimitFolder; 
@@ -182,10 +185,12 @@ public:
 		if(hratio) delete hratio;
 		if(TotalSysUp) delete TotalSysUp;
 		if(TotalSysDown) delete TotalSysDown;
-    if(hData && doData) delete hData;
-    if(hStack) delete hStack;
-    if(hAllBkg) delete hAllBkg;
-};            // Destructor
+		if(hData && doData) delete hData;
+		if(hStack) delete hStack;
+		if(hAllBkg) delete hAllBkg;
+		cout << f << endl;
+		if(f)       delete f;
+	};            // Destructor
 
 	void AddSample(TString p = "TTbar_Powheg", TString pr = "ttbar", Int_t type = -1, Int_t color = 0, TString tsys = "0", TString options = "");
 
@@ -315,6 +320,8 @@ protected:
   TString YieldsTableName = "yields";
   TString tableFormats = "%1.2f";
   TString gof = "";
+  
+  TFile *f;
 
   Int_t nSignalSamples;
   
