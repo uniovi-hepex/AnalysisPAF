@@ -13,10 +13,64 @@
 #include "EventBuilder.h"
 
 ClassImp(EventBuilder);
-EventBuilder::EventBuilder() : PAFChainItemSelector() {}
+EventBuilder::EventBuilder() : PAFChainItemSelector(),
+			       METfilters(false),
+			       passTrigger(false),
+			       isSS(false),
+			       gIsFastSim(false),
+			       TriggerSF(0),
+			       TriggerSF_Up(0),
+			       TriggerSF_Down(0),
+			       TriggerSF_err(0),
+			       PUSF(0),
+			       PUSF_Up(0),
+			       PUSF_Down(0),
+			       NormWeight(0),
+			       Weight(0),
+			       genWeight(0),
+			       nTrueInt(0),
+			       gChannel(0),
+			       TriggSF(0),
+			       fPUWeight(0),
+			       fPUWeightUp(0),
+			       fPUWeightDown(0),
+			       gIsSingleMuon(false),
+			       gIsSingleElec(false),
+			       gIsDoubleMuon(false),
+			       gIsDoubleElec(false),
+			       gIsMuonEG(false),
+			       gIsData(false),
+			       run(-1),
+			       gSelection(-1),
+			       gSampleName(""),
+			       gPathToHeppyTrees(""),
+			       gXSec(0),
+			       gCount(0),
+			       gIsMCatNLO(false),
+			       gNEntries(0),
+			       gSumOfWeights(0),
+			       nEntries(0),
+			       Count(0),
+			       xsec(0),
+			       nProcessedEvents(0),
+			       gOptions(""),
+			       gIsData2017(0)
+{}
+
+
+
+EventBuilder::~EventBuilder() {
+  delete fPUWeight;
+  delete fPUWeightUp;
+  delete fPUWeightDown;
+  delete TriggSF;
+}
+
+
 void EventBuilder::Summary(){
-/*  cout << " ========================================================= " << endl;
-  cout << " ====== Sample: " << gSampleName << " for selection: " << LabSelection[gSelection] << " ======\n";
+  cout << endl << endl << " ========================================================= " << endl;
+  cout << " ====== Sample: \"" << gSampleName <<"\"" << flush;
+  cout << " for selection: \"" << LabSelection[gSelection] << "\" ======\n";
   cout << " -----------> Is data?.......... "; if(gIsData)    cout << "YES\n"; else cout << "NO\n";
   cout << " -----------> Is aMCatNLO?...... "; if(gIsMCatNLO) cout << "YES\n"; else cout << "NO\n";
   cout << " -----------> Is FastSim?-...... "; if(gIsFastSim) cout << "YES\n"; else cout << "NO\n";
@@ -28,7 +82,6 @@ void EventBuilder::Summary(){
   cout << " >>> Total weight  for norm    : " << Weight           << endl;
   cout << " >>> Processed events          : " << nProcessedEvents << endl;
   cout << " ========================================================= " << endl;
-*/
 }
 
 

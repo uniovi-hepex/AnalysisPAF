@@ -231,7 +231,7 @@ void LeptonSF::loadHisto(Int_t iHisto, Int_t wp){
     filename = "triggerSummary_emu"; histoname = "scalefactor_eta2d_with_syst";
     fMuEGSF = GetHistogramFromFileF(path_to_SF_histos + filename + ".root", histoname, "fMuEGSF"); 
   }
-  std::cout << " [Lepton SF] : Loaded histogram " << histoname << " from file " << path_to_SF_histos + filename + ".root" << std::endl;
+  PAF_INFO("Lepton SF", Form("Loaded histogram %s from file %s%s.root", histoname.Data(), path_to_SF_histos.Data(), filename.Data()));
   loadedHistos.push_back(iHisto);
 }
 
