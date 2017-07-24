@@ -258,4 +258,17 @@ Float_t ShapVarWith1j1tBDtAndJetPt(Double_t nJet, Double_t nBtag, Double_t bdt, 
 //   else
 //     return -1;
 // }
+
+
+Float_t nJetsnBs(float TNJets, float TNBtags)
+{
+  if (TNJets < 3)
+    return TNJets + TNJets*(TNJets-1)/2 + TNBtags;
+  else return 6;
+}
+
+
+
+
+
 #endif
