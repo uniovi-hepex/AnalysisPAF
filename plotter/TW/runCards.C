@@ -14,7 +14,7 @@ R__LOAD_LIBRARY(TW/AdditionalStuff.C+)
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle);
 
-TString pathToTree = "/pool/cienciasrw/userstorage/sscruz/TW/jul8/";
+TString pathToTree = "/pool/cienciasrw/userstorage/sscruz/TW/jul21/";
 
 TString NameOfTree = "MiniTree";
 

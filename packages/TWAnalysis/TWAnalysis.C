@@ -228,6 +228,7 @@ void TWAnalysis::InsideLoop(){
     TWeight_MistagDown =  NormWeight*ElecSF*MuonSF*TrigSF*PUSF     *  BtagSFMistagDown; 
 
 
+
     if(gIsData) TWeight = 1;
     // Event Selection
     // ===================================================================================================================
@@ -238,6 +239,14 @@ void TWAnalysis::InsideLoop(){
         FillHistos(gChannel, idilepton);
         FillDYHistos(gChannel);
       }
+
+      TLeadingLepPt     = selLeptons.at(0).p.Pt();
+      TLeadingLepEta    = selLeptons.at(0).p.Eta();
+      TDilepPt          = (selLeptons.at(0).p + selLeptons.at(1).p).Pt();
+      TSubLeadingLepPt  = selLeptons.at(1).p.Pt();
+      TSubLeadingLepEta = selLeptons.at(1).p.Eta();
+      TMll              = (selLeptons.at(0).p + selLeptons.at(1).p).M();
+
 
       if(TChannel == iElMu || (TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15)  ){ //  Z Veto in ee, µµ
         if(isSS) fHSSyields[gChannel][0] -> Fill(iZVeto, TWeight);
@@ -758,6 +767,17 @@ void TWAnalysis::SetTWVariables()
   fMini->Branch("TWeight_BtagUp"   ,     &TWeight_BtagUp     ,"TWeight_BtagUp/F"    );
   fMini->Branch("TWeight_BtagDown" ,     &TWeight_BtagDown   ,"TWeight_BtagDown/F"  );
   fMini->Branch("TLHEWeight",        TLHEWeight,         "TLHEWeight[254]/F");
+
+
+  fMini->Branch("TLeadingLepPt",         &TLeadingLepPt      , "TLeadingLepPt/F"    );
+  fMini->Branch("TLeadingLepEta",        &TLeadingLepEta     , "TLeadingLepEta/F"    );
+  fMini->Branch("TDilepPt"       ,       &TDilepPt           , "TDilepPt/F"         );
+  fMini->Branch("TSubLeadingLepPt",      &TSubLeadingLepPt      , "TSubLeadingLepPt/F"    );
+  fMini->Branch("TSubLeadingLepEta",     &TSubLeadingLepEta     , "TSubLeadingLepEta/F"    );
+  fMini->Branch("TMll"             ,     &TMll                  , "TMll/F"    );
+
+
+
 
 
   fMini1j1t->Branch("TWeight",      &TWeight,      "TWeight/F");

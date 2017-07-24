@@ -73,7 +73,6 @@ class TWAnalysis : public PAFChainItemSelector{
     Float_t  BtagSFMistagUp  ;
     Float_t  BtagSFMistagDown;
 
-    Float_t TDilepPt;
 
     Float_t TVetoJet1_Pt;
     Float_t TVetoJet1_Eta;
@@ -213,6 +212,13 @@ class TWAnalysis : public PAFChainItemSelector{
     Float_t   LeadingLeptEta_  ;    
     Float_t   jetPtSubLeading_ ;
     Float_t   jetEtaSubLeading_;
+
+    Float_t TLeadingLepPt    ;
+    Float_t TLeadingLepEta   ;
+    Float_t TDilepPt         ;
+    Float_t TSubLeadingLepPt ;
+    Float_t TSubLeadingLepEta;
+
 
 
     Float_t  DilepMETJetPt  , DilepMETJetPtJESUp  , DilepMETJetPtJESDown  , DilepMETJetPtJERUp  ;
