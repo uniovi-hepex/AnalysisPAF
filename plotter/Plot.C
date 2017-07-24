@@ -201,10 +201,11 @@ void Plot::AddSystematic(TString var, TString pr){
 
 void Plot::GroupSystematics(){
   VSumHistoSystUp.clear(); VSumHistoSystDown.clear();
-  TString var = "";
+  cout << "Entro en la funcioooooooooooon" << endl;
+  TString var = ""; TString pr = "";
   for(Int_t i = 0; i < (Int_t) VSystLabel.size(); i++){
     var = VSystLabel.at(i);
-    TString tag = var; TString name = "";
+    TString tag = var; TString name = ""; Bool_t exists = false;
     Histo* hsumSysUp = NULL; Histo* hsumSysDown = NULL; 
     if(gROOT->FindObject(tag + "_SystSumUp"))   delete gROOT->FindObject(tag + "_SystSumUp");
     if(gROOT->FindObject(tag + "_SystSumDown")) delete gROOT->FindObject(tag + "_SystSumDown");
@@ -216,17 +217,32 @@ void Plot::GroupSystematics(){
       hsumSysUp   = new Histo(TH1F(tag + "_SystSumUp",  tag + "_SystSumUp" ,   nb, vbins));
       hsumSysDown = new Histo(TH1F(tag + "_SystSumDown",tag + "_SystSumDown" , nb, vbins));
     }
-    for(Int_t i = 0; i < (Int_t) VSyst.size(); i++){
-      tag =  VSyst.at(i)->GetTag();
-      name = VSyst.at(i)->GetName();
+    for(Int_t k = 0; k < (Int_t) VSyst.size(); k++){
+      tag =  VSyst.at(k)->GetTag();
+      name = VSyst.at(k)->GetName();
+      pr   = VSyst.at(k)->GetProcess(); 
+      cout << "var = " << var << ", tag = " << tag << ", name = " << name << ", process = " << pr << endl;
       if(name.Contains("T2tt") || name.Contains("FastSim") || name.Contains("FullSim") ) continue;
       if(name.BeginsWith("S_")) continue;
-      if(tag.Contains(var+"Up") )   hsumSysUp  ->Add( VSyst.at(i));
-      if(tag.Contains(var+"Down")) hsumSysDown->Add( VSyst.at(i));
+      if(tag.Contains(var+"Up") )   hsumSysUp  ->Add( (Histo*)VSyst.at(k)->Clone(var+"Up_"+pr));
+      if(tag.Contains(var+"Down")) hsumSysDown->Add( (Histo*)VSyst.at(k)->Clone(var+"Down_"+pr));
+    }
+    for(Int_t j = 0; j < (Int_t) VTagProcesses.size(); j++){
+      exists = false;
+      for(Int_t k = 0; k < (Int_t) VSyst.size(); k++){
+        tag =  VSyst.at(k)->GetTag();
+        pr   = VSyst.at(k)->GetProcess(); 
+        if(pr == VTagProcesses.at(j) && tag.Contains(var)) exists = true;
+      }
+      if(!exists){
+        hsumSysUp  ->Add((Histo*) GetHisto(VTagProcesses.at(j))->Clone(var+"Up_"+pr));
+        hsumSysDown->Add((Histo*) GetHisto(VTagProcesses.at(j))->Clone(var+"Down_"+pr));
+      }
     }
     AddSumHistoSystematicUp(hsumSysUp);
     AddSumHistoSystematicDown(hsumSysDown);
   }
+  cout << "ACABO LA FUNCIONNNNN" << endl;
 }
 
 //================================================================================
