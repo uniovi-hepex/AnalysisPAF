@@ -221,22 +221,29 @@ void Plot::GroupSystematics(){
       tag =  VSyst.at(k)->GetTag();
       name = VSyst.at(k)->GetName();
       pr   = VSyst.at(k)->GetProcess(); 
-      cout << "var = " << var << ", tag = " << tag << ", name = " << name << ", process = " << pr << endl;
+      //cout << "var = " << var << ", tag = " << tag << ", name = " << name << ", process = " << pr << endl;
       if(name.Contains("T2tt") || name.Contains("FastSim") || name.Contains("FullSim") ) continue;
       if(name.BeginsWith("S_")) continue;
       if(tag.Contains(var+"Up") )   hsumSysUp  ->Add( (Histo*)VSyst.at(k)->Clone(var+"Up_"+pr));
       if(tag.Contains(var+"Down")) hsumSysDown->Add( (Histo*)VSyst.at(k)->Clone(var+"Down_"+pr));
     }
+    cout << " SYST: " << var << endl;
     for(Int_t j = 0; j < (Int_t) VTagProcesses.size(); j++){
+      if(j != 0){
+        cout << "probando..." << endl; 
+        if(VTagProcesses.at(j) == VTagProcesses.at(j-1)) continue; // Count each process only once
+      }
       exists = false;
+      cout << "Searching for process " << VTagProcesses.at(j) << "..." << endl;
       for(Int_t k = 0; k < (Int_t) VSyst.size(); k++){
         tag =  VSyst.at(k)->GetTag();
         pr   = VSyst.at(k)->GetProcess(); 
-        if(pr == VTagProcesses.at(j) && tag.Contains(var)) exists = true;
+        if(pr == VTagProcesses.at(j) && tag.Contains(var)){ exists = true; cout << " --> Found for process " << pr << endl;} 
       }
       if(!exists){
-        hsumSysUp  ->Add((Histo*) GetHisto(VTagProcesses.at(j))->Clone(var+"Up_"+pr));
-        hsumSysDown->Add((Histo*) GetHisto(VTagProcesses.at(j))->Clone(var+"Down_"+pr));
+        cout << "    --> No existe un syst " << var << " para el proceso " << VTagProcesses.at(j) << "!! Adding nominal... " << endl;
+        hsumSysUp  ->Add((Histo*) GetHisto(VTagProcesses.at(j))->Clone(var+"Up_"+VTagProcesses.at(j)));
+        hsumSysDown->Add((Histo*) GetHisto(VTagProcesses.at(j))->Clone(var+"Down_"+VTagProcesses.at(j)));
       }
     }
     AddSumHistoSystematicUp(hsumSysUp);
