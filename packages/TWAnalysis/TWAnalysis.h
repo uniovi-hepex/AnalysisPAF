@@ -38,7 +38,11 @@ class TWAnalysis : public PAFChainItemSelector{
     std::vector<Jet> vetoJets;
 
     TTree* fTree;
-    TTree* fTWTree;
+    TTree* fMini;
+    TTree* fMini1j1t;
+    TTree* fMini2j1t;
+
+    bool hasTW;
     Float_t TLHEWeight[254];
     void SetLeptonVariables();
     void SetJetVariables();

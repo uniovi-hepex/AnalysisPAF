@@ -48,6 +48,7 @@ public:
   std::vector<TString> VTagDataSamples;
   std::vector<TString> VTagProcesses;
   std::vector<TString> VTagOptions;
+  std::vector<TString> VBinLabels;
   Histo* hData = NULL;
   THStack* hStack = NULL;
   Histo* hAllBkg = NULL;
@@ -64,12 +65,12 @@ public:
   TString sys = "0";
   Float_t sys_lumi = 0.025;
 
-	Plot(){
-		plotFolder = DefaultPlotfolder; 
+  Plot(){
+    plotFolder = DefaultPlotfolder; 
     limitFolder = DefaultLimitFolder; 
     Lumi = DefaultLumi;
     nSignalSamples = 0;
-        }
+  }
   Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Double_t bin0 = 0, Double_t binN = 0, TString tit = "title", TString xtit = "VAR"){
     var    = variable;
     cut    = (cuts);
@@ -80,6 +81,7 @@ public:
     title = tit;
     xtitle = xtit;
     varname = variable; if(variable.Contains(" ")) TString(variable(0,variable.First(" ")));
+    f = 0;
 
     plotFolder = DefaultPlotfolder;
     limitFolder = DefaultLimitFolder; 
@@ -89,13 +91,14 @@ public:
     VSignalsErr = std::vector<Histo*>();
     VData = std::vector<Histo*>();
     VSyst = std::vector<Histo*>();
-		VSumHistoSystUp = std::vector<Histo*>();
-		VSumHistoSystDown =  std::vector<Histo*>();
+    VSumHistoSystUp = std::vector<Histo*>();
+    VSumHistoSystDown =  std::vector<Histo*>();
     VSystLabel = std::vector<TString>();
     VTagSamples = std::vector<TString>();
     VTagDataSamples = std::vector<TString>();
     VTagProcesses = std::vector<TString>();
     VTagOptions = std::vector<TString>();
+    VBinLabels  = std::vector<TString>();
     hData = NULL;
     hStack = NULL;
     hAllBkg = NULL;
@@ -109,10 +112,10 @@ public:
     TotalSysUp = NULL;
     TotalSysDown = NULL;
     nSignalSamples = 0;
-    fLegX1 = 0.70; 
-    fLegY1 = 0.65;
-    fLegX2 = 0.93; 
-    fLegY2 = 0.93;
+    fLegX1 = 0.66; 
+    fLegY1 = 0.42;
+    fLegX2 = 0.98; 
+    fLegY2 = 0.92;
     SignalDrawStyle = "hist";
   }
   Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Float_t* bins = 0, TString tit = "title", TString xtit = "VAR"){
@@ -125,7 +128,9 @@ public:
     vbins  = bins;
     title = tit;
     xtitle = xtit;
-    varname = variable; if(variable.Contains(" ")) TString(variable(0,variable.First(" ")));
+    f = 0;
+    varname = variable; if(variable.Contains(" ")) TString(variable(0,variable.First(" ")))
+						     ;
 
     plotFolder = DefaultPlotfolder;
     limitFolder = DefaultLimitFolder; 
@@ -142,6 +147,7 @@ public:
     VTagDataSamples = std::vector<TString>();
     VTagProcesses = std::vector<TString>();
     VTagOptions = std::vector<TString>();
+    VBinLabels  = std::vector<TString>();
     hData = NULL;
     hStack = NULL;
     hAllBkg = NULL;
@@ -163,30 +169,32 @@ public:
   }
 	
 	virtual ~Plot(){
-		//if(plot) delete plot;
-		//if(pratio) delete pratio;
-//		if(texlumi) delete texlumi;
-//		if(texcms) delete texcms;
-//		if(texchan) delete texchan;
-		VData.clear();
-		VBkgs.clear();
-		VSignals.clear();
-		VSignalsErr.clear();
-		VSyst.clear();
-		VSumHistoSystUp.clear();
-		VSumHistoSystDown.clear();
-		VSystLabel.clear();
-		VTagSamples.clear();
-		VTagDataSamples.clear();
-		VTagProcesses.clear();
-		if(hratio) delete hratio;
-		if(TotalSysUp) delete TotalSysUp;
-		if(TotalSysDown) delete TotalSysDown;
-    if(hData && doData) delete hData;
-    if(hStack) delete hStack;
-    if(hAllBkg) delete hAllBkg;
-};            // Destructor
-
+	  //if(plot) delete plot;
+	  //if(pratio) delete pratio;
+	  //		if(texlumi) delete texlumi;
+	  //		if(texcms) delete texcms;
+	  //		if(texchan) delete texchan;
+	  VData.clear();
+	  VBkgs.clear();
+	  VSignals.clear();
+	  VSignalsErr.clear();
+	  VSyst.clear();
+	  VSumHistoSystUp.clear();
+	  VSumHistoSystDown.clear();
+	  VSystLabel.clear();
+	  VTagSamples.clear();
+	  VTagDataSamples.clear();
+	  VTagProcesses.clear();
+	  if(hratio) delete hratio;
+	  if(TotalSysUp) delete TotalSysUp;
+	  if(TotalSysDown) delete TotalSysDown;
+	  if(hData && doData) delete hData;
+	  if(hStack) delete hStack;
+	  if(hAllBkg) delete hAllBkg;
+	  VBinLabels.clear();
+	  if(f)       delete f;
+	};            // Destructor
+	
 	void AddSample(TString p = "TTbar_Powheg", TString pr = "ttbar", Int_t type = -1, Int_t color = 0, TString tsys = "0", TString options = "");
 
 	// ######### Methods ########
@@ -315,6 +323,8 @@ protected:
   TString YieldsTableName = "yields";
   TString tableFormats = "%1.2f";
   TString gof = "";
+  
+  TFile *f;
 
   Int_t nSignalSamples;
   

@@ -64,14 +64,18 @@ void TWAnalysis::Initialise(){
   gIsTTbar     = false;
   gIsTW        = false;
   gIsLHE       = false;
+  cout << gSampleName << endl;
   if (gSampleName.Contains("TTbar") || gSampleName.Contains("TTJets")) gIsTTbar = true;
   if (gSampleName.Contains("TW")    || gSampleName.Contains("TbarW") ) gIsTW    = false;
-  if (gSampleName == "TTbar_Powheg")   gIsLHE = true;
+  if (gSampleName.Contains("TTbar_Powheg"))   gIsLHE = true;
 
   makeTree = true;
   makeHistos = true;
   if(makeTree){
-    fTree   = CreateTree("MiniTree","Created with PAF");
+    fTree       = CreateTree("MiniTree","Created with PAF");
+    fMini       = CreateTree("Mini"    , "MiniMiniTree");
+    fMini1j1t   = CreateTree("Mini1j1t", "MiniMiniTree");
+    fMini2j1t   = CreateTree("Mini2j1t", "MiniMiniTree");
     SetLeptonVariables();
     SetJetVariables();
     SetEventVariables();
@@ -94,6 +98,8 @@ void TWAnalysis::Initialise(){
 }
 
 void TWAnalysis::InsideLoop(){
+
+  
 
   ReSetTWVariables();
   // Vectors with the objects
@@ -161,7 +167,7 @@ void TWAnalysis::InsideLoop(){
   }
   //if((Int_t) genLeptons.size() >=2 && TNSelLeps >= 2 && passTrigger && passMETfilters){ // dilepton event, 2 leptons // && !isSS
   // if (gSelection == iTopSelec){
-  if (gIsTTbar && genLeptons.size() > 1 ) return; // Dilepton selection for ttbar!!!
+  if (gIsTTbar && genLeptons.size() < 2 ) return; // Dilepton selection for ttbar!!!
   // }
   // else if (gSelection == iTWSelec){
   //   if (gIsTW && genLeptons.size() < 2) return; // Dilepton selection for tw!!
@@ -272,50 +278,38 @@ void TWAnalysis::InsideLoop(){
 	  }
         }
       }
-      // DESCOMENTAR ESTO
-#ifndef doingTraining
-      if(TChannel == iElMu || ((TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15))){
-        if(TChannel == iElMu || TMET > 40){   // MET > 40 in ee, µµ
-          if (TNBtags > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0 || TNBtagsJERUp > 0) {
+      // Option 1: for signal extraction
+      if(TChannel == iElMu){
+	if (TNBtags > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0 || TNBtagsJERUp > 0) {
+	  CalculateTWVariables();
+	  fTree->Fill();
+	  // cout << "Filling " << TWeight << endl;
+	}
+      }
+      
+      // Option 2: for nB,nJets plot
+      if(TChannel == iElMu)
+	fMini->Fill();
+
+      // Option 3: for 1j1t plots
+      if(TChannel == iElMu){   // MET > 40 in ee, µµ
+	if (TNBtags == 1 || TNBtagsJESUp == 1 || TNBtagsJESDown == 1 || TNBtagsJERUp == 1) {
+	  if (TNJets == 1 || TNJetsJESUp == 1 || TNJetsJESDown == 1 || TNJetsJERUp == 1){
 	    CalculateTWVariables();
-	    // if (TNJets == 2 && TNBtags == 1 && TNJetsJESUp == 2 && TNBtagsJESUp == 1 && TNJetsJESDown == 2 && TNBtagsJESDown == 1){
-	      // if ( (BDT2j1t - BDT2j1tJESUp) * (BDT2j1t - BDT2j1tJESDown) > 0){
-	      // 	cout << "##########" << endl;
-	      // 	cout << "ERRORRRRR" << endl;
-	      // 	cout << "ERRORRRRR" << endl;
-	      // 	cout << "ERRORRRRR" << endl;
-	      // 	cout << "ERRORRRRR" << endl;
-	      // 	cout << "ERRORRRRR" << endl;
-	      // 	cout << "TBDT " << TBDT2j1t << " " << TBDT2j1tJESUp-TBDT2j1t << " " << TBDT2j1tJESDown-TBDT2j1t << endl;
-	      // 	cout << "jetPtSubLeading_ " <<jetPtSubLeading_ <<  " " << jetPtSubLeading_JESUp << " " << jetPtSubLeading_JESDown << endl;
-	      // 	cout << "##########" << endl;	      
-	      // 	cout << "##########" << endl;
-	      // }
-	      // cout << "##########" << endl;
-	      // cout << "TBDT " << TBDT2j1t << " " << TBDT2j1tJESUp-TBDT2j1t << " " << TBDT2j1tJESDown-TBDT2j1t << endl;
-	      // cout << "jetPtSubLeading_ " <<jetPtSubLeading_ <<  " " << jetPtSubLeading_JESUp << " " << jetPtSubLeading_JESDown << endl;
-	      // cout << "TDR_L1_J1        " <<TDR_L1_J1    	  <<  " " << TDR_L1_J1JESUp 	  << " " << TDR_L1_J1JESDown 	    << endl;
-	      // cout << "TDR_L1L2_J1J2    " <<TDR_L1L2_J1J2 	  <<  " " << TDR_L1L2_J1J2JESUp 	  << " " << TDR_L1L2_J1J2JESDown    << endl;
-	      // cout << "TDR_L1L2_J1J2MET " <<TDR_L1L2_J1J2MET <<  " " << TDR_L1L2_J1J2METJESUp << " " << TDR_L1L2_J1J2METJESDown << endl;
-	      // cout << "##########" << endl;
-
-	    // }
-	    fTree->Fill();
+	    fMini1j1t->Fill();
 	  }
-        }
+	}
       }
-#else
 
-      if (TNBtags == 1 && TNJets == 1 && TIsSS == 0){
-	CalculateTWVariables();
-	fTree->Fill();
+      // Option 4: for 2j1t plots
+      if(TChannel == iElMu){   // MET > 40 in ee, µµ
+	if (TNBtags == 1 || TNBtagsJESUp == 1 || TNBtagsJESDown == 1 || TNBtagsJERUp == 1) {
+	  if (TNJets == 2 || TNJetsJESUp == 2 || TNJetsJESDown == 2 || TNJetsJERUp == 2){
+	    CalculateTWVariables();
+	    fMini2j1t->Fill();
+	  }
+	}
       }
-#endif//
-      // if (TNBtags == 1 && TNJets == 2 && TIsSS == 0){
-      // 	cout << "Filling " << endl;
-      // 	CalculateTWVariables();
-      // 	fTree->Fill();
-      // }
 
     }
   }
@@ -470,6 +464,8 @@ void TWAnalysis::GetMET(){
 
     TGenMET     = Get<Float_t>("met_genPt");
   if(gIsLHE)  for(Int_t i = 0; i < Get<Int_t>("nLHEweight"); i++)   TLHEWeight[i] = Get<Float_t>("LHEweight_wgt", i);
+
+  cout << gIsLHE << " " << TLHEWeight[0] << endl;
 }
 
 void TWAnalysis::InitHistos(){
@@ -605,11 +601,15 @@ void TWAnalysis::FillHistos(Int_t ch, Int_t cut){
 }
 
 void TWAnalysis::SetLeptonVariables(){
+
+  
+
+
 #ifndef do2j1t
 #ifndef doingTraining
-  fTree->Branch("TNSelLeps",     &TNSelLeps,     "TNSelLeps/I");
-  fTree->Branch("TLep_Pt",     TLep_Pt,     "TLep_Pt[TNSelLeps]/F");
-  fTree->Branch("TLep_Eta",     TLep_Eta,     "TLep_Eta[TNSelLeps]/F");
+  // fTree->Branch("TNSelLeps",     &TNSelLeps,     "TNSelLeps/I");
+  // fTree->Branch("TLep_Pt",     TLep_Pt,     "TLep_Pt[TNSelLeps]/F");
+  // fTree->Branch("TLep_Eta",     TLep_Eta,     "TLep_Eta[TNSelLeps]/F");
   fTree->Branch("TChannel",      &TChannel,      "TChannel/I");
   fTree->Branch("TIsSS",      &TIsSS,      "TIsSS/B");
 #endif
@@ -619,12 +619,12 @@ void TWAnalysis::SetLeptonVariables(){
   // fTree->Branch("TNVetoLeps",     &TNVetoLeps,     "TNVetoLeps/I");
   // fTree->Branch("TMll",      &TMll,      "TMll/F");
 #else 
-  fTree->Branch("TNSelLeps",     &TNSelLeps,     "TNSelLeps/I");
-  fTree->Branch("TLep_Pt",     TLep_Pt,     "TLep_Pt[TNSelLeps]/F");
-  fTree->Branch("TLep_Eta",     TLep_Eta,     "TLep_Eta[TNSelLeps]/F");
-  fTree->Branch("TLep_Phi",     TLep_Phi,     "TLep_Phi[TNSelLeps]/F");
-  fTree->Branch("TLep_E" ,     TLep_E ,     "TLep_E[TNSelLeps]/F");
-  fTree->Branch("TLep_Charge",  TLep_Charge, "TLep_Charge[TNSelLeps]/F");
+  // fTree->Branch("TNSelLeps",     &TNSelLeps,     "TNSelLeps/I");
+  // fTree->Branch("TLep_Pt",     TLep_Pt,     "TLep_Pt[TNSelLeps]/F");
+  // fTree->Branch("TLep_Eta",     TLep_Eta,     "TLep_Eta[TNSelLeps]/F");
+  // fTree->Branch("TLep_Phi",     TLep_Phi,     "TLep_Phi[TNSelLeps]/F");
+  // fTree->Branch("TLep_E" ,     TLep_E ,     "TLep_E[TNSelLeps]/F");
+  // fTree->Branch("TLep_Charge",  TLep_Charge, "TLep_Charge[TNSelLeps]/F");
   fTree->Branch("TChannel",      &TChannel,      "TChannel/I");
 #endif
 }
@@ -636,7 +636,7 @@ void TWAnalysis::SetJetVariables(){
   fTree->Branch("TNBtags",       &TNBtags,     "TNBtags/I");
 #ifndef doingTraining
   fTree->Branch("TJet_Pt",           TJet_Pt,           "TJet_Pt[TNJets]/F");
-  fTree->Branch("TJet_Eta",           TJet_Eta,           "TJet_Eta[TNJets]/F");
+  // fTree->Branch("TJet_Eta",           TJet_Eta,           "TJet_Eta[TNJets]/F");
   
   fTree->Branch("TJet2_Pt"       ,           &TJet2_Pt       ,       "TJet2_Pt/F"       );
   fTree->Branch("TJet2_PtJESUp"  ,           &TJet2_PtJESUp  ,       "TJet2_PtJESUp/F"  );
@@ -673,11 +673,11 @@ void TWAnalysis::SetJetVariables(){
 
   fTree->Branch("TNJets"         , &TNJets         ,       "TNJets/I"                  );
   fTree->Branch("TNBtags"        , &TNBtags        ,       "TNBtags/I"                 );
-  fTree->Branch("TJet_isBJet"    ,  TJet_isBJet    ,       "TJet_isBJet[TNJets]/I"     );
-  fTree->Branch("TJet_Pt"        ,  TJet_Pt        ,       "TJet_Pt[TNJets]/F"         );
-  fTree->Branch("TJet_Eta"       ,  TJet_Eta       ,       "TJet_Eta[TNJets]/F"        );
-  fTree->Branch("TJet_Phi"       ,  TJet_Phi       ,       "TJet_Phi[TNJets]/F"        );
-  fTree->Branch("TJet_E"         ,  TJet_E         ,       "TJet_E[TNJets]/F"          );
+  // fTree->Branch("TJet_isBJet"    ,  TJet_isBJet    ,       "TJet_isBJet[TNJets]/I"     );
+  // fTree->Branch("TJet_Pt"        ,  TJet_Pt        ,       "TJet_Pt[TNJets]/F"         );
+  // fTree->Branch("TJet_Eta"       ,  TJet_Eta       ,       "TJet_Eta[TNJets]/F"        );
+  // fTree->Branch("TJet_Phi"       ,  TJet_Phi       ,       "TJet_Phi[TNJets]/F"        );
+  // fTree->Branch("TJet_E"         ,  TJet_E         ,       "TJet_E[TNJets]/F"          );
   // fTree->Branch("TNVetoJets"     , &TNVetoJets     ,       "TNVetoJets/I"              );
   // fTree->Branch("TVetoJet_isBJet",  TVetoJet_isBJet,       "TVetoJet_isBJet[TNJets]/I" );
   // fTree->Branch("TVetoJet_Pt"    ,  TVetoJet_Pt    ,       "TVetoJet_Pt[TNJets]/F"     );
@@ -685,7 +685,7 @@ void TWAnalysis::SetJetVariables(){
   // fTree->Branch("TVetoJet_Phi"   ,  TVetoJet_Phi   ,       "TVetoJet_Phi[TNJets]/F"    );
   // fTree->Branch("TVetoJet_E"     ,  TVetoJet_E     ,       "TVetoJet_E[TNJets]/F"      );
 
-  fTree->Branch("THT"            ,          &THT   ,       "THT/F"                     );
+  // fTree->Branch("THT"            ,          &THT   ,       "THT/F"                     );
 
 
 #endif
@@ -723,8 +723,8 @@ void TWAnalysis::SetEventVariables(){
 #else 
   fTree->Branch("TWeight",      &TWeight,      "TWeight/F");
 
-  fTree->Branch("TMET",         &TMET,         "TMET/F");
-  fTree->Branch("TMET_Phi",     &TMET_Phi,     "TMET_Phi/F");
+  // fTree->Branch("TMET",         &TMET,         "TMET/F");
+  // fTree->Branch("TMET_Phi",     &TMET_Phi,     "TMET_Phi/F");
 
 
 #endif
@@ -733,31 +733,164 @@ void TWAnalysis::SetEventVariables(){
 
 void TWAnalysis::SetTWVariables()
 {
-  // fTree->Branch("Lep1METJetPt"    , &Lep1METJetPt   , "Lep1METJetPt/F"   );
-  // fTree->Branch("DPtDilep_JetMET" , &DPtDilep_JetMET, "DPtDilep_JetMET/F");
-  // fTree->Branch("DPtDilep_MET"    , &DPtDilep_MET   , "DPtDilep_MET/F"   );
-  // fTree->Branch("DPtLep1_MET"     , &DPtLep1_MET    , "DPtLep1_MET/F"    ); 
-  // fTree->Branch("TJet2csv"        , &TJet2csv       , "TJet2csv/F"       );
-  // fTree->Branch("DR_j_bllmet", &DR_j_bllmet , "DR_j_bllmet/F" );
-  // fTree->Branch("M_l1_j"     , &M_l1_j      , "M_l1_j/F"      );
-  // fTree->Branch("M_l2_j"     , &M_l2_j      , "M_l2_j/F"      );
-  // fTree->Branch("JetPt "     , &JetPt       , "JetPt/F"       );
-  // fTree->Branch("BPt"        , &BPt         , "BPt/F"         );
-  // fTree->Branch("DR_j_b"     , &DR_j_b      , "DR_j_b/F"      );
+  fMini->Branch("TChannel"     , &TChannel     , "TChannel/I"      );
+  fMini->Branch("TIsSS"        , &TIsSS        , "TIsSS/B"         );
+  fMini->Branch("TNJets"       , &TNJets       , "TNJets/I"        );
+  fMini->Branch("TNJetsJESUp"  , &TNJetsJESUp  , "TNJetsJESUp/I"   );
+  fMini->Branch("TNJetsJESDown", &TNJetsJESDown, "TNJetsJESDown/I" );
+  fMini->Branch("TNBtags"       , &TNBtags       , "TNBtags/I"        );
+  fMini->Branch("TNBtagsJESUp"  , &TNBtagsJESUp  , "TNBtagsJESUp/I"   );
+  fMini->Branch("TNBtagsJESDown", &TNBtagsJESDown, "TNBtagsJESDown/I" );
 
-  // for signal extraction
+  fMini->Branch("TWeight",      &TWeight,      "TWeight/F");
+  fMini->Branch("TWeight_LepEffUp",      &TWeight_LepEffUp,      "TWeight_LepEffUp/F");
+  fMini->Branch("TWeight_LepEffDown",    &TWeight_LepEffDown,    "TWeight_LepEffDown/F");
+  fMini->Branch("TWeight_ElecEffUp",     &TWeight_ElecEffUp,      "TWeight_ElecEffUp/F");
+  fMini->Branch("TWeight_ElecEffDown",   &TWeight_ElecEffDown,    "TWeight_ElecEffDown/F");
+  fMini->Branch("TWeight_MuonEffUp",     &TWeight_MuonEffUp,      "TWeight_MuonEffUp/F");
+  fMini->Branch("TWeight_MuonEffDown",   &TWeight_MuonEffDown,    "TWeight_MuonEffDown/F");
+  fMini->Branch("TWeight_TrigUp",        &TWeight_TrigUp,        "TWeight_TrigUp/F");
+  fMini->Branch("TWeight_TrigDown",      &TWeight_TrigDown,      "TWeight_TrigDown/F");
+  fMini->Branch("TWeight_PUUp",          &TWeight_PUUp,        "TWeight_PUUp/F");
+  fMini->Branch("TWeight_PUDown",        &TWeight_PUDown     ,        "TWeight_PUDown/F");
+  fMini->Branch("TWeight_MistagUp"   ,   &TWeight_MistagUp   ,"TWeight_MistagUp/F"  );
+  fMini->Branch("TWeight_MistagDown" ,   &TWeight_MistagDown ,"TWeight_MistagDown/F");
+  fMini->Branch("TWeight_BtagUp"   ,     &TWeight_BtagUp     ,"TWeight_BtagUp/F"    );
+  fMini->Branch("TWeight_BtagDown" ,     &TWeight_BtagDown   ,"TWeight_BtagDown/F"  );
+  fMini->Branch("TLHEWeight",        TLHEWeight,         "TLHEWeight[254]/F");
+
+
+  fMini1j1t->Branch("TWeight",      &TWeight,      "TWeight/F");
+  fMini1j1t->Branch("TWeight_LepEffUp",      &TWeight_LepEffUp,      "TWeight_LepEffUp/F");
+  fMini1j1t->Branch("TWeight_LepEffDown",    &TWeight_LepEffDown,    "TWeight_LepEffDown/F");
+  fMini1j1t->Branch("TWeight_ElecEffUp",     &TWeight_ElecEffUp,      "TWeight_ElecEffUp/F");
+  fMini1j1t->Branch("TWeight_ElecEffDown",   &TWeight_ElecEffDown,    "TWeight_ElecEffDown/F");
+  fMini1j1t->Branch("TWeight_MuonEffUp",     &TWeight_MuonEffUp,      "TWeight_MuonEffUp/F");
+  fMini1j1t->Branch("TWeight_MuonEffDown",   &TWeight_MuonEffDown,    "TWeight_MuonEffDown/F");
+  fMini1j1t->Branch("TWeight_TrigUp",        &TWeight_TrigUp,        "TWeight_TrigUp/F");
+  fMini1j1t->Branch("TWeight_TrigDown",      &TWeight_TrigDown,      "TWeight_TrigDown/F");
+  fMini1j1t->Branch("TWeight_PUUp",          &TWeight_PUUp,        "TWeight_PUUp/F");
+  fMini1j1t->Branch("TWeight_PUDown",        &TWeight_PUDown     ,        "TWeight_PUDown/F");
+  fMini1j1t->Branch("TWeight_MistagUp"   ,   &TWeight_MistagUp   ,"TWeight_MistagUp/F"  );
+  fMini1j1t->Branch("TWeight_MistagDown" ,   &TWeight_MistagDown ,"TWeight_MistagDown/F");
+  fMini1j1t->Branch("TWeight_BtagUp"   ,     &TWeight_BtagUp     ,"TWeight_BtagUp/F"    );
+  fMini1j1t->Branch("TWeight_BtagDown" ,     &TWeight_BtagDown   ,"TWeight_BtagDown/F"  );
+  fMini1j1t->Branch("TLHEWeight",        TLHEWeight,         "TLHEWeight[254]/F");
+  fMini1j1t->Branch("TNJets"       , &TNJets       , "TNJets/I"        );
+  fMini1j1t->Branch("TNJetsJESUp"  , &TNJetsJESUp  , "TNJetsJESUp/I"   );
+  fMini1j1t->Branch("TNJetsJESDown", &TNJetsJESDown, "TNJetsJESDown/I" );
+  fMini1j1t->Branch("TNBtags"       , &TNBtags       , "TNBtags/I"        );
+  fMini1j1t->Branch("TNBtagsJESUp"  , &TNBtagsJESUp  , "TNBtagsJESUp/I"   );
+  fMini1j1t->Branch("TNBtagsJESDown", &TNBtagsJESDown, "TNBtagsJESDown/I" );
+
+  fMini1j1t->Branch("TnLooseCentral"        , &nLooseCentral      , "TnLooseCentral/F"       );
+  fMini1j1t->Branch("TnBTotal"              , &nBTotal            , "TnBTotal/F"             );
+  fMini1j1t->Branch("TDilepMETJetPt"        , &DilepMETJetPt      , "TDilepMETJetPt/F"       );
+  fMini1j1t->Branch("TTHTtot"               , &THTtot             , "TTHTtot/F"              );
+  fMini1j1t->Branch("TTJet1_pt"             , &TJet1_pt           , "TTJet1_pt/F"            );
+  fMini1j1t->Branch("TTJetLooseCentralpt"   , &TJetLooseCentralpt , "TTJetLooseCentralpt/F"  );
+  fMini1j1t->Branch("TDilepMETJetPt_THTtot" , &DilepmetjetOverHT  , "TDilepMETJetPt_THTtot/F");
+  fMini1j1t->Branch("TMSys"                 , &MSys               , "TMSys/F"                );
+  fMini1j1t->Branch("TC_jll"                , &C_jll              , "TC_jll/F"               );
+  fMini1j1t->Branch("THTLepOverHT"          , &HTLepOverHT        , "THTLepOverHT/F"         );
+  fMini1j1t->Branch("TDilepJetPt"           , &DilepJetPt         , "TDilepJetPt/F"          );
+
+  fMini1j1t->Branch("TnLooseCentralJESUp"        , &nLooseCentralJESUp      , "TnLooseCentralJESUp/F"       );
+  fMini1j1t->Branch("TnBTotalJESUp"              , &nBTotalJESUp            , "TnBTotalJESUp/F"             );
+  fMini1j1t->Branch("TDilepMETJetPtJESUp"        , &DilepMETJetPtJESUp      , "TDilepMETJetPtJESUp/F"       );
+  fMini1j1t->Branch("TTHTtotJESUp"               , &THTtotJESUp             , "TTHTtotJESUp/F"              );
+  fMini1j1t->Branch("TTJet1_ptJESUp"             , &TJet1_ptJESUp           , "TTJet1_ptJESUp/F"            );
+  fMini1j1t->Branch("TTJetLooseCentralptJESUp"   , &TJetLooseCentralptJESUp , "TTJetLooseCentralptJESUp/F"  );
+  fMini1j1t->Branch("TDilepMETJetPt_THTtotJESUp" , &DilepmetjetOverHTJESUp  , "TDilepMETJetPt_THTtotJESUp/F");
+  fMini1j1t->Branch("TMSys"                      , &MSysJESUp               , "TMSysJESUp/F"                );
+  fMini1j1t->Branch("TC_jllJESUp"                , &C_jllJESUp              , "TC_jllJESUp/F"               );
+  fMini1j1t->Branch("THTLepOverHTJESUp"          , &HTLepOverHTJESUp        , "THTLepOverHTJESUp/F"         );
+  fMini1j1t->Branch("TDilepJetPtJESUp"           , &DilepJetPtJESUp         , "TDilepJetPtJESUp/F"          );
+
+
+  fMini1j1t->Branch("TnLooseCentralJESDown"        , &nLooseCentralJESDown      , "TnLooseCentralJESDown/F"       );
+  fMini1j1t->Branch("TnBTotalJESDown"              , &nBTotalJESDown            , "TnBTotalJESDown/F"             );
+  fMini1j1t->Branch("TDilepMETJetPtJESDown"        , &DilepMETJetPtJESDown      , "TDilepMETJetPtJESDown/F"       );
+  fMini1j1t->Branch("TTHTtotJESDown"               , &THTtotJESDown             , "TTHTtotJESDown/F"              );
+  fMini1j1t->Branch("TTJet1_ptJESDown"             , &TJet1_ptJESDown           , "TTJet1_ptJESDown/F"            );
+  fMini1j1t->Branch("TTJetLooseCentralptJESDown"   , &TJetLooseCentralptJESDown , "TTJetLooseCentralptJESDown/F"  );
+  fMini1j1t->Branch("TDilepMETJetPt_THTtotJESDown" , &DilepmetjetOverHTJESDown  , "TDilepMETJetPt_THTtotJESDown/F");
+  fMini1j1t->Branch("TMSys"                      , &MSysJESDown               , "TMSysJESDown/F"                );
+  fMini1j1t->Branch("TC_jllJESDown"                , &C_jllJESDown              , "TC_jllJESDown/F"               );
+  fMini1j1t->Branch("THTLepOverHTJESDown"          , &HTLepOverHTJESDown        , "THTLepOverHTJESDown/F"         );
+  fMini1j1t->Branch("TDilepJetPtJESDown"           , &DilepJetPtJESDown         , "TDilepJetPtJESDown/F"          );
+
+
+  fMini1j1t->Branch("TnLooseCentralJERUp"        , &nLooseCentralJERUp      , "TnLooseCentralJERUp/F"       );
+  fMini1j1t->Branch("TnBTotalJERUp"              , &nBTotalJERUp            , "TnBTotalJERUp/F"             );
+  fMini1j1t->Branch("TDilepMETJetPtJERUp"        , &DilepMETJetPtJERUp      , "TDilepMETJetPtJERUp/F"       );
+  fMini1j1t->Branch("TTHTtotJERUp"               , &THTtotJERUp             , "TTHTtotJERUp/F"              );
+  fMini1j1t->Branch("TTJet1_ptJERUp"             , &TJet1_ptJERUp           , "TTJet1_ptJERUp/F"            );
+  fMini1j1t->Branch("TTJetLooseCentralptJERUp"   , &TJetLooseCentralptJERUp , "TTJetLooseCentralptJERUp/F"  );
+  fMini1j1t->Branch("TDilepMETJetPt_THTtotJERUp" , &DilepmetjetOverHTJERUp  , "TDilepMETJetPt_THTtotJERUp/F");
+  fMini1j1t->Branch("TMSys"                      , &MSysJERUp               , "TMSysJERUp/F"                );
+  fMini1j1t->Branch("TC_jllJERUp"                , &C_jllJERUp              , "TC_jllJERUp/F"               );
+  fMini1j1t->Branch("THTLepOverHTJERUp"          , &HTLepOverHTJERUp        , "THTLepOverHTJERUp/F"         );
+  fMini1j1t->Branch("TDilepJetPtJERUp"           , &DilepJetPtJERUp         , "TDilepJetPtJERUp/F"          );
+
+
+
+
+  fMini2j1t->Branch("TWeight",      &TWeight,      "TWeight/F");
+  fMini2j1t->Branch("TWeight_LepEffUp",      &TWeight_LepEffUp,      "TWeight_LepEffUp/F");
+  fMini2j1t->Branch("TWeight_LepEffDown",    &TWeight_LepEffDown,    "TWeight_LepEffDown/F");
+  fMini2j1t->Branch("TWeight_ElecEffUp",     &TWeight_ElecEffUp,      "TWeight_ElecEffUp/F");
+  fMini2j1t->Branch("TWeight_ElecEffDown",   &TWeight_ElecEffDown,    "TWeight_ElecEffDown/F");
+  fMini2j1t->Branch("TWeight_MuonEffUp",     &TWeight_MuonEffUp,      "TWeight_MuonEffUp/F");
+  fMini2j1t->Branch("TWeight_MuonEffDown",   &TWeight_MuonEffDown,    "TWeight_MuonEffDown/F");
+  fMini2j1t->Branch("TWeight_TrigUp",        &TWeight_TrigUp,        "TWeight_TrigUp/F");
+  fMini2j1t->Branch("TWeight_TrigDown",      &TWeight_TrigDown,      "TWeight_TrigDown/F");
+  fMini2j1t->Branch("TWeight_PUUp",          &TWeight_PUUp,        "TWeight_PUUp/F");
+  fMini2j1t->Branch("TWeight_PUDown",        &TWeight_PUDown     ,        "TWeight_PUDown/F");
+  fMini2j1t->Branch("TWeight_MistagUp"   ,   &TWeight_MistagUp   ,"TWeight_MistagUp/F"  );
+  fMini2j1t->Branch("TWeight_MistagDown" ,   &TWeight_MistagDown ,"TWeight_MistagDown/F");
+  fMini2j1t->Branch("TWeight_BtagUp"   ,     &TWeight_BtagUp     ,"TWeight_BtagUp/F"    );
+  fMini2j1t->Branch("TWeight_BtagDown" ,     &TWeight_BtagDown   ,"TWeight_BtagDown/F"  );
+  fMini2j1t->Branch("TLHEWeight",        TLHEWeight,         "TLHEWeight[254]/F");
+  fMini2j1t->Branch("TNJets"       , &TNJets       , "TNJets/I"        );
+  fMini2j1t->Branch("TNJetsJESUp"  , &TNJetsJESUp  , "TNJetsJESUp/I"   );
+  fMini2j1t->Branch("TNJetsJESDown", &TNJetsJESDown, "TNJetsJESDown/I" );
+  fMini2j1t->Branch("TNBtags"       , &TNBtags       , "TNBtags/I"        );
+  fMini2j1t->Branch("TNBtagsJESUp"  , &TNBtagsJESUp  , "TNBtagsJESUp/I"   );
+  fMini2j1t->Branch("TNBtagsJESDown", &TNBtagsJESDown, "TNBtagsJESDown/I" );
+
+  fMini2j1t->Branch( "TjetPtSubLeading_"  , &jetPtSubLeading_ , "jetPtSubLeading_/F");
+  fMini2j1t->Branch( "TDR_L1_J1"       	, &TDR_L1_J1        , "TDR_L1_J1/F");     
+  fMini2j1t->Branch( "TDR_L1L2_J1J2"      , &TDR_L1L2_J1J2    , "TDR_L1L2_J1J2/F");
+  fMini2j1t->Branch( "TDR_L1L2_J1J2MET"   , &TDR_L1L2_J1J2MET , "TDR_L1L2_J1J2MET/F");
+
+  fMini2j1t->Branch( "TjetPtSubLeading_JESUp"   , &jetPtSubLeading_JESUp , "jetPtSubLeading_JESUp/F");
+  fMini2j1t->Branch( "TDR_L1_J1JESUp"       	, &TDR_L1_J1JESUp        , "TDR_L1_J1JESUp/F");     
+  fMini2j1t->Branch( "TDR_L1L2_J1J2JESUp"       , &TDR_L1L2_J1J2JESUp    , "TDR_L1L2_J1J2JESUp/F");
+  fMini2j1t->Branch( "TDR_L1L2_J1J2METJESUp"    , &TDR_L1L2_J1J2METJESUp , "TDR_L1L2_J1J2METJESUp/F");
+
+  fMini2j1t->Branch( "TjetPtSubLeading_JESDown"   , &jetPtSubLeading_JESDown , "jetPtSubLeading_JESDown/F");
+  fMini2j1t->Branch( "TDR_L1_J1JESDown"       	, &TDR_L1_J1JESDown        , "TDR_L1_J1JESDown/F");     
+  fMini2j1t->Branch( "TDR_L1L2_J1J2JESDown"       , &TDR_L1L2_J1J2JESDown    , "TDR_L1L2_J1J2JESDown/F");
+  fMini2j1t->Branch( "TDR_L1L2_J1J2METJESDown"    , &TDR_L1L2_J1J2METJESDown , "TDR_L1L2_J1J2METJESDown/F");
+
+  fMini2j1t->Branch( "TjetPtSubLeading_JERUp"   , &jetPtSubLeading_JERUp , "jetPtSubLeading_JERUp/F");
+  fMini2j1t->Branch( "TDR_L1_J1JERUp"       	, &TDR_L1_J1JERUp        , "TDR_L1_J1JERUp/F");     
+  fMini2j1t->Branch( "TDR_L1L2_J1J2JERUp"       , &TDR_L1L2_J1J2JERUp    , "TDR_L1L2_J1J2JERUp/F");
+  fMini2j1t->Branch( "TDR_L1L2_J1J2METJERUp"    , &TDR_L1L2_J1J2METJERUp , "TDR_L1L2_J1J2METJERUp/F");
+ 
 
 #ifndef do2j1t
 
 #ifndef doingTraining
-  fTree->Branch("TBDTada"             , &TBDTada            , "TBDTada/F"        );
-  fTree->Branch("TBDTadaJESUp"        , &TBDTadaJESUp       , "TBDTadaJESUp/F"   );
-  fTree->Branch("TBDTadaJESDown"      , &TBDTadaJESDown     , "TBDTadaJESDown/F" );
-  fTree->Branch("TBDTJadaERUp"        , &TBDTadaJERUp         , "TBDTadaJERUp/F"   );
-  fTree->Branch("TBDTgrad"            , &TBDTgrad           , "TBDTgrad/F"       );
-  fTree->Branch("TBDTgradJESUp"       , &TBDTgradJESUp      , "TBDTgradJESUp/F"  );
-  fTree->Branch("TBDTgradJESDown"     , &TBDTgradJESDown    , "TBDTgradJESDown/F");
-  fTree->Branch("TBDTgradJERUp"       , &TBDTgradJERUp        , "TBDTgradJERUp/F"  );
+  // fTree->Branch("TBDTada"             , &TBDTada            , "TBDTada/F"        );
+  // fTree->Branch("TBDTadaJESUp"        , &TBDTadaJESUp       , "TBDTadaJESUp/F"   );
+  // fTree->Branch("TBDTadaJESDown"      , &TBDTadaJESDown     , "TBDTadaJESDown/F" );
+  // fTree->Branch("TBDTJadaERUp"        , &TBDTadaJERUp         , "TBDTadaJERUp/F"   );
+  // fTree->Branch("TBDTgrad"            , &TBDTgrad           , "TBDTgrad/F"       );
+  // fTree->Branch("TBDTgradJESUp"       , &TBDTgradJESUp      , "TBDTgradJESUp/F"  );
+  // fTree->Branch("TBDTgradJESDown"     , &TBDTgradJESDown    , "TBDTgradJESDown/F");
+  // fTree->Branch("TBDTgradJERUp"       , &TBDTgradJERUp        , "TBDTgradJERUp/F"  );
   fTree->Branch("TBDT"                , &TBDT               , "TBDT/F"           );
   fTree->Branch("TBDTJESUp"           , &TBDTJESUp          , "TBDTJESUp/F"      );
   fTree->Branch("TBDTJESDown"         , &TBDTJESDown        , "TBDTJESDown/F"    );
@@ -765,43 +898,43 @@ void TWAnalysis::SetTWVariables()
 #endif
   //fTree->Branch("TBDTJER"         , &TBDTJER        , "TBDTJER/F"        );
   // for bdt training
-  fTree->Branch("DilepMETJetPt"   , &DilepMETJetPt  , "DilepMETJetPt/F"  );
-  fTree->Branch("DilepMETJet1Pz"  , &DilepMETJet1Pz , "DilepMETJet1Pz/F" );
-  fTree->Branch("nLooseCentral"   , &nLooseCentral  , "nLooseCentral/F"  );
-  fTree->Branch("nLooseFwd"       , &nLooseFwd      , "nLooseFwd/F"      );
-  fTree->Branch("nBTotal"         , &nBTotal        , "nBTotal/F"        );
-  fTree->Branch("MSys"            , &MSys           , "MSys/F"           );
-  fTree->Branch("TJetLoosept"     , &TJetLoosept    , "TJetLoosept/F"    ); // loose jet pt
-  fTree->Branch("TJetLooseCentralpt"     , &TJetLooseCentralpt    , "TJetLooseCentralpt/F"    ); // loose jet pt
-  fTree->Branch("C_jll"           , &C_jll          , "C_jll/F"          );
-  fTree->Branch("DilepJetPt"      , &DilepJetPt     , "DilepJetPt/F"     );
-  fTree->Branch("TJet1_pt"        , &TJet1_pt       , "TJet1_pt/F"       );
-  fTree->Branch("HTLepOverHT"     , &HTLepOverHT    , "HTLepOverHT/F"    );
-  fTree->Branch("THTtot"          , &THTtot         , "THTtot/F"         );
-  fTree->Branch("TDilepPt"        , &TDilepPt       , "TDilepPt/F"       );
-  fTree->Branch("THTtot2j"        , &THTtot2j       , "THTtot2j/F"       );
+  // fTree->Branch("DilepMETJetPt"   , &DilepMETJetPt  , "DilepMETJetPt/F"  );
+  // fTree->Branch("DilepMETJet1Pz"  , &DilepMETJet1Pz , "DilepMETJet1Pz/F" );
+  // fTree->Branch("nLooseCentral"   , &nLooseCentral  , "nLooseCentral/F"  );
+  // fTree->Branch("nLooseFwd"       , &nLooseFwd      , "nLooseFwd/F"      );
+  // fTree->Branch("nBTotal"         , &nBTotal        , "nBTotal/F"        );
+  // fTree->Branch("MSys"            , &MSys           , "MSys/F"           );
+  // fTree->Branch("TJetLoosept"     , &TJetLoosept    , "TJetLoosept/F"    ); // loose jet pt
+  // fTree->Branch("TJetLooseCentralpt"     , &TJetLooseCentralpt    , "TJetLooseCentralpt/F"    ); // loose jet pt
+  // fTree->Branch("C_jll"           , &C_jll          , "C_jll/F"          );
+  // fTree->Branch("DilepJetPt"      , &DilepJetPt     , "DilepJetPt/F"     );
+  // fTree->Branch("TJet1_pt"        , &TJet1_pt       , "TJet1_pt/F"       );
+  // fTree->Branch("HTLepOverHT"     , &HTLepOverHT    , "HTLepOverHT/F"    );
+  // fTree->Branch("THTtot"          , &THTtot         , "THTtot/F"         );
+  // fTree->Branch("TDilepPt"        , &TDilepPt       , "TDilepPt/F"       );
+  // fTree->Branch("THTtot2j"        , &THTtot2j       , "THTtot2j/F"       );
   // fTree->Branch("nBLooseCentral"  , &nBLooseCentral , "nBLooseCentral/F" );
   // fTree->Branch("nBLooseFwd"      , &nBLooseFwd     , "nBLooseFwd/F"     );
 
   // 2j1t
 #ifndef doingTraining
-  fTree->Branch("TDilepMETPt"    ,  &TDilepMETPt     , "TDilepMETPt/F");
-  fTree->Branch("TETSys"         ,  &TETSys          , "TETSys/F");
-  fTree->Branch("TET_LLJetMET"   ,  &TET_LLJetMET    , "TET_LLJetMET/F");
-  fTree->Branch("TDPtL1_L2"      ,  &TDPtL1_L2       , "TDPtL1_L2/F");
-  fTree->Branch("TDPtJ2_L2"      ,  &TDPtJ2_L2       , "TDPtJ2_L2/F");
-  fTree->Branch("TDR_L1_J1"      ,  &TDR_L1_J1       , "TDR_L1_J1/F");
-  fTree->Branch("TDR_L1L2_J1J2"  ,  &TDR_L1L2_J1J2   , "TDR_L1L2_J1J2/F");
-  fTree->Branch("TDR_L1L2_J1J2MET" , &TDR_L1L2_J1J2MET, "TDR_L1L2_J1J2MET/F");
-  fTree->Branch("THtRejJ2"       , &THtRejJ2         , "THtRejJ2/F");
+  // fTree->Branch("TDilepMETPt"    ,  &TDilepMETPt     , "TDilepMETPt/F");
+  // fTree->Branch("TETSys"         ,  &TETSys          , "TETSys/F");
+  // fTree->Branch("TET_LLJetMET"   ,  &TET_LLJetMET    , "TET_LLJetMET/F");
+  // fTree->Branch("TDPtL1_L2"      ,  &TDPtL1_L2       , "TDPtL1_L2/F");
+  // fTree->Branch("TDPtJ2_L2"      ,  &TDPtJ2_L2       , "TDPtJ2_L2/F");
+  // fTree->Branch("TDR_L1_J1"      ,  &TDR_L1_J1       , "TDR_L1_J1/F");
+  // fTree->Branch("TDR_L1L2_J1J2"  ,  &TDR_L1L2_J1J2   , "TDR_L1L2_J1J2/F");
+  // fTree->Branch("TDR_L1L2_J1J2MET" , &TDR_L1L2_J1J2MET, "TDR_L1L2_J1J2MET/F");
+  // fTree->Branch("THtRejJ2"       , &THtRejJ2         , "THtRejJ2/F");
   // fTree->Branch("TBDT2j1tv1"     , &TBDT2j1tv1       , "TBDT2j1tv1/F");
   // fTree->Branch("TBDT2j1tv2"     , &TBDT2j1tv2       , "TBDT2j1tv2/F");
   // fTree->Branch("TBDT2j1tv3"     , &TBDT2j1tv3       , "TBDT2j1tv3/F");
   fTree->Branch("TBDT2j1tJESUp"  , &TBDT2j1tJESUp    , "TBDT2j1tJESUp/F");
   fTree->Branch("TBDT2j1tJESDown", &TBDT2j1tJESDown  , "TBDT2j1tJESDown/F");
   fTree->Branch("TBDT2j1tJERUp"    , &TBDT2j1tJERUp      , "TBDT2j1tJERUp/F");
-  fTree->Branch("TBDT2j1t_DR" ,  &TBDT2j1t_DR   , "TBDT2j1t_DR/F");
-  fTree->Branch("TBDT2j1t_ot" ,  &TBDT2j1t_ot   , "TBDT2j1t_ot/F");
+  // fTree->Branch("TBDT2j1t_DR" ,  &TBDT2j1t_DR   , "TBDT2j1t_DR/F");
+  // fTree->Branch("TBDT2j1t_ot" ,  &TBDT2j1t_ot   , "TBDT2j1t_ot/F");
   
 
 #endif
@@ -813,6 +946,7 @@ void TWAnalysis::SetTWVariables()
 
 void TWAnalysis::ReSetTWVariables()
 {
+  hasTW = false;
 
   DilepMETJetPt  = -99;
   Lep1METJetPt   = -99;
@@ -845,6 +979,8 @@ void TWAnalysis::ReSetTWVariables()
 
 void TWAnalysis::CalculateTWVariables()
 {
+  if (hasTW) return;
+  hasTW = true;
 
   get20Jets();
   if (TNJets == 1 && TNBtags == 1){
@@ -2167,9 +2303,9 @@ void TWAnalysis::setTWBDT()
 
   BDT2j1tJESUp = new TMVA::Reader();
   BDT2j1tJESUp->AddVariable("jetPtSubLeading_"       , &jetPtSubLeading_JESUp  );
-  BDT2j1tJESUp->AddVariable("deltaRL1_J1_"	     , &TDR_L1_J1JESUp );
-  BDT2j1tJESUp->AddVariable("deltaRL1L2_J1J2_"       , &TDR_L1L2_J1J2JESUp );
-  BDT2j1tJESUp->AddVariable("deltaRL1L2_metJ1J2_"    , &TDR_L1L2_J1J2METJESUp );
+  BDT2j1tJESUp->AddVariable("deltaRL1_J1_"	     , &TDR_L1_J1JESUp         );
+  BDT2j1tJESUp->AddVariable("deltaRL1L2_J1J2_"       , &TDR_L1L2_J1J2JESUp     );
+  BDT2j1tJESUp->AddVariable("deltaRL1L2_metJ1J2_"    , &TDR_L1L2_J1J2METJESUp  );
   BDT2j1tJESUp->BookMVA("2j1b","/nfs/fanae/user/sscruz/TW_jun4/AnalysisPAF/plotter/TW/StableWeights/jul8/bdtForTWv5/weights/TMVAClassification_GradBoost_200_005_4.weights.xml");
 
   
