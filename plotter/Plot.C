@@ -669,7 +669,11 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
     if(!doData) cout << "[Plot::DrawStack] WARNING: cannot print ratio Data/MC without data!!" << endl;
     else{
       hratio = (TH1F*)hData->Clone("hratio");
-      hratio->Divide(hAllBkg);
+      // ratio by hand so systematic (background) errors don't get summed up to statistical ones (data)
+      for (int bin = 0; bin < hratio->GetNbinsX(); ++bin){
+	hratio->SetBinContent( bin+1, hratio->GetBinContent(bin+1) / hAllBkg->GetBinContent(bin+1));
+	hratio->SetBinError  ( bin+1, hratio->GetBinError  (bin+1) / hAllBkg->GetBinContent(bin+1));
+      }
     }
   }
   SetHRatio();
@@ -836,25 +840,33 @@ void Plot::SetHRatio(TH1F* h){
   h->GetXaxis()->SetTitleOffset(0.9);
   h->GetXaxis()->SetLabelSize(0.13);
   h->GetXaxis()->SetTitleSize(0.16);
-  if (varname == "NBtagsNJets") {  //change bin labels
-    h->GetXaxis()->SetBinLabel( 1, "(0, 0)");
-    h->GetXaxis()->SetBinLabel( 2, "(1, 0)");
-    h->GetXaxis()->SetBinLabel( 3, "(1, 1)");
-    h->GetXaxis()->SetBinLabel( 4, "(2, 0)");
-    h->GetXaxis()->SetBinLabel( 5, "(2, 1)");
-    h->GetXaxis()->SetBinLabel( 6, "(2, 2)");
-    h->GetXaxis()->SetBinLabel( 7, "(3, 0)");
-    h->GetXaxis()->SetBinLabel( 8, "(3, 1)");
-    h->GetXaxis()->SetBinLabel( 9, "(3, 2)");
-    h->GetXaxis()->SetBinLabel(10, "(3, 3)");
-    h->GetXaxis()->SetBinLabel(11, "(4, 0)");
-    h->GetXaxis()->SetBinLabel(12, "(4, 1)");
-    h->GetXaxis()->SetBinLabel(13, "(4, 2)");
-    h->GetXaxis()->SetBinLabel(14, "(4, 3)");
-    h->GetXaxis()->SetBinLabel(15, "(4, 4)");
-    h->GetXaxis()->SetLabelSize(0.14);
-    h->GetXaxis()->SetLabelOffset(0.02);
+
+  int iBin = 1;
+  for (auto& label : VBinLabels){
+    h->GetXaxis()->SetBinLabel( iBin, label );
+    iBin++;
   }
+
+
+  // if (varname == "NBtagsNJets") {  //change bin labels
+  //   h->GetXaxis()->SetBinLabel( 1, "(0, 0)");
+  //   h->GetXaxis()->SetBinLabel( 2, "(1, 0)");
+  //   h->GetXaxis()->SetBinLabel( 3, "(1, 1)");
+  //   h->GetXaxis()->SetBinLabel( 4, "(2, 0)");
+  //   h->GetXaxis()->SetBinLabel( 5, "(2, 1)");
+  //   h->GetXaxis()->SetBinLabel( 6, "(2, 2)");
+  //   h->GetXaxis()->SetBinLabel( 7, "(3, 0)");
+  //   h->GetXaxis()->SetBinLabel( 8, "(3, 1)");
+  //   h->GetXaxis()->SetBinLabel( 9, "(3, 2)");
+  //   h->GetXaxis()->SetBinLabel(10, "(3, 3)");
+  //   h->GetXaxis()->SetBinLabel(11, "(4, 0)");
+  //   h->GetXaxis()->SetBinLabel(12, "(4, 1)");
+  //   h->GetXaxis()->SetBinLabel(13, "(4, 2)");
+  //   h->GetXaxis()->SetBinLabel(14, "(4, 3)");
+  //   h->GetXaxis()->SetBinLabel(15, "(4, 4)");
+  //   h->GetXaxis()->SetLabelSize(0.14);
+  //   h->GetXaxis()->SetLabelOffset(0.02);
+  // }
   h->GetXaxis()->SetTitle(xtitle);
   h->SetMinimum(RatioMin);
   h->SetMaximum(RatioMax);

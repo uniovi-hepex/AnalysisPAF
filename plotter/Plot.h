@@ -48,6 +48,7 @@ public:
   std::vector<TString> VTagDataSamples;
   std::vector<TString> VTagProcesses;
   std::vector<TString> VTagOptions;
+  std::vector<TString> VBinLabels;
   Histo* hData = NULL;
   THStack* hStack = NULL;
   Histo* hAllBkg = NULL;
@@ -64,12 +65,12 @@ public:
   TString sys = "0";
   Float_t sys_lumi = 0.025;
 
-	Plot(){
-		plotFolder = DefaultPlotfolder; 
+  Plot(){
+    plotFolder = DefaultPlotfolder; 
     limitFolder = DefaultLimitFolder; 
     Lumi = DefaultLumi;
     nSignalSamples = 0;
-        }
+  }
   Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Double_t bin0 = 0, Double_t binN = 0, TString tit = "title", TString xtit = "VAR"){
     var    = variable;
     cut    = (cuts);
@@ -90,13 +91,14 @@ public:
     VSignalsErr = std::vector<Histo*>();
     VData = std::vector<Histo*>();
     VSyst = std::vector<Histo*>();
-		VSumHistoSystUp = std::vector<Histo*>();
-		VSumHistoSystDown =  std::vector<Histo*>();
+    VSumHistoSystUp = std::vector<Histo*>();
+    VSumHistoSystDown =  std::vector<Histo*>();
     VSystLabel = std::vector<TString>();
     VTagSamples = std::vector<TString>();
     VTagDataSamples = std::vector<TString>();
     VTagProcesses = std::vector<TString>();
     VTagOptions = std::vector<TString>();
+    VBinLabels  = std::vector<TString>();
     hData = NULL;
     hStack = NULL;
     hAllBkg = NULL;
@@ -145,6 +147,7 @@ public:
     VTagDataSamples = std::vector<TString>();
     VTagProcesses = std::vector<TString>();
     VTagOptions = std::vector<TString>();
+    VBinLabels  = std::vector<TString>();
     hData = NULL;
     hStack = NULL;
     hAllBkg = NULL;
@@ -166,32 +169,32 @@ public:
   }
 	
 	virtual ~Plot(){
-		//if(plot) delete plot;
-		//if(pratio) delete pratio;
-//		if(texlumi) delete texlumi;
-//		if(texcms) delete texcms;
-//		if(texchan) delete texchan;
-		VData.clear();
-		VBkgs.clear();
-		VSignals.clear();
-		VSignalsErr.clear();
-		VSyst.clear();
-		VSumHistoSystUp.clear();
-		VSumHistoSystDown.clear();
-		VSystLabel.clear();
-		VTagSamples.clear();
-		VTagDataSamples.clear();
-		VTagProcesses.clear();
-		if(hratio) delete hratio;
-		if(TotalSysUp) delete TotalSysUp;
-		if(TotalSysDown) delete TotalSysDown;
-		if(hData && doData) delete hData;
-		if(hStack) delete hStack;
-		if(hAllBkg) delete hAllBkg;
-		cout << f << endl;
-		if(f)       delete f;
+	  //if(plot) delete plot;
+	  //if(pratio) delete pratio;
+	  //		if(texlumi) delete texlumi;
+	  //		if(texcms) delete texcms;
+	  //		if(texchan) delete texchan;
+	  VData.clear();
+	  VBkgs.clear();
+	  VSignals.clear();
+	  VSignalsErr.clear();
+	  VSyst.clear();
+	  VSumHistoSystUp.clear();
+	  VSumHistoSystDown.clear();
+	  VSystLabel.clear();
+	  VTagSamples.clear();
+	  VTagDataSamples.clear();
+	  VTagProcesses.clear();
+	  if(hratio) delete hratio;
+	  if(TotalSysUp) delete TotalSysUp;
+	  if(TotalSysDown) delete TotalSysDown;
+	  if(hData && doData) delete hData;
+	  if(hStack) delete hStack;
+	  if(hAllBkg) delete hAllBkg;
+	  VBinLabels.clear();
+	  if(f)       delete f;
 	};            // Destructor
-
+	
 	void AddSample(TString p = "TTbar_Powheg", TString pr = "ttbar", Int_t type = -1, Int_t color = 0, TString tsys = "0", TString options = "");
 
 	// ######### Methods ########
