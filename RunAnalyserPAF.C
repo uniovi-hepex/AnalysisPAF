@@ -202,7 +202,6 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
       G_Event_Weight = xsec/Count;
     } 
     else{ // Use dataset manager
-      cout << "Using dataset manager " << endl;
       Float_t sumNorm = 1; long double totalXSec = 0; long double totalNorm = 0;
       TString sampleChain = TString(sampleName);  
       if(sampleName.Contains("&")) sampleName = TString(sampleName(0, sampleName.First('&'))); // For output file
@@ -219,8 +218,6 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
         //myProject->AddDataFiles(dm->GetFiles()); 
         Files.insert(Files.end(), (dm->GetFiles()).begin(), (dm->GetFiles()).end());
         xsec    = dm->GetCrossSection();
-	cout << "xsec is " << xsec << endl;
-	cout << "uxsec is " << uxsec << endl;
         // if(uxsec != 1) xsec    = uxsec;
       }
       GetCount(Files);
@@ -228,10 +225,9 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
       if(SumOfWeights != Count){ // is aMCatNLO
         G_IsMCatNLO = true;
         if(verbose) cout << " >>> This is an aMCatNLO sample!!" << endl;
-	cout << "Check B" << endl;
         G_Event_Weight = xsec/SumOfWeights;
       }
-      else{ cout << "Check A " << endl;  cout << xsec << " " << Count << endl; G_Event_Weight = xsec/Count;}
+      else{  G_Event_Weight = xsec/Count;}
     }
     if(sampleName.Contains("FastSim")) G_IsFastSim = true;
   }
@@ -343,7 +339,6 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   // COMMON PARAMETERS
   myProject->SetInputParam("sampleName",        sampleName       );
   myProject->SetInputParam("IsData",            G_IsData         );
-  cout << "But my weight is " << G_Event_Weight << endl;
   myProject->SetInputParam("weight",            G_Event_Weight   );
   myProject->SetInputParam("IsMCatNLO",         G_IsMCatNLO      );  
   myProject->SetInputParam("iSelection",        (int) sel        );
