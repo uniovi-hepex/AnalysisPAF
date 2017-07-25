@@ -230,7 +230,7 @@ void Plot::GroupSystematics(){
     cout << " SYST: " << var << endl;
     for(Int_t j = 0; j < (Int_t) VTagProcesses.size(); j++){
       if(j != 0){
-        cout << "probando..." << endl; 
+        if (verbose) cout << "probando..." << endl; 
         if(VTagProcesses.at(j) == VTagProcesses.at(j-1)) continue; // Count each process only once
       }
       exists = false;
@@ -238,10 +238,11 @@ void Plot::GroupSystematics(){
       for(Int_t k = 0; k < (Int_t) VSyst.size(); k++){
         tag =  VSyst.at(k)->GetTag();
         pr   = VSyst.at(k)->GetProcess(); 
-        if(pr == VTagProcesses.at(j) && tag.Contains(var)){ exists = true; cout << " --> Found for process " << pr << endl;} 
+        if(pr == VTagProcesses.at(j) && tag.Contains(var)){ exists = true;
+	  if (verbose)cout << " --> Found for process " << pr << endl;} 
       }
       if(!exists){
-        cout << "    --> No existe un syst " << var << " para el proceso " << VTagProcesses.at(j) << "!! Adding nominal... " << endl;
+        if (verbose) cout << "    --> No existe un syst " << var << " para el proceso " << VTagProcesses.at(j) << "!! Adding nominal... " << endl;
         hsumSysUp  ->Add((Histo*) GetHisto(VTagProcesses.at(j))->Clone(var+"Up_"+VTagProcesses.at(j)));
         hsumSysDown->Add((Histo*) GetHisto(VTagProcesses.at(j))->Clone(var+"Down_"+VTagProcesses.at(j)));
 	cout << "Integral up is " << GetHisto(VTagProcesses.at(j))->Integral() << endl;
@@ -250,7 +251,7 @@ void Plot::GroupSystematics(){
     AddSumHistoSystematicUp(hsumSysUp);
     AddSumHistoSystematicDown(hsumSysDown);
   }
-  cout << "ACABO LA FUNCIONNNNN" << endl;
+  if (verbose) cout << "ACABO LA FUNCIONNNNN" << endl;
 }
 
 //================================================================================
