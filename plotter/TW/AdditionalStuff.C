@@ -17,15 +17,15 @@ using namespace std;
 Float_t theBDt(Double_t BDT){
   // if (BDT < -1)     { cout << "[W]: BDT < -1" << endl; return -9999;  }
   // else if (BDT >  1){ cout << "[W]: BDT >  1" << endl; return -9999;  }
-  if      (BDT < -0.501254 ) return 1; 
-  else if (BDT < -0.328117 ) return 2; 
-  else if (BDT < -0.207006 ) return 3; 
-  else if (BDT < -0.108441 ) return 4; 
-  else if (BDT < -0.0307518) return 5; 
-  else if (BDT < 0.0479999 ) return 6; 
-  else if (BDT < 0.138156  ) return 7; 
-  else if (BDT < 0.244131  ) return 8; 
-  else if (BDT < 0.352559  ) return 9; 
+  if      (BDT < -0.531448  ) return 1; 
+  else if (BDT < -0.396646  ) return 2; 
+  else if (BDT < -0.282771  ) return 3; 
+  else if (BDT < -0.184872  ) return 4; 
+  else if (BDT < -0.0977834 ) return 5; 
+  else if (BDT < -0.0118005 ) return 6; 
+  else if (BDT < 0.0867415  ) return 7; 
+  else if (BDT < 0.207723   ) return 8; 
+  else if (BDT < 0.332052   ) return 9; 
   else                       return 10;
 
 }

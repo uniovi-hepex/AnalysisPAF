@@ -27,7 +27,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   Plot* p = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
   p->SetPathSignal(pathToTree + "");
-  p->verbose = true;
+  p->verbose = false;
   p->SetVarName(varname);
 
   p->AddSample("TTWToLNu","Other", itBkg, kOrange-3);
@@ -51,11 +51,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample("SingleMuon", "Data", itData);
   p->AddSample("SingleElec", "Data", itData);
   
-  cout << "hdamp" << endl;
   p->AddSample("TTbar_Powheg_hdampUp", "t#bar{t}", itSys, 1,  "hdampUp"); 
   p->AddSample("TTbar_Powheg_hdampDown", "t#bar{t}", itSys, 1,  "hdampDown"); 
-
-  cout << "ue" << endl;
 
 
   // SERGIO: nuevo
@@ -87,7 +84,6 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 //SERGIO: volver a poer  p->AddSample("TW_DS","tW", itSys, 1,  "DiagramSubtractionUp");
 //SERGIO: volver a poer  p->AddSample("TbarW_DS","tW", itSys, 1,  "DiagramSubtractionUp");
 
-  cout << "powheg" << endl;
 
   // SERGIO: to addd ME, pdf
   p->AddSample("TTbar_Powheg", "t#bar{t}", itSys, 1, "ScaleUp"); 
@@ -102,7 +98,9 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   // p->AddSample("TW"   , "tW", itSys, 1, "JERUp");
   // p->AddSample("TbarW", "tW", itSys, 1, "JERUp");
 
-  
+  p->SetRatioMin( 0.6 );
+  p->SetRatioMax( 1.4 );
+
   p->AddSystematic("stat,JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"); //,LepEff
   // p->AddSystematic("stat"); //,LepEff
   
@@ -111,6 +109,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 
 
   p->doYieldsInLeg=false;
+  p->SetPlotFolder("FitPlots/");
 
 
   // p->AddSystematic("JES,Btag,MisTag,PU,ElecEff,MuonEff"); //,LepEff

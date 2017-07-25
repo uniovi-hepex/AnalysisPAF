@@ -141,7 +141,7 @@ void TWAnalysis::InsideLoop(){
 
 
   // Number of events in fiducial region
-  if(genLeptons.size() > 2 ){ // MIND THE POSSIBLE SKIM (on reco leptons) IN THE SAMPLE!!
+  if(genLeptons.size() => 2 ){ // MIND THE POSSIBLE SKIM (on reco leptons) IN THE SAMPLE!!
     Int_t GenChannel = -1;
     if(genLeptons.at(0).isElec && genLeptons.at(0).isMuon) GenChannel = iElMu; 
     if(genLeptons.at(0).isMuon && genLeptons.at(0).isElec) GenChannel = iElMu; 

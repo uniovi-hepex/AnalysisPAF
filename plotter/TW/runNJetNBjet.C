@@ -25,20 +25,20 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   Plot* p = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
   p->SetPathSignal(pathToTree + "");
-  p->verbose = true;
+  p->verbose = false;
   // p->SetVarName("forFit");
 
   vector<TString> labels = { "(0,0)","(1,0)","(1,1)","(2,0)","(2,1)","(2,2)","(3+,0+)" };
   p->VBinLabels = labels;
 
 
-  p->AddSample("WZ", "VV", itBkg, kYellow);
-  p->AddSample("WW", "VV", itBkg);
-  p->AddSample("ZZ", "VV", itBkg);
-  p->AddSample("TTWToLNu", "ttV", itBkg, kOrange-3);
-  p->AddSample("TTWToQQ", "ttV", itBkg);
-  p->AddSample("TTZToQQ", "ttV", itBkg);
-  p->AddSample("TTZToLLNuNu", "ttV", itBkg);
+  p->AddSample("TTWToLNu", "Other", itBkg, kOrange-3);
+  p->AddSample("TTWToQQ", "Other", itBkg);
+  p->AddSample("TTZToQQ", "Other", itBkg);
+  p->AddSample("TTZToLLNuNu", "Other", itBkg);
+  p->AddSample("WZ", "Other", itBkg);
+  p->AddSample("WW", "Other", itBkg);
+  p->AddSample("ZZ", "Other", itBkg);
 
   p->AddSample("DYJetsToLL_M10to50_aMCatNLO", " Z/#gamma* #rightarrow e^{#pm}#mu^{#mp}", itBkg, TColor::GetColor("#3b0160")); // kRed);
   p->AddSample("DYJetsToLL_M50_aMCatNLO",     " Z/#gamma* #rightarrow e^{#pm}#mu^{#mp}", itBkg);
@@ -87,10 +87,12 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample("TTbar_Powheg", "t#bar{t}", itSys, 1, "pdfDown"); 
 
 
-  
+  p->SetRatioMin( 0.6 );
+  p->SetRatioMax( 1.4 );
   
   p->AddSystematic("stat,JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"); //,LepEff
 
+  p->SetPlotFolder("Control/");
 
   p->doYieldsInLeg=false;
   

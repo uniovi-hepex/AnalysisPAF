@@ -34,13 +34,14 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   if (varname != "") p->SetVarName(varname);
 
 
-  p->AddSample("WZ", "VV", itBkg, kYellow);
-  p->AddSample("WW", "VV", itBkg);
-  p->AddSample("ZZ", "VV", itBkg);
-  p->AddSample("TTWToLNu", "ttV", itBkg, kOrange-3);
-  p->AddSample("TTWToQQ", "ttV", itBkg);
-  p->AddSample("TTZToQQ", "ttV", itBkg);
-  p->AddSample("TTZToLLNuNu", "ttV", itBkg);
+  p->AddSample("TTWToLNu", "Other", itBkg, kOrange-3);
+  p->AddSample("TTWToQQ", "Other", itBkg);
+  p->AddSample("TTZToQQ", "Other", itBkg);
+  p->AddSample("TTZToLLNuNu", "Other", itBkg);
+  p->AddSample("WZ", "Other", itBkg);
+  p->AddSample("WW", "Other", itBkg);
+  p->AddSample("ZZ", "Other", itBkg);
+
 
   p->AddSample("DYJetsToLL_M10to50_aMCatNLO", " Z/#gamma* #rightarrow e^{#pm}#mu^{#mp}", itBkg, TColor::GetColor("#3b0160")); // kRed);
   p->AddSample("DYJetsToLL_M50_aMCatNLO",     " Z/#gamma* #rightarrow e^{#pm}#mu^{#mp}", itBkg);
@@ -90,12 +91,15 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 
 
   
+  p->SetPlotFolder("Control/");
   
   p->AddSystematic("stat,JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"); //,LepEff
 
 
   p->doYieldsInLeg=false;
 
+  p->SetRatioMin( 0.6 );
+  p->SetRatioMax( 1.4 );
 
   p->doSetLogy = false;
   p->doData = true;

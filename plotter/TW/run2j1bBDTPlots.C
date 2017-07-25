@@ -148,11 +148,16 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample("TTbar_Powheg", "t#bar{t}", itSys, 1, "pdfUp"); 
   p->AddSample("TTbar_Powheg", "t#bar{t}", itSys, 1, "pdfDown"); 
 
+  p->SetRatioMin( 0.6 );
+  p->SetRatioMax( 1.4 );
+
+  p->SetPlotFolder("2j1t/");
 
   
   
   p->AddSystematic("stat,JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"); //,LepEff
 
+  p->doYieldsInLeg=false;
 
   // p->doStackSignal = true;
   p->doSetLogy = false;
