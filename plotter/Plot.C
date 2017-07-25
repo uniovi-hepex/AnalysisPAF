@@ -244,6 +244,7 @@ void Plot::GroupSystematics(){
         cout << "    --> No existe un syst " << var << " para el proceso " << VTagProcesses.at(j) << "!! Adding nominal... " << endl;
         hsumSysUp  ->Add((Histo*) GetHisto(VTagProcesses.at(j))->Clone(var+"Up_"+VTagProcesses.at(j)));
         hsumSysDown->Add((Histo*) GetHisto(VTagProcesses.at(j))->Clone(var+"Down_"+VTagProcesses.at(j)));
+	cout << "Integral up is " << GetHisto(VTagProcesses.at(j))->Integral() << endl;
       }
     }
     AddSumHistoSystematicUp(hsumSysUp);
@@ -694,8 +695,11 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
       hratio = (TH1F*)hData->Clone("hratio");
       // ratio by hand so systematic (background) errors don't get summed up to statistical ones (data)
       for (int bin = 0; bin < hratio->GetNbinsX(); ++bin){
-	hratio->SetBinContent( bin+1, hratio->GetBinContent(bin+1) / hAllBkg->GetBinContent(bin+1));
-	hratio->SetBinError  ( bin+1, hratio->GetBinError  (bin+1) / hAllBkg->GetBinContent(bin+1));
+	if (hratio->GetBinContent(bin+1) > 0){
+	  hratio->SetBinContent( bin+1, hratio->GetBinContent(bin+1) / hAllBkg->GetBinContent(bin+1));
+	  hratio->SetBinError  ( bin+1, hratio->GetBinError  (bin+1) / hAllBkg->GetBinContent(bin+1));
+	}
+	else{ hratio->SetBinError  ( bin+1, 0.); }
       }
     }
   }
