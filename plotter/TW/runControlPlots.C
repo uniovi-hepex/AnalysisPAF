@@ -30,7 +30,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   Plot* p = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
   p->SetPathSignal(pathToTree + "");
-  p->verbose = true;
+  p->verbose = false;
   if (varname != "") p->SetVarName(varname);
 
 

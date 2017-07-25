@@ -15,12 +15,12 @@ TString NameOfTree = "Mini1j1t";
 
 void run1j1tPlots(){
 
+  DrawPlot("TnBTotal - 1 "    , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 4, -0.5, 3.5, "n_{B}^{20}");
+  DrawPlot("TnLooseCentral - 1 ", "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 5, -0.5, 4.5, "n_{20}");
 
   DrawPlot("TDilepMETJetPt_THTtot ","(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20, 0., 1., "p_{T}(lljmet) / H_{T}");
-  DrawPlot("TnLooseCentral - 1 ", "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 5, 0.5, 5.5, "n_{20}");
   DrawPlot("TC_jll ","(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20, 0., 1., "C_{jll}");
   DrawPlot("TTJet1_pt ", "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20, 0., 250., "p^{jet1}_{T} [GeV]");
-  DrawPlot("TnBTotal - 1 "    , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 4, 0.5, 4.5, "n_{B}^{20}");
   DrawPlot("TDilepMETJetPt "    , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20, 0., 200., "p_{T}(lljmet)");
   DrawPlot("TTHTtot "     , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20, 70., 550., "H_{T} [GeV]");
   DrawPlot("TTJetLooseCentralpt "    , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20, 0., 30., "Loose jet p_{T} [GeV]");

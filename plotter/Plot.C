@@ -234,7 +234,7 @@ void Plot::GroupSystematics(){
         if(VTagProcesses.at(j) == VTagProcesses.at(j-1)) continue; // Count each process only once
       }
       exists = false;
-      cout << "Searching for process " << VTagProcesses.at(j) << "..." << endl;
+      if (verbose) cout << "Searching for process " << VTagProcesses.at(j) << "..." << endl;
       for(Int_t k = 0; k < (Int_t) VSyst.size(); k++){
         tag =  VSyst.at(k)->GetTag();
         pr   = VSyst.at(k)->GetProcess(); 
