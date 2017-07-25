@@ -13,7 +13,7 @@ class EventBuilder : public PAFChainItemSelector{
     std::vector<Float_t> LHEWeights;
 
     EventBuilder();
-    virtual ~EventBuilder() {delete fPUWeight, fPUWeightUp, fPUWeightDown, TriggSF;}
+    virtual ~EventBuilder();
     virtual void InsideLoop();
     virtual void Initialise();
     virtual void Summary();

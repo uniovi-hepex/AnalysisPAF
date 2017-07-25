@@ -17,7 +17,7 @@ BTagSFUtil::BTagSFUtil(const string& MeasurementType,
   TString CSVFileName = Form("%s/%s.csv", BTagSFPath.Data(), BTagAlgorithm.c_str());
   //if(gIsFastSim) CSVFileName = Form("%s/%s_FastSim.csv", BTagSFPath.Data(), BTagAlgorithm.c_str());
   //  string CSVFileName = (string) pathtocsv.Data() + BTagAlgorithm + ".csv";
-  cout << "PAF_INFO: [BTagSFUtil] BTag SF will be read from " << CSVFileName << endl;
+  cout << "INFO: [BTagSFUtil] BTag SF will be read from " << CSVFileName << endl;
   
   const BTagCalibration calib(BTagAlgorithm, (string) CSVFileName.Data());
   

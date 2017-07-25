@@ -8,7 +8,10 @@
 ///////////////////////////////////////////////////////////////////////
 #include "PUWeight.h"
 
-// ROOT Includes
+// PAF includes
+#include "PAF.h"
+
+// ROOT includes
 #include "TFile.h"
 #include "TCanvas.h"
 #include "TString.h"
@@ -21,7 +24,7 @@ using namespace std;
 
 //Set DEBUGPUWEIGHT to 1 to get some debug information. Set it to 2 for more
 //detail debug information.
-#define DEBUGPUWEIGHT 2
+#define DEBUGPUWEIGHT 1
 
 #ifdef DEBUG
 #define DEBUGPUWEIGHT 1
@@ -63,15 +66,15 @@ PUWeight::PUWeight(float luminosity, EMCDistribution mcdistr, const char* year):
 
 TH1D* PUWeight::LoadMCHistogram(const char* mcfolder, const char* mcproccess) {
 #ifdef DEBUGPUWEIGHT
-  cout << "\n>> Getting pileup for the MC " << mcproccess 
-       << " inside " << mcfolder << "..." << endl;
+  PAF_DEBUG("PUWeight", Form("Getting pileup for the MC %s inside %s...",
+			     mcproccess, mcfolder));
 #endif
   
   TString dsfile;
   dsfile.Form("http://www.hep.uniovi.es/jfernan/PUhistos/%s/%s.root", 
         mcfolder, mcproccess);
 #if (DEBUGPUWEIGHT > 1)
-  cout << "   + Opening " << dsfile << endl;
+  PAF_DEBUG("PUWeight", Form("   + Opening %s", dsfile.Data()));
 #endif
   
   TFile* fds = TFile::Open(dsfile);
@@ -84,7 +87,7 @@ TH1D* PUWeight::LoadMCHistogram(const char* mcfolder, const char* mcproccess) {
   
   //Read dataset histogram...
 #if (DEBUGPUWEIGHT > 1)
-  cout << "   + Looking for histogram..." << endl;
+  PAF_DEBUG("PUWeight", "   + Looking for histogram...");
 #endif
   
   fMC = (TH1D*) fds->Get("htemp")->Clone("PU_MC");
@@ -96,8 +99,7 @@ TH1D* PUWeight::LoadMCHistogram(const char* mcfolder, const char* mcproccess) {
   fMC->SetDirectory(0);
 
   if (fMC->Integral() != 1) {
-    cout << "NOTE [PUWeight]: MC histogram is not normalized to 1! Normalizing..."
-   << endl;
+    PAF_INFO("PUWeight", "MC histogram is not normalized to 1! Normalizing...");
     fMC->Scale(1./fMC->Integral());
   }
 
@@ -110,9 +112,8 @@ TH1D* PUWeight::LoadMCHistogram(const char* mcfolder, const char* mcproccess) {
 TH1D* PUWeight::LoadDataHistogram(float luminosity, const char* year) {
 
 #ifdef DEBUGPUWEIGHT
-  cout << " " << endl;
-  cout << ">> Getting pileup for the " << luminosity << " pb-1 of data..." 
-       << endl;
+  PAF_DEBUG("PUWeight", Form("Getting pileup for the %s pb-1 of data...", 
+			     luminosity));
 #endif
   
   TString dtfile;
@@ -128,7 +129,7 @@ TH1D* PUWeight::LoadDataHistogram(float luminosity, const char* year) {
 
   
 #if (DEBUGPUWEIGHT > 1)
-    cout << "   + Opening " << dtfile << endl;
+    PAF_DEBUG("PUWeight",Form("   + Opening %s", dtfile));
 #endif
 
     fdt = TFile::Open(dtfile);
@@ -142,7 +143,7 @@ TH1D* PUWeight::LoadDataHistogram(float luminosity, const char* year) {
     dtfile="http://www.hep.uniovi.es/jfernan/PUhistos/Data2011A/PUdata.root";
 
 #if (DEBUGPUWEIGHT > 1)
-    cout << "   + Opening " << dtfile << endl;
+    PAF_DEBUG("PUWeight", Form("   + Opening %s", dtfile));
 #endif
 
     fdt = TFile::Open(dtfile);
@@ -164,8 +165,7 @@ TH1D* PUWeight::LoadDataHistogram(float luminosity, const char* year) {
   fData->SetDirectory(0);
   
   if (fData->Integral() != 1) {
-    cout << "NOTE [PUWeight]: Data histogram is not normalized to 1! Normalizing..."
-   << endl;
+    PAF_INFO("PUWeight", "Data histogram is not normalized to 1! Normalizing...");
     fData->Scale(1./fData->Integral());
   }
 
@@ -177,8 +177,7 @@ TH1D* PUWeight::LoadDataHistogram(float luminosity, const char* year) {
 
 TH1D* PUWeight::CalculateWeight() {
 #ifdef DEBUGPUWEIGHT
-  cout << ">> Calculating weights..." 
-       << endl;
+  PAF_DEBUG("PUWeight",  "Calculating weights...");
 #endif
   if (fData && fMC) {
     unsigned int nbins = fData->GetXaxis()->GetNbins();
@@ -196,15 +195,14 @@ TH1D* PUWeight::CalculateWeight() {
   }
 
 #ifdef DEBUGPUWEIGHT
-  cout << ">> Done weight calculation..." << endl;
+  PAF_DEBUG("PUWeight", "Done weight calculation...");
 #endif
   return fWeight;
 }
 
 TH1D* PUWeight::IdealMCHistogram(EMCDistribution mcdistr) {
 #ifdef DEBUGPUWEIGHT
-  cout << ">> Building ideal MC profile... " 
-       << endl;
+  PAF_DEBUG("PUWeight", "Building ideal MC profile... ");
 #endif
   unsigned int ndbins = 25;
   float xmin = -0.5;
@@ -218,8 +216,8 @@ TH1D* PUWeight::IdealMCHistogram(EMCDistribution mcdistr) {
 
 
 #if (DEBUGPUWEIGHT > 1)
-  cout << " + Data histogram has " << ndbins << " bins - [ " 
-       << xmin << " - " << xmax << " ]" << endl;
+  PAF_DEBUG("PUWeight", Form(" + Data histogram has %d bins - [%f, %f]",
+			     ndbins, xmin, xmax));
 #endif
 
   fMC = new TH1D("PU_MC", "PU^{MC} Weight", ndbins, xmin, xmax);
@@ -558,7 +556,6 @@ TH1D* PUWeight::IdealMCHistogram(EMCDistribution mcdistr) {
   fMC->FillN(nbins, bins, idealpu);
   }
   else if (mcdistr == Summer12_53X){
-    cout << "1111"<< endl;
     nbins =60;
     double idealpu[]= {
        2.560E-06,
