@@ -185,7 +185,7 @@ void Plot::AddSystematic(TString var, TString pr){
     }
   }
   else{
-    vector<TString> vpr = TStringToVector(pr);
+    std::vector<TString> vpr = TStringToVector(pr);
     TString p;
     for(Int_t k = 0; k < (Int_t) vpr.size(); k++){
       p = vpr.at(k);
@@ -201,7 +201,6 @@ void Plot::AddSystematic(TString var, TString pr){
 
 void Plot::GroupSystematics(){
   VSumHistoSystUp.clear(); VSumHistoSystDown.clear();
-  cout << "Entro en la funcioooooooooooon" << endl;
   TString var = ""; TString pr = "";
   for(Int_t i = 0; i < (Int_t) VSystLabel.size(); i++){
     var = VSystLabel.at(i);
@@ -227,21 +226,20 @@ void Plot::GroupSystematics(){
       if(tag.Contains(var+"Up") )   hsumSysUp  ->Add( (Histo*)VSyst.at(k)->Clone(var+"Up_"+pr));
       if(tag.Contains(var+"Down")) hsumSysDown->Add( (Histo*)VSyst.at(k)->Clone(var+"Down_"+pr));
     }
-    cout << " SYST: " << var << endl;
+    //cddout << " SYST: " << var << endl;
     for(Int_t j = 0; j < (Int_t) VTagProcesses.size(); j++){
       if(j != 0){
-        cout << "probando..." << endl; 
         if(VTagProcesses.at(j) == VTagProcesses.at(j-1)) continue; // Count each process only once
       }
       exists = false;
-      cout << "Searching for process " << VTagProcesses.at(j) << "..." << endl;
+      //cout << "Searching for process " << VTagProcesses.at(j) << "..." << endl;
       for(Int_t k = 0; k < (Int_t) VSyst.size(); k++){
         tag =  VSyst.at(k)->GetTag();
         pr   = VSyst.at(k)->GetProcess(); 
         if(pr == VTagProcesses.at(j) && tag.Contains(var)){ exists = true; cout << " --> Found for process " << pr << endl;} 
       }
       if(!exists){
-        cout << "    --> No existe un syst " << var << " para el proceso " << VTagProcesses.at(j) << "!! Adding nominal... " << endl;
+        //cout << "    --> No existe un syst " << var << " para el proceso " << VTagProcesses.at(j) << "!! Adding nominal... " << endl;
         hsumSysUp  ->Add((Histo*) GetHisto(VTagProcesses.at(j))->Clone(var+"Up_"+VTagProcesses.at(j)));
         hsumSysDown->Add((Histo*) GetHisto(VTagProcesses.at(j))->Clone(var+"Down_"+VTagProcesses.at(j)));
       }
@@ -361,7 +359,7 @@ Float_t Plot::GetYield(TString pr, TString systag){
 
 TLegend* Plot::SetLegend(){ // To be executed before using the legend
   TLegend* leg = new TLegend(fLegX1, fLegY1, fLegX2, fLegY2);
-  leg->SetTextSize(0.035);
+  leg->SetTextSize(LegendTextSize);
   leg->SetBorderSize(0);
   leg->SetFillColor(10);
   Float_t MinYield = 0; 
@@ -489,8 +487,7 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString options){
     plot->SetLogy();
   }
   TLegend* leg = SetLegend();
-  leg->SetTextSize(0.08);
-  leg->Draw("same");
+  if(doLegend) leg->Draw("same");
   
   if(gof!=""){
       cout << "WARNING: at the moment, only the GoF between the first and the second plot is supported. If you plot more than two plots, the remaining ones will be ignored. Further functionality will be added later." << endl;
@@ -664,7 +661,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   hratioerr->SetMarkerSize(0);
 
   TLegend* leg = SetLegend();
-  leg->Draw("same");      
+  if(doLegend) leg->Draw("same");      
   texcms->Draw("same");   // CMS Preliminary
   texlumi->Draw("same");  // The luminosity
 
@@ -854,6 +851,7 @@ void Plot::SetHRatio(TH1F* h){
   else if(RatioOptions == "S/sqrtB")   h->GetYaxis()->SetTitle("S/#sqrt{B}");
   else if(RatioOptions == "S/sqrtSpB") h->GetYaxis()->SetTitle("S/#sqrt{S+B}");
   else                                 h->GetYaxis()->SetTitle("Data/MC");
+  if(RatioPlotLabel != "")             h->GetYaxis()->SetTitle(RatioPlotLabel);
   h->GetXaxis()->SetTitleSize(0.05);
   h->GetYaxis()->CenterTitle();
   h->GetYaxis()->SetTitleOffset(0.25);
@@ -899,6 +897,53 @@ Int_t Plot::GetColorOfProcess(TString pr){
   for(Int_t i = 0; i < (Int_t) VBkgs.size(); i++) if(VBkgs.at(i)->GetProcess() == (pr)) return VBkgs.at(i)->GetFillColor();
   for(Int_t i = 0; i < (Int_t) VSignals.size(); i++) if(VSignals.at(i)->GetProcess() == (pr)) return VSignals.at(i)->GetLineColor();
   return 0;
+}
+
+void Plot::RemoveSystematic(TString sys){
+  if(sys.Contains(",")){
+    std::vector<TString> v = TStringToVector(sys);
+    Int_t n = v.size();
+    for(Int_t i = 0; i < n; i++) RemoveSystematic(v.at(i));
+    return;
+  }
+  TString tag = "";
+  for(Int_t k = 0; k < (Int_t) VSyst.size(); k++){ 
+    if(VSyst.at(k)->GetTag() == sys || VSyst.at(k)->GetTag() == sys+"Up" || VSyst.at(k)->GetTag() == sys+"Down") VSyst.erase(VSyst.begin()+k); 
+  }
+  for(Int_t j = 0; j < (Int_t) VSystLabel.size(); j++){
+   tag = VSystLabel.at(j); 
+    if (sys.EndsWith("Up"))   sys = sys(0, sys.Sizeof()-3);
+    if (sys.EndsWith("Down")) sys = sys(0, sys.Sizeof()-5);
+    if(tag == sys || tag == sys + "Up" || tag == sys + "Down"){
+      VSystLabel.erase(VSystLabel.begin()+j);
+      if(verbose) cout << "Removing systematic " << tag << endl;
+    }
+  }
+}
+
+void Plot::UseEnvelope(TString pr, TString tags, TString newname){
+  Histo* envelopeUp =  GetHisto(pr)->CloneHisto("envelopeUp"); Histo* envelopeDown = GetHisto(pr)->CloneHisto("envelopeDown"); 
+  vector<Histo*> vhistos =  vector<Histo*>();
+  vector<TString> v = TStringToVector(tags);
+  if(verbose){
+    for(Int_t i = 0; i < (Int_t) v.size(); i++) cout << v.at(i) << ", "; cout << endl;
+  }
+  // Naming the new systematic
+  if(newname == "") newname = v.at(0);
+  if(newname.EndsWith("Up")) newname = newname(0, newname.Sizeof()-3);
+  else if(newname.EndsWith("Down")) newname = newname(0, newname.Sizeof()-5);
+  if(verbose) cout << "New name of the systematic: " << newname << endl;
+  for(Int_t k = 0; k < (Int_t) v.size(); k++) vhistos.push_back((Histo*) GetHisto(pr, v.at(k))->Clone(pr+"_"+v.at(k)+"cp"));
+
+  envelopeUp   ->GetEnvelope(vhistos,  1);
+  envelopeDown ->GetEnvelope(vhistos, -1);
+  envelopeUp  ->SetProcess(pr); envelopeUp  ->SetTag(pr+"_"+newname+"Up");   envelopeUp  ->SetName(pr+"_"+newname+"Up");   envelopeUp  ->SetType(itSys); envelopeUp  ->SetStyle();
+  envelopeDown->SetProcess(pr); envelopeDown->SetTag(pr+"_"+newname+"Down"); envelopeDown->SetName(pr+"_"+newname+"Down"); envelopeDown->SetType(itSys); envelopeDown->SetStyle();
+  AddToHistos(envelopeUp);
+  AddToHistos(envelopeDown);
+  AddToSystematicLabels(newname);
+
+  RemoveSystematic(tags); 
 }
 
 //================================================================================
