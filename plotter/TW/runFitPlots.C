@@ -16,8 +16,8 @@ TString NameOfTree = "MiniTree";
 void runFitPlots(){
 
   DrawPlot("ShapVarWith1j1tBDtAndJetPt( TNJets , TNBtags , TBDT , TBDT2j1t , TJet2_Pt )", "(TIsSS == 0)", "ElMu", 24, -0.5, 23.5, "Bin","FullFit");
-  // DrawPlot("TBDT ", "(TIsSS == 0 && TNJets == 1 && TNBtags == 1)", "ElMu", 20, -1., 1., "BDT","TBDT1j1t",true);
-  // DrawPlot("TBDT2j1t ", "(TIsSS == 0 && TNJets == 2 && TNBtags == 1)", "ElMu", 20, -1., 1., "BDT","TBDT2j1t",true);
+  DrawPlot("TBDT ", "(TIsSS == 0 && TNJets == 1 && TNBtags == 1)", "ElMu", 20, -1., 1., "BDT","TBDT1j1t",true);
+  DrawPlot("TBDT2j1t ", "(TIsSS == 0 && TNJets == 2 && TNBtags == 1)", "ElMu", 20, -1., 1., "BDT","TBDT2j1t",true);
   return; 
 
   
