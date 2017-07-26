@@ -129,6 +129,7 @@ void Histo::AddToSystematics(Histo* hsys, TString dir){
   if(ourbins != nbins)  std::cout << " [Histo] WARNING: cannot add to systematics" << std::endl; 
   for(Int_t k = 0; k < nbins; k++){
     diff = GetBinContent(k+1) - hsys->GetBinContent(k+1);
+    // if (k == 2) cout << hsys->GetName() << " " << diff/GetBinContent(k+1) << endl;
     if(diff >  0) vsysd[k] += diff*diff;
     else          vsysu[k] += diff*diff;
   }
@@ -139,7 +140,7 @@ void Histo::SetBinsErrorFromSyst(){
   Float_t max = 0;
   for(Int_t k = 0; k < nbins; k++){
     //max = vsysd[k] > vsysu[k] ? vsysd[k] : vsysu[k];
-    SetBinError(k+1, TMath::Sqrt((vsysu[k]+vsysd[k])/2));
+    SetBinError(k+1, TMath::Sqrt((vsysu[k]+vsysd[k]))/2);
   }
 }
 

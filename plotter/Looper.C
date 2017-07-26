@@ -7,10 +7,11 @@ std::vector<TString> GetAllVars(TString varstring){
   while(chain.Contains("T")){
     i = 0;
     var = chain(chain.First('T'), chain.Sizeof());
-    while(TString(var[i]).IsAlnum()) i++;
+    //    while(TString(var[i]).IsAlnum()) i++;
+    while( var[i] != ' ') i++;
     var = var(0,i);
     g.push_back(var);
-    chain.ReplaceAll(var, "");
+    chain.ReplaceAll(var + " ", " ");
   }
   return g;
 }
@@ -20,8 +21,9 @@ TString Looper::CraftVar(TString varstring, TString sys){
   std::vector<TString> AllVars = GetAllVars(var);
   Int_t nvars = AllVars.size();
   for(Int_t i = 0; i < nvars; i++) 
-    if(tree->GetBranchStatus(AllVars.at(i) + sys)) 
-      var.ReplaceAll(AllVars.at(i), AllVars.at(i)+sys);
+    if(tree->GetBranchStatus(AllVars.at(i) + sys)){
+      var.ReplaceAll(AllVars.at(i) + " ", AllVars.at(i)+sys+" ");
+    }
   return var;
 }
 
@@ -35,23 +37,23 @@ TString Looper::CraftFormula(TString cuts, TString chan, TString sys, TString op
   else if(chan == "4l")    schan = (Form("(TChannel == %i)", iFourLep));
   else if(chan == "SF" || chan == "sameF") schan = (Form("(TChannel != %i)", iElMu));
   else if(chan == "PromptLep") schan = Form("(TChannel == %i || TChannel == %i)", iTriLep, i2lss);
-  //else if(chan == "PromptTau") schan = Form("(TChannel == %i || TChannel == %i)", iSS1tau, iOS1tau);
-  else if(chan == "SSTau") schan = Form("(TChannel == %i)", iSS1tau);
-  else if(chan == "OSTau") schan = Form("(TChannel == %i)", iOS1tau);
+  else if(chan == "PromptTau") schan = Form("(TChannel == %i || TChannel == %i)", iSS1tau, iOS1tau);
   else if(chan == "SSTau") schan = Form("(TChannel == %i)", iSS1tau);
   else if(chan == "OSTau") schan = Form("(TChannel == %i)", iOS1tau);
   else if(chan == "All")   schan = ("1");
   else schan = chan;
 
   TString weight = TString("TWeight");
-  if(tree->GetBranchStatus(weight + "_" + sys)) weight += "_" + sys; 
+  if(tree->GetBranchStatus(weight + "_" + sys)){
+    weight += "_" + sys; 
+  }
 
   std::vector<TString> AllVars = GetAllVars((TString) cuts);
   Int_t nvars = AllVars.size();
   for(Int_t i = 0; i < nvars; i++) 
-    if(tree->GetBranchStatus(AllVars.at(i) + sys)) 
-      cuts = ( ((TString) cuts).ReplaceAll(AllVars.at(i), AllVars.at(i)+sys));
-
+    if(tree->GetBranchStatus(AllVars.at(i) + sys)){
+      cuts = ( ((TString) cuts).ReplaceAll(AllVars.at(i) + " ", AllVars.at(i)+sys + " "));
+    }
   TString                                                  formula = TString("(") + cuts + TString(")*(") + schan + TString(")*") + weight;
   if((options.Contains("Fake") || options.Contains("fake"))){
     if(chan.Contains("Lep")) schan = Form("(TChannel == %i || TChannel == %i)", i2lss_fake, iTriLep_fake);
@@ -226,6 +228,7 @@ void Looper::Loop(TString sys){
       alpha_up = TMath::Abs(hLHE[109]->GetBinContent(bin) - nom);
       alpha_dw = TMath::Abs(hLHE[110]->GetBinContent(bin) - nom);
       env = TMath::Sqrt(rms*rms + ((alpha_up-alpha_dw)*0.75/2)*((alpha_up-alpha_dw)*0.75/2));
+      //cout << env << " " << rms << " " << alpha_up << " " << alpha_dw << endl;
       if(sys.Contains("Up") || sys.Contains("up"))  Hist->SetBinContent(bin, nom + env);
       else                                          Hist->SetBinContent(bin, nom - env);
     }
@@ -243,6 +246,7 @@ Float_t Looper::getLHEweight(Int_t i){
   else if (i<249) bin = i + 4780;   // 5002-5028: muRmuF, hdamp 
   norm = hLHEweights->GetBinContent(1002);
   weight = FormulasLHE->EvalInstance(i)/hLHEweights->GetBinContent(bin)*norm; 
+  // cout << "weight for " << i << " is " << weight << endl;
   return weight;
 }
 
