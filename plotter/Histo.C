@@ -145,10 +145,24 @@ void Histo::SetBinsErrorFromSyst(){
 
 
 
-Histo* Histo::CloneHisto(const char* newname) const
-{
+Histo* Histo::CloneHisto(const char* newname) const{
   TH1F* h = (TH1F*) Clone(newname);
   return new Histo(*h);
-    
+}
 
+
+void Histo::GetEnvelope(vector<Histo*> v, Int_t dir) {
+  Int_t nHistos = v.size();
+  Int_t nbins = GetNbinsX();
+  Float_t extremeval; Float_t val = 0;
+
+  for(Int_t iB = 0; iB <= nbins; iB++){
+    extremeval = GetBinContent(iB);
+    for(Int_t iH = 0; iH < nHistos; iH++){
+      val = v.at(iH)->GetBinContent(iB);
+      if(dir >= 0) if(val > extremeval) extremeval = val;
+      if(dir <  0) if(val < extremeval) extremeval = val;
+    }
+    SetBinContent(iB, extremeval);
+  }
 }
