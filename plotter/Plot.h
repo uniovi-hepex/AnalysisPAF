@@ -35,6 +35,7 @@ public:
   bool doSignal        = true;
   bool doSetLogy       = true;
   bool doStatUncInDatacard = true;
+  bool doLegend        = true;
 
   std::vector<Histo*> VBkgs;
   std::vector<Histo*> VSignals;
@@ -116,6 +117,8 @@ public:
     fLegY1 = 0.42;
     fLegX2 = 0.98; 
     fLegY2 = 0.92;
+    LegendTextSize  = 0.035;
+    RatioPlotLabel  = "";
     SignalDrawStyle = "hist";
   }
   Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Float_t* bins = 0, TString tit = "title", TString xtit = "VAR"){
@@ -165,6 +168,8 @@ public:
     fLegY1 = 0.65;
     fLegX2 = 0.93; 
     fLegY2 = 0.93;
+    LegendTextSize  = 0.035;
+    RatioPlotLabel  = "";
     SignalDrawStyle = "hist";
   }
 	
@@ -291,6 +296,8 @@ public:
   Float_t GetTotalSystematic(TString pr);
   Int_t GetColorOfProcess(TString pr);
   Plot* NewPlot(TString newVar = "", TString newCut = "", TString newChan = "", Int_t newnbins = -1, Float_t newbin0 = -999, Float_t newbinN = -999, TString newtitle = "", TString newXtitle = "");
+  void RemoveSystematic(TString sys);
+  void UseEnvelope(TString pr, TString tags, TString newname = "");
 
   void SetRatioMin(Float_t r){ RatioMin = r;}
   void SetRatioMax(Float_t r){ RatioMax = r;}
@@ -305,6 +312,8 @@ public:
   void SetLoopOptions(TString t){LoopOptions = t;}
   void SetRatioOptions(TString t){RatioOptions = t;}
   void SetSignalDrawStyle(TString t){ SignalDrawStyle = t;}
+  void SetLegendTextSize(Float_t t){ LegendTextSize = t;} 
+  void SetRatioPlotLabel(TString t){ RatioPlotLabel = t;} 
 
   void SetSignalProcess(TString p){ SignalProcess = p;}
   void SetSignalStyle(TString p){ SignalStyle = p;} 
@@ -365,6 +374,8 @@ protected:
   float fLegY1;
   float fLegX2;
   float fLegY2;
+  Float_t LegendTextSize;
+  TString RatioPlotLabel;
   
 };
 
