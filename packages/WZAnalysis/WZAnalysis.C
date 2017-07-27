@@ -142,8 +142,7 @@ void WZAnalysis::InsideLoop(){
     }
   }
 
-  // Here I need to redefine my leptons and multiple selections
-
+  // Here I redefine my leptons and multiple selections
   makeLeptonCollections();
 
    //if((Int_t) genLeptons.size() >=2 && TNSelLeps >= 2 && passTrigger && passMETfilters){ // dilepton event, 2 leptons // && !isSS
@@ -547,22 +546,163 @@ void WZAnalysis::SetEventVariables(){
   fTree->Branch("TMETJESDown",  &TMETJESDown,  "TMETJESDown/F");
 }
 
+
+Bool_t LeptonSelector::isGoodLepton(Lepton lep){
+}
+
+
+void WZAnalysis::lepMVA(Lepton& lep, TString wp)
+{
+  if(wp=="LV")
+    {
+      // 	Tight muons for multilepton ttH Analysis:
+      // abs(eta)<0.4, Pt>15, abs(dxy)<0.05cm, abs(dz)<0.1cm, SIP3D<8, Imini<0.4,
+      // isLooseMuon==1,jetCSV<0.8484,isMediumMuon==1,tight-charge,lepMVA>0.90.
+      //
+      // 	Tight electrons for multilepton ttH Analysis:
+      // abs(eta)<0.5, Pt>15, abs(dxy)<0.05cm, abs(dz)<0.1cm, SIP3D<8, Imini<0.4,
+      // jetCSV<0.8484,lepMVA>0.90,missinghits==0,conversion rej..
+      // Furthermore, 3 regions in eta-phi space are defined: 0-0.8-1.479-2.5,
+      // where: MVA ID>(0,0,0.7), sigmaietaieta<(0.011,0.011,0.031),
+      // HoverE<(0.10,0.10,0.07), Deltaetain<(0.01,0.01,0.008),
+      // Deltaphiin<(0.04,0.04,0.07),-0.05<1/E-1/p<(0.01,0.01,0.005)
+      //
+      if (lep.isMuon) {
+        if(abs(eta) >= 2.4)        return false;
+        if(pt < 10)                return false;
+        if(!getGoodVertex(iTight)) return false;
+        if(!getSIPcut(8))          return false;
+        if(!getminiRelIso(iTight)) return false;
+        if(jetBTagCSV >= 0.8484)   return false;
+        if(!mediumMuonId)          return false;
+        if(MVATTH <= 0.90)         return false;
+      }
+      if (lep.isElec) {
+        if(abs(eta) <= 2.5)           return false;
+        if(pt <= 10)                  return false;
+        if(!getGoodVertex(iTight))    return false;
+        if(!getSIPcut(8))             return false;
+        if(!getminiRelIso(iTight))    return false;
+        if(!getElecMVAId(iTight,lep)) return false;
+        if(jetBTagCSV >= 0.8484)      return false;
+        if(MVATTH <= 0.90)            return false;
+      }
+      return true;
+    }
+  else if(wp=="LL")
+    {
+      // 	Loose muons for multilepton ttH Analysis:
+      // Fakeable muons without jetCSV cut and with pt>5.
+      //
+      // 	Loose electrons for multilepton ttH Analysis:
+      // Fakeable electrons with Nmissinghits<2 and pt>7 and without jetCSV,
+      // ptratio, 1/E-1/p, deltaPhiin, deltaEtain, H/E, sigmaietaieta cuts
+      //
+      if (lep.isMuon) {
+        if(abs(eta) >= 2.4)          return false;
+        if(pt <= 5)                  return false;
+        if(!getGoodVertex(iLoose))  return false;
+        if(!getSIPcut(8))           return false;
+        if(!getminiRelIso(iLoose))  return false;
+      }
+      if (lep.isElec) {
+        if(abs(eta) >= 2.5)            return false;
+        if(pt <= 7)                    return false;
+        if(!getGoodVertex(iLoose))    return false;
+        if(!getSIPcut(8))             return false;
+        if(!getminiRelIso(iLoose))    return false;
+        if(!getElecMVAId(iLoose,lep)) return false;
+      }
+      return true;
+    }
+  else if(wp=="LVeto")
+    {
+      // 	Fakeable muons for multilepton ttH Analysis:
+      // Tight muons without medium muon ID, tight charge and lepton MVA cuts.
+      //
+      // 	Fakeable electrons for multilepton ttH Analysis:
+      // Tight electrons without tight charge, conv. rej., lepton MVA cuts and
+      // with ptratio > 0.5, if the electron fails tight selection (otherwise
+      // w/o cut in ptratio) and, in this case too, with <0.3 jet CSV.
+      //
+      if (lep.isMuon) {
+        if(abs(eta) >= 2.4)          return false;
+        if(pt <= 10)                 return false;
+        if(!getGoodVertex(iMedium)) return false;
+        if(!getSIPcut(8))           return false;
+        if(!getminiRelIso(iLoose))  return false;
+        if (!isGoodLepton(lep)) {
+          if(jetBTagCSV >= 0.3)      return false;
+          if(ptRatio <= 0.5)         return false;
+          if(SegComp <= 0.3)         return false;
+        } else {
+          if(jetBTagCSV <= 0.8484)   return false;
+        }
+      }
+      if (lep.isElec) {
+        if(abs(eta) >= 2.5)           return false;
+        if(pt > 10)                   return false;
+        if(!getGoodVertex(iMedium))   return false;
+        if(!getSIPcut(8))             return false;
+        if(!getminiRelIso(iLoose))    return false;
+        if(!getElecMVAId(iLoose,lep)) return false;
+        if (!isGoodLepton(lep)) {
+          if(ptRatio <= 0.5)          return false;
+          if(jetBTagCSV >= 0.3)       return false;
+        } else {
+          if(jetBTagCSV >= 0.8484)    return false;
+        }
+      }
+      return true;
+    }
+}
+
+void WZAnalysis::pogID(Lepton& lep, TString wp)
+{
+  if(wp=="POGMain"){
+    Bool_t passId; Bool_t passIso;
+    
+    // Tight cut-based electrons, pT > 20, |eta| < 2.4, RelIso POG, tightIP2D, SIP3D > 4
+    // Tight Muon ID, RelIso POG, tightIP2D, SIP3D > 4
+    if(lep.isMuon){
+      passId  = getMuonId(iTight);
+      passIso = getRelIso04POG(iTight);
+    }
+    if(lep.isElec){
+      passId = getElecCutBasedId(iTight) && lostHits <= 1;
+      passIso = getRelIso03POG(iTight);
+      if(TMath::Abs(etaSC) > 1.4442 && TMath::Abs(etaSC) < 1.566) return false;
+    }
+    if(lep.p.Pt() < 20 || TMath::Abs(lep.p.Eta()) > 2.4) return false;
+    if(passId && passIso && ( (lep.isElec && getGoodVertex(iTight)) || (lep.isMuon && getGoodVertex(iMedium) ))) return true;
+    else return false;
+  }
+  else if(wp=="POGVeto")
+    {
+    return true;
+    }
+  else if(wp=="POGLoose")
+    {
+      
+    }
+
+  return true;
+}
+
 void WZAnalysis::makeLeptonCollections()
 {
 
   for(auto& lep : selLeptons)
     {
-  KA
-  std::vector<Lepton> selLeptonsLV  ; // lepMVA VT
-  std::vector<Lepton> vetoLeptonLV  ; // lepMVA VT
-  std::vector<Lepton> selLeptonsLM  ; // lepMVA M
-  std::vector<Lepton> vetoLeptonsLM ; // lepMVA M
-  std::vector<Lepton> selLeptonsPT  ; // POG T
-  std::vector<Lepton> vetoLeptonsPT ; // POG T
-  std::vector<Lepton> selLeptonsPM  ; // POG M
-  std::vector<Lepton> vetoLeptonsPM ; // POG M
+      
+      if(pogID(lep, "T")) selLeptonsPT.push_back(lep);
+      if(pogID(lep, "M")) selLeptonsPM.push_back(lep);
+      if(pogID(lep, "L")) vetoLeptonsPL.push_back(lep);
+      if(lepMVA(lep, "VT")) selLeptonsLV.push_back(lep);
+      if(lepMVA(lep, "M"))  selLeptonsLM.push_back(lep);
+      if(lepMVA(lep, "L"))  vetoLeptonsLL.push_back(lep);
+    }
   
-
 }
 
 
