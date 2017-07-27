@@ -17,15 +17,15 @@ using namespace std;
 Float_t theBDt(Double_t BDT){
   // if (BDT < -1)     { cout << "[W]: BDT < -1" << endl; return -9999;  }
   // else if (BDT >  1){ cout << "[W]: BDT >  1" << endl; return -9999;  }
-  if      (BDT < -0.501254 ) return 1; 
-  else if (BDT < -0.328117 ) return 2; 
-  else if (BDT < -0.207006 ) return 3; 
-  else if (BDT < -0.108441 ) return 4; 
-  else if (BDT < -0.0307518) return 5; 
-  else if (BDT < 0.0479999 ) return 6; 
-  else if (BDT < 0.138156  ) return 7; 
-  else if (BDT < 0.244131  ) return 8; 
-  else if (BDT < 0.352559  ) return 9; 
+  if      (BDT < -0.531448  ) return 1; 
+  else if (BDT < -0.396646  ) return 2; 
+  else if (BDT < -0.282771  ) return 3; 
+  else if (BDT < -0.184872  ) return 4; 
+  else if (BDT < -0.0977834 ) return 5; 
+  else if (BDT < -0.0118005 ) return 6; 
+  else if (BDT < 0.0867415  ) return 7; 
+  else if (BDT < 0.207723   ) return 8; 
+  else if (BDT < 0.332052   ) return 9; 
   else                       return 10;
 
 }
@@ -48,12 +48,20 @@ Float_t the2j1tBDt(Double_t BDT){
   // else if (BDT < 0.399538 ) return 5;
   // else                      return 6;
 
-  if      ( BDT < -0.22298  ) return 1;
-  else if ( BDT < -0.0288331) return 2;
-  else if ( BDT < 0.149631  ) return 3;
-  else if ( BDT < 0.352233  ) return 4;
-  else if ( BDT < 0.562698  ) return 5;
-  else                        return 6;
+  // if      ( BDT < -0.22298  ) return 1;
+  // else if ( BDT < -0.0288331) return 2;
+  // else if ( BDT < 0.149631  ) return 3;
+  // else if ( BDT < 0.352233  ) return 4;
+  // else if ( BDT < 0.562698  ) return 5;
+  // else                        return 6;
+
+
+  if      ( BDT < -0.176522  ) return 1;
+  else if ( BDT < -0.0798808 ) return 2;
+  else if ( BDT < -0.00888648) return 3;
+  else if ( BDT < 0.0427275  ) return 4;
+  else if ( BDT < 0.108243   ) return 5;
+  else                         return 6;
 
 
 }
@@ -250,4 +258,17 @@ Float_t ShapVarWith1j1tBDtAndJetPt(Double_t nJet, Double_t nBtag, Double_t bdt, 
 //   else
 //     return -1;
 // }
+
+
+Float_t nJetsnBs(float TNJets, float TNBtags)
+{
+  if (TNJets < 3)
+    return TNJets + TNJets*(TNJets-1)/2 + TNBtags;
+  else return 6;
+}
+
+
+
+
+
 #endif

@@ -13,7 +13,7 @@ class EventBuilder : public PAFChainItemSelector{
     std::vector<Float_t> LHEWeights;
 
     EventBuilder();
-    virtual ~EventBuilder() {delete fPUWeight, fPUWeightUp, fPUWeightDown, TriggSF;}
+    virtual ~EventBuilder();
     virtual void InsideLoop();
     virtual void Initialise();
     virtual void Summary();
@@ -75,14 +75,18 @@ class EventBuilder : public PAFChainItemSelector{
     Int_t   gSelection;
     TString gSampleName;
     TString gPathToHeppyTrees;
-    Bool_t  gIsMCatNLO;
-    
+    Float_t  gXSec;
+    Float_t  gCount;
+    Bool_t   gIsMCatNLO;
+    Int_t gNEntries;
+    Float_t  gSumOfWeights;
     Int_t nEntries;
-    Int_t FirstEvent;
-    Int_t nEvents;
-    Int_t Count;
+    Long64_t Count;
     Float_t xsec;
     Int_t nProcessedEvents;
+
+    TString gOptions;
+    Bool_t gIsData2017;
   
 
     void SetCountLHE();

@@ -61,11 +61,16 @@ class WWAnalysis : public PAFChainItemSelector{
 		Int_t   TNSelLeps;
 		Int_t   TNVetoJets;
 		Int_t TChannel;
-		Float_t TLep_Pt[10];    
-		Float_t TLep_Eta[10];
-		Float_t TLep_Phi[10];
-		Float_t TLep_E[10];
-		Float_t TLep_Charge[10];
+		Float_t TLep0_Pt;    
+		Float_t TLep0_Eta;
+		Float_t TLep0_Phi;
+		Float_t TLep0_E;
+		Float_t TLep0_Charge;
+		Float_t TLep1_Pt;    
+		Float_t TLep1_Eta;
+		Float_t TLep1_Phi;
+		Float_t TLep1_E;
+		Float_t TLep1_Charge;
 
 		Int_t TNJets;            // Jets...
 		Int_t TNBtags;

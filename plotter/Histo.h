@@ -66,6 +66,7 @@ class Histo : public TH1F{
   void SetBinsErrorFromSyst();
   void SetDrawStyle(TString g){ DrawStyle = g;}
   TString GetDrawStyle(){ return DrawStyle;}
+  void GetEnvelope(vector<Histo*> v, Int_t dir = 1) ;
   
   Float_t *vsysu = NULL; 
   Float_t *vsysd = NULL;

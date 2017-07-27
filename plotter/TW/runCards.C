@@ -14,7 +14,7 @@ R__LOAD_LIBRARY(TW/AdditionalStuff.C+)
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle);
 
-TString pathToTree = "/pool/cienciasrw/userstorage/sscruz/TW/jun26/";
+TString pathToTree = "/pool/cienciasrw/userstorage/sscruz/TW/jul25/";
 
 TString NameOfTree = "MiniTree";
 
@@ -34,10 +34,9 @@ void runCards(){
 
 
    // DrawPlot("ShapVar( TNJets , TNBtags )", "(TIsSS == 0)", "ElMu", 3, -0.5, 2.5, "YieldsOnly");
-   DrawPlot("ShapVarWith1j1tBDt( TNJets , TNBtags , TBDT )", "(TIsSS == 0)", "ElMu", 12, -0.5, 11.5, "With1j1t");
-   return; 
-  DrawPlot("ShapVarWithBothBDts( TNJets , TNBtags , TBDT , TBDT2j1t )", "(TIsSS == 0)", "ElMu", 17, -0.5, 16.5, "withBothBDTs");
-  DrawPlot("ShapVarWith1j1tBDtAndJetPt( TNJets , TNBtags , TBDT , TBDT2j1t , TJet2_Pt )", "(TIsSS == 0)", "ElMu", 24, -0.5, 23.5, "WithEverything");
+   // DrawPlot("ShapVarWith1j1tBDt( TNJets , TNBtags , TBDT )", "(TIsSS == 0)", "ElMu", 12, -0.5, 11.5, "With1j1t");
+   // DrawPlot("ShapVarWithBothBDts( TNJets , TNBtags , TBDT , TBDT2j1t )", "(TIsSS == 0)", "ElMu", 17, -0.5, 16.5, "withBothBDTs");
+   DrawPlot("ShapVarWith1j1tBDtAndJetPt( TNJets , TNBtags , TBDT , TBDT2j1t , TJet2_Pt )", "(TIsSS == 0)", "ElMu", 24, -0.5, 23.5, "WithEverything");
 
 
 

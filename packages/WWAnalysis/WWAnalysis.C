@@ -15,7 +15,9 @@ WWAnalysis::WWAnalysis() : PAFChainItemSelector() {
 	TMETJESUp = 0; TMETJESDown = 0; TMT2llJESUp = 0; TMT2llJESDown = 0; TMT2 = 0; TMT = 0; TMTprime = 0;
 	TWeight_LepEffUp = 0; TWeight_LepEffDown = 0; TWeight_TrigUp = 0; TWeight_TrigDown = 0;
 	TWeight_FSUp = 0; TWeight_FSDown = 0; TWeight_PUDown = 0; TWeight_PUUp = 0;  TNVetoJets = 0;
-	TDeltaPhi = 0; TDeltaEta = 0;
+	TDeltaPhi = 0; TDeltaEta = 0; TLep0_Pt = 0; TLep0_Eta = 0; TLep0_Phi = 0; TLep0_E = 0; TLep0_Charge = 0;
+	TLep1_Pt = 0; TLep1_Eta = 0; TLep1_Phi = 0; TLep1_E = 0; TLep1_Charge = 0;
+	
 	
 	for(Int_t i = 0; i < 20; i++){
 		TJet_Pt[i] = 0;
@@ -159,7 +161,7 @@ void WWAnalysis::InsideLoop(){
 				//}
 			//}          
 //=============================// analisis de cosas básicas de WW
-			if( ((selLeptons.at(0).p +selLeptons.at(1).p).M() > 12) && gChannel == iElMu)// mll > 12 GeV
+			if( ((selLeptons.at(0).p +selLeptons.at(1).p).M() > 12) && gChannel == iElMu )// mll > 12 GeV
 				//&& (gChannel == iElMu || (TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15))){ //Channel e mu y con Z Veto in ee, µµ
 				fTree->Fill();
 			//};
@@ -180,18 +182,23 @@ void WWAnalysis::InsideLoop(){
 void WWAnalysis::SetLeptonVariables(){
 	fTree->Branch("TNVetoLeps",     &TNVetoLeps,     "TNVetoLeps/I");
   	fTree->Branch("TNSelLeps",     &TNSelLeps,     "TNSelLeps/I");
-  	fTree->Branch("TLep_Pt",     &TLep_Pt,     "TLep_Pt/F");
-  	fTree->Branch("TLep_Eta",     &TLep_Eta,     "TLep_Eta/F");
-  	fTree->Branch("TLep_Phi",     &TLep_Phi,     "TLep_Phi/F");
-  	fTree->Branch("TLep_E" ,     &TLep_E ,     "TLep_E/F");
-  	fTree->Branch("TLep_Charge", &TLep_Charge, "TLep_Charge/F");
+  	fTree->Branch("TLep0_Pt",       &TLep0_Pt,       "TLep0_Pt/F");
+  	fTree->Branch("TLep0_Eta",      &TLep0_Eta,      "TLep0_Eta/F");
+  	fTree->Branch("TLep0_Phi",      &TLep0_Phi,      "TLep0_Phi/F");
+  	fTree->Branch("TLep0_E" ,       &TLep0_E ,       "TLep0_E/F");
+  	fTree->Branch("TLep0_Charge",   &TLep0_Charge,   "TLep0_Charge/F");
+  	fTree->Branch("TLep1_Pt",       &TLep1_Pt,       "TLep1_Pt/F");
+  	fTree->Branch("TLep1_Eta",      &TLep1_Eta,      "TLep1_Eta/F");
+  	fTree->Branch("TLep1_Phi",      &TLep1_Phi,      "TLep1_Phi/F");
+  	fTree->Branch("TLep1_E" ,       &TLep1_E ,       "TLep1_E/F");
+  	fTree->Branch("TLep1_Charge",   &TLep1_Charge,   "TLep1_Charge/F");
   	fTree->Branch("TChannel",      &TChannel,      "TChannel/I");
 	fTree->Branch("TPtdil",         &TPtdil ,       "TPtdil/F");
 	fTree->Branch("TMT",       &TMT,        "TMT/F");
   	fTree->Branch("TMll",      &TMll,      "TMll/F");
   	fTree->Branch("TMT2",      &TMT2,      "TMT2/F");
   	fTree->Branch("TDeltaPhi",      &TDeltaPhi,      "TDeltaPhi/F");
-  	fTree->Branch("TDeltaEta",      &TDeltaEta,      "TDeltaPhi/F");
+  	fTree->Branch("TDeltaEta",      &TDeltaEta,      "TDeltaEta/F");
 };
 
 
@@ -254,20 +261,20 @@ void WWAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<
   TNSelLeps = selLeptons.size();
   Int_t nVetoLeptons = VetoLeptons.size();
   TNVetoLeps = (nVetoLeptons == 0) ? TNSelLeps : nVetoLeptons;
-  for(Int_t i = 0; i < TNSelLeps; i++){
-    TLep_Pt[i]     = selLeptons.at(i).Pt();    
-    TLep_Eta[i]    = selLeptons.at(i).Eta();    
-    TLep_Phi[i]    = selLeptons.at(i).Phi();    
-    TLep_E[i]      = selLeptons.at(i).E();    
-    TLep_Charge[i] = selLeptons.at(i).charge;    
+   if(TNSelLeps > 0){
+    	TLep0_Pt     = selLeptons.at(0).Pt();    
+    	TLep0_Eta    = selLeptons.at(0).Eta();    
+    	TLep0_Phi    = selLeptons.at(0).Phi();    
+    	TLep0_E      = selLeptons.at(0).E();    
+    	TLep0_Charge = selLeptons.at(0).charge;    
   }
-  if(TNSelLeps < 2) TChannel = -1;
-  else if(selLeptons.at(0).isMuon && selLeptons.at(1).isElec) TChannel = iElMu;
-  else if(selLeptons.at(0).isElec && selLeptons.at(1).isMuon) TChannel = iElMu;
-  else if(selLeptons.at(0).isMuon && selLeptons.at(1).isMuon) TChannel = iMuon;
-  else if(selLeptons.at(0).isElec && selLeptons.at(1).isElec) TChannel = iElec;
-  TChannel = gChannel;
   if(TNSelLeps > 1){
+  	TLep1_Pt     = selLeptons.at(1).Pt();    
+   	TLep1_Eta    = selLeptons.at(1).Eta();    
+   	TLep1_Phi    = selLeptons.at(1).Phi();    
+    	TLep1_E      = selLeptons.at(1).E();    
+    	TLep1_Charge = selLeptons.at(1).charge;
+ 
 	TMll = (selLeptons.at(0).p + selLeptons.at(1).p).M();    
 	TPtdil = (selLeptons.at(0).p + selLeptons.at(1).p).Pt(); 
 	TMT2 = getMT2ll(selLeptons.at(0), selLeptons.at(1), Get<Float_t>("met_pt"), Get<Float_t>("met_phi") ); 
@@ -279,6 +286,12 @@ void WWAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<
 	//defincion directa con el TLorentzVector de TMT (predefinida)
 	TMTprime = (selLeptons.at(0).p + selLeptons.at(1).p).Mt();
   }
+  if(TNSelLeps < 2) TChannel = -1;
+  else if(selLeptons.at(0).isMuon && selLeptons.at(1).isElec) TChannel = iElMu;
+  else if(selLeptons.at(0).isElec && selLeptons.at(1).isMuon) TChannel = iElMu;
+  else if(selLeptons.at(0).isMuon && selLeptons.at(1).isMuon) TChannel = iMuon;
+  else if(selLeptons.at(0).isElec && selLeptons.at(1).isElec) TChannel = iElec;
+  TChannel = gChannel;
 }
 
 void WWAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut){

@@ -38,7 +38,11 @@ class TWAnalysis : public PAFChainItemSelector{
     std::vector<Jet> vetoJets;
 
     TTree* fTree;
-    TTree* fTWTree;
+    TTree* fMini;
+    TTree* fMini1j1t;
+    TTree* fMini2j1t;
+
+    bool hasTW;
     Float_t TLHEWeight[254];
     void SetLeptonVariables();
     void SetJetVariables();
@@ -69,7 +73,6 @@ class TWAnalysis : public PAFChainItemSelector{
     Float_t  BtagSFMistagUp  ;
     Float_t  BtagSFMistagDown;
 
-    Float_t TDilepPt;
 
     Float_t TVetoJet1_Pt;
     Float_t TVetoJet1_Eta;
@@ -210,6 +213,13 @@ class TWAnalysis : public PAFChainItemSelector{
     Float_t   jetPtSubLeading_ ;
     Float_t   jetEtaSubLeading_;
 
+    Float_t TLeadingLepPt    ;
+    Float_t TLeadingLepEta   ;
+    Float_t TDilepPt         ;
+    Float_t TSubLeadingLepPt ;
+    Float_t TSubLeadingLepEta;
+
+
 
     Float_t  DilepMETJetPt  , DilepMETJetPtJESUp  , DilepMETJetPtJESDown  , DilepMETJetPtJERUp  ;
     Float_t  Lep1METJetPt   , Lep1METJetPtJESUp   , Lep1METJetPtJESDown   , Lep1METJetPtJERUp   ;
@@ -231,6 +241,7 @@ class TWAnalysis : public PAFChainItemSelector{
     Float_t  TBDTgrad       , TBDTgradJESUp       , TBDTgradJESDown       , TBDTgradJERUp       ;
     Float_t  TBDT       , TBDTJESUp       , TBDTJESDown       , TBDTJERUp       ;
     Float_t  TBDT2j1t       , TBDT2j1tJESUp       , TBDT2j1tJESDown       , TBDT2j1tJERUp       ;
+    Float_t TBDT2j1t_DR, TBDT2j1t_ot;
     /* Float_t  TBDT2j1tv1, TBDT2j1tv2, TBDT2j1tv3; */
     /* Float_t  TBDTBTagUp     , TBDTBTagDown; */
     /* Float_t  TBDTMistagUp   , TBDTBMistagDown; */
@@ -319,6 +330,9 @@ class TWAnalysis : public PAFChainItemSelector{
     TMVA::Reader* BDT2j1tJESUp;
     TMVA::Reader* BDT2j1tJESDown;
     TMVA::Reader* BDT2j1tJER;
+
+    TMVA::Reader* BDT2j1t_DR;
+    TMVA::Reader* BDT2j1t_ot;
 
     /* TMVA::Reader* BDT2j1tv1; */
     /* TMVA::Reader* BDT2j1tv2; */
