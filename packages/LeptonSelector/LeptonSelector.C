@@ -314,7 +314,7 @@ Bool_t LeptonSelector::getElecCutBasedId(Int_t wp){
   }
   else if(gSelection == iWZSelec)
     {
-      return true; // Me la pela, porque selecciono IDs multiplos dentro del paquete de analisis
+      return true; // Selección de ID dentro del paquete de analisis
     }
   else{
     if(wp == iTight   && tightVar < 3)     return false;

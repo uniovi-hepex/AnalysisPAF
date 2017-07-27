@@ -5,14 +5,15 @@
 #include <iostream>
 #include <vector>
 
-//enum eChannels{iUnkChan, iElMu, iMuon, iElec, nChannels};
-const Int_t nChannels = 3;
-enum eLevels  {idilepton, iZVeto, iMETcut, i2jets, i1btag, nLevels};
+enum eChannels{iElElEl, iElElMu, iElMuMu,iMuMuMu};
+const Int_t nChannels = 4;
+enum eLevels  {itrilepton, ionZ, imet, i0btag, im3l, nLevels};
 enum eSysts   {inorm, nSysts};
 const int nWeights = 248;
-const TString gChanLabel[nChannels] = {"ElMu", "Muon","Elec"};
-const TString sCut[nLevels] = {"dilepton", "ZVeto", "MET", "2jets", "1btag"};
+const TString gChanLabel[nChannels] = {"ElElEl", "ElElMu","ElMuMu","MuMuMu"};
+const TString sCut[nLevels] = {"trilepton","onZ","met","0btag","m3l"};
 const TString gSys[nSysts] = {"0"};
+
 
 
 class WZAnalysis : public PAFChainItemSelector{
@@ -34,8 +35,10 @@ class WZAnalysis : public PAFChainItemSelector{
     std::vector<Jet> selJets ;
     std::vector<Jet> selJetsJecUp   ;
     std::vector<Jet> selJetsJecDown ;
-
-
+		Lepton lepZ1;
+		Lepton lepZ2;
+		Lepton lepW;
+		Float_t nomZmass = 91.1876;
 
 
     std::vector<Jet> Jets15  ;
@@ -66,7 +69,6 @@ class WZAnalysis : public PAFChainItemSelector{
     Int_t   gChannel;
     Bool_t  passMETfilters;
     Bool_t  passTrigger;
-    Bool_t  isSS;
     Float_t NormWeight;
 
     void InitHistos();
@@ -91,18 +93,22 @@ class WZAnalysis : public PAFChainItemSelector{
     bool pogID (Lepton& lep, TString wp);
 
     void makeLeptonCollections();
+		void AssignWZLeptons();
 
     //Variables
     Float_t TWeight;   // Total nominal weight
-    Float_t TMll;      // Invariant mass
+    Float_t TMll;      // Invariant mass of OSSF (best Z mass)
+		Float_t TMinMll;    // Invariant mass of any pair
+    Int_t TNOSSF; 		 // Number of OSSF pairs
     Float_t TMET;      // MET
     Float_t TGenMET;     
     Float_t TMET_Phi;  // MET phi
 
+
     Int_t   TNVetoLeps;
     Int_t   TNSelLeps;
     Int_t   TChannel;
-    Bool_t   TIsSS;
+
     Float_t TLep_Pt[10];    
     Float_t TLep_Eta[10];
     Float_t TLep_Phi[10];
@@ -170,8 +176,7 @@ class WZAnalysis : public PAFChainItemSelector{
     Float_t  C_jll          , C_jllJESUp          , C_jllJESDown          ;
     Float_t  DilepJetPt     , DilepJetPtJESUp     , DilepJetPtJESDown     ;
     Float_t  TBDT           , TBDTJESUp           , TBDTJESDown           ;
-    /* Float_t  TBDTBTagUp     , TBDTBTagDown; */
-    /* Float_t  TBDTMistagUp   , TBDTBMistagDown; */
+
 
     Float_t  nBTotal          , nBTotalJESUp          , nBTotalJESDown          ; 
     Float_t  DilepmetjetOverHT, DilepmetjetOverHTJESUp, DilepmetjetOverHTJESDown; 
@@ -217,7 +222,7 @@ class WZAnalysis : public PAFChainItemSelector{
   TH1F* fhDummy;
   TH1F*  fHyields[nChannels][nSysts];
   TH1F*  fHFiduYields[nChannels][nSysts];
-  TH1F*  fHSSyields[nChannels][nSysts];
+
 
   protected:
 
