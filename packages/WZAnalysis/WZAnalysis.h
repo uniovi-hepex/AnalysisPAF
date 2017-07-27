@@ -87,8 +87,8 @@ class WZAnalysis : public PAFChainItemSelector{
     Double_t getSysM(const TString& sys = "Norm");
     Double_t getM(vector<TLorentzVector>);
 
-    void lepMVA(Lepton& lep, TString wp);
-    void pogID (Lepton& lep, TString wp);
+    bool lepMVA(Lepton& lep, TString wp);
+    bool pogID (Lepton& lep, TString wp);
 
     void makeLeptonCollections();
 

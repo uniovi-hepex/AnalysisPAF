@@ -547,13 +547,9 @@ void WZAnalysis::SetEventVariables(){
 }
 
 
-Bool_t LeptonSelector::isGoodLepton(Lepton lep){
-}
-
-
-void WZAnalysis::lepMVA(Lepton& lep, TString wp)
+bool WZAnalysis::lepMVA(Lepton& lep, TString wp)
 {
-  if(wp=="LV")
+/*  if(wp=="LV")
     {
       // 	Tight muons for multilepton ttH Analysis:
       // abs(eta)<0.4, Pt>15, abs(dxy)<0.05cm, abs(dz)<0.1cm, SIP3D<8, Imini<0.4,
@@ -568,8 +564,8 @@ void WZAnalysis::lepMVA(Lepton& lep, TString wp)
       // Deltaphiin<(0.04,0.04,0.07),-0.05<1/E-1/p<(0.01,0.01,0.005)
       //
       if (lep.isMuon) {
-        if(abs(eta) >= 2.4)        return false;
-        if(pt < 10)                return false;
+        if(abs(lep.p.Eta()) >= 2.4)        return false;
+        if(lep.p.Pt() < 10)                return false;
         if(!getGoodVertex(iTight)) return false;
         if(!getSIPcut(8))          return false;
         if(!getminiRelIso(iTight)) return false;
@@ -578,8 +574,8 @@ void WZAnalysis::lepMVA(Lepton& lep, TString wp)
         if(MVATTH <= 0.90)         return false;
       }
       if (lep.isElec) {
-        if(abs(eta) <= 2.5)           return false;
-        if(pt <= 10)                  return false;
+        if(abs(lep.p.Eta()) <= 2.5)           return false;
+        if(lep.p.Pt() <= 10)                  return false;
         if(!getGoodVertex(iTight))    return false;
         if(!getSIPcut(8))             return false;
         if(!getminiRelIso(iTight))    return false;
@@ -599,15 +595,15 @@ void WZAnalysis::lepMVA(Lepton& lep, TString wp)
       // ptratio, 1/E-1/p, deltaPhiin, deltaEtain, H/E, sigmaietaieta cuts
       //
       if (lep.isMuon) {
-        if(abs(eta) >= 2.4)          return false;
-        if(pt <= 5)                  return false;
+        if(abs(lep.p.Eta()) >= 2.4)          return false;
+        if(lep.p.Pt() <= 5)                  return false;
         if(!getGoodVertex(iLoose))  return false;
         if(!getSIPcut(8))           return false;
         if(!getminiRelIso(iLoose))  return false;
       }
       if (lep.isElec) {
-        if(abs(eta) >= 2.5)            return false;
-        if(pt <= 7)                    return false;
+        if(abs(lep.p.Eta()) >= 2.5)            return false;
+        if(lep.p.Pt() <= 7)                    return false;
         if(!getGoodVertex(iLoose))    return false;
         if(!getSIPcut(8))             return false;
         if(!getminiRelIso(iLoose))    return false;
@@ -626,8 +622,8 @@ void WZAnalysis::lepMVA(Lepton& lep, TString wp)
       // w/o cut in ptratio) and, in this case too, with <0.3 jet CSV.
       //
       if (lep.isMuon) {
-        if(abs(eta) >= 2.4)          return false;
-        if(pt <= 10)                 return false;
+        if(abs(lep.p.Eta()) >= 2.4)          return false;
+        if(lep.p.Pt() <= 10)                 return false;
         if(!getGoodVertex(iMedium)) return false;
         if(!getSIPcut(8))           return false;
         if(!getminiRelIso(iLoose))  return false;
@@ -640,8 +636,8 @@ void WZAnalysis::lepMVA(Lepton& lep, TString wp)
         }
       }
       if (lep.isElec) {
-        if(abs(eta) >= 2.5)           return false;
-        if(pt > 10)                   return false;
+        if(abs(lep.p.Eta()) >= 2.5)           return false;
+        if(lep.p.Pt() > 10)                   return false;
         if(!getGoodVertex(iMedium))   return false;
         if(!getSIPcut(8))             return false;
         if(!getminiRelIso(iLoose))    return false;
@@ -654,11 +650,12 @@ void WZAnalysis::lepMVA(Lepton& lep, TString wp)
         }
       }
       return true;
-    }
+    }*/
+	return true;
 }
 
-void WZAnalysis::pogID(Lepton& lep, TString wp)
-{
+bool WZAnalysis::pogID(Lepton& lep, TString wp)
+{/*
   if(wp=="POGMain"){
     Bool_t passId; Bool_t passIso;
     
@@ -685,7 +682,7 @@ void WZAnalysis::pogID(Lepton& lep, TString wp)
     {
       
     }
-
+*/
   return true;
 }
 
