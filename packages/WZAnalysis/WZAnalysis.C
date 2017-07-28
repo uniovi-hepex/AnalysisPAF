@@ -5,7 +5,7 @@ ClassImp(WZAnalysis);
 bool GreaterThan(float i, float j){ return (i > j);}
 
 WZAnalysis::WZAnalysis() : PAFChainItemSelector() {
-  fTree = 0;
+	//fTree = {0};
   fhDummy = 0;
   passMETfilters = 0;
   passTrigger    = 0;
@@ -63,10 +63,12 @@ void WZAnalysis::Initialise(){
   makeTree = true;
   makeHistos = true;
   if(makeTree){
-    fTree   = CreateTree("MiniTree","Created with PAF");
-    SetLeptonVariables();
-    SetJetVariables();
-    SetEventVariables();
+		for(int i = 0; i < nWPoints; i++){
+	    fTree[i]   = CreateTree(sWPoints[i],"Created with PAF");
+    	SetLeptonVariables(fTree[i]);
+    	SetJetVariables(fTree[i]);
+    	SetEventVariables(fTree[i]);
+		}
   }
   InitHistos();
 }
@@ -75,7 +77,8 @@ void WZAnalysis::InsideLoop(){
   // Vectors with the objects
   genLeptons  = GetParam<vector<Lepton>>("genLeptons");
   selLeptons  = GetParam<vector<Lepton>>("selLeptons");
-  vetoLeptons = GetParam<vector<Lepton>>("vetoLeptons");
+  foLeptons = GetParam<vector<Lepton>>("vetoLeptons");
+  looseLeptons = GetParam<vector<Lepton>>("looseLeptons");
   selJets     = GetParam<vector<Jet>>("selJets");
   selJetsJecUp   = GetParam<vector<Jet>>("selJetsJecUp");
   selJetsJecDown = GetParam<vector<Jet>>("selJetsJecDown");
@@ -96,92 +99,98 @@ void WZAnalysis::InsideLoop(){
   passMETfilters = GetParam<Bool_t>("METfilters");
   passTrigger    = GetParam<Bool_t>("passTrigger");
 
-  // Leptons and Jets
-  GetLeptonVariables(selLeptons, vetoLeptons);
-  GetJetVariables(selJets, Jets15);
-  GetGenJetVariables(genJets, mcJets);
-  GetMET();
-  fhDummy->Fill(1);
+	for (int wP = 0; wP < nWPoints; wP++){
+  	// Leptons and Jets
 
-  // FIXME: Here I might redefine my leptons and multiple selections
-  makeLeptonCollections();
+			tightLeptons = {};
+			fakeableLeptons = {};
 
-  if(TNSelLeps == 3 && passTrigger && passMETfilters){ // trilepton event with OSSF + l, passes trigger and MET filters
-    // Deal with weights:
-    Float_t lepSF   = selLeptons.at(0).GetSF(0)*selLeptons.at(1).GetSF(0)*selLeptons.at(2).GetSF(0);
-    Float_t ElecSF = 1; Float_t MuonSF = 1;
-    Float_t ElecSFUp = 1; Float_t ElecSFDo = 1; Float_t MuonSFUp = 1; Float_t MuonSFDo = 1;
-    Float_t stat = 0; 
-    //For muons
-    //https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonReferenceEffsRun2
-    //Additional 1% for ID + 0.5% for Isolation + 0.5% single muon triggers
-
-    if(TChannel == iElElEl){
-      ElecSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0)*selLeptons.at(2).GetSF( 0);
-      ElecSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1)*selLeptons.at(2).GetSF( 1);
-      ElecSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1)*selLeptons.at(2).GetSF(-1);
-      MuonSFUp = 1; MuonSFDo = 1; MuonSF = 1;
-    }
-    else if(TChannel == iMuMuMu){
-      MuonSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0)*selLeptons.at(2).GetSF( 0);
-      MuonSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1)*selLeptons.at(2).GetSF( 1);
-      MuonSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1)*selLeptons.at(2).GetSF(-1);
-      ElecSFUp = 1; ElecSFDo = 1; ElecSF = 1;
-    }
-		else{
-      MuonSFUp = 1; MuonSFDo = 1; MuonSF = 1;ElecSFUp = 1; ElecSFDo = 1; ElecSF = 1;
-			for (int i = 0; i <3; i ++){
-				if (selLeptons.at(i).isMuon){
-					MuonSF   *= selLeptons.at(i).GetSF( 0);
-					MuonSFUp *= selLeptons.at(i).GetSF( 1);
-					MuonSFDo *= selLeptons.at(i).GetSF(-1);				
-				}
-				else {
-					ElecSF   *= selLeptons.at(i).GetSF( 0);
-					ElecSFUp *= selLeptons.at(i).GetSF( 1);
-					ElecSFDo *= selLeptons.at(i).GetSF(-1);				
+			GetLeptonsByWP(wP);
+ 
+  		GetLeptonVariables(tightLeptons, fakeableLeptons, looseLeptons);
+  		GetJetVariables(selJets, Jets15);
+  		GetGenJetVariables(genJets, mcJets);
+  		GetMET();
+  		fhDummy->Fill(1);
+	
+	
+  	if(TNTightLeps == 3 && passTrigger && passMETfilters){ // trilepton event with OSSF + l, passes trigger and MET filters
+    	// Deal with weights:
+    	Float_t lepSF   = selLeptons.at(0).GetSF(0)*selLeptons.at(1).GetSF(0)*selLeptons.at(2).GetSF(0);
+    	Float_t ElecSF = 1; Float_t MuonSF = 1;
+    	Float_t ElecSFUp = 1; Float_t ElecSFDo = 1; Float_t MuonSFUp = 1; Float_t MuonSFDo = 1;
+    	Float_t stat = 0; 
+    	//For muons
+    	//https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonReferenceEffsRun2
+    	//Additional 1% for ID + 0.5% for Isolation + 0.5% single muon triggers
+	
+    	if(TChannel == iElElEl){
+    	  ElecSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0)*selLeptons.at(2).GetSF( 0);
+    	  ElecSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1)*selLeptons.at(2).GetSF( 1);
+    	  ElecSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1)*selLeptons.at(2).GetSF(-1);
+    	  MuonSFUp = 1; MuonSFDo = 1; MuonSF = 1;
+    	}
+    	else if(TChannel == iMuMuMu){
+    	  MuonSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0)*selLeptons.at(2).GetSF( 0);
+    	  MuonSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1)*selLeptons.at(2).GetSF( 1);
+    	  MuonSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1)*selLeptons.at(2).GetSF(-1);
+    	  ElecSFUp = 1; ElecSFDo = 1; ElecSF = 1;
+    	}
+			else{
+    	  MuonSFUp = 1; MuonSFDo = 1; MuonSF = 1;ElecSFUp = 1; ElecSFDo = 1; ElecSF = 1;
+				for (int i = 0; i <3; i ++){
+					if (selLeptons.at(i).isMuon){
+						MuonSF   *= selLeptons.at(i).GetSF( 0);
+						MuonSFUp *= selLeptons.at(i).GetSF( 1);
+						MuonSFDo *= selLeptons.at(i).GetSF(-1);				
+					}
+					else{
+						ElecSF   *= selLeptons.at(i).GetSF( 0);
+						ElecSFUp *= selLeptons.at(i).GetSF( 1);
+						ElecSFDo *= selLeptons.at(i).GetSF(-1);				
+					}
 				}
 			}
-		}
+	
+    	TWeight             = NormWeight*ElecSF*MuonSF*TrigSF*PUSF;
+    	TWeight_ElecEffUp   = NormWeight*ElecSFUp*MuonSF*TrigSF*PUSF;
+    	TWeight_ElecEffDown = NormWeight*ElecSFDo*MuonSF*TrigSF*PUSF;
+    	TWeight_MuonEffUp   = NormWeight*ElecSF*MuonSFUp*TrigSF*PUSF;
+    	TWeight_MuonEffDown = NormWeight*ElecSF*MuonSFDo*TrigSF*PUSF;
+    	TWeight_TrigUp     = NormWeight*lepSF*(TrigSF+TrigSFerr)*PUSF;
+    	TWeight_TrigDown   = NormWeight*lepSF*(TrigSF-TrigSFerr)*PUSF;
+    	TWeight_PUDown     = NormWeight*lepSF*TrigSF*PUSF_Up;
+    	TWeight_PUUp       = NormWeight*lepSF*TrigSF*PUSF_Down;
+	
+    	if(gIsData) TWeight = 1;
+    	// Event Selection
+    	// ===================================================================================================================
 
-    TWeight             = NormWeight*ElecSF*MuonSF*TrigSF*PUSF;
-    TWeight_ElecEffUp   = NormWeight*ElecSFUp*MuonSF*TrigSF*PUSF;
-    TWeight_ElecEffDown = NormWeight*ElecSFDo*MuonSF*TrigSF*PUSF;
-    TWeight_MuonEffUp   = NormWeight*ElecSF*MuonSFUp*TrigSF*PUSF;
-    TWeight_MuonEffDown = NormWeight*ElecSF*MuonSFDo*TrigSF*PUSF;
-    TWeight_TrigUp     = NormWeight*lepSF*(TrigSF+TrigSFerr)*PUSF;
-    TWeight_TrigDown   = NormWeight*lepSF*(TrigSF-TrigSFerr)*PUSF;
-    TWeight_PUDown     = NormWeight*lepSF*TrigSF*PUSF_Up;
-    TWeight_PUUp       = NormWeight*lepSF*TrigSF*PUSF_Down;
-
-    if(gIsData) TWeight = 1;
-    // Event Selection
-    // ===================================================================================================================
-
-    if(TNSelLeps == 3 && TNOSSF > 0){ 
-			AssignWZLeptons();
-			if (lepZ1.Pt() > 25 && lepZ2.Pt() > 10 && lepW.Pt() > 25){//3 lepton, has OSSF, leptons assigned to W and Z
-	      fHyields[gChannel][0] -> Fill(itrilepton, TWeight);
-	      FillHistos(gChannel, itrilepton);
-	      FillDYHistos(gChannel);
-      
-      	if(TMath::Abs(TMll - nomZmass)< 15. && TMinMll > 4. && (lepZ1.p + lepZ2.p + lepW.p).M() > 100.  ){ //  Z window + exlcude low masses + M_3l selection 
-					fHyields[gChannel][0] -> Fill(ionZ, TWeight);
-      	  FillHistos(gChannel, ionZ);
-
-      	  if(TMET > 30.){   // MET > 30 always
-      	  	fHyields[gChannel][0] -> Fill(imet, TWeight);
-      	    FillHistos(gChannel, imet);
-      	    if(TNBtags == 0){ //Exactly 0 btags
-      	      fHyields[gChannel][0] -> Fill(i0btag, TWeight);
-      	      FillHistos(gChannel, i0btag);
-							fTree -> Fill();
-            }
-          }
-        }
-      }
-    }   
-  }
+    	if(TNTightLeps == 3 && TNOSSF > 0){ 
+				AssignWZLeptons();
+				if (lepZ1.Pt() > 25 && lepZ2.Pt() > 10 && lepW.Pt() > 25){//3 lepton, has OSSF, leptons assigned to W and Z
+	  	    fHyields[gChannel][0] -> Fill(itrilepton, TWeight);
+	  	    FillHistos(gChannel, itrilepton);
+	  	    FillDYHistos(gChannel);
+    	  
+    	  	if(TMath::Abs(TMll - nomZmass)< 15. && TMinMll > 4. && (lepZ1.p + lepZ2.p + lepW.p).M() > 100.  ){ //  Z window + exlcude low masses + M_3l selection 
+						fHyields[gChannel][0] -> Fill(ionZ, TWeight);
+    	  	  FillHistos(gChannel, ionZ);
+	
+    	  	  if(TMET > 30.){   // MET > 30 always
+    	  	  	fHyields[gChannel][0] -> Fill(imet, TWeight);
+    	  	    FillHistos(gChannel, imet);
+    	  	    if(TNBtags == 0){ //Exactly 0 btags
+    	  	      fHyields[gChannel][0] -> Fill(i0btag, TWeight);
+    	  	      FillHistos(gChannel, i0btag);
+								fTree[wP] -> Fill();
+    	        }
+    	      }
+    	    }
+    	  }
+    	}   
+  	}
+	}
 }
 
 
@@ -257,88 +266,103 @@ void WZAnalysis::InitHistos(){
   }
 }
 
-void WZAnalysis::SetLeptonVariables(){
-  fTree->Branch("TNVetoLeps",     &TNVetoLeps,     "TNVetoLeps/I");
-  fTree->Branch("TNSelLeps",     &TNSelLeps,     "TNSelLeps/I");
-  fTree->Branch("TLep_Pt",     TLep_Pt,     "TLep_Pt[TNSelLeps]/F");
-  fTree->Branch("TLep_Eta",     TLep_Eta,     "TLep_Eta[TNSelLeps]/F");
-  fTree->Branch("TLep_Phi",     TLep_Phi,     "TLep_Phi[TNSelLeps]/F");
-  fTree->Branch("TLep_E" ,     TLep_E ,     "TLep_E[TNSelLeps]/F");
-  fTree->Branch("TLep_Charge",  TLep_Charge, "TLep_Charge[TNSelLeps]/F");
-  fTree->Branch("TChannel",      &TChannel,      "TChannel/I");
-  fTree->Branch("TMll",        &TMll,      "TMll/F");
-  fTree->Branch("TNOSSF",      &TNOSSF,      "TNOSSF/I");
-  fTree->Branch("TMinMll",      &TMinMll,      "TMinMll/F");
+void WZAnalysis::SetLeptonVariables(TTree* iniTree){
+  iniTree->Branch("TNFOLeps",     &TNFOLeps,     "TNFOLeps/I");
+  iniTree->Branch("TNTightLeps",     &TNTightLeps,     "TNTightLeps/I");
+  iniTree->Branch("TLep_Pt",     TLep_Pt,     "TLep_Pt[TNTightLeps]/F");
+  iniTree->Branch("TLep_Eta",     TLep_Eta,     "TLep_Eta[TNTightLeps]/F");
+  iniTree->Branch("TLep_Phi",     TLep_Phi,     "TLep_Phi[TNTightLeps]/F");
+  iniTree->Branch("TLep_E" ,     TLep_E ,     "TLep_E[TNTightLeps]/F");
+  iniTree->Branch("TLep_Charge",  TLep_Charge, "TLep_Charge[TNTightLeps]/F");
+  iniTree->Branch("TChannel",      &TChannel,      "TChannel/I");
+  iniTree->Branch("TMll",        &TMll,      "TMll/F");
+  iniTree->Branch("TNOSSF",      &TNOSSF,      "TNOSSF/I");
+  iniTree->Branch("TMinMll",      &TMinMll,      "TMinMll/F");
 }
 
-void WZAnalysis::SetJetVariables(){
-  fTree->Branch("TNJets",           &TNJets,         "TNJets/I");
-  fTree->Branch("TNBtags",       &TNBtags,     "TNBtags/I");
-  fTree->Branch("TJet_isBJet",       TJet_isBJet,       "TJet_isBJet[TNJets]/I");
-  fTree->Branch("TJet_Pt",           TJet_Pt,           "TJet_Pt[TNJets]/F");
-  fTree->Branch("TJet_Eta",           TJet_Eta,           "TJet_Eta[TNJets]/F");
-  fTree->Branch("TJet_Phi",           TJet_Phi,           "TJet_Phi[TNJets]/F");
-  fTree->Branch("TJet_E",            TJet_E,            "TJet_E[TNJets]/F");
+void WZAnalysis::SetJetVariables(TTree* iniTree){
+  iniTree->Branch("TNJets",           &TNJets,         "TNJets/I");
+  iniTree->Branch("TNBtags",       &TNBtags,     "TNBtags/I");
+  iniTree->Branch("TJet_isBJet",       TJet_isBJet,       "TJet_isBJet[TNJets]/I");
+  iniTree->Branch("TJet_Pt",           TJet_Pt,           "TJet_Pt[TNJets]/F");
+  iniTree->Branch("TJet_Eta",           TJet_Eta,           "TJet_Eta[TNJets]/F");
+  iniTree->Branch("TJet_Phi",           TJet_Phi,           "TJet_Phi[TNJets]/F");
+  iniTree->Branch("TJet_E",            TJet_E,            "TJet_E[TNJets]/F");
 
-  fTree->Branch("TNJetsJESUp",           &TNJetsJESUp,         "TNJetsJESUp/I");
-  fTree->Branch("TNJetsJESDown",           &TNJetsJESDown,         "TNJetsJESDown/I");
-  fTree->Branch("TNJetsJERUp",           &TNJetsJERUp,         "TNJetsJERUp/I");
+  iniTree->Branch("TNJetsJESUp",           &TNJetsJESUp,         "TNJetsJESUp/I");
+  iniTree->Branch("TNJetsJESDown",           &TNJetsJESDown,         "TNJetsJESDown/I");
+  iniTree->Branch("TNJetsJERUp",           &TNJetsJERUp,         "TNJetsJERUp/I");
 
-  fTree->Branch("TNBtagsBtagUp",     &TNBtagsBtagUp,   "TNBtagsBtagUp/I");
-  fTree->Branch("TNBtagsBtagDown",   &TNBtagsBtagDown, "TNBtagsBtagDown/I");
-  fTree->Branch("TNBtagsMisTagUp",     &TNBtagsMisTagUp,   "TNBtagsMisTagUp/I");
-  fTree->Branch("TNBtagsMisTagDown",   &TNBtagsMisTagDown, "TNBtagsMisTagDown/I");
+  iniTree->Branch("TNBtagsBtagUp",     &TNBtagsBtagUp,   "TNBtagsBtagUp/I");
+  iniTree->Branch("TNBtagsBtagDown",   &TNBtagsBtagDown, "TNBtagsBtagDown/I");
+  iniTree->Branch("TNBtagsMisTagUp",     &TNBtagsMisTagUp,   "TNBtagsMisTagUp/I");
+  iniTree->Branch("TNBtagsMisTagDown",   &TNBtagsMisTagDown, "TNBtagsMisTagDown/I");
 
-  fTree->Branch("TNBtagsJESUp",   &TNBtagsJESUp, "TNBtagsJESUp/I");
-  fTree->Branch("TNBtagsJESDown",  &TNBtagsJESDown, "TNBtagsJESDown/I");
+  iniTree->Branch("TNBtagsJESUp",   &TNBtagsJESUp, "TNBtagsJESUp/I");
+  iniTree->Branch("TNBtagsJESDown",  &TNBtagsJESDown, "TNBtagsJESDown/I");
 
-  fTree->Branch("TJetJESUp_Pt",      TJetJESUp_Pt,      "TJetJESUp_Pt[TNJetsJESUp]/F");
-  fTree->Branch("TJetJESDown_Pt",    TJetJESDown_Pt,    "TJetJESDown_Pt[TNJetsJESDown]/F");
-  fTree->Branch("TJetJER_Pt",        TJetJER_Pt,        "TJetJER_Pt[TNJetsJERUp]/F");
+  iniTree->Branch("TJetJESUp_Pt",      TJetJESUp_Pt,      "TJetJESUp_Pt[TNJetsJESUp]/F");
+  iniTree->Branch("TJetJESDown_Pt",    TJetJESDown_Pt,    "TJetJESDown_Pt[TNJetsJESDown]/F");
+  iniTree->Branch("TJetJER_Pt",        TJetJER_Pt,        "TJetJER_Pt[TNJetsJERUp]/F");
 
-  fTree->Branch("THT",          &THT,          "THT/F");
-  fTree->Branch("THTJESUp",     &THTJESUp,     "THTJESUp/F");
-  fTree->Branch("THTJESDown",   &THTJESDown,   "THTJESDown/F");
+  iniTree->Branch("THT",          &THT,          "THT/F");
+  iniTree->Branch("THTJESUp",     &THTJESUp,     "THTJESUp/F");
+  iniTree->Branch("THTJESDown",   &THTJESDown,   "THTJESDown/F");
 }
 
-void WZAnalysis::SetEventVariables(){
-  fTree->Branch("TWeight",      &TWeight,      "TWeight/F");
-  fTree->Branch("TWeight_LepEffUp",      &TWeight_LepEffUp,      "TWeight_LepEffUp/F");
-  fTree->Branch("TWeight_LepEffDown",    &TWeight_LepEffDown,    "TWeight_LepEffDown/F");
-  fTree->Branch("TWeight_ElecEffUp",      &TWeight_ElecEffUp,      "TWeight_ElecEffUp/F");
-  fTree->Branch("TWeight_ElecEffDown",    &TWeight_ElecEffDown,    "TWeight_ElecEffDown/F");
-  fTree->Branch("TWeight_MuonEffUp",      &TWeight_MuonEffUp,      "TWeight_MuonEffUp/F");
-  fTree->Branch("TWeight_MuonEffDown",    &TWeight_MuonEffDown,    "TWeight_MuonEffDown/F");
-  fTree->Branch("TWeight_TrigUp",        &TWeight_TrigUp,        "TWeight_TrigUp/F");
-  fTree->Branch("TWeight_TrigDown",      &TWeight_TrigDown,      "TWeight_TrigDown/F");
-  fTree->Branch("TWeight_PUUp",        &TWeight_PUUp,        "TWeight_PUUp/F");
-  fTree->Branch("TWeight_PUDown",        &TWeight_PUDown,        "TWeight_PUDown/F");
+void WZAnalysis::SetEventVariables(TTree* iniTree){
+  iniTree->Branch("TWeight",      &TWeight,      "TWeight/F");
+  iniTree->Branch("TWeight_LepEffUp",      &TWeight_LepEffUp,      "TWeight_LepEffUp/F");
+  iniTree->Branch("TWeight_LepEffDown",    &TWeight_LepEffDown,    "TWeight_LepEffDown/F");
+  iniTree->Branch("TWeight_ElecEffUp",      &TWeight_ElecEffUp,      "TWeight_ElecEffUp/F");
+  iniTree->Branch("TWeight_ElecEffDown",    &TWeight_ElecEffDown,    "TWeight_ElecEffDown/F");
+  iniTree->Branch("TWeight_MuonEffUp",      &TWeight_MuonEffUp,      "TWeight_MuonEffUp/F");
+  iniTree->Branch("TWeight_MuonEffDown",    &TWeight_MuonEffDown,    "TWeight_MuonEffDown/F");
+  iniTree->Branch("TWeight_TrigUp",        &TWeight_TrigUp,        "TWeight_TrigUp/F");
+  iniTree->Branch("TWeight_TrigDown",      &TWeight_TrigDown,      "TWeight_TrigDown/F");
+  iniTree->Branch("TWeight_PUUp",        &TWeight_PUUp,        "TWeight_PUUp/F");
+  iniTree->Branch("TWeight_PUDown",        &TWeight_PUDown,        "TWeight_PUDown/F");
 
-  fTree->Branch("TLHEWeight",        TLHEWeight,         "TLHEWeight[254]/F");
-  fTree->Branch("TMET",         &TMET,         "TMET/F");
-  fTree->Branch("TGenMET",         &TGenMET,         "TGenMET/F");
-  fTree->Branch("TMET_Phi",     &TMET_Phi,     "TMET_Phi/F");
-  fTree->Branch("TMETJESUp",    &TMETJESUp,    "TMETJESUp/F");
-  fTree->Branch("TMETJESDown",  &TMETJESDown,  "TMETJESDown/F");
+  iniTree->Branch("TLHEWeight",        TLHEWeight,         "TLHEWeight[254]/F");
+  iniTree->Branch("TMET",         &TMET,         "TMET/F");
+  iniTree->Branch("TGenMET",         &TGenMET,         "TGenMET/F");
+  iniTree->Branch("TMET_Phi",     &TMET_Phi,     "TMET_Phi/F");
+  iniTree->Branch("TMETJESUp",    &TMETJESUp,    "TMETJESUp/F");
+  iniTree->Branch("TMETJESDown",  &TMETJESDown,  "TMETJESDown/F");
 }
 
 //#####################################################################
 // Get Variables
 //------------------------------------------------------------------
 
-void WZAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> VetoLeptons){
-  TNSelLeps = selLeptons.size();
-  Int_t nVetoLeptons = VetoLeptons.size();
-  TNVetoLeps = (nVetoLeptons == 0) ? TNSelLeps : nVetoLeptons;
-  for(Int_t i = 0; i < TNSelLeps; i++){
+void WZAnalysis::GetLeptonsByWP(Int_t wPValue){
+	Int_t nFakeableLeptons = foLeptons.size();
+	for (int k = 0; k < nFakeableLeptons; k++){
+		if (foLeptons.at(k).idMVA > wPValue-1){
+			fakeableLeptons.push_back(foLeptons.at(k));
+		}
+	}
+	Int_t nTightLeptons = selLeptons.size();
+	for (int k = 0; k < nTightLeptons; k++){
+		if (selLeptons.at(k).idMVA > wPValue-1){
+			tightLeptons.push_back(selLeptons.at(k));
+		}
+	}
+}
+
+void WZAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> foLeptons, std::vector<Lepton> looseLeptons){
+  TNTightLeps = selLeptons.size();
+  Int_t nVetoLeptons = foLeptons.size();
+  TNFOLeps = (nVetoLeptons == 0) ? TNTightLeps : nVetoLeptons;
+  for(Int_t i = 0; i < TNTightLeps; i++){
     TLep_Pt[i]     = selLeptons.at(i).Pt();    
     TLep_Eta[i]    = selLeptons.at(i).Eta();    
     TLep_Phi[i]    = selLeptons.at(i).Phi();    
     TLep_E[i]      = selLeptons.at(i).E();    
     TLep_Charge[i] = selLeptons.at(i).charge;    
   }
-	//Require exactly 3 leptons
-  if(TNSelLeps != 3) gChannel = -1;
+	//Require exactly 3 leptons 
+  if(TNTightLeps != 3 ) gChannel = -1;
 	//Charge compatibility with WZ production
 	else if(TMath::Abs(selLeptons.at(0).charge + selLeptons.at(1).charge + selLeptons.at(2).charge) != 1) gChannel = -1;
 	//Combinatory of posible final leptons
@@ -352,9 +376,10 @@ void WZAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<
   else if(selLeptons.at(0).isElec && selLeptons.at(1).isElec && selLeptons.at(2).isElec) gChannel = iElElEl;
 	TMinMll = 100000;
 	TNOSSF = 0;
-	for(Int_t i = 0; i < TNSelLeps; i++){
-		for(Int_t j = i+1; j < TNSelLeps; j++){
+	for(Int_t i = 0; i < TNTightLeps; i++){
+		for(Int_t j = i+1; j < TNTightLeps; j++){
 			if (selLeptons.at(j).isMuon && selLeptons.at(i).isMuon && selLeptons.at(i).charge*selLeptons.at(j).charge == -1) 					TNOSSF++;
+			if (selLeptons.at(j).isElec && selLeptons.at(i).isElec && selLeptons.at(i).charge*selLeptons.at(j).charge == -1) 					TNOSSF++;
 			Float_t hypMll = (selLeptons.at(j).p + selLeptons.at(i).p).M();
 			if (hypMll < TMinMll) TMinMll = hypMll;
 		}
@@ -499,158 +524,10 @@ void WZAnalysis::FillHistos(Int_t ch, Int_t cut){
 // Additional lepton selection code
 //------------------------------------------------------------------
 
-bool WZAnalysis::lepMVA(Lepton& lep, TString wp)
-{
-/*  if(wp=="LV")
-    {
-      // 	Tight muons for multilepton ttH Analysis:
-      // abs(eta)<0.4, Pt>15, abs(dxy)<0.05cm, abs(dz)<0.1cm, SIP3D<8, Imini<0.4,
-      // isLooseMuon==1,jetCSV<0.8484,isMediumMuon==1,tight-charge,lepMVA>0.90.
-      //
-      // 	Tight electrons for multilepton ttH Analysis:
-      // abs(eta)<0.5, Pt>15, abs(dxy)<0.05cm, abs(dz)<0.1cm, SIP3D<8, Imini<0.4,
-      // jetCSV<0.8484,lepMVA>0.90,missinghits==0,conversion rej..
-      // Furthermore, 3 regions in eta-phi space are defined: 0-0.8-1.479-2.5,
-      // where: MVA ID>(0,0,0.7), sigmaietaieta<(0.011,0.011,0.031),
-      // HoverE<(0.10,0.10,0.07), Deltaetain<(0.01,0.01,0.008),
-      // Deltaphiin<(0.04,0.04,0.07),-0.05<1/E-1/p<(0.01,0.01,0.005)
-      //
-      if (lep.isMuon) {
-        if(abs(lep.p.Eta()) >= 2.4)        return false;
-        if(lep.p.Pt() < 10)                return false;
-        if(!getGoodVertex(iTight)) return false;
-        if(!getSIPcut(8))          return false;
-        if(!getminiRelIso(iTight)) return false;
-        if(jetBTagCSV >= 0.8484)   return false;
-        if(!mediumMuonId)          return false;
-        if(MVATTH <= 0.90)         return false;
-      }
-      if (lep.isElec) {
-        if(abs(lep.p.Eta()) <= 2.5)           return false;
-        if(lep.p.Pt() <= 10)                  return false;
-        if(!getGoodVertex(iTight))    return false;
-        if(!getSIPcut(8))             return false;
-        if(!getminiRelIso(iTight))    return false;
-        if(!getElecMVAId(iTight,lep)) return false;
-        if(jetBTagCSV >= 0.8484)      return false;
-        if(MVATTH <= 0.90)            return false;
-      }
-      return true;
-    }
-  else if(wp=="LL")
-    {
-      // 	Loose muons for multilepton ttH Analysis:
-      // Fakeable muons without jetCSV cut and with pt>5.
-      //
-      // 	Loose electrons for multilepton ttH Analysis:
-      // Fakeable electrons with Nmissinghits<2 and pt>7 and without jetCSV,
-      // ptratio, 1/E-1/p, deltaPhiin, deltaEtain, H/E, sigmaietaieta cuts
-      //
-      if (lep.isMuon) {
-        if(abs(lep.p.Eta()) >= 2.4)          return false;
-        if(lep.p.Pt() <= 5)                  return false;
-        if(!getGoodVertex(iLoose))  return false;
-        if(!getSIPcut(8))           return false;
-        if(!getminiRelIso(iLoose))  return false;
-      }
-      if (lep.isElec) {
-        if(abs(lep.p.Eta()) >= 2.5)            return false;
-        if(lep.p.Pt() <= 7)                    return false;
-        if(!getGoodVertex(iLoose))    return false;
-        if(!getSIPcut(8))             return false;
-        if(!getminiRelIso(iLoose))    return false;
-        if(!getElecMVAId(iLoose,lep)) return false;
-      }
-      return true;
-    }
-  else if(wp=="LVeto")
-    {
-      // 	Fakeable muons for multilepton ttH Analysis:
-      // Tight muons without medium muon ID, tight charge and lepton MVA cuts.
-      //
-      // 	Fakeable electrons for multilepton ttH Analysis:
-      // Tight electrons without tight charge, conv. rej., lepton MVA cuts and
-      // with ptratio > 0.5, if the electron fails tight selection (otherwise
-      // w/o cut in ptratio) and, in this case too, with <0.3 jet CSV.
-      //
-      if (lep.isMuon) {
-        if(abs(lep.p.Eta()) >= 2.4)          return false;
-        if(lep.p.Pt() <= 10)                 return false;
-        if(!getGoodVertex(iMedium)) return false;
-        if(!getSIPcut(8))           return false;
-        if(!getminiRelIso(iLoose))  return false;
-        if (!isGoodLepton(lep)) {
-          if(jetBTagCSV >= 0.3)      return false;
-          if(ptRatio <= 0.5)         return false;
-          if(SegComp <= 0.3)         return false;
-        } else {
-          if(jetBTagCSV <= 0.8484)   return false;
-        }
-      }
-      if (lep.isElec) {
-        if(abs(lep.p.Eta()) >= 2.5)           return false;
-        if(lep.p.Pt() > 10)                   return false;
-        if(!getGoodVertex(iMedium))   return false;
-        if(!getSIPcut(8))             return false;
-        if(!getminiRelIso(iLoose))    return false;
-        if(!getElecMVAId(iLoose,lep)) return false;
-        if (!isGoodLepton(lep)) {
-          if(ptRatio <= 0.5)          return false;
-          if(jetBTagCSV >= 0.3)       return false;
-        } else {
-          if(jetBTagCSV >= 0.8484)    return false;
-        }
-      }
-      return true;
-    }*/
-	return true;
-}
 
-bool WZAnalysis::pogID(Lepton& lep, TString wp)
-{/*
-  if(wp=="POGMain"){
-    Bool_t passId; Bool_t passIso;
-    
-    // Tight cut-based electrons, pT > 20, |eta| < 2.4, RelIso POG, tightIP2D, SIP3D > 4
-    // Tight Muon ID, RelIso POG, tightIP2D, SIP3D > 4
-    if(lep.isMuon){
-      passId  = getMuonId(iTight);
-      passIso = getRelIso04POG(iTight);
-    }
-    if(lep.isElec){
-      passId = getElecCutBasedId(iTight) && lostHits <= 1;
-      passIso = getRelIso03POG(iTight);
-      if(TMath::Abs(etaSC) > 1.4442 && TMath::Abs(etaSC) < 1.566) return false;
-    }
-    if(lep.p.Pt() < 20 || TMath::Abs(lep.p.Eta()) > 2.4) return false;
-    if(passId && passIso && ( (lep.isElec && getGoodVertex(iTight)) || (lep.isMuon && getGoodVertex(iMedium) ))) return true;
-    else return false;
-  }
-  else if(wp=="POGVeto")
-    {
-    return true;
-    }
-  else if(wp=="POGLoose")
-    {
-      
-    }
-*/
-  return true;
-}
 
 void WZAnalysis::makeLeptonCollections()
 {
-
-  for(auto& lep : selLeptons)
-    {
-      
-      if(pogID(lep, "T")) selLeptonsPT.push_back(lep);
-      if(pogID(lep, "M")) selLeptonsPM.push_back(lep);
-      if(pogID(lep, "L")) vetoLeptonsPL.push_back(lep);
-      if(lepMVA(lep, "VT")) selLeptonsLV.push_back(lep);
-      if(lepMVA(lep, "M"))  selLeptonsLM.push_back(lep);
-      if(lepMVA(lep, "L"))  vetoLeptonsLL.push_back(lep);
-    } 
 }
 
 void WZAnalysis::AssignWZLeptons()
@@ -658,9 +535,9 @@ void WZAnalysis::AssignWZLeptons()
 	Float_t dZmass = 100000.; 
 	Int_t indexZ1;
 	Int_t indexZ2;
-	for(Int_t i = 0; i < TNSelLeps; i++){
-		for(Int_t j = i+1; j < TNSelLeps; j++){
-			if (selLeptons.at(j).isMuon && selLeptons.at(i).isMuon && selLeptons.at(i).charge*selLeptons.at(j).charge == -1){
+	for(Int_t i = 0; i < TNTightLeps; i++){
+		for(Int_t j = i+1; j < TNTightLeps; j++){
+			if ( ( (selLeptons.at(j).isMuon && selLeptons.at(i).isMuon) || (selLeptons.at(j).isElec && selLeptons.at(i).isElec)    ) && selLeptons.at(i).charge*selLeptons.at(j).charge == -1){
 				Float_t hypZmass = (selLeptons.at(j).p + selLeptons.at(i).p).M();
 				if (TMath::Abs(hypZmass-nomZmass) < dZmass){
 					dZmass = TMath::Abs(hypZmass-nomZmass);
@@ -679,7 +556,7 @@ void WZAnalysis::AssignWZLeptons()
 			}
 		}
 	}
-	for(Int_t i = 0; i < TNSelLeps; i++){
+	for(Int_t i = 0; i < TNTightLeps; i++){
 		if (i != indexZ1 && i != indexZ2){
 			lepW = selLeptons.at(i);
 		}

@@ -9,9 +9,13 @@ enum eChannels{iElElEl, iElElMu, iElMuMu,iMuMuMu};
 const Int_t nChannels = 4;
 enum eLevels  {itrilepton, ionZ, imet, i0btag, im3l, nLevels};
 enum eSysts   {inorm, nSysts};
+enum eWPoints  {veryLoose, loose, medium, tight, veryTight, extraTight};
+
+const int nWPoints = 7;
 const int nWeights = 248;
 const TString gChanLabel[nChannels] = {"ElElEl", "ElElMu","ElMuMu","MuMuMu"};
 const TString sCut[nLevels] = {"trilepton","onZ","met","0btag","m3l"};
+const TString sWPoints[nWPoints] = {"nolepMVA","veryLoose", "loose", "medium", "tight", "veryTight", "extraTight"};
 const TString gSys[nSysts] = {"0"};
 
 
@@ -25,13 +29,14 @@ class WZAnalysis : public PAFChainItemSelector{
     virtual void Summary();
     std::vector<Lepton> genLeptons  ;
     std::vector<Lepton> selLeptons  ; // Main container
-    std::vector<Lepton> vetoLeptons ; // Main container
-    std::vector<Lepton> selLeptonsLV  ; // lepMVA VT
-    std::vector<Lepton> selLeptonsLM  ; // lepMVA M
-    std::vector<Lepton> vetoLeptonsLL; // lepMVA M
-    std::vector<Lepton> selLeptonsPT  ; // POG T
-    std::vector<Lepton> selLeptonsPM  ; // POG M
-    std::vector<Lepton> vetoLeptonsPL ; // POG M
+    std::vector<Lepton> foLeptons   ; // Main container
+		std::vector<Lepton> looseLeptons;
+
+
+		std::vector<Lepton> tightLeptons;
+		std::vector<Lepton> fakeableLeptons;
+
+
     std::vector<Jet> selJets ;
     std::vector<Jet> selJetsJecUp   ;
     std::vector<Jet> selJetsJecDown ;
@@ -46,18 +51,19 @@ class WZAnalysis : public PAFChainItemSelector{
     std::vector<Jet> mcJets  ;
     std::vector<Jet> vetoJets;
 
-    TTree* fTree;
+    TTree* fTree[nWPoints] = {0};
     Float_t TLHEWeight[254];
-    void SetLeptonVariables();
-    void SetJetVariables();
-    void SetEventVariables();
+    void SetLeptonVariables(TTree* iniTree);
+    void SetJetVariables(TTree* iniTree);
+    void SetEventVariables(TTree* iniTree);
 
     Bool_t makeHistos = false;
     Bool_t makeTree   = false;
 
-    void GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> VetoLeptons);
+    void GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> foLeptons, std::vector<Lepton> looseLeptons);
     void GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut = 30);
     void GetGenJetVariables(std::vector<Jet> genJets, std::vector<Jet> mcJets);
+		void GetLeptonsByWP(Int_t wPValue); 
     void GetMET();
     Int_t nFiduJets; Int_t nFidubJets; 
 
@@ -89,8 +95,6 @@ class WZAnalysis : public PAFChainItemSelector{
     Double_t getSysM(const TString& sys = "Norm");
     Double_t getM(vector<TLorentzVector>);
 
-    bool lepMVA(Lepton& lep, TString wp);
-    bool pogID (Lepton& lep, TString wp);
 
     void makeLeptonCollections();
 		void AssignWZLeptons();
@@ -105,8 +109,8 @@ class WZAnalysis : public PAFChainItemSelector{
     Float_t TMET_Phi;  // MET phi
 
 
-    Int_t   TNVetoLeps;
-    Int_t   TNSelLeps;
+    Int_t   TNFOLeps;
+    Int_t   TNTightLeps;
     Int_t   TChannel;
 
     Float_t TLep_Pt[10];    
