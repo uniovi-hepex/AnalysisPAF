@@ -65,7 +65,7 @@ out ='''  \hline \hline Source & Uncertainty (\%) \\ \hline
                ME/PS matching  & {hdmp:>1.1f} \\                                                                   
       Initial state radiation  & {isr:>1.1f} \\                                                                   
         Final state radiation  & {fsr:>1.1f} \\                                                                   
-            Color reconnection &  \\                                                                      
+            Color reconnection & {color:>1.1f} \\                                                                      
                           PDF  & {pdf:>1.1f} \\                                                                   
                         DR-DS  & {dr:>1.1f} \\\hline                                                             
                            VV  & {vv:>1.1f} \\                                                                   
@@ -85,6 +85,7 @@ out ='''  \hline \hline Source & Uncertainty (\%) \\ \hline
                                                                          btag  = float(theLines['Btag']),
                                                                          mtag  = float(theLines['Mistag']),  
                                                                          pu    = float(theLines['PU']),
+                                                                         color = float(theLines['ColorReconnection']),
                                                                          me    = math.sqrt(sclUnc ),
                                                                          ue    = float(theLines['ue']),
                                                                          hdmp  = float(theLines['hdamp']), 

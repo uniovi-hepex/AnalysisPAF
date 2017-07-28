@@ -68,7 +68,14 @@ void TWAnalysis::Initialise(){
   if (gSampleName.Contains("TTbar") || gSampleName.Contains("TTJets")) gIsTTbar = true;
   if (gSampleName.Contains("TW")    || gSampleName.Contains("TbarW") ) gIsTW    = false;
   if (gSampleName == "TTbar_Powheg")   gIsLHE = true;
-
+  // Esto en python seria media linea :D
+  if (gSampleName.Contains("_")){
+    TObjArray *tx = gSampleName.Tokenize("_");
+    if (((TObjString*) tx->Last())->GetString().IsDigit()) gIsLHE = true;
+  }
+  
+  cout << "Is LHE ? " << gIsLHE << endl;
+  
   makeTree = true;
   makeHistos = true;
   if(makeTree){
@@ -139,31 +146,35 @@ void TWAnalysis::InsideLoop(){
   GetMET();
   fhDummy->Fill(1);
 
-
-  // Number of events in fiducial region
-  if(genLeptons.size() => 2 ){ // MIND THE POSSIBLE SKIM (on reco leptons) IN THE SAMPLE!!
+  TIsFid = false;
+  if (genLeptons.size() < 2) return;
+  if(genLeptons.size() >= 2){ // MIND THE POSSIBLE SKIM (on reco leptons) IN THE SAMPLE!!
     Int_t GenChannel = -1;
-    if(genLeptons.at(0).isElec && genLeptons.at(0).isMuon) GenChannel = iElMu; 
-    if(genLeptons.at(0).isMuon && genLeptons.at(0).isElec) GenChannel = iElMu; 
-    if(genLeptons.at(0).isMuon && genLeptons.at(0).isMuon) GenChannel = iMuon; 
-    if(genLeptons.at(0).isElec && genLeptons.at(0).isElec) GenChannel = iElec; 
+    if(genLeptons.at(0).isElec && genLeptons.at(1).isMuon) GenChannel = iElMu; 
+    if(genLeptons.at(0).isMuon && genLeptons.at(1).isElec) GenChannel = iElMu; 
+    if(genLeptons.at(0).isMuon && genLeptons.at(1).isMuon) GenChannel = iMuon; 
+    if(genLeptons.at(0).isElec && genLeptons.at(1).isElec) GenChannel = iElec; 
+    // cout << nFiduJets << " " <<  nFidubJets << endl;
     if( ( (genLeptons.at(0).p.Pt() > 25 && genLeptons.at(1).p.Pt() > 20) || (genLeptons.at(0).p.Pt() > 20 && genLeptons.at(1).p.Pt() > 25) )
-        && (TMath::Abs(genLeptons.at(0).p.Eta() < 2.4) && TMath::Abs(genLeptons.at(1).p.Eta() < 2.4)) 
-        && ( (genLeptons.at(0).p + genLeptons.at(1).p).M() > 20 ) ){
-      fHFiduYields[GenChannel-1][0] -> Fill(idilepton);
-      if(GenChannel == iElMu || (TMath::Abs((genLeptons.at(0).p + genLeptons.at(1).p).M() - 91) > 15) ){
-        fHFiduYields[GenChannel-1][0] -> Fill(iZVeto);
-        if(GenChannel == iElMu || TGenMET > 40){   // MET > 40 in ee, µµ
-          fHFiduYields[GenChannel-1][0] -> Fill(iMETcut);
-          if(nFiduJets >= 2){ //At least 2 jets
-            fHFiduYields[GenChannel-1][0] -> Fill(i2jets);
-            if(nFidubJets >= 1){ // At least 1 b-tag
-              fHFiduYields[GenChannel-1][0] -> Fill(i1btag);
-            }
-          }
-        }
+        && (TMath::Abs(genLeptons.at(0).p.Eta()) < 2.4 && TMath::Abs(genLeptons.at(1).p.Eta()) < 2.4) 
+        && ( (genLeptons.at(0).p + genLeptons.at(1).p).M() > 20 )
+	&& (nFiduJets == 1 && nFidubJets == 1)){
+      TIsFid = true;
+      fHFiduYields[GenChannel-1][0] -> Fill(1);
+      Int_t nWTree = Get<Int_t>("nLHEweight");
+      for(int i = 0; i<nWeights; i++){
+	fHWeightsFidu->Fill(i, Get<Float_t>("LHEweight_wgt", i));
+      }
+    }	
+    else{
+      TIsFid = false;
+      fHFiduYields[GenChannel-1][0] -> Fill(2);
+      Int_t nWTree = Get<Int_t>("nLHEweight");
+      for(int i = 0; i<nWeights; i++){
+	fHWeightsNotFidu->Fill(i, Get<Float_t>("LHEweight_wgt", i));
       }
     }
+    
   }
   //if((Int_t) genLeptons.size() >=2 && TNSelLeps >= 2 && passTrigger && passMETfilters){ // dilepton event, 2 leptons // && !isSS
   // if (gSelection == iTopSelec){
@@ -287,41 +298,44 @@ void TWAnalysis::InsideLoop(){
 	  }
         }
       }
+      // SERGIO: uncomment from here
       // Option 1: for signal extraction
       if(TChannel == iElMu){
-	if (TNBtags > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0 || TNBtagsJERUp > 0) {
-	  CalculateTWVariables();
-	  fTree->Fill();
-	  // cout << "Filling " << TWeight << endl;
-	}
+      	if (TNBtags > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0 || TNBtagsJERUp > 0) {
+      	  CalculateTWVariables();
+      	  fTree->Fill();
+      	  // cout << "Filling " << TWeight << endl;
+      	}
       }
       
       // Option 2: for nB,nJets plot
       if(TChannel == iElMu)
-	fMini->Fill();
+      	fMini->Fill();
 
       // Option 3: for 1j1t plots
       if(TChannel == iElMu){   // MET > 40 in ee, µµ
-	if (TNBtags == 1 || TNBtagsJESUp == 1 || TNBtagsJESDown == 1 || TNBtagsJERUp == 1) {
-	  if (TNJets == 1 || TNJetsJESUp == 1 || TNJetsJESDown == 1 || TNJetsJERUp == 1){
-	    CalculateTWVariables();
-	    if (TNBtags == 1 && TNJets == 1) cout << "var is " << DilepMETJetPt << " " 
-						  << " " << THTtot << " "<< DilepmetjetOverHT  << endl;
-	    fMini1j1t->Fill();
-	  }
-	}
+      	if (TNBtags == 1 || TNBtagsJESUp == 1 || TNBtagsJESDown == 1 || TNBtagsJERUp == 1) {
+      	  if (TNJets == 1 || TNJetsJESUp == 1 || TNJetsJESDown == 1 || TNJetsJERUp == 1){
+      	    CalculateTWVariables();
+      	    if (TNBtags == 1 && TNJets == 1) cout << "var is " << DilepMETJetPt << " " 
+      						  << " " << THTtot << " "<< DilepmetjetOverHT  << endl;
+      	    fMini1j1t->Fill();
+      	  }
+      	}
       }
 
       // Option 4: for 2j1t plots
       if(TChannel == iElMu){   // MET > 40 in ee, µµ
-	if (TNBtags == 1 || TNBtagsJESUp == 1 || TNBtagsJESDown == 1 || TNBtagsJERUp == 1) {
-	  if (TNJets == 2 || TNJetsJESUp == 2 || TNJetsJESDown == 2 || TNJetsJERUp == 2){
-	    CalculateTWVariables();
-	    fMini2j1t->Fill();
-	  }
-	}
+      	if (TNBtags == 1 || TNBtagsJESUp == 1 || TNBtagsJESDown == 1 || TNBtagsJERUp == 1) {
+      	  if (TNJets == 2 || TNJetsJESUp == 2 || TNJetsJESDown == 2 || TNJetsJERUp == 2){
+      	    CalculateTWVariables();
+      	    fMini2j1t->Fill();
+      	  }
+      	}
       }
-
+      // SERGIO: until here (luego comentar las proximas lineas!!)
+    //   if(TChannel == iElMu && (TNBtags == 1 || TNBtagsJESUp == 1 || TNBtagsJESDown == 1 || TNBtagsJERUp == 1))
+    //   	fMini->Fill();
     }
   }
 }
@@ -481,6 +495,8 @@ void TWAnalysis::GetMET(){
 
 void TWAnalysis::InitHistos(){
   fhDummy = CreateH1F("fhDummy", "fhDummy", 1, 0, 2);
+  fHWeightsFidu    = CreateH1F("hPDFweightsFidu"   ,"hPDFweightsFidu"   , nWeights, -0.5, nWeights - 0.5);
+  fHWeightsNotFidu = CreateH1F("hPDFweightsNotFidu","hPDFweightsNotFidu", nWeights, -0.5, nWeights - 0.5);
   for(Int_t ch = 0; ch < nChannels; ch++){
     fHyields[ch][0]     = CreateH1F("H_Yields_"+gChanLabel[ch],"", nLevels, -0.5, nLevels-0.5);
     fHFiduYields[ch][0]     = CreateH1F("H_FiduYields_"+gChanLabel[ch],"", nLevels, -0.5, nLevels-0.5);
@@ -744,6 +760,7 @@ void TWAnalysis::SetEventVariables(){
 
 void TWAnalysis::SetTWVariables()
 {
+  fMini->Branch("TIsFid"       , &TIsFid       , "TIsFid/B");
   fMini->Branch("TChannel"     , &TChannel     , "TChannel/I"      );
   fMini->Branch("TIsSS"        , &TIsSS        , "TIsSS/B"         );
   fMini->Branch("TNJets"       , &TNJets       , "TNJets/I"        );

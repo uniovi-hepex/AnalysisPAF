@@ -243,7 +243,19 @@ void JetSelector::InsideLoop(){
 
   // Loop over the jets
   nJet = Get<Int_t>("nJet");
+
+  Float_t mcTag     = 1.;
+  Float_t dataTag   = 1.;
+  Float_t mcNoTag   = 1.;
+  Float_t dataNoTag = 1.;
+  Float_t errHup  = 0.;
+  Float_t errHdn  = 0.;
+  Float_t errLup  = 0.;
+  Float_t errLdn  = 0.;
+
+  
   for(Int_t i = 0; i < nJet; i++){
+
     GetJetVariables(i);
     tJ = Jet(tpJ, csv, jetId, flavmc);
     tJ.isBtag = IsBtag(tJ);
@@ -274,17 +286,54 @@ void JetSelector::InsideLoop(){
 	  vetoJets.push_back(tJ);
 	  if (!gIsData){
 	    if ( tJ.p.Pt() < 20.) continue;
-	    BtagSF           *= fBTagSFnom->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
-	    BtagSFBtagUp     *= fBTagSFbUp->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
-	    BtagSFBtagDown   *= fBTagSFbDo->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
-	    BtagSFMistagUp   *= fBTagSFlUp->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
-	    BtagSFMistagDown *= fBTagSFlDo->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
+	    Float_t eff   = fBTagSFnom->JetTagEfficiency( tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
+	    Float_t sf    = fBTagSFnom->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
+	    Float_t sfHUp = fBTagSFbUp->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());	    
+	    Float_t sfHDn = fBTagSFbDo->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
+	    Float_t sfLUp = fBTagSFlUp->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
+	    Float_t sfLDn = fBTagSFlDo->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
+
+	    if (tJ.isBtag){
+
+	      mcTag   *= eff;
+	      dataTag *= eff * sf;
+
+	      if (tJ.flavmc == 5 || tJ.flavmc == 4){
+		errHup += (sfHUp - sf ) / sf;
+		errHdn += (sf - sfHDn ) / sf;
+	      }
+	      else{
+		errLup += (sfLUp - sf ) / sf;
+		errLdn += (sf - sfLDn ) / sf;
+	      }
+	    }
+	    else{
+	      mcNoTag   *= ( 1 - eff    );
+	      dataNoTag *= ( 1 - eff*sf );
+	      if (tJ.flavmc == 5 || tJ.flavmc == 4){
+		errHup -= eff*(sfHUp - sf ) / (1 - eff*sf);
+		errHdn -= eff*(sf - sfHDn ) / (1 - eff*sf);
+	      }
+	      else{
+		errLup -= eff*(sfLUp - sf ) / (1 - eff*sf);
+		errLdn -= eff*(sf - sfLDn ) / (1 - eff*sf);
+	      }
+
+	    }
 	  }
 	}
         else                                            vetoJets.push_back(tJ);
       }
     }
   }
+
+  BtagSF           *= (dataNoTag * dataTag) / (mcNoTag * mcTag);
+  BtagSFBtagUp     *= BtagSF * ( 1 + errHup );
+  BtagSFBtagDown   *= BtagSF * ( 1 - errHdn );
+  BtagSFMistagUp   *= BtagSF * ( 1 + errLup );
+  BtagSFMistagDown *= BtagSF * ( 1 - errLdn );
+  
+
   // If stop, disc
   if(gSelection == iStopSelec){
     nJet = Get<Int_t>("nDiscJet");

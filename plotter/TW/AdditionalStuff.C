@@ -69,14 +69,12 @@ Float_t the2j1tBDt(Double_t BDT){
 
 Float_t JetPtBinning( Double_t jetpt)
 {
+  cout << "Cuidado!!!! Has cambiado el binning de todo?" << endl;
   if      (jetpt < 50.)  return 0;
   else if (jetpt < 70.)  return 1;
   else if (jetpt < 90.)  return 2;
   else if (jetpt < 110.) return 3;
-  else if (jetpt < 130.) return 4;
-  else if (jetpt < 150.) return 5;
-  else if (jetpt < 170.) return 6;
-  else                   return 7;
+  else return 4;
 
 }
 
@@ -106,11 +104,11 @@ Float_t Case4( Double_t TNJets , Double_t TNBtags , Double_t TBDT , Double_t TJe
 {
   // entre 0 y 18 (19 bines)
   if (TNJets == 2 && TNBtags == 2)
-    return JetPtBinning(TJet2_Pt);        // entre 0 y 7
+    return JetPtBinning(TJet2_Pt);        // entre 0 y 4
   else if (TNJets == 2 && TNBtags == 1)
-    return 8;                             // 8 
+    return 5;                             // 5
   else if (TNJets == 1 && TNBtags == 1)
-    return theBDt( TBDT )+8;                 // entre 9 y 18 (BDT entre 1 y 10)
+    return theBDt( TBDT )+5;                 // entre 6 y 15 (BDT entre 1 y 10)
   else return -1;
 
 }
@@ -154,10 +152,10 @@ Float_t FitWYieldsTwoBDTs(Double_t nJet, Double_t nBtag, Double_t bdt, Double_t 
 
 Float_t ShapVarWith1j1tBDtAndJetPt(Double_t nJet, Double_t nBtag, Double_t bdt, Double_t bdt2j1t, Double_t jetpt)
 {
-  // entre 0 y 23 (24 bines)
-  if (nJet == 2 && nBtag == 2) return JetPtBinning(jetpt);        // entre 0 y 7
-  else if (nJet == 2 && nBtag == 1) return the2j1tBDt( bdt2j1t )+7; // the2j1t esta entre 1 y 6  => entre 8 y 13
-  else if (nJet == 1 && nBtag == 1) return theBDt(bdt)+13;  // entre 14 y 23 (thBDt esta entre 1 y 10) 
+  // entre 0 y 20 (21 bines)
+  if (nJet == 2 && nBtag == 2) return JetPtBinning(jetpt);        // entre 0 y 4
+  else if (nJet == 2 && nBtag == 1) return the2j1tBDt( bdt2j1t )+4; // the2j1t esta entre 1 y 6  => entre 5 y 10
+  else if (nJet == 1 && nBtag == 1) return theBDt(bdt)+10;  // entre 11 y 20 (thBDt esta entre 1 y 10) 
   else return -1;
 
 }
