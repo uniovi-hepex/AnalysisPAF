@@ -90,21 +90,63 @@ Float_t ShapVar(Double_t nJet, Double_t nBtag)
   else return -1;
 }
 
+
+Float_t Case2( Double_t TNJets , Double_t TNBtags , Double_t TBDT )
+{
+  // entre 0 y 10 (11 bines)
+  if (TNJets == 2 && TNBtags == 1) return 0; // 0
+  else if (TNJets == 1 && TNBtags == 1){
+    return theBDt(TBDT); // entre 1 y 10
+  }
+  else return -1;
+
+}
+
+Float_t Case4( Double_t TNJets , Double_t TNBtags , Double_t TBDT , Double_t TJet2_Pt )
+{
+  // entre 0 y 18 (19 bines)
+  if (TNJets == 2 && TNBtags == 2)
+    return JetPtBinning(TJet2_Pt);        // entre 0 y 7
+  else if (TNJets == 2 && TNBtags == 1)
+    return 8;                             // 8 
+  else if (TNJets == 1 && TNBtags == 1)
+    return theBDt( TBDT )+8;                 // entre 9 y 18 (BDT entre 1 y 10)
+  else return -1;
+
+}
+
 Float_t ShapVarWith1j1tBDt(Double_t nJet, Double_t nBtag, Double_t bdt)
+{
+  // entre 0 y 9 (0 bines)
+  if (nJet == 1 && nBtag == 1) return theBDt(bdt)-1;  // entre 0 y 9
+  else return -1;
+
+}
+
+Float_t FitWYieldsOneBDT(Double_t nJet, Double_t nBtag, Double_t bdt)
 {
   // entre 0 y 11 (12 bines)
   if (nJet == 2 && nBtag == 2) return 0;
   else if (nJet == 2 && nBtag == 1) return 1;
-  else if (nJet == 1 && nBtag == 1) return theBDt(bdt)+1;  // entre 2 y 11 (thBDt esta entre 1 y 10)
+  else if (nJet == 1 && nBtag == 1) return theBDt(bdt)+1;  // entre 2 y 11
   else return -1;
 
 }
 
 Float_t ShapVarWithBothBDts(Double_t nJet, Double_t nBtag, Double_t bdt, Double_t bdt2j1t)
 {
+  // entre 0 y 15 (16 bines)
+  if (nJet == 2 && nBtag == 1) return the2j1tBDt( bdt2j1t )-1; // the2j1t esta entre 1 y 6 (entre 0 y 5) 
+  else if (nJet == 1 && nBtag == 1) return theBDt(bdt)+5;  // entre 6 y 15 (thBDt esta entre 1 y 10)
+  else return -1;
+
+}
+
+Float_t FitWYieldsTwoBDTs(Double_t nJet, Double_t nBtag, Double_t bdt, Double_t bdt2j1t)
+{
   // entre 0 y 16 (17 bines)
-  if (nJet == 2 && nBtag == 2) return 0;
-  else if (nJet == 2 && nBtag == 1) return the2j1tBDt( bdt2j1t ); // the2j1t esta entre 1 y 6 
+  if (nJet == 2 && nBtag == 2)      return 0;
+  else if (nJet == 2 && nBtag == 1) return the2j1tBDt( bdt2j1t ); // the2j1t esta entre 1 y 6 (entre 1 y 6) 
   else if (nJet == 1 && nBtag == 1) return theBDt(bdt)+6;  // entre 7 y 16 (thBDt esta entre 1 y 10)
   else return -1;
 
