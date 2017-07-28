@@ -72,6 +72,7 @@ class LeptonSelector : public PAFChainItemSelector{
     Float_t SegComp;
     Int_t isGlobalMuon;
     Int_t isTrackerMuon;
+		Int_t lepMVASUSYId;
     
     // genLeptons
     Int_t ngenLep;
@@ -101,6 +102,7 @@ class LeptonSelector : public PAFChainItemSelector{
     Bool_t isGoodLepton(Lepton lep);
     Bool_t isLooseLepton(Lepton lep);
     Bool_t isVetoLepton(Lepton lep);
+		Int_t  getSUSYMVAId(Lepton lep, Int_t ty);
 
   ClassDef(LeptonSelector, 0);
 };
