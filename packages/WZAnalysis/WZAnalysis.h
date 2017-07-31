@@ -5,14 +5,19 @@
 #include <iostream>
 #include <vector>
 
-//enum eChannels{iUnkChan, iElMu, iMuon, iElec, nChannels};
-const Int_t nChannels = 3;
-enum eLevels  {idilepton, iZVeto, iMETcut, i2jets, i1btag, nLevels};
+enum eChannels{iElElEl, iElElMu, iElMuMu,iMuMuMu};
+const Int_t nChannels = 4;
+enum eLevels  {itrilepton, ionZ, imet, i0btag, im3l, nLevels};
 enum eSysts   {inorm, nSysts};
+enum eWPoints  {nolepMVA, veryLoose, loose, medium, tight, veryTight, extraTight, top};
+
+const int nWPoints = 8;
 const int nWeights = 248;
-const TString gChanLabel[nChannels] = {"ElMu", "Muon","Elec"};
-const TString sCut[nLevels] = {"dilepton", "ZVeto", "MET", "2jets", "1btag"};
+const TString gChanLabel[nChannels] = {"ElElEl", "ElElMu","ElMuMu","MuMuMu"};
+const TString sCut[nLevels] = {"trilepton","onZ","met","0btag","m3l"};
+const TString sWPoints[nWPoints] = {"nolepMVA","veryLoose", "loose", "medium", "tight", "veryTight", "extraTight", "top"};
 const TString gSys[nSysts] = {"0"};
+
 
 
 class WZAnalysis : public PAFChainItemSelector{
@@ -24,18 +29,21 @@ class WZAnalysis : public PAFChainItemSelector{
     virtual void Summary();
     std::vector<Lepton> genLeptons  ;
     std::vector<Lepton> selLeptons  ; // Main container
-    std::vector<Lepton> vetoLeptons ; // Main container
-    std::vector<Lepton> selLeptonsLV  ; // lepMVA VT
-    std::vector<Lepton> selLeptonsLM  ; // lepMVA M
-    std::vector<Lepton> vetoLeptonsLL; // lepMVA M
-    std::vector<Lepton> selLeptonsPT  ; // POG T
-    std::vector<Lepton> selLeptonsPM  ; // POG M
-    std::vector<Lepton> vetoLeptonsPL ; // POG M
+    std::vector<Lepton> foLeptons   ; // Main container
+		std::vector<Lepton> looseLeptons;
+
+
+		std::vector<Lepton> tightLeptons;
+		std::vector<Lepton> fakeableLeptons;
+
+
     std::vector<Jet> selJets ;
     std::vector<Jet> selJetsJecUp   ;
     std::vector<Jet> selJetsJecDown ;
-
-
+		Lepton lepZ1;
+		Lepton lepZ2;
+		Lepton lepW;
+		Float_t nomZmass = 91.1876;
 
 
     std::vector<Jet> Jets15  ;
@@ -43,18 +51,19 @@ class WZAnalysis : public PAFChainItemSelector{
     std::vector<Jet> mcJets  ;
     std::vector<Jet> vetoJets;
 
-    TTree* fTree;
+    TTree* fTree[nWPoints] = {0};
     Float_t TLHEWeight[254];
-    void SetLeptonVariables();
-    void SetJetVariables();
-    void SetEventVariables();
+    void SetLeptonVariables(TTree* iniTree);
+    void SetJetVariables(TTree* iniTree);
+    void SetEventVariables(TTree* iniTree);
 
     Bool_t makeHistos = false;
     Bool_t makeTree   = false;
 
-    void GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> VetoLeptons);
+    void GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> foLeptons, std::vector<Lepton> looseLeptons);
     void GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut = 30);
     void GetGenJetVariables(std::vector<Jet> genJets, std::vector<Jet> mcJets);
+		void GetLeptonsByWP(Int_t wPValue); 
     void GetMET();
     Int_t nFiduJets; Int_t nFidubJets; 
 
@@ -66,7 +75,6 @@ class WZAnalysis : public PAFChainItemSelector{
     Int_t   gChannel;
     Bool_t  passMETfilters;
     Bool_t  passTrigger;
-    Bool_t  isSS;
     Float_t NormWeight;
 
     void InitHistos();
@@ -87,29 +95,42 @@ class WZAnalysis : public PAFChainItemSelector{
     Double_t getSysM(const TString& sys = "Norm");
     Double_t getM(vector<TLorentzVector>);
 
-    void lepMVA(Lepton& lep, TString wp);
-    void pogID (Lepton& lep, TString wp);
 
     void makeLeptonCollections();
+		void AssignWZLeptons();
 
     //Variables
     Float_t TWeight;   // Total nominal weight
-    Float_t TMll;      // Invariant mass
-    Float_t TMET;      // MET
-    Float_t TGenMET;     
+    Float_t TMll;      // Invariant mass of OSSF (best Z mass)
+		Float_t TMtW;			 // M_T of the W boson
+		Float_t TMtWZ;			 // M_T of the WZ system
+		Float_t TM3l;      // Invariant mass of the three leptons
+		Float_t TMinMll;   // Invariant mass of any pair
+    Int_t   TNOSSF; 		 // Number of OSSF pairs
+    Float_t TMET;      // Reco MET
+    Float_t TGenMET;   // Gent MET
     Float_t TMET_Phi;  // MET phi
 
-    Int_t   TNVetoLeps;
-    Int_t   TNSelLeps;
+		// Event classification
+		Bool_t  TIsSR;
+		Bool_t  TIsCRTT;
+		Bool_t  TIsCRDY;
+		Bool_t  TIsNewCRTT;
+		Bool_t  TIsNewCRDY;
+
+    Int_t   TNFOLeps;
+    Int_t   TNTightLeps;
     Int_t   TChannel;
-    Bool_t   TIsSS;
+
+		// Lepton Things
     Float_t TLep_Pt[10];    
     Float_t TLep_Eta[10];
     Float_t TLep_Phi[10];
     Float_t TLep_E[10];
     Float_t TLep_Charge[10];
 
-    Int_t TNJets;            // Jets...
+		// Jet Things
+    Int_t TNJets;            
     Int_t TNBtags;
     Float_t TJet_Pt[20];
     Float_t TJet_Eta[20];
@@ -170,8 +191,7 @@ class WZAnalysis : public PAFChainItemSelector{
     Float_t  C_jll          , C_jllJESUp          , C_jllJESDown          ;
     Float_t  DilepJetPt     , DilepJetPtJESUp     , DilepJetPtJESDown     ;
     Float_t  TBDT           , TBDTJESUp           , TBDTJESDown           ;
-    /* Float_t  TBDTBTagUp     , TBDTBTagDown; */
-    /* Float_t  TBDTMistagUp   , TBDTBMistagDown; */
+
 
     Float_t  nBTotal          , nBTotalJESUp          , nBTotalJESDown          ; 
     Float_t  DilepmetjetOverHT, DilepmetjetOverHTJESUp, DilepmetjetOverHTJESDown; 
@@ -217,7 +237,7 @@ class WZAnalysis : public PAFChainItemSelector{
   TH1F* fhDummy;
   TH1F*  fHyields[nChannels][nSysts];
   TH1F*  fHFiduYields[nChannels][nSysts];
-  TH1F*  fHSSyields[nChannels][nSysts];
+
 
   protected:
 

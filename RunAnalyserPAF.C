@@ -118,6 +118,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   else if(Selection == "StopTop"   || Selection == "topSUSY" ) sel = iStopTopSelec;
   else if(Selection == "WW"                                  ) sel = iWWSelec;
   else if(Selection == "HWW"                                 ) sel = iHWWSelec;
+  else if(Selection == "WZ"                                  ) sel = iWZSelec;
   else { 
     PAF_ERROR("RunAnalyserPAF", Form("Wrong selection \"%s\".",
 				     Selection.Data()));
@@ -376,6 +377,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   }
   else if (sel == iWWSelec  )  myProject->AddSelectorPackage("WWAnalysis");
   else if (sel == iHWWSelec )  myProject->AddSelectorPackage("HWWAnalysis");
+  else if (sel == iWZSelec  )  myProject->AddSelectorPackage("WZAnalysis");
   else                         PAF_FATAL("RunAnalyserPAF", "No selector defined for this analysis!!!!");
   
   // Additional packages
