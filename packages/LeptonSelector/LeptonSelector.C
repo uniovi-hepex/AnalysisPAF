@@ -367,44 +367,44 @@ Bool_t LeptonSelector::getMultiIso(Int_t wp){
 Int_t LeptonSelector::getSUSYMVAId(Lepton lep, Int_t ty){//ty = 1 for FO, ty = 2 for tight
 	if (ty == 1){//Fakeable Objects
 		if (lep.isMuon){
-				if (ptRatio > 0.30 && jetBTagCSV < 0.3) return 6; //Only for FO
-				else if (MVASUSY >  0.65) return 6; //Extra Tight
-				else if (MVASUSY >  0.45) return 5; //Very Tight
-				else if (MVASUSY >  0.15) return 4; //Tight
-				else if (MVASUSY > -0.20) return 3; //Medium
-				else if (MVASUSY > -0.60) return 2; //Loose
-				else if (MVASUSY > -0.90) return 1; //Very Loose
+				if (ptRatio > 0.30 && jetBTagCSV < 0.3) return 7; //Only for FO
+				else if (MVASUSY >  0.65) return 7; //Extra Tight
+				else if (MVASUSY >  0.45) return 6; //Very Tight
+				else if (MVASUSY >  0.15) return 5; //Tight
+				else if (MVASUSY > -0.20) return 4; //Medium
+				else if (MVASUSY > -0.60) return 3; //Loose
+				else if (MVASUSY > -0.90) return 2; //Very Loose
 		}
 		else if (lep.isElec){
-				if (ptRatio > 0.30 && jetBTagCSV < 0.3 && ( (MVAID > 0.0)*(lep.p.Eta() < 0.8) || (MVAID > 0.0)*(lep.p.Eta() < 1.479)*(lep.p.Eta() > 0.8) || (MVAID > 0.3)*(lep.p.Eta() > 1.479) )) return 6; //Only for FO
-				else if (MVASUSY >  0.85) return 6; //Extra Tight
-				else if (MVASUSY >  0.75) return 5; //Very Tight
-				else if (MVASUSY >  0.65) return 4; //Tight
-				else if (MVASUSY >  0.50) return 3; //Medium
-				else if (MVASUSY >  0.25) return 2; //Loose
-				else if (MVASUSY > -0.30) return 1; //Very Loose
+				if (ptRatio > 0.30 && jetBTagCSV < 0.3 && ( (MVAID > 0.0)*(lep.p.Eta() < 0.8) || (MVAID > 0.0)*(lep.p.Eta() < 1.479)*(lep.p.Eta() > 0.8) || (MVAID > 0.3)*(lep.p.Eta() > 1.479) )) return 7; //Only for FO
+				else if (MVASUSY >  0.85) return 7; //Extra Tight
+				else if (MVASUSY >  0.75) return 6; //Very Tight
+				else if (MVASUSY >  0.65) return 5; //Tight
+				else if (MVASUSY >  0.50) return 4; //Medium
+				else if (MVASUSY >  0.25) return 3; //Loose
+				else if (MVASUSY > -0.30) return 2; //Very Loose
 		}
 	}
 
 	else if (ty == 2){//Tight leptonMVA leptons
 		if (lep.isMuon){
-				if      (MVASUSY >  0.65) return 6; //Extra Tight
-				else if (MVASUSY >  0.45) return 5; //Very Tight
-				else if (MVASUSY >  0.15) return 4; //Tight
-				else if (MVASUSY > -0.20) return 3; //Medium
-				else if (MVASUSY > -0.60) return 2; //Loose
-				else if (MVASUSY > -0.90) return 1; //Very Loose
+				if      (MVASUSY >  0.65) return 7; //Extra Tight
+				else if (MVASUSY >  0.45) return 6; //Very Tight
+				else if (MVASUSY >  0.15) return 5; //Tight
+				else if (MVASUSY > -0.20) return 4; //Medium
+				else if (MVASUSY > -0.60) return 3; //Loose
+				else if (MVASUSY > -0.90) return 2; //Very Loose
 		}
 		else if (lep.isElec){
-				if      (MVASUSY >  0.85) return 6; //Extra Tight
-				else if (MVASUSY >  0.75) return 5; //Very Tight
-				else if (MVASUSY >  0.65) return 4; //Tight
-				else if (MVASUSY >  0.50) return 3; //Medium
-				else if (MVASUSY >  0.25) return 2; //Loose
-				else if (MVASUSY > -0.30) return 1; //Very Loose
+				if      (MVASUSY >  0.85) return 7; //Extra Tight
+				else if (MVASUSY >  0.75) return 6; //Very Tight
+				else if (MVASUSY >  0.65) return 5; //Tight
+				else if (MVASUSY >  0.50) return 4; //Medium
+				else if (MVASUSY >  0.25) return 3; //Loose
+				else if (MVASUSY > -0.30) return 2; //Very Loose
 		}
 	}
-  return 0;
+  return 1;
 }
 
 //################################################################
@@ -511,21 +511,49 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
     return true;
   }
   else if(gSelection == iWZSelec){ // Fakeable Objects for the WZ analysis. MVA WP (and related selection criteria) are defined inside the proper analysis
-    if(lep.isMuon){
-			if(!isVetoLepton(lep)) return false;
-			if(TightCharge != 2) return false;
+		Bool_t isMVALepton = true;    
+		if(lep.isMuon){
+			if(!isVetoLepton(lep)) isMVALepton = false;
+			if(TightCharge != 2) isMVALepton = false;
 			// Added MVA selection in the analysis
-
     }
     if(lep.isElec){
-			if(!isVetoLepton(lep)) return false;
-			if(TightCharge != 2) return false;
-			if(!convVeto) return false;
+			if(!isVetoLepton(lep)) isMVALepton = false;
+			if(TightCharge != 2) isMVALepton = false;
+			if(!convVeto) isMVALepton = false;
 			// Added MVA selection in the analysis
     }
-		lepMVASUSYId = getSUSYMVAId(lep, 2);
-		if (lepMVASUSYId < 0) return false;
-    return true;
+
+		Bool_t isTopLepton = true;
+		//Top/Stop ID		
+		if(lep.isMuon){
+      passId  = getMuonId(iTight);
+      passIso = getRelIso04POG(iTight);
+    }
+    if(lep.isElec){
+      passId = getElecCutBasedId(iTight) && lostHits <= 1;
+      passIso = getRelIso03POG(iTight);
+      if(TMath::Abs(etaSC) > 1.4442 && TMath::Abs(etaSC) < 1.566) isTopLepton = false;
+    }
+    if(lep.p.Pt() < 20 || TMath::Abs(lep.p.Eta()) > 2.4) isTopLepton = false;
+    if(passId && passIso && ( (lep.isElec && getGoodVertex(iTight)) || (lep.isMuon && getGoodVertex(iMedium) ))){
+			isTopLepton = true;
+		}
+    else isTopLepton = false;
+
+		if (isTopLepton && isMVALepton){
+	    lepMVASUSYId = getSUSYMVAId(lep, 2) + 10; //This is a terrible but quick way to do it
+			return true;
+		}
+		else if (isTopLepton && !(isMVALepton)){
+	    lepMVASUSYId = 10; //This is a terrible but quick way to do it
+			return true;	
+		}
+		else if ( (!isTopLepton) && isMVALepton){
+	    lepMVASUSYId = getSUSYMVAId(lep, 2); //This is a terrible but quick way to do it
+			return true;		
+		}
+		else return false;
   }
   else if (gSelection == ittHSelec ) {
     // 	Tight muons for multilepton ttH Analysis:

@@ -9,13 +9,13 @@ enum eChannels{iElElEl, iElElMu, iElMuMu,iMuMuMu};
 const Int_t nChannels = 4;
 enum eLevels  {itrilepton, ionZ, imet, i0btag, im3l, nLevels};
 enum eSysts   {inorm, nSysts};
-enum eWPoints  {veryLoose, loose, medium, tight, veryTight, extraTight};
+enum eWPoints  {nolepMVA, veryLoose, loose, medium, tight, veryTight, extraTight, top};
 
-const int nWPoints = 7;
+const int nWPoints = 8;
 const int nWeights = 248;
 const TString gChanLabel[nChannels] = {"ElElEl", "ElElMu","ElMuMu","MuMuMu"};
 const TString sCut[nLevels] = {"trilepton","onZ","met","0btag","m3l"};
-const TString sWPoints[nWPoints] = {"nolepMVA","veryLoose", "loose", "medium", "tight", "veryTight", "extraTight"};
+const TString sWPoints[nWPoints] = {"nolepMVA","veryLoose", "loose", "medium", "tight", "veryTight", "extraTight", "top"};
 const TString gSys[nSysts] = {"0"};
 
 
@@ -102,24 +102,35 @@ class WZAnalysis : public PAFChainItemSelector{
     //Variables
     Float_t TWeight;   // Total nominal weight
     Float_t TMll;      // Invariant mass of OSSF (best Z mass)
-		Float_t TMinMll;    // Invariant mass of any pair
-    Int_t TNOSSF; 		 // Number of OSSF pairs
-    Float_t TMET;      // MET
-    Float_t TGenMET;     
+		Float_t TMtW;			 // M_T of the W boson
+		Float_t TMtWZ;			 // M_T of the WZ system
+		Float_t TM3l;      // Invariant mass of the three leptons
+		Float_t TMinMll;   // Invariant mass of any pair
+    Int_t   TNOSSF; 		 // Number of OSSF pairs
+    Float_t TMET;      // Reco MET
+    Float_t TGenMET;   // Gent MET
     Float_t TMET_Phi;  // MET phi
 
+		// Event classification
+		Bool_t  TIsSR;
+		Bool_t  TIsCRTT;
+		Bool_t  TIsCRDY;
+		Bool_t  TIsNewCRTT;
+		Bool_t  TIsNewCRDY;
 
     Int_t   TNFOLeps;
     Int_t   TNTightLeps;
     Int_t   TChannel;
 
+		// Lepton Things
     Float_t TLep_Pt[10];    
     Float_t TLep_Eta[10];
     Float_t TLep_Phi[10];
     Float_t TLep_E[10];
     Float_t TLep_Charge[10];
 
-    Int_t TNJets;            // Jets...
+		// Jet Things
+    Int_t TNJets;            
     Int_t TNBtags;
     Float_t TJet_Pt[20];
     Float_t TJet_Eta[20];

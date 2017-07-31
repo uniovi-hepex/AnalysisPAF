@@ -161,7 +161,11 @@ void WZAnalysis::InsideLoop(){
     	TWeight_TrigDown   = NormWeight*lepSF*(TrigSF-TrigSFerr)*PUSF;
     	TWeight_PUDown     = NormWeight*lepSF*TrigSF*PUSF_Up;
     	TWeight_PUUp       = NormWeight*lepSF*TrigSF*PUSF_Down;
-	
+			TIsSR   = false;
+			TIsCRDY = false;
+			TIsCRTT = false;	
+			TIsNewCRDY = false;
+			TIsNewCRTT = false;	
     	if(gIsData) TWeight = 1;
     	// Event Selection
     	// ===================================================================================================================
@@ -176,17 +180,33 @@ void WZAnalysis::InsideLoop(){
     	  	if(TMath::Abs(TMll - nomZmass)< 15. && TMinMll > 4. && (lepZ1.p + lepZ2.p + lepW.p).M() > 100.  ){ //  Z window + exlcude low masses + M_3l selection 
 						fHyields[gChannel][0] -> Fill(ionZ, TWeight);
     	  	  FillHistos(gChannel, ionZ);
-	
+						// The last two cuts define the Control/Signal regions
+						
+						// Signal Region
     	  	  if(TMET > 30.){   // MET > 30 always
     	  	  	fHyields[gChannel][0] -> Fill(imet, TWeight);
     	  	    FillHistos(gChannel, imet);
     	  	    if(TNBtags == 0){ //Exactly 0 btags
     	  	      fHyields[gChannel][0] -> Fill(i0btag, TWeight);
     	  	      FillHistos(gChannel, i0btag);
-								fTree[wP] -> Fill();
+								TIsSR   = true;
+    	        }
+    	  	    else if(TNBtags > 0 && (TNOSSF == 0 || (TNOSSF > 0 && TMath::Abs(TM3l - nomZmass) > 5))){ //1 or more btags
+								TIsCRTT = true ;
     	        }
     	      }
+						else if (TMET < 30. && TNBtags == 0){
+							TIsCRDY = true ;
+						}
+
     	    }
+					else if (TMath::Abs(TMll - nomZmass)< 15. && TMinMll > 4. && TMET < 30.){
+						TIsNewCRDY = true;
+					}
+					else if (TMath::Abs(TMll - nomZmass)> 15. && TMath::Abs(TM3l - nomZmass) > 5 &&  TMinMll > 4. && (lepZ1.p + lepZ2.p + lepW.p).M() > 100. && TMET > 30.){
+						TIsNewCRTT = true;
+					}  
+					if (TIsSR || TIsCRDY || TIsCRTT || TIsNewCRDY || TIsNewCRTT) fTree[wP] -> Fill();
     	  }
     	}   
   	}
@@ -276,6 +296,9 @@ void WZAnalysis::SetLeptonVariables(TTree* iniTree){
   iniTree->Branch("TLep_Charge",  TLep_Charge, "TLep_Charge[TNTightLeps]/F");
   iniTree->Branch("TChannel",      &TChannel,      "TChannel/I");
   iniTree->Branch("TMll",        &TMll,      "TMll/F");
+  iniTree->Branch("TM3l",        &TM3l,      "TM3l/F");
+  iniTree->Branch("TMtW",        &TMtW,      "TMtW/F");
+  iniTree->Branch("TMtWZ",        &TMtWZ,      "TMtWZ/F");
   iniTree->Branch("TNOSSF",      &TNOSSF,      "TNOSSF/I");
   iniTree->Branch("TMinMll",      &TMinMll,      "TMinMll/F");
 }
@@ -312,6 +335,11 @@ void WZAnalysis::SetJetVariables(TTree* iniTree){
 
 void WZAnalysis::SetEventVariables(TTree* iniTree){
   iniTree->Branch("TWeight",      &TWeight,      "TWeight/F");
+  iniTree->Branch("TIsSR"  ,      &TIsSR  ,      "TIsSR/B"  );
+  iniTree->Branch("TIsCRTT",      &TIsCRTT,      "TIsCRTT/B");
+  iniTree->Branch("TIsCRDY",      &TIsCRDY,      "TIsCRDY/B");
+  iniTree->Branch("TIsNewCRTT",      &TIsNewCRTT,      "TIsNewCRTT/B");
+  iniTree->Branch("TIsNewCRDY",      &TIsNewCRDY,      "TIsNewCRDY/B");
   iniTree->Branch("TWeight_LepEffUp",      &TWeight_LepEffUp,      "TWeight_LepEffUp/F");
   iniTree->Branch("TWeight_LepEffDown",    &TWeight_LepEffDown,    "TWeight_LepEffDown/F");
   iniTree->Branch("TWeight_ElecEffUp",      &TWeight_ElecEffUp,      "TWeight_ElecEffUp/F");
@@ -337,15 +365,27 @@ void WZAnalysis::SetEventVariables(TTree* iniTree){
 
 void WZAnalysis::GetLeptonsByWP(Int_t wPValue){
 	Int_t nFakeableLeptons = foLeptons.size();
-	for (int k = 0; k < nFakeableLeptons; k++){
-		if (foLeptons.at(k).idMVA > wPValue-1){
-			fakeableLeptons.push_back(foLeptons.at(k));
+	Int_t nTightLeptons = selLeptons.size();
+
+	if (wPValue == top){
+		for (int k = 0; k < nTightLeptons; k++){ // No FO for top ID
+			if (selLeptons.at(k).idMVA >= 10){
+				tightLeptons.push_back(selLeptons.at(k));
+				fakeableLeptons.push_back(selLeptons.at(k));
+			}
 		}
 	}
-	Int_t nTightLeptons = selLeptons.size();
-	for (int k = 0; k < nTightLeptons; k++){
-		if (selLeptons.at(k).idMVA > wPValue-1){
-			tightLeptons.push_back(selLeptons.at(k));
+	else {
+		for (int k = 0; k < nFakeableLeptons; k++){
+			if (foLeptons.at(k).idMVA%10 > wPValue){
+				fakeableLeptons.push_back(foLeptons.at(k));
+			}
+		}
+	
+		for (int k = 0; k < nTightLeptons; k++){
+			if (selLeptons.at(k).idMVA%10 > wPValue){
+				tightLeptons.push_back(selLeptons.at(k));
+			}
 		}
 	}
 }
@@ -353,7 +393,7 @@ void WZAnalysis::GetLeptonsByWP(Int_t wPValue){
 void WZAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> foLeptons, std::vector<Lepton> looseLeptons){
   TNTightLeps = selLeptons.size();
   Int_t nVetoLeptons = foLeptons.size();
-  TNFOLeps = (nVetoLeptons == 0) ? TNTightLeps : nVetoLeptons;
+  TNFOLeps = nVetoLeptons;
   for(Int_t i = 0; i < TNTightLeps; i++){
     TLep_Pt[i]     = selLeptons.at(i).Pt();    
     TLep_Eta[i]    = selLeptons.at(i).Eta();    
@@ -384,7 +424,6 @@ void WZAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<
 			if (hypMll < TMinMll) TMinMll = hypMll;
 		}
 	}
-
 
   TChannel = gChannel;
   gChannel = gChannel -1; // gchannel used for chan index of histograms
@@ -525,11 +564,6 @@ void WZAnalysis::FillHistos(Int_t ch, Int_t cut){
 //------------------------------------------------------------------
 
 
-
-void WZAnalysis::makeLeptonCollections()
-{
-}
-
 void WZAnalysis::AssignWZLeptons()
 {
 	Float_t dZmass = 100000.; 
@@ -561,6 +595,11 @@ void WZAnalysis::AssignWZLeptons()
 			lepW = selLeptons.at(i);
 		}
 	}	
+	TLorentzVector metVector = TLorentzVector();
+	metVector.SetPtEtaPhiM(TMET, TMET_Phi, 0., 0.);
+	TM3l = (lepZ1.p + lepZ2.p + lepW.p).M();
+	TMtWZ = (lepZ1.p + lepZ2.p + lepW.p + metVector).Mt();
+	TMtW  = (lepW.p + metVector).Mt();
 }
 
 
