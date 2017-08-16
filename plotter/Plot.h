@@ -60,6 +60,7 @@ public:
   TLatex* texlumi = NULL;
   TLatex* texcms = NULL;
   TLatex* texchan = NULL;
+  TString chlabel = "";
   TH1F* hratio = NULL;
   Float_t* TotalSysUp = NULL;
   Float_t* TotalSysDown = NULL;

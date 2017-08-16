@@ -15,7 +15,7 @@ TString NameOfTree = "Mini";
 
 void runNJetNBjet(){
 
-  DrawPlot("nJetsnBs( TNJets , TNBtags )", "(TIsSS == 0)", "ElMu", 7, -0.5, 6.5, "(nJets, nBtags)");
+  DrawPlot("nJetsnBs( TNJets , TNBtags )", "(TIsSS == 0)", "ElMu", 7, -0.5, 6.5, "(Number of jets, number of b-tagged jets)");
   return; 
 
   
@@ -28,57 +28,55 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->verbose = false;
   // p->SetVarName("forFit");
 
-  vector<TString> labels = { "(0,0)","(1,0)","(1,1)","(2,0)","(2,1)","(2,2)","(3+,0+)" };
+  vector<TString> labels = { "(0, 0)","(1, 0)","(1, 1)","(2, 0)","(2, 1)","(2, 2)","(#geq3, #geq0)" };
   p->VBinLabels = labels;
 
+  p->chlabel="e^{#pm}#mu^{#mp}";
 
-  p->AddSample("TTWToLNu", "Other", itBkg, kOrange-3);
-  p->AddSample("TTWToQQ", "Other", itBkg);
-  p->AddSample("TTZToQQ", "Other", itBkg);
-  p->AddSample("TTZToLLNuNu", "Other", itBkg);
-  p->AddSample("WZ", "Other", itBkg);
-  p->AddSample("WW", "Other", itBkg);
-  p->AddSample("ZZ", "Other", itBkg);
+  p->AddSample("TTWToLNu"   , "VV+t#bar{t}V", itBkg, kOrange-3);
+  p->AddSample("TTWToQQ"    , "VV+t#bar{t}V", itBkg);
+  p->AddSample("TTZToQQ"    , "VV+t#bar{t}V", itBkg);
+  p->AddSample("TTZToLLNuNu", "VV+t#bar{t}V", itBkg);
+  p->AddSample("WZ"         , "VV+t#bar{t}V", itBkg);
+  p->AddSample("WW"         , "VV+t#bar{t}V", itBkg);
+  p->AddSample("ZZ"         , "VV+t#bar{t}V", itBkg);
 
-  p->AddSample("DYJetsToLL_M10to50_aMCatNLO", " Z/#gamma* #rightarrow e^{#pm}#mu^{#mp}", itBkg, TColor::GetColor("#3b0160")); // kRed);
-  p->AddSample("DYJetsToLL_M50_aMCatNLO",     " Z/#gamma* #rightarrow e^{#pm}#mu^{#mp}", itBkg);
-  p->AddSample("TTbar_Powheg", "t#bar{t}", itBkg, TColor::GetColor("#669966")); // TColor::GetColor("#8ADCFF"));
-  p->AddSample("TW", "tW", itBkg, TColor::GetColor("#ff4800")); // TColor::GetColor("#ffc878"));
-  p->AddSample("TbarW", "tW", itBkg);
-  p->AddSample("TTbar_PowhegSemi","Non W/Z", itBkg, kGray);
-  p->AddSample("WJetsToLNu_MLM","Non W/Z", itBkg, kGray);
+  p->AddSample("DYJetsToLL_M10to50_aMCatNLO", "Z/#gamma* #rightarrow e^{#pm}#mu^{#mp}", itBkg, TColor::GetColor("#3b0160")); // kRed);
+  p->AddSample("DYJetsToLL_M50_aMCatNLO"    , "Z/#gamma* #rightarrow e^{#pm}#mu^{#mp}", itBkg);
+  p->AddSample("TTbar_Powheg"               , "t#bar{t}", itBkg, TColor::GetColor("#669966")); // TColor::GetColor("#8ADCFF"));
+  p->AddSample("TTbar_PowhegSemi"           , "Non W/Z" , itBkg, kGray);
+  p->AddSample("WJetsToLNu_MLM"             , "Non W/Z" , itBkg, kGray);
+  p->AddSample("TW"                         , "tW"      , itBkg, TColor::GetColor("#ff4800")); // TColor::GetColor("#ffc878"));
+  p->AddSample("TbarW"                      , "tW"      , itBkg);
 
 
-  p->AddSample("MuonEG", "Data", itData);
+  p->AddSample("MuonEG"    , "Data", itData);
   p->AddSample("SingleMuon", "Data", itData);
   p->AddSample("SingleElec", "Data", itData);
 
-  p->AddSample("TTbar_Powheg_hdampUp", "t#bar{t}", itSys, 1,  "hdampUp"); 
+  p->AddSample("TTbar_Powheg_hdampUp"  , "t#bar{t}", itSys, 1,  "hdampUp"); 
   p->AddSample("TTbar_Powheg_hdampDown", "t#bar{t}", itSys, 1,  "hdampDown"); 
 
-
-
-
-  p->AddSample("TTbar_Powheg_ueUp", "t#bar{t}", itSys, 1,  "ueUp"); 
-  p->AddSample("TTbar_Powheg_ueDown", "t#bar{t}", itSys, 1,  "ueDown"); 
-  p->AddSample("TTbar_Powheg_isrUp", "t#bar{t}", itSys, 1,  "isrUp"); 
+  p->AddSample("TTbar_Powheg_ueUp"   , "t#bar{t}", itSys, 1,  "ueUp"); 
+  p->AddSample("TTbar_Powheg_ueDown" , "t#bar{t}", itSys, 1,  "ueDown"); 
+  p->AddSample("TTbar_Powheg_isrUp"  , "t#bar{t}", itSys, 1,  "isrUp"); 
   p->AddSample("TTbar_Powheg_isrDown", "t#bar{t}", itSys, 1,  "isrDown"); 
-  p->AddSample("TTbar_Powheg_fsrUp", "t#bar{t}", itSys, 1,  "fsrUp"); 
+  p->AddSample("TTbar_Powheg_fsrUp"  , "t#bar{t}", itSys, 1,  "fsrUp"); 
   p->AddSample("TTbar_Powheg_fsrDown", "t#bar{t}", itSys, 1,  "fsrDown"); 
 
-  p->AddSample("TW_noFullyHadr_isrUp","tW", itSys, 1,  "isrUp");
+  p->AddSample("TW_noFullyHadr_isrUp"  ,"tW", itSys, 1,  "isrUp");
   p->AddSample("TW_noFullyHadr_isrDown","tW", itSys, 1,  "isrDown");
-  p->AddSample("TW_noFullyHadr_fsrUp","tW", itSys, 1,  "fsrUp");
+  p->AddSample("TW_noFullyHadr_fsrUp"  ,"tW", itSys, 1,  "fsrUp");
   p->AddSample("TW_noFullyHadr_fsrDown","tW", itSys, 1,  "fsrDown");
 
-  p->AddSample("TW_noFullyHadr_MEscaleUp","tW", itSys, 1,  "tWMe_s_caleUp");
+  p->AddSample("TW_noFullyHadr_MEscaleUp"  ,"tW", itSys, 1,  "tWMe_s_caleUp");
   p->AddSample("TW_noFullyHadr_MEscaleDown","tW", itSys, 1,  "tWMe_s_caleDown");
 
-  p->AddSample("TbarW_noFullyHadr_isrUp","tW", itSys, 1,  "isrUp");
-  p->AddSample("TbarW_noFullyHadr_isrDown","tW", itSys, 1,  "isrDown");
-  p->AddSample("TbarW_noFullyHadr_fsrUp","tW", itSys, 1,  "fsrUp");
-  p->AddSample("TbarW_noFullyHadr_fsrDown","tW", itSys, 1,  "fsrDown");
-  p->AddSample("TbarW_noFullyHadr_MEscaleUp","tW", itSys, 1,  "tWMe_s_caleUp");
+  p->AddSample("TbarW_noFullyHadr_isrUp"      ,"tW", itSys, 1,  "isrUp");
+  p->AddSample("TbarW_noFullyHadr_isrDown"    ,"tW", itSys, 1,  "isrDown");
+  p->AddSample("TbarW_noFullyHadr_fsrUp"      ,"tW", itSys, 1,  "fsrUp");
+  p->AddSample("TbarW_noFullyHadr_fsrDown"    ,"tW", itSys, 1,  "fsrDown");
+  p->AddSample("TbarW_noFullyHadr_MEscaleUp"  ,"tW", itSys, 1,  "tWMe_s_caleUp");
   p->AddSample("TbarW_noFullyHadr_MEscaleDown","tW", itSys, 1,  "tWMe_s_caleDown");
 
   p->AddSample("TTbar_Powheg", "t#bar{t}", itSys, 1, "ScaleUp"); 
@@ -91,12 +89,14 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->SetRatioMax( 1.4 );
   
   p->AddSystematic("stat,JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"); //,LepEff
+  //p->AddSystematic("stat"); //,LepEff
 
   p->SetPlotFolder("Control/");
 
   p->doYieldsInLeg=false;
   
-  p->SetLegendPosition(0.66, 0.62, 0.98, 0.92);
+  //p->SetLegendPosition(0.66, 0.65, 0.98, 0.85);
+  p->SetLegendPosition(0.6, 0.52, 0.83, 0.92);
 
   p->doSetLogy = false;
   p->doData = true;
