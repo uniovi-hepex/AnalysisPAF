@@ -241,5 +241,87 @@ std::vector<TString> TStringToVector(TString t, char separator){
   return v;
 }
 
+Bool_t IsWord(TString s, Int_t pos = 0, TString word = ""){
+  if(word == "") word = s;
+  if(s.Index(word, word.Sizeof()-1, pos, TString::kExact) < 0){
+    cout << "[IsWord] WARNING: no word \"" << word << "\" in string \"" << s << "\"" << endl;
+    return false;
+  }
+  TString LimitWord = ",. ?:)]([{}@\"'&|<>=!";
+  Int_t nstop = LimitWord.Sizeof()-1;
+  Bool_t isword = true;
+
+  // Check containt
+  for(Int_t i = 0; i < nstop; i++){
+    if(word.Contains(LimitWord[i])){
+      isword = false;
+      return isword; 
+    }
+  }
+
+  // Check the begining
+  if(pos != 0){
+    isword = false;
+    char c = s[pos-1];
+    cout << Form("Checking first char --> %c",c) << endl;
+    for(Int_t i = 0; i < nstop; i++){
+      if(c == LimitWord[i]){
+        isword = true;
+        break;  
+      }
+    }
+  } 
+  if(!isword) return false;
+
+  // Check the end 
+  if(s.Sizeof() == pos+word.Sizeof()) return true;
+  else{
+    isword = false;
+    char d = s[pos+word.Sizeof()-1];
+    cout << Form("Checking last char --> %c", d) << endl;
+    for(Int_t i = 0; i < nstop; i++){
+      if(d == LimitWord[i]){
+        isword = true;
+        break;  
+      }
+    }
+  }
+  return isword;
+}
+
+TString ReplaceWords(TString orig, TString search, TString replace){
+  if(!IsWord(replace)){
+    cout << "[ReplaceWords] Warning!! \""  << replace << "\" is not a word!!" << endl;
+    return orig;
+  }
+  if(!IsWord(search)){
+    cout << "[ReplaceWords] Warning!! \""  << search << "\" is not a word!!" << endl;
+    return orig;
+  }
+  if(search == replace) return orig;
+
+  Int_t wordsize = search.Sizeof()-1;
+  Int_t replsize = replace.Sizeof()-1;
+  Int_t pos = 0; Int_t found = 0; Int_t nreplaces = 0;
+
+
+  while(orig.Index(search, wordsize, pos, TString::kExact) >= 0){
+    
+    found = orig.Index(search, wordsize, pos, TString::kExact);
+    pos = found;
+    cout << "orig = " << orig << endl;
+    cout << "pos = " << pos << endl;
+    cout << "search = " << search << endl;
+    if(IsWord(orig, pos, search)){ // Replace and restart the loop
+      orig.Replace(pos, wordsize, replace);
+      pos += replsize;
+      continue;
+    }
+    else{ // Go on!
+      pos += wordsize;
+    } 
+  }
+  return orig;
+}
 
 #endif
