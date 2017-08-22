@@ -36,6 +36,7 @@ public:
   bool doSetLogy       = true;
   bool doStatUncInDatacard = true;
   bool doLegend        = true;
+  bool doUncInLegend   = true;
 
   std::vector<Histo*> VBkgs;
   std::vector<Histo*> VSignals;
@@ -118,7 +119,7 @@ public:
     fLegY1 = 0.42;
     fLegX2 = 0.98; 
     fLegY2 = 0.92;
-    LegendTextSize  = 0.035;
+    LegendTextSize  = 0.065;
     RatioPlotLabel  = "";
     SignalDrawStyle = "hist";
   }
@@ -169,7 +170,7 @@ public:
     fLegY1 = 0.65;
     fLegX2 = 0.93; 
     fLegY2 = 0.93;
-    LegendTextSize  = 0.035;
+    LegendTextSize  = 0.065;
     RatioPlotLabel  = "";
     SignalDrawStyle = "hist";
   }

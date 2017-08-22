@@ -363,8 +363,7 @@ Float_t Plot::GetYield(TString pr, TString systag){
 
 TLegend* Plot::SetLegend(){ // To be executed before using the legend
   TLegend* leg = new TLegend(fLegX1, fLegY1, fLegX2, fLegY2);
-  //leg->SetTextSize(LegendTextSize);
-  leg->SetTextSize(0.065);
+  leg->SetTextSize(LegendTextSize);
   leg->SetBorderSize(0);
   leg->SetFillColor(10);
   Float_t MinYield = 0; 
@@ -404,7 +403,7 @@ TLegend* Plot::SetLegend(){ // To be executed before using the legend
     else VBkgs.at(i)->AddToLegend(leg,doYieldsInLeg);
   }
 
-  hAllBkg->AddToLegend(leg,doYieldsInLeg); // add legend for uncertainty
+  if(doSys && doUncInLegend) hAllBkg->AddToLegend(leg,doYieldsInLeg); // add legend for uncertainty
 
   if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
     for(int i = VSignals.size()-1; i >= 0; i--) VSignals[i]->AddToLegend(leg, doYieldsInLeg);

@@ -100,13 +100,6 @@ void Histo::AddToLegend(TLegend* leg, Bool_t doyi){
     else if (type == itCompare)op = "pe";
   }
   
-  ////////////////////////////////////////////////////////////////////////////////
-  // Kike added these two line to be able to draw the uncertainty box (03.08.2017)
-  // I'm sure there is a better way to do it....
-  op="f";
-  if (type == itData)   op = "pe";
-  ////////////////////////////////////////////////////////////////////////////////
-  
   if(doyi) leg->AddEntry(h2, Form(process + ": %1.0f", yield), op);
   else leg->AddEntry(h2, tag, op);
 }
