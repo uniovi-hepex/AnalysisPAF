@@ -458,10 +458,21 @@ TCanvas* Plot::SetCanvas(){ // Returns the canvas
   texcms->SetTextSize(0.06);
   texcms->SetTextSizePixels(22);
 
+  texPrelim  = new TLatex(0.,0., CMSmodeLabel); 
+  texPrelim->SetNDC();
+  texPrelim->SetTextAlign(12);
+  texPrelim->SetX(0.15);
+  texPrelim->SetY(0.83);
+  texPrelim->SetTextFont(52);
+  texPrelim->SetTextSize(0.052);
+  texPrelim->SetTextSizePixels(22);
+ 
+
   return c;
 }
 
 void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString options){
+  doUncInLegend = false;
   TString drawstyle = "pe";
   if(options.Contains("hist")) drawstyle = "hist";
   if(options.Contains("style=l")) drawstyle = "l";
@@ -637,21 +648,13 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
     PlotMinimum = PlotMinimum == -999? 0 : PlotMinimum;
     PlotMaximum = PlotMaximum == -999? Max*ScaleMax : PlotMaximum;
     
-    // increase the y-axis max ONLY for lepton eta distributions
-    //cout << hStack->GetTitle() << endl;
-    if(hStack->GetXaxis()->GetXmax()==2.5 && hStack->GetXaxis()->GetNbins()==25){ 
-        cout << "Increasing the y-axis maximun" << endl;
-        PlotMaximum = 1.15*PlotMaximum;               
-    }
-    // need to do the same with 1j1b BDT output!!!
-    
     hStack->SetMaximum(PlotMaximum);
     hStack->SetMinimum(PlotMinimum);
   }  
-  //hStack->Draw("hist"); // mobe this line up to be able to adjust the y-axis max
 
-
-  float binWidth = hStack->GetXaxis()->GetBinWidth(1);
+// Needs to be re-thinked
+//
+/*  float binWidth = hStack->GetXaxis()->GetBinWidth(1);
   TString yAxisTitle = "Events";
   
   if(hStack->GetXaxis()->GetNbins()<8 || hStack->GetXaxis()->GetXmax()==23.5)  // for nJets distributions
@@ -670,13 +673,13 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
      yAxisTitle += " GeV";
   }
   
-
   hStack->GetYaxis()->SetTitle(yAxisTitle);
   hStack->GetYaxis()->SetTitleSize(0.07);
   hStack->GetYaxis()->SetTitleOffset(0.67);
   hStack->GetYaxis()->SetNdivisions(505);
   hStack->GetYaxis()->SetLabelSize(0.06);
   hStack->GetYaxis()->SetNoExponent(kFALSE);
+*/
   hStack->GetXaxis()->SetLabelSize(0.0);
 
   if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
@@ -685,8 +688,8 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
 
   // Draw systematics histo
   hAllBkg->SetFillStyle(3444); // 3444 o 3004 (3145 default here)
-  hAllBkg->SetFillColor(kGray+2);
-  hAllBkg->SetLineColor(kGray+2);
+  hAllBkg->SetFillColor(StackErrorColor); // kGray+2 as default
+  hAllBkg->SetLineColor(StackErrorColor);
   hAllBkg->SetLineWidth(0);
   hAllBkg->SetMarkerSize(0);
   if(doSys)  hAllBkg->Draw("same,e2");
@@ -697,7 +700,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
 
 
   // Draw systematics ratio
-  hAllBkg->SetFillStyle(3444);
+  hAllBkg->SetFillStyle(StackErrorStyle);
   TH1F* hratioerr =  (TH1F*) hAllBkg->Clone("hratioerr");
   Int_t nbins = hAllBkg->GetNbinsX(); Float_t binval = 0; Float_t errbin = 0; Float_t totalerror = 0;
   for(int bin = 1; bin <= nbins; bin++){  // Set bin error
@@ -709,26 +712,17 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   }
   //hratioerr->SetFillColor(kTeal-7);
   //hratioerr->SetFillStyle(3144); 
-  hratioerr->SetFillColor(kGray+2);
-  hratioerr->SetFillStyle(3444); // 3444 o 3004 (3144 default here)
+  hratioerr->SetFillColor(RatioErrorColor); // kGray+2 as default
+  hratioerr->SetFillStyle(RatioErrorStyle); // 3444 o 3004 (3144 default here)
   hratioerr->SetMarkerSize(0);
 
   TLegend* leg = SetLegend();
   if(doLegend) leg->Draw("same");      
   texcms->Draw("same");     // CMS 
   texlumi->Draw("same");    // The luminosity
-
-  TLatex *texPrelim;
-  texPrelim  = new TLatex(0.,0., "Preliminary"); 
-  texPrelim->SetNDC();
-  texPrelim->SetTextAlign(12);
-  texPrelim->SetX(0.15);
-  texPrelim->SetY(0.83);
-  texPrelim->SetTextFont(52);
-  texPrelim->SetTextSize(0.052);
-  texPrelim->SetTextSizePixels(22);
   texPrelim->Draw("same");  // Preliminary
-  
+
+ 
   // Draw text for selection
   if (chlabel != ""){
     //TLatex *chtitle = new TLatex(-20.,50., "* e^{#pm}#mu^{#mp} + 1j1b"); 
