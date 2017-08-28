@@ -1,28 +1,39 @@
 #include "Looper.h"
 
-std::vector<TString> GetAllVars(TString varstring){ 
+std::vector<TString> GetAllVars(TString varstring, Bool_t verbose){ 
   std::vector<TString> g;
   TString var; Int_t i;
   TString chain = varstring;
+  //cout << "[GetAllVars] varstring = " << varstring << endl;
   while(chain.Contains("T")){
     i = 0;
     var = chain(chain.First('T'), chain.Sizeof());
-    //    while(TString(var[i]).IsAlnum()) i++;
-    while( var[i] != ' ') i++;
+    while(TString(var[i]).IsAlnum() || var[i] == '_') i++;
+    //while( var[i] != ' ') i++;
     var = var(0,i);
+    //cout << "Found var; " << var << endl;
+    //cout << "Replacing word \"" << var << "\" in chain \"" << chain << "\" " << endl;
+    if(!IsWord(chain, chain.First('T'), var)) break;
     g.push_back(var);
-    chain.ReplaceAll(var + " ", " ");
+    //chain.ReplaceAll(var, "");
+    chain = ReplaceWords(chain, var, "");
+  }
+  if(verbose) {
+    cout << "[Looper::GetAllVars] List of variables: ";
+    for(Int_t i = 0; i < (Int_t) g.size(); i++) cout << g.at(i) << ", ";
+    cout << endl;
   }
   return g;
 }
 
 TString Looper::CraftVar(TString varstring, TString sys){
   TString var = varstring;
-  std::vector<TString> AllVars = GetAllVars(var);
+  std::vector<TString> AllVars = GetAllVars(var, verbose);
   Int_t nvars = AllVars.size();
+  if(verbose) cout << "[Looper::CraftVar] Systematic = " << sys << "... Looping over " << nvars << " variables..." << endl;
   for(Int_t i = 0; i < nvars; i++) 
     if(tree->GetBranchStatus(AllVars.at(i) + sys)){
-      var.ReplaceAll(AllVars.at(i) + " ", AllVars.at(i)+sys+" ");
+      var = ReplaceWords(var, AllVars.at(i), AllVars.at(i)+sys);
     }
   return var;
 }
@@ -48,11 +59,11 @@ TString Looper::CraftFormula(TString cuts, TString chan, TString sys, TString op
     weight += "_" + sys; 
   }
 
-  std::vector<TString> AllVars = GetAllVars((TString) cuts);
+  std::vector<TString> AllVars = GetAllVars((TString) cuts, verbose);
   Int_t nvars = AllVars.size();
   for(Int_t i = 0; i < nvars; i++) 
     if(tree->GetBranchStatus(AllVars.at(i) + sys)){
-      cuts = ( ((TString) cuts).ReplaceAll(AllVars.at(i) + " ", AllVars.at(i)+sys + " "));
+      cuts = ReplaceWords((TString) cuts, AllVars.at(i), AllVars.at(i)+sys);
     }
   TString                                                  formula = TString("(") + cuts + TString(")*(") + schan + TString(")*") + weight;
   if((options.Contains("Fake") || options.Contains("fake"))){
@@ -72,8 +83,12 @@ void Looper::SetFormulas(TString systematic){
   if(FormulasLHE)  delete FormulasLHE;
   stringcut = ""; stringvar = "";
   TString cu = ""; TString ch = ""; TString v = ""; 
+  //cout << "[SetFormulas] Crafting formula..." << endl;
   stringcut = CraftFormula(cut, chan, systematic, options);
+  if(verbose) cout << "[Looper::SetFormulas] Formula: " << stringcut << endl;
+  //cout << "[SetFormulas] Crafting var..." << endl;
   stringvar = CraftVar(var, systematic);
+  if(verbose) cout << "[Looper::SetFormulas] Variable: " << stringvar << endl;
 
   if(stringvar.Contains("[") && stringvar.Contains("]")){
     TString number = TString(stringvar(stringvar.First("["), stringvar.First("]")) );
@@ -272,9 +287,11 @@ Histo* Looper::GetHisto(TString sample, TString sys){
       else doSysScale = true;
     }
   }
-
+  if(verbose) cout << "### Creating Histo..." << endl;
   CreateHisto(sys);
+  if(verbose) cout << "### Setting formulas..." << endl;
   SetFormulas(sys);
+  if(verbose) cout << "### Looping..." << endl;
   Loop(sys);
   return Hist;
 }

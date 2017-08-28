@@ -20,14 +20,16 @@ enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau
 const Int_t nLHEweights = 112;
 std::vector<TString> TStringToVector(TString t, char separator = ',');
 
-std::vector<TString> GetAllVars(TString varstring); 
+std::vector<TString> GetAllVars(TString varstring, Bool_t verbose); 
 TH1D* loadSumOfLHEweights(TString pathToHeppyTrees = "/pool/ciencias/HeppyTreesSummer16/v2/", TString sampleName = "TTbar_PowhegLHE");
 TH1F* hLHE[nLHEweights];
 
 class Looper{
   public:
     Looper(){};
+
     Looper(TString pathToTree, TString NameOfTree, TString _var = "TMET", TString _cut = "1", TString _chan = "ElMu", Int_t nb = 30, Float_t b0 = 0, Float_t bN = 300){
+   verbose = false;
    Hist = NULL; 
    FormulasCuts = NULL;
    FormulasVars = NULL;
@@ -46,6 +48,7 @@ class Looper{
    pathToHeppyTrees = "/pool/ciencias/HeppyTreesSummer16/v2/";
   }  
     Looper(TString pathToTree, TString NameOfTree, TString _var = "TMET", TString _cut = "1", TString _chan = "ElMu", Int_t nb = 30, Float_t* bins = 0){
+   verbose = false;
    Hist = NULL; 
    FormulasCuts = NULL;
    FormulasVars = NULL;
@@ -89,6 +92,7 @@ class Looper{
    Bool_t doSysPDF = false;
    Bool_t doSysScale = false;
    Bool_t doISRweight = false;
+   Bool_t verbose = false;
    Int_t numberInstance;
    void SetSampleName(TString t){sampleName   = t;}
    void SetHeppySampleName(TString t){HeppySampleName   = t;}
@@ -263,7 +267,6 @@ Bool_t IsWord(TString s, Int_t pos = 0, TString word = ""){
   if(pos != 0){
     isword = false;
     char c = s[pos-1];
-    cout << Form("Checking first char --> %c",c) << endl;
     for(Int_t i = 0; i < nstop; i++){
       if(c == LimitWord[i]){
         isword = true;
@@ -278,7 +281,6 @@ Bool_t IsWord(TString s, Int_t pos = 0, TString word = ""){
   else{
     isword = false;
     char d = s[pos+word.Sizeof()-1];
-    cout << Form("Checking last char --> %c", d) << endl;
     for(Int_t i = 0; i < nstop; i++){
       if(d == LimitWord[i]){
         isword = true;
@@ -309,9 +311,9 @@ TString ReplaceWords(TString orig, TString search, TString replace){
     
     found = orig.Index(search, wordsize, pos, TString::kExact);
     pos = found;
-    cout << "orig = " << orig << endl;
-    cout << "pos = " << pos << endl;
-    cout << "search = " << search << endl;
+    //cout << "orig = " << orig << endl;
+    //cout << "pos = " << pos << endl;
+    //cout << "search = " << search << endl;
     if(IsWord(orig, pos, search)){ // Replace and restart the loop
       orig.Replace(pos, wordsize, replace);
       pos += replsize;
