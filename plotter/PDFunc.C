@@ -3,6 +3,8 @@
 
 #include "Histo.h"
 #include "Looper.h"
+#include <iostream>
+#include <fstream>
 
 const Int_t totalNweights = 254;
 const TString hSumGenWeightsName = "SumGenWeights";
@@ -10,8 +12,6 @@ const TString hSumGenWeightsName = "SumGenWeights";
 //#### Extra functions
 Int_t GetLHEid(Int_t i);
 Int_t GetLHEidNom(Int_t i);
-void line();
-void line2();
 //_________________________________________________________
 
 class PDFunc{
@@ -42,38 +42,43 @@ class PDFunc{
  *  Histo* hUp =   pdf->GetSystHisto("up",   "pdf");
  *  Histo* hDown = pdf->GetSystHisto("down", "pdf");
  *
+ *  // Print everything:
+ *  for(Int_t bin = 0; bin < pdf->GetNbins(); bin++) PrintLHE(bin);
+ *  // If you want to print it into a txt file, add an argument "outputText.txt"
+ *  // at the end of the constructor.
+ *
  */
 
 public:
-  PDFunc(TString path, TString sample, TString tn = "tree", TString _cut = "1", TString _chan = "ElMu"){
+  PDFunc(TString path, TString sample, TString tn = "tree", TString _cut = "1", TString _chan = "ElMu", TString filename = ""){
     pathToTree = path;
     sampleName = sample;
     treeName = tn; 
     cut = _cut; chan = _chan;
     nBins = 1; var = "";
+    saveoutput = filename;
     Init();
     FillHistoWeights();
-    nomyield = GetNomYield(1);
   }
-  PDFunc(TString path, TString sample, TString tn,  TString _cut, TString _chan, TString _var, Int_t nb = 30, Float_t b0 = 0, Float_t bN = 300){
+  PDFunc(TString path, TString sample, TString tn,  TString _cut, TString _chan, TString _var, Int_t nb, Float_t b0 = 0, Float_t bN = 300, TString filename = ""){
     pathToTree = path;
     sampleName = sample;
     treeName = tn;
     var = _var; cut = _cut; chan = _chan;
     nBins = nb;  bin0 = b0; binN = bN;
+    saveoutput = filename;
     Init();
     FillHistoWeightsAllBins();
-    nomyield = GetNomYield(1);
   }
-  PDFunc(TString path, TString sample, TString tn, TString _cut, TString _chan, TString _var, Int_t nb = 30, Float_t *b0 = 0){
+  PDFunc(TString path, TString sample, TString tn, TString _cut, TString _chan, TString _var, Int_t nb, Float_t *b0 = 0, TString filename = ""){
     pathToTree = path;
     sampleName = sample;
     treeName = tn;
     var = _var; cut = _cut; chan = _chan;
     nBins = nb;  bin0 = 0; binN = 0; bins = b0; 
+    saveoutput = filename;
     Init();
     FillHistoWeightsAllBins();
-    nomyield = GetNomYield(1);
   }
   ~PDFunc(){
     if(weights) delete weights;
@@ -101,6 +106,7 @@ public:
     TH1D* hCount = loadHistogram1D(pathToTree, sampleName, "Count");
     count = hCount->GetBinContent(1);
     SetFormulas();
+    if(saveoutput != "") os = ofstream(saveoutput);
   }
 
   void SetPathToTree(TString t){ pathToTree = t;}
@@ -112,6 +118,8 @@ public:
 
   void SetLHEwNameInTree(TString t){ LHEweighName = t;}
   void SetLHEsumFiduInTree(TString t){ SumFiduWeightsName = t;}
+
+  Int_t GetNbins(){ return nBins;}
 
   void CreateHisto();
   TString GetBinCut(Int_t bin);
@@ -131,21 +139,25 @@ public:
   Float_t NNPDFsyst();
   Float_t MEsyst();
 
+  void line();
+  void line2();
   void printi(Int_t i);
   void printv(Int_t i);
-  void PrintInfo();
+  void PrintInfo(Int_t bin = 0);
   void PrintWeightHisto(Int_t bin = 0);
   void PrintSumOfWeightsHisto(){ hSumGenWeights->Draw();}
   void PrintMuRMuFvariations();
   void PrintNNPDFvariations();
   void PrintNNPDFsyst();
-  void PrintLHE();
+  void PrintLHE(Int_t bin = 0);
 
 protected:
   // Main tree and histograms to open
   TH1D* hSumGenWeights; TH1D* hSumFiduWeights; TTree* tree; Int_t nEntries;
   TString SumFiduWeightsName; Float_t nomyield;
   TString LHEweighName;
+  TString saveoutput;
+  ofstream os;
   
   // Here we store all the LHE-weighted events
   TH1F* weights; vector<TH1F*> wBins; Double_t count;
@@ -202,7 +214,7 @@ void PDFunc::FillHistoWeights(Int_t bin){
   Float_t EventWeight;  Float_t bincutWeight;
 
   if(bin != 0) SetBinCutFormula(bin);
-  PrintInfo(); // Print all info
+  PrintInfo(bin); // Print all info
 
   // Loop over all entries
   for(Long64_t i = 0; i < nEntries; i++){
@@ -324,23 +336,57 @@ Float_t PDFunc::MEsyst(){
 //#############################################################################################
 //
 // Printing...
-void PDFunc::PrintInfo(){
-  cout << "nEntries:     "    << nEntries << endl;
-  cout << "Selection:    "    << cut   << endl;
-  cout << "Channel:      "    << chan  << endl;
-  cout << "Event weight: "    << weight << endl;
-  if(var == "") cout << " Getting weights inclusively for the selection above. " << endl; 
-  else if(bin0 == binN){
-    cout << "Getting weights for different bins... " << endl;
-    cout << "nBins    = " << nBins << endl;
-    cout << "Variable = " << var << endl;
-    cout << "Bincut   = " << bincut << endl;
+void PDFunc::PrintInfo(Int_t bin){
+  if(bin == 0){
+    cout << "nEntries:     "    << nEntries << endl;
+    cout << "Selection:    "    << cut   << endl;
+    cout << "Channel:      "    << chan  << endl;
+    cout << "Event weight: "    << weight << endl;
+    if(saveoutput != ""){
+      os << "nEntries:     "    << nEntries << endl;
+      os << "Selection:    "    << cut   << endl;
+      os << "Channel:      "    << chan  << endl;
+      os << "Event weight: "    << weight << endl;
+    }
+    if(var == "") cout << " Getting weights inclusively for the selection above. " << endl; 
+  }
+  else if(bin == 1){
+    if(bin0 == binN){
+      cout << "Getting weights for different bins... " << endl;
+      cout << "nBins    = " << nBins << endl;
+      cout << "Variable = " << var << endl;
+      cout << Form("\n=========== BIN %i ===========\n", bin);
+      cout << "Bincut   = " << bincut << endl;
+      if(saveoutput != ""){
+        os << "Getting weights for different bins... " << endl;
+        os << "nBins    = " << nBins << endl;
+        os << "Variable = " << var << endl;
+        os << Form("\n=========== BIN %i ===========\n", bin);
+        os << "Bincut   = " << bincut << endl;
+      }
+    }
+    else{
+      cout << "Getting weights for different bins... " << endl;
+      cout << "nBins = " << nBins << ", bin0     = " << bin0 << ", binN = " << binN << endl;
+      cout << "Variable = " << var << endl;
+      cout << Form("\n=========== BIN %i ===========\n", bin);
+      cout << "Bincut   = " << bincut << endl;
+      if(saveoutput != ""){
+        os << "Getting weights for different bins... " << endl;
+        os << "nBins = " << nBins << ", bin0     = " << bin0 << ", binN = " << binN << endl;
+        os << "Variable = " << var << endl;
+        os << Form("\n=========== BIN %i ===========\n", bin);
+        os << "Bincut   = " << bincut << endl;
+      }
+    }
   }
   else{
-    cout << "Getting weights for different bins... " << endl;
-    cout << "nBins = " << nBins << ", bin0     = " << bin0 << ", binN = " << binN << endl;
-    cout << "Variable = " << var << endl;
+    cout << Form("\n=========== BIN %i ===========\n", bin);
     cout << "Bincut   = " << bincut << endl;
+    if(saveoutput != ""){
+      os << Form("\n=========== BIN %i ===========\n", bin);
+      os << "Bincut   = " << bincut << endl;
+    }
   }
 }
 
@@ -358,29 +404,33 @@ void PDFunc::PrintMuRMuFvariations(){
   };
   line2();
   cout << " ### muR/muF ME variations (hdamp = mtop), nominal + 8" << endl;
+  if(saveoutput != "") os << " ### muR/muF ME variations (hdamp = mtop), nominal + 8" << endl;
   line();
   float nom = 0; float y = 0; float vmax = 0;
   TString o = " Maximum variation                                 ";
   nom = GetWyield(0); vmax = nom;
   for(int k = 0; k<9; k++) {
-    printi(k);  cout << muRmuFtext[k] ; printv(k);
+    printi(k);  cout << muRmuFtext[k];  if(saveoutput != "") os << muRmuFtext[k]; printv(k);
     if (TMath::Abs(GetWyield(k)-nom) > TMath::Abs(vmax-nom)) vmax = GetWyield(k);
   }
   line();
     o += Form("||  %6.2f (%2.2f %c)  ", TMath::Abs(vmax-nom), TMath::Abs(vmax-nom)/nom*100, '%');
   cout << o << endl;
+  if(saveoutput != "") os << o << endl;
   line2();
 }
 
 void PDFunc::PrintNNPDFvariations(){
   line2();
   cout << " ### NNPDF variations: 100 + 2 (alpha_s) " << endl;
+  if(saveoutput != "") os << " ### NNPDF variations: 100 + 2 (alpha_s) " << endl;
   line();
   for(int i = 9; i<109; i++){
     printi(i); printv(i);
   }
   line();
   cout << " - NNPDF alpha_s variations " << endl;
+  if(saveoutput != "") os << " - NNPDF alpha_s variations " << endl;
   line();
   printi(109); printv(109);
   printi(110); printv(110);
@@ -394,12 +444,23 @@ void PDFunc::PrintNNPDFsyst(){
   cout << " Evaluated by taking the RMS under the 100 weights" << endl;
   cout << " Alpha_s variations are added in quadrature after rescaling by 0.75" << endl;
   cout << " The formula is: sqrt(RMS^2 + ((alphas var 1 - alphas var 2)*0.75/2)^2 )" << endl;
+  if(saveoutput != ""){
+    os << " >>>> NNPDF systematic uncertainty" << endl;
+    os << " Evaluated by taking the RMS under the 100 weights" << endl;
+    os << " Alpha_s variations are added in quadrature after rescaling by 0.75" << endl;
+    os << " The formula is: sqrt(RMS^2 + ((alphas var 1 - alphas var 2)*0.75/2)^2 )" << endl;
+
+  }
   line(); 
   cout << Form("  ====>   %4.2f (%2.3f %c)  ", val, val/nom*100, '%') << endl;
+  if(saveoutput != "") os << Form("  ====>   %4.2f (%2.3f %c)  ", val, val/nom*100, '%') << endl;
   line2();
 }
 
-void PDFunc::PrintLHE(){
+void PDFunc::PrintLHE(Int_t bin){
+  SetBin(bin);
+  cout << Form("\n========== bin %i ==========\n", bin);
+  if(saveoutput != "") os << Form("\n========== bin %i ==========\n", bin);
   PrintMuRMuFvariations();
   PrintNNPDFvariations();
   PrintNNPDFsyst();
@@ -409,13 +470,29 @@ void PDFunc::PrintLHE(){
 //
 // Extra finctions
 
-void line() { cout << "--------------------------------------------------------------------------------------------------------" << endl;}
-void line2(){ cout << "========================================================================================================" << endl;}
-void PDFunc::printi(Int_t i){ cout << Form("i = %i, LHE id = %5i    |  ", i, GetLHEid(i));}
+void PDFunc::line() { 
+  cout << "--------------------------------------------------------------------------------------------------------" << endl;
+  if(saveoutput != "") os << "--------------------------------------------------------------------------------------------------------" << endl;
+}
+void PDFunc::line2(){ 
+  cout << "========================================================================================================" << endl;
+  if(saveoutput != "") os << "========================================================================================================" << endl;
+}
+void PDFunc::printi(Int_t i){ 
+  cout << Form("i = %i, LHE id = %5i    |  ", i, GetLHEid(i));
+  if(saveoutput != "") os << Form("i = %i, LHE id = %5i    |  ", i, GetLHEid(i));
+}
 void PDFunc::printv(Int_t i){ 
   cout << Form(" %6.2f (%2.2f %c) ", GetWyield(i), (GetWyield(i)-GetNomYield(i))/GetNomYield(i)*100, '%');
-  if(GetLHEid(i) == GetLHEidNom(i)) cout << " <--- Nominal" << endl;
-  else cout << endl;
+  if(saveoutput != "") os << Form(" %6.2f (%2.2f %c) ", GetWyield(i), (GetWyield(i)-GetNomYield(i))/GetNomYield(i)*100, '%');
+  if(GetLHEid(i) == GetLHEidNom(i)){
+    cout << " <--- Nominal" << endl;
+    if(saveoutput != "") os << " <--- Nominal" << endl;
+  }
+  else{
+    cout << endl;
+    if(saveoutput != "") os << endl;
+  }
 }
 
 Int_t GetLHEid(Int_t i){
