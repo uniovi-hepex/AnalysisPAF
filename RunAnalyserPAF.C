@@ -279,7 +279,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
         firstEvent = (nTrueEntries/nChunks)*i+1;
         nEvents = nTrueEntries/nChunks;
         if(i == nChunks - 1) nEvents = nTrueEntries-firstEvent;
-        command = Form("root -l -b -1 \'RunAnalyserPAF.C(\"%s\", \"%s\", %i, %lli, %i, %i, %i, %i)\'", orig_sampleName.Data(), Selection.Data(), nSlots, nEvents, firstEvent, i, stopMass, lspMass);
+        command = Form("root -l -b -q \'RunAnalyserPAF.C(\"%s\", \"%s\", %i, %lli, %i, %i, %i, %i)\'", orig_sampleName.Data(), Selection.Data(), nSlots, nEvents, firstEvent, i, stopMass, lspMass);
         cout << command << endl;
         os << command << endl;
       }
