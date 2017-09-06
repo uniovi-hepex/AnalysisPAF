@@ -173,22 +173,22 @@ void WZAnalysis::InsideLoop(){
     	if(TNTightLeps == 3 && TNOSSF > 0){ 
 				AssignWZLeptons();
 				if (lepZ1.Pt() > 25 && lepZ2.Pt() > 10 && lepW.Pt() > 25){//3 lepton, has OSSF, leptons assigned to W and Z
-	  	    fHyields[gChannel][0] -> Fill(itrilepton, TWeight);
-	  	    FillHistos(gChannel, itrilepton);
-	  	    FillDYHistos(gChannel);
+	  	    // fHyields[gChannel][0] -> Fill(itrilepton, TWeight);
+	  	    // FillHistos(gChannel, itrilepton);
+	  	    // FillDYHistos(gChannel);
     	  
     	  	if(TMath::Abs(TMll - nomZmass)< 15. && TMinMll > 4. && (lepZ1.p + lepZ2.p + lepW.p).M() > 100.  ){ //  Z window + exlcude low masses + M_3l selection 
-						fHyields[gChannel][0] -> Fill(ionZ, TWeight);
-    	  	  FillHistos(gChannel, ionZ);
+						// fHyields[gChannel][0] -> Fill(ionZ, TWeight);
+    	  	  // FillHistos(gChannel, ionZ);
 						// The last two cuts define the Control/Signal regions
 						
 						// Signal Region
     	  	  if(TMET > 30.){   // MET > 30 always
-    	  	  	fHyields[gChannel][0] -> Fill(imet, TWeight);
-    	  	    FillHistos(gChannel, imet);
+    	  	  	// fHyields[gChannel][0] -> Fill(imet, TWeight);
+    	  	    // FillHistos(gChannel, imet);
     	  	    if(TNBtags == 0){ //Exactly 0 btags
-    	  	      fHyields[gChannel][0] -> Fill(i0btag, TWeight);
-    	  	      FillHistos(gChannel, i0btag);
+    	  	      //fHyields[gChannel][0] -> Fill(i0btag, TWeight);
+    	  	      //FillHistos(gChannel, i0btag);
 								TIsSR   = true;
     	        }
     	  	    else if(TNBtags > 0 && (TNOSSF == 0 || (TNOSSF > 0 && TMath::Abs(TM3l - nomZmass) > 5))){ //1 or more btags
@@ -200,10 +200,10 @@ void WZAnalysis::InsideLoop(){
 						}
 
     	    }
-					else if (TMath::Abs(TMll - nomZmass)< 15. && TMinMll > 4. && TMET < 30.){
+					if (TMath::Abs(TMll - nomZmass)< 15. && TMinMll > 4. && TMET < 30.){
 						TIsNewCRDY = true;
 					}
-					else if (TMath::Abs(TMll - nomZmass)> 15. && TMath::Abs(TM3l - nomZmass) > 5 &&  TMinMll > 4. && (lepZ1.p + lepZ2.p + lepW.p).M() > 100. && TMET > 30.){
+					if (TMath::Abs(TMll - nomZmass)> 15. && TMath::Abs(TM3l - nomZmass) > 5 &&  TMinMll > 4. && (lepZ1.p + lepZ2.p + lepW.p).M() > 100. && TMET > 30.){
 						TIsNewCRTT = true;
 					}  
 					if (TIsSR || TIsCRDY || TIsCRTT || TIsNewCRDY || TIsNewCRTT) fTree[wP] -> Fill();
