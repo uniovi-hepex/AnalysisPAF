@@ -5,7 +5,7 @@ ClassImp(WZAnalysis);
 bool GreaterThan(float i, float j){ return (i > j);}
 
 WZAnalysis::WZAnalysis() : PAFChainItemSelector() {
-	//fTree = {0};
+  //fTree = {0};
   fhDummy = 0;
   passMETfilters = 0;
   passTrigger    = 0;
@@ -63,12 +63,12 @@ void WZAnalysis::Initialise(){
   makeTree = true;
   makeHistos = true;
   if(makeTree){
-		for(int i = 0; i < nWPoints; i++){
-	    fTree[i]   = CreateTree(sWPoints[i],"Created with PAF");
-    	SetLeptonVariables(fTree[i]);
-    	SetJetVariables(fTree[i]);
-    	SetEventVariables(fTree[i]);
-		}
+    for(int i = 0; i < nWPoints; i++){
+      fTree[i]   = CreateTree(sWPoints[i],"Created with PAF");
+      SetLeptonVariables(fTree[i]);
+      SetJetVariables(fTree[i]);
+      SetEventVariables(fTree[i]);
+    }
   }
   InitHistos();
 }
@@ -99,118 +99,118 @@ void WZAnalysis::InsideLoop(){
   passMETfilters = GetParam<Bool_t>("METfilters");
   passTrigger    = GetParam<Bool_t>("passTrigger");
 
-	for (int wP = 0; wP < nWPoints; wP++){
-  	// Leptons and Jets
+  for (int wP = 0; wP < nWPoints; wP++){
+    // Leptons and Jets
 
-			tightLeptons = {};
-			fakeableLeptons = {};
+      tightLeptons = {};
+      fakeableLeptons = {};
 
-			GetLeptonsByWP(wP);
+      GetLeptonsByWP(wP);
  
-  		GetLeptonVariables(tightLeptons, fakeableLeptons, looseLeptons);
-  		GetJetVariables(selJets, Jets15);
-  		GetGenJetVariables(genJets, mcJets);
-  		GetMET();
-  		fhDummy->Fill(1);
-	
-	
-  	if(TNTightLeps == 3 && passTrigger && passMETfilters){ // trilepton event with OSSF + l, passes trigger and MET filters
-    	// Deal with weights:
-    	Float_t lepSF   = selLeptons.at(0).GetSF(0)*selLeptons.at(1).GetSF(0)*selLeptons.at(2).GetSF(0);
-    	Float_t ElecSF = 1; Float_t MuonSF = 1;
-    	Float_t ElecSFUp = 1; Float_t ElecSFDo = 1; Float_t MuonSFUp = 1; Float_t MuonSFDo = 1;
-    	Float_t stat = 0; 
-    	//For muons
-    	//https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonReferenceEffsRun2
-    	//Additional 1% for ID + 0.5% for Isolation + 0.5% single muon triggers
-	
-    	if(TChannel == iElElEl){
-    	  ElecSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0)*selLeptons.at(2).GetSF( 0);
-    	  ElecSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1)*selLeptons.at(2).GetSF( 1);
-    	  ElecSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1)*selLeptons.at(2).GetSF(-1);
-    	  MuonSFUp = 1; MuonSFDo = 1; MuonSF = 1;
-    	}
-    	else if(TChannel == iMuMuMu){
-    	  MuonSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0)*selLeptons.at(2).GetSF( 0);
-    	  MuonSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1)*selLeptons.at(2).GetSF( 1);
-    	  MuonSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1)*selLeptons.at(2).GetSF(-1);
-    	  ElecSFUp = 1; ElecSFDo = 1; ElecSF = 1;
-    	}
-			else{
-    	  MuonSFUp = 1; MuonSFDo = 1; MuonSF = 1;ElecSFUp = 1; ElecSFDo = 1; ElecSF = 1;
-				for (int i = 0; i <3; i ++){
-					if (selLeptons.at(i).isMuon){
-						MuonSF   *= selLeptons.at(i).GetSF( 0);
-						MuonSFUp *= selLeptons.at(i).GetSF( 1);
-						MuonSFDo *= selLeptons.at(i).GetSF(-1);				
-					}
-					else{
-						ElecSF   *= selLeptons.at(i).GetSF( 0);
-						ElecSFUp *= selLeptons.at(i).GetSF( 1);
-						ElecSFDo *= selLeptons.at(i).GetSF(-1);				
-					}
-				}
-			}
-	
-    	TWeight             = NormWeight*ElecSF*MuonSF*TrigSF*PUSF;
-    	TWeight_ElecEffUp   = NormWeight*ElecSFUp*MuonSF*TrigSF*PUSF;
-    	TWeight_ElecEffDown = NormWeight*ElecSFDo*MuonSF*TrigSF*PUSF;
-    	TWeight_MuonEffUp   = NormWeight*ElecSF*MuonSFUp*TrigSF*PUSF;
-    	TWeight_MuonEffDown = NormWeight*ElecSF*MuonSFDo*TrigSF*PUSF;
-    	TWeight_TrigUp     = NormWeight*lepSF*(TrigSF+TrigSFerr)*PUSF;
-    	TWeight_TrigDown   = NormWeight*lepSF*(TrigSF-TrigSFerr)*PUSF;
-    	TWeight_PUDown     = NormWeight*lepSF*TrigSF*PUSF_Up;
-    	TWeight_PUUp       = NormWeight*lepSF*TrigSF*PUSF_Down;
-			TIsSR   = false;
-			TIsCRDY = false;
-			TIsCRTT = false;	
-			TIsNewCRDY = false;
-			TIsNewCRTT = false;	
-    	if(gIsData) TWeight = 1;
-    	// Event Selection
-    	// ===================================================================================================================
+      GetLeptonVariables(tightLeptons, fakeableLeptons, looseLeptons);
+      GetJetVariables(selJets, Jets15);
+      GetGenJetVariables(genJets, mcJets);
+      GetMET();
+      fhDummy->Fill(1);
+  
+  
+    if(TNTightLeps == 3 && passTrigger && passMETfilters){ // trilepton event with OSSF + l, passes trigger and MET filters
+      // Deal with weights:
+      Float_t lepSF   = selLeptons.at(0).GetSF(0)*selLeptons.at(1).GetSF(0)*selLeptons.at(2).GetSF(0);
+      Float_t ElecSF = 1; Float_t MuonSF = 1;
+      Float_t ElecSFUp = 1; Float_t ElecSFDo = 1; Float_t MuonSFUp = 1; Float_t MuonSFDo = 1;
+      Float_t stat = 0; 
+      //For muons
+      //https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonReferenceEffsRun2
+      //Additional 1% for ID + 0.5% for Isolation + 0.5% single muon triggers
+  
+      if(TChannel == iElElEl){
+        ElecSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0)*selLeptons.at(2).GetSF( 0);
+        ElecSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1)*selLeptons.at(2).GetSF( 1);
+        ElecSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1)*selLeptons.at(2).GetSF(-1);
+        MuonSFUp = 1; MuonSFDo = 1; MuonSF = 1;
+      }
+      else if(TChannel == iMuMuMu){
+        MuonSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0)*selLeptons.at(2).GetSF( 0);
+        MuonSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1)*selLeptons.at(2).GetSF( 1);
+        MuonSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1)*selLeptons.at(2).GetSF(-1);
+        ElecSFUp = 1; ElecSFDo = 1; ElecSF = 1;
+      }
+      else{
+        MuonSFUp = 1; MuonSFDo = 1; MuonSF = 1;ElecSFUp = 1; ElecSFDo = 1; ElecSF = 1;
+        for (int i = 0; i <3; i ++){
+          if (selLeptons.at(i).isMuon){
+            MuonSF   *= selLeptons.at(i).GetSF( 0);
+            MuonSFUp *= selLeptons.at(i).GetSF( 1);
+            MuonSFDo *= selLeptons.at(i).GetSF(-1);        
+          }
+          else{
+            ElecSF   *= selLeptons.at(i).GetSF( 0);
+            ElecSFUp *= selLeptons.at(i).GetSF( 1);
+            ElecSFDo *= selLeptons.at(i).GetSF(-1);        
+          }
+        }
+      }
+  
+      TWeight             = NormWeight*ElecSF*MuonSF*TrigSF*PUSF;
+      TWeight_ElecEffUp   = NormWeight*ElecSFUp*MuonSF*TrigSF*PUSF;
+      TWeight_ElecEffDown = NormWeight*ElecSFDo*MuonSF*TrigSF*PUSF;
+      TWeight_MuonEffUp   = NormWeight*ElecSF*MuonSFUp*TrigSF*PUSF;
+      TWeight_MuonEffDown = NormWeight*ElecSF*MuonSFDo*TrigSF*PUSF;
+      TWeight_TrigUp     = NormWeight*lepSF*(TrigSF+TrigSFerr)*PUSF;
+      TWeight_TrigDown   = NormWeight*lepSF*(TrigSF-TrigSFerr)*PUSF;
+      TWeight_PUDown     = NormWeight*lepSF*TrigSF*PUSF_Up;
+      TWeight_PUUp       = NormWeight*lepSF*TrigSF*PUSF_Down;
+      TIsSR   = false;
+      TIsCRDY = false;
+      TIsCRTT = false;  
+      TIsNewCRDY = false;
+      TIsNewCRTT = false;  
+      if(gIsData) TWeight = 1;
+      // Event Selection
+      // ===================================================================================================================
 
-    	if(TNTightLeps == 3 && TNOSSF > 0){ 
-				AssignWZLeptons();
-				if (lepZ1.Pt() > 25 && lepZ2.Pt() > 10 && lepW.Pt() > 25){//3 lepton, has OSSF, leptons assigned to W and Z
-	  	    // fHyields[gChannel][0] -> Fill(itrilepton, TWeight);
-	  	    // FillHistos(gChannel, itrilepton);
-	  	    // FillDYHistos(gChannel);
-    	  
-    	  	if(TMath::Abs(TMll - nomZmass)< 15. && TMinMll > 4. && (lepZ1.p + lepZ2.p + lepW.p).M() > 100.  ){ //  Z window + exlcude low masses + M_3l selection 
-						// fHyields[gChannel][0] -> Fill(ionZ, TWeight);
-    	  	  // FillHistos(gChannel, ionZ);
-						// The last two cuts define the Control/Signal regions
-						
-						// Signal Region
-    	  	  if(TMET > 30.){   // MET > 30 always
-    	  	  	// fHyields[gChannel][0] -> Fill(imet, TWeight);
-    	  	    // FillHistos(gChannel, imet);
-    	  	    if(TNBtags == 0){ //Exactly 0 btags
-    	  	      //fHyields[gChannel][0] -> Fill(i0btag, TWeight);
-    	  	      //FillHistos(gChannel, i0btag);
-								TIsSR   = true;
-    	        }
-    	  	    else if(TNBtags > 0 && (TNOSSF == 0 || (TNOSSF > 0 && TMath::Abs(TM3l - nomZmass) > 5))){ //1 or more btags
-								TIsCRTT = true ;
-    	        }
-    	      }
-						else if (TMET < 30. && TNBtags == 0){
-							TIsCRDY = true ;
-						}
+      if(TNTightLeps == 3 && TNOSSF > 0){ 
+        AssignWZLeptons();
+        if (lepZ1.Pt() > 25 && lepZ2.Pt() > 10 && lepW.Pt() > 25){//3 lepton, has OSSF, leptons assigned to W and Z
+          // fHyields[gChannel][0] -> Fill(itrilepton, TWeight);
+          // FillHistos(gChannel, itrilepton);
+          // FillDYHistos(gChannel);
+        
+          if(TMath::Abs(TMll - nomZmass)< 15. && TMinMll > 4. && (lepZ1.p + lepZ2.p + lepW.p).M() > 100.  ){ //  Z window + exlcude low masses + M_3l selection 
+            // fHyields[gChannel][0] -> Fill(ionZ, TWeight);
+            // FillHistos(gChannel, ionZ);
+            // The last two cuts define the Control/Signal regions
+            
+            // Signal Region
+            if(TMET > 30.){   // MET > 30 always
+              // fHyields[gChannel][0] -> Fill(imet, TWeight);
+              // FillHistos(gChannel, imet);
+              if(TNBtags == 0){ //Exactly 0 btags
+                //fHyields[gChannel][0] -> Fill(i0btag, TWeight);
+                //FillHistos(gChannel, i0btag);
+                TIsSR   = true;
+              }
+              else if(TNBtags > 0 && (TNOSSF == 0 || (TNOSSF > 0 && TMath::Abs(TM3l - nomZmass) > 5))){ //1 or more btags
+                TIsCRTT = true ;
+              }
+            }
+            else if (TMET < 30. && TNBtags == 0){
+              TIsCRDY = true ;
+            }
 
-    	    }
-					if (TMath::Abs(TMll - nomZmass)< 15. && TMinMll > 4. && TMET < 30.){
-						TIsNewCRDY = true;
-					}
-					if (TMath::Abs(TMll - nomZmass)> 15. && TMath::Abs(TM3l - nomZmass) > 5 &&  TMinMll > 4. && (lepZ1.p + lepZ2.p + lepW.p).M() > 100. && TMET > 30.){
-						TIsNewCRTT = true;
-					}  
-					if (TIsSR || TIsCRDY || TIsCRTT || TIsNewCRDY || TIsNewCRTT) fTree[wP] -> Fill();
-    	  }
-    	}   
-  	}
-	}
+          }
+          if (TMath::Abs(TMll - nomZmass)< 15. && TMinMll > 4. && TMET < 30.){
+            TIsNewCRDY = true;
+          }
+          if (TMath::Abs(TMll - nomZmass)> 15. && TMath::Abs(TM3l - nomZmass) > 5 &&  TMinMll > 4. && (lepZ1.p + lepZ2.p + lepW.p).M() > 100. && TMET > 30.){
+            TIsNewCRTT = true;
+          }  
+          if (TIsSR || TIsCRDY || TIsCRTT || TIsNewCRDY || TIsNewCRTT) fTree[wP] -> Fill();
+        }
+      }   
+    }
+  }
 }
 
 
@@ -364,30 +364,30 @@ void WZAnalysis::SetEventVariables(TTree* iniTree){
 //------------------------------------------------------------------
 
 void WZAnalysis::GetLeptonsByWP(Int_t wPValue){
-	Int_t nFakeableLeptons = foLeptons.size();
-	Int_t nTightLeptons = selLeptons.size();
+  Int_t nFakeableLeptons = foLeptons.size();
+  Int_t nTightLeptons = selLeptons.size();
 
-	if (wPValue == top){
-		for (int k = 0; k < nTightLeptons; k++){ // No FO for top ID
-			if (selLeptons.at(k).idMVA >= 10){
-				tightLeptons.push_back(selLeptons.at(k));
-				fakeableLeptons.push_back(selLeptons.at(k));
-			}
-		}
-	}
-	else {
-		for (int k = 0; k < nFakeableLeptons; k++){
-			if (foLeptons.at(k).idMVA%10 > wPValue){
-				fakeableLeptons.push_back(foLeptons.at(k));
-			}
-		}
-	
-		for (int k = 0; k < nTightLeptons; k++){
-			if (selLeptons.at(k).idMVA%10 > wPValue){
-				tightLeptons.push_back(selLeptons.at(k));
-			}
-		}
-	}
+  if (wPValue == top){
+    for (int k = 0; k < nTightLeptons; k++){ // No FO for top ID
+      if (selLeptons.at(k).idMVA >= 10){
+        tightLeptons.push_back(selLeptons.at(k));
+        fakeableLeptons.push_back(selLeptons.at(k));
+      }
+    }
+  }
+  else {
+    for (int k = 0; k < nFakeableLeptons; k++){
+      if (foLeptons.at(k).idMVA%10 > wPValue){
+        fakeableLeptons.push_back(foLeptons.at(k));
+      }
+    }
+  
+    for (int k = 0; k < nTightLeptons; k++){
+      if (selLeptons.at(k).idMVA%10 > wPValue){
+        tightLeptons.push_back(selLeptons.at(k));
+      }
+    }
+  }
 }
 
 void WZAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> foLeptons, std::vector<Lepton> looseLeptons){
@@ -401,11 +401,11 @@ void WZAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<
     TLep_E[i]      = selLeptons.at(i).E();    
     TLep_Charge[i] = selLeptons.at(i).charge;    
   }
-	//Require exactly 3 leptons 
+  //Require exactly 3 leptons 
   if(TNTightLeps != 3 ) gChannel = -1;
-	//Charge compatibility with WZ production
-	else if(TMath::Abs(selLeptons.at(0).charge + selLeptons.at(1).charge + selLeptons.at(2).charge) != 1) gChannel = -1;
-	//Combinatory of posible final leptons
+  //Charge compatibility with WZ production
+  else if(TMath::Abs(selLeptons.at(0).charge + selLeptons.at(1).charge + selLeptons.at(2).charge) != 1) gChannel = -1;
+  //Combinatory of posible final leptons
   else if(selLeptons.at(0).isMuon && selLeptons.at(1).isMuon && selLeptons.at(2).isMuon) gChannel = iMuMuMu;
   else if(selLeptons.at(0).isMuon && selLeptons.at(1).isMuon && selLeptons.at(2).isElec) gChannel = iElMuMu;
   else if(selLeptons.at(0).isMuon && selLeptons.at(1).isElec && selLeptons.at(2).isMuon) gChannel = iElMuMu;
@@ -414,16 +414,16 @@ void WZAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<
   else if(selLeptons.at(0).isElec && selLeptons.at(1).isMuon && selLeptons.at(2).isElec) gChannel = iElElMu;
   else if(selLeptons.at(0).isElec && selLeptons.at(1).isElec && selLeptons.at(2).isMuon) gChannel = iElElMu;
   else if(selLeptons.at(0).isElec && selLeptons.at(1).isElec && selLeptons.at(2).isElec) gChannel = iElElEl;
-	TMinMll = 100000;
-	TNOSSF = 0;
-	for(Int_t i = 0; i < TNTightLeps; i++){
-		for(Int_t j = i+1; j < TNTightLeps; j++){
-			if (selLeptons.at(j).isMuon && selLeptons.at(i).isMuon && selLeptons.at(i).charge*selLeptons.at(j).charge == -1) 					TNOSSF++;
-			if (selLeptons.at(j).isElec && selLeptons.at(i).isElec && selLeptons.at(i).charge*selLeptons.at(j).charge == -1) 					TNOSSF++;
-			Float_t hypMll = (selLeptons.at(j).p + selLeptons.at(i).p).M();
-			if (hypMll < TMinMll) TMinMll = hypMll;
-		}
-	}
+  TMinMll = 100000;
+  TNOSSF = 0;
+  for(Int_t i = 0; i < TNTightLeps; i++){
+    for(Int_t j = i+1; j < TNTightLeps; j++){
+      if (selLeptons.at(j).isMuon && selLeptons.at(i).isMuon && selLeptons.at(i).charge*selLeptons.at(j).charge == -1)           TNOSSF++;
+      if (selLeptons.at(j).isElec && selLeptons.at(i).isElec && selLeptons.at(i).charge*selLeptons.at(j).charge == -1)           TNOSSF++;
+      Float_t hypMll = (selLeptons.at(j).p + selLeptons.at(i).p).M();
+      if (hypMll < TMinMll) TMinMll = hypMll;
+    }
+  }
 
   TChannel = gChannel;
   gChannel = gChannel -1; // gchannel used for chan index of histograms
@@ -566,40 +566,40 @@ void WZAnalysis::FillHistos(Int_t ch, Int_t cut){
 
 void WZAnalysis::AssignWZLeptons()
 {
-	Float_t dZmass = 100000.; 
-	Int_t indexZ1;
-	Int_t indexZ2;
-	for(Int_t i = 0; i < TNTightLeps; i++){
-		for(Int_t j = i+1; j < TNTightLeps; j++){
-			if ( ( (selLeptons.at(j).isMuon && selLeptons.at(i).isMuon) || (selLeptons.at(j).isElec && selLeptons.at(i).isElec)    ) && selLeptons.at(i).charge*selLeptons.at(j).charge == -1){
-				Float_t hypZmass = (selLeptons.at(j).p + selLeptons.at(i).p).M();
-				if (TMath::Abs(hypZmass-nomZmass) < dZmass){
-					dZmass = TMath::Abs(hypZmass-nomZmass);
-					TMll  = hypZmass;
-					indexZ1 = j;
-					indexZ2 = i;
-					if (selLeptons.at(j).Pt() > selLeptons.at(i).Pt()) {
-						lepZ1 = selLeptons.at(j);
-						lepZ2 = selLeptons.at(i); 
-					}
-					else{
-						lepZ1 = selLeptons.at(i);
-						lepZ2 = selLeptons.at(j);
-					}
-				}
-			}
-		}
-	}
-	for(Int_t i = 0; i < TNTightLeps; i++){
-		if (i != indexZ1 && i != indexZ2){
-			lepW = selLeptons.at(i);
-		}
-	}	
-	TLorentzVector metVector = TLorentzVector();
-	metVector.SetPtEtaPhiM(TMET, TMET_Phi, 0., 0.);
-	TM3l = (lepZ1.p + lepZ2.p + lepW.p).M();
-	TMtWZ = (lepZ1.p + lepZ2.p + lepW.p + metVector).Mt();
-	TMtW  = (lepW.p + metVector).Mt();
+  Float_t dZmass = 100000.; 
+  Int_t indexZ1;
+  Int_t indexZ2;
+  for(Int_t i = 0; i < TNTightLeps; i++){
+    for(Int_t j = i+1; j < TNTightLeps; j++){
+      if ( ( (selLeptons.at(j).isMuon && selLeptons.at(i).isMuon) || (selLeptons.at(j).isElec && selLeptons.at(i).isElec)    ) && selLeptons.at(i).charge*selLeptons.at(j).charge == -1){
+        Float_t hypZmass = (selLeptons.at(j).p + selLeptons.at(i).p).M();
+        if (TMath::Abs(hypZmass-nomZmass) < dZmass){
+          dZmass = TMath::Abs(hypZmass-nomZmass);
+          TMll  = hypZmass;
+          indexZ1 = j;
+          indexZ2 = i;
+          if (selLeptons.at(j).Pt() > selLeptons.at(i).Pt()) {
+            lepZ1 = selLeptons.at(j);
+            lepZ2 = selLeptons.at(i); 
+          }
+          else{
+            lepZ1 = selLeptons.at(i);
+            lepZ2 = selLeptons.at(j);
+          }
+        }
+      }
+    }
+  }
+  for(Int_t i = 0; i < TNTightLeps; i++){
+    if (i != indexZ1 && i != indexZ2){
+      lepW = selLeptons.at(i);
+    }
+  }  
+  TLorentzVector metVector = TLorentzVector();
+  metVector.SetPtEtaPhiM(TMET, TMET_Phi, 0., 0.);
+  TM3l = (lepZ1.p + lepZ2.p + lepW.p).M();
+  TMtWZ = (lepZ1.p + lepZ2.p + lepW.p + metVector).Mt();
+  TMtW  = (lepW.p + metVector).Mt();
 }
 
 

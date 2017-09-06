@@ -19,7 +19,6 @@ const TString sWPoints[nWPoints] = {"nolepMVA","veryLoose", "loose", "medium", "
 const TString gSys[nSysts] = {"0"};
 
 
-
 class WZAnalysis : public PAFChainItemSelector{
   public:
     WZAnalysis();
@@ -30,20 +29,20 @@ class WZAnalysis : public PAFChainItemSelector{
     std::vector<Lepton> genLeptons  ;
     std::vector<Lepton> selLeptons  ; // Main container
     std::vector<Lepton> foLeptons   ; // Main container
-		std::vector<Lepton> looseLeptons;
+    std::vector<Lepton> looseLeptons;
 
 
-		std::vector<Lepton> tightLeptons;
-		std::vector<Lepton> fakeableLeptons;
+    std::vector<Lepton> tightLeptons;
+    std::vector<Lepton> fakeableLeptons;
 
 
     std::vector<Jet> selJets ;
     std::vector<Jet> selJetsJecUp   ;
     std::vector<Jet> selJetsJecDown ;
-		Lepton lepZ1;
-		Lepton lepZ2;
-		Lepton lepW;
-		Float_t nomZmass = 91.1876;
+    Lepton lepZ1;
+    Lepton lepZ2;
+    Lepton lepW;
+    Float_t nomZmass = 91.1876;
 
 
     std::vector<Jet> Jets15  ;
@@ -63,7 +62,7 @@ class WZAnalysis : public PAFChainItemSelector{
     void GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> foLeptons, std::vector<Lepton> looseLeptons);
     void GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut = 30);
     void GetGenJetVariables(std::vector<Jet> genJets, std::vector<Jet> mcJets);
-		void GetLeptonsByWP(Int_t wPValue); 
+    void GetLeptonsByWP(Int_t wPValue); 
     void GetMET();
     Int_t nFiduJets; Int_t nFidubJets; 
 
@@ -97,39 +96,39 @@ class WZAnalysis : public PAFChainItemSelector{
 
 
     void makeLeptonCollections();
-		void AssignWZLeptons();
+    void AssignWZLeptons();
 
     //Variables
     Float_t TWeight;   // Total nominal weight
     Float_t TMll;      // Invariant mass of OSSF (best Z mass)
-		Float_t TMtW;			 // M_T of the W boson
-		Float_t TMtWZ;			 // M_T of the WZ system
-		Float_t TM3l;      // Invariant mass of the three leptons
-		Float_t TMinMll;   // Invariant mass of any pair
-    Int_t   TNOSSF; 		 // Number of OSSF pairs
+    Float_t TMtW;       // M_T of the W boson
+    Float_t TMtWZ;       // M_T of the WZ system
+    Float_t TM3l;      // Invariant mass of the three leptons
+    Float_t TMinMll;   // Invariant mass of any pair
+    Int_t   TNOSSF;      // Number of OSSF pairs
     Float_t TMET;      // Reco MET
     Float_t TGenMET;   // Gent MET
     Float_t TMET_Phi;  // MET phi
 
-		// Event classification
-		Bool_t  TIsSR;
-		Bool_t  TIsCRTT;
-		Bool_t  TIsCRDY;
-		Bool_t  TIsNewCRTT;
-		Bool_t  TIsNewCRDY;
+    // Event classification
+    Bool_t  TIsSR;
+    Bool_t  TIsCRTT;
+    Bool_t  TIsCRDY;
+    Bool_t  TIsNewCRTT;
+    Bool_t  TIsNewCRDY;
 
     Int_t   TNFOLeps;
     Int_t   TNTightLeps;
     Int_t   TChannel;
 
-		// Lepton Things
+    // Lepton Things
     Float_t TLep_Pt[10];    
     Float_t TLep_Eta[10];
     Float_t TLep_Phi[10];
     Float_t TLep_E[10];
     Float_t TLep_Charge[10];
 
-		// Jet Things
+    // Jet Things
     Int_t TNJets;            
     Int_t TNBtags;
     Float_t TJet_Pt[20];
@@ -237,7 +236,6 @@ class WZAnalysis : public PAFChainItemSelector{
   TH1F* fhDummy;
   TH1F*  fHyields[nChannels][nSysts];
   TH1F*  fHFiduYields[nChannels][nSysts];
-
 
   protected:
 
