@@ -532,8 +532,8 @@ Int_t GetDileptonicChannel(vector<Lepton> leptons){
   Int_t nLeptons = leptons.size();
   if(nLeptons < 2) return 0; // no channel
   else{
-    if(     leptons.at(0).IsMuon && leptons.at(1).IsMuon) return iMuon;
-    else if(leptons.at(0).IsElec && leptons.at(1).IsElec) return iElec;
+    if(     leptons.at(0).isMuon && leptons.at(1).isMuon) return iMuon;
+    else if(leptons.at(0).isElec && leptons.at(1).isElec) return iElec;
     else return iElMu;
   }
   return 0;
