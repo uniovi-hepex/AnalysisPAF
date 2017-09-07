@@ -81,8 +81,28 @@ Make cute tables in txt, tex, html. It's used in other classes.
 
 Datacards.C
 ====
-It uses a .root created by Plot and generate datacards!
+It uses a .root created by Plot and generate datacards! Example:
 
+    TString signalName = "T2tt_250_50";
+    TString Bkg =      "ttV,  VV,   DY,   tW,   Nonprompt, ttbar";
+    TString NormSyst = "1.30, 1.30, 1.15, 1.30, 2.00,      1.053, 1.10"; // the last one is for the signal
+    TString Sys = "ue, isr, hdamp, Scale, pdf, JES, Btag, MisTag, LepEff, PU, JER, MET";
+
+    Datacard *d = new Datacard(signal, Bkg, Sys, chan);
+
+    d->AddNuis("TriggerEff"); // You can add another nuisance
+    d->SetShape("TriggerEff", false); // You can say if it's a shape or not
+
+    // Load the .root!!!
+    d->SetPathToFile("path_to_rootfile");
+    d->SetRootFileName("rootfileName.root");
+    d->GetParamsFormFile();
+
+    d->SetNuisancesToAllProcesses("TriggerEff", 1.02); // For those that aren't on the rootfile
+    d->SetNormUnc(NormSyst); // defined above
+    d->SetLumiUnc(1 + 0.024); // For example
+
+    d->PrintDatacard("datacard_nombre.txt"); // Here you have your datacard!
 
 EventDump
 ====
