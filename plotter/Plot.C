@@ -238,8 +238,7 @@ void Plot::GroupSystematics(){
       for(Int_t k = 0; k < (Int_t) VSyst.size(); k++){
         tag =  VSyst.at(k)->GetTag();
         pr   = VSyst.at(k)->GetProcess(); 
-        if(pr == VTagProcesses.at(j) && tag.Contains(var)){ exists = true;
-	  if (verbose)cout << " --> Found for process " << pr << endl;} 
+        if(pr == VTagProcesses.at(j) && tag.Contains(var)){ exists = true;}
       }
       if(!exists){
         //cout << "    --> No existe un syst " << var << " para el proceso " << VTagProcesses.at(j) << "!! Adding nominal... " << endl;
@@ -600,7 +599,7 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString options){
 }
 
 
-void Plot::DrawStack(TString tag = "0", bool sav = 0){
+void Plot::DrawStack(TString tag, bool sav){
   //gStyle->SetErrorX(0);
     
   std::vector<Histo*> VStackedSignals;

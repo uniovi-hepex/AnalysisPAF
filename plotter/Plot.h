@@ -198,8 +198,8 @@ public:
 
   void SetGoF(TString thegof="chi2");
   
-  void DrawStack(TString tag, bool sav);
-  void DrawComp(TString tag = "0", bool sav = 1, bool doNorm = 0, TString options = "");
+  void DrawStack(TString tag = "", bool sav = 1);
+  void DrawComp(TString tag = "", bool sav = 1, bool doNorm = 0, TString options = "");
   void SaveHistograms();
   TString GetStatUncDatacard(Int_t iSignal = 0);
 	TString GetShapeUncLines();

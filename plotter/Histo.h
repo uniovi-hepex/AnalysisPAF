@@ -23,6 +23,7 @@ const TString DefaultTreeName = "MiniTree";
 class Histo : public TH1F{
  public:
   Histo(const char *name, const char *title, Int_t nbins, Double_t xlow, Double_t xup);
+  Histo(const char *name, const char *title, Int_t nbins, Float_t* bins);
   //Histo(const char *name, const char *title, Int_t nbins, const Float_t* xbins);
  Histo(const TH1F &h, Int_t tipo = 0, Int_t c = 1): tag(""), process(""){
     ((Histo&)h).Copy(*this);
@@ -36,6 +37,10 @@ class Histo : public TH1F{
     //if(vsysd) delete vsysd;
     //if(vsysu) delete vsysu;
   };
+  void Init(){ 
+    type = 0; color = 0; SysTag = "0";
+    tag = "0"; process="0"; cuts="0"; xlabel="0";
+  }
   
   void SetType(Int_t tipo = 0);
   void SetColor(Int_t c);
@@ -70,7 +75,8 @@ class Histo : public TH1F{
   
   Float_t *vsysu = NULL; 
   Float_t *vsysd = NULL;
-  
+
+
  protected:
   Int_t type; 
   TString DrawStyle = "";

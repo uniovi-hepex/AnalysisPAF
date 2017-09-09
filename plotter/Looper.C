@@ -1,82 +1,5 @@
 #include "Looper.h"
 
-std::vector<TString> GetAllVars(TString varstring, Bool_t verbose){ 
-  std::vector<TString> g;
-  TString var; Int_t i;
-  TString chain = varstring;
-  //cout << "[GetAllVars] varstring = " << varstring << endl;
-  while(chain.Contains("T")){
-    i = 0;
-    var = chain(chain.First('T'), chain.Sizeof());
-    while(TString(var[i]).IsAlnum() || var[i] == '_') i++;
-    //while( var[i] != ' ') i++;
-    var = var(0,i);
-    //cout << "Found var; " << var << endl;
-    //cout << "Replacing word \"" << var << "\" in chain \"" << chain << "\" " << endl;
-    if(!IsWord(chain, chain.First('T'), var)) break;
-    g.push_back(var);
-    //chain.ReplaceAll(var, "");
-    chain = ReplaceWords(chain, var, "");
-  }
-  if(verbose) {
-    cout << "[Looper::GetAllVars] List of variables: ";
-    for(Int_t i = 0; i < (Int_t) g.size(); i++) cout << g.at(i) << ", ";
-    cout << endl;
-  }
-  return g;
-}
-
-TString Looper::CraftVar(TString varstring, TString sys){
-  TString var = varstring;
-  std::vector<TString> AllVars = GetAllVars(var, verbose);
-  Int_t nvars = AllVars.size();
-  if(verbose) cout << "[Looper::CraftVar] Systematic = " << sys << "... Looping over " << nvars << " variables..." << endl;
-  for(Int_t i = 0; i < nvars; i++) 
-    if(tree->GetBranchStatus(AllVars.at(i) + sys)){
-      var = ReplaceWords(var, AllVars.at(i), AllVars.at(i)+sys);
-    }
-  return var;
-}
-
-TString Looper::CraftFormula(TString cuts, TString chan, TString sys, TString options){
-  TString schan = ("1");
-  if     (chan == "ElMu")  schan = (Form("(TChannel == %i)", iElMu));
-  else if(chan == "Muon")  schan = (Form("(TChannel == %i)", iMuon));
-  else if(chan == "Elec")  schan = (Form("(TChannel == %i)", iElec));
-  else if(chan == "2lss")  schan = (Form("(TChannel == %i)", i2lss));
-  else if(chan == "3l")    schan = (Form("(TChannel == %i)", iTriLep));
-  else if(chan == "4l")    schan = (Form("(TChannel == %i)", iFourLep));
-  else if(chan == "SF" || chan == "sameF") schan = (Form("(TChannel != %i)", iElMu));
-  else if(chan == "PromptLep") schan = Form("(TChannel == %i || TChannel == %i)", iTriLep, i2lss);
-  else if(chan == "PromptTau") schan = Form("(TChannel == %i || TChannel == %i)", iSS1tau, iOS1tau);
-  else if(chan == "SSTau") schan = Form("(TChannel == %i)", iSS1tau);
-  else if(chan == "OSTau") schan = Form("(TChannel == %i)", iOS1tau);
-  else if(chan == "All")   schan = ("1");
-  else schan = chan;
-
-  TString weight = TString("TWeight");
-  if(tree->GetBranchStatus(weight + "_" + sys)){
-    weight += "_" + sys; 
-  }
-
-  std::vector<TString> AllVars = GetAllVars((TString) cuts, verbose);
-  Int_t nvars = AllVars.size();
-  for(Int_t i = 0; i < nvars; i++) 
-    if(tree->GetBranchStatus(AllVars.at(i) + sys)){
-      cuts = ReplaceWords((TString) cuts, AllVars.at(i), AllVars.at(i)+sys);
-    }
-  TString                                                  formula = TString("(") + cuts + TString(")*(") + schan + TString(")*") + weight;
-  if((options.Contains("Fake") || options.Contains("fake"))){
-    if(chan.Contains("Lep")) schan = Form("(TChannel == %i || TChannel == %i)", i2lss_fake, iTriLep_fake);
-    //if(chan.Contains("Tau")) schan = Form("(TChannel == %i)", i1Tau_emufake);
-    if(options.Contains("sub") || options.Contains("Sub"))  formula = TString("(") + cuts + TString(")*(") + schan + TString(")*") + weight;
-    else formula = TString("(") + cuts + TString(")*(") + schan + TString(")");
-  }
-  if(options.Contains("isr") || options.Contains("ISR"))   formula = "TISRweight*(" + formula + ")";
-  if(options.Contains("noWeight"))                         formula = TString("(") + cuts + TString(")*(") + schan + TString(")");
-  return formula;
-}
-
 void Looper::SetFormulas(TString systematic){
   if(FormulasCuts) delete FormulasCuts;
   if(FormulasVars) delete FormulasVars;
@@ -84,10 +7,10 @@ void Looper::SetFormulas(TString systematic){
   stringcut = ""; stringvar = "";
   TString cu = ""; TString ch = ""; TString v = ""; 
   //cout << "[SetFormulas] Crafting formula..." << endl;
-  stringcut = CraftFormula(cut, chan, systematic, options);
+  stringcut = CraftFormula(cut, chan, systematic, weight, tree);
   if(verbose) cout << "[Looper::SetFormulas] Formula: " << stringcut << endl;
   //cout << "[SetFormulas] Crafting var..." << endl;
-  stringvar = CraftVar(var, systematic);
+  stringvar = CraftVar(var, systematic, tree);
   if(verbose) cout << "[Looper::SetFormulas] Variable: " << stringvar << endl;
 
   if(stringvar.Contains("[") && stringvar.Contains("]")){
@@ -101,10 +24,10 @@ void Looper::SetFormulas(TString systematic){
 
   FormulasCuts = new TTreeFormula("Form_" + sampleName + "_" + systematic + "_cut", stringcut, tree);
   FormulasVars = new TTreeFormula("Form_" + sampleName + "_" + systematic + "_var", stringvar, tree);
-  if(doSysScale || doSysPDF){
+/*  if(doSysScale || doSysPDF){
     FormulasLHE  = new TTreeFormula("Form_" + sampleName + "_" + systematic + "_LHE", "TLHEWeight", tree);
     FormulasLHE->GetNdata();
-  }
+  }*/
 }
 
 void Looper::CreateHisto(TString sys){
@@ -114,12 +37,12 @@ void Looper::CreateHisto(TString sys){
   if(sys != "0") name += "_" + sys;
   if(bin0 != binN) Hist = new Histo(TH1F(name,sampleName+"_"+sys+"_"+var, nbins, bin0, binN));
   else             Hist = new Histo(TH1F(name,sampleName+"_"+sys+"_"+var, nbins, vbins));
-  if(doSysPDF || doSysScale){
+ /* if(doSysPDF || doSysScale){
     for(Int_t i = 0; i < nLHEweights; i++){
       if(bin0 != binN) hLHE[i] = new TH1F(name+"_"+Form("%i", i),sampleName+"_"+sys+"_"+var+"_"+Form("%i",i), nbins, bin0, binN);
       else             hLHE[i] = new TH1F(name+"_"+Form("%i", i),sampleName+"_"+sys+"_"+var+"_"+Form("%i",i), nbins, vbins);
     }
-  }
+  }*/
 }
 
 void Looper::Loop(TString sys){
@@ -141,18 +64,18 @@ void Looper::Loop(TString sys){
     HeppySampleName = hsn;
   }
   //cout << HeppySampleName << endl;
-  if(doSysPDF || doSysScale) hLHEweights = loadSumOfLHEweights(pathToHeppyTrees, HeppySampleName);
+ // if(doSysPDF || doSysScale) hLHEweights = loadSumOfLHEweights(pathToHeppyTrees, HeppySampleName);
 
   // For fake or flips from data
   Float_t f; Int_t nfakes;
   if(options.Contains("Fake") || options.Contains("fake")){
-    ForFLepPt    = GetFormula("LepPt",    "TFLep_Pt");
-    ForFLepEta   = GetFormula("LepEta",   "TFLep_Eta");
-    ForFLepPdgId = GetFormula("LepPdgId", "TFLep_pdgId");
-    ForLepChar   = GetFormula("LepChar",  "TLep_Charge");
-    FornSelTau   = GetFormula("nSelTau",  "TNTaus");
-    FornSelLep   = GetFormula("nSelLep",  "TNSelLeps");
-    FornFakeLep  = GetFormula("nFakeLep", "TNFakeableLeps");
+    ForFLepPt    = GetFormula("LepPt",    "TFLep_Pt",        tree);
+    ForFLepEta   = GetFormula("LepEta",   "TFLep_Eta",       tree);
+    ForFLepPdgId = GetFormula("LepPdgId", "TFLep_pdgId",     tree);
+    ForLepChar   = GetFormula("LepChar",  "TLep_Charge",     tree);
+    FornSelTau   = GetFormula("nSelTau",  "TNTaus",          tree);
+    FornSelLep   = GetFormula("nSelLep",  "TNSelLeps",       tree);
+    FornFakeLep  = GetFormula("nFakeLep", "TNFakeableLeps",  tree);
   }
 
   Int_t counter = 0;
@@ -164,15 +87,15 @@ void Looper::Loop(TString sys){
     val     = FormulasVars->EvalInstance(numberInstance);
 
     // For ScaleME and PDF systematics
-    if(doSysScale || doSysPDF){
+/*    if(doSysScale || doSysPDF){
       Float_t LHEweight = 1;
       for(Int_t i = 0; i < nLHEweights; i++){
         LHEweight = weight*getLHEweight(i);
         hLHE[i]->Fill(val, LHEweight);
       }
-    }
+    }*/
 
-    if(options.Contains("Fake") || options.Contains("fake")){
+   /* if(options.Contains("Fake") || options.Contains("fake")){
       f = 1; nfakes = 0; 
       if(options.Contains("Sub") || options.Contains("sub")) weight *= -1;
       ForFLepPt   ->GetNdata();
@@ -196,7 +119,7 @@ void Looper::Loop(TString sys){
         weight *= f/(1-f);
         //if(weight != 0) cout << "[" << counter << "] nFakes = " << nFakeLeps << ", weight = " << weight << endl;
       }
-    }
+    }*/
 
     if(doAllInstances){
       nInstances = FormulasVars->GetNdata();
@@ -210,7 +133,7 @@ void Looper::Loop(TString sys){
   }
 
   Float_t nom = 0; Float_t var = 0; Float_t ext = 0; Float_t env = 0;
-  if(doSysScale){ // Get envelope!!
+/*  if(doSysScale){ // Get envelope!!
     //cout << " Scale matrix element weights: \n";
     for(Int_t bin = 1; bin <= nbins; bin++){
       ext = 0; env = 0;
@@ -247,10 +170,10 @@ void Looper::Loop(TString sys){
       if(sys.Contains("Up") || sys.Contains("up"))  Hist->SetBinContent(bin, nom + env);
       else                                          Hist->SetBinContent(bin, nom - env);
     }
-  }
+  }*/
 
 }
-
+/*
 Float_t Looper::getLHEweight(Int_t i){
   Float_t weight = 0; Float_t norm = 0; 
   Int_t bin = 0; 
@@ -263,7 +186,7 @@ Float_t Looper::getLHEweight(Int_t i){
   weight = FormulasLHE->EvalInstance(i)/hLHEweights->GetBinContent(bin)*norm; 
   // cout << "weight for " << i << " is " << weight << endl;
   return weight;
-}
+}*/
 
 void Looper::loadTree(){
   TString prefix = "Tree_"; TString sufix = ".root";
@@ -277,16 +200,16 @@ void Looper::loadTree(){
 Histo* Looper::GetHisto(TString sample, TString sys){
   SetSampleName(sample); 
   loadTree();
-  doSysPDF = false; doSysScale = false;
+ // doSysPDF = false; doSysScale = false;
 
   // For scale and PDF uncertainties
   // ----------------------------------------------------------------
-  if(sys.Contains("Scale") || sys.Contains("scale") || sys.Contains("Q2") || sys.Contains("PDF") || sys.Contains("pdf")){ // Using LHE weights
+ /* if(sys.Contains("Scale") || sys.Contains("scale") || sys.Contains("Q2") || sys.Contains("PDF") || sys.Contains("pdf")){ // Using LHE weights
     if(tree->GetBranchStatus("TLHEWeight")){
       if(sys.Contains("PDF") || sys.Contains("pdf")) doSysPDF = true;
       else doSysScale = true;
     }
-  }
+  }*/
   if(verbose) cout << "### Creating Histo..." << endl;
   CreateHisto(sys);
   if(verbose) cout << "### Setting formulas..." << endl;
@@ -295,7 +218,7 @@ Histo* Looper::GetHisto(TString sample, TString sys){
   Loop(sys);
   return Hist;
 }
-
+/*
 TH1D* loadSumOfLHEweights(TString pathToHeppyTrees, TString sampleName){
   vector<TString> files = GetAllFiles(pathToHeppyTrees, sampleName);
   Int_t nFiles = files.size();
@@ -313,15 +236,11 @@ TH1D* loadSumOfLHEweights(TString pathToHeppyTrees, TString sampleName){
   }
   hSumOfLHEweights->SetDirectory(0);
   return hSumOfLHEweights;
-}
+}*/
 
 
 
-TTreeFormula* Looper::GetFormula(TString name, TString var){
-  TTreeFormula *f = new TTreeFormula(name, var, tree);
-  f->GetNdata();
-  return f;
-}
+
 
 void Looper::loadHisto2D(TString Path_to_histo, TString histo_name){
 

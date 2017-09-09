@@ -20,8 +20,14 @@ enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau
 const Int_t nLHEweights = 112;
 std::vector<TString> TStringToVector(TString t, char separator = ',');
 
-std::vector<TString> GetAllVars(TString varstring, Bool_t verbose); 
+std::vector<TString> GetAllVars(TString varstring, Bool_t verbose = false); 
+TString CraftFormula(TString cut, TString chan, TString sys, TString weight, TTree* tree);
+TString CraftVar(TString varstring, TString sys, TTree* tree);
+TTreeFormula *GetFormula(TString name, TString var, TTree* tree);
 TH1D* loadSumOfLHEweights(TString pathToHeppyTrees = "/pool/ciencias/HeppyTreesSummer16/v2/", TString sampleName = "TTbar_PowhegLHE");
+TTree* loadTree(TString path, TString sampleName, TString treeName);
+TH1D* loadHistogram1D(TString path, TString sampleName, TString histoName);
+TH1F* loadHistogram1F(TString path, TString sampleName, TString histoName);
 TH1F* hLHE[nLHEweights];
 
 class Looper{
@@ -45,6 +51,8 @@ class Looper{
    cut = _cut;
    chan = _chan;
 
+   weight = "TWeight";
+
    pathToHeppyTrees = "/pool/ciencias/HeppyTreesSummer16/v2/";
   }  
     Looper(TString pathToTree, TString NameOfTree, TString _var = "TMET", TString _cut = "1", TString _chan = "ElMu", Int_t nb = 30, Float_t* bins = 0){
@@ -65,6 +73,8 @@ class Looper{
    cut = _cut;
    chan = _chan;
 
+   weight = "TWeight";
+
    pathToHeppyTrees = "/pool/ciencias/HeppyTreesSummer16/v2/";
   } 
 
@@ -76,8 +86,6 @@ class Looper{
      //if(Hist) delete Hist;
    };
 
-   TString CraftFormula(TString cut, TString chan, TString sys, TString options = "");
-   TString CraftVar(TString varstring, TString sys);
 
    void SetCut(    TString t){cut  = t;}
    void SetVar(    TString t){var  = t;}
@@ -98,6 +106,7 @@ class Looper{
    void SetHeppySampleName(TString t){HeppySampleName   = t;}
 	 void SetTreeName(  TString t){treeName     = t;}
 	 void SetPath(      TString t){path         = t;}
+   void SetWeight(    TString t){weight       = t;}
 
    void loadHisto2D(TString Path_to_histo, TString histo_name);
 
@@ -110,7 +119,6 @@ class Looper{
    void Loop(TString sys = "");
    Float_t getLHEweight(Int_t i);
    void SetOptions(TString p){options = p;}
-   TTreeFormula *GetFormula(TString name, TString var);
 
  // protected:
    Histo* Hist;
@@ -137,6 +145,7 @@ class Looper{
    TString options = "";
    TString sampleName;
    TString HeppySampleName;
+   TString weight;
 
    TH2F* hWeights;
 
@@ -162,6 +171,10 @@ class Looper{
 
 };
 
+//################################################################
+//
+// UNIVERSAL FUNCTIONS READY TO USE !!!!!!!!!!!!!!!!!!!
+//
 
 // GET ALL FILES IN PATH
 vector<TString> GetAllFiles(TString path, TString  filename) {
@@ -325,5 +338,135 @@ TString ReplaceWords(TString orig, TString search, TString replace){
   }
   return orig;
 }
+
+std::vector<TString> GetAllVars(TString varstring, Bool_t verbose){ 
+  std::vector<TString> g;
+  TString var; Int_t i;
+  TString chain = varstring;
+  //cout << "[GetAllVars] varstring = " << varstring << endl;
+  while(chain.Contains("T")){
+    i = 0;
+    var = chain(chain.First('T'), chain.Sizeof());
+    while(TString(var[i]).IsAlnum() || var[i] == '_') i++;
+    //while( var[i] != ' ') i++;
+    var = var(0,i);
+    //cout << "Found var; " << var << endl;
+    //cout << "Replacing word \"" << var << "\" in chain \"" << chain << "\" " << endl;
+    if(!IsWord(chain, chain.First('T'), var)) break;
+    g.push_back(var);
+    //chain.ReplaceAll(var, "");
+    chain = ReplaceWords(chain, var, "");
+  }
+  if(verbose) {
+    cout << "[GetAllVars] List of variables: ";
+    for(Int_t i = 0; i < (Int_t) g.size(); i++) cout << g.at(i) << ", ";
+    cout << endl;
+  }
+  return g;
+}
+
+TString CraftVar(TString varstring, TString sys, TTree *tree){
+  TString var = varstring;
+  std::vector<TString> AllVars = GetAllVars(var);
+  Int_t nvars = AllVars.size();
+  //if(verbose) cout << "[Looper::CraftVar] Systematic = " << sys << "... Looping over " << nvars << " variables..." << endl;
+  for(Int_t i = 0; i < nvars; i++) 
+    if(tree->GetBranchStatus(AllVars.at(i) + sys)){
+      var = ReplaceWords(var, AllVars.at(i), AllVars.at(i)+sys);
+    }
+  return var;
+}
+
+TString CraftFormula(TString cuts, TString chan, TString sys, TString weight, TTree* tree){
+  TString schan = ("1");
+  if     (chan == "ElMu")  schan = (Form("(TChannel == %i)", iElMu));
+  else if(chan == "Muon")  schan = (Form("(TChannel == %i)", iMuon));
+  else if(chan == "Elec")  schan = (Form("(TChannel == %i)", iElec));
+  else if(chan == "2lss")  schan = (Form("(TChannel == %i)", i2lss));
+  else if(chan == "3l")    schan = (Form("(TChannel == %i)", iTriLep));
+  else if(chan == "4l")    schan = (Form("(TChannel == %i)", iFourLep));
+  else if(chan == "SF" || chan == "sameF") schan = (Form("(TChannel != %i)", iElMu));
+  else if(chan == "PromptLep") schan = Form("(TChannel == %i || TChannel == %i)", iTriLep, i2lss);
+  else if(chan == "PromptTau") schan = Form("(TChannel == %i || TChannel == %i)", iSS1tau, iOS1tau);
+  else if(chan == "SSTau") schan = Form("(TChannel == %i)", iSS1tau);
+  else if(chan == "OSTau") schan = Form("(TChannel == %i)", iOS1tau);
+  else if(chan == "All")   schan = ("1");
+  else schan = chan;
+
+  //TString weight = TString("TWeight");
+  if(tree->GetBranchStatus(weight + "_" + sys)){
+    weight += "_" + sys; 
+  }
+
+  std::vector<TString> AllVars = GetAllVars((TString) cuts);
+  Int_t nvars = AllVars.size();
+  for(Int_t i = 0; i < nvars; i++) 
+    if(tree->GetBranchStatus(AllVars.at(i) + sys)){
+      cuts = ReplaceWords((TString) cuts, AllVars.at(i), AllVars.at(i)+sys);
+    }
+  TString  formula = TString("(") + cuts + TString(")*(") + schan + TString(")*") + weight;
+/*  if((options.Contains("Fake") || options.Contains("fake"))){
+    if(chan.Contains("Lep")) schan = Form("(TChannel == %i || TChannel == %i)", i2lss_fake, iTriLep_fake);
+    //if(chan.Contains("Tau")) schan = Form("(TChannel == %i)", i1Tau_emufake);
+    if(options.Contains("sub") || options.Contains("Sub"))  formula = TString("(") + cuts + TString(")*(") + schan + TString(")*") + weight;
+    else formula = TString("(") + cuts + TString(")*(") + schan + TString(")");
+  }
+  if(options.Contains("isr") || options.Contains("ISR"))   formula = "TISRweight*(" + formula + ")";
+  if(options.Contains("noWeight"))                         formula = TString("(") + cuts + TString(")*(") + schan + TString(")"); */
+  return formula;
+}
+
+TTreeFormula* GetFormula(TString name, TString var, TTree* tree){
+  TTreeFormula *f = new TTreeFormula(name, var, tree);
+  f->GetNdata();
+  return f;
+} 
+
+TTree* loadTree(TString path, TString sampleName, TString treeName){
+  TTree* t;
+  TString prefix = "Tree_"; TString sufix = ".root";
+	TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject(path + prefix + sampleName + sufix);
+	if (!f || !f->IsOpen()) {
+		f = new TFile(path + prefix + sampleName + sufix);
+	}
+	f->GetObject(treeName,t);
+  t->SetDirectory(0);
+  //delete f;
+  return t;
+}
+
+TH1D* loadHistogram1D(TString path, TString sampleName, TString histoName){
+  TH1D* h;
+  if(!path.EndsWith("/")) path += "/";
+  sampleName.ReplaceAll(".root", "");
+  if(sampleName.BeginsWith("Tree_")) sampleName = sampleName(5, sampleName.Sizeof());
+  TString thefile = path + "Tree_" + sampleName + ".root";
+  TFile* inputfile = TFile::Open(thefile);
+  inputfile->GetObject(histoName, h);
+  h->SetDirectory(0);
+  delete inputfile;
+  return h;
+}
+
+TH1F* loadHistogram1F(TString path, TString sampleName, TString histoName){
+  if(!path.EndsWith("/")) path += "/";
+  sampleName.ReplaceAll(".root", "");
+  if(sampleName.BeginsWith("Tree_")) sampleName = sampleName(5, sampleName.Sizeof());
+  TString thefile = path + "Tree_" + sampleName + ".root";
+  TH1F* h;
+  TFile* inputfile = TFile::Open(thefile);
+  inputfile->GetObject(histoName, h);
+  h->SetDirectory(0);
+  delete inputfile;
+  return h;
+}
+
+
+
+
+
+
+
+
 
 #endif
