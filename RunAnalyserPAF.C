@@ -145,8 +145,8 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   DatasetManager* dm = DatasetManager::GetInstance();
 
   // Tab in the spreadsheet https://docs.google.com/spreadsheets/d/1b4qnWfZrimEGYc1z4dHl21-A9qyJgpqNUbhOlvCzjbE
-  //dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2");
-  dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2_noSkim");
+  dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2");
+  //dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2_noSkim");
   
   TString pathToFiles = dataPath + dm->FindLocalFolder();
   // Deal with data samples
@@ -154,16 +154,16 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
     G_Event_Weight = 1.;
     G_IsData = true;
     TString datasuffix[] = { 
-    //  "16B_03Feb2017",
-    //  "16C_03Feb2017",
-    //  "16D_03Feb2017",
-    //  "16E_03Feb2017",
-    //  "16F_03Feb2017",
+      "16B_03Feb2017",
+      "16C_03Feb2017",
+      "16D_03Feb2017",
+      "16E_03Feb2017",
+      "16F_03Feb2017",
       "16G_03Feb2017",
-    //  "16H_03Feb2017_v2",
-    //  "16H_03Feb2017_v3"
+      "16H_03Feb2017_v2",
+      "16H_03Feb2017_v3"
     };
-    const unsigned int nDataSamples = 1;
+    const unsigned int nDataSamples = 8;
     for(unsigned int i = 0; i < nDataSamples; i++) {
       TString asample = Form("Tree_%s_%s",sampleName.Data(), datasuffix[i].Data());
       //myProject->AddDataFiles(dm->GetRealDataFiles(asample));
