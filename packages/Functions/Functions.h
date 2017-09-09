@@ -93,6 +93,8 @@ Float_t ClosestMlltoZ(vector<Lepton> leptons);
 Bool_t IsThereSSpair(vector<Lepton> leptons);
 Bool_t IsThere3SS(vector<Lepton> lepton);
 Bool_t ByPt(Jet, Jet);
+std::vector<Lepton> AssignWZLeptons(std::vector<Lepton> leptonList);
+
 
 Int_t   getCS(vector<Lepton> lepton);
 void co(TString out, TString co);

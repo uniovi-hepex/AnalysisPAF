@@ -96,7 +96,6 @@ class WZAnalysis : public PAFChainItemSelector{
 
 
     void makeLeptonCollections();
-    void AssignWZLeptons();
 
     //Variables
     Float_t TWeight;   // Total nominal weight
