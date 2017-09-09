@@ -528,6 +528,17 @@ Int_t getCS(vector<Lepton> lepton) { // Get the sum of charges of a vector of Le
   return cs;
 }
 
+Int_t GetDileptonicChannel(vector<Lepton> leptons){
+  Int_t nLeptons = leptons.size();
+  if(nLeptons < 2) return 0; // no channel
+  else{
+    if(     leptons.at(0).isMuon && leptons.at(1).isMuon) return iMuon;
+    else if(leptons.at(0).isElec && leptons.at(1).isElec) return iElec;
+    else return iElMu;
+  }
+  return 0;
+}
+
 void co(TString out, TString co = "1;30"){
   std::cout << "\033[" << co << "m" << out << "\033[0m" << endl;
 }

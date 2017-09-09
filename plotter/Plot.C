@@ -1,6 +1,8 @@
 #include "Plot.h"
 #include "TSystem.h"
 #include "TLine.h"
+#include "TStyle.h"
+#include "TLatex.h"
 #include <fstream> 
 
 Histo* Plot::GetH(TString sample, TString sys, Int_t type){ 
@@ -112,7 +114,7 @@ void Plot::GetStack(){ // Sets the histogram hStack
   if(hAllBkg) delete hAllBkg;
   hAllBkg = new Histo(*(TH1F*) hStack->GetStack()->Last(), 3);
   hAllBkg->SetStyle();
-  hAllBkg->SetTag("TotalBkg");
+  hAllBkg->SetTag("Uncertainty");
   //hAllBkg->SetStatUnc();
   if(verbose) cout << Form(" Adding %i systematic to sum of bkg...\n", (Int_t) VSumHistoSystUp.size());
   if(doSys) GroupSystematics();
@@ -389,18 +391,23 @@ TLegend* Plot::SetLegend(){ // To be executed before using the legend
       }
     }
   }
-  for(int i = nVBkgs-1; i >= 0; i--){
-    if(VBkgs.at(i)->GetYield() < MinYield) continue;
-    else VBkgs.at(i)->AddToLegend(leg,doYieldsInLeg);
-  }
-  if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
-    for(int i = VSignals.size()-1; i >= 0; i--) VSignals[i]->AddToLegend(leg, doYieldsInLeg);
 
   if(doData && hData && VData.size() > 0){
     hData->SetTag("Data");
     hData->SetProcess("Data");
     hData->AddToLegend(leg,doYieldsInLeg);
   }
+
+  for(int i = nVBkgs-1; i >= 0; i--){
+    if(VBkgs.at(i)->GetYield() < MinYield) continue;
+    else VBkgs.at(i)->AddToLegend(leg,doYieldsInLeg);
+  }
+
+  if(doSys && doUncInLegend) hAllBkg->AddToLegend(leg,doYieldsInLeg); // add legend for uncertainty
+
+  if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
+    for(int i = VSignals.size()-1; i >= 0; i--) VSignals[i]->AddToLegend(leg, doYieldsInLeg);
+  
   return leg;
 }
 
@@ -420,6 +427,7 @@ void Plot::SetLegendPosition(TString pos)
 }
 
 TCanvas* Plot::SetCanvas(){ // Returns the canvas
+  
   TCanvas* c= new TCanvas("c","c",10,10,800,600);
   c->Divide(1,2);
 
@@ -435,22 +443,36 @@ TCanvas* Plot::SetCanvas(){ // Returns the canvas
   texlumi = new TLatex(-20.,50., Form("%2.1f fb^{-1}, #sqrt{s} = 13 TeV", Lumi));
   texlumi->SetNDC();
   texlumi->SetTextAlign(12);
-  texlumi->SetX(0.72);
+  texlumi->SetX(0.73);
   texlumi->SetY(0.97);
   texlumi->SetTextFont(42);
-  texlumi->SetTextSize(0.045);
+  texlumi->SetTextSize(0.05);
   texlumi->SetTextSizePixels(22);
+  
   texcms = new TLatex(0.,0., CMSlabel);
   texcms->SetNDC();
   texcms->SetTextAlign(12);
   texcms->SetX(0.15);
-  texcms->SetY(0.9);
-  texcms->SetTextSize(0.052);
-  texcms->SetTextSizePixels(23);
+  texcms->SetY(0.89);
+  //texcms->SetTextFont(42);
+  texcms->SetTextSize(0.06);
+  texcms->SetTextSizePixels(22);
+
+  texPrelim  = new TLatex(0.,0., CMSmodeLabel); 
+  texPrelim->SetNDC();
+  texPrelim->SetTextAlign(12);
+  texPrelim->SetX(0.15);
+  texPrelim->SetY(0.83);
+  texPrelim->SetTextFont(52);
+  texPrelim->SetTextSize(0.052);
+  texPrelim->SetTextSizePixels(22);
+ 
+
   return c;
 }
 
 void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString options){
+  doUncInLegend = false;
   TString drawstyle = "pe";
   if(options.Contains("hist")) drawstyle = "hist";
   if(options.Contains("style=l")) drawstyle = "l";
@@ -570,13 +592,17 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString options){
     plotname.ReplaceAll("/","_");
     c->Print( dir + plotname + ".png", "png");
     c->Print( dir + plotname + ".pdf", "pdf");
+    c->Print( dir + plotname + ".eps", "eps");
     delete c;
   }
   if(htemp) delete htemp;
   ratios.clear();
 }
 
+
 void Plot::DrawStack(TString tag = "0", bool sav = 0){
+  //gStyle->SetErrorX(0);
+    
   std::vector<Histo*> VStackedSignals;
 
   if(verbose) cout << "[Plot::DrawStack] Setting Canvas..." << endl;
@@ -606,6 +632,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
     }   
   }
 
+  hStack->Draw("hist");
   float maxData = doData? hData->GetMax() : hAllBkg->GetMax();
   float maxMC = hAllBkg->GetMax();
   float Max = maxMC > maxData? maxMC : maxData;
@@ -620,15 +647,39 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
   else{
     PlotMinimum = PlotMinimum == -999? 0 : PlotMinimum;
     PlotMaximum = PlotMaximum == -999? Max*ScaleMax : PlotMaximum;
+    
     hStack->SetMaximum(PlotMaximum);
-      hStack->SetMinimum(PlotMinimum);
+    hStack->SetMinimum(PlotMinimum);
   }  
-  hStack->Draw("hist");
 
-  hStack->GetYaxis()->SetTitle("Number of Events");
-  hStack->GetYaxis()->SetTitleSize(0.06);
-  hStack->GetYaxis()->SetTitleOffset(0.8);
+// Needs to be re-thinked
+//
+/*  float binWidth = hStack->GetXaxis()->GetBinWidth(1);
+  TString yAxisTitle = "Events";
+  
+  if(hStack->GetXaxis()->GetNbins()<8 || hStack->GetXaxis()->GetXmax()==23.5)  // for nJets distributions
+     yAxisTitle = "Events";
+  else if(  hStack->GetXaxis()->GetXmax()==2.5  // for eta distributions
+         || (hStack->GetXaxis()->GetXmax()==1.0 && hStack->GetXaxis()->GetXmin()==(-1.0) )  // for BDT
+         || hStack->GetXaxis()->GetXmax()==5.0  // for DeltaR distributions 
+	 )  
+     yAxisTitle +=  "/0.1 units"; 
+  else if(  (hStack->GetXaxis()->GetXmax()==1.0 && hStack->GetXaxis()->GetXmin()==0)  // for centrality, ratios distributions
+	 )  
+     yAxisTitle +=  "/0.05 units"; 
+  else{
+     yAxisTitle +=  "/";  
+     yAxisTitle +=  binWidth;  
+     yAxisTitle += " GeV";
+  }
+  
+  hStack->GetYaxis()->SetTitle(yAxisTitle);
+  hStack->GetYaxis()->SetTitleSize(0.07);
+  hStack->GetYaxis()->SetTitleOffset(0.67);
   hStack->GetYaxis()->SetNdivisions(505);
+  hStack->GetYaxis()->SetLabelSize(0.06);
+  hStack->GetYaxis()->SetNoExponent(kFALSE);
+*/
   hStack->GetXaxis()->SetLabelSize(0.0);
 
   if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
@@ -636,19 +687,20 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
 
 
   // Draw systematics histo
-  hAllBkg->SetFillStyle(3145);
-  hAllBkg->SetFillColor(kGray+2);
-  hAllBkg->SetLineColor(kGray+2);
+  hAllBkg->SetFillStyle(3444); // 3444 o 3004 (3145 default here)
+  hAllBkg->SetFillColor(StackErrorColor); // kGray+2 as default
+  hAllBkg->SetLineColor(StackErrorColor);
   hAllBkg->SetLineWidth(0);
   hAllBkg->SetMarkerSize(0);
   if(doSys)  hAllBkg->Draw("same,e2");
-  if(doData) hData->Draw("pesame");
+  //if(doData) hData->Draw("pesame");
+  if(doData) hData->Draw("psameE1X0");
   Histo* hSignalerr = NULL; 
   VSignalsErr.clear();
 
 
   // Draw systematics ratio
-  hAllBkg->SetFillStyle(3145);
+  hAllBkg->SetFillStyle(StackErrorStyle);
   TH1F* hratioerr =  (TH1F*) hAllBkg->Clone("hratioerr");
   Int_t nbins = hAllBkg->GetNbinsX(); Float_t binval = 0; Float_t errbin = 0; Float_t totalerror = 0;
   for(int bin = 1; bin <= nbins; bin++){  // Set bin error
@@ -658,15 +710,37 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
     hratioerr->SetBinContent(bin, 1);
     hratioerr->SetBinError(bin, errbin);
   }
-  hratioerr->SetFillColor(kTeal-7);
-  hratioerr->SetFillStyle(3144);
+  //hratioerr->SetFillColor(kTeal-7);
+  //hratioerr->SetFillStyle(3144); 
+  hratioerr->SetFillColor(RatioErrorColor); // kGray+2 as default
+  hratioerr->SetFillStyle(RatioErrorStyle); // 3444 o 3004 (3144 default here)
   hratioerr->SetMarkerSize(0);
 
   TLegend* leg = SetLegend();
   if(doLegend) leg->Draw("same");      
-  texcms->Draw("same");   // CMS Preliminary
-  texlumi->Draw("same");  // The luminosity
+  texcms->Draw("same");     // CMS 
+  texlumi->Draw("same");    // The luminosity
+  texPrelim->Draw("same");  // Preliminary
 
+ 
+  // Draw text for selection
+  if (chlabel != ""){
+    //TLatex *chtitle = new TLatex(-20.,50., "* e^{#pm}#mu^{#mp} + 1j1b"); 
+    // the star is needed to have the signs at the same height... :(
+    // to cover it, draw a white circle on top :)
+    //TLatex *chtitle = new TLatex(-20.,50., "e^{#pm}#mu^{#mp}"); // this string needs to be changed accordingly for each region!!!!
+    // TLatex *chtitle = new TLatex(-20.,50., "e^{#pm}#mu^{#mp} + 1j1b"); 
+    //TLatex *chtitle = new TLatex(-20.,50., "e^{#pm}#mu^{#mp} + 2j1b"); 
+    //TLatex *chtitle = new TLatex(-20.,50., "e^{#pm}#mu^{#mp} + 2j2b");
+    TLatex *chtitle = new TLatex(-20.,50., chlabel); 
+    chtitle->SetNDC();
+    chtitle->SetX(0.45);
+    chtitle->SetY(0.85);
+    chtitle->SetTextFont(42);
+    chtitle->SetTextSize(0.065);
+    chtitle->SetTextSizePixels(22);
+    chtitle->Draw("same");
+  }
 
   // Set ratio
   pratio->cd();
@@ -702,6 +776,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
     }
   }
   SetHRatio();
+  hratio->SetLineWidth(0); // remove horizontal error bar
   hratio->Draw("same");
 
   if(RatioOptions == "S/B"){
@@ -721,6 +796,7 @@ void Plot::DrawStack(TString tag = "0", bool sav = 0){
     plotname.ReplaceAll("/","_");
     c->Print( dir + plotname + ".pdf", "pdf");
     c->Print( dir + plotname + ".png", "png");
+    c->Print( dir + plotname + ".eps", "eps");
     c->SaveAs( dir + plotname + ".root");
     delete c;
   }
@@ -857,15 +933,18 @@ void Plot::SetHRatio(TH1F* h){
   else if(RatioOptions == "S/sqrtSpB") h->GetYaxis()->SetTitle("S/#sqrt{S+B}");
   else                                 h->GetYaxis()->SetTitle("Data/MC");
   if(RatioPlotLabel != "")             h->GetYaxis()->SetTitle(RatioPlotLabel);
-  h->GetXaxis()->SetTitleSize(0.05);
-  h->GetYaxis()->CenterTitle();
-  h->GetYaxis()->SetTitleOffset(0.25);
-  h->GetYaxis()->SetTitleSize(0.1);
-  h->GetYaxis()->SetLabelSize(0.1);
-  h->GetYaxis()->SetNdivisions(402);
-  h->GetXaxis()->SetTitleOffset(0.9);
-  h->GetXaxis()->SetLabelSize(0.13);
+
+  //h->GetXaxis()->SetTitleSize(0.05);
+  h->GetXaxis()->SetTitleOffset(1.2);
   h->GetXaxis()->SetTitleSize(0.16);
+  h->GetXaxis()->SetLabelOffset(0.02);
+  h->GetXaxis()->SetLabelSize(0.16);
+
+  h->GetYaxis()->SetTitleOffset(0.27);
+  h->GetYaxis()->CenterTitle();
+  h->GetYaxis()->SetTitleSize(0.13);
+  h->GetYaxis()->SetLabelSize(0.13);
+  h->GetYaxis()->SetNdivisions(402);
 
   int iBin = 1;
   for (auto& label : VBinLabels){

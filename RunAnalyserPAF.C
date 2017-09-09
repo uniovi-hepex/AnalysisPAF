@@ -14,6 +14,8 @@
 // + Load DatasetManager needed to find out information about datasets
 R__LOAD_LIBRARY(DatasetManager/DatasetManager.C+)
 #include "DatasetManager/DatasetManager.h"
+#include <iostream>
+#include <fstream>
 //
 //=============================================================================
 
@@ -32,9 +34,12 @@ Float_t         GetISRweight(Int_t mStop, Int_t mLsp);
 Double_t        GetStopXSec(Int_t StopMass);
 vector<TString> GetAllFiles(TString path, TString  filename = "");
 TH1D* GetHistoFromFiles(vector<TString> Files, TString histoName);
+void SaveCountHistos(vector<TString> Files, TString filename); 
+void SaveCountHistos(TString path, TString  inputfile, TString filename); 
 
 void CheckTreesInDir(TString path, TString treeName = "tree", Int_t verbose = 0);
 void CheckTree(TString filename, TString treeName = "tree", Int_t verbose = 0);
+
 //Float_t* GetCountLHE(std::vector<TString> Files, Float_t a[]);
 //
 //=============================================================================
@@ -141,8 +146,8 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   DatasetManager* dm = DatasetManager::GetInstance();
 
   // Tab in the spreadsheet https://docs.google.com/spreadsheets/d/1b4qnWfZrimEGYc1z4dHl21-A9qyJgpqNUbhOlvCzjbE
-  dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2");
-  //dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2_noSkim");
+  //dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2");
+  dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2_noSkim");
   
   TString pathToFiles = dataPath + dm->FindLocalFolder();
   // Deal with data samples
@@ -150,16 +155,16 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
     G_Event_Weight = 1.;
     G_IsData = true;
     TString datasuffix[] = { 
-      "16B_03Feb2017",
-      "16C_03Feb2017",
-      "16D_03Feb2017",
-      "16E_03Feb2017",
-      "16F_03Feb2017",
+    //  "16B_03Feb2017",
+    //  "16C_03Feb2017",
+    //  "16D_03Feb2017",
+    //  "16E_03Feb2017",
+    //  "16F_03Feb2017",
       "16G_03Feb2017",
-      "16H_03Feb2017_v2",
-      "16H_03Feb2017_v3"
+    //  "16H_03Feb2017_v2",
+    //  "16H_03Feb2017_v3"
     };
-    const unsigned int nDataSamples = 8;
+    const unsigned int nDataSamples = 1;
     for(unsigned int i = 0; i < nDataSamples; i++) {
       TString asample = Form("Tree_%s_%s",sampleName.Data(), datasuffix[i].Data());
       //myProject->AddDataFiles(dm->GetRealDataFiles(asample));
@@ -262,10 +267,25 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   if(sampleName.Contains("_ext"))  sampleName.ReplaceAll("_ext",""); 
   
   //if     (nEvents > 0 && FirstEvent == 0) myProject->SetNEvents(nEvents);
-  if(nEvents < 0 && FirstEvent == 0){ // Divide the sample
+  if(nEvents < 0 && FirstEvent <= 0){ // Divide the sample
     Int_t nChunks = TMath::Abs(nEvents);
     Int_t firstEvent = 0;
     cout << endl;
+    if(FirstEvent < 0){
+      cout << "Generating commands..." << endl;
+      ofstream os("commands_" + sampleName + ".sh");
+      os << "# Dividing sample " << sampleName << " in " << nChunks << " chunks...\n";
+      TString command;
+      for(Int_t i = 0; i < nChunks; i++){
+        firstEvent = (nTrueEntries/nChunks)*i+1;
+        nEvents = nTrueEntries/nChunks;
+        if(i == nChunks - 1) nEvents = nTrueEntries-firstEvent;
+        command = Form("root -l -b -q \'RunAnalyserPAF.C(\"%s\", \"%s\", %i, %lli, %i, %i, %i, %i)\'", orig_sampleName.Data(), Selection.Data(), nSlots, nEvents, firstEvent, i, stopMass, lspMass);
+        cout << command << endl;
+        os << command << endl;
+      }
+      return;
+    }
     cout << Form("\033[0;97m >>> The sample is going to be divided in %i chunks!! \033[0m\n\n", nChunks);
     for(Int_t i = 0; i < nChunks; i++){
       firstEvent = (nTrueEntries/nChunks)*i+1;
@@ -399,49 +419,9 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   //=============================================================================
   //== Save info in files
   //=============================================================================
-
-  //TFile* _file = TFile::Open(outputFile, "UPDATE");
-  
-//  TH1D* _count = GetHistoFromFiles(Files, "Count");
-  TH1D* _sow;
-  TH1D* _cLHE;
-  //if(!G_IsData) _sow   = GetHistoFromFiles(Files, "SumGenWeights");
-  //if(!G_IsData && !G_IsFastSim) _cLHE  = GetHistoFromFiles(Files, "CountLHE");
-  //TFile* _file = new TFile(outputFile, "UPDATE");
-  //_count->Write();
-  //if(!G_IsData) _cLHE ->Write();
-  //if(!G_IsData && !G_IsFastSim) _sow  ->Write();
+  SaveCountHistos(Files, outputFile);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-TH1D* GetHistoFromFiles(vector<TString> Files, TString histoName){
-  Int_t nFiles = Files.size(); TFile *f;
-  TH1D *h; TH1F *htemp;
-  for(Int_t i = 0; i < nFiles; i++){
-    cout << "Opening: " << Files.at(i) << endl;
-    f = TFile::Open(Files.at(i));
-    if(i == 0) {
-      f->GetObject(histoName, h); 
-    }
-    else{
-      f->GetObject(histoName, htemp); 
-      h->Add(htemp);
-    }
-  }
-  return h;
-}
- 
 
 
 
@@ -450,8 +430,9 @@ TH1D* GetHistoFromFiles(vector<TString> Files, TString histoName){
 //=== Auxiliary functions
 //=============================================================================
 
-void GetCount(std::vector<TString> Files, Bool_t IsData){
 
+
+void GetCount(std::vector<TString> Files, Bool_t IsData){
 	Int_t nFiles = Files.size(); TFile *f;
 	TH1D *hcount; TH1D *hsum; TTree* tree;
 	if(verbose) cout << "\033[1;30m=================================================\033[0m\n";
@@ -469,7 +450,6 @@ void GetCount(std::vector<TString> Files, Bool_t IsData){
 		}
 		f->Close();    
 	}
-
 }
 
 Float_t GetSMSnorm(Int_t mStop, Int_t mLsp){
@@ -651,3 +631,46 @@ void CheckTreesInDir(TString path, TString treeName, Int_t verbose){
     CheckTree(AllFiles.at(i), treeName, verbose);
   }
 }
+
+TH1D* GetHistoFromFiles(vector<TString> Files, TString histoName){
+  Int_t nFiles = Files.size(); TFile *f;
+  TH1D *h; TH1D *htemp;
+  for(Int_t i = 0; i < nFiles; i++){
+    //cout << "Opening: " << Files.at(i) << endl;
+    f = TFile::Open(Files.at(i));
+    if(!f->FindKey(histoName)){
+      //cout << "WARNING: not found histogram \"" << histoName << "\"" << endl;
+      return h;
+    }
+    if(i == 0) {
+      f->GetObject(histoName, h); 
+    }
+    else{
+      f->GetObject(histoName, htemp); 
+      h->Add(htemp);
+    }
+  }
+  return h;
+}
+
+void SaveCountHistos(vector<TString> Files, TString filename){ 
+  TH1D* _SumOfWeights;
+  TH1D* _SumOfLHEweights;
+  TH1D* _Count;
+
+  _SumOfWeights    = GetHistoFromFiles(Files, "SumGenWeights");
+  _SumOfLHEweights = GetHistoFromFiles(Files, "CountLHE");
+  _Count           = GetHistoFromFiles(Files, "Count");
+  
+  TFile* _file = TFile::Open(filename, "UPDATE");
+  if(_SumOfWeights) _SumOfWeights->Write();
+  if(_SumOfLHEweights) _SumOfLHEweights->Write();
+  if(_Count) _Count->Write();
+}
+
+void SaveCountHistos(TString path, TString  inputfile, TString filename){ 
+  vector<TString> Files = GetAllFiles(path, inputfile);
+  SaveCountHistos(Files, filename);
+}
+
+

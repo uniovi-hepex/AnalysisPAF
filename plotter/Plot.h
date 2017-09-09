@@ -28,7 +28,7 @@ class Plot {
 public:
   bool verbose         = false;
   bool doSys           = true;
-  bool doData          = true;
+  bool doData          = true; 
   bool doYieldsInLeg   = true;
   bool doSingleLep     = false;
   bool doStackOverflow = true;
@@ -36,6 +36,7 @@ public:
   bool doSetLogy       = true;
   bool doStatUncInDatacard = true;
   bool doLegend        = true;
+  bool doUncInLegend   = false;
 
   std::vector<Histo*> VBkgs;
   std::vector<Histo*> VSignals;
@@ -59,7 +60,9 @@ public:
   TPad* plot = NULL; TPad* pratio = NULL;
   TLatex* texlumi = NULL;
   TLatex* texcms = NULL;
+  TLatex* texPrelim = NULL;
   TLatex* texchan = NULL;
+  TString chlabel = "";
   TH1F* hratio = NULL;
   Float_t* TotalSysUp = NULL;
   Float_t* TotalSysDown = NULL;
@@ -83,44 +86,9 @@ public:
     xtitle = xtit;
     varname = variable; if(variable.Contains(" ")) TString(variable(0,variable.First(" ")));
     f = 0;
-
-    plotFolder = DefaultPlotfolder;
-    limitFolder = DefaultLimitFolder; 
-    Lumi = DefaultLumi;
-    VBkgs = std::vector<Histo*>();
-    VSignals = std::vector<Histo*>();
-    VSignalsErr = std::vector<Histo*>();
-    VData = std::vector<Histo*>();
-    VSyst = std::vector<Histo*>();
-    VSumHistoSystUp = std::vector<Histo*>();
-    VSumHistoSystDown =  std::vector<Histo*>();
-    VSystLabel = std::vector<TString>();
-    VTagSamples = std::vector<TString>();
-    VTagDataSamples = std::vector<TString>();
-    VTagProcesses = std::vector<TString>();
-    VTagOptions = std::vector<TString>();
-    VBinLabels  = std::vector<TString>();
-    hData = NULL;
-    hStack = NULL;
-    hAllBkg = NULL;
-    //hSignal = NULL; 
-
-    plot = NULL; pratio = NULL;
-    texlumi = NULL;
-    texcms = NULL;
-    texchan = NULL;
-    hratio = NULL;
-    TotalSysUp = NULL;
-    TotalSysDown = NULL;
-    nSignalSamples = 0;
-    fLegX1 = 0.66; 
-    fLegY1 = 0.42;
-    fLegX2 = 0.98; 
-    fLegY2 = 0.92;
-    LegendTextSize  = 0.035;
-    RatioPlotLabel  = "";
-    SignalDrawStyle = "hist";
+    Init();
   }
+
   Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Float_t* bins = 0, TString tit = "title", TString xtit = "VAR"){
     var    = variable;
     cut    = (cuts);
@@ -132,45 +100,8 @@ public:
     title = tit;
     xtitle = xtit;
     f = 0;
-    varname = variable; if(variable.Contains(" ")) TString(variable(0,variable.First(" ")))
-						     ;
-
-    plotFolder = DefaultPlotfolder;
-    limitFolder = DefaultLimitFolder; 
-    Lumi = DefaultLumi;
-    VBkgs = std::vector<Histo*>();
-    VSignals = std::vector<Histo*>();
-    VSignalsErr = std::vector<Histo*>();
-    VData = std::vector<Histo*>();
-    VSyst = std::vector<Histo*>();
-		VSumHistoSystUp = std::vector<Histo*>();
-		VSumHistoSystDown =  std::vector<Histo*>();
-    VSystLabel = std::vector<TString>();
-    VTagSamples = std::vector<TString>();
-    VTagDataSamples = std::vector<TString>();
-    VTagProcesses = std::vector<TString>();
-    VTagOptions = std::vector<TString>();
-    VBinLabels  = std::vector<TString>();
-    hData = NULL;
-    hStack = NULL;
-    hAllBkg = NULL;
-    //hSignal = NULL; 
-
-    plot = NULL; pratio = NULL;
-    texlumi = NULL;
-    texcms = NULL;
-    texchan = NULL;
-    hratio = NULL;
-    TotalSysUp = NULL;
-    TotalSysDown = NULL;
-    nSignalSamples = 0;
-    fLegX1 = 0.70; 
-    fLegY1 = 0.65;
-    fLegX2 = 0.93; 
-    fLegY2 = 0.93;
-    LegendTextSize  = 0.035;
-    RatioPlotLabel  = "";
-    SignalDrawStyle = "hist";
+    varname = variable; if(variable.Contains(" ")) TString(variable(0,variable.First(" ")));
+    Init();
   }
 	
 	virtual ~Plot(){
@@ -199,6 +130,53 @@ public:
 	  VBinLabels.clear();
 	  if(f)       delete f;
 	};            // Destructor
+
+  void Init(){
+    plotFolder = DefaultPlotfolder;
+    limitFolder = DefaultLimitFolder; 
+    Lumi = DefaultLumi;
+    VBkgs = std::vector<Histo*>();
+    VSignals = std::vector<Histo*>();
+    VSignalsErr = std::vector<Histo*>();
+    VData = std::vector<Histo*>();
+    VSyst = std::vector<Histo*>();
+    VSumHistoSystUp = std::vector<Histo*>();
+    VSumHistoSystDown =  std::vector<Histo*>();
+    VSystLabel = std::vector<TString>();
+    VTagSamples = std::vector<TString>();
+    VTagDataSamples = std::vector<TString>();
+    VTagProcesses = std::vector<TString>();
+    VTagOptions = std::vector<TString>();
+    VBinLabels  = std::vector<TString>();
+    hData = NULL;
+    hStack = NULL;
+    hAllBkg = NULL;
+    //hSignal = NULL; 
+    plot = NULL; pratio = NULL;
+    texlumi = NULL;
+    texcms = NULL;
+    texPrelim = NULL;
+    texchan = NULL;
+    hratio = NULL;
+    TotalSysUp = NULL;
+    TotalSysDown = NULL;
+    nSignalSamples = 0;
+    fLegX1 = 0.66; 
+    fLegY1 = 0.42;
+    fLegX2 = 0.98; 
+    fLegY2 = 0.92;
+    LegendTextSize  = 0.065;
+    RatioPlotLabel  = "";
+    SignalDrawStyle = "hist";
+    CMSlabel = "CMS";
+    CMSmodeLabel = "Preliminary";
+    RatioErrorColor = kGray+2;
+    RatioErrorStyle = 3444;
+    StackErrorColor = kGray+2;
+    StackErrorStyle = 3444;
+  }
+
+
 	
 	void AddSample(TString p = "TTbar_Powheg", TString pr = "ttbar", Int_t type = -1, Int_t color = 0, TString tsys = "0", TString options = "");
 
@@ -314,12 +292,17 @@ public:
   void SetSignalDrawStyle(TString t){ SignalDrawStyle = t;}
   void SetLegendTextSize(Float_t t){ LegendTextSize = t;} 
   void SetRatioPlotLabel(TString t){ RatioPlotLabel = t;} 
+  void SetRatioErrorColor(Int_t b){ RatioErrorColor = b;}
+  void SetRatioErrorStyle(Int_t b){ RatioErrorStyle = b;}
+  void SetStackErrorColor(Int_t b){ StackErrorColor = b;}
+  void SetStackErrorStyle(Int_t b){ StackErrorStyle = b;}
 
   void SetSignalProcess(TString p){ SignalProcess = p;}
   void SetSignalStyle(TString p){ SignalStyle = p;} 
   TString GetSignalProcess(){ return SignalProcess;}
 
   void SetCMSlabel(TString t){ CMSlabel = t;}
+  void SetCMSmodeLabel(TString t){ CMSmodeLabel = t;}
 //  void SetInfoText(TString t){ InfoText = t;}
 
 protected: 
@@ -361,7 +344,12 @@ protected:
   TString RatioOptions = "";
   TString SignalStyle = "";
   TString SignalDrawStyle;
-  TString CMSlabel = "CMS Preliminary";
+  TString CMSlabel;
+  TString CMSmodeLabel;
+  Int_t  RatioErrorColor;
+  Int_t  RatioErrorStyle;
+  Int_t  StackErrorColor;
+  Int_t  StackErrorStyle;
 
   TString SystVar;
   Int_t iS;

@@ -15,22 +15,18 @@ TString NameOfTree = "Mini1j1t";
 
 void run1j1tPlots(){
 
-  DrawPlot("TnBTotal - 1 "    , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 4, -0.5, 3.5, "n_{B}^{20}");
-  DrawPlot("TnLooseCentral - 1 ", "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 5, -0.5, 4.5, "n_{20}");
+  DrawPlot("TnBTotal - 1 "         , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu",  3, -0.5, 2.5, "Number of b-tagged loose jets");
+  DrawPlot("TnLooseCentral - 1 "   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu",  5, -0.5, 4.5, "Number of loose jets");
+  DrawPlot("TDilepMETJetPt_THTtot ", "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20,  0.,   1., "p_{T}(e#mu j met) / H_{T}");
+  DrawPlot("TC_jll "		   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20,  0.,   1., "C_{je#mu}");
+  DrawPlot("TTJet1_pt " 	   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 25,  0., 250., "Leading jet p_{T} [GeV]");
+  DrawPlot("TDilepMETJetPt "	   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20,  0., 200., "p_{T}(e#mu j met) [GeV]");
+  DrawPlot("TTHTtot "		   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20, 70., 550., "H_{T} [GeV]");
+  DrawPlot("TTJetLooseCentralpt "  , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 30,  0.,  30., "Loose jet p_{T} [GeV]");
+  DrawPlot("TMSys "		   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20, 50., 750., "m_{sys} [GeV]");
+  DrawPlot("THTLepOverHT "	   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20,  0.,   1., "H_{T}+lep / H_{T}");
+  DrawPlot("TDilepJetPt "	   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 25,  0., 250., "p_{T}^{e#mu, j} [GeV]");
 
-  DrawPlot("TDilepMETJetPt_THTtot ","(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20, 0., 1., "p_{T}(lljmet) / H_{T}");
-  DrawPlot("TC_jll ","(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20, 0., 1., "C_{jll}");
-  DrawPlot("TTJet1_pt ", "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20, 0., 250., "p^{jet1}_{T} [GeV]");
-  DrawPlot("TDilepMETJetPt "    , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20, 0., 200., "p_{T}(lljmet)");
-  DrawPlot("TTHTtot "     , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20, 70., 550., "H_{T} [GeV]");
-  DrawPlot("TTJetLooseCentralpt "    , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20, 0., 30., "Loose jet p_{T} [GeV]");
-  DrawPlot("TMSys ","(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20, 50., 750., "m_{sys}[GeV]");
-  DrawPlot("THTLepOverHT ","(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20, 0., 1., "H_{T}+lep / H_{T}");
-  DrawPlot("TDilepJetPt ","(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20, 0., 250., "p_{T}^{ll,j} [GeV]");
-
-
-  
-  
 }
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, bool setLegendLeft = false){
@@ -40,53 +36,53 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->verbose = false;
   // p->SetVarName("forFit");
 
-  p->AddSample("WZ", "VV", itBkg, kYellow);
-  p->AddSample("WW", "VV", itBkg);
-  p->AddSample("ZZ", "VV", itBkg);
-  p->AddSample("TTWToLNu", "ttV", itBkg, kOrange-3);
-  p->AddSample("TTWToQQ", "ttV", itBkg);
-  p->AddSample("TTZToQQ", "ttV", itBkg);
-  p->AddSample("TTZToLLNuNu", "ttV", itBkg);
+  TGaxis::SetMaxDigits(3);
+  p->chlabel="e^{#pm}#mu^{#mp} + 1j1b";
 
-  p->AddSample("DYJetsToLL_M10to50_aMCatNLO", " Z/#gamma* #rightarrow e^{#pm}#mu^{#mp}", itBkg, TColor::GetColor("#3b0160")); // kRed);
-  p->AddSample("DYJetsToLL_M50_aMCatNLO",     " Z/#gamma* #rightarrow e^{#pm}#mu^{#mp}", itBkg);
-  p->AddSample("TTbar_Powheg", "t#bar{t}", itBkg, TColor::GetColor("#669966")); // TColor::GetColor("#8ADCFF"));
-  p->AddSample("TW", "tW", itBkg, TColor::GetColor("#ff4800")); // TColor::GetColor("#ffc878"));
-  p->AddSample("TbarW", "tW", itBkg);
-  p->AddSample("TTbar_PowhegSemi","Non W/Z", itBkg, kGray);
-  p->AddSample("WJetsToLNu_MLM","Non W/Z", itBkg, kGray);
+  p->AddSample("WZ"         , "VV+t#bar{t}V", itBkg, kOrange-3);
+  p->AddSample("WW"         , "VV+t#bar{t}V", itBkg);
+  p->AddSample("ZZ"         , "VV+t#bar{t}V", itBkg);
+  p->AddSample("TTWToLNu"   , "VV+t#bar{t}V", itBkg);
+  p->AddSample("TTWToQQ"    , "VV+t#bar{t}V", itBkg);
+  p->AddSample("TTZToQQ"    , "VV+t#bar{t}V", itBkg);
+  p->AddSample("TTZToLLNuNu", "VV+t#bar{t}V", itBkg);
 
+  p->AddSample("DYJetsToLL_M10to50_aMCatNLO", "Z/#gamma* #rightarrow e^{#pm}#mu^{#mp}", itBkg, TColor::GetColor("#3b0160")); // kRed);
+  p->AddSample("DYJetsToLL_M50_aMCatNLO"    , "Z/#gamma* #rightarrow e^{#pm}#mu^{#mp}", itBkg);
+  p->AddSample("TTbar_Powheg"               , "t#bar{t}" , itBkg, TColor::GetColor("#669966")); // TColor::GetColor("#8ADCFF"));
+  p->AddSample("TTbar_PowhegSemi"           , "Non W/Z"  , itBkg, kGray);
+  p->AddSample("WJetsToLNu_MLM"             , "Non W/Z"  , itBkg, kGray);
+  p->AddSample("TW"                         , "tW"       , itBkg, TColor::GetColor("#ff4800")); // TColor::GetColor("#ffc878"));
+  p->AddSample("TbarW"                      , "tW"       , itBkg);
+ 
 
-  p->AddSample("MuonEG", "Data", itData);
+  p->AddSample("MuonEG"    , "Data", itData);
   p->AddSample("SingleMuon", "Data", itData);
   p->AddSample("SingleElec", "Data", itData);
 
   p->AddSample("TTbar_Powheg_hdampUp", "t#bar{t}", itSys, 1,  "hdampUp"); 
   p->AddSample("TTbar_Powheg_hdampDown", "t#bar{t}", itSys, 1,  "hdampDown"); 
 
-
-
-
-  p->AddSample("TTbar_Powheg_ueUp", "t#bar{t}", itSys, 1,  "ueUp"); 
-  p->AddSample("TTbar_Powheg_ueDown", "t#bar{t}", itSys, 1,  "ueDown"); 
-  p->AddSample("TTbar_Powheg_isrUp", "t#bar{t}", itSys, 1,  "isrUp"); 
+  p->AddSample("TTbar_Powheg_ueUp"   , "t#bar{t}", itSys, 1,  "ueUp"); 
+  p->AddSample("TTbar_Powheg_ueDown" , "t#bar{t}", itSys, 1,  "ueDown"); 
+  p->AddSample("TTbar_Powheg_isrUp"  , "t#bar{t}", itSys, 1,  "isrUp"); 
   p->AddSample("TTbar_Powheg_isrDown", "t#bar{t}", itSys, 1,  "isrDown"); 
-  p->AddSample("TTbar_Powheg_fsrUp", "t#bar{t}", itSys, 1,  "fsrUp"); 
+  p->AddSample("TTbar_Powheg_fsrUp"  , "t#bar{t}", itSys, 1,  "fsrUp"); 
   p->AddSample("TTbar_Powheg_fsrDown", "t#bar{t}", itSys, 1,  "fsrDown"); 
 
-  p->AddSample("TW_noFullyHadr_isrUp","tW", itSys, 1,  "isrUp");
+  p->AddSample("TW_noFullyHadr_isrUp"  ,"tW", itSys, 1,  "isrUp");
   p->AddSample("TW_noFullyHadr_isrDown","tW", itSys, 1,  "isrDown");
-  p->AddSample("TW_noFullyHadr_fsrUp","tW", itSys, 1,  "fsrUp");
+  p->AddSample("TW_noFullyHadr_fsrUp"  ,"tW", itSys, 1,  "fsrUp");
   p->AddSample("TW_noFullyHadr_fsrDown","tW", itSys, 1,  "fsrDown");
 
-  p->AddSample("TW_noFullyHadr_MEscaleUp","tW", itSys, 1,  "tWMe_s_caleUp");
+  p->AddSample("TW_noFullyHadr_MEscaleUp"  ,"tW", itSys, 1,  "tWMe_s_caleUp");
   p->AddSample("TW_noFullyHadr_MEscaleDown","tW", itSys, 1,  "tWMe_s_caleDown");
 
-  p->AddSample("TbarW_noFullyHadr_isrUp","tW", itSys, 1,  "isrUp");
-  p->AddSample("TbarW_noFullyHadr_isrDown","tW", itSys, 1,  "isrDown");
-  p->AddSample("TbarW_noFullyHadr_fsrUp","tW", itSys, 1,  "fsrUp");
-  p->AddSample("TbarW_noFullyHadr_fsrDown","tW", itSys, 1,  "fsrDown");
-  p->AddSample("TbarW_noFullyHadr_MEscaleUp","tW", itSys, 1,  "tWMe_s_caleUp");
+  p->AddSample("TbarW_noFullyHadr_isrUp"      ,"tW", itSys, 1,  "isrUp");
+  p->AddSample("TbarW_noFullyHadr_isrDown"    ,"tW", itSys, 1,  "isrDown");
+  p->AddSample("TbarW_noFullyHadr_fsrUp"      ,"tW", itSys, 1,  "fsrUp");
+  p->AddSample("TbarW_noFullyHadr_fsrDown"    ,"tW", itSys, 1,  "fsrDown");
+  p->AddSample("TbarW_noFullyHadr_MEscaleUp"  ,"tW", itSys, 1,  "tWMe_s_caleUp");
   p->AddSample("TbarW_noFullyHadr_MEscaleDown","tW", itSys, 1,  "tWMe_s_caleDown");
 
   p->AddSample("TTbar_Powheg", "t#bar{t}", itSys, 1, "ScaleUp"); 
@@ -97,11 +93,13 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 
   p->SetRatioMin( 0.6 );
   p->SetRatioMax( 1.4 );
-  
+
+  p->SetLegendPosition(0.7, 0.45, 0.93, 0.92);
 
   p->SetPlotFolder("1j1t/");
 
   p->AddSystematic("stat,JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"); //,LepEff
+  //p->AddSystematic("stat"); //,LepEff
 
   p->doYieldsInLeg=false;
 

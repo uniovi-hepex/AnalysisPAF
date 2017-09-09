@@ -99,6 +99,7 @@ void Histo::AddToLegend(TLegend* leg, Bool_t doyi){
     else if (type == itData)   op = "pe";
     else if (type == itCompare)op = "pe";
   }
+  
   if(doyi) leg->AddEntry(h2, Form(process + ": %1.0f", yield), op);
   else leg->AddEntry(h2, tag, op);
 }

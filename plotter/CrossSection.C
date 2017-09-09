@@ -223,11 +223,11 @@ void CrossSection::PrintCrossSection(TString options){
   t[1][0] = BR;
   t[2][0] = efficiency; t[2][4] = acc_err;
   t[3][0] = acceptance; t[3][4] = eff_err;
-  t[4][0] = xsec*acceptance;
-  t[4][1] = xsec_stat_err*acceptance; //stat
-  t[4][2] = xsec_syst_err*acceptance; //syst
-  t[4][3] = xsec_lumi_err*acceptance; //lumi
-  t[4][4] = xsec_total_err*acceptance; //total
+  t[4][0] = xsec*acceptance*BR;
+  t[4][1] = xsec_stat_err*acceptance*BR; //stat
+  t[4][2] = xsec_syst_err*acceptance*BR; //syst
+  t[4][3] = xsec_lumi_err*acceptance*BR; //lumi
+  t[4][4] = xsec_total_err*acceptance*BR; //total
 
 
   t.SetDrawHLines(true); t.SetDrawVLines(true); t.Print();
