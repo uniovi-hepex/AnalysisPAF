@@ -95,7 +95,6 @@ Bool_t IsThere3SS(vector<Lepton> lepton);
 Bool_t ByPt(Jet, Jet);
 std::vector<Lepton> AssignWZLeptons(std::vector<Lepton> leptonList);
 
-
 Int_t   getCS(vector<Lepton> lepton);
 void co(TString out, TString co);
 void DumpVar(Int_t evt, TString varname, Float_t val, Bool_t pass = false, Bool_t verbose = false);
