@@ -69,6 +69,7 @@ class StopTopAnalysis : public PAFChainItemSelector{
     Int_t   TNSelLeps;
     Int_t TChannel;
     Int_t TPassTrigger;
+    Int_t TPassMETfilters;
     Float_t TLep0_Pt;    
     Float_t TLep0_Eta;
     Float_t TLep0_Phi;

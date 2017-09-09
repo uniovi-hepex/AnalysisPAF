@@ -6,7 +6,6 @@ StopTopAnalysis::StopTopAnalysis() : PAFChainItemSelector() {
   fSumISRJets = 0;  
   fISRJets = 0;  
   ResetVariables();
-
 }
 
 void StopTopAnalysis::Summary(){}
@@ -30,7 +29,7 @@ void StopTopAnalysis::ResetVariables(){
   TgenDeltaPhi = 0; TgenDeltaEta = 0; TgenMT2 = 0; TNgenJets = 0;  TgenHT = 0;
   TgentopDeltaPhi = 0; TgentopDeltaR = 0;
   TMETMETDown = 0; TMETMETUp = 0; TMT2METUp = 0; TMT2METDown = 0;
-  TPassTrigger = 0;
+  TPassTrigger = 0; TPassMETfilters = 0;
   for(Int_t i = 0; i < 20; i++){
     TJet_Pt[i] = 0;
     TJet_Eta[i] = 0;
@@ -52,6 +51,7 @@ void StopTopAnalysis::ResetVariables(){
   selLeptons.clear(); vetoLeptons.clear();
   genLeptons.clear();
   selJets.clear(); Jets15.clear();
+  genJets.clear();
 }
 
 void StopTopAnalysis::Initialise(){
@@ -70,8 +70,8 @@ void StopTopAnalysis::Initialise(){
   fSumISRJets = CreateH1F("SumISRweights", "SumISRweights", 1 , 0, 2); 
   fISRJets =    CreateH1F(   "ISRweights",    "ISRweights", 6 , 0, 6); 
 
-  gIsLHE = false;
-  if(gSampleName == ("TTbar_Powheg")) gIsLHE = true;
+  gIsLHE = false; gIsTTbar = false;
+  if(gSampleName.Contains("TTbar_Powheg")) gIsLHE = true;
   if(gSampleName.Contains("TTbar")) gIsTTbar = true;
   
   gDoISR = false;
@@ -129,12 +129,17 @@ void StopTopAnalysis::InsideLoop(){
 
   fSumISRJets->Fill(1, getISRJetsWeight(TNISRJets)); 
 
-  // if(TNSelLeps == 2 && passMETfilters){ // 2 leptons, OS
-  //if(1){ 
+  // =================== Tree at gen level here! ==================
+  //if(TNgenLeps >= 2){
+  //  TChannel = GetDileptonicChannel(genLeptons);
+  //  fTree->Fill();
+  //}
+  //return;
+
+  // =================== Tree at reco level here! ==================
   if(TNSelLeps == 2){ // 2 leptons, OS
-    //if(TNSelLeps == 2 && passTrigger && passMETfilters && !isSS){ // 2 leptons, OS
-    //  if(TNVetoLeps < 3){  // Veto to 3rd lepton
-    // Deal with weights:
+    // TPassTrigger && TPassMETfilters && !TIsSS
+     
     Float_t ElecSF = 1; Float_t MuonSF = 1;
     Float_t ElecSFUp = 1; Float_t ElecSFDo = 1; Float_t MuonSFUp = 1; Float_t MuonSFDo = 1;
     if(TNSelLeps >= 2){
@@ -208,7 +213,7 @@ void StopTopAnalysis::InsideLoop(){
     }
   }
   //if(TNgenLeps >= 2) fTree->Fill();
-  }
+}
 
 
 //#####################################################################
@@ -232,6 +237,7 @@ void StopTopAnalysis::SetLeptonVariables(){
   fTree->Branch("TLep1_Id" ,     &TLep1_Id ,     "TLep1_Id/I");
   fTree->Branch("TChannel",      &TChannel,      "TChannel/I");
   fTree->Branch("TPassTrigger",  &TPassTrigger,  "TPassTrigger/I");
+  fTree->Branch("TPassMETfilters",  &TPassMETfilters,  "TPassMETfilters/I");
   fTree->Branch("TMll",      &TMll,      "TMll/F");
   fTree->Branch("TMT2",      &TMT2,      "TMT2/F");
   fTree->Branch("TDeltaPhi",      &TDeltaPhi,      "TDeltaPhi/F");
@@ -356,6 +362,7 @@ void StopTopAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::ve
     TDeltaEta = TMath::Abs(TMath::Abs(selLeptons.at(0).p.Eta()) - TMath::Abs(selLeptons.at(1).p.Eta()));
   }
   TPassTrigger = passTrigger;
+  TPassMETfilters = passMETfilters;
   if(gIsData) return;  
 }
 
