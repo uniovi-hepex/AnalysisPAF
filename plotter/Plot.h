@@ -305,7 +305,7 @@ public:
 
   void SetCMSlabel(TString t){ CMSlabel = t;}
   void SetCMSmodeLabel(TString t){ CMSmodeLabel = t;}
-//  void SetInfoText(TString t){ InfoText = t;}
+  void SetChLabel(TString t){chlabel= t;}
 
 protected: 
   TString pathToHeppyTrees = "";
