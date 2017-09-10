@@ -19,6 +19,7 @@
 enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau, iOS1tau, i2lss_fake, iTriLep_fake, iElEl, iMuMu, i1Tau_emufakeOS ,i1Tau_emufakeSS, TotalDefinedChannels};
 const Int_t nLHEweights = 112;
 std::vector<TString> TStringToVector(TString t, char separator = ',');
+void PrintVector(std::vector<TString> v);
 
 std::vector<TString> GetAllVars(TString varstring, Bool_t verbose = false); 
 TString CraftFormula(TString cut, TString chan, TString sys, TString weight, TTree* tree);
@@ -256,6 +257,13 @@ std::vector<TString> TStringToVector(TString t, char separator){
   }
   v.push_back(t);
   return v;
+}
+
+void PrintVector(std::vector<TString> v){
+  Int_t dim = v.size();
+  cout << "[size = " << dim << "]: (";
+  for(Int_t i = 0; i < dim-1; i++) cout << v.at(i) << ", ";
+  cout << v.at(dim-1) << ")" << endl;
 }
 
 Bool_t IsWord(TString s, Int_t pos = 0, TString word = ""){
