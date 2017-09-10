@@ -228,11 +228,13 @@ public:
   }
 	void SetTitle(TString tit){title = tit;}
 	void SetTitleX(TString xtit){xtitle = xtit;}
+  void SetBinLabels(TString t, char separator = ','){VBinLabels = TStringToVector(t, separator);}
 
 
   void AddToHistos(Histo* p);
 	void AddVarHistos(TString sys);
 	void AddSystematic(TString s, TString pr = "");
+  void AddStatError(TString process = "");
   void AddToSystematicLabels(TString sys){
     sys.ReplaceAll("Up", ""); sys.ReplaceAll("Down", "");
     for(Int_t i = 0; i < (Int_t) VSystLabel.size(); i++){

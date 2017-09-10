@@ -22,10 +22,6 @@ Histo* Plot::GetH(TString sample, TString sys, Int_t type){
   Histo* h = ah->GetHisto(sample, sys);
   h->SetDirectory(0);
   h->SetStyle(); 
-  if(sys.Contains("stat")){
-    if(sys.Contains("Up")) for(Int_t i = 0; i <= nb; i++) h->SetBinContent(i, h->GetBinContent(i) + h->GetBinError(i));
-    else                   for(Int_t i = 0; i <= nb; i++) h->SetBinContent(i, h->GetBinContent(i) - h->GetBinError(i));
-  }
   delete ah;
   return h;
 }
@@ -169,6 +165,12 @@ void Plot::AddToHistos(Histo* p){ // Add the histogram to the right vector
 //================================================================================
 
 void Plot::AddSystematic(TString var, TString pr){
+  if(var == "stat"){
+    AddToSystematicLabels("stat");
+    AddStatError();
+    if(verbose) cout << "[Plot::AddSystematic] Added statistical uncertainties! " << endl;
+    return;
+  }
   var.ReplaceAll(" ", "");
   if(var.Contains(",")){
     TString OneSyst;
@@ -199,6 +201,29 @@ void Plot::AddSystematic(TString var, TString pr){
     }
   }
   if(verbose) cout << "[Plot::AddSystematic] Systematic histograms added to the list for variation: " << var << endl;
+}
+
+void Plot::AddStatError(TString process){
+  if(process == ""){ 
+    for(Int_t iProcess = 0; iProcess < (Int_t) VBkgs.size(); iProcess++) AddStatError(VBkgs.at(iProcess)->GetProcess());
+    for(Int_t iSig = 0; iSig < (Int_t) VSignals.size(); iSig++) AddStatError(VSignals.at(iSig)->GetProcess());
+    return;
+  }
+  Float_t nom; Float_t stat;
+  Histo *hUp   = (Histo*)GetHisto(process)->CloneHisto(process + "_statUp");
+  Histo* hDown = (Histo*)GetHisto(process)->CloneHisto(process + "_statDown");
+  hUp->SetDirectory(0); hDown->SetDirectory(0);
+  for(Int_t iBin = 0; iBin <= hUp->GetNbinsX(); iBin++){
+    nom = hUp->GetBinContent(iBin); stat = hUp->GetBinError(iBin);
+    hUp  ->SetBinContent(iBin, nom+stat);
+    hDown->SetBinContent(iBin, nom-stat);
+  }
+  hUp->SetProcess(process); hDown->SetProcess(process);
+  hUp->SetSysTag("statUp"); hDown->SetSysTag("statDown");
+  hUp->SetTag(process + "_statUp"); hDown->SetTag(process + "_statDown");
+  hUp->SetType(itSys); hDown->SetType(itSys);
+  hUp->SetStyle(); hDown->SetStyle();
+  AddToHistos(hUp); AddToHistos(hDown);
 }
 
 void Plot::GroupSystematics(){
@@ -250,7 +275,6 @@ void Plot::GroupSystematics(){
     AddSumHistoSystematicUp(hsumSysUp);
     AddSumHistoSystematicDown(hsumSysDown);
   }
-  if (verbose) cout << "ACABO LA FUNCIONNNNN" << endl;
 }
 
 //================================================================================
@@ -651,7 +675,7 @@ void Plot::DrawStack(TString tag, bool sav){
     hStack->SetMinimum(PlotMinimum);
   }  
 
-// Needs to be re-thinked
+// Needs to be re-thought
 //
 /*  float binWidth = hStack->GetXaxis()->GetBinWidth(1);
   TString yAxisTitle = "Events";
