@@ -566,3 +566,37 @@ void DumpEvent(Int_t evt, TString s, Bool_t verbose){
     if(evt == ee) cout << s << endl;
   }
 }
+
+std::vector<Lepton> AssignWZLeptons(std::vector<Lepton> leptonList){//Assign W and Z Leptons as in the WZ analysis. Z leptons are assigned to the best invariant mass pair, W lepton is the next higher p_T lepton.
+  Float_t dZmass = 100000.; 
+  Int_t nLeptons = leptonList.size();
+  Int_t indexZ1;
+  Int_t indexZ2;
+  std::vector<Lepton> WZleps;
+  for(Int_t i = 0; i < nLeptons; i++){
+    for(Int_t j = i+1; j < nLeptons; j++){
+      if ( ( (leptonList.at(j).isMuon && leptonList.at(i).isMuon) || (leptonList.at(j).isElec && leptonList.at(i).isElec)    ) && leptonList.at(i).charge*leptonList.at(j).charge == -1){
+        Float_t hypZmass = (leptonList.at(j).p + leptonList.at(i).p).M();
+        if (TMath::Abs(hypZmass-91.1876) < dZmass){
+          dZmass = TMath::Abs(hypZmass-91.1876);
+          indexZ1 = j;
+          indexZ2 = i;
+          if (leptonList.at(j).Pt() > leptonList.at(i).Pt()) {
+            WZleps.push_back(leptonList.at(j));
+            WZleps.push_back(leptonList.at(i));
+          }
+          else{
+            WZleps.push_back(leptonList.at(i));
+            WZleps.push_back(leptonList.at(j));
+          }
+        }
+      }
+    }
+  }
+  for(Int_t i = 0; i < nLeptons; i++){
+    if (i != indexZ1 && i != indexZ2){
+      WZleps.push_back(leptonList.at(i));
+    }
+  }  
+  return WZleps;
+}

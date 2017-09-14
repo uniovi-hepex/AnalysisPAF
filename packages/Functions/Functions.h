@@ -94,6 +94,7 @@ Bool_t IsThereSSpair(vector<Lepton> leptons);
 Bool_t IsThere3SS(vector<Lepton> lepton);
 Bool_t ByPt(Jet, Jet);
 Int_t GetDileptonicChannel(vector<Lepton> leptons);
+vector<Lepton> AssignWZLeptons(vector<Lepton> leptonList);
 
 Int_t   getCS(vector<Lepton> lepton);
 void co(TString out, TString co);

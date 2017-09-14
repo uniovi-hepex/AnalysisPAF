@@ -43,10 +43,10 @@ class LeptonSelector : public PAFChainItemSelector{
     TLorentzVector tP; 
     Float_t pt;
     Float_t eta;
-    Int_t 	charge; 
-    Int_t 	type;
-    Int_t 	tightVar;
-    Int_t 	mediumMuonId;
+    Int_t   charge; 
+    Int_t   type;
+    Int_t   tightVar;
+    Int_t   mediumMuonId;
     Float_t etaSC;
     Float_t RelIso03;
     Float_t RelIso04;
@@ -65,12 +65,14 @@ class LeptonSelector : public PAFChainItemSelector{
     Float_t sip;
     Float_t SF;
     Float_t MVATTH;
-    Int_t	TightCharge;
+    Float_t MVASUSY;
+    Int_t  TightCharge;
     Float_t MVAID;
     Float_t jetBTagCSV;
     Float_t SegComp;
     Int_t isGlobalMuon;
     Int_t isTrackerMuon;
+    Int_t lepMVASUSYId;
     
     // genLeptons
     Int_t ngenLep;
@@ -100,6 +102,7 @@ class LeptonSelector : public PAFChainItemSelector{
     Bool_t isGoodLepton(Lepton lep);
     Bool_t isLooseLepton(Lepton lep);
     Bool_t isVetoLepton(Lepton lep);
+    Int_t  getSUSYMVAId(Lepton lep, Int_t ty);
 
   ClassDef(LeptonSelector, 0);
 };
