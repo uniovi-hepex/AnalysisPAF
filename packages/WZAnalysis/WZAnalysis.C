@@ -93,6 +93,7 @@ void WZAnalysis::InsideLoop(){
   PUSF         = GetParam<Float_t>("PUSF");
   PUSF_Up      = GetParam<Float_t>("PUSF_Up");
   PUSF_Down    = GetParam<Float_t>("PUSF_Down");
+  localPath      = GetParam<TString>("WorkingDir");
 
   // Event variables
   gChannel       = GetParam<Int_t>("gChannel");
@@ -116,7 +117,7 @@ void WZAnalysis::InsideLoop(){
   
     if(TNTightLeps == 3 && passTrigger && passMETfilters){ // trilepton event with OSSF + l, passes trigger and MET filters
       // Deal with weights:
-      Float_t lepSF   = selLeptons.at(0).GetSF(0)*selLeptons.at(1).GetSF(0)*selLeptons.at(2).GetSF(0);
+      Float_t lepSF   = tightLeptons.at(0).GetSF(0)*tightLeptons.at(1).GetSF(0)*tightLeptons.at(2).GetSF(0);
       Float_t ElecSF = 1; Float_t MuonSF = 1;
       Float_t ElecSFUp = 1; Float_t ElecSFDo = 1; Float_t MuonSFUp = 1; Float_t MuonSFDo = 1;
       Float_t stat = 0; 
@@ -125,42 +126,42 @@ void WZAnalysis::InsideLoop(){
       //Additional 1% for ID + 0.5% for Isolation + 0.5% single muon triggers
   
       if(TChannel == iElElEl){
-        ElecSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0)*selLeptons.at(2).GetSF( 0);
-        ElecSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1)*selLeptons.at(2).GetSF( 1);
-        ElecSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1)*selLeptons.at(2).GetSF(-1);
+        ElecSF   = tightLeptons.at(0).GetSF( 0)*tightLeptons.at(1).GetSF( 0)*tightLeptons.at(2).GetSF( 0);
+        ElecSFUp = tightLeptons.at(0).GetSF( 1)*tightLeptons.at(1).GetSF( 1)*tightLeptons.at(2).GetSF( 1);
+        ElecSFDo = tightLeptons.at(0).GetSF(-1)*tightLeptons.at(1).GetSF(-1)*tightLeptons.at(2).GetSF(-1);
         MuonSFUp = 1; MuonSFDo = 1; MuonSF = 1;
       }
       else if(TChannel == iMuMuMu){
-        MuonSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0)*selLeptons.at(2).GetSF( 0);
-        MuonSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1)*selLeptons.at(2).GetSF( 1);
-        MuonSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1)*selLeptons.at(2).GetSF(-1);
+        MuonSF   = tightLeptons.at(0).GetSF( 0)*tightLeptons.at(1).GetSF( 0)*tightLeptons.at(2).GetSF( 0);
+        MuonSFUp = tightLeptons.at(0).GetSF( 1)*tightLeptons.at(1).GetSF( 1)*tightLeptons.at(2).GetSF( 1);
+        MuonSFDo = tightLeptons.at(0).GetSF(-1)*tightLeptons.at(1).GetSF(-1)*tightLeptons.at(2).GetSF(-1);
         ElecSFUp = 1; ElecSFDo = 1; ElecSF = 1;
       }
       else{
         MuonSFUp = 1; MuonSFDo = 1; MuonSF = 1;ElecSFUp = 1; ElecSFDo = 1; ElecSF = 1;
         for (int i = 0; i <3; i ++){
-          if (selLeptons.at(i).isMuon){
-            MuonSF   *= selLeptons.at(i).GetSF( 0);
-            MuonSFUp *= selLeptons.at(i).GetSF( 1);
-            MuonSFDo *= selLeptons.at(i).GetSF(-1);        
+          if (tightLeptons.at(i).isMuon){
+            MuonSF   *= tightLeptons.at(i).GetSF( 0);
+            MuonSFUp *= tightLeptons.at(i).GetSF( 1);
+            MuonSFDo *= tightLeptons.at(i).GetSF(-1);        
           }
           else{
-            ElecSF   *= selLeptons.at(i).GetSF( 0);
-            ElecSFUp *= selLeptons.at(i).GetSF( 1);
-            ElecSFDo *= selLeptons.at(i).GetSF(-1);        
+            ElecSF   *= tightLeptons.at(i).GetSF( 0);
+            ElecSFUp *= tightLeptons.at(i).GetSF( 1);
+            ElecSFDo *= tightLeptons.at(i).GetSF(-1);        
           }
         }
       }
   
       TWeight             = NormWeight*ElecSF*MuonSF*TrigSF*PUSF;
-      TWeight_ElecEffUp   = NormWeight*ElecSFUp*MuonSF*TrigSF*PUSF;
+/*      TWeight_ElecEffUp   = NormWeight*ElecSFUp*MuonSF*TrigSF*PUSF;
       TWeight_ElecEffDown = NormWeight*ElecSFDo*MuonSF*TrigSF*PUSF;
       TWeight_MuonEffUp   = NormWeight*ElecSF*MuonSFUp*TrigSF*PUSF;
       TWeight_MuonEffDown = NormWeight*ElecSF*MuonSFDo*TrigSF*PUSF;
       TWeight_TrigUp     = NormWeight*lepSF*(TrigSF+TrigSFerr)*PUSF;
       TWeight_TrigDown   = NormWeight*lepSF*(TrigSF-TrigSFerr)*PUSF;
       TWeight_PUDown     = NormWeight*lepSF*TrigSF*PUSF_Up;
-      TWeight_PUUp       = NormWeight*lepSF*TrigSF*PUSF_Down;
+      TWeight_PUUp       = NormWeight*lepSF*TrigSF*PUSF_Down;*/
       TIsSR   = false;
       TIsCRDY = false;
       TIsCRTT = false;  
@@ -321,7 +322,7 @@ void WZAnalysis::SetJetVariables(TTree* iniTree){
   iniTree->Branch("TJet_Eta",           TJet_Eta,           "TJet_Eta[TNJets]/F");
   iniTree->Branch("TJet_Phi",           TJet_Phi,           "TJet_Phi[TNJets]/F");
   iniTree->Branch("TJet_E",            TJet_E,            "TJet_E[TNJets]/F");
-
+/*
   iniTree->Branch("TNJetsJESUp",           &TNJetsJESUp,         "TNJetsJESUp/I");
   iniTree->Branch("TNJetsJESDown",           &TNJetsJESDown,         "TNJetsJESDown/I");
   iniTree->Branch("TNJetsJERUp",           &TNJetsJERUp,         "TNJetsJERUp/I");
@@ -330,17 +331,17 @@ void WZAnalysis::SetJetVariables(TTree* iniTree){
   iniTree->Branch("TNBtagsBtagDown",   &TNBtagsBtagDown, "TNBtagsBtagDown/I");
   iniTree->Branch("TNBtagsMisTagUp",     &TNBtagsMisTagUp,   "TNBtagsMisTagUp/I");
   iniTree->Branch("TNBtagsMisTagDown",   &TNBtagsMisTagDown, "TNBtagsMisTagDown/I");
+*/
+//  iniTree->Branch("TNBtagsJESUp",   &TNBtagsJESUp, "TNBtagsJESUp/I");
+//  iniTree->Branch("TNBtagsJESDown",  &TNBtagsJESDown, "TNBtagsJESDown/I");
 
-  iniTree->Branch("TNBtagsJESUp",   &TNBtagsJESUp, "TNBtagsJESUp/I");
-  iniTree->Branch("TNBtagsJESDown",  &TNBtagsJESDown, "TNBtagsJESDown/I");
-
-  iniTree->Branch("TJetJESUp_Pt",      TJetJESUp_Pt,      "TJetJESUp_Pt[TNJetsJESUp]/F");
-  iniTree->Branch("TJetJESDown_Pt",    TJetJESDown_Pt,    "TJetJESDown_Pt[TNJetsJESDown]/F");
+//  iniTree->Branch("TJetJESUp_Pt",      TJetJESUp_Pt,      "TJetJESUp_Pt[TNJetsJESUp]/F");
+//  iniTree->Branch("TJetJESDown_Pt",    TJetJESDown_Pt,    "TJetJESDown_Pt[TNJetsJESDown]/F");
   iniTree->Branch("TJetJER_Pt",        TJetJER_Pt,        "TJetJER_Pt[TNJetsJERUp]/F");
 
   iniTree->Branch("THT",          &THT,          "THT/F");
-  iniTree->Branch("THTJESUp",     &THTJESUp,     "THTJESUp/F");
-  iniTree->Branch("THTJESDown",   &THTJESDown,   "THTJESDown/F");
+//  iniTree->Branch("THTJESUp",     &THTJESUp,     "THTJESUp/F");
+//  iniTree->Branch("THTJESDown",   &THTJESDown,   "THTJESDown/F");
 }
 
 void WZAnalysis::SetEventVariables(TTree* iniTree){
@@ -350,7 +351,7 @@ void WZAnalysis::SetEventVariables(TTree* iniTree){
   iniTree->Branch("TIsCRDY",      &TIsCRDY,      "TIsCRDY/B");
   iniTree->Branch("TIsNewCRTT",      &TIsNewCRTT,      "TIsNewCRTT/B");
   iniTree->Branch("TIsNewCRDY",      &TIsNewCRDY,      "TIsNewCRDY/B");
-  iniTree->Branch("TWeight_LepEffUp",      &TWeight_LepEffUp,      "TWeight_LepEffUp/F");
+/*  iniTree->Branch("TWeight_LepEffUp",      &TWeight_LepEffUp,      "TWeight_LepEffUp/F");
   iniTree->Branch("TWeight_LepEffDown",    &TWeight_LepEffDown,    "TWeight_LepEffDown/F");
   iniTree->Branch("TWeight_ElecEffUp",      &TWeight_ElecEffUp,      "TWeight_ElecEffUp/F");
   iniTree->Branch("TWeight_ElecEffDown",    &TWeight_ElecEffDown,    "TWeight_ElecEffDown/F");
@@ -359,14 +360,14 @@ void WZAnalysis::SetEventVariables(TTree* iniTree){
   iniTree->Branch("TWeight_TrigUp",        &TWeight_TrigUp,        "TWeight_TrigUp/F");
   iniTree->Branch("TWeight_TrigDown",      &TWeight_TrigDown,      "TWeight_TrigDown/F");
   iniTree->Branch("TWeight_PUUp",        &TWeight_PUUp,        "TWeight_PUUp/F");
-  iniTree->Branch("TWeight_PUDown",        &TWeight_PUDown,        "TWeight_PUDown/F");
+  iniTree->Branch("TWeight_PUDown",        &TWeight_PUDown,        "TWeight_PUDown/F");*/
 
   iniTree->Branch("TLHEWeight",        TLHEWeight,         "TLHEWeight[254]/F");
   iniTree->Branch("TMET",         &TMET,         "TMET/F");
   iniTree->Branch("TGenMET",         &TGenMET,         "TGenMET/F");
   iniTree->Branch("TMET_Phi",     &TMET_Phi,     "TMET_Phi/F");
-  iniTree->Branch("TMETJESUp",    &TMETJESUp,    "TMETJESUp/F");
-  iniTree->Branch("TMETJESDown",  &TMETJESDown,  "TMETJESDown/F");
+//  iniTree->Branch("TMETJESUp",    &TMETJESUp,    "TMETJESUp/F");
+//  iniTree->Branch("TMETJESDown",  &TMETJESDown,  "TMETJESDown/F");
 }
 
 //#####################################################################
@@ -376,24 +377,34 @@ void WZAnalysis::SetEventVariables(TTree* iniTree){
 void WZAnalysis::GetLeptonsByWP(Int_t wPValue){
   Int_t nFakeableLeptons = foLeptons.size();
   Int_t nTightLeptons = selLeptons.size();
-
+  LeptonSF* leptonSF = new LeptonSF(localPath + "/InputFiles/");
   if (wPValue == top){
+    leptonSF->loadHisto(iMuonId,   iTight);          //Only top
+    leptonSF->loadHisto(iMuonIsoTightId,   iTight);//Only top
+    leptonSF->loadHisto(iElecId,   iTight);        //Only top
     for (int k = 0; k < nTightLeptons; k++){ // No FO for top ID
       if (selLeptons.at(k).idMVA >= 10){
+        selLeptons.at(k).SetSF(selLeptons.at(k).GetSF(0)*leptonSF->GetLeptonSF(selLeptons.at(k).Pt(), selLeptons.at(k).Eta(), selLeptons.at(k).type));
         tightLeptons.push_back(selLeptons.at(k));
         fakeableLeptons.push_back(selLeptons.at(k));
       }
     }
   }
   else {
+    leptonSF->loadHisto(iMuonEWKinoID);//Only MVA
+    leptonSF->loadHisto(iMuonEWKinomvaM);//Only MVA
+    leptonSF->loadHisto(iElecEWKinoID);//Only MVA
+    leptonSF->loadHisto(iElecEWKinomvaM);//Only MVA
     for (int k = 0; k < nFakeableLeptons; k++){
       if (foLeptons.at(k).idMVA%10 > wPValue){
+        foLeptons.at(k).SetSF(foLeptons.at(k).GetSF(0)*leptonSF->GetLeptonSF(foLeptons.at(k).Pt(), foLeptons.at(k).Eta(), foLeptons.at(k).type));
         fakeableLeptons.push_back(foLeptons.at(k));
       }
     }
   
     for (int k = 0; k < nTightLeptons; k++){
       if (selLeptons.at(k).idMVA%10 > wPValue){
+        selLeptons.at(k).SetSF(selLeptons.at(k).GetSF(0)*leptonSF->GetLeptonSF(selLeptons.at(k).Pt(), selLeptons.at(k).Eta(), selLeptons.at(k).type));
         tightLeptons.push_back(selLeptons.at(k));
       }
     }
@@ -441,9 +452,9 @@ void WZAnalysis::GetLeptonVariables(std::vector<Lepton> tightLeptons, std::vecto
 
 void WZAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut){
   TNJets = selJets.size(); THT = 0;
-  TNBtags = 0; TNBtagsBtagUp = 0; TNBtagsBtagDown = 0;
+  TNBtags = 0; /*TNBtagsBtagUp = 0; TNBtagsBtagDown = 0;
   TNBtagsMisTagUp = 0;  TNBtagsMisTagDown = 0;
-  THTJESUp = 0; THTJESDown = 0;
+  THTJESUp = 0; THTJESDown = 0;*/
   for(Int_t i = 0; i < TNJets; i++){
     TJet_Pt[i]     = selJets.at(i).Pt();
     TJet_Eta[i]    = selJets.at(i).Eta();
@@ -454,7 +465,7 @@ void WZAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> clea
     if(selJets.at(i).isBtag)            TNBtags++;
   }
   SetParam("THT",THT);
-
+/*
   if(gIsData) return;  // For systematics...
   for(Int_t i = 0; i < TNJets; i++){
     if(selJets.at(i).isBtag_BtagUp    ) TNBtagsBtagUp++;
@@ -485,7 +496,7 @@ void WZAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> clea
       TJetJER_Pt[i] = cleanedJets15.at(i).pTJERUp;
     }
   }
-
+*/
 }
 
 void WZAnalysis::GetGenJetVariables(std::vector<Jet> genJets, std::vector<Jet> mcJets){
@@ -501,8 +512,8 @@ void WZAnalysis::GetMET(){
     TMET        = Get<Float_t>("met_pt");
     TMET_Phi    = Get<Float_t>("met_phi");  // MET phi
     if(gIsData) return;
-    TMETJESUp   = Get<Float_t>("met_jecUp_pt"  );
-    TMETJESDown = Get<Float_t>("met_jecDown_pt");
+/*    TMETJESUp   = Get<Float_t>("met_jecUp_pt"  );
+    TMETJESDown = Get<Float_t>("met_jecDown_pt");*/
     TGenMET     = Get<Float_t>("met_genPt");
   if(gIsLHE)  for(Int_t i = 0; i < Get<Int_t>("nLHEweight"); i++)   TLHEWeight[i] = Get<Float_t>("LHEweight_wgt", i);
 }

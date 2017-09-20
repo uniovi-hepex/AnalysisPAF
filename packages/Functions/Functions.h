@@ -18,9 +18,9 @@ enum iSFs{
   iElecReco, iElecId, iElecIdSUSY, iElecIso, iElecIsoSUSY, iElecIP2D, iElecSIP3D, iElecIdFastSim, iElecIsoFastSim,
   iTrigDoubleMuon, iTrigDoubleElec, iTrigElMu,
   iMuonlepMVA2lSSttH, iMuonlepMVA3l4lttH, 
-  iMuonLooseTracksttH, iMuonLooseMiniIsottH, iMuonTightIP2DttH,
+  iMuonLooseTracksttH, iMuonLooseMiniIsottH, iMuonTightIP2DttH, iMuonEWKinoID, iMuonEWKinomvaM, iMuonEWKinomvaVT,
   iEleclepMVA2lSSttH, iEleclepMVA3l4lttH, 
-  iElecTightIP2DM17ttH, iElecMini4M17ttH, iElecConvVetoM17ttH,
+  iElecTightIP2DM17ttH, iElecMini4M17ttH, iElecConvVetoM17ttH, iElecEWKinoID, iElecEWKinomvaM, iElecEWKinomvaVT,
   nfiles
 };
 
@@ -29,9 +29,9 @@ const TString SFTString[nfiles] = {
   "iElecReco", "iElecId", "iElecIdSUSY", "iElecIso", "iElecIsoSUSY", "iElecIP2D", "iElecSIP3D", "iElecIdFastSim", "iElecIsoFastSim",
   "iTrigDoubleMuon", "iTrigDoubleElec", "iTrigElMu",
   "iMuonlepMVA2lSSttH", "iMuonlepMVA3l4lttH", 
-  "iMuonLooseTracksttH", "iMuonLooseMiniIsottH", "iMuonTightIP2DttH",
+  "iMuonLooseTracksttH", "iMuonLooseMiniIsottH", "iMuonTightIP2DttH","iMuonEWKinoID","iMuonEWKinomvaM","iMuonEWKinomvaVT",
   "iEleclepMVA2lSSttH", "iEleclepMVA3l4lttH", 
-  "iElecTightIP2DM17ttH", "iElecMini4M17ttH", "iElecConvVetoM17ttH"
+  "iElecTightIP2DM17ttH", "iElecMini4M17ttH", "iElecConvVetoM17ttH","iElecEWKinoID","iElecEWKinomvaM","iElecEWKinomvaVT",
 };
 
 

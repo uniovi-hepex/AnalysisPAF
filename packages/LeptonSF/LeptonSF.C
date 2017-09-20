@@ -21,7 +21,9 @@ LeptonSF::LeptonSF(TString path):
   fMuonLooseTracksttH(0),   // Muon ttH Loose Tracks
   fMuonLooseMiniIsottH(0),  // Muon ttH Loose MiniIso
   fMuonTightIP2DttH(0),     // Muon ttH Tight IP2D
-
+  fMuonEWKinoID(0),
+  fMuonEWKinomvaM(0),
+  fMuonEWKinomvaVT(0),
 
   fElecTrackerSF(0),  // Electron Reco
   fElecIdSF(0),       // Electron Id (+Iso)
@@ -35,6 +37,9 @@ LeptonSF::LeptonSF(TString path):
   fElecTightIP2DM17ttH(0),  // Elec ttH Tight IP2D
   fElecMini4M17ttH(0),      // Elec ttH Mini4 
   fElecConvVetoM17ttH(0),   // Elec ttH ConvVeto 
+  fElecEWKinoID(0),
+  fElecEWKinomvaM(0),
+  fElecEWKinomvaVT(0),
 
   fDoubleMuSF(0),     // Trigger Double Muon
   fDoubleElSF(0),     // Trigger Double Elec
@@ -153,6 +158,19 @@ void LeptonSF::loadHisto(Int_t iHisto, Int_t wp){
     fMuonTightIP2DttH     = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fMuonTightIP2DttH");
   }
 
+  else if(iHisto == iMuonEWKinoID){
+    filename = "muonSF_id_EWKino_fullsim_M17_36p5fb"; histoname = "SF";
+    fMuonEWKinoID     = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fMuonEWKinoID");
+  }
+  else if(iHisto == iMuonEWKinomvaM){
+    filename = "muonSF_mvaM_EWKino_fullsim_M17_36p5fb"; histoname = "SF";
+    fMuonEWKinomvaM     = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fMuonEWKinomvaM");
+  }
+  else if(iHisto == iMuonEWKinomvaVT){
+    filename = "muonSF_mvaVT_EWKino_fullsim_M17_36p5fb"; histoname = "SF";
+    fMuonEWKinomvaVT    = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fMuonEWKinomvaVT");
+  }
+
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>> Electrons
   else if(iHisto == iElecReco){
@@ -215,6 +233,20 @@ void LeptonSF::loadHisto(Int_t iHisto, Int_t wp){
   }
 
 
+  else if(iHisto == iElecEWKinoID){
+    filename = "electronSF_id_EWKino_fullsim_M17_36p5fb.root"; histoname = "GsfElectronToMVAVLooseTightIP2D";
+    fElecEWKinoID     = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fElecEWKinoID");
+  }
+  else if(iHisto == iElecEWKinomvaM){
+    filename = "electronSF_id_EWKino_fullsim_M17_36p5fb.root"; histoname = "GsfElectronToLeptonMvaMIDEmuTightIP2DSIP3D8mini04";
+    fElecEWKinomvaM     = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fElecEWKinomvaM");
+  }
+  else if(iHisto == iElecEWKinomvaVT){
+    filename = "electronSF_id_EWKino_fullsim_M17_36p5fb.root"; histoname = "GsfElectronToLeptonMvaVTIDEmuTightIP2DSIP3D8mini04";
+    fElecEWKinomvaVT    = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fElecEWKinomvaVT");
+  }
+
+
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>> Triggers
   else if(iHisto == iTrigDoubleMuon){
     //filename = "TriggerSF_mumu2016_pt"; histoname = "lepton_pt_2D_sf";
@@ -264,6 +296,9 @@ Float_t LeptonSF::GetLeptonSF(Float_t pt, Float_t ieta, Int_t type){
       else if(id == iMuonLooseTracksttH)  pr = fMuonLooseTracksttH  ->GetBinContent(fMuonLooseTracksttH ->FindBin(pt,eta));
       else if(id == iMuonLooseMiniIsottH) pr = fMuonLooseMiniIsottH ->GetBinContent(fMuonLooseMiniIsottH->FindBin(pt,eta));
       else if(id == iMuonTightIP2DttH)    pr = fMuonTightIP2DttH    ->GetBinContent(fMuonTightIP2DttH   ->FindBin(pt,eta));
+      else if(id == iMuonEWKinoID)    pr = fMuonEWKinoID    ->GetBinContent(fMuonEWKinoID   ->FindBin(pt,eta));
+      else if(id == iMuonEWKinomvaM)    pr = fMuonEWKinomvaM    ->GetBinContent(fMuonEWKinomvaM   ->FindBin(pt,eta));
+      else if(id == iMuonEWKinomvaVT)    pr = fMuonEWKinomvaVT   ->GetBinContent(fMuonEWKinomvaVT   ->FindBin(pt,eta));
     }
     else if(type == 1){ 
       if(pt > 200) pt = 199;
@@ -281,6 +316,9 @@ Float_t LeptonSF::GetLeptonSF(Float_t pt, Float_t ieta, Int_t type){
       else if(id == iElecTightIP2DM17ttH) pr = fElecTightIP2DM17ttH  ->GetBinContent(fElecTightIP2DM17ttH  ->FindBin(pt,eta));
       else if(id == iElecMini4M17ttH)     pr = fElecMini4M17ttH      ->GetBinContent(fElecMini4M17ttH      ->FindBin(pt,eta));
       else if(id == iElecConvVetoM17ttH)  pr = fElecConvVetoM17ttH   ->GetBinContent(fElecConvVetoM17ttH   ->FindBin(pt,eta));
+      else if(id == iElecEWKinoID)    pr = fElecEWKinoID    ->GetBinContent(fElecEWKinoID   ->FindBin(pt,eta));
+      else if(id == iElecEWKinomvaM)    pr = fElecEWKinomvaM    ->GetBinContent(fElecEWKinomvaM   ->FindBin(pt,eta));
+      else if(id == iElecEWKinomvaVT)    pr = fElecEWKinomvaVT   ->GetBinContent(fElecEWKinomvaVT   ->FindBin(pt,eta));
     }
     SF *= pr;
     //cout << "   " << SFTString[id] << ", SF = " << pr << ", total SF = " << SF << endl;

@@ -2,6 +2,7 @@
 
 #include "PAFChainItemSelector.h"
 #include "Functions.h"
+#include "LeptonSF.h"
 #include <iostream>
 #include <vector>
 
@@ -76,6 +77,7 @@ class WZAnalysis : public PAFChainItemSelector{
     Bool_t  passTrigger;
     Float_t NormWeight;
 
+    TString localPath;
     void InitHistos();
     void FillDYHistos(Int_t ch);
     void FillHistos(Int_t ch, Int_t cut);

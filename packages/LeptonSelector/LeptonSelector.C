@@ -54,7 +54,7 @@ void LeptonSelector::Initialise(){
     LepSF->loadHisto(iElecMini4M17ttH);
     LepSF->loadHisto(iElecConvVetoM17ttH);
   }
-  else if(gSelection == i4tSelec || gSelection == iWZSelec){
+  else if(gSelection == i4tSelec){
     // Los tenemos en funciones, no en histogramas, entonces nos la pela de cargar histogramas
   }
 
@@ -67,6 +67,24 @@ void LeptonSelector::Initialise(){
     LepSF->loadHisto(iMuonId,   iTight);
     LepSF->loadHisto(iMuonIsoTightId,   iTight);
     LepSF->loadHisto(iElecId,   iTight);
+  }
+
+  else if(gSelection == iWZSelec){
+    LepSF->loadHisto(iTrigDoubleMuon);//Both
+    LepSF->loadHisto(iTrigDoubleElec);//Both
+    LepSF->loadHisto(iTrigElMu);//Both
+    LepSF->loadHisto(iMuonReco);//Both
+    LepSF->loadHisto(iElecReco);//Both
+/*    LepSF->loadHisto(iMuonId,   iTight);//Only top
+    LepSF->loadHisto(iMuonIsoTightId,   iTight);//Only top
+    LepSF->loadHisto(iElecId,   iTight);//Only top
+
+    LepSF->loadHisto(iMuonEWKinoID);//Only MVA
+    LepSF->loadHisto(iMuonEWKinomvaM);//Only MVA
+    LepSF->loadHisto(iMuonEWKinomvaVT);//Only MVA
+    LepSF->loadHisto(iElecEWKinoID);//Only MVA
+    LepSF->loadHisto(iElecEWKinomvaM);//Only MVA
+    LepSF->loadHisto(iElecEWKinomvaVT);//Only MVA*/
   }
   else std::cout << ">>>>>>>>>>>> WRONG SELECTION!!!!!!!!" << std::endl;
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
