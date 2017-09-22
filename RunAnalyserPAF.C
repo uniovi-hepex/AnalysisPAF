@@ -112,6 +112,8 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   Bool_t  G_DoSystematics = false;
   G_IsFastSim     = false;
 
+  if(options.Contains("FastSim")) G_IsFastSim = true;
+
   // Selection
   ESelector sel = iStopSelec;
   if     (Selection == "StopDilep" || Selection == "stop"    ) sel = iStopSelec;
@@ -190,7 +192,6 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
       GetCount(Files, G_IsData);
       xsec = uxsec;
       G_Event_Weight = xsec/Count;
-        if(options.Contains("FastSim")) G_IsFastSim = true;
     }
     else if(sampleName.BeginsWith("Scan:")){ // T2tt sample
       theSample = sampleName.ReplaceAll("Scan:", "");
