@@ -174,11 +174,12 @@ public:
     RatioErrorStyle = 3444;
     StackErrorColor = kGray+2;
     StackErrorStyle = 3444;
+    weight = "TWeight";
   }
 
 
 	
-	void AddSample(TString p = "TTbar_Powheg", TString pr = "ttbar", Int_t type = -1, Int_t color = 0, TString tsys = "0", TString options = "");
+	void AddSample(TString p = "TTbar_Powheg", TString pr = "", Int_t type = itBkg, Int_t color = 0, TString tsys = "0", TString options = "");
 
 	// ######### Methods ########
   Histo* GetH(TString sample = "TTbar_Powheg", TString s = "0", Int_t type = itBkg);
@@ -279,6 +280,7 @@ public:
   void RemoveSystematic(TString sys);
   void UseEnvelope(TString pr, TString tags, TString newname = "");
 
+  void SetWeight(TString t){ weight = t;}
   void SetRatioMin(Float_t r){ RatioMin = r;}
   void SetRatioMax(Float_t r){ RatioMax = r;}
   void SetScaleMax(Float_t s){ ScaleMax = s;}
@@ -317,6 +319,7 @@ protected:
   TString YieldsTableName = "yields";
   TString tableFormats = "%1.2f";
   TString gof = "";
+  TString weight;
   
   TFile *f;
 

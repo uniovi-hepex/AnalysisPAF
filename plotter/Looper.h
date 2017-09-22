@@ -20,9 +20,10 @@ enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau
 const Int_t nLHEweights = 112;
 std::vector<TString> TStringToVector(TString t, char separator = ',');
 void PrintVector(std::vector<TString> v);
+void PrintVector(std::vector<Float_t> v);
 
 std::vector<TString> GetAllVars(TString varstring, Bool_t verbose = false); 
-TString CraftFormula(TString cut, TString chan, TString sys, TString weight, TTree* tree);
+TString CraftFormula(TString cut, TString chan, TString sys, TString weight, TTree* tree, TString options = "");
 TString CraftVar(TString varstring, TString sys, TTree* tree);
 TTreeFormula *GetFormula(TString name, TString var, TTree* tree);
 TH1D* loadSumOfLHEweights(TString pathToHeppyTrees = "/pool/ciencias/HeppyTreesSummer16/v2/", TString sampleName = "TTbar_PowhegLHE");
@@ -266,6 +267,22 @@ void PrintVector(std::vector<TString> v){
   cout << v.at(dim-1) << ")" << endl;
 }
 
+void PrintVector(std::vector<Float_t> v){
+  Int_t dim = v.size();
+  cout << "[size = " << dim << "]: (";
+  for(Int_t i = 0; i < dim-1; i++) cout << v.at(i) << ", ";
+  cout << v.at(dim-1) << ")" << endl;
+}
+
+void PrintArray(Float_t *a, Int_t dim){
+  TString out;
+  out = Form("[size = %i] [", dim);
+  for(Int_t i = 0; i < dim-1; i++) out += Form("%g, ",a[i]); 
+  out += Form("%g]\n", a[dim-1]);
+  cout << out;
+}
+
+
 Bool_t IsWord(TString s, Int_t pos = 0, TString word = ""){
   if(word == "") word = s;
   if(s.Index(word, word.Sizeof()-1, pos, TString::kExact) < 0){
@@ -385,7 +402,7 @@ TString CraftVar(TString varstring, TString sys, TTree *tree){
   return var;
 }
 
-TString CraftFormula(TString cuts, TString chan, TString sys, TString weight, TTree* tree){
+TString CraftFormula(TString cuts, TString chan, TString sys, TString weight, TTree* tree, TString options){
   TString schan = ("1");
   if     (chan == "ElMu")  schan = (Form("(TChannel == %i)", iElMu));
   else if(chan == "Muon")  schan = (Form("(TChannel == %i)", iMuon));
@@ -418,9 +435,9 @@ TString CraftFormula(TString cuts, TString chan, TString sys, TString weight, TT
     //if(chan.Contains("Tau")) schan = Form("(TChannel == %i)", i1Tau_emufake);
     if(options.Contains("sub") || options.Contains("Sub"))  formula = TString("(") + cuts + TString(")*(") + schan + TString(")*") + weight;
     else formula = TString("(") + cuts + TString(")*(") + schan + TString(")");
-  }
+  }*/
   if(options.Contains("isr") || options.Contains("ISR"))   formula = "TISRweight*(" + formula + ")";
-  if(options.Contains("noWeight"))                         formula = TString("(") + cuts + TString(")*(") + schan + TString(")"); */
+  if(options.Contains("noWeight"))                         formula = TString("(") + cuts + TString(")*(") + schan + TString(")"); 
   return formula;
 }
 
@@ -433,9 +450,11 @@ TTreeFormula* GetFormula(TString name, TString var, TTree* tree){
 TTree* loadTree(TString path, TString sampleName, TString treeName){
   TTree* t;
   TString prefix = "Tree_"; TString sufix = ".root";
-	TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject(path + prefix + sampleName + sufix);
+  TString totalname = path + prefix + sampleName + sufix;
+  cout << "[loadTree]: Getting tree \"" << treeName << "\" in file " << totalname << endl;
+	TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject(totalname);
 	if (!f || !f->IsOpen()) {
-		f = new TFile(path + prefix + sampleName + sufix);
+		f = new TFile(totalname);
 	}
 	f->GetObject(treeName,t);
   t->SetDirectory(0);
@@ -449,6 +468,7 @@ TH1D* loadHistogram1D(TString path, TString sampleName, TString histoName){
   sampleName.ReplaceAll(".root", "");
   if(sampleName.BeginsWith("Tree_")) sampleName = sampleName(5, sampleName.Sizeof());
   TString thefile = path + "Tree_" + sampleName + ".root";
+  cout << "[loadHistogram1D]: Getting histogram \"" << histoName << "\" in file " << thefile << endl;
   TFile* inputfile = TFile::Open(thefile);
   inputfile->GetObject(histoName, h);
   h->SetDirectory(0);

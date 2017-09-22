@@ -7,7 +7,7 @@ void Looper::SetFormulas(TString systematic){
   stringcut = ""; stringvar = "";
   TString cu = ""; TString ch = ""; TString v = ""; 
   //cout << "[SetFormulas] Crafting formula..." << endl;
-  stringcut = CraftFormula(cut, chan, systematic, weight, tree);
+  stringcut = CraftFormula(cut, chan, systematic, weight, tree, options);
   if(verbose) cout << "[Looper::SetFormulas] Formula: " << stringcut << endl;
   //cout << "[SetFormulas] Crafting var..." << endl;
   stringvar = CraftVar(var, systematic, tree);

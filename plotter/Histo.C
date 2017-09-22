@@ -65,7 +65,6 @@ void Histo::SetStatUnc(){
 }
 
 void Histo::SetTag(TString t, TString p, TString x, TString c){
-
   if(t != "") tag = t;
   if(p != "") process = p; 
   if(x != "") xlabel = x;
@@ -149,7 +148,11 @@ void Histo::SetBinsErrorFromSyst(){
 
 Histo* Histo::CloneHisto(const char* newname) const{
   TH1F* h = (TH1F*) Clone(newname);
-  return new Histo(*h);
+  Histo* g = new Histo(*h);
+  g->SetTag(tag, process, xlabel, cuts);
+  g->SetType(type); g->SetColor(color);
+  g->SetStyle();
+  return g;
 }
 
 

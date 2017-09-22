@@ -18,6 +18,7 @@ Histo* Plot::GetH(TString sample, TString sys, Int_t type){
   if(xN != x0) ah = new Looper(pathToMiniTree, treeName, var, cut, chan, nb, x0, xN);
   else         ah = new Looper(pathToMiniTree, treeName, var, cut, chan, nb, vbins);
 
+  ah->SetWeight(weight);
   ah->SetOptions(LoopOptions);
   Histo* h = ah->GetHisto(sample, sys);
   h->SetDirectory(0);
@@ -28,6 +29,7 @@ Histo* Plot::GetH(TString sample, TString sys, Int_t type){
 
 void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, TString sys, TString options){
   p.ReplaceAll(" ", "");
+  if(pr == "") pr = p;
   if(p.Contains(",")){
     TString First_p = p(0, p.First(','));
     TString theRest = p(p.First(',')+1, p.Sizeof());
@@ -322,7 +324,7 @@ Histo* Plot::GetHisto(TString pr, TString systag){
 Histo* Plot::GetSymmetricHisto(TString pr, TString systag){
   Histo* nom = GetHisto(pr, "0");
   Histo* var = GetHisto(pr, systag);
-  Histo* sym = (Histo*) var->CloneHisto();
+  Histo* sym = (Histo*) var->CloneHisto("newHisto");
   Int_t nbins = nom->GetNbinsX();
   Float_t bindiff = 0; Float_t cont;
   for(Int_t i = 0; i <= nbins+1; i++){
@@ -756,16 +758,19 @@ void Plot::DrawStack(TString tag, bool sav){
       Float_t StoBmean = hSignal->GetYield()/hAllBkg->GetYield();
       hline = new TLine(0, StoBmean, 200, StoBmean); hline->SetLineColor(kOrange-2);
       //cout << "StoBmean = " << StoBmean << endl;
+      //cout << "Cloning hration..." << endl;
       hratio = (TH1F*)hSignal->Clone("hratio");
+      //cout << "Dividing hratio..." << endl;
       hratio->Divide(hAllBkg);
+      //cout << "Setting hration min max... " << endl;
       Float_t rmax = hratio->GetMaximum()*1.15;
       Float_t rmin = hratio->GetMinimum()*0.85;
       SetRatioMin(rmin);
       SetRatioMax(rmax);
     }
   }
-  else if(RatioOptions == "S/sqrtB")   {cout << "Option not implemented yet!!!! Sorry!!!!\n";}
-  else if(RatioOptions == "S/sqrtSpB") {cout << "Option not implemented yet!!!! Sorry!!!!\n";}
+  else if(RatioOptions == "S/sqrtB")   {cout << "Option not implemented yet!!!! Sorry!!!! [DO IT YOURSELF!]\n";}
+  else if(RatioOptions == "S/sqrtSpB") {cout << "Option not implemented yet!!!! Sorry!!!! [DO IT YOURSELF!]\n";}
   else{ // ratio Data/MC
     if(!doData) cout << "[Plot::DrawStack] WARNING: cannot print ratio Data/MC without data!!" << endl;
     else{
@@ -781,7 +786,7 @@ void Plot::DrawStack(TString tag, bool sav){
     }
   }
   SetHRatio();
-  hratio->SetLineWidth(0); // remove horizontal error bar
+  //if(!RatioOptions.Contains("S")) hratio->SetLineWidth(0); 
   hratio->Draw("same");
 
   if(RatioOptions == "S/B") hline->Draw();
