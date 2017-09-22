@@ -14,8 +14,9 @@ LeptonSF::LeptonSF(TString path):
   fMuonIsoSFSUSY(0),  // Muon Iso
   fMuonIP2DSF(0),     // Muon IP2d
   fMuonSIP3DSF(0),    // Muon SIP
-  fMuonIsoFastSim(0),
-  fMuonIdFastSim(0),
+  fMuonFastSim(0),
+  fMuonIsoFastSimStop(0),
+  fMuonIdFastSimStop(0),
   fMuonlepMVA2lSSttH(0),    // Muon ttH LepMVA 2lSS
   fMuonlepMVA3l4lttH(0),    // Muon ttH LepMVA 3l, 4l
   fMuonLooseTracksttH(0),   // Muon ttH Loose Tracks
@@ -28,8 +29,9 @@ LeptonSF::LeptonSF(TString path):
   fElecIsoSF(0),      // Electron Iso
   fElecIP2DSF(0),     // Electron IP2D
   fElecSIP3DSF(0),    // Electron SIP3D
-  fElecIsoFastSim(0),
-  fElecIdFastSim(0),
+  fElecFastSim(0),
+  fElecIsoFastSimStop(0),
+  fElecIdFastSimStop(0),
   fEleclepMVA2lSSttH(0),    // Elec ttH LepMVA 2lSS
   fEleclepMVA3l4lttH(0),    // Elec ttH LepMVA 3l, 4l
   fElecTightIP2DM17ttH(0),  // Elec ttH Tight IP2D
@@ -124,13 +126,17 @@ void LeptonSF::loadHisto(Int_t iHisto, Int_t wp){
     filename = "SUS_MuonSIPb4vMediumM17"; histoname = "SF";
     fMuonSIP3DSF = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fMuonSIP3DSF"); 
   }
-  else if(iHisto == iMuonIsoFastSim){
-    filename = "Fast_vs_Full_mu_mediumID_iso012"; histoname = "histo2D";
-    fMuonIsoFastSim = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fMuonIsoFastSim"); 
+  else if(iHisto == iMuonFastSim){
+    filename = "FullSimFastSim_Muon"; histoname = "SF";
+    fMuonFastSim = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fMuonFastSim"); 
   }
-  else if(iHisto == iMuonIdFastSim){
+  else if(iHisto == iMuonIsoFastSimStop){
+    filename = "Fast_vs_Full_mu_mediumID_iso012"; histoname = "histo2D";
+    fMuonIsoFastSimStop = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fMuonIsoFastSimStop"); 
+  }
+  else if(iHisto == iMuonIdFastSimStop){
     filename = "Fast_vs_Full_mu_mediumID"; histoname = "histo2D";
-    fMuonIdFastSim = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fMuonIdFastSim"); 
+    fMuonIdFastSimStop = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fMuonIdFastSimSrop"); 
   }
   else if(iHisto == iMuonlepMVA2lSSttH){
     filename = "lepMVAEffSF_m_2lss"; histoname = "sf";
@@ -185,13 +191,17 @@ void LeptonSF::loadHisto(Int_t iHisto, Int_t wp){
     filename = ""; histoname = "";
     fElecSIP3DSF = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fElecSIP3DSF"); 
   }
-  else if(iHisto == iElecIsoFastSim){
-    filename = "Fast_vs_Full_el_tightCB_iso012"; histoname = "histo2D";
-    fElecIsoFastSim = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fElecIsoFastSim"); 
+  else if(iHisto == iElecFastSim){
+    filename = "FullSimFastSim_Elec"; histoname = "SF";
+    fElecFastSim = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fElecFastSim"); 
   }
-  else if(iHisto == iElecIdFastSim){
+  else if(iHisto == iElecIsoFastSimStop){
+    filename = "Fast_vs_Full_el_tightCB_iso012"; histoname = "histo2D";
+    fElecIsoFastSimStop = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fElecIsoFastSimStop"); 
+  }
+  else if(iHisto == iElecIdFastSimStop){
     filename = "Fast_vs_Full_el_tightCB"; histoname = "histo2D";
-    fElecIdFastSim = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fElecIdFastSim"); 
+    fElecIdFastSimStop = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fElecIdFastSimStop"); 
   }
   else if(iHisto == iEleclepMVA2lSSttH){
     filename = "lepMVAEffSF_e_2lss"; histoname = "sf";
@@ -257,8 +267,9 @@ Float_t LeptonSF::GetLeptonSF(Float_t pt, Float_t ieta, Int_t type){
         pr = (fMuonIsoSF_BCDEF->GetBinContent(fMuonIsoSF_BCDEF->FindBin(pt,eta))*lumiBCDEF + fMuonIsoSF_GH->GetBinContent(fMuonIsoSF_GH->FindBin(pt,eta))*lumiGH)/(lumiBCDEF+lumiGH);
       else if(id == iMuonIP2D)    pr = fMuonIP2DSF    ->GetBinContent(fMuonIP2DSF   ->FindBin(pt,eta));
       else if(id == iMuonSIP3D)   pr = fMuonSIP3DSF   ->GetBinContent(fMuonSIP3DSF  ->FindBin(pt,eta));
-      else if(id == iMuonIdFastSim)   pr = fMuonIdFastSim   ->GetBinContent(fMuonIdFastSim  ->FindBin(pt,eta));
-      else if(id == iMuonIsoFastSim)   pr = fMuonIsoFastSim   ->GetBinContent(fMuonIsoFastSim  ->FindBin(pt,eta));
+      else if(id == iMuonFastSim)   pr = fMuonFastSim   ->GetBinContent(fMuonFastSim  ->FindBin(pt,eta));
+      else if(id == iMuonIdFastSimStop)   pr = fMuonIdFastSimStop    ->GetBinContent(fMuonIdFastSimStop  ->FindBin(pt,eta));
+      else if(id == iMuonIsoFastSimStop)  pr = fMuonIsoFastSimStop   ->GetBinContent(fMuonIsoFastSimStop  ->FindBin(pt,eta));
       else if(id == iMuonlepMVA2lSSttH)   pr = fMuonlepMVA2lSSttH   ->GetBinContent(fMuonlepMVA2lSSttH  ->FindBin(pt,eta));
       else if(id == iMuonlepMVA3l4lttH)   pr = fMuonlepMVA3l4lttH   ->GetBinContent(fMuonlepMVA3l4lttH  ->FindBin(pt,eta));
       else if(id == iMuonLooseTracksttH)  pr = fMuonLooseTracksttH  ->GetBinContent(fMuonLooseTracksttH ->FindBin(pt,eta));
@@ -274,8 +285,9 @@ Float_t LeptonSF::GetLeptonSF(Float_t pt, Float_t ieta, Int_t type){
       else if(id == iElecId)      pr = fElecIdSF      ->GetBinContent(fElecIdSF     ->FindBin(eta,pt));
       else if(id == iElecIP2D)    pr = fElecIP2DSF    ->GetBinContent(fElecIP2DSF   ->FindBin(eta,pt));
       else if(id == iElecSIP3D)   pr = fElecSIP3DSF   ->GetBinContent(fElecSIP3DSF  ->FindBin(eta,pt));
-      else if(id == iElecIsoFastSim)   pr = fElecIsoFastSim ->GetBinContent(fElecIsoFastSim  ->FindBin(pt, eta));
-      else if(id == iElecIdFastSim)   pr = fElecIdFastSim ->GetBinContent(fElecIdFastSim  ->FindBin(pt, eta));
+      else if(id == iElecFastSim)   pr = fElecFastSim ->GetBinContent(fElecFastSim  ->FindBin(pt, eta));
+      else if(id == iElecIsoFastSimStop)   pr = fElecIsoFastSimStop ->GetBinContent(fElecIsoFastSimStop  ->FindBin(pt, eta));
+      else if(id == iElecIdFastSimStop)   pr = fElecIdFastSimStop ->GetBinContent(fElecIdFastSimStop  ->FindBin(pt, eta));
       else if(id == iEleclepMVA2lSSttH)   pr = fEleclepMVA2lSSttH    ->GetBinContent(fEleclepMVA2lSSttH    ->FindBin(pt,eta));
       else if(id == iEleclepMVA3l4lttH)   pr = fEleclepMVA3l4lttH    ->GetBinContent(fEleclepMVA3l4lttH    ->FindBin(pt,eta));
       else if(id == iElecTightIP2DM17ttH) pr = fElecTightIP2DM17ttH  ->GetBinContent(fElecTightIP2DM17ttH  ->FindBin(pt,eta));
@@ -308,8 +320,9 @@ Float_t LeptonSF::GetLeptonSFerror(Float_t pt, Float_t ieta, Int_t type){
         err += p2( (fMuonIsoSF_BCDEF->GetBinError(fMuonIsoSF_BCDEF->FindBin(pt,eta))*lumiBCDEF + fMuonIsoSF_GH->GetBinError(fMuonIsoSF_GH->FindBin(pt,eta))*lumiGH)/(lumiBCDEF+lumiGH) );
       else if(id == iMuonIP2D)    err += p2(fMuonIP2DSF    ->GetBinError(fMuonIP2DSF   ->FindBin(pt,eta)));
       else if(id == iMuonSIP3D)   err += p2(fMuonSIP3DSF   ->GetBinError(fMuonSIP3DSF  ->FindBin(pt,eta)));
-      else if(id == iMuonIdFastSim)   err += p2(fMuonIdFastSim   ->GetBinError(fMuonIdFastSim  ->FindBin(pt,eta)));
-      else if(id == iMuonIsoFastSim)   err += p2(fMuonIsoFastSim   ->GetBinError(fMuonIsoFastSim  ->FindBin(pt,eta)));
+      else if(id == iMuonFastSim)   err += p2(fMuonFastSim   ->GetBinError(fMuonFastSim  ->FindBin(pt,eta)));
+      else if(id == iMuonIdFastSimStop)   err += p2(fMuonIdFastSimStop   ->GetBinError(fMuonIdFastSimStop  ->FindBin(pt,eta)));
+      else if(id == iMuonIsoFastSimStop)  err += p2(fMuonIsoFastSimStop   ->GetBinError(fMuonIsoFastSimStop  ->FindBin(pt,eta)));
       else if(id == iMuonlepMVA2lSSttH)   err += p2(fMuonlepMVA2lSSttH    ->GetBinError(fMuonlepMVA2lSSttH  ->FindBin(pt,eta)));
       else if(id == iMuonlepMVA3l4lttH)   err += p2(fMuonlepMVA3l4lttH    ->GetBinError(fMuonlepMVA3l4lttH  ->FindBin(pt,eta)));
       else if(id == iMuonLooseTracksttH)  err += p2(fMuonLooseTracksttH   ->GetBinError(fMuonLooseTracksttH ->FindBin(pt,eta)));
@@ -325,8 +338,9 @@ Float_t LeptonSF::GetLeptonSFerror(Float_t pt, Float_t ieta, Int_t type){
       else if(id == iElecId)      err += p2(fElecIdSF      ->GetBinError(fElecIdSF     ->FindBin(eta,pt)));
       else if(id == iElecIP2D)    err += p2(fElecIP2DSF    ->GetBinError(fElecIP2DSF   ->FindBin(eta,pt)));
       else if(id == iElecSIP3D)   err += p2(fElecSIP3DSF   ->GetBinError(fElecSIP3DSF  ->FindBin(eta,pt)));
-      else if(id == iElecIsoFastSim)   err += p2(fElecIsoFastSim ->GetBinError(fElecIsoFastSim  ->FindBin(pt, eta)));
-      else if(id == iElecIdFastSim)   err += p2(fElecIdFastSim ->GetBinError(fElecIdFastSim  ->FindBin(pt, eta)));
+      else if(id == iElecFastSim)   err += p2(fElecFastSim ->GetBinError(fElecFastSim  ->FindBin(pt, eta)));
+      else if(id == iElecIsoFastSimStop)   err += p2(fElecIsoFastSimStop ->GetBinError(fElecIsoFastSimStop  ->FindBin(pt, eta)));
+      else if(id == iElecIdFastSimStop)   err += p2(fElecIdFastSimStop ->GetBinError(fElecIdFastSimStop  ->FindBin(pt, eta)));
       else if(id == iEleclepMVA2lSSttH)   err += p2(fEleclepMVA2lSSttH    ->GetBinError(fEleclepMVA2lSSttH  ->FindBin(pt,eta)));
       else if(id == iEleclepMVA3l4lttH)   err += p2(fEleclepMVA3l4lttH    ->GetBinError(fEleclepMVA3l4lttH  ->FindBin(pt,eta)));
       else if(id == iElecTightIP2DM17ttH) err += p2(fElecTightIP2DM17ttH  ->GetBinError(fElecTightIP2DM17ttH->FindBin(pt,eta)));

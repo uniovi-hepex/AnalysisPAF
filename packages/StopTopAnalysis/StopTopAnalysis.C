@@ -6,6 +6,7 @@ StopTopAnalysis::StopTopAnalysis() : PAFChainItemSelector() {
   fSumISRJets = 0;  
   fISRJets = 0;  
   ResetVariables();
+  IsT2ttScan = false;
 }
 
 void StopTopAnalysis::Summary(){}
@@ -64,6 +65,7 @@ void StopTopAnalysis::Initialise(){
     gStopMass = GetParam<Int_t>("stopMass");
     gLspMass  = GetParam<Int_t>("lspMass");
     NormISRweights = GetParam<Float_t>("NormISRweights");
+    if(gSampleName.Contains("T2tt")) IsT2ttScan = true;
   }
   else if(gSampleName.BeginsWith("T2tt")) NormISRweights = GetParam<Float_t>("NormISRweights");
   fTree = CreateTree("tree","Created with PAF");
@@ -71,7 +73,7 @@ void StopTopAnalysis::Initialise(){
   fISRJets =    CreateH1F(   "ISRweights",    "ISRweights", 6 , 0, 6); 
 
   gIsLHE = false; gIsTTbar = false;
-  if(gSampleName.Contains("TTbar_Powheg")) gIsLHE = true;
+  if(gSampleName.Contains("TTbar_Powheg") && !gSampleName.Contains("hdamp")) gIsLHE = true;
   if(gSampleName.Contains("TTbar")) gIsTTbar = true;
   
   gDoISR = false;
@@ -92,7 +94,7 @@ void StopTopAnalysis::Initialise(){
 
 
 void StopTopAnalysis::InsideLoop(){
-  if(gIsFastSim) if(fabs(fabs((Get<Int_t>("GenSusyMStop"))- gStopMass)) > 1 || fabs((fabs(Get<Int_t>("GenSusyMNeutralino")) - gLspMass)) > 1) return;
+  if(IsT2ttScan) if(fabs(fabs((Get<Int_t>("GenSusyMStop"))- gStopMass)) > 1 || fabs((fabs(Get<Int_t>("GenSusyMNeutralino")) - gLspMass)) > 1) return;
 
   ResetVariables();
 
@@ -124,7 +126,9 @@ void StopTopAnalysis::InsideLoop(){
   // Leptons and Jets
   GetLeptonVariables(selLeptons, vetoLeptons);
   GetJetVariables(selJets, Jets15);
+  // -----------> hdamp casca después de esto!
   GetMET();
+  // -----------> hdamp casca antes de esto!
   GetGenInfo();
 
   fSumISRJets->Fill(1, getISRJetsWeight(TNISRJets)); 
@@ -186,6 +190,10 @@ void StopTopAnalysis::InsideLoop(){
         PUSF_Up  = 1;
         PUSF_Down = 1;
       }
+      Float_t MuonSF_diffUp   = MuonSFUp - MuonSF;
+      Float_t MuonSF_diffDown = MuonSF - MuonSFDo;
+      MuonSFUp = MuonSF + TMath::Sqrt(0.005*0.005+0.005*0.005 + 0.01*0.01 + MuonSF_diffUp*MuonSF_diffUp);
+      MuonSFDo = MuonSF + TMath::Sqrt(0.005*0.005+0.005*0.005 + 0.01*0.01 + MuonSF_diffDown*MuonSF_diffDown);
       TWeight             = NormWeight*ElecSF*MuonSF*TrigSF*PUSF;
       TWeight_ElecEffUp   = NormWeight*ElecSFUp*MuonSF*TrigSF*PUSF;
       TWeight_ElecEffDown = NormWeight*ElecSFDo*MuonSF*TrigSF*PUSF;
@@ -299,8 +307,10 @@ void StopTopAnalysis::SetEventVariables(){
   if(gIsData) return;
   fTree->Branch("TgenMET",         &TgenMET,         "TgenMET/F");
   fTree->Branch("TISRweight",      &TISRweight,      "TISRweight/F");
-  fTree->Branch("TWeight_LepEffUp",      &TWeight_LepEffUp,      "TWeight_LepEffUp/F");
-  fTree->Branch("TWeight_LepEffDown",    &TWeight_LepEffDown,    "TWeight_LepEffDown/F");
+  fTree->Branch("TWeight_MuonEffUp",      &TWeight_MuonEffUp,      "TWeight_MuonEffUp/F");
+  fTree->Branch("TWeight_MuonEffDown",    &TWeight_MuonEffDown,    "TWeight_MuonEffDown/F");
+  fTree->Branch("TWeight_ElecEffUp",      &TWeight_ElecEffUp,      "TWeight_ElecEffUp/F");
+  fTree->Branch("TWeight_ElecEffDown",    &TWeight_ElecEffDown,    "TWeight_ElecEffDown/F");
   fTree->Branch("TWeight_TrigUp",        &TWeight_TrigUp,        "TWeight_TrigUp/F");
   fTree->Branch("TWeight_TrigDown",      &TWeight_TrigDown,      "TWeight_TrigDown/F");
   fTree->Branch("TWeight_PUUp",        &TWeight_PUUp,        "TWeight_PUUp/F");
@@ -459,6 +469,7 @@ void StopTopAnalysis::GetMET(){
   TISRweightUp   = TISRweight + diff;
   TISRweightDown = TISRweight - diff;
   if(gIsLHE) for(Int_t i = 0; i < Get<Int_t>("nLHEweight"); i++)   TLHEWeight[i] = Get<Float_t>("LHEweight_wgt", i);
+  
 }
 
 void StopTopAnalysis::GetGenInfo(){

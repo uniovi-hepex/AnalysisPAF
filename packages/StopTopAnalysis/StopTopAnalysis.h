@@ -48,6 +48,7 @@ class StopTopAnalysis : public PAFChainItemSelector{
     Bool_t passTrigger;
     Bool_t isSS;
     Float_t NormWeight;
+    Bool_t IsT2ttScan = false;
     Bool_t gIsFastSim = false;
     Int_t gStopMass;
     Int_t gLspMass;

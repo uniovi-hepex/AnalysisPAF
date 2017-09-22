@@ -335,7 +335,7 @@ void JetSelector::InsideLoop(){
   
 
   // If stop, disc
-  if(gSelection == iStopSelec){
+  if(gSelection == iStopSelec || gSelection == iStopTopSelec){
     nJet = Get<Int_t>("nDiscJet");
     for(Int_t i = 0; i < nJet; i++){
       GetDiscJetVariables(i);

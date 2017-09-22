@@ -37,10 +37,10 @@ void LeptonSelector::Initialise(){
     LepSF->loadHisto(iElecIdSUSY,   iWPforStop);
     LepSF->loadHisto(iElecIsoSUSY,   iWPforStop);
     if(gIsFastSim){
-      LepSF->loadHisto(iElecIdFastSim);
-      LepSF->loadHisto(iElecIsoFastSim);
-      LepSF->loadHisto(iMuonIdFastSim);
-      LepSF->loadHisto(iMuonIsoFastSim);
+      LepSF->loadHisto(iElecIdFastSimStop);
+      LepSF->loadHisto(iElecIsoFastSimStop);
+      LepSF->loadHisto(iMuonIdFastSimStop);
+      LepSF->loadHisto(iMuonIsoFastSimStop);
     }
   }
   else if(gSelection == ittHSelec){
@@ -58,7 +58,7 @@ void LeptonSelector::Initialise(){
     // Los tenemos en funciones, no en histogramas, entonces nos la pela de cargar histogramas
   }
 
-  else if(gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
+  else if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
     LepSF->loadHisto(iTrigDoubleMuon);
     LepSF->loadHisto(iTrigDoubleElec);
     LepSF->loadHisto(iTrigElMu);
@@ -67,6 +67,20 @@ void LeptonSelector::Initialise(){
     LepSF->loadHisto(iMuonId,   iTight);
     LepSF->loadHisto(iMuonIsoTightId,   iTight);
     LepSF->loadHisto(iElecId,   iTight);
+  }
+  else if(gSelection == iStopTopSelec){
+    LepSF->loadHisto(iTrigDoubleMuon);
+    LepSF->loadHisto(iTrigDoubleElec);
+    LepSF->loadHisto(iTrigElMu);
+    LepSF->loadHisto(iMuonReco);
+    LepSF->loadHisto(iElecReco);
+    LepSF->loadHisto(iMuonId,   iTight);
+    LepSF->loadHisto(iMuonIsoTightId,   iTight);
+    LepSF->loadHisto(iElecId,   iTight);
+    if(gIsFastSim){
+      LepSF->loadHisto(iElecFastSim);
+      LepSF->loadHisto(iMuonFastSim);
+    }
   }
   else std::cout << ">>>>>>>>>>>> WRONG SELECTION!!!!!!!!" << std::endl;
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -607,7 +621,7 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
 //============================================== VETO LEPTONS
 Bool_t LeptonSelector::isVetoLepton(Lepton lep){
   Bool_t passId; Bool_t passIso;
-  if(gSelection == iStopSelec){
+  if(gSelection == iStopSelec || gSelection == iStopTopSelec){
     if(lep.isMuon){
       passId = true;
       passIso = getRelIso03POG(iLooseWPforStop);
@@ -618,7 +632,7 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
     } 
     return passId && passIso && getGoodVertex(iTight) && getSIPcut(4);
   }
-  else if(gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec){
+  else if(gSelection == iTopSelec || gSelection == iTWSelec){
     return true;
   }
   else if((gSelection == iWWSelec) || (gSelection == iHWWSelec)){
@@ -860,7 +874,7 @@ void LeptonSelector::InsideLoop(){
       else looseLeptons.push_back(tL);
     }
   }
-  if(gSelection == iStopSelec){ // Adding leptons for the discarded collection
+  if(gSelection == iStopSelec || gSelection == iStopTopSelec){ // Adding leptons for the discarded collection
     nLep     = Get<Int_t>("nDiscLep");
     for(Int_t i = 0; i < nLep; i++){
       GetDiscLeptonVariables(i);
