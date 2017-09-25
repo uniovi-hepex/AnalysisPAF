@@ -54,12 +54,24 @@ void WZAnalysis::Initialise(){
   gIsData      = GetParam<Bool_t>("IsData");
   gSelection   = GetParam<Int_t>("iSelection");
   gSampleName  = GetParam<TString>("sampleName");
+  localPath    = GetParam<TString>("WorkingDir");
   gDoSyst      = GetParam<Bool_t>("doSyst");
   gIsTTbar     = false;
   gIsLHE       = false;
   if (gSampleName.Contains("TTbar") || gSampleName.Contains("TTJets")) gIsTTbar = true;
   if (gSampleName == "TTbar_Powheg") gIsLHE = true;
+  leptonSFtop = new LeptonSF(localPath + "/InputFiles/");
+  leptonSFEWK = new LeptonSF(localPath + "/InputFiles/");
 
+  if (!gIsData){
+    leptonSFtop->loadHisto(iMuonId,   iTight);          //Only top
+    leptonSFtop->loadHisto(iMuonIsoTightId,   iTight);//Only top
+    leptonSFtop->loadHisto(iElecId,   iTight);        //Only top
+    leptonSFEWK->loadHisto(iMuonEWKinoID);//Only MVA
+    leptonSFEWK->loadHisto(iMuonEWKinomvaM);//Only MVA
+    leptonSFEWK->loadHisto(iElecEWKinoID);//Only MVA
+    leptonSFEWK->loadHisto(iElecEWKinomvaM);//Only MVA
+  }
   makeTree = true;
   makeHistos = true;
   if(makeTree){
@@ -93,21 +105,19 @@ void WZAnalysis::InsideLoop(){
   PUSF         = GetParam<Float_t>("PUSF");
   PUSF_Up      = GetParam<Float_t>("PUSF_Up");
   PUSF_Down    = GetParam<Float_t>("PUSF_Down");
-  localPath      = GetParam<TString>("WorkingDir");
+
 
   // Event variables
   gChannel       = GetParam<Int_t>("gChannel");
   passMETfilters = GetParam<Bool_t>("METfilters");
   passTrigger    = GetParam<Bool_t>("passTrigger");
-
+  TEvtNum        = Get<ULong64_t>("evt");
   for (int wP = 0; wP < nWPoints; wP++){
     // Leptons and Jets
 
       tightLeptons = {};
       fakeableLeptons = {};
-
       GetLeptonsByWP(wP);
- 
       GetLeptonVariables(tightLeptons, fakeableLeptons, looseLeptons);
       GetJetVariables(selJets, Jets15);
       GetGenJetVariables(genJets, mcJets);
@@ -337,7 +347,7 @@ void WZAnalysis::SetJetVariables(TTree* iniTree){
 
 //  iniTree->Branch("TJetJESUp_Pt",      TJetJESUp_Pt,      "TJetJESUp_Pt[TNJetsJESUp]/F");
 //  iniTree->Branch("TJetJESDown_Pt",    TJetJESDown_Pt,    "TJetJESDown_Pt[TNJetsJESDown]/F");
-  iniTree->Branch("TJetJER_Pt",        TJetJER_Pt,        "TJetJER_Pt[TNJetsJERUp]/F");
+//  iniTree->Branch("TJetJER_Pt",        TJetJER_Pt,        "TJetJER_Pt[TNJetsJERUp]/F");
 
   iniTree->Branch("THT",          &THT,          "THT/F");
 //  iniTree->Branch("THTJESUp",     &THTJESUp,     "THTJESUp/F");
@@ -364,6 +374,7 @@ void WZAnalysis::SetEventVariables(TTree* iniTree){
 
   iniTree->Branch("TLHEWeight",        TLHEWeight,         "TLHEWeight[254]/F");
   iniTree->Branch("TMET",         &TMET,         "TMET/F");
+  iniTree->Branch("TEvtNum",         &TEvtNum,         "TEvtNum/l");
   iniTree->Branch("TGenMET",         &TGenMET,         "TGenMET/F");
   iniTree->Branch("TMET_Phi",     &TMET_Phi,     "TMET_Phi/F");
 //  iniTree->Branch("TMETJESUp",    &TMETJESUp,    "TMETJESUp/F");
@@ -377,35 +388,29 @@ void WZAnalysis::SetEventVariables(TTree* iniTree){
 void WZAnalysis::GetLeptonsByWP(Int_t wPValue){
   Int_t nFakeableLeptons = foLeptons.size();
   Int_t nTightLeptons = selLeptons.size();
-  LeptonSF* leptonSF = new LeptonSF(localPath + "/InputFiles/");
+
   if (wPValue == top){
-    leptonSF->loadHisto(iMuonId,   iTight);          //Only top
-    leptonSF->loadHisto(iMuonIsoTightId,   iTight);//Only top
-    leptonSF->loadHisto(iElecId,   iTight);        //Only top
     for (int k = 0; k < nTightLeptons; k++){ // No FO for top ID
       if (selLeptons.at(k).idMVA >= 10){
-        selLeptons.at(k).SetSF(selLeptons.at(k).GetSF(0)*leptonSF->GetLeptonSF(selLeptons.at(k).Pt(), selLeptons.at(k).Eta(), selLeptons.at(k).type));
         tightLeptons.push_back(selLeptons.at(k));
         fakeableLeptons.push_back(selLeptons.at(k));
+        tightLeptons.back().SetSF(selLeptons.at(k).GetSF(0)*leptonSFtop->GetLeptonSF(selLeptons.at(k).Pt(), selLeptons.at(k).Eta(), selLeptons.at(k).type));
+        fakeableLeptons.back().SetSF(selLeptons.at(k).GetSF(0)*leptonSFtop->GetLeptonSF(selLeptons.at(k).Pt(), selLeptons.at(k).Eta(), selLeptons.at(k).type));
       }
     }
   }
   else {
-    leptonSF->loadHisto(iMuonEWKinoID);//Only MVA
-    leptonSF->loadHisto(iMuonEWKinomvaM);//Only MVA
-    leptonSF->loadHisto(iElecEWKinoID);//Only MVA
-    leptonSF->loadHisto(iElecEWKinomvaM);//Only MVA
     for (int k = 0; k < nFakeableLeptons; k++){
       if (foLeptons.at(k).idMVA%10 > wPValue){
-        foLeptons.at(k).SetSF(foLeptons.at(k).GetSF(0)*leptonSF->GetLeptonSF(foLeptons.at(k).Pt(), foLeptons.at(k).Eta(), foLeptons.at(k).type));
         fakeableLeptons.push_back(foLeptons.at(k));
+        fakeableLeptons.back().SetSF(foLeptons.at(k).GetSF(0)*leptonSFEWK->GetLeptonSF(foLeptons.at(k).Pt(), foLeptons.at(k).Eta(), foLeptons.at(k).type));
       }
     }
   
     for (int k = 0; k < nTightLeptons; k++){
       if (selLeptons.at(k).idMVA%10 > wPValue){
-        selLeptons.at(k).SetSF(selLeptons.at(k).GetSF(0)*leptonSF->GetLeptonSF(selLeptons.at(k).Pt(), selLeptons.at(k).Eta(), selLeptons.at(k).type));
         tightLeptons.push_back(selLeptons.at(k));
+        tightLeptons.back().SetSF(selLeptons.at(k).GetSF(0)*leptonSFtop->GetLeptonSF(selLeptons.at(k).Pt(), selLeptons.at(k).Eta(), selLeptons.at(k).type));
       }
     }
   }

@@ -234,15 +234,15 @@ void LeptonSF::loadHisto(Int_t iHisto, Int_t wp){
 
 
   else if(iHisto == iElecEWKinoID){
-    filename = "electronSF_id_EWKino_fullsim_M17_36p5fb.root"; histoname = "GsfElectronToMVAVLooseTightIP2D";
+    filename = "electronSF_id_EWKino_fullsim_M17_36p5fb"; histoname = "GsfElectronToMVAVLooseTightIP2D";
     fElecEWKinoID     = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fElecEWKinoID");
   }
   else if(iHisto == iElecEWKinomvaM){
-    filename = "electronSF_id_EWKino_fullsim_M17_36p5fb.root"; histoname = "GsfElectronToLeptonMvaMIDEmuTightIP2DSIP3D8mini04";
+    filename = "electronSF_id_EWKino_fullsim_M17_36p5fb"; histoname = "GsfElectronToLeptonMvaMIDEmuTightIP2DSIP3D8mini04";
     fElecEWKinomvaM     = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fElecEWKinomvaM");
   }
   else if(iHisto == iElecEWKinomvaVT){
-    filename = "electronSF_id_EWKino_fullsim_M17_36p5fb.root"; histoname = "GsfElectronToLeptonMvaVTIDEmuTightIP2DSIP3D8mini04";
+    filename = "electronSF_id_EWKino_fullsim_M17_36p5fb"; histoname = "GsfElectronToLeptonMvaVTIDEmuTightIP2DSIP3D8mini04";
     fElecEWKinomvaVT    = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fElecEWKinomvaVT");
   }
 

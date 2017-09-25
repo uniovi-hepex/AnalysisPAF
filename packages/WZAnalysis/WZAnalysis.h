@@ -23,7 +23,7 @@ const TString gSys[nSysts] = {"0"};
 class WZAnalysis : public PAFChainItemSelector{
   public:
     WZAnalysis();
-    virtual ~WZAnalysis(){}
+    virtual ~WZAnalysis(){delete leptonSFtop; delete leptonSFEWK;}
     virtual void InsideLoop();
     virtual void Initialise();
     virtual void Summary();
@@ -51,6 +51,8 @@ class WZAnalysis : public PAFChainItemSelector{
     std::vector<Jet> mcJets  ;
     std::vector<Jet> vetoJets;
 
+    LeptonSF * leptonSFtop;
+    LeptonSF * leptonSFEWK;
     TTree* fTree[nWPoints] = {0};
     Float_t TLHEWeight[254];
     void SetLeptonVariables(TTree* iniTree);
@@ -111,6 +113,8 @@ class WZAnalysis : public PAFChainItemSelector{
     Float_t TGenMET;   // Gent MET
     Float_t TMET_Phi;  // MET phi
 
+    ULong64_t  TEvtNum;
+
     // Event classification
     Bool_t  TIsSR;
     Bool_t  TIsCRTT;
@@ -160,7 +164,7 @@ class WZAnalysis : public PAFChainItemSelector{
     Float_t TMETJESDown;
     Float_t TMT2llJESUp;
     Float_t TMT2llJESDown;
-
+    
     Float_t  TWeight_LepEffUp;
     Float_t  TWeight_LepEffDown;
     Float_t  TWeight_ElecEffUp;

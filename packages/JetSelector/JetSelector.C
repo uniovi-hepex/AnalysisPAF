@@ -65,15 +65,6 @@ void JetSelector::Initialise(){
     vetoJet_maxEta = 2.4;
     minDR = 0.4;
   }
-  else if (gSelection == iWZSelec){
-    taggerName="CSVv2"; // Soon to be: taggerName="DeepCSV" 
-    stringWP = "Medium";
-    jet_MaxEta = 2.4;
-    jet_MinPt  = 40;
-    vetoJet_minPt = 25;
-    vetoJet_maxEta = 2.4;
-    minDR = 0.4;
-  }
   else if (gSelection == iTWSelec){
     taggerName="CSVv2";
     stringWP = "Medium";

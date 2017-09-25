@@ -75,16 +75,6 @@ void LeptonSelector::Initialise(){
     LepSF->loadHisto(iTrigElMu);//Both
     LepSF->loadHisto(iMuonReco);//Both
     LepSF->loadHisto(iElecReco);//Both
-/*    LepSF->loadHisto(iMuonId,   iTight);//Only top
-    LepSF->loadHisto(iMuonIsoTightId,   iTight);//Only top
-    LepSF->loadHisto(iElecId,   iTight);//Only top
-
-    LepSF->loadHisto(iMuonEWKinoID);//Only MVA
-    LepSF->loadHisto(iMuonEWKinomvaM);//Only MVA
-    LepSF->loadHisto(iMuonEWKinomvaVT);//Only MVA
-    LepSF->loadHisto(iElecEWKinoID);//Only MVA
-    LepSF->loadHisto(iElecEWKinomvaM);//Only MVA
-    LepSF->loadHisto(iElecEWKinomvaVT);//Only MVA*/
   }
   else std::cout << ">>>>>>>>>>>> WRONG SELECTION!!!!!!!!" << std::endl;
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -551,7 +541,7 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
     if(lep.isElec){
       passId = getElecCutBasedId(iTight) && lostHits <= 1;
       passIso = getRelIso03POG(iTight);
-      if(TMath::Abs(etaSC) > 1.4442 && TMath::Abs(etaSC) < 1.566) isTopLepton = false;
+      if(TMath::Abs(etaSC) > 1.4442 && TMath::Abs(etaSC) < 1.566) passId = false;
     }
     if(lep.p.Pt() < 20 || TMath::Abs(lep.p.Eta()) > 2.4) isTopLepton = false;
     if(passId && passIso && ( (lep.isElec && getGoodVertex(iTight)) || (lep.isMuon && getGoodVertex(iMedium) ))){
