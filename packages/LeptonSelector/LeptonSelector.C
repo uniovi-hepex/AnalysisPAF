@@ -924,6 +924,7 @@ void LeptonSelector::InsideLoop(){
   nLooseLeptons = looseLeptons.size();
   nGenLeptons    = genLeptons.size();
 
+  //=== Trigger SF
   TriggerSF = 1; TriggerSFerr = 0;
   if(gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec || gSelection == iStopSelec){
     if(nSelLeptons >= 2){
@@ -941,6 +942,15 @@ void LeptonSelector::InsideLoop(){
       }
     }
   }
+
+  //=== FullSim/FastSim SF
+  FSSF = 1; FSSFerr = 0; Float_t id;
+  if(gIsFastSim && nSelLeptons >= 1){
+    id = 11; if(selLeptons.at(0).isMuon) id = 13;
+    FSSF    = LepSF->GetFSSF(selLeptons.at(0).p.Pt(), selLeptons.at(0).p.Eta(), id);
+    FSSFerr = LepSF->GetFSSFerr(selLeptons.at(0).p.Pt(), selLeptons.at(0).p.Eta(), id);
+  }
+
   DumpEvent(evt, "========================================");
 
  selLeptons   = SortLeptonsByPt(selLeptons);
@@ -961,6 +971,8 @@ void LeptonSelector::InsideLoop(){
 
   SetParam("TriggerSF",    TriggerSF);
   SetParam("TriggerSFerr", TriggerSFerr);
+  SetParam("FSSF",    FSSF);
+  SetParam("FSSFerr", FSSFerr);
 }
 
 //################################################################

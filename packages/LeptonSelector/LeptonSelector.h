@@ -36,6 +36,10 @@ class LeptonSelector : public PAFChainItemSelector{
     Float_t TriggerSF;
     Float_t TriggerSFerr;
 
+    // FullSim/FastSim SF
+    Float_t FSSF;
+    Float_t FSSFerr;
+
     // LepGood
     Lepton tL;
     Int_t nLep;

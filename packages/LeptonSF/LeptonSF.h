@@ -34,6 +34,12 @@ class LeptonSF {
   Float_t GetTrigDoubleMuSF_err(Float_t eta1, Float_t eta2) const;
   Float_t GetTrigDoubleElSF_err(Float_t eta1, Float_t eta2) const;
   Float_t GetTrigElMuSF_err    (Float_t eta1, Float_t eta2) const;
+
+  //FullSim/FastSim SF
+  // Only if these are per-event SF (not for lepton)
+  // If you have SF for lepton, include them with the normal Lepton SF
+  Float_t GetFSSF(Float_t pt, Float_t eta, Int_t id);
+  Float_t GetFSSFerr(Float_t pt, Float_t eta, Int_t id);
   
   std::vector<Int_t> loadedHistos;
 

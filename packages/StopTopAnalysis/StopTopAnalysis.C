@@ -14,11 +14,11 @@ void StopTopAnalysis::Summary(){}
 void StopTopAnalysis::ResetVariables(){
   TrigSF = 0; TrigSFerr = 0; PUSF = 0; PUSF_Up = 0; PUSF_Down = 0;
   gChannel = 0; passMETfilters = 0; passTrigger = 0; isSS = 0;  NormWeight = 0; TWeight = 0;
-  TMT2 = 0; TMll = 0;  TMET = 0; TMET_Phi = 0; TgenMET = 0; TNJets = 0; TNBtags = 0; THT = 0; 
+  TMT2 = 0; TMll = 0;  TPfMET = 0; TMET = 0; TMET_Phi = 0; TgenMET = 0; TNJets = 0; TNBtags = 0; THT = 0; 
   TNVetoLeps = 0; TNSelLeps = 0; TChannel = 0; TDeltaPhi = 0; TDeltaEta = 0; TBtagSFFS = 0;
   TNJetsJESUp = 0; TNJetsJESDown = 0; TNJetsJERUp = 0; TNBtagsJESUp = 0; TNBtagsJESDown = 0;
   TNBtagsBtagUp = 0; TNBtagsBtagDown = 0; TNBtagsMisTagUp = 0; TNBtagsMisTagDown = 0;
-  THTJESUp = 0; THTJESDown = 0; TNISRJets = 0;
+  THTJESUp = 0; THTJESDown = 0; TNISRJets = 0; TNVert = 0; FSSF = 0; FSSFerr = 0;
   TMETJERUp = 0; TMETJESUp = 0; TMETJESDown = 0; TMT2JERUp = 0; TMT2JESUp = 0; TMT2JESDown = 0;
   TWeight_LepEffUp = 0; TWeight_LepEffDown = 0; TWeight_TrigUp = 0; TWeight_TrigDown = 0;
   TWeight_FSUp = 0; TWeight_FSDown = 0; TWeight_PUDown = 0; TWeight_PUUp = 0;
@@ -74,7 +74,7 @@ void StopTopAnalysis::Initialise(){
 
   gIsLHE = false; gIsTTbar = false;
   if(gSampleName.Contains("TTbar_Powheg") && !gSampleName.Contains("hdamp")) gIsLHE = true;
-  if(gSampleName.Contains("TTbar")) gIsTTbar = true;
+  if(gSampleName.Contains("TTbar") || gSampleName.Contains("TTJets")) gIsTTbar = true;
   
   gDoISR = false;
   if(gSampleName.Contains("T2tt")) gDoISR = true;
@@ -105,7 +105,7 @@ void StopTopAnalysis::InsideLoop(){
   Jets15      = GetParam<vector<Jet>>("Jets15");
   genJets     = GetParam<vector<Jet>>("genJets");
   if(gIsTTbar){
-    if(genLeptons.size() < 2) return;
+    //if(genLeptons.size() < 2) return;
   }
 
   // Weights and SFs
@@ -115,7 +115,9 @@ void StopTopAnalysis::InsideLoop(){
   PUSF         = GetParam<Float_t>("PUSF");
   PUSF_Up      = GetParam<Float_t>("PUSF_Up");
   PUSF_Down    = GetParam<Float_t>("PUSF_Down");
-  BtagSFFS    = GetParam<Float_t>("BtagSFFS");
+  BtagSFFS     = GetParam<Float_t>("BtagSFFS");
+  FSSF         = GetParam<Float_t>("FSSF");
+  FSSFerr      = GetParam<Float_t>("FSSFerr");
 
   // Event variables
   gChannel        = GetParam<Int_t>("gChannel");
@@ -132,6 +134,14 @@ void StopTopAnalysis::InsideLoop(){
   GetGenInfo();
 
   fSumISRJets->Fill(1, getISRJetsWeight(TNISRJets)); 
+
+  //if(TNSelLeps >= 1){
+  //  TChannel = iElec;
+  //  if(selLeptons.at(0).isMuon) TChannel = iMuon;
+  //  fTree->Fill();
+  //  return;
+  //}
+  //else return;
 
   // =================== Tree at gen level here! ==================
   //if(TNgenLeps >= 2){
@@ -185,26 +195,29 @@ void StopTopAnalysis::InsideLoop(){
         }
       }
       if(gIsFastSim){
-        TrigSF *= 0.98; // trigg efficiency for FastSim
+        //TrigSF *= 0.98; // trigg efficiency for FastSim
         PUSF = 1;
         PUSF_Up  = 1;
         PUSF_Down = 1;
       }
+      else FSSF = 1;
       Float_t MuonSF_diffUp   = MuonSFUp - MuonSF;
       Float_t MuonSF_diffDown = MuonSF - MuonSFDo;
       MuonSFUp = MuonSF + TMath::Sqrt(0.005*0.005+0.005*0.005 + 0.01*0.01 + MuonSF_diffUp*MuonSF_diffUp);
       MuonSFDo = MuonSF + TMath::Sqrt(0.005*0.005+0.005*0.005 + 0.01*0.01 + MuonSF_diffDown*MuonSF_diffDown);
-      TWeight             = NormWeight*ElecSF*MuonSF*TrigSF*PUSF;
-      TWeight_ElecEffUp   = NormWeight*ElecSFUp*MuonSF*TrigSF*PUSF;
-      TWeight_ElecEffDown = NormWeight*ElecSFDo*MuonSF*TrigSF*PUSF;
-      TWeight_MuonEffUp   = NormWeight*ElecSF*MuonSFUp*TrigSF*PUSF;
-      TWeight_MuonEffDown = NormWeight*ElecSF*MuonSFDo*TrigSF*PUSF;
+      TWeight             = NormWeight*ElecSF*MuonSF*TrigSF*PUSF*FSSF;
+      TWeight_ElecEffUp   = NormWeight*ElecSFUp*MuonSF*TrigSF*PUSF*FSSF;
+      TWeight_ElecEffDown = NormWeight*ElecSFDo*MuonSF*TrigSF*PUSF*FSSF;
+      TWeight_MuonEffUp   = NormWeight*ElecSF*MuonSFUp*TrigSF*PUSF*FSSF;
+      TWeight_MuonEffDown = NormWeight*ElecSF*MuonSFDo*TrigSF*PUSF*FSSF;
       TWeight_TrigUp     = NormWeight*ElecSF*MuonSF*(TrigSF+TrigSFerr)*PUSF;
       TWeight_TrigDown   = NormWeight*ElecSF*MuonSF*(TrigSF-TrigSFerr)*PUSF;
-      TWeight_PUDown     = NormWeight*ElecSF*MuonSF*TrigSF*PUSF_Up;
-      TWeight_PUUp       = NormWeight*ElecSF*MuonSF*TrigSF*PUSF_Down;
-      TWeight_ISRUp      = NormWeight*ElecSF*MuonSF*TrigSF*PUSF*TISRweightUp;
-      TWeight_ISRDown    = NormWeight*ElecSF*MuonSF*TrigSF*PUSF*TISRweightDown;
+      TWeight_FSUp     = NormWeight*ElecSF*MuonSF*TrigSF*(FSSF+FSSFerr)*PUSF*FSSF;
+      TWeight_FSDown   = NormWeight*ElecSF*MuonSF*TrigSF*(FSSF-FSSFerr)*PUSF*FSSF;
+      TWeight_PUDown     = NormWeight*ElecSF*MuonSF*TrigSF*PUSF_Up*FSSF;
+      TWeight_PUUp       = NormWeight*ElecSF*MuonSF*TrigSF*PUSF_Down*FSSF;
+      TWeight_ISRUp      = NormWeight*ElecSF*MuonSF*TrigSF*PUSF*TISRweightUp*FSSF;
+      TWeight_ISRDown    = NormWeight*ElecSF*MuonSF*TrigSF*PUSF*TISRweightDown*FSSF;
       if(gIsData) TWeight = 1;
 
       // Event Selection
@@ -301,6 +314,8 @@ void StopTopAnalysis::SetEventVariables(){
   fTree->Branch("TWeight",      &TWeight,      "TWeight/F");
   fTree->Branch("TBtagSFFS",    &TBtagSFFS,    "TBtagSFFS/F");
   fTree->Branch("TMET",         &TMET,         "TMET/F");
+  fTree->Branch("TPfMET",         &TPfMET,         "TPfMET/F");
+  fTree->Branch("TNVert",         &TNVert,         "TNVert/I");
   fTree->Branch("TMET_Phi",     &TMET_Phi,     "TMET_Phi/F");
   fTree->Branch("TIsSS",        &TIsSS,        "TIsSS/B");  
 
@@ -315,6 +330,8 @@ void StopTopAnalysis::SetEventVariables(){
   fTree->Branch("TWeight_TrigDown",      &TWeight_TrigDown,      "TWeight_TrigDown/F");
   fTree->Branch("TWeight_PUUp",        &TWeight_PUUp,        "TWeight_PUUp/F");
   fTree->Branch("TWeight_PUDown",        &TWeight_PUDown,        "TWeight_PUDown/F");
+  fTree->Branch("TWeight_FSUp",        &TWeight_FSUp,        "TWeight_FSUp/F");
+  fTree->Branch("TWeight_FSDown",        &TWeight_FSDown,        "TWeight_FSDown/F");
 
   //fTree->Branch("TNLHEWeight",        &TNLHEWeight,         "TNLHEWeight/I");
   fTree->Branch("TLHEWeight",        TLHEWeight,         "TLHEWeight[254]/F");
@@ -436,7 +453,9 @@ void StopTopAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet>
 void StopTopAnalysis::GetMET(){
   TMET        = Get<Float_t>("met_pt");
   TMET_Phi    = Get<Float_t>("met_phi");  // MET phi
+  TNVert      = Get<Int_t>("nVert");
   TIsSS       = isSS;
+  TPfMET = TMET;
   if(TNSelLeps>1)  TMT2 = getMT2ll(selLeptons.at(0), selLeptons.at(1), TMET,        TMET_Phi);
   if(gIsData) return;
   TgenMET     = Get<Float_t>("met_genPt");

@@ -39,6 +39,8 @@ class StopTopAnalysis : public PAFChainItemSelector{
 
     Float_t TrigSF;
     Float_t TrigSFerr;
+    Float_t FSSF; 
+    Float_t FSSFerr; 
     Float_t PUSF;
     Float_t PUSF_Up;
     Float_t PUSF_Down;
@@ -62,7 +64,9 @@ class StopTopAnalysis : public PAFChainItemSelector{
     Float_t TDeltaEta;
     Float_t TMT2;      // Invariant mass
     Float_t TMET;      // MET
+    Float_t TPfMET;      // MET
     Float_t TMET_Phi;  // MET phi
+    Int_t   TNVert;
     Bool_t  TIsSS;
     Float_t TBtagSFFS;
 
@@ -133,9 +137,9 @@ class StopTopAnalysis : public PAFChainItemSelector{
     Float_t  TWeight_MuonEffDown;
     Float_t  TWeight_TrigUp;
     Float_t  TWeight_TrigDown;
-    Float_t  TWeight_FSUp;
     Float_t  TWeight_PUDown;
     Float_t  TWeight_PUUp;
+    Float_t  TWeight_FSUp;
     Float_t  TWeight_FSDown;
     Float_t  TWeight_ISRUp;
     Float_t  TWeight_ISRDown;
