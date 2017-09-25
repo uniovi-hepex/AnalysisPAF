@@ -30,7 +30,6 @@ EventBuilder::EventBuilder() : PAFChainItemSelector(),
 			       genWeight(0),
 			       nTrueInt(0),
 			       gChannel(0),
-			       TriggSF(0),
 			       fPUWeight(0),
 			       fPUWeightUp(0),
 			       fPUWeightDown(0),
@@ -63,7 +62,6 @@ EventBuilder::~EventBuilder() {
   delete fPUWeight;
   delete fPUWeightUp;
   delete fPUWeightDown;
-  delete TriggSF;
 }
 
 
@@ -323,11 +321,6 @@ void EventBuilder::Initialise(){
 
   Weight = GetParam<Float_t>("weight");
 
-  TriggSF       = new LeptonSF();
-  // >>>>>>>>>>>>>>> Load histograms for trigger used in analysis  <<<<<<<<<<<<<<<<<<<<<<< Needs to be updated!!!
-  // if(gSelection == iStopSelec){
-  // Load histograms for trigger SFs here!!!!
-  // }
   passTrigger = 1;
   isSS = 0;
   nTrueInt = 0;
