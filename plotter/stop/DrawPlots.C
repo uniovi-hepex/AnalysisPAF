@@ -82,9 +82,9 @@ void DrawPlots(TString chan = "ElMu"){
   //>>> Plot with S/B ratio
   if(_PrintSignalPlots){
     DrawSignalPlot("TMT2",        cut, chan, ngbins, 0, 0, gbins, "M_{T2} [GeV]", "MT2");
-    DrawSignalPlot("TMET",        cut, chan, 40,    0,  400, 0, "MET [GeV]",                    "MET");
-    DrawSignalPlot("TDeltaPhi",   cut, chan, 30,    0, 3.15, 0, "#Delta#varphi_{#font[12]{ll}} [rad]",   "DeltaPhi");
-    DrawSignalPlot("TDeltaEta",   cut, chan, 30,    0,  2.4, 0, "#Delta#eta_{#font[12]{ll}} [rad]",      "DeltaEta");
+    //DrawSignalPlot("TMET",        cut, chan, 40,    0,  400, 0, "MET [GeV]",                    "MET");
+    //DrawSignalPlot("TDeltaPhi",   cut, chan, 30,    0, 3.15, 0, "#Delta#varphi_{#font[12]{ll}} [rad]",   "DeltaPhi");
+    //DrawSignalPlot("TDeltaEta",   cut, chan, 30,    0,  2.4, 0, "#Delta#eta_{#font[12]{ll}} [rad]",      "DeltaEta");
   }
 }
 
@@ -235,8 +235,8 @@ void DrawSignalPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t
 	p->AddSample("MuonEG, SingleMuon, SingleElec, DoubleEG, DoubleMuon", "Data", itData);
 
   //>>> Adding signal sample (only one at a time, for now...)
-  p->AddSample("T2tt_mStop175_mLsp1",   "Stop[175, 1]",    itSignal, kGreen+1);
-  //p->AddSample("T2tt_225_50_FS_summer", "Stop[225,50]", itSignal, kCyan); 
+  //p->AddSample("T2tt_mStop175_mLsp1",   "Stop[175, 1]",    itSignal, kGreen+1);
+  p->AddSample("T2tt_225_50_FS_summer", "Stop[225,50]", itSignal, kCyan); 
   p->SetOutputName("Signal");
 
   //>>> Setting StoB ratio... NO DATA  

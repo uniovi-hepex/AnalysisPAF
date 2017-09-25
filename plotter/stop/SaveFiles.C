@@ -15,15 +15,12 @@ R__LOAD_LIBRARY(TResultsTable.C+)
 #include "SSCR.C"
 #include "PDFunc.C"
 
-// TODO:
-// --> Btag SF on weight (TWeight*TBTagSF) for Fast sim signals
-
 //============================================================== Constants
-TString pathToTree = "/pool/ciencias/userstorage/juanr/stop/sep8/";
+TString pathToTree = "/pool/ciencias/userstorage/juanr/stop/sep22/";
 TString NameOfTree = "tree";
 TString outputFolder = "./output/";
 Float_t gbins[] = {0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,140,200}; Int_t ngbins = 26;
-TString FastSimSignals = "S_175_1, S_183_1, S_192_25, S_200_25, S_208_25, S_217_50, S_225_50, S_242_75, S_250_75, SD_160_1, SD_160_20, SD_170_1, SD_170_10, SD_170_20, SD_175_1, SD_175_10, SD_175_20, SD_180_1, SD_180_10, SD_180_20, SD_190_1, SD_190_10, SD_190_20, SD_200_1, SD_200_10, SD_200_20, SD_210_1, SD_210_10, SD_210_20";
+TString FastSimSignals = "S_175_1, S_183_1, S_192_25, S_200_25, S_208_25, S_217_50, S_225_50, S_242_75, S_250_75, SD_160_1, SD_160_10, SD_160_20, SD_170_1, SD_170_10, SD_170_20, SD_175_1, SD_175_10, SD_175_20, SD_180_1, SD_180_10, SD_180_20, SD_190_1, SD_190_10, SD_190_20, SD_200_1, SD_200_10, SD_200_20, SD_210_1, SD_210_10, SD_210_20";
 TString FullSimSignals = "SFS_175_1, SFS_200_50, SFS_225_50, SFS_250_50";
 Plot   *p = nullptr;
 PDFunc *pdf = nullptr;
@@ -41,8 +38,8 @@ void ScaleFakes();
 
 //============================================================== SaveFiles (Main function)
 void SaveFiles(TString options = ""){
-    //CreatePlot("TChannel", BaselineCut, "ElMu", 1, 0, 10,      "Yields",       "CutAndCount", options);
-    CreatePlot("TMT2",     BaselineCut, "ElMu", ngbins, gbins, "M_{T2} [GeV]", "MT2"        , options);
+    CreatePlot("TChannel", BaselineCut, "ElMu", 1, 0, 10,      "Yields",       "CutAndCount", options);
+    //CreatePlot("TMT2",     BaselineCut, "ElMu", ngbins, gbins, "M_{T2} [GeV]", "MT2"        , options);
 }
 
 
@@ -56,7 +53,7 @@ void CreatePlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin
   AddSamples(options);
   ScaleFakes(); 
   if(name != "") p->SetVarName(name);
-  p->doData = false;
+  p->doData = true;
   p->PrintSystYields();
   p->SaveHistograms();
   delete p;
@@ -70,7 +67,7 @@ void CreatePlot(TString var, TString cut, TString chan, Int_t nbins, Float_t* bi
   AddSamples(options);
   ScaleFakes(); 
   if(name != "") p->SetVarName(name);
-  p->doData = false;
+  p->doData = true;
   p->PrintSystYields();
   p->SaveHistograms();
   delete p;
@@ -87,7 +84,7 @@ void AddSamples(TString options){
   p->AddSample("DYJetsToLL_M50_aMCatNLO, DYJetsToLL_M10to50_aMCatNLO", "DY", itBkg, kAzure-8);
   p->AddSample("TW, TbarW", "tW", itBkg, kMagenta);
   p->AddSample("TTbar_Powheg", "ttbar", itBkg, kRed+1);
-  //p->AddSample("MuonEG, SingleMuon, SingleElec, DoubleEG, DoubleMuon", "Data", itData);
+  p->AddSample("MuonEG, SingleMuon, SingleElec, DoubleEG, DoubleMuon", "Data", itData);
 
   //>>> ttbar systematics
   if(options.Contains("ttbar")){
@@ -95,10 +92,20 @@ void AddSamples(TString options){
     p->AddSample("TTbar_Powheg_ueDown", "ttbar", itSys, 1, "ueDown");
     p->AddSample("TTbar_Powheg_isrUp", "ttbar", itSys, 1, "isrUp");
     p->AddSample("TTbar_Powheg_isrDown", "ttbar", itSys, 1, "isrDown");
-
-    //------------> Missing: color Reconnection... FSR?
     p->AddSample("TTbar_Powheg_hdampUp", "ttbar", itSys, 1, "hdampUp");
     p->AddSample("TTbar_Powheg_hdampDown", "ttbar", itSys, 1, "hdampDown");
+    //----------> Missing FSR unc.
+    //p->AddSample("TTbar_Powheg_fsrUp", "ttbar", itSys, 1, "fsrUp");
+    //p->AddSample("TTbar_Powheg_fsrDown", "ttbar", itSys, 1, "fsrDown");
+    
+    //----------> Missing unc on top pt????, b-fragmentation
+
+    //>>> Color Reconnection
+    p->AddSample("TTbar_Powheg_erdON", "ttbar", itSys, 1, "Powheg_erdON");
+    p->AddSample("TTbar_QCDbasedCRTune_erdON", "ttbar", itSys, 1, "QCDbasedCRTune_erdON");
+    p->AddSample("TTbar_GluonMoveCRTune", "ttbar", itSys, 1, "GluonMoveCRTune");
+    p->AddSample("TTbar_GluonMoveCRTune_erdON", "ttbar", itSys, 1, "GluonMoveCRTune_erdON");
+    p->UseEnvelope("ttbar", "Powheg_erdON, QCDbasedCRTune_erdON, GluonMoveCRTune, GluonMoveCRTune_erdON", "CR");
 
     //>>> PDF and scale using LHE weights...
     Histo* hPDFUp   =  pdf->GetSystHisto("up",   "pdf")->CloneHisto();
@@ -116,7 +123,7 @@ void AddSamples(TString options){
   
   //>>> FulSim samples
   if(options.Contains("FullSim")){
-    p->AddSample("T2tt_175_1_FS",         "SFS_175_1",  itSignal, kCyan);
+    //p->AddSample("T2tt_175_1_FS",         "SFS_175_1",  itSignal, kCyan);
     p->AddSample("T2tt_200_50_FS_summer", "SFS_200_50", itSignal, kCyan);
     p->AddSample("T2tt_225_50_FS_summer", "SFS_225_50", itSignal, kPink);
     p->AddSample("T2tt_250_50_FS_summer", "SFS_250_50", itSignal, 1);

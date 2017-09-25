@@ -17,7 +17,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 void DrawComp(TString systName, Bool_t VariedSample = false);
 
 //=== Constants
-TString pathToTree = "/pool/ciencias/userstorage/juanr/stop/sep8/";
+TString pathToTree = "/pool/ciencias/userstorage/juanr/stop/sep22/";
 TString NameOfTree = "tree";
 TString outputFolder = "./output/";
 TString BaselineCut = "TNJets >= 2 && TNBtags >= 1 && !TIsSS && TNVetoLeps < 3 && TPassTrigger && TPassMETfilters";
@@ -29,13 +29,13 @@ Plot* p = nullptr;
 PDFunc *pdf = nullptr;
 
 //=== Systematics
-enum Syst{kJES, kBtag, kMuon, kElec, kPU, kUE, kISR, kFSR, kJER, kTrig, khdamp, kPDF, nSyst}; // khDamp, kCR, kMET
+enum Syst{kJES, kBtag, kMuon, kElec, kPU, kUE, kISR, kFSR, kJER, kTrig, khdamp, kME, kPDF, kCR, nSyst}; // khDamp, kCR, kMET
 
 //=== Main function
 void SystematicPlots(TString chan = "ElMu"){
 //  for(Int_t pl = 0; pl < nSyst; pl++) DrawPlot("TMT2", BaselineCut, chan, ngbins, 0, 0, gbins, "M_{T2} [GeV]", "MT2", pl);
 //  for(Int_t pl = 0; pl < nSyst; pl++) DrawPlot("TMT2", BaselineCut + " && TMT2 > 0", chan, ngbins, 0, 0, gbins, "M_{T2} [GeV]", "MT2no0", pl);
- DrawPlot("TMT2", BaselineCut, chan, ngbins, 0, 0, gbins, "M_{T2} [GeV]", "MT2", kPDF);
+ DrawPlot("TMT2", BaselineCut, chan, ngbins, 0, 0, gbins, "M_{T2} [GeV]", "MT2", kCR);
 }
 
 //=== Plotting function
@@ -51,7 +51,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 
   //>>> Ratio range for each syst variation
   Float_t RatioMax = 1.2; Float_t RatioMin = 0.8;
-  if(pl == kTrig || pl == kElec || pl == kMuon || pl == kJER || pl == kPDF){ RatioMax = 1.03; RatioMin = 0.97;} 
+  if(pl == kCR || pl == kTrig || pl == kElec || pl == kMuon || pl == kJER || pl == kPDF){ RatioMax = 1.03; RatioMin = 0.97;} 
   if(pl == kBtag){ RatioMax = 1.05; RatioMin = 0.95;} 
   if(pl == kJES || pl == kPU || pl == kUE || pl == khdamp){ RatioMax = 1.1; RatioMin = 0.9;} 
   p->SetRatioMin(RatioMin); p->SetRatioMax(RatioMax);
@@ -70,7 +70,6 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   if(pl == kUE)     DrawComp("ue", true);
   if(pl == kISR)    DrawComp("isr", true);
   if(pl == kFSR)    DrawComp("fsr", true);
-  //if(pl == kCR)    return;
 
   //>>> Btag includes mistag
   if(pl == kBtag){
@@ -93,6 +92,25 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     p->DrawComp("JER", 1);
   }
   
+  //>>> Color Reconnection
+  if(pl == kCR){
+    p->AddSample("TTbar_Powheg_erdON", "ttbar", itSys, 1, "Powheg_erdON");
+    p->AddSample("TTbar_QCDbasedCRTune_erdON", "ttbar", itSys, 1, "QCDbasedCRTune_erdON");
+    p->AddSample("TTbar_GluonMoveCRTune", "ttbar", itSys, 1, "GluonMoveCRTune");
+    p->AddSample("TTbar_GluonMoveCRTune_erdON", "ttbar", itSys, 1, "GluonMoveCRTune_erdON");
+    p->GetHisto("Nominal")->SetProcess("ttbar"); 
+
+    p->UseEnvelope("ttbar", "Powheg_erdON, QCDbasedCRTune_erdON, GluonMoveCRTune, GluonMoveCRTune_erdON", "CR");
+    Histo* hCRUp = p->GetHisto("ttbar", "CRUp")->CloneHisto("ttbar_CRUp");
+    Histo* hCRDo = p->GetHisto("ttbar", "CRDown")->CloneHisto("ttbar_CRDo");
+    hCRUp->SetType(itSignal); hCRDo->SetType(itSignal);
+    hCRUp->SetStyle(); hCRDo->SetStyle();
+    hCRUp->SetColor(kGreen+1); hCRDo->SetColor(kRed+1);
+    p->AddToHistos(hCRUp); p->AddToHistos(hCRDo);
+    p->DrawComp("CR", 1);
+  }
+
+
   // The PDF and Scale ME variations
   if(pl == kPDF || pl == kME){
     if(bin0 == binN) pdf = new PDFunc(pathToTree, "TTbar_Powheg", NameOfTree, cut, chan, var, nbins, bins, "");
