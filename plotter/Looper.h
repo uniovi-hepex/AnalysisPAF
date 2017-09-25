@@ -22,6 +22,7 @@ std::vector<TString> TStringToVector(TString t, char separator = ',');
 void PrintVector(std::vector<TString> v);
 void PrintVector(std::vector<Float_t> v);
 
+Histo* GetHisto(TString path, TString samplename, TString treeName = "tree", TString var = "", TString cut = "", TString chan = "TChannel > 0", TString weight = "TWeight", TString sys = "", Int_t nbins = 1, Float_t bin0 = 0, Float_t binN = 1, Float_t *bins = nullptr, TString options = "");
 std::vector<TString> GetAllVars(TString varstring, Bool_t verbose = false); 
 TString CraftFormula(TString cut, TString chan, TString sys, TString weight, TTree* tree, TString options = "");
 TString CraftVar(TString varstring, TString sys, TTree* tree);
