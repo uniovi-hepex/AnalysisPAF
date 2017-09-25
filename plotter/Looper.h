@@ -86,6 +86,7 @@ class Looper{
      if(FormulasCuts) delete FormulasCuts;
      if(FormulasVars) delete FormulasVars;
      if(FormulasLHE)  delete FormulasLHE;
+     FRhistos.clear();
      //if(Hist) delete Hist;
    };
 
@@ -110,8 +111,6 @@ class Looper{
 	 void SetTreeName(  TString t){treeName     = t;}
 	 void SetPath(      TString t){path         = t;}
    void SetWeight(    TString t){weight       = t;}
-
-   void loadHisto2D(TString Path_to_histo, TString histo_name);
 
    Float_t GetPDFweight(TString sys = "PDF");
    Float_t GetScaleWeight(TString sys = "Scale");
@@ -171,6 +170,8 @@ class Looper{
    TTreeFormula *FornSelLep;
    TTreeFormula *FornSelTau;
    TTreeFormula *FornFakeLep;
+
+   std::vector<TH1F*> FRhistos;
 
 };
 

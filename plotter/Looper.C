@@ -1,3 +1,4 @@
+#include "FRFunctions.C"
 #include "Looper.h"
 
 void Looper::SetFormulas(TString systematic){
@@ -127,11 +128,6 @@ Histo* Looper::GetHisto(TString sample, TString sys){
   return Hist;
 }
 
-
-//=== To be done
-void Looper::loadHisto2D(TString Path_to_histo, TString histo_name){
-
-}
 
 //=== Magical function that obtains a simple plot from a minitree using Looper
 Histo* GetHisto(TString path, TString samplename, TString treeName, TString var, TString cut, TString chan, TString weight, TString sys, Int_t nbins, Float_t bin0, Float_t binN, Float_t *bins, TString options){
