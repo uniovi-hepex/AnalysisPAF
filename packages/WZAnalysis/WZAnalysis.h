@@ -67,6 +67,8 @@ class WZAnalysis : public PAFChainItemSelector{
     void GetGenJetVariables(std::vector<Jet> genJets, std::vector<Jet> mcJets);
     void GetLeptonsByWP(Int_t wPValue); 
     void GetMET();
+    Bool_t passesMCTruth(std::vector<Lepton> sLep, std::vector<Lepton> gLep);
+    
     Int_t nFiduJets; Int_t nFidubJets; 
 
     Float_t TrigSF;

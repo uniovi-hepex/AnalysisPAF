@@ -79,7 +79,7 @@ class LeptonSelector : public PAFChainItemSelector{
     Int_t ngenLep;
     Int_t ngenLepFromTau;
     Int_t gpdgMId;
-
+    Int_t gpdgGMId;
     Int_t nLeptonsFromTau;
     Int_t nSelLeptons;
     Int_t nGenLeptons;

@@ -73,6 +73,9 @@ void WZAnalysis::InsideLoop(){
   passMETfilters = GetParam<Bool_t>("METfilters");
   passTrigger    = GetParam<Bool_t>("passTrigger");
   TEvtNum        = Get<ULong64_t>("evt");
+
+  getMatchGenSelLeptons(selLeptons, genLeptons, 0.3); // Match gen and sel
+
   for (int wP = 0; wP < nWPoints; wP++){
     // Leptons and Jets
 
@@ -132,7 +135,7 @@ void WZAnalysis::InsideLoop(){
       // Event Selection
       // ===================================================================================================================
 
-      if(TNTightLeps == 3 && TNOSSF > 0){
+      if(TNTightLeps == 3 && TNOSSF > 0 && passesMCTruth(tightLeptons, genLeptons)){
         std::vector<Lepton> tempLeps = AssignWZLeptons(tightLeptons);
         lepZ1 = tempLeps.at(0);
         lepZ2 = tempLeps.at(1);
@@ -226,6 +229,23 @@ void WZAnalysis::SetEventVariables(TTree* iniTree){
   iniTree->Branch("TMET_Phi",     &TMET_Phi,     "TMET_Phi/F");
 }
 
+Bool_t WZAnalysis::passesMCTruth(std::vector<Lepton> sLep, std::vector<Lepton> gLep){
+  Bool_t pass = true;
+  if (!gIsData){
+    for (int i = 0; i < sLep.size(); i++){
+      if (sLep.at(i).lepMatch == -1) pass = false;
+      else {
+        Lepton theLep = sLep.at(i);
+        Lepton genMatch = gLep.at(sLep.at(i).lepMatch);
+        if (!genMatch.isPrompt && !theLep.isPrompt){
+          pass = false;
+        }
+      } 
+    }
+  }
+  return pass;
+}
+
 //#####################################################################
 // Get Variables
 //------------------------------------------------------------------
@@ -270,7 +290,7 @@ void WZAnalysis::GetLeptonVariables(std::vector<Lepton> tightLeptons, std::vecto
     TLep_Eta[i]    = tightLeptons.at(i).Eta();    
     TLep_Phi[i]    = tightLeptons.at(i).Phi();    
     TLep_E[i]      = tightLeptons.at(i).E();    
-    TLep_Charge[i] = tightLeptons.at(i).charge;    
+    TLep_Charge[i] = tightLeptons.at(i).charge;
   }
   //Require exactly 3 leptons 
   if(TNTightLeps != 3 ) gChannel = -1;
