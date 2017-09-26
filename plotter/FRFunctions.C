@@ -57,6 +57,7 @@ TH2F* GetFRhisto(TString name){
   return h;
 }
 
+//=== This is only an example in case you have only one fakeable lepton!!!!
 Float_t GetFRweight(Float_t pt, Float_t eta, Float_t mvaVal){
   Float_t f = 1; Int_t bin = 0; 
 
@@ -78,7 +79,7 @@ Float_t GetFRweight(Float_t pt, Float_t eta, Float_t mvaVal){
   f   = h->GetBinContent(bin);
 
   //>>> This function is for a single lepton...
-  return 1/(1-f);
+  return f/(1-f);
 }
 
 #endif
