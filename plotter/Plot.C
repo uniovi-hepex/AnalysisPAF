@@ -205,11 +205,18 @@ void Plot::AddSystematic(TString var, TString pr){
 }
 
 void Plot::AddStatError(TString process){
-  if(process == ""){ 
-    for(Int_t iProcess = 0; iProcess < (Int_t) VBkgs.size(); iProcess++) AddStatError(VBkgs.at(iProcess)->GetProcess());
-    for(Int_t iSig = 0; iSig < (Int_t) VSignals.size(); iSig++) AddStatError(VSignals.at(iSig)->GetProcess());
+  TString pr;
+  if(process == ""){
+    for(Int_t i = 0; i < (Int_t) VTagProcesses.size(); i++){
+      pr = VTagProcesses.at(i);
+      cout << "i = " << i << ", process = " << pr << endl;
+      if(i != 0) if(pr == VTagProcesses.at(i-1)) continue;
+      cout << "Vamos a poner el stat!!" << endl;
+      AddStatError(pr);
+    }
     return;
   }
+  //cout << " --> process = " << process << endl;
   Float_t nom; Float_t stat;
   Histo *hUp   = (Histo*)GetHisto(process)->CloneHisto(process + "_statUp");
   Histo* hDown = (Histo*)GetHisto(process)->CloneHisto(process + "_statDown");
@@ -507,7 +514,7 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString options){
   else signal = VSignals.at(0);
   yield = VSignals.at(0)->Integral();
   if(doNorm) signal->Scale(1/yield);
-  signal->SetDrawStyle("pe");
+  signal->SetDrawStyle(drawstyle);
   signal->SetTitle("");
   signal->SetLineWidth(3);
   signal->SetMarkerStyle(24); signal->SetMarkerSize(1.8);
