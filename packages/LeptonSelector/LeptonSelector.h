@@ -73,6 +73,7 @@ class LeptonSelector : public PAFChainItemSelector{
     Int_t isGlobalMuon;
     Int_t isTrackerMuon;
     Int_t lepMVASUSYId;
+    Bool_t isPrompt;
     
     // genLeptons
     Int_t ngenLep;

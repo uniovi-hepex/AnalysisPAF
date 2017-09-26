@@ -848,7 +848,10 @@ void LeptonSelector::InsideLoop(){
       //if(1){
       tL.SetSF(   LepSF->GetLeptonSF(     pt, eta, tL.type) ); // Set SF and error
       tL.SetSFerr(LepSF->GetLeptonSFerror(pt, eta, tL.type) );
-      if(gSelection == iWZSelec) tL.idMVA = lepMVASUSYId;
+      if(gSelection == iWZSelec){
+        tL.idMVA    = lepMVASUSYId;
+        if(!gIsData){ tL.isPrompt = isPrompt };
+      }
       selLeptons.push_back(tL);
     }
     else DumpEvent(evt, Form(" >>> Lepton %i (pt = %g, eta = %g, type = %i): NO PASA", i, tP.Pt(), tP.Eta(), type));
@@ -899,6 +902,9 @@ void LeptonSelector::InsideLoop(){
       GetGenLeptonVariables(i);
       if(gpdgMId == 23 || gpdgMId == 24 || gpdgMId == 25){
         tL = Lepton(tP, charge, type);
+        if(gSelection == iWZSelec){
+          tL.isPrompt = isPrompt;
+        }
         //if(tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta() < 2.4)) genLeptons.push_back(tL);
         genLeptons.push_back(tL);
       }
@@ -907,6 +913,9 @@ void LeptonSelector::InsideLoop(){
       GetGenLepFromTauVariables(i);
       if(gpdgMId == 23 || gpdgMId == 24 || gpdgMId == 25){
         tL = Lepton(tP, charge, type);
+        if(gSelection == iWZSelec){
+          tL.isPrompt = isPrompt;
+        }
         nLeptonsFromTau++;
        // if(tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta() < 2.4)i) genLeptons.push_back(tL);
         genLeptons.push_back(tL);
@@ -993,7 +1002,7 @@ void LeptonSelector::GetLeptonVariables(Int_t i){ // Once per muon, get all the 
   SegComp        = Get<Float_t>("LepGood_segmentCompatibility",i);   //*
   isGlobalMuon = Get<Int_t>("LepGood_isGlobalMuon",i);
   isTrackerMuon = Get<Int_t>("LepGood_isTrackerMuon",i);
-
+  if(!gIsData){ isPrompt = (Get<Int_t>("LepGood_mcPrompt",i) != 0) || (Get<Int_t>("LepGood_mcPromptTau",i) != 0); }
   SF = 1;
 }
 
@@ -1037,6 +1046,7 @@ void LeptonSelector::GetGenLeptonVariables(Int_t i){
   charge = Get<Int_t>("genLep_charge", i);
   gpdgMId = TMath::Abs(Get<Int_t>("genLep_motherId", i));
   type = TMath::Abs(Get<Int_t>("genLep_pdgId",i)) == 11 ? 1 : 0;
+  isPrompt = (Get<Int_t>("genLep_isPromptHard",i) != 0);
 }
 
 void LeptonSelector::GetGenLepFromTauVariables(Int_t i){
@@ -1044,4 +1054,5 @@ void LeptonSelector::GetGenLepFromTauVariables(Int_t i){
   charge = Get<Int_t>("genLepFromTau_charge", i);
   gpdgMId = TMath::Abs(Get<Int_t>("genLepFromTau_grandmotherId", i));
   type = TMath::Abs(Get<Int_t>("genLepFromTau_pdgId",i)) == 11 ? 1 : 0;
+  isPrompt = (Get<Int_t>("genLep_isPromptHard",i) != 0);
 }

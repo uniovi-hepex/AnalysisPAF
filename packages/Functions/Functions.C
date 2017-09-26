@@ -600,3 +600,25 @@ std::vector<Lepton> AssignWZLeptons(std::vector<Lepton> leptonList){//Assign W a
   }  
   return WZleps;
 }
+
+
+void getMatchGenSelLeptons(std::vector<Lepton> selectedLeptons, std::vector<Lepton> generatedLeptons, Float_t dRMax){ //Match gen/sel leptons by close dR^2
+  Int_t nSel       = selectedLeptons.size();
+  Int_t nGen       = generatedLeptons.size();
+  std::pair<Float_t,Int_t> dRValues[nSel*nGen];
+  for (Int_t i = 0; i < nSel ; i++){
+    for (Int_t j = 0; j < nGen ; j++){
+      dRValues[i*nGen + j] = {selectedLeptons.at(i).p.DeltaR(generatedLeptons.at(j).p),i*nGen+j};
+      if (selectedLeptons.at(i).type != generatedLeptons.at(j).type){
+        dRValues[i*nGen +j].first = 2*dRMax;
+      }
+    }
+  }
+  std::sort(dRValues, dRValues + nGen*nSel);
+  for (Int_t k = 0; k < nGen*nSel; k++){
+    if (dRValues[k].first * dRValues[k].first < dRMax * dRMax &&  selectedLeptons.at(dRValues[k].second / nGen).lepMatch == -1 && generatedLeptons.at(dRValues[k].second % nGen).lepMatch == -1){
+      selectedLeptons.at(dRValues[k].second / nGen).lepMatch  =  dRValues[k].second % nGen;
+      generatedLeptons.at(dRValues[k].second % nGen).lepMatch =  dRValues[k].second / nGen;
+    }
+  }
+}
