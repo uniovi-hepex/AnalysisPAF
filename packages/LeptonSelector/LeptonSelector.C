@@ -859,7 +859,7 @@ void LeptonSelector::InsideLoop(){
     else DumpEvent(evt, Form(" >>> Lepton %i (pt = %g, eta = %g, type = %i): NO PASA", i, tP.Pt(), tP.Eta(), type));
     if(isVetoLepton(tL)){ // If you need to veto extra leptons...
       //tL.SetSF(1); tL.SetSFerr(1); // To be updated if ever needed
-      if(gSelection == iWZSelec) tL.idMVA = lepMVASUSYId;
+      if(gSelection == iWZSelec) tL.idMVA = lepMVASUSYId; // Or just use it as FO for the loose-to-tight fake estimations
       if(gSelection == i4tSelec){
         if(!isGoodLepton(tL)) vetoLeptons.push_back(tL);
       }

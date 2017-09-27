@@ -79,20 +79,28 @@ void WZAnalysis::InsideLoop(){
 
   for (int wP = 0; wP < nWPoints; wP++){
     // Leptons and Jets
-
+    //std::cout << "Create vectors\n";
       tightLeptons = {};
       fakeableLeptons = {};
       GetLeptonsByWP(wP);
+    //std::cout << "Get Tight/FO\n";
       GetLeptonVariables(tightLeptons, fakeableLeptons, looseLeptons);
+    //std::cout << "Get Lepton\n";
       GetJetVariables(selJets, Jets15);
+    //std::cout << "Get Jet\n";
       GetGenJetVariables(genJets, mcJets);
+    //std::cout << "Get GenVariables\n";
+
       GetMET();
-      tightLeptons = getMatchGenSelLeptons(tightLeptons, genLeptons, 0.3, true); // Match gen and sel Leptons, require same Id
-      tightLeptons = getMatchGenSelLeptons(tightLeptons, genParticles, 0.3, false); // Match gen particles and sel Leptons, do not require same Id (allow for taus)
+
+    //std::cout << "Match gen/reco\n";
+      fakeableLeptons = getMatchGenSelLeptons(fakeableLeptons, genLeptons, 0.3, true); // Match gen and sel Leptons, require same Id
+      fakeableLeptons = getMatchGenSelLeptons(fakeableLeptons, genParticles, 0.3, false); // Match gen particles and sel Leptons, do not require same Id (allow for taus)
 
     if(TNFOLeps == 3 && passTrigger && passMETfilters){ // trilepton event with OSSF + l, passes trigger and MET filters
       // Deal with weights:
-      Float_t lepSF   = tightLeptons.at(0).GetSF(0)*tightLeptons.at(1).GetSF(0)*tightLeptons.at(2).GetSF(0);
+    //std::cout << "Pass 3FO\n";
+      Float_t lepSF   = fakeableLeptons.at(0).GetSF(0)*fakeableLeptons.at(1).GetSF(0)*fakeableLeptons.at(2).GetSF(0);
       Float_t ElecSF = 1; Float_t MuonSF = 1;
       Float_t ElecSFUp = 1; Float_t ElecSFDo = 1; Float_t MuonSFUp = 1; Float_t MuonSFDo = 1;
       Float_t stat = 0; 
@@ -101,29 +109,29 @@ void WZAnalysis::InsideLoop(){
       //Additional 1% for ID + 0.5% for Isolation + 0.5% single muon triggers
   
       if(TChannel == iElElEl){
-        ElecSF   = tightLeptons.at(0).GetSF( 0)*tightLeptons.at(1).GetSF( 0)*tightLeptons.at(2).GetSF( 0);
-        ElecSFUp = tightLeptons.at(0).GetSF( 1)*tightLeptons.at(1).GetSF( 1)*tightLeptons.at(2).GetSF( 1);
-        ElecSFDo = tightLeptons.at(0).GetSF(-1)*tightLeptons.at(1).GetSF(-1)*tightLeptons.at(2).GetSF(-1);
+        ElecSF   = fakeableLeptons.at(0).GetSF( 0)*fakeableLeptons.at(1).GetSF( 0)*fakeableLeptons.at(2).GetSF( 0);
+        ElecSFUp = fakeableLeptons.at(0).GetSF( 1)*fakeableLeptons.at(1).GetSF( 1)*fakeableLeptons.at(2).GetSF( 1);
+        ElecSFDo = fakeableLeptons.at(0).GetSF(-1)*fakeableLeptons.at(1).GetSF(-1)*fakeableLeptons.at(2).GetSF(-1);
         MuonSFUp = 1; MuonSFDo = 1; MuonSF = 1;
       }
       else if(TChannel == iMuMuMu){
-        MuonSF   = tightLeptons.at(0).GetSF( 0)*tightLeptons.at(1).GetSF( 0)*tightLeptons.at(2).GetSF( 0);
-        MuonSFUp = tightLeptons.at(0).GetSF( 1)*tightLeptons.at(1).GetSF( 1)*tightLeptons.at(2).GetSF( 1);
-        MuonSFDo = tightLeptons.at(0).GetSF(-1)*tightLeptons.at(1).GetSF(-1)*tightLeptons.at(2).GetSF(-1);
+        MuonSF   = fakeableLeptons.at(0).GetSF( 0)*fakeableLeptons.at(1).GetSF( 0)*fakeableLeptons.at(2).GetSF( 0);
+        MuonSFUp = fakeableLeptons.at(0).GetSF( 1)*fakeableLeptons.at(1).GetSF( 1)*fakeableLeptons.at(2).GetSF( 1);
+        MuonSFDo = fakeableLeptons.at(0).GetSF(-1)*fakeableLeptons.at(1).GetSF(-1)*fakeableLeptons.at(2).GetSF(-1);
         ElecSFUp = 1; ElecSFDo = 1; ElecSF = 1;
       }
       else{
         MuonSFUp = 1; MuonSFDo = 1; MuonSF = 1;ElecSFUp = 1; ElecSFDo = 1; ElecSF = 1;
         for (int i = 0; i <3; i ++){
-          if (tightLeptons.at(i).isMuon){
-            MuonSF   *= tightLeptons.at(i).GetSF( 0);
-            MuonSFUp *= tightLeptons.at(i).GetSF( 1);
-            MuonSFDo *= tightLeptons.at(i).GetSF(-1);        
+          if (fakeableLeptons.at(i).isMuon){
+            MuonSF   *= fakeableLeptons.at(i).GetSF( 0);
+            MuonSFUp *= fakeableLeptons.at(i).GetSF( 1);
+            MuonSFDo *= fakeableLeptons.at(i).GetSF(-1);        
           }
           else{
-            ElecSF   *= tightLeptons.at(i).GetSF( 0);
-            ElecSFUp *= tightLeptons.at(i).GetSF( 1);
-            ElecSFDo *= tightLeptons.at(i).GetSF(-1);        
+            ElecSF   *= fakeableLeptons.at(i).GetSF( 0);
+            ElecSFUp *= fakeableLeptons.at(i).GetSF( 1);
+            ElecSFDo *= fakeableLeptons.at(i).GetSF(-1);        
           }
         }
       }
@@ -141,21 +149,21 @@ void WZAnalysis::InsideLoop(){
       TMtWZ = -999;
       TMtW  = -999;
       TMll  = -999;
+      std::vector<Lepton> tempLeps = AssignWZLeptons(fakeableLeptons);
+      lepZ1 = tempLeps.at(0);
+      lepZ2 = tempLeps.at(1);
+      lepW  = tempLeps.at(2);
+      TLorentzVector metVector = TLorentzVector();
+      metVector.SetPtEtaPhiM(TMET, TMET_Phi, 0., 0.);
+      TM3l = (lepZ1.p + lepZ2.p + lepW.p).M();
+      TMtWZ = (lepZ1.p + lepZ2.p + lepW.p + metVector).Mt();
+      TMtW  = (lepW.p + metVector).Mt();
+      TMll  = (lepZ1.p + lepZ2.p).M();
       if(TNTightLeps == 3 && TNOSSF > 0 && passesMCTruth(tightLeptons,1,3)){
-        std::vector<Lepton> tempLeps = AssignWZLeptons(tightLeptons);
-        lepZ1 = tempLeps.at(0);
-        lepZ2 = tempLeps.at(1);
-        lepW  = tempLeps.at(2);
-        TLorentzVector metVector = TLorentzVector();
-        metVector.SetPtEtaPhiM(TMET, TMET_Phi, 0., 0.);
-        TM3l = (lepZ1.p + lepZ2.p + lepW.p).M();
-        TMtWZ = (lepZ1.p + lepZ2.p + lepW.p + metVector).Mt();
-        TMtW  = (lepW.p + metVector).Mt();
-        TMll  = (lepZ1.p + lepZ2.p).M();
-
+        //std::cout << "Pass 3Tight, hasOS,passMC\n";
         if (lepZ1.Pt() > 25 && lepZ2.Pt() > 10 && lepW.Pt() > 25){//3 lepton, has OSSF, leptons assigned to W and Z. Fill histos from here onwards
         
-          if(TMath::Abs(TMll - nomZmass)< 15. && TMinMll > 4. && (lepZ1.p + lepZ2.p + lepW.p).M() > 100.  ){ //  Z window + exlcude low masses + M_3l selection 
+          if(TMath::Abs(TMll - nomZmass)< 15. && TMinMll > 4. && TM3l > 100.  ){ //  Z window + exlcude low masses + M_3l selection 
             // The last two cuts define the Control/Signal regions
             
             // Signal Region
@@ -181,9 +189,8 @@ void WZAnalysis::InsideLoop(){
           } 
         }
       }
-    //fTree[wP] -> Fill();  //Skimming for 3 FO
+    fTree[wP] -> Fill();  //Skimming for 3 FO
     }
-    fTree[wP] -> Fill();
   }
 }
 
@@ -282,11 +289,12 @@ void WZAnalysis::GetLeptonsByWP(Int_t wPValue){
   else {
     for (int k = 0; k < nFakeableLeptons; k++){
       if (foLeptons.at(k).idMVA%10 > wPValue){
+        //std::cout << k << std::endl;
         fakeableLeptons.push_back(foLeptons.at(k));
         fakeableLeptons.back().SetSF(foLeptons.at(k).GetSF(0)*leptonSFEWK->GetLeptonSF(foLeptons.at(k).Pt(), foLeptons.at(k).Eta(), foLeptons.at(k).type));
       }
     }
-  
+
     for (int k = 0; k < nTightLeptons; k++){
       if (selLeptons.at(k).idMVA%10 > wPValue){
         tightLeptons.push_back(selLeptons.at(k));
@@ -300,37 +308,39 @@ void WZAnalysis::GetLeptonVariables(std::vector<Lepton> tightLeptons, std::vecto
   TNTightLeps = tightLeptons.size();
   Int_t nVetoLeptons = foLeptons.size();
   TNFOLeps = nVetoLeptons;
+  //std::cout << "NLeps:" << TNFOLeps << ", NTight:" << TNTightLeps << std::endl;
   for(Int_t i = 0; i < TNFOLeps; i++){
-    TLep_Pt[i]     = tightLeptons.at(i).Pt();    
-    TLep_Eta[i]    = tightLeptons.at(i).Eta();    
-    TLep_Phi[i]    = tightLeptons.at(i).Phi();    
-    TLep_E[i]      = tightLeptons.at(i).E();    
-    TLep_Charge[i] = tightLeptons.at(i).charge;
+    TLep_Pt[i]     = foLeptons.at(i).Pt();    
+    TLep_Eta[i]    = foLeptons.at(i).Eta();    
+    TLep_Phi[i]    = foLeptons.at(i).Phi();    
+    TLep_E[i]      = foLeptons.at(i).E();    
+    TLep_Charge[i] = foLeptons.at(i).charge;
   }
   //Require exactly 3 leptons 
-  if(TNTightLeps != 3 ) gChannel = -1;
+  if(TNFOLeps != 3 ) gChannel = -1;
   //Charge compatibility with WZ production
-  else if(TMath::Abs(tightLeptons.at(0).charge + tightLeptons.at(1).charge + tightLeptons.at(2).charge) != 1) gChannel = -1;
+  else if(TMath::Abs(fakeableLeptons.at(0).charge + fakeableLeptons.at(1).charge + fakeableLeptons.at(2).charge) != 1) gChannel = -1;
   //Combinatory of posible final leptons
-  else if(tightLeptons.at(0).isMuon && tightLeptons.at(1).isMuon && tightLeptons.at(2).isMuon) gChannel = iMuMuMu;
-  else if(tightLeptons.at(0).isMuon && tightLeptons.at(1).isMuon && tightLeptons.at(2).isElec) gChannel = iElMuMu;
-  else if(tightLeptons.at(0).isMuon && tightLeptons.at(1).isElec && tightLeptons.at(2).isMuon) gChannel = iElMuMu;
-  else if(tightLeptons.at(0).isMuon && tightLeptons.at(1).isElec && tightLeptons.at(2).isElec) gChannel = iElElMu;
-  else if(tightLeptons.at(0).isElec && tightLeptons.at(1).isMuon && tightLeptons.at(2).isMuon) gChannel = iElMuMu;
-  else if(tightLeptons.at(0).isElec && tightLeptons.at(1).isMuon && tightLeptons.at(2).isElec) gChannel = iElElMu;
-  else if(tightLeptons.at(0).isElec && tightLeptons.at(1).isElec && tightLeptons.at(2).isMuon) gChannel = iElElMu;
-  else if(tightLeptons.at(0).isElec && tightLeptons.at(1).isElec && tightLeptons.at(2).isElec) gChannel = iElElEl;
+  else if(fakeableLeptons.at(0).isMuon && fakeableLeptons.at(1).isMuon && fakeableLeptons.at(2).isMuon) gChannel = iMuMuMu;
+  else if(fakeableLeptons.at(0).isMuon && fakeableLeptons.at(1).isMuon && fakeableLeptons.at(2).isElec) gChannel = iElMuMu;
+  else if(fakeableLeptons.at(0).isMuon && fakeableLeptons.at(1).isElec && fakeableLeptons.at(2).isMuon) gChannel = iElMuMu;
+  else if(fakeableLeptons.at(0).isMuon && fakeableLeptons.at(1).isElec && fakeableLeptons.at(2).isElec) gChannel = iElElMu;
+  else if(fakeableLeptons.at(0).isElec && fakeableLeptons.at(1).isMuon && fakeableLeptons.at(2).isMuon) gChannel = iElMuMu;
+  else if(fakeableLeptons.at(0).isElec && fakeableLeptons.at(1).isMuon && fakeableLeptons.at(2).isElec) gChannel = iElElMu;
+  else if(fakeableLeptons.at(0).isElec && fakeableLeptons.at(1).isElec && fakeableLeptons.at(2).isMuon) gChannel = iElElMu;
+  else if(fakeableLeptons.at(0).isElec && fakeableLeptons.at(1).isElec && fakeableLeptons.at(2).isElec) gChannel = iElElEl;
+  //std::cout << "Channel Set\n";
   TMinMll = 100000;
   TNOSSF = 0;
-  for(Int_t i = 0; i < TNTightLeps; i++){
-    for(Int_t j = i+1; j < TNTightLeps; j++){
-      if (tightLeptons.at(j).isMuon && tightLeptons.at(i).isMuon && tightLeptons.at(i).charge*tightLeptons.at(j).charge == -1)           TNOSSF++;
-      if (tightLeptons.at(j).isElec && tightLeptons.at(i).isElec && tightLeptons.at(i).charge*tightLeptons.at(j).charge == -1)           TNOSSF++;
-      Float_t hypMll = (tightLeptons.at(j).p + tightLeptons.at(i).p).M();
+  for(Int_t i = 0; i < TNFOLeps; i++){
+    for(Int_t j = i+1; j < TNFOLeps; j++){
+      if (fakeableLeptons.at(j).isMuon && fakeableLeptons.at(i).isMuon && fakeableLeptons.at(i).charge*fakeableLeptons.at(j).charge == -1)           TNOSSF++;
+      if (fakeableLeptons.at(j).isElec && fakeableLeptons.at(i).isElec && fakeableLeptons.at(i).charge*fakeableLeptons.at(j).charge == -1)           TNOSSF++;
+      Float_t hypMll = (fakeableLeptons.at(j).p + fakeableLeptons.at(i).p).M();
       if (hypMll < TMinMll) TMinMll = hypMll;
     }
   }
-
+  //std::cout << "Mass computed\n";
   TChannel = gChannel;
   gChannel = gChannel -1; // gchannel used for chan index of histograms
 }
