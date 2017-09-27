@@ -4,6 +4,8 @@
 #include "TLorentzVector.h"
 #include "TString.h"
 
+class Lepton;
+
 class Lepton : public TObject{
   public:
     Lepton(){
@@ -59,8 +61,8 @@ class Lepton : public TObject{
     Float_t Phi(){return p.Phi();}
     Float_t E(){return p.E();}
 
-    Int_t lepMatch = -1;
-    Bool_t isPrompt;
+    Lepton * lepMatch = 0;
+    Int_t isPrompt;
   protected:
     Float_t SF;
     Float_t SFerr;

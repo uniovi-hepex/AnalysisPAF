@@ -832,6 +832,8 @@ void LeptonSelector::InsideLoop(){
   looseLeptons.clear();
   genLeptons.clear();
   vetoLeptons.clear();
+  genParticles.clear();
+
   nLeptonsFromTau = 0;
   // Loop over the leptons and select
   nLep     = Get<Int_t>("nLepGood");
@@ -898,37 +900,57 @@ void LeptonSelector::InsideLoop(){
   if(!gIsData){
     ngenLep         = Get<Int_t>("ngenLep");
     ngenLepFromTau  = Get<Int_t>("ngenLepFromTau");
+    ngenPart        = Get<Int_t>("nGenPart");
     for(Int_t i = 0; i < ngenLep; i++){
       GetGenLeptonVariables(i);
-      if(gpdgMId == 23 || gpdgMId == 24 || gpdgMId == 25){
+      if(gSelection == iWZSelec){
         tL = Lepton(tP, charge, type);
-        if(gSelection == iWZSelec){
-          tL.isPrompt = isPrompt;
-        }
+        tL.isPrompt  = isPrompt;
+        tL.decayMode   = gpdgMId;
+        tL.idDecayMode = gpdgGMId;
+        genLeptons.push_back(tL);
+      }
+      if((gpdgMId == 23 || gpdgMId == 24 || gpdgMId == 25) && gSelection != iWZSelec){
+        tL = Lepton(tP, charge, type);
         //if(tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta() < 2.4)) genLeptons.push_back(tL);
         genLeptons.push_back(tL);
       }
     }
     for(Int_t i = 0; i < ngenLepFromTau; i++){
       GetGenLepFromTauVariables(i);
-      if(gpdgMId == 23 || gpdgMId == 24 || gpdgMId == 25){
+      if(gSelection == iWZSelec){
         tL = Lepton(tP, charge, type);
-        if(gSelection == iWZSelec){
-          tL.isPrompt = isPrompt;
-        }
+        tL.isPrompt  = isPrompt;
+        tL.decayMode   = gpdgMId;
+        tL.idDecayMode = gpdgGMId;
+        nLeptonsFromTau++;
+        genLeptons.push_back(tL);
+      }
+      if((gpdgGMId == 23 || gpdgGMId == 24 || gpdgGMId == 25) && gSelection != iWZSelec){
+        tL = Lepton(tP, charge, type);
         nLeptonsFromTau++;
        // if(tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta() < 2.4)i) genLeptons.push_back(tL);
         genLeptons.push_back(tL);
       }
     }
+    for(Int_t i = 0; i < ngenPart; i++){
+      GetGenParticleVariables(i);
+      if(gSelection == iWZSelec){
+        tL = Lepton(tP, charge, type);
+        tL.isPrompt  = isPrompt;
+        tL.decayMode   = gpdgMId;
+        tL.idDecayMode = gpdgGMId;
+        genParticles.push_back(tL);
+      }
+    }
   }
-  nSelLeptons   = selLeptons.size();
+  nSelLeptons    = selLeptons.size();
   nVetoLeptons   = vetoLeptons.size();
-  nLooseLeptons = looseLeptons.size();
+  nLooseLeptons  = looseLeptons.size();
   nGenLeptons    = genLeptons.size();
 
   TriggerSF = 1; TriggerSFerr = 0;
-  if(gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec || gSelection == iStopSelec){
+  if(gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec || gSelection == iStopSelec || gSelection == iWZSelec){
     if(nSelLeptons >= 2){
       if     (selLeptons.at(0).isMuon && selLeptons.at(1).isMuon){
         TriggerSF = LepSF->GetTrigDoubleMuSF(    selLeptons.at(0).p.Eta(), selLeptons.at(1).p.Eta());
@@ -944,18 +966,20 @@ void LeptonSelector::InsideLoop(){
       }
     }
   }
-  DumpEvent(evt, "========================================");
+ DumpEvent(evt, "========================================");
 
  selLeptons   = SortLeptonsByPt(selLeptons);
  vetoLeptons  = SortLeptonsByPt(vetoLeptons);
  looseLeptons = SortLeptonsByPt(looseLeptons);
  genLeptons   = SortLeptonsByPt(genLeptons);
+ genParticles = SortLeptonsByPt(genParticles);
 
   // Set params for the next selectors
   SetParam("selLeptons",  selLeptons );
   SetParam("vetoLeptons", vetoLeptons);
   SetParam("looseLeptons", looseLeptons);
   SetParam("genLeptons",  genLeptons );
+  SetParam("genParticles",  genParticles);
   SetParam("nLeptonsFromTau", nLeptonsFromTau);
   SetParam("nGenLeptons", nGenLeptons);
   SetParam("nSelLeptons", nSelLeptons);
@@ -1002,7 +1026,7 @@ void LeptonSelector::GetLeptonVariables(Int_t i){ // Once per muon, get all the 
   SegComp        = Get<Float_t>("LepGood_segmentCompatibility",i);   //*
   isGlobalMuon = Get<Int_t>("LepGood_isGlobalMuon",i);
   isTrackerMuon = Get<Int_t>("LepGood_isTrackerMuon",i);
-  if(!gIsData){ isPrompt = (Get<Int_t>("LepGood_mcPrompt",i) != 0) || (Get<Int_t>("LepGood_mcPromptTau",i) != 0); }
+  if(!gIsData){ isPrompt = Get<Int_t>("LepGood_mcPrompt",i) + Get<Int_t>("LepGood_mcPromptTau",i); }
   SF = 1;
 }
 
@@ -1045,17 +1069,25 @@ void LeptonSelector::GetGenLeptonVariables(Int_t i){
   tP.SetPtEtaPhiM(Get<Float_t>("genLep_pt", i), Get<Float_t>("genLep_eta", i), Get<Float_t>("genLep_phi", i), Get<Float_t>("genLep_mass", i));
   charge = Get<Int_t>("genLep_charge", i);
   gpdgMId = TMath::Abs(Get<Int_t>("genLep_motherId", i));
-
+  gpdgGMId = TMath::Abs(Get<Int_t>("genLep_motherId", i));
   type = TMath::Abs(Get<Int_t>("genLep_pdgId",i)) == 11 ? 1 : 0;
-  isPrompt = (Get<Int_t>("genLep_isPromptHard",i) != 0) || (gpdgMId == 23) || (gpdgMId == 24) ;
+  isPrompt = (Get<Int_t>("genLep_isPromptHard",i) != 0);
+}
+
+void LeptonSelector::GetGenParticleVariables(Int_t i){
+  tP.SetPtEtaPhiM(Get<Float_t>("GenPart_pt", i), Get<Float_t>("GenPart_eta", i), Get<Float_t>("GenPart_phi", i), Get<Float_t>("GenPart_mass", i));
+  charge = Get<Int_t>("GenPart_charge", i);
+  gpdgMId = TMath::Abs(Get<Int_t>("GenPart_motherId", i));
+  gpdgGMId = TMath::Abs(Get<Int_t>("GenPart_motherId", i));
+  type = TMath::Abs(Get<Int_t>("GenPart_pdgId",i));
+  isPrompt = Get<Int_t>("GenPart_isPromptHard",i) ;
 }
 
 void LeptonSelector::GetGenLepFromTauVariables(Int_t i){
   tP.SetPtEtaPhiM(Get<Float_t>("genLepFromTau_pt", i), Get<Float_t>("genLepFromTau_eta", i), Get<Float_t>("genLepFromTau_phi", i), Get<Float_t>("genLepFromTau_mass", i));
   charge = Get<Int_t>("genLepFromTau_charge", i);
   gpdgMId = TMath::Abs(Get<Int_t>("genLepFromTau_grandmotherId", i));
+  gpdgGMId = TMath::Abs(Get<Int_t>("genLepFromTau_grandmotherId", i));
   type = TMath::Abs(Get<Int_t>("genLepFromTau_pdgId",i)) == 11 ? 1 : 0;
-  gpdgGMId = TMath::Abs(Get<Int_t>("genLep_grandmotherId", i));
-
-  isPrompt = (Get<Int_t>("genLep_isPromptHard",i) != 0) || (gpdgGMId == 23) || (gpdgGMId == 24) ;
+  isPrompt = Get<Int_t>("genLep_isPromptHard",i);
 }

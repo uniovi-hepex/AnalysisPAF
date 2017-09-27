@@ -49,6 +49,7 @@ void WZAnalysis::Initialise(){
 void WZAnalysis::InsideLoop(){
   // Vectors with the objects
   genLeptons  = GetParam<vector<Lepton>>("genLeptons");
+  genParticles= GetParam<vector<Lepton>>("genParticles");
   selLeptons  = GetParam<vector<Lepton>>("selLeptons");
   foLeptons = GetParam<vector<Lepton>>("vetoLeptons");
   looseLeptons = GetParam<vector<Lepton>>("looseLeptons");
@@ -74,7 +75,7 @@ void WZAnalysis::InsideLoop(){
   passTrigger    = GetParam<Bool_t>("passTrigger");
   TEvtNum        = Get<ULong64_t>("evt");
 
-  getMatchGenSelLeptons(selLeptons, genLeptons, 0.3); // Match gen and sel
+
 
   for (int wP = 0; wP < nWPoints; wP++){
     // Leptons and Jets
@@ -86,8 +87,10 @@ void WZAnalysis::InsideLoop(){
       GetJetVariables(selJets, Jets15);
       GetGenJetVariables(genJets, mcJets);
       GetMET();
-  
-    if(TNTightLeps == 3 && passTrigger && passMETfilters){ // trilepton event with OSSF + l, passes trigger and MET filters
+      tightLeptons = getMatchGenSelLeptons(tightLeptons, genLeptons, 0.3, true); // Match gen and sel Leptons, require same Id
+      tightLeptons = getMatchGenSelLeptons(tightLeptons, genParticles, 0.3, false); // Match gen particles and sel Leptons, do not require same Id (allow for taus)
+
+    if(TNFOLeps == 3 && passTrigger && passMETfilters){ // trilepton event with OSSF + l, passes trigger and MET filters
       // Deal with weights:
       Float_t lepSF   = tightLeptons.at(0).GetSF(0)*tightLeptons.at(1).GetSF(0)*tightLeptons.at(2).GetSF(0);
       Float_t ElecSF = 1; Float_t MuonSF = 1;
@@ -125,7 +128,7 @@ void WZAnalysis::InsideLoop(){
         }
       }
   
-      TWeight             = NormWeight*ElecSF*MuonSF*TrigSF*PUSF;
+      TWeight = NormWeight*ElecSF*MuonSF*TrigSF*PUSF;
       TIsSR   = false;
       TIsCRDY = false;
       TIsCRTT = false;  
@@ -134,8 +137,11 @@ void WZAnalysis::InsideLoop(){
       if(gIsData) TWeight = 1;
       // Event Selection
       // ===================================================================================================================
-
-      if(TNTightLeps == 3 && TNOSSF > 0 && passesMCTruth(tightLeptons, genLeptons)){
+      TM3l  = -999;
+      TMtWZ = -999;
+      TMtW  = -999;
+      TMll  = -999;
+      if(TNTightLeps == 3 && TNOSSF > 0 && passesMCTruth(tightLeptons,1,3)){
         std::vector<Lepton> tempLeps = AssignWZLeptons(tightLeptons);
         lepZ1 = tempLeps.at(0);
         lepZ2 = tempLeps.at(1);
@@ -172,11 +178,12 @@ void WZAnalysis::InsideLoop(){
           }
           if (TMath::Abs(TMll - nomZmass)> 15. && TMath::Abs(TM3l - nomZmass) > 5 &&  TMinMll > 4. && (lepZ1.p + lepZ2.p + lepW.p).M() > 100. && TMET > 30.){
             TIsNewCRTT = true;
-          }
-        fTree[wP] -> Fill();  
+          } 
         }
-      }   
+      }
+    //fTree[wP] -> Fill();  //Skimming for 3 FO
     }
+    fTree[wP] -> Fill();
   }
 }
 
@@ -202,6 +209,7 @@ void WZAnalysis::SetLeptonVariables(TTree* iniTree){
   iniTree->Branch("TMtWZ",        &TMtWZ,      "TMtWZ/F");
   iniTree->Branch("TNOSSF",      &TNOSSF,      "TNOSSF/I");
   iniTree->Branch("TMinMll",      &TMinMll,      "TMinMll/F");
+  iniTree->Branch("TConvNumber",      &TConvNumber,      "TConvNumber/I");
 }
 
 void WZAnalysis::SetJetVariables(TTree* iniTree){
@@ -229,21 +237,28 @@ void WZAnalysis::SetEventVariables(TTree* iniTree){
   iniTree->Branch("TMET_Phi",     &TMET_Phi,     "TMET_Phi/F");
 }
 
-Bool_t WZAnalysis::passesMCTruth(std::vector<Lepton> sLep, std::vector<Lepton> gLep){
-  Bool_t pass = true;
+Bool_t WZAnalysis::passesMCTruth(std::vector<Lepton> sLep, Int_t addConvs = 1, Int_t requiredLeps = 3){
+  Int_t passes = 0;
+  Int_t isConv = 0;
   if (!gIsData){
     for (int i = 0; i < sLep.size(); i++){
-      if (sLep.at(i).lepMatch == -1) pass = false;
+      //std::cout << "LepMatch " << sLep.at(i).lepMatch << std::endl;
+      if (sLep.at(i).isPrompt > 0) passes++; //MC hard prompt lepton
+      else if (sLep.at(i).lepMatch == 0) continue;//No matching gen/reco is a fail
       else {
         Lepton theLep = sLep.at(i);
-        Lepton genMatch = gLep.at(sLep.at(i).lepMatch);
-        if (!genMatch.isPrompt && !theLep.isPrompt){
-          pass = false;
-        }
+        Lepton genMatch = *sLep.at(i).lepMatch;
+        Int_t theTypepdgId = (theLep.type == 1) ? 11 : 13;
+        Int_t theMotherId  = TMath::Abs(genMatch.decayMode);
+        Int_t theGrandMotherId  = TMath::Abs(genMatch.idDecayMode);
+        if (genMatch.isPrompt) passes++; //MC hard prompt lepton
+        else if (((theTypepdgId == TMath::Abs(genMatch.type) || TMath::Abs(genMatch.type) == 15) && ( (theMotherId == 23 || theMotherId == 24 || theMotherId == 25) || (theMotherId == 15 && (theGrandMotherId == 23 || theGrandMotherId == 24 || theGrandMotherId == 25))))) passes++; //Either a decay from a tau, Z, W or H including tau decays from the later
+        else if (genMatch.type == 22 || (theMotherId == 22 && TMath::Abs(genMatch.type) == theTypepdgId)) isConv++; //For conversions
       } 
     }
   }
-  return pass;
+  TConvNumber = isConv;
+  return (passes + addConvs*isConv) == requiredLeps; //Count Prompt leptons and conversions and add up to the required lepton number
 }
 
 //#####################################################################
@@ -275,7 +290,7 @@ void WZAnalysis::GetLeptonsByWP(Int_t wPValue){
     for (int k = 0; k < nTightLeptons; k++){
       if (selLeptons.at(k).idMVA%10 > wPValue){
         tightLeptons.push_back(selLeptons.at(k));
-        tightLeptons.back().SetSF(selLeptons.at(k).GetSF(0)*leptonSFtop->GetLeptonSF(selLeptons.at(k).Pt(), selLeptons.at(k).Eta(), selLeptons.at(k).type));
+        tightLeptons.back().SetSF(selLeptons.at(k).GetSF(0)*leptonSFEWK->GetLeptonSF(selLeptons.at(k).Pt(), selLeptons.at(k).Eta(), selLeptons.at(k).type));
       }
     }
   }
@@ -285,7 +300,7 @@ void WZAnalysis::GetLeptonVariables(std::vector<Lepton> tightLeptons, std::vecto
   TNTightLeps = tightLeptons.size();
   Int_t nVetoLeptons = foLeptons.size();
   TNFOLeps = nVetoLeptons;
-  for(Int_t i = 0; i < TNTightLeps; i++){
+  for(Int_t i = 0; i < TNFOLeps; i++){
     TLep_Pt[i]     = tightLeptons.at(i).Pt();    
     TLep_Eta[i]    = tightLeptons.at(i).Eta();    
     TLep_Phi[i]    = tightLeptons.at(i).Phi();    

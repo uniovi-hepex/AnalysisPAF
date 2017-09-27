@@ -28,6 +28,7 @@ class WZAnalysis : public PAFChainItemSelector{
     virtual void Initialise();
     virtual void Summary();
     std::vector<Lepton> genLeptons  ;
+    std::vector<Lepton> genParticles;
     std::vector<Lepton> selLeptons  ; // Main container
     std::vector<Lepton> foLeptons   ; // Main container
     std::vector<Lepton> looseLeptons;
@@ -67,7 +68,7 @@ class WZAnalysis : public PAFChainItemSelector{
     void GetGenJetVariables(std::vector<Jet> genJets, std::vector<Jet> mcJets);
     void GetLeptonsByWP(Int_t wPValue); 
     void GetMET();
-    Bool_t passesMCTruth(std::vector<Lepton> sLep, std::vector<Lepton> gLep);
+    Bool_t passesMCTruth(std::vector<Lepton> sLep, Int_t addConvs, Int_t requiredLeps);
     
     Int_t nFiduJets; Int_t nFidubJets; 
 
@@ -124,6 +125,7 @@ class WZAnalysis : public PAFChainItemSelector{
     Bool_t  TIsNewCRTT;
     Bool_t  TIsNewCRDY;
 
+
     Int_t   TNFOLeps;
     Int_t   TNTightLeps;
     Int_t   TChannel;
@@ -134,6 +136,7 @@ class WZAnalysis : public PAFChainItemSelector{
     Float_t TLep_Phi[10];
     Float_t TLep_E[10];
     Float_t TLep_Charge[10];
+    Int_t   TConvNumber;
 
     // Jet Things
     Int_t TNJets;            

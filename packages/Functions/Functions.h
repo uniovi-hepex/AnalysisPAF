@@ -95,7 +95,7 @@ Bool_t IsThere3SS(vector<Lepton> lepton);
 Bool_t ByPt(Jet, Jet);
 Int_t GetDileptonicChannel(vector<Lepton> leptons);
 vector<Lepton> AssignWZLeptons(vector<Lepton> leptonList);
-void getMatchGenSelLeptons(std::vector<Lepton> selectedLeptons, std::vector<Lepton> generatedLeptons, Float_t dRMax);
+vector<Lepton> getMatchGenSelLeptons(std::vector<Lepton> selectedLeptons, std::vector<Lepton> generatedLeptons, Float_t dRMax, Bool_t doIdMatch = true);
 
 Int_t   getCS(vector<Lepton> lepton);
 void co(TString out, TString co);

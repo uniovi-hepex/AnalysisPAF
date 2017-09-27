@@ -22,6 +22,7 @@ class LeptonSelector : public PAFChainItemSelector{
     std::vector<Lepton> looseLeptons;
     std::vector<Lepton> genLeptons;
     std::vector<Lepton> vetoLeptons;
+    std::vector<Lepton> genParticles;
 
   protected:
 
@@ -73,11 +74,12 @@ class LeptonSelector : public PAFChainItemSelector{
     Int_t isGlobalMuon;
     Int_t isTrackerMuon;
     Int_t lepMVASUSYId;
-    Bool_t isPrompt;
+    Int_t isPrompt;
     
     // genLeptons
     Int_t ngenLep;
     Int_t ngenLepFromTau;
+    Int_t ngenPart;
     Int_t gpdgMId;
     Int_t gpdgGMId;
     Int_t nLeptonsFromTau;
@@ -90,6 +92,7 @@ class LeptonSelector : public PAFChainItemSelector{
     void GetDiscLeptonVariables(Int_t i);
     void GetGenLeptonVariables(Int_t i);
     void GetGenLepFromTauVariables(Int_t i);
+    void GetGenParticleVariables(Int_t i);
     Bool_t getSIPcut(Float_t cut); 
     Bool_t getGoodVertex(Int_t wp); 
     Bool_t getRelIso03POG(Int_t wp); 
