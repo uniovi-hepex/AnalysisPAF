@@ -12,11 +12,14 @@ enum eLevels  {itrilepton, ionZ, imet, i0btag, im3l, nLevels};
 enum eSysts   {inorm, nSysts};
 enum eWPoints  {nolepMVA, veryLoose, loose, medium, tight, veryTight, extraTight, top};
 
-const int nWPoints = 8;
+//const int nWPoints = 8;
+const int nWPoints = 3;
 const int nWeights = 248;
 const TString gChanLabel[nChannels] = {"ElElEl", "ElElMu","ElMuMu","MuMuMu"};
 const TString sCut[nLevels] = {"trilepton","onZ","met","0btag","m3l"};
-const TString sWPoints[nWPoints] = {"nolepMVA","veryLoose", "loose", "medium", "tight", "veryTight", "extraTight", "top"};
+//const TString sWPoints[nWPoints] = {"nolepMVA","veryLoose", "loose", "medium", "tight", "veryTight", "extraTight", "top"};
+const TString sWPoints[nWPoints]  = {"nolepMVA", "medium", "top"};
+const Int_t   WPointVal[nWPoints] = {0, 3, 7}; //Just don't want to tinker with maps
 const TString gSys[nSysts] = {"0"};
 
 
@@ -136,6 +139,7 @@ class WZAnalysis : public PAFChainItemSelector{
     Float_t TLep_Phi[10];
     Float_t TLep_E[10];
     Float_t TLep_Charge[10];
+    Bool_t  TIsTight[10];
     Int_t   TConvNumber;
 
     // Jet Things

@@ -159,7 +159,7 @@ void WZAnalysis::InsideLoop(){
       TMtWZ = (lepZ1.p + lepZ2.p + lepW.p + metVector).Mt();
       TMtW  = (lepW.p + metVector).Mt();
       TMll  = (lepZ1.p + lepZ2.p).M();
-      if(TNTightLeps == 3 && TNOSSF > 0 && passesMCTruth(tightLeptons,1,3)){
+      if(TNOSSF > 0 && passesMCTruth(fakeableLeptons,1,3)){
         //std::cout << "Pass 3Tight, hasOS,passMC\n";
         if (lepZ1.Pt() > 25 && lepZ2.Pt() > 10 && lepW.Pt() > 25){//3 lepton, has OSSF, leptons assigned to W and Z. Fill histos from here onwards
         
@@ -189,7 +189,7 @@ void WZAnalysis::InsideLoop(){
           } 
         }
       }
-    fTree[wP] -> Fill();  //Skimming for 3 FO
+    fTree[wP] -> Fill();  //Skimming for 3 FO; remember to use TNTightLeptons == 3 for plotting!!!
     }
   }
 }
@@ -204,11 +204,11 @@ void WZAnalysis::InitHistos(){
 void WZAnalysis::SetLeptonVariables(TTree* iniTree){
   iniTree->Branch("TNFOLeps",     &TNFOLeps,     "TNFOLeps/I");
   iniTree->Branch("TNTightLeps",     &TNTightLeps,     "TNTightLeps/I");
-  iniTree->Branch("TLep_Pt",     TLep_Pt,     "TLep_Pt[TNTightLeps]/F");
-  iniTree->Branch("TLep_Eta",     TLep_Eta,     "TLep_Eta[TNTightLeps]/F");
-  iniTree->Branch("TLep_Phi",     TLep_Phi,     "TLep_Phi[TNTightLeps]/F");
-  iniTree->Branch("TLep_E" ,     TLep_E ,     "TLep_E[TNTightLeps]/F");
-  iniTree->Branch("TLep_Charge",  TLep_Charge, "TLep_Charge[TNTightLeps]/F");
+  iniTree->Branch("TLep_Pt",     TLep_Pt,     "TLep_Pt[TNFOLeps]/F");
+  iniTree->Branch("TLep_Eta",     TLep_Eta,     "TLep_Eta[TNFOLeps]/F");
+  iniTree->Branch("TLep_Phi",     TLep_Phi,     "TLep_Phi[TNFOLeps]/F");
+  iniTree->Branch("TLep_E" ,     TLep_E ,     "TLep_E[TNFOLeps]/F");
+  iniTree->Branch("TLep_Charge",  TLep_Charge, "TLep_Charge[TNFOLeps]/F");
   iniTree->Branch("TChannel",      &TChannel,      "TChannel/I");
   iniTree->Branch("TMll",        &TMll,      "TMll/F");
   iniTree->Branch("TM3l",        &TM3l,      "TM3l/F");
@@ -217,6 +217,7 @@ void WZAnalysis::SetLeptonVariables(TTree* iniTree){
   iniTree->Branch("TNOSSF",      &TNOSSF,      "TNOSSF/I");
   iniTree->Branch("TMinMll",      &TMinMll,      "TMinMll/F");
   iniTree->Branch("TConvNumber",      &TConvNumber,      "TConvNumber/I");
+  iniTree->Branch("TIsTight",      &TIsTight,      "TIsTight/B");
 }
 
 void WZAnalysis::SetJetVariables(TTree* iniTree){
@@ -276,7 +277,7 @@ void WZAnalysis::GetLeptonsByWP(Int_t wPValue){
   Int_t nFakeableLeptons = foLeptons.size();
   Int_t nTightLeptons = selLeptons.size();
 
-  if (wPValue == top){
+  if (sWPoints[wPValue] == "top"){
     for (int k = 0; k < nTightLeptons; k++){ // No FO for top ID
       if (selLeptons.at(k).idMVA >= 10){
         tightLeptons.push_back(selLeptons.at(k));
@@ -315,6 +316,9 @@ void WZAnalysis::GetLeptonVariables(std::vector<Lepton> tightLeptons, std::vecto
     TLep_Phi[i]    = foLeptons.at(i).Phi();    
     TLep_E[i]      = foLeptons.at(i).E();    
     TLep_Charge[i] = foLeptons.at(i).charge;
+    if (i < TNTightLeps){
+      TIsTight[i] = true;
+    }
   }
   //Require exactly 3 leptons 
   if(TNFOLeps != 3 ) gChannel = -1;
