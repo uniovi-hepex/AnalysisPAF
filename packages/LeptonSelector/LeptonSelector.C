@@ -1031,9 +1031,12 @@ void LeptonSelector::GetLeptonVariables(Int_t i){ // Once per muon, get all the 
   SegComp        = Get<Float_t>("LepGood_segmentCompatibility",i);   //*
   isGlobalMuon = Get<Int_t>("LepGood_isGlobalMuon",i);
   isTrackerMuon = Get<Int_t>("LepGood_isTrackerMuon",i);
+  isPrompt = 1;
+  matchId  = 1;
+  matchIdGamma = 0;
   if(!gIsData){ isPrompt = Get<Int_t>("LepGood_mcPrompt",i) + Get<Int_t>("LepGood_mcPromptTau",i); };
-  matchId      = TMath::Abs(Get<Int_t>("LepGood_mcMatchId",i));
-  matchIdGamma = TMath::Abs(Get<Int_t>("LepGood_mcPromptGamma",i));
+  if(!gIsData){ matchId      = TMath::Abs(Get<Int_t>("LepGood_mcMatchId",i));}
+  if(!gIsData){ matchIdGamma = TMath::Abs(Get<Int_t>("LepGood_mcPromptGamma",i));}
   SF = 1;
 }
 
