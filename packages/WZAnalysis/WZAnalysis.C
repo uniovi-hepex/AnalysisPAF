@@ -217,7 +217,8 @@ void WZAnalysis::SetLeptonVariables(TTree* iniTree){
   iniTree->Branch("TNOSSF",      &TNOSSF,      "TNOSSF/I");
   iniTree->Branch("TMinMll",      &TMinMll,      "TMinMll/F");
   iniTree->Branch("TConvNumber",      &TConvNumber,      "TConvNumber/I");
-  iniTree->Branch("TIsTight",      &TIsTight,      "TIsTight/B");
+  iniTree->Branch("TFakeNumber",      &TFakeNumber,      "TFakeNumber/I");
+  iniTree->Branch("TIsTight",      &TIsTight,      "TIsTight[TNFOLeps]/I");
 }
 
 void WZAnalysis::SetJetVariables(TTree* iniTree){
@@ -247,8 +248,25 @@ void WZAnalysis::SetEventVariables(TTree* iniTree){
 
 Bool_t WZAnalysis::passesMCTruth(std::vector<Lepton> sLep, Int_t addConvs = 1, Int_t requiredLeps = 3){
   Int_t passes = 0;
-  Int_t isConv = 0;
-  if (!gIsData){
+  Int_t convs = 0;
+  Int_t otherfakes = 0;
+  for (int i = 0; i < sLep.size(); i++){
+    if (gIsData) passes++;
+    else{
+      Int_t theID = sLep.at(i).idDecayMode;
+      Int_t theGammaID = sLep.at(i).decayMode;
+      if (theID != 0){//Is prompt (parent is not fake, might be gamma)
+        passes++;
+      }
+      else if (theID == 0 && theGammaID == 1){//Is conversion (parent is a fake gamma)
+        convs++;
+      }
+      else if (theID == 0 && theGammaID != 1){//Other fakes
+        otherfakes++;
+      } 
+    }
+  }
+/*  if (!gIsData){
     for (int i = 0; i < sLep.size(); i++){
       //std::cout << "LepMatch " << sLep.at(i).lepMatch << std::endl;
       if (sLep.at(i).isPrompt > 0) passes++; //MC hard prompt lepton
@@ -265,8 +283,10 @@ Bool_t WZAnalysis::passesMCTruth(std::vector<Lepton> sLep, Int_t addConvs = 1, I
       } 
     }
   }
-  TConvNumber = isConv;
-  return (passes + addConvs*isConv) == requiredLeps; //Count Prompt leptons and conversions and add up to the required lepton number
+  if (gIsData){ passes++;}*/
+  TConvNumber = convs; //Used to cut conversions in non-conversion samples
+  TFakeNumber = otherfakes;
+  return (passes + addConvs*(convs+ otherfakes)) == requiredLeps; //Count Prompt leptons and conversions and add up to the required lepton number
 }
 
 //#####################################################################
@@ -288,11 +308,15 @@ void WZAnalysis::GetLeptonsByWP(Int_t wPValue){
     }
   }
   else {
+    Int_t nFO = 0;
     for (int k = 0; k < nFakeableLeptons; k++){
       if (foLeptons.at(k).idMVA%10 > wPValue){
         //std::cout << k << std::endl;
+        TIsTight[nFO] = 0;
         fakeableLeptons.push_back(foLeptons.at(k));
         fakeableLeptons.back().SetSF(foLeptons.at(k).GetSF(0)*leptonSFEWK->GetLeptonSF(foLeptons.at(k).Pt(), foLeptons.at(k).Eta(), foLeptons.at(k).type));
+        if (fakeableLeptons.back().isTight%10 > wPValue) TIsTight[nFO] = 1;
+        nFO++;
       }
     }
 
@@ -316,9 +340,6 @@ void WZAnalysis::GetLeptonVariables(std::vector<Lepton> tightLeptons, std::vecto
     TLep_Phi[i]    = foLeptons.at(i).Phi();    
     TLep_E[i]      = foLeptons.at(i).E();    
     TLep_Charge[i] = foLeptons.at(i).charge;
-    if (i < TNTightLeps){
-      TIsTight[i] = true;
-    }
   }
   //Require exactly 3 leptons 
   if(TNFOLeps != 3 ) gChannel = -1;

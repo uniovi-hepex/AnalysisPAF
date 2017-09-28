@@ -375,22 +375,22 @@ Bool_t LeptonSelector::getMultiIso(Int_t wp){
 Int_t LeptonSelector::getSUSYMVAId(Lepton lep, Int_t ty){//ty = 1 for FO, ty = 2 for tight
   if (ty == 1){//Fakeable Objects
     if (lep.isMuon){
-        if (ptRatio > 0.30 && jetBTagCSV < 0.3) return 7; //Only for FO
-        else if (MVASUSY >  0.65) return 7; //Extra Tight
+        if (MVASUSY >  0.65) return 7; //Extra Tight
         else if (MVASUSY >  0.45) return 6; //Very Tight
         else if (MVASUSY >  0.15) return 5; //Tight
         else if (MVASUSY > -0.20) return 4; //Medium
         else if (MVASUSY > -0.60) return 3; //Loose
         else if (MVASUSY > -0.90) return 2; //Very Loose
+        else if (ptRatio > 0.30 && jetBTagCSV < 0.3) return 8; //Only for FO. Only if MVA fails
     }
     else if (lep.isElec){
-        if (ptRatio > 0.30 && jetBTagCSV < 0.3 && ( (MVAID > 0.0)*(lep.p.Eta() < 0.8) || (MVAID > 0.0)*(lep.p.Eta() < 1.479)*(lep.p.Eta() > 0.8) || (MVAID > 0.3)*(lep.p.Eta() > 1.479) )) return 7; //Only for FO
-        else if (MVASUSY >  0.85) return 7; //Extra Tight
+        if (MVASUSY >  0.85) return 7; //Extra Tight
         else if (MVASUSY >  0.75) return 6; //Very Tight
         else if (MVASUSY >  0.65) return 5; //Tight
         else if (MVASUSY >  0.50) return 4; //Medium
         else if (MVASUSY >  0.25) return 3; //Loose
         else if (MVASUSY > -0.30) return 2; //Very Loose
+        else if (ptRatio > 0.30 && jetBTagCSV < 0.3 && ( (MVAID > 0.0)*(lep.p.Eta() < 0.8) || (MVAID > 0.0)*(lep.p.Eta() < 1.479)*(lep.p.Eta() > 0.8) || (MVAID > 0.3)*(lep.p.Eta() > 1.479) )) return 8; //Only for FO. Only if MVA fails
     }
   }
 
@@ -843,6 +843,10 @@ void LeptonSelector::InsideLoop(){
   for(Int_t i = 0; i < nLep; i++){
     GetLeptonVariables(i);
     tL = Lepton(tP, charge, type);
+    if (gSelection == iWZSelec){
+      tL = Lepton(tP, charge, type, matchIdGamma, matchId);
+      tL.isTight = false;
+    }
     if(tL.isMuon) tL.SetIso(RelIso04);
     else          tL.SetIso(RelIso03);
     if(isGoodLepton(tL)){
@@ -852,6 +856,7 @@ void LeptonSelector::InsideLoop(){
       tL.SetSFerr(LepSF->GetLeptonSFerror(pt, eta, tL.type) );
       if(gSelection == iWZSelec){
         tL.idMVA    = lepMVASUSYId;
+        tL.isTight  = lepMVASUSYId;
         if(!gIsData){ tL.isPrompt = isPrompt; };
       }
       selLeptons.push_back(tL);
@@ -1026,7 +1031,9 @@ void LeptonSelector::GetLeptonVariables(Int_t i){ // Once per muon, get all the 
   SegComp        = Get<Float_t>("LepGood_segmentCompatibility",i);   //*
   isGlobalMuon = Get<Int_t>("LepGood_isGlobalMuon",i);
   isTrackerMuon = Get<Int_t>("LepGood_isTrackerMuon",i);
-  if(!gIsData){ isPrompt = Get<Int_t>("LepGood_mcPrompt",i) + Get<Int_t>("LepGood_mcPromptTau",i); }
+  if(!gIsData){ isPrompt = Get<Int_t>("LepGood_mcPrompt",i) + Get<Int_t>("LepGood_mcPromptTau",i); };
+  matchId      = TMath::Abs(Get<Int_t>("LepGood_mcMatchId",i));
+  matchIdGamma = TMath::Abs(Get<Int_t>("LepGood_mcPromptGamma",i));
   SF = 1;
 }
 
@@ -1060,7 +1067,7 @@ void LeptonSelector::GetDiscLeptonVariables(Int_t i){ // Once per muon, get all 
   MVAID          = Get<Float_t>("DiscLep_mvaIdSpring16GP",i);   //*
   jetBTagCSV    = Get<Float_t>("DiscLep_jetBTagCSV",i);   //*
   SegComp        = Get<Float_t>("DiscLep_segmentCompatibility",i);   //*
-  isGlobalMuon = Get<Int_t>("DiscLep_isGlobalMuon",i);
+  isGlobalMuon  = Get<Int_t>("DiscLep_isGlobalMuon",i);
   isTrackerMuon = Get<Int_t>("DiscLep_isTrackerMuon",i);
 
   SF = 1;

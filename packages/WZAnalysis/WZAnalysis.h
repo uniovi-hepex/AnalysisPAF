@@ -139,8 +139,9 @@ class WZAnalysis : public PAFChainItemSelector{
     Float_t TLep_Phi[10];
     Float_t TLep_E[10];
     Float_t TLep_Charge[10];
-    Bool_t  TIsTight[10];
+    Int_t  TIsTight[10];
     Int_t   TConvNumber;
+    Int_t   TFakeNumber;
 
     // Jet Things
     Int_t TNJets;            
