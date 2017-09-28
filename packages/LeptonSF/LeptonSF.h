@@ -34,6 +34,12 @@ class LeptonSF {
   Float_t GetTrigDoubleMuSF_err(Float_t eta1, Float_t eta2) const;
   Float_t GetTrigDoubleElSF_err(Float_t eta1, Float_t eta2) const;
   Float_t GetTrigElMuSF_err    (Float_t eta1, Float_t eta2) const;
+
+  //FullSim/FastSim SF
+  // Only if these are per-event SF (not for lepton)
+  // If you have SF for lepton, include them with the normal Lepton SF
+  Float_t GetFSSF(Float_t pt, Float_t eta, Int_t id);
+  Float_t GetFSSFerr(Float_t pt, Float_t eta, Int_t id);
   
   std::vector<Int_t> loadedHistos;
 
@@ -52,10 +58,12 @@ class LeptonSF {
   TH2D*  fMuonIsoSFSUSY;     
   TH2D*  fMuonIP2DSF;     
   TH2D*  fMuonSIP3DSF;     
-  TH2D*  fMuonIsoFastSim;
-  TH2D*  fMuonIdFastSim;
-  TH2D*  fElecIsoFastSim;
-  TH2D*  fElecIdFastSim;
+  TH2D*  fMuonFastSim;
+  TH2D*  fMuonIsoFastSimStop;
+  TH2D*  fMuonIdFastSimStop;
+  TH2D*  fElecFastSim;
+  TH2D*  fElecIsoFastSimStop;
+  TH2D*  fElecIdFastSimStop;
   TH2D*  fMuonlepMVA2lSSttH;
   TH2D*  fMuonlepMVA3l4lttH;
   TH2D*  fMuonLooseTracksttH;

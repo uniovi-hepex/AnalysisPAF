@@ -99,6 +99,7 @@ public:
     weight = "TWeight";
     LHEweighName = "TLHEWeight";
     wBins.clear();
+    verbose = true;
 
     tree = (TTree*) loadTree(pathToTree, sampleName, treeName)->Clone("mytree");
     nEntries = tree->GetEntries();
@@ -108,6 +109,8 @@ public:
     SetFormulas();
     if(saveoutput != "") os = ofstream(saveoutput);
   }
+
+  Bool_t verbose;
 
   void SetPathToTree(TString t){ pathToTree = t;}
   void SetTreeName(TString t){ treeName = t;}
@@ -179,6 +182,7 @@ protected:
 };
 
 void PDFunc::SetHistoWeights(Int_t bin){
+  if(verbose) cout << "[PDFunc::SetHistoWeights] Setting histo weights for bin " << bin << endl;
   //if(weights) delete weights;
   weights = new TH1F(Form("weights_%i",bin), Form("weights_%i",bin), totalNweights, 0, totalNweights);
 }
@@ -189,6 +193,7 @@ void PDFunc::SetFormulas(){
 //  if(FLHEweight)  delete FLHEweight;
  
   TString strcut = CraftFormula(cut, chan, "", weight, tree);
+  if(verbose) cout << "[PDFunc::SetFormulas] Cut: " << strcut << endl;
   FCut       = new TTreeFormula("Form_cut", strcut, tree);//GetFormula("Form_cut", strcut, tree);
   FLHEweight = new TTreeFormula("Form_LHEweight", LHEweighName, tree);//GetFormula("Form_cut", strcut, tree);
 }
@@ -205,6 +210,7 @@ void PDFunc::SetBinCutFormula(Int_t bin){
     upbin   = bin0 + (binN - bin0)/(nBins)*(bin); 
   }
   bincut = Form("((%s >= %f) && (%s < %f))", var.Data(), downbin, var.Data(), upbin);
+  if(verbose) cout << "[PDFunc::SetBinCutFormula] Creating formula with bincut: " << bincut << endl;
   FCutBin = new TTreeFormula(Form("Form_bincut_%i", bin), bincut, tree);
 }
 
@@ -214,7 +220,7 @@ void PDFunc::FillHistoWeights(Int_t bin){
   Float_t EventWeight;  Float_t bincutWeight;
 
   if(bin != 0) SetBinCutFormula(bin);
-  PrintInfo(bin); // Print all info
+  if(verbose) PrintInfo(bin); // Print all info
 
   // Loop over all entries
   for(Long64_t i = 0; i < nEntries; i++){
@@ -352,11 +358,11 @@ void PDFunc::PrintInfo(Int_t bin){
   }
   else if(bin == 1){
     if(bin0 == binN){
-      cout << "Getting weights for different bins... " << endl;
-      cout << "nBins    = " << nBins << endl;
-      cout << "Variable = " << var << endl;
-      cout << Form("\n=========== BIN %i ===========\n", bin);
-      cout << "Bincut   = " << bincut << endl;
+        cout << "Getting weights for different bins... " << endl;
+        cout << "nBins    = " << nBins << endl;
+        cout << "Variable = " << var << endl;
+        cout << Form("\n=========== BIN %i ===========\n", bin);
+        cout << "Bincut   = " << bincut << endl;
       if(saveoutput != ""){
         os << "Getting weights for different bins... " << endl;
         os << "nBins    = " << nBins << endl;
@@ -366,11 +372,11 @@ void PDFunc::PrintInfo(Int_t bin){
       }
     }
     else{
-      cout << "Getting weights for different bins... " << endl;
-      cout << "nBins = " << nBins << ", bin0     = " << bin0 << ", binN = " << binN << endl;
-      cout << "Variable = " << var << endl;
-      cout << Form("\n=========== BIN %i ===========\n", bin);
-      cout << "Bincut   = " << bincut << endl;
+        cout << "Getting weights for different bins... " << endl;
+        cout << "nBins = " << nBins << ", bin0     = " << bin0 << ", binN = " << binN << endl;
+        cout << "Variable = " << var << endl;
+        cout << Form("\n=========== BIN %i ===========\n", bin);
+        cout << "Bincut   = " << bincut << endl;
       if(saveoutput != ""){
         os << "Getting weights for different bins... " << endl;
         os << "nBins = " << nBins << ", bin0     = " << bin0 << ", binN = " << binN << endl;
@@ -381,8 +387,8 @@ void PDFunc::PrintInfo(Int_t bin){
     }
   }
   else{
-    cout << Form("\n=========== BIN %i ===========\n", bin);
-    cout << "Bincut   = " << bincut << endl;
+      cout << Form("\n=========== BIN %i ===========\n", bin);
+      cout << "Bincut   = " << bincut << endl;
     if(saveoutput != ""){
       os << Form("\n=========== BIN %i ===========\n", bin);
       os << "Bincut   = " << bincut << endl;

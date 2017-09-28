@@ -23,11 +23,11 @@ class SSCR{
 
   public:
     SSCR(TString path = "", TString basecut = "", TString sys = ""){
-      if(path    == "") pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/StopTrees/jun26/";
+      if(path    == "") pathToTree = "/pool/ciencias/userstorage/juanr/stop/sep8/";
       if(basecut == "") BaselineCut = "TNJets > 1 && TNBtags > 0 && !TIsSS && TNVetoLeps < 3";
       if(sys     == "") systematics = "stat";
       NameOfTree = "tree";
-      SScut      = "TNJets >= 2 && TNBtags >= 1 && TIsSS && TNVetoLeps < 3";
+      SScut      = "TNJets >= 2 && TNBtags >= 1 && TIsSS && TNVetoLeps < 3 && TPassTrigger && TPassMETfilters";
       var        = "TMT2"; 
       chan       = "ElMu"; 
       set        = false;
@@ -37,6 +37,11 @@ class SSCR{
       gbins[10] = 50;  gbins[11] = 55;  gbins[12] = 60;  gbins[13] = 65;  gbins[14] = 70; 
       gbins[15] = 75;  gbins[16] = 80;  gbins[17] = 85;  gbins[18] = 90;  gbins[19] = 95; 
       gbins[20] = 100; gbins[21] = 105; gbins[22] = 110; gbins[23] = 115; gbins[24] = 120; gbins[25] = 140; gbins[26] = 200; 
+     /* ngbins = 20;
+      gbins[0]  = 0;   gbins[1]  = 5;   gbins[2]  = 10;  gbins[3]  = 15;  gbins[4] = 20; 
+      gbins[5]  = 25;  gbins[6]  = 30;  gbins[7]  = 35;  gbins[8]  = 40;  gbins[9] = 45; 
+      gbins[10] = 50;  gbins[11] = 55;  gbins[12] = 60;  gbins[13] = 65;  gbins[14] = 70; 
+      gbins[15] = 75;  gbins[16] = 80;  gbins[17] = 100;  gbins[18] = 120;  gbins[19] = 140; gbins[20] = 200; */
     };
     ~SSCR(){if(p) delete p; if(g) delete g;}
 
@@ -138,11 +143,20 @@ void SSCR::DrawSSCR(TString name){
   if(!set) SetSF(); 
   if(name == "") name = "SSCR";
   if(plotfolder != "") gSystem->mkdir(plotfolder, kTRUE);
-  p->SetRatioMin(0); p->SetRatioMax(3);
+  p->SetPlotFolder(plotfolder);
+  p->AddSystematic("stat");
+  p->SetLegendTextSize(0.045);
+  p->SetLegendPosition(0.70, 0.60, 0.93, 0.93);
+  p->SetRatioErrorColor(kTeal-2);
+  p->SetRatioErrorStyle(3244);
+  p->SetStackErrorStyle(3244);
+  p->SetRatioMin(0); p->SetRatioMax(5);
   p->doSetLogy = false;
-  p->DrawStack(plotfolder + name, 1);
+  p->SetOutputName(name);
+  p->DrawStack();
+  p->SetOutputName(name+"_log");
   p->doSetLogy = true;
-  p->DrawStack(plotfolder + name + "_log", 1);
+  p->DrawStack();
 }
 
 
@@ -159,7 +173,6 @@ void SSCR::SetSF(){
 }
 
 void SSCR::SetPlots(){
-
   set = true;
   g = new Plot(var, BaselineCut, chan, ngbins, gbins, "Title", "M_{T2} [GeV]");
   g->SetPath(pathToTree); g->SetTreeName(NameOfTree);
@@ -169,8 +182,8 @@ void SSCR::SetPlots(){
   p = new Plot(var, SScut, chan, ngbins, gbins, "Title2", "M_{T2} [GeV]");
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
   p->SetPathSignal(pathToTree + "T2tt/");
-  p->SetPathData(  pathToTree + "/FullDataset/");
-  p->verbose = true;
+  p->SetPathData(  pathToTree + "/Full2016Dataset/");
+  p->verbose = false;
   p->SetVarName("MT2");
 
   p->AddSample("WZ, WW, ZZ",                                           "VV",        itBkg, kYellow-10);

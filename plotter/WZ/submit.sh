@@ -5,4 +5,7 @@ source /cms/slc6_amd64_gcc530/external/gcc/5.3.0/etc/profile.d/init.sh; source /
 
 source /opt/PAF/PAF_setup.sh
 
-sh plotter/WZ/WZMiniTrees.sh
+#sh plotter/WZ/WZMiniTrees.sh
+sh plotter/WZ/Prompt.sh
+sh plotter/WZ/Fakes.sh
+sh plotter/WZ/Conversions.sh

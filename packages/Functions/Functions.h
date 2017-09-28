@@ -14,8 +14,10 @@ using namespace std;
 
 
 enum iSFs{
-  iMuonReco, iMuonId, iMuonIdSUSY, iMuonIsoTightId, iMuonIsoMediumId, iMuonIsoSUSY, iMuonIP2D, iMuonSIP3D, iMuonIdFastSim, iMuonIsoFastSim,
-  iElecReco, iElecId, iElecIdSUSY, iElecIso, iElecIsoSUSY, iElecIP2D, iElecSIP3D, iElecIdFastSim, iElecIsoFastSim,
+  iMuonReco, iMuonId, iMuonIdSUSY, iMuonIsoTightId, iMuonIsoMediumId, iMuonIsoSUSY, iMuonIP2D, iMuonSIP3D,
+  iMuonFastSim, iMuonIdFastSimStop, iMuonIsoFastSimStop,
+  iElecReco, iElecId, iElecIdSUSY, iElecIso, iElecIsoSUSY, iElecIP2D, iElecSIP3D, 
+  iElecFastSim, iElecIdFastSimStop, iElecIsoFastSimStop,
   iTrigDoubleMuon, iTrigDoubleElec, iTrigElMu,
   iMuonlepMVA2lSSttH, iMuonlepMVA3l4lttH, 
   iMuonLooseTracksttH, iMuonLooseMiniIsottH, iMuonTightIP2DttH, iMuonEWKinoID, iMuonEWKinomvaM, iMuonEWKinomvaVT,
@@ -25,8 +27,10 @@ enum iSFs{
 };
 
 const TString SFTString[nfiles] = {
-  "iMuonReco", "iMuonId", "iMuonIdSUSY", "iMuonIsoTightId", "iMuonIsoMediumId", "iMuonIsoSUSY", "iMuonIP2D", "iMuonSIP3D", "iMuonIdFastSim", "iMuonIsoFastSim",
-  "iElecReco", "iElecId", "iElecIdSUSY", "iElecIso", "iElecIsoSUSY", "iElecIP2D", "iElecSIP3D", "iElecIdFastSim", "iElecIsoFastSim",
+  "iMuonReco", "iMuonId", "iMuonIdSUSY", "iMuonIsoTightId", "iMuonIsoMediumId", "iMuonIsoSUSY", "iMuonIP2D", "iMuonSIP3D", 
+  "iMuonFastSimStop", "iMuonIdFastSimStop", "iMuonIsoFastSimStop",
+  "iElecReco", "iElecId", "iElecIdSUSY", "iElecIso", "iElecIsoSUSY", "iElecIP2D", "iElecSIP3D", 
+  "iElecFastSim", "iElecIdFastSimStop", "iElecIsoFastSimStop",
   "iTrigDoubleMuon", "iTrigDoubleElec", "iTrigElMu",
   "iMuonlepMVA2lSSttH", "iMuonlepMVA3l4lttH", 
   "iMuonLooseTracksttH", "iMuonLooseMiniIsottH", "iMuonTightIP2DttH","iMuonEWKinoID","iMuonEWKinomvaM","iMuonEWKinomvaVT",

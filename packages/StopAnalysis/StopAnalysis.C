@@ -72,7 +72,7 @@ void StopAnalysis::Initialise(){
 
   gIsLHE = false;
   if(gSampleName == ("TTbar_Powheg")) gIsLHE = true;
-  if(gSampleName.Contains("TTbar")) gIsTTbar = true;
+  if(gSampleName.Contains("TTbar") && !gSampleName.Contains("hdamp")) gIsTTbar = true;
   
   gDoISR = false;
   if(gSampleName.Contains("T2tt")) gDoISR = true;

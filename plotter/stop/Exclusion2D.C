@@ -1,5 +1,10 @@
-class Exclusion2D{
+//#######################################################
+//
+// Class to draw 2D plots with exclusion and numbers...
+//
+//#######################################################
 
+class Exclusion2D{
   public:
   Exclusion2D(){InitParams();};
   Exclusion2D(Int_t nx, Float_t bx0, Float_t bxn, Int_t ny, Float_t by0, Float_t byn){
@@ -105,7 +110,6 @@ void Exclusion2D::InitParams(){
   SaveOptions = "png,pdf";
 } 
 
-
 void Exclusion2D::InitTH2F(){
   if( (FirstBinX == LastBinX) || (FirstBinY == LastBinY) ){
     h = new TH2F("histo2D", "Exclusion plot", nbX, bX, nbY, bY);
@@ -155,18 +159,7 @@ void Exclusion2D::Draw(){
   delete c;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
+//=== Extra functions
 std::vector<Int_t> Exclusion2D::TStringToVectorInt(TString t, char separator){
   std::vector<Int_t> v;
   t.ReplaceAll(" ", "");
@@ -193,5 +186,4 @@ std::vector<Float_t> Exclusion2D::TStringToVectorFloat(TString t, char separator
   }
   v.push_back(t.Atof());
   return v;
-
 }

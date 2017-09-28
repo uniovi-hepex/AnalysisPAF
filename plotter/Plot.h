@@ -174,11 +174,12 @@ public:
     RatioErrorStyle = 3444;
     StackErrorColor = kGray+2;
     StackErrorStyle = 3444;
+    weight = "TWeight";
   }
 
 
 	
-	void AddSample(TString p = "TTbar_Powheg", TString pr = "ttbar", Int_t type = -1, Int_t color = 0, TString tsys = "0", TString options = "");
+	void AddSample(TString p = "TTbar_Powheg", TString pr = "", Int_t type = itBkg, Int_t color = 0, TString tsys = "0", TString options = "");
 
 	// ######### Methods ########
   Histo* GetH(TString sample = "TTbar_Powheg", TString s = "0", Int_t type = itBkg);
@@ -198,8 +199,8 @@ public:
 
   void SetGoF(TString thegof="chi2");
   
-  void DrawStack(TString tag, bool sav);
-  void DrawComp(TString tag = "0", bool sav = 1, bool doNorm = 0, TString options = "");
+  void DrawStack(TString tag = "", bool sav = 1);
+  void DrawComp(TString tag = "", bool sav = 1, bool doNorm = 0, TString options = "");
   void SaveHistograms();
   TString GetStatUncDatacard(Int_t iSignal = 0);
 	TString GetShapeUncLines();
@@ -228,11 +229,13 @@ public:
   }
 	void SetTitle(TString tit){title = tit;}
 	void SetTitleX(TString xtit){xtitle = xtit;}
+  void SetBinLabels(TString t, char separator = ','){VBinLabels = TStringToVector(t, separator);}
 
 
   void AddToHistos(Histo* p);
 	void AddVarHistos(TString sys);
 	void AddSystematic(TString s, TString pr = "");
+  void AddStatError(TString process = "");
   void AddToSystematicLabels(TString sys){
     sys.ReplaceAll("Up", ""); sys.ReplaceAll("Down", "");
     for(Int_t i = 0; i < (Int_t) VSystLabel.size(); i++){
@@ -277,6 +280,7 @@ public:
   void RemoveSystematic(TString sys);
   void UseEnvelope(TString pr, TString tags, TString newname = "");
 
+  void SetWeight(TString t){ weight = t;}
   void SetRatioMin(Float_t r){ RatioMin = r;}
   void SetRatioMax(Float_t r){ RatioMax = r;}
   void SetScaleMax(Float_t s){ ScaleMax = s;}
@@ -303,7 +307,7 @@ public:
 
   void SetCMSlabel(TString t){ CMSlabel = t;}
   void SetCMSmodeLabel(TString t){ CMSmodeLabel = t;}
-//  void SetInfoText(TString t){ InfoText = t;}
+  void SetChLabel(TString t){chlabel= t;}
 
 protected: 
   TString pathToHeppyTrees = "";
@@ -315,6 +319,7 @@ protected:
   TString YieldsTableName = "yields";
   TString tableFormats = "%1.2f";
   TString gof = "";
+  TString weight;
   
   TFile *f;
 
