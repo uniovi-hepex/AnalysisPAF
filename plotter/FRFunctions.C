@@ -82,4 +82,43 @@ Float_t GetFRweight(Float_t pt, Float_t eta, Float_t mvaVal){
   return f/(1-f);
 }
 
+Float_t GetFRweightMVAM(Float_t pt, Float_t eta, Int_t isTight, Int_t pdgId){
+  TH2F* hEl = GetFRhisto("mvaMFRhistoEl");
+  TH2F* hMu = GetFRhisto("mvaMFRhistoMu");
+  Float_t f = 0;
+  if (pdgId == 11 && !isTight){//Electrons 
+    f = hEl->GetBinContent(hEl->FindBin(pt,eta));
+  }
+  else if (pdgId == 13 && !isTight){
+    f = hMu->GetBinContent(hMu->FindBin(pt,eta));
+  }  
+  if (f!= 0 || f == 0){ 
+    std::cout << f << std::endl;
+    std::cout << pt << "," << eta << "," << isTight << "," << pdgId;  
+  }
+
+  //delete hEl;
+  //delete hMu; =>We don't want crashes, don't we?
+  return f;
+}
+
+Float_t GetFRweightlepMVAM3lep(Float_t f1, Float_t f2, Float_t f3, Int_t doSub){
+  Float_t f[3] = {f1,f2,f3};
+  Float_t fWeight = 1.;
+  for (int j = 0; j < 3; j++){
+    if  (f[j] > 0.){
+      fWeight *= (1 - f[j]/(1.-f[j]));
+    }
+  }
+
+  fWeight = 1-fWeight;
+  fWeight *= doSub;
+  //std::cout << fWeight;
+  return fWeight;
+}
+
+
+Float_t dumpFR(Float_t a){
+  return 1;
+  } 
 #endif
