@@ -63,6 +63,7 @@ class Lepton : public TObject{
 
     Lepton * lepMatch = 0;
     Int_t isPrompt;
+    Int_t isConvVeto;
     Int_t isTight = -1;
   protected:
     Float_t SF;
