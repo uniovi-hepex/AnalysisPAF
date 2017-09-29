@@ -134,13 +134,34 @@ class WZAnalysis : public PAFChainItemSelector{
     Int_t   TChannel;
 
     // Lepton Things
-    Float_t TLep_Pt[10];    
-    Float_t TLep_Eta[10];
-    Float_t TLep_Phi[10];
-    Float_t TLep_E[10];
-    Float_t TLep_Charge[10];
-    Int_t  TIsTight[10];
-    Int_t  TLep_pdgId[10];
+    Float_t TLep_PtZ1;    
+    Float_t TLep_PtZ2;
+    Float_t TLep_PtW;  
+
+    Float_t TLep_EtaZ1;    
+    Float_t TLep_EtaZ2;
+    Float_t TLep_EtaW;  
+
+    Float_t TLep_PhiZ1;    
+    Float_t TLep_PhiZ2;
+    Float_t TLep_PhiW;  
+
+    Float_t TLep_EZ1;    
+    Float_t TLep_EZ2;
+    Float_t TLep_EW;  
+
+    Float_t TLep_ChargeZ1;    
+    Float_t TLep_ChargeZ2;
+    Float_t TLep_ChargeW;  
+
+    Float_t TLep_IsTightZ1;    
+    Float_t TLep_IsTightZ2;
+    Float_t TLep_IsTightW;  
+  
+    Float_t TLep_pdgIdZ1;    
+    Float_t TLep_pdgIdZ2;
+    Float_t TLep_pdgIdW;  
+  
     Int_t  TLep_isConvVeto[10];
     Int_t   TConvNumber;
     Int_t   TFakeNumber;

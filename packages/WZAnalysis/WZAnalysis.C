@@ -153,6 +153,35 @@ void WZAnalysis::InsideLoop(){
       lepZ1 = tempLeps.at(0);
       lepZ2 = tempLeps.at(1);
       lepW  = tempLeps.at(2);
+
+      TLep_PtZ1 = lepZ1.Pt();
+      TLep_EtaZ1 = lepZ1.Eta();
+      TLep_PhiZ1 = lepZ1.Phi();
+      TLep_EZ1 = lepZ1.E();
+      TLep_ChargeZ1 = lepZ1.charge;
+      TLep_IsTightZ1 =  (lepZ1.isTight%10 > wP) ? 1 : 0;
+      TLep_pdgIdZ1 = lepZ1.type;
+
+      TLep_PtZ2 = lepZ2.Pt();
+      TLep_EtaZ2 = lepZ2.Eta();
+      TLep_PhiZ2 = lepZ2.Phi();
+      TLep_EZ2 = lepZ2.E();
+      TLep_ChargeZ2 = lepZ2.charge;
+      TLep_IsTightZ2 =  (lepZ2.isTight%10 > wP) ? 1 : 0;
+      TLep_pdgIdZ2 = lepZ2.type;
+
+      TLep_PtW = lepW.Pt();
+      TLep_EtaW = lepW.Eta();
+      TLep_PhiW = lepW.Phi();
+      TLep_EW = lepW.E();
+      TLep_ChargeW = lepW.charge;
+      TLep_IsTightW =  (lepW.isTight%10 > wP) ? 1 : 0;
+      TLep_pdgIdW = lepW.type;
+
+
+      for(Int_t i = 0; i < TNFOLeps; i++){
+        TLep_isConvVeto[i]  = tempLeps.at(i).isConvVeto;
+      }
       TLorentzVector metVector = TLorentzVector();
       metVector.SetPtEtaPhiM(TMET, TMET_Phi, 0., 0.);
       TM3l = (lepZ1.p + lepZ2.p + lepW.p).M();
@@ -204,11 +233,27 @@ void WZAnalysis::InitHistos(){
 void WZAnalysis::SetLeptonVariables(TTree* iniTree){
   iniTree->Branch("TNFOLeps",     &TNFOLeps,     "TNFOLeps/I");
   iniTree->Branch("TNTightLeps",     &TNTightLeps,     "TNTightLeps/I");
-  iniTree->Branch("TLep_Pt",     TLep_Pt,     "TLep_Pt[TNFOLeps]/F");
-  iniTree->Branch("TLep_Eta",     TLep_Eta,     "TLep_Eta[TNFOLeps]/F");
-  iniTree->Branch("TLep_Phi",     TLep_Phi,     "TLep_Phi[TNFOLeps]/F");
-  iniTree->Branch("TLep_E" ,     TLep_E ,     "TLep_E[TNFOLeps]/F");
-  iniTree->Branch("TLep_Charge",  TLep_Charge, "TLep_Charge[TNFOLeps]/F");
+
+  iniTree->Branch("TLep_PtZ1",     &TLep_PtZ1,     "TLep_PtZ1/F");
+  iniTree->Branch("TLep_PtZ2",     &TLep_PtZ2,     "TLep_PtZ2/F");
+  iniTree->Branch("TLep_PtW",      &TLep_PtW,     "TLep_PtW/F");
+
+  iniTree->Branch("TLep_EtaZ1",     &TLep_EtaZ1,     "TLep_EtaZ1/F");
+  iniTree->Branch("TLep_EtaZ2",     &TLep_EtaZ2,     "TLep_EtaZ2/F");
+  iniTree->Branch("TLep_EtaW",      &TLep_EtaW,     "TLep_EtaW/F");
+
+  iniTree->Branch("TLep_PhiZ1",     &TLep_PhiZ1,     "TLep_PhiZ1/F");
+  iniTree->Branch("TLep_PhiZ2",     &TLep_PhiZ2,     "TLep_PhiZ2/F");
+  iniTree->Branch("TLep_PhiW",      &TLep_PhiW,     "TLep_PhiW/F");
+
+  iniTree->Branch("TLep_EZ1",     &TLep_EZ1,     "TLep_EZ1/F");
+  iniTree->Branch("TLep_EZ2",     &TLep_EZ2,     "TLep_EZ2/F");
+  iniTree->Branch("TLep_EW",      &TLep_EW,     "TLep_EW/F");
+
+  iniTree->Branch("TLep_ChargeZ1",     &TLep_ChargeZ1,     "TLep_ChargeZ1/F");
+  iniTree->Branch("TLep_ChargeZ2",     &TLep_ChargeZ2,     "TLep_ChargeZ2/F");
+  iniTree->Branch("TLep_ChargeW",      &TLep_ChargeW,     "TLep_ChargeW/F");
+
   iniTree->Branch("TChannel",      &TChannel,      "TChannel/I");
   iniTree->Branch("TMll",        &TMll,      "TMll/F");
   iniTree->Branch("TM3l",        &TM3l,      "TM3l/F");
@@ -218,8 +263,14 @@ void WZAnalysis::SetLeptonVariables(TTree* iniTree){
   iniTree->Branch("TMinMll",      &TMinMll,      "TMinMll/F");
   iniTree->Branch("TConvNumber",      &TConvNumber,      "TConvNumber/I");
   iniTree->Branch("TFakeNumber",      &TFakeNumber,      "TFakeNumber/I");
-  iniTree->Branch("TIsTight",      &TIsTight,      "TIsTight[TNFOLeps]/I");
-  iniTree->Branch("TLep_pdgId",   &TLep_pdgId, "TLep_pdgId[TNFOLeps]/I");
+
+  iniTree->Branch("TLep_IsTightZ1",     &TLep_IsTightZ1,     "TLep_IsTightZ1/F");
+  iniTree->Branch("TLep_IsTightZ2",     &TLep_IsTightZ2,     "TLep_IsTightZ2/F");
+  iniTree->Branch("TLep_IsTightW",      &TLep_IsTightW,     "TLep_IsTightW/F");
+
+  iniTree->Branch("TLep_pdgIdZ1",     &TLep_pdgIdZ1,     "TLep_pdgIdZ1/F");
+  iniTree->Branch("TLep_pdgIdZ2",     &TLep_pdgIdZ2,     "TLep_pdgIdZ2/F");
+  iniTree->Branch("TLep_pdgIdW",      &TLep_pdgIdW,     "TLep_pdgIdW/F");
   iniTree->Branch("TLep_isConvVeto",   &TLep_isConvVeto, "TLep_isConvVeto[TNFOLeps]/I");
 }
 
@@ -314,10 +365,8 @@ void WZAnalysis::GetLeptonsByWP(Int_t wPValue){
     for (int k = 0; k < nFakeableLeptons; k++){
       if (foLeptons.at(k).idMVA%10 > wPValue){
         //std::cout << k << std::endl;
-        TIsTight[nFO] = 0;
         fakeableLeptons.push_back(foLeptons.at(k));
         fakeableLeptons.back().SetSF(foLeptons.at(k).GetSF(0)*leptonSFEWK->GetLeptonSF(foLeptons.at(k).Pt(), foLeptons.at(k).Eta(), foLeptons.at(k).type));
-        if (fakeableLeptons.back().isTight%10 > wPValue) TIsTight[nFO] = 1;
         nFO++;
       }
     }
@@ -336,15 +385,6 @@ void WZAnalysis::GetLeptonVariables(std::vector<Lepton> tightLeptons, std::vecto
   Int_t nVetoLeptons = foLeptons.size();
   TNFOLeps = nVetoLeptons;
   //std::cout << "NLeps:" << TNFOLeps << ", NTight:" << TNTightLeps << std::endl;
-  for(Int_t i = 0; i < TNFOLeps; i++){
-    TLep_Pt[i]     = foLeptons.at(i).Pt();    
-    TLep_Eta[i]    = foLeptons.at(i).Eta();    
-    TLep_Phi[i]    = foLeptons.at(i).Phi();    
-    TLep_E[i]      = foLeptons.at(i).E();    
-    TLep_Charge[i] = foLeptons.at(i).charge;
-    TLep_pdgId[i]  = foLeptons.at(i).isMuon ? 13 : 11;
-    TLep_isConvVeto[i]  = foLeptons.at(i).isConvVeto;
-  }
   //Require exactly 3 leptons 
   if(TNFOLeps != 3 ) gChannel = -1;
   //Charge compatibility with WZ production
