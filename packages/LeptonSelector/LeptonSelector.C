@@ -400,7 +400,7 @@ Int_t LeptonSelector::getSUSYMVAId(Lepton lep, Int_t ty){//ty = 1 for FO, ty = 2
         else if (MVASUSY >  0.50) return 4; //Medium
         else if (MVASUSY >  0.25) return 3; //Loose
         else if (MVASUSY > -0.30) return 2; //Very Loose
-        else if (ptRatio > 0.30 && jetBTagCSV < 0.3 && ( (MVAID > 0.0)*(lep.p.Eta() < 0.8) || (MVAID > 0.0)*(lep.p.Eta() < 1.479)*(lep.p.Eta() > 0.8) || (MVAID > 0.3)*(lep.p.Eta() > 1.479) )) return 8; //Only for FO. Only if MVA fails
+        else if (ptRatio > 0.30 && jetBTagCSV < 0.3 && ( (MVAID > 0.0)*(TMath::Abs(lep.p.Eta()) < 0.8) || (MVAID > 0.0)*(TMath::Abs(lep.p.Eta()) < 1.479)*(TMath::Abs(lep.p.Eta()) > 0.8) || (MVAID > 0.3)*(TMath::Abs(lep.p.Eta()) > 1.479) )) return 8; //Only for FO. Only if MVA fails
     }
   }
 
@@ -680,11 +680,11 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
       if(lep.p.Pt() < 10) return false;
       if(!isLooseLepton(lep)) return false;
       if(lostHits > 0) return false;
-      if((sigmaIEtaIEta > 0.011 )*(lep.p.Eta() < 0.8) || (sigmaIEtaIEta > 0.011)*(lep.p.Eta() < 1.479)*(lep.p.Eta() > 0.8) || (sigmaIEtaIEta > 0.030)*(lep.p.Eta() > 1.479)) return false;
-      if((HoE > 0.1)*(lep.p.Eta() < 0.8) || (HoE > 0.1)*(lep.p.Eta() < 1.479)*(lep.p.Eta() > 0.8) || (HoE > 0.07)*(lep.p.Eta() > 1.479)) return false;
-      if((dEtaSC > 0.01)*(lep.p.Eta() < 0.8) || (dEtaSC > 0.01)*(lep.p.Eta() < 1.479)*(lep.p.Eta() > 0.8) || (dEtaSC > 0.008)*(lep.p.Eta() > 1.479)) return false;
-      if((dPhiSC > 0.04)*(lep.p.Eta() < 0.8) || (dPhiSC > 0.04)*(lep.p.Eta() < 1.479)*(lep.p.Eta() > 0.8) || (dPhiSC > 0.07)*(lep.p.Eta() > 1.479)) return false;
-      if((eImpI<-0.05) || (eImpI > 0.01)*(lep.p.Eta() < 0.8) || (eImpI > 0.01)*(lep.p.Eta() < 1.479)*(lep.p.Eta() > 0.8) || (eImpI > 0.005)*(lep.p.Eta() > 1.479)) return false;
+      if((sigmaIEtaIEta > 0.011 )*(TMath::Abs(lep.p.Eta()) < 0.8) || (sigmaIEtaIEta > 0.011)*(TMath::Abs(lep.p.Eta()) < 1.479)*(TMath::Abs(lep.p.Eta()) > 0.8) || (sigmaIEtaIEta > 0.030)*(TMath::Abs(lep.p.Eta()) > 1.479)) return false;
+      if((HoE > 0.1)*(TMath::Abs(lep.p.Eta()) < 0.8) || (HoE > 0.1)*(TMath::Abs(lep.p.Eta()) < 1.479)*(TMath::Abs(lep.p.Eta()) > 0.8) || (HoE > 0.07)*(TMath::Abs(lep.p.Eta()) > 1.479)) return false;
+      if((dEtaSC > 0.01)*(TMath::Abs(lep.p.Eta()) < 0.8) || (dEtaSC > 0.01)*(TMath::Abs(lep.p.Eta()) < 1.479)*(TMath::Abs(lep.p.Eta()) > 0.8) || (dEtaSC > 0.008)*(TMath::Abs(lep.p.Eta()) > 1.479)) return false;
+      if((dPhiSC > 0.04)*(TMath::Abs(lep.p.Eta()) < 0.8) || (dPhiSC > 0.04)*(TMath::Abs(lep.p.Eta()) < 1.479)*(TMath::Abs(lep.p.Eta()) > 0.8) || (dPhiSC > 0.07)*(TMath::Abs(lep.p.Eta()) > 1.479)) return false;
+      if((eImpI<-0.05) || (eImpI > 0.01)*(TMath::Abs(lep.p.Eta()) < 0.8) || (eImpI > 0.01)*(TMath::Abs(lep.p.Eta()) < 1.479)*(TMath::Abs(lep.p.Eta()) > 0.8) || (eImpI > 0.005)*(TMath::Abs(lep.p.Eta()) > 1.479)) return false;
 
     }
     lepMVASUSYId = getSUSYMVAId(lep, 1);
@@ -786,7 +786,7 @@ Bool_t LeptonSelector::isLooseLepton(Lepton lep){
       if(!getSIPcut(8)) return false;
       if(!getminiRelIso(iLoose)) return false;
       if(!getElecMVAId(iLoose,lep)) return false;  
-      if((MVAID < -0.70)*(lep.p.Eta() < 0.8) || (MVAID < -0.83)*(lep.p.Eta() < 1.479)*(lep.p.Eta() > 0.8) || (MVAID < -0.92)*(lep.p.Eta() > 1.479)) return false;
+      if((MVAID < -0.70)*(TMath::Abs(lep.p.Eta()) < 0.8) || (MVAID < -0.83)*(TMath::Abs(lep.p.Eta()) < 1.479)*(TMath::Abs(lep.p.Eta()) > 0.8) || (MVAID < -0.92)*(TMath::Abs(lep.p.Eta()) > 1.479)) return false;
       if(lostHits > 2) return false;
     }
     return true;
