@@ -332,10 +332,6 @@ Bool_t LeptonSelector::getElecCutBasedId(Int_t wp){
     }
     return true;
   }
-  else if(gSelection == iWZSelec)
-    {
-      return true; // Selección de ID dentro del paquete de analisis
-    }
   else{
     if(wp == iTight   && tightVar < 3)     return false;
     if(wp == iMedium  && tightVar < 2)     return false;
@@ -542,7 +538,11 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
     if(lep.isElec){
       if(!isVetoLepton(lep)) isMVALepton = false;
       if(TightCharge != 2) isMVALepton = false;
-      if(!convVeto) isMVALepton = false;
+      if(!convVeto){ 
+        isMVALepton = false;
+        isConvVeto = 0;
+      }
+      else isConvVeto = 1;      
       // Added MVA selection in the analysis
     }
 
@@ -871,6 +871,7 @@ void LeptonSelector::InsideLoop(){
       if(gSelection == iWZSelec){
         tL.idMVA    = lepMVASUSYId;
         tL.isTight  = lepMVASUSYId;
+        tL.isConvVeto = isConvVeto;
         if(!gIsData){ tL.isPrompt = isPrompt; };
       }
       selLeptons.push_back(tL);

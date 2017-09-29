@@ -81,6 +81,7 @@ class LeptonSelector : public PAFChainItemSelector{
     Int_t isPrompt;
     Int_t matchId;
     Int_t matchIdGamma;    
+    Bool_t isConvVeto;    
 
     // genLeptons
     Int_t ngenLep;
