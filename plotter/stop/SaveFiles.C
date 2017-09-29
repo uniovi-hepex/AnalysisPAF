@@ -26,7 +26,7 @@ Plot   *p = nullptr;
 PDFunc *pdf = nullptr;
 
 //============================================================== Selection
-TString BaselineCut = "TNJets >= 2 && TNBtags >= 1 && !TIsSS && TNVetoLeps < 3 && TPassTrigger && TPassMETfilters";
+TString BaselineCut = "TNJets >= 2 && TNBtags >= 1 && !TIsSS && TPassTrigger && TPassMETfilters"; // && TNVetoLeps < 3 
 
 //============================================================== Functions
 void CreatePlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name, TString options = "");

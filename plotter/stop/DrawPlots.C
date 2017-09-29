@@ -30,20 +30,20 @@ void PrintYieldTalbe(TString chan = "ElMu", TString cut = "");
 void DrawSignalPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, Float_t* bins, TString Xtitle, TString name);
 
 //=== Define paths and tree name
-TString pathToTree = "/pool/ciencias/userstorage/juanr/stop/sep8/";
+TString pathToTree = "/pool/ciencias/userstorage/juanr/stop/sep22/";
 TString NameOfTree = "tree";
 TString outputFolder = "./output/";
 
 //=== Constants...
-TString BaselineCut = "TNJets >= 2 && TNBtags >= 1 && !TIsSS && TNVetoLeps < 3 && TPassTrigger && TPassMETfilters";
+TString BaselineCut = "TNJets >= 2 && TNBtags >= 1 && !TIsSS && TPassTrigger && TPassMETfilters";
 TString Dilepton    = "!TIsSS && TNVetoLeps < 3 && TPassTrigger && TPassMETfilters";
 Float_t gbins[] = {0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,140,200}; Int_t ngbins = 26;
 
 //=== Change here your options
 Bool_t _PrintDataPlots   = false;
 Bool_t _PrintWZestimate  = false;
-Bool_t _PrintYieldTable  = false;
-Bool_t _PrintSignalPlots = true;
+Bool_t _PrintYieldTable  = true;
+Bool_t _PrintSignalPlots = false;
 
 void DrawPlots(TString chan = "ElMu"){
   TString  cut = BaselineCut;
@@ -52,17 +52,17 @@ void DrawPlots(TString chan = "ElMu"){
 
   if(_PrintDataPlots){ //>>> Plots with data (Control plots)
     cut = Dilepton;
-    DrawPlot("TNJets", cut, chan, 9, 0, 8, 0, "#Jets", "NJets");
-    DrawPlot("NBtagNJets(TNJets,TNBtags)", cut, chan, 16, 0, 15, 0, "[#Jets|#BJets]", "NBtagsNJets");
+    //DrawPlot("TNJets", cut, chan, 9, 0, 8, 0, "#Jets", "NJets");
+    //DrawPlot("NBtagNJets(TNJets,TNBtags)", cut, chan, 16, 0, 15, 0, "[#Jets|#BJets]", "NBtagsNJets");
     cut = BaselineCut;
-    DrawPlot("TLep0_Pt",    cut, chan, 25,   25,  250, 0, "Leading lepton p_{T} [GeV]",   "Lep0Pt");
-    DrawPlot("TLep1_Pt",    cut, chan, 30,    0,  200, 0, "Subleading lepton p_T [GeV]",  "Lep1Pt");
-    DrawPlot("TLep0_Eta",   cut, chan, 20, -2.4,  2.4, 0, "Leading lepton #eta [rad]",    "Lep0Eta");
-    DrawPlot("TLep1_Eta",   cut, chan, 20, -2.4,  2.4, 0, "Subleading lepton #eta [rad]", "Lep1Eta");
-    DrawPlot("TMT2",        cut, chan, ngbins, 0, 0, gbins, "M_{T2} [GeV]", "MT2");
-    DrawPlot("TMET",        cut, chan, 40,    0,  400, 0, "MET [GeV]",                    "MET");
-    DrawPlot("TMll",        cut, chan, 40,    0,  600, 0, "M_{#font[12]{ll}} [GeV]",               "InvMass");
-    DrawPlot("TChannel",    cut, chan, 1,     0,   10, 0, "Events",                       "Events");
+    //DrawPlot("TLep0_Pt",    cut, chan, 25,   25,  250, 0, "Leading lepton p_{T} [GeV]",   "Lep0Pt");
+    //DrawPlot("TLep1_Pt",    cut, chan, 30,    0,  200, 0, "Subleading lepton p_T [GeV]",  "Lep1Pt");
+    //DrawPlot("TLep0_Eta",   cut, chan, 20, -2.4,  2.4, 0, "Leading lepton #eta [rad]",    "Lep0Eta");
+    //DrawPlot("TLep1_Eta",   cut, chan, 20, -2.4,  2.4, 0, "Subleading lepton #eta [rad]", "Lep1Eta");
+    //DrawPlot("TMT2",        cut, chan, ngbins, 0, 0, gbins, "M_{T2} [GeV]", "MT2");
+    //DrawPlot("TMET",        cut, chan, 40,    0,  400, 0, "MET [GeV]",                    "MET");
+    //DrawPlot("TMll",        cut, chan, 40,    0,  600, 0, "M_{#font[12]{ll}} [GeV]",               "InvMass");
+    //DrawPlot("TChannel",    cut, chan, 1,     0,   10, 0, "Events",                       "Events");
     DrawPlot("TDeltaPhi",   cut, chan, 30,    0, 3.15, 0, "#Delta#varphi_{#font[12]{ll}} [rad]",   "DeltaPhi");
     DrawPlot("TDeltaEta",   cut, chan, 30,    0,  2.4, 0, "#Delta#eta_{#font[12]{ll}} [rad]",      "DeltaEta");
     DrawPlot("DilepPt(TLep0_Pt, TLep0_Eta, TLep0_Phi, TLep0_E, TLep1_Pt, TLep1_Eta, TLep1_Phi, TLep1_E)",    cut, chan, 30,    0,  300, 0, "p_{T}^{#font[12]{ll}} [GeV]",  "DilepPt");
@@ -70,7 +70,7 @@ void DrawPlots(TString chan = "ElMu"){
     //DrawPlot("TJet_Eta[1]", cut, chan, 20, -2.4,  2.4, 0, "Subleading jet #eta [rad]",    "Jet1Eta");
     //DrawPlot("TJet_Pt[0]",  cut, chan, 27,   30,  300, 0, "Leading jet p_T [GeV]",        "Jet0Pt");
     //DrawPlot("TJet_Pt[1]",  cut, chan, 30,    0,  300, 0, "Subleading jet p_T [GeV]",     "Jet1Pt");
-    DrawPlot("TNBtags", cut, chan, 5, 0, 4, 0, "#b jets", "NBtags");
+    //DrawPlot("TNBtags", cut, chan, 5, 0, 4, 0, "#b jets", "NBtags");
   }
   
   //>>> Nonprompt estimate
@@ -103,11 +103,18 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 
   //>>> Set style
   p->SetOutputName("Data");
-  p->SetLegendTextSize(0.035);
-  p->SetLegendPosition(0.70, 0.70, 0.93, 0.93);
+  p->SetLegendTextSize(0.055);
+  p->SetLegendPosition(0.60, 0.30, 0.93, 0.93);
+  if(var.Contains("Eta" || var.Contains("eta"))){
+    p->SetLegendTextSize(0.035);
+    p->SetLegendPosition(0.70, 0.70, 0.93, 0.93);
+  }
+
   p->SetRatioErrorColor(kTeal-2);
   p->SetRatioErrorStyle(3244);
   p->SetStackErrorStyle(3244);
+  p->doYieldsInLeg = false;
+  p->doSignal = false;
 
   //>>> Add all backgrounds and data
   p->AddSample("WZ, WW, ZZ", "VV", itBkg, kYellow-10);

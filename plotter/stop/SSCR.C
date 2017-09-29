@@ -24,10 +24,10 @@ class SSCR{
   public:
     SSCR(TString path = "", TString basecut = "", TString sys = ""){
       if(path    == "") pathToTree = "/pool/ciencias/userstorage/juanr/stop/sep8/";
-      if(basecut == "") BaselineCut = "TNJets > 1 && TNBtags > 0 && !TIsSS && TNVetoLeps < 3";
+      if(basecut == "") BaselineCut = "TNJets > 1 && TNBtags > 0 && !TIsSS && TPassTrigger && TPassMETfilters";
       if(sys     == "") systematics = "stat";
       NameOfTree = "tree";
-      SScut      = "TNJets >= 2 && TNBtags >= 1 && TIsSS && TNVetoLeps < 3 && TPassTrigger && TPassMETfilters";
+      SScut      = "TNJets >= 2 && TNBtags >= 1 && TIsSS && TPassTrigger && TPassMETfilters";
       var        = "TMT2"; 
       chan       = "ElMu"; 
       set        = false;
@@ -144,7 +144,6 @@ void SSCR::DrawSSCR(TString name){
   if(name == "") name = "SSCR";
   if(plotfolder != "") gSystem->mkdir(plotfolder, kTRUE);
   p->SetPlotFolder(plotfolder);
-  p->AddSystematic("stat");
   p->SetLegendTextSize(0.045);
   p->SetLegendPosition(0.70, 0.60, 0.93, 0.93);
   p->SetRatioErrorColor(kTeal-2);
