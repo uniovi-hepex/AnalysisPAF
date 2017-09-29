@@ -209,9 +209,7 @@ void Plot::AddStatError(TString process){
   if(process == ""){
     for(Int_t i = 0; i < (Int_t) VTagProcesses.size(); i++){
       pr = VTagProcesses.at(i);
-      cout << "i = " << i << ", process = " << pr << endl;
       if(i != 0) if(pr == VTagProcesses.at(i-1)) continue;
-      cout << "Vamos a poner el stat!!" << endl;
       AddStatError(pr);
     }
     return;
@@ -514,7 +512,9 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString options){
   else signal = VSignals.at(0);
   yield = VSignals.at(0)->Integral();
   if(doNorm) signal->Scale(1/yield);
-  signal->SetDrawStyle(drawstyle);
+  TString sD = signal->GetDrawStyle();
+  if(sD == "") sD = drawstyle;
+  signal->SetDrawStyle(sD);
   signal->SetTitle("");
   signal->SetLineWidth(3);
   signal->SetMarkerStyle(24); signal->SetMarkerSize(1.8);
@@ -592,11 +592,16 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString options){
         htemp->SetLineStyle(VSignals.at(i)->GetLineStyle());
         htemp->SetMarkerColor(VSignals.at(i)->GetColor());
         htemp->SetMarkerStyle(VSignals.at(i)->GetMarkerStyle());
+        //htemp->SetDrawStyle(VSignals.at(i)->GetDrawStyle());
         ratios.push_back(htemp);
         i++;
       }        
     }
-    for(Int_t k = 0; k < (Int_t) ratios.size(); k++) ratios.at(k)->Draw(drawstyle + "same");
+    for(Int_t k = 0; k < (Int_t) ratios.size(); k++){
+      //sD = ratios.at(k)->GetDrawStyle();
+      sD = drawstyle;
+      ratios.at(k)->Draw(sD + "same");
+    }
   }
   else{
     for(Int_t  i = 1; i < nsamples; i++){
@@ -610,7 +615,9 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString options){
       htemp->SetMarkerColor(VSignals.at(i)->GetColor());
       htemp->SetMarkerStyle(VSignals.at(i)->GetMarkerStyle());
       ratios.push_back(htemp);
-      ratios.at(i-1)->Draw(drawstyle + "same");
+      //sD = ratios.at(i-1)->GetDrawStyle();
+      sD = drawstyle;
+      ratios.at(i-1)->Draw(sD + "same");
     }
   }
   if(sav){ // Save the histograms
