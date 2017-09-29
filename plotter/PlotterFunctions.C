@@ -11,6 +11,8 @@
 //   Using arrays ---> (*pt, *eta, *phi, *m)
 //   Or           ---> (pt1, eta1, phi1, m1, pt2, eta2, phi2, m2)
 
+#include "t4/t3Functions.C"
+
 Float_t GetEntry(Float_t *pt, Int_t pos);
 
 Float_t InvMass(Float_t *pt, Float_t *eta, Float_t *phi, Float_t *e);
@@ -66,9 +68,6 @@ Int_t NBtagNJets(Int_t nJets, Int_t nBtags){
   else if(nJets == 4) return 10+nBtags;
   else return 15;
 }
-
-
-
 
 Float_t GetPt(Float_t lep0pt, Float_t lep1pt, Int_t lep0id, Int_t lep1id, Int_t id){
   id = abs(id);
