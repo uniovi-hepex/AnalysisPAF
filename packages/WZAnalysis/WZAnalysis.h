@@ -140,6 +140,8 @@ class WZAnalysis : public PAFChainItemSelector{
     Float_t TLep_E[10];
     Float_t TLep_Charge[10];
     Int_t  TIsTight[10];
+    Int_t  TLep_pdgId[10];
+    Int_t  TLep_isConvVeto[10];
     Int_t   TConvNumber;
     Int_t   TFakeNumber;
 

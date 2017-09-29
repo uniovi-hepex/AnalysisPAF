@@ -219,6 +219,8 @@ void WZAnalysis::SetLeptonVariables(TTree* iniTree){
   iniTree->Branch("TConvNumber",      &TConvNumber,      "TConvNumber/I");
   iniTree->Branch("TFakeNumber",      &TFakeNumber,      "TFakeNumber/I");
   iniTree->Branch("TIsTight",      &TIsTight,      "TIsTight[TNFOLeps]/I");
+  iniTree->Branch("TLep_pdgId",   &TLep_pdgId, "TLep_pdgId[TNFOLeps]/I");
+  iniTree->Branch("TLep_isConvVeto",   &TLep_isConvVeto, "TLep_isConvVeto[TNFOLeps]/I");
 }
 
 void WZAnalysis::SetJetVariables(TTree* iniTree){
@@ -340,6 +342,8 @@ void WZAnalysis::GetLeptonVariables(std::vector<Lepton> tightLeptons, std::vecto
     TLep_Phi[i]    = foLeptons.at(i).Phi();    
     TLep_E[i]      = foLeptons.at(i).E();    
     TLep_Charge[i] = foLeptons.at(i).charge;
+    TLep_pdgId[i]  = foLeptons.at(i).isMuon ? 13 : 11;
+    TLep_isConvVeto[i]  = foLeptons.at(i).isConvVeto;
   }
   //Require exactly 3 leptons 
   if(TNFOLeps != 3 ) gChannel = -1;
