@@ -12,7 +12,7 @@ StopTopAnalysis::StopTopAnalysis() : PAFChainItemSelector() {
 void StopTopAnalysis::Summary(){}
 
 void StopTopAnalysis::ResetVariables(){
-  TrigSF = 0; TrigSFerr = 0; PUSF = 0; PUSF_Up = 0; PUSF_Down = 0;
+  TrigSF = 0; TrigSFerr = 0; PUSF = 0; PUSF_Up = 0; PUSF_Down = 0; genWeight = 0;
   gChannel = 0; passMETfilters = 0; passTrigger = 0; isSS = 0;  NormWeight = 0; TWeight = 0;
   TMT2 = 0; TMll = 0;  TPfMET = 0; TMET = 0; TMET_Phi = 0; TgenMET = 0; TNJets = 0; TNBtags = 0; THT = 0; 
   TNVetoLeps = 0; TNSelLeps = 0; TChannel = 0; TDeltaPhi = 0; TDeltaEta = 0; TBtagSFFS = 0;
@@ -73,7 +73,7 @@ void StopTopAnalysis::Initialise(){
   fISRJets =    CreateH1F(   "ISRweights",    "ISRweights", 6 , 0, 6); 
 
   gIsLHE = false; gIsTTbar = false;
-  if(gSampleName.Contains("TTbar_Powheg") && !gSampleName.Contains("hdamp")) gIsLHE = true;
+  if(gSampleName == "TTbar_Powheg") gIsLHE = true;
   if(gSampleName.Contains("TTbar") || gSampleName.Contains("TTJets")) gIsTTbar = true;
   
   gDoISR = false;
@@ -118,6 +118,10 @@ void StopTopAnalysis::InsideLoop(){
   BtagSFFS     = GetParam<Float_t>("BtagSFFS");
   FSSF         = GetParam<Float_t>("FSSF");
   FSSFerr      = GetParam<Float_t>("FSSFerr");
+  gIsMCatNLO   = GetParam<Bool_t>("IsMCatNLO");
+
+  if(gIsMCatNLO) genWeight = Get<Float_t>("genWeight");
+  else           genWeight = 1;
 
   // Event variables
   gChannel        = GetParam<Int_t>("gChannel");
@@ -144,11 +148,11 @@ void StopTopAnalysis::InsideLoop(){
   //else return;
 
   // =================== Tree at gen level here! ==================
-  //if(TNgenLeps >= 2){
-  //  TChannel = GetDileptonicChannel(genLeptons);
-  //  fTree->Fill();
-  //}
-  //return;
+  if(TNgenLeps >= 2){
+    TChannel = GetDileptonicChannel(genLeptons);
+    fTree->Fill();
+  }
+  return;
 
   // =================== Tree at reco level here! ==================
   if(TNSelLeps == 2){ // 2 leptons, OS
@@ -346,6 +350,7 @@ void StopTopAnalysis::SetEventVariables(){
   fTree->Branch("TMT2METUp",    &TMT2METUp,    "TMT2METUp/F");
   fTree->Branch("TMT2METDown",  &TMT2METDown,  "TMT2METDown/F");
 
+  fTree->Branch("TgenWeight"  , &TgenWeight,  "TgenWeight/F" ); 
   fTree->Branch("TgenMETPhi"  , &TgenMETPhi , "TgenMETPhi/F" ); 
   fTree->Branch("TgenTop1Pt"  , &TgenTop1Pt , "TgenTop1Pt/F" );
   fTree->Branch("TgenTop1Eta" , &TgenTop1Eta, "TgenTop1Eta/F"); 
@@ -494,6 +499,7 @@ void StopTopAnalysis::GetMET(){
 void StopTopAnalysis::GetGenInfo(){
   if(gIsData) return; 
   TgenMETPhi = Get<Float_t>("met_genPhi");
+  TgenWeight = genWeight;
 
   TLorentzVector top1; 
   TLorentzVector top2; 
