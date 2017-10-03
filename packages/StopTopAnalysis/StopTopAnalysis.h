@@ -14,6 +14,7 @@ class StopTopAnalysis : public PAFChainItemSelector{
     TH1F* fISRJets;  
     Int_t TNLHEWeight;
     Float_t TLHEWeight[254];
+    Float_t genWeight;
  
     StopTopAnalysis();
     virtual ~StopTopAnalysis(){}
@@ -49,6 +50,7 @@ class StopTopAnalysis : public PAFChainItemSelector{
     Bool_t passMETfilters;
     Bool_t passTrigger;
     Bool_t isSS;
+    Bool_t gIsMCatNLO;
     Float_t NormWeight;
     Bool_t IsT2ttScan = false;
     Bool_t gIsFastSim = false;
