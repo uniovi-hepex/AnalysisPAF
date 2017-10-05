@@ -1,25 +1,38 @@
-#include "FRFunctions.C"
 #include "Looper.h"
 
 void Looper::SetFormulas(TString systematic){
   if(FormulasCuts) delete FormulasCuts;
-  if(FormulasVars) delete FormulasVars;
-  if(FormulasLHE)  delete FormulasLHE;
+  //if(FormulasVars) delete FormulasVars;
+  vvars.clear();
+  vinst.clear();
+  vector<TString> vvariables = TStringToVector(var, ':');
+  nVars = vvariables.size();
+  
+  //>>> Cut
   stringcut = ""; stringvar = "";
-  TString cu = ""; TString ch = ""; TString v = ""; 
+  TString cu = ""; TString ch = ""; 
   stringcut = CraftFormula(cut, chan, systematic, weight, tree, options);
   if(verbose) cout << "[Looper::SetFormulas] Formula: " << stringcut << endl;
-  stringvar = CraftVar(var, systematic, tree);
-  if(verbose) cout << "[Looper::SetFormulas] Variable: " << stringvar << endl;
-
-  if(stringvar.Contains("[") && stringvar.Contains("]")){
-    TString number = TString(stringvar(stringvar.First("["), stringvar.First("]")) );
-    stringvar.ReplaceAll(number, "");
-    numberInstance = TString(number.ReplaceAll("[", "").ReplaceAll("]","")).Atoi(); 
-  }
-
   FormulasCuts = new TTreeFormula("Form_" + sampleName + "_" + systematic + "_cut", stringcut, tree);
-  FormulasVars = new TTreeFormula("Form_" + sampleName + "_" + systematic + "_var", stringvar, tree);
+
+  //>>> var
+  TString v = "";
+  for(Int_t k = 0; k < nVars; k++){
+    FormulasVars = NULL;
+    v = vvariables.at(k);
+    stringvar = CraftVar(v, systematic, tree);
+    if(verbose) cout << "[Looper::SetFormulas] Variable: " << stringvar << endl;
+
+    if(stringvar.Contains("[") && stringvar.Contains("]")){
+      TString number = TString(stringvar(stringvar.First("["), stringvar.First("]")) );
+      stringvar.ReplaceAll(number, "");
+      numberInstance = TString(number.ReplaceAll("[", "").ReplaceAll("]","")).Atoi(); 
+      vinst.push_back(numberInstance);
+    }
+    else vinst.push_back(0);
+    FormulasVars = new TTreeFormula("Form_" + sampleName + "_" + systematic + "_var", stringvar, tree);
+    vvars.push_back(FormulasVars);
+  }
 }
 
 void Looper::CreateHisto(TString sys){
@@ -34,7 +47,7 @@ void Looper::Loop(TString sys){
   //SetFormulas(sys); // Change systematic
   Int_t nEntries = tree->GetEntries();
   Float_t val = 0; Float_t weight = 0;
-  Int_t nInstances = FormulasVars->GetNdata();
+  //Int_t nInstances = FormulasVars->GetNdata();
   Bool_t doAllInstances(false);
   if(options.Contains("AllInstances")){
     doAllInstances = true;
@@ -57,11 +70,9 @@ void Looper::Loop(TString sys){
   for (Long64_t jentry=0; jentry<nEntries; jentry++) {
     tree->GetEntry(jentry);
     counter ++;
-    if(numberInstance != 0) FormulasVars->GetNdata();
 
     //>>> Getting values for weight and variable
     weight  = FormulasCuts->EvalInstance();
-    val     = FormulasVars->EvalInstance(numberInstance);
 
    // <<<<<<< NEEDS TO BE REDONE >>>>>>>>
    /* if(options.Contains("Fake") || options.Contains("fake")){
@@ -91,17 +102,22 @@ void Looper::Loop(TString sys){
     }*/
 
     //>>> Fill the histogram with all the entries in an array
-    if(doAllInstances){
-      nInstances = FormulasVars->GetNdata();
+    if(nVars == 1 && doAllInstances){
+      FormulasVars = vvars.at(0);
+      Int_t nInstances = FormulasVars->GetNdata();
       for(Int_t g = 0; g < nInstances; g++){
         val = FormulasVars->EvalInstance(g);
         Hist->Fill(val, weight);
       }
     }
-
     //>>> Fill the histogram
-    else    Hist->Fill(val, weight);
-
+    else{
+      for(Int_t k = 0; k < nVars; k++){
+        vvars.at(k)->GetNdata();
+        val     = vvars.at(k)->EvalInstance(vinst.at(k));
+        Hist->Fill(val, weight);
+      }
+    }
   }
 }
 

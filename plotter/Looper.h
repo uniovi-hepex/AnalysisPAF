@@ -14,10 +14,10 @@
 #include "Histo.h"
 #include "TH2F.h"
 #include "TSystem.h"
-#include "../InputFiles/for4t/fake_rates.h"
+#include "FRFunctions.C"
+#include "PlotterFunctions.C"
 
 enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau, iOS1tau, i2lss_fake, iTriLep_fake, iElEl, iMuMu, i1Tau_emufakeOS ,i1Tau_emufakeSS, TotalDefinedChannels};
-const Int_t nLHEweights = 112;
 std::vector<TString> TStringToVector(TString t, char separator = ',');
 void PrintVector(std::vector<TString> v);
 void PrintVector(std::vector<Float_t> v);
@@ -27,11 +27,9 @@ std::vector<TString> GetAllVars(TString varstring, Bool_t verbose = false);
 TString CraftFormula(TString cut, TString chan, TString sys, TString weight, TTree* tree, TString options = "");
 TString CraftVar(TString varstring, TString sys, TTree* tree);
 TTreeFormula *GetFormula(TString name, TString var, TTree* tree);
-TH1D* loadSumOfLHEweights(TString pathToHeppyTrees = "/pool/ciencias/HeppyTreesSummer16/v2/", TString sampleName = "TTbar_PowhegLHE");
 TTree* loadTree(TString path, TString sampleName, TString treeName);
 TH1D* loadHistogram1D(TString path, TString sampleName, TString histoName);
 TH1F* loadHistogram1F(TString path, TString sampleName, TString histoName);
-TH1F* hLHE[nLHEweights];
 
 class Looper{
   public:
@@ -42,7 +40,6 @@ class Looper{
    Hist = NULL; 
    FormulasCuts = NULL;
    FormulasVars = NULL;
-   FormulasLHE  = NULL;
    tree = NULL;
    path = pathToTree;
    treeName = NameOfTree;
@@ -63,7 +60,6 @@ class Looper{
    Hist = NULL; 
    FormulasCuts = NULL;
    FormulasVars = NULL;
-   FormulasLHE  = NULL;
    tree = NULL;
    path = pathToTree;
    treeName = NameOfTree;
@@ -85,8 +81,8 @@ class Looper{
 		 delete tree->GetCurrentFile();
      if(FormulasCuts) delete FormulasCuts;
      if(FormulasVars) delete FormulasVars;
-     if(FormulasLHE)  delete FormulasLHE;
      FRhistos.clear();
+     vvars.clear();
      //if(Hist) delete Hist;
    };
 
@@ -101,8 +97,6 @@ class Looper{
      else if(i == 4) chan = "SF";
      else chan = "All";
    }
-   Bool_t doSysPDF = false;
-   Bool_t doSysScale = false;
    Bool_t doISRweight = false;
    Bool_t verbose = false;
    Int_t numberInstance;
@@ -112,21 +106,20 @@ class Looper{
 	 void SetPath(      TString t){path         = t;}
    void SetWeight(    TString t){weight       = t;}
 
-   Float_t GetPDFweight(TString sys = "PDF");
-   Float_t GetScaleWeight(TString sys = "Scale");
    Histo* GetHisto(TString sampleName, TString sys = "0");
 
 	 void SetFormulas(TString sys = "0"); 
 	 void CreateHisto(TString sys = "0"); 
    void Loop(TString sys = "");
-   Float_t getLHEweight(Int_t i);
    void SetOptions(TString p){options = p;}
 
  // protected:
    Histo* Hist;
    TTreeFormula* FormulasCuts;
    TTreeFormula* FormulasVars;
-   TTreeFormula* FormulasLHE;
+   vector<TTreeFormula*> vvars;
+   vector<Int_t>         vinst;
+   Int_t   nVars;
    Int_t   nbins;
    Float_t bin0;
    Float_t binN;
@@ -139,7 +132,6 @@ class Looper{
 
    Bool_t HistosCreated;
 
-   TH1D* hLHEweights;
    TString pathToHeppyTrees;
    TString path;
    TString treeName;
