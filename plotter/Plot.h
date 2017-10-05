@@ -263,9 +263,12 @@ public:
   void PrintSamples();
   void PrintSystematics(); 
   void PrintYields(TString cuts = "", TString labels = "", TString channels = "", TString options = "");
+  void PrintBinsYields(TString options = "txt,tex,html");
 	void PrintSystYields();
 	Float_t GetYield(TString pr = "ttbar", TString systag = "0");
+	Float_t GetBinYield(TString pr = "ttbar", Int_t bin = 1, TString systag = "0");
 	Histo* GetHisto(TString pr = "ttbar", TString systag = "0");
+  void AddNormUnc(TString pr, Float_t systUp = 1, Float_t systDown = - 99);
 	void SetLineStyle(TString pr = "ttbar", Int_t s = 0){  Histo* h = GetHisto(pr, "0"); h->SetLineStyle(s);}
 	void SetLineColor(TString pr = "ttbar", Int_t s = 0){  Histo* h = GetHisto(pr, "0"); h->SetLineColor(s);}
 	void SetMarkerColor(TString pr = "ttbar", Int_t s = 0){  Histo* h = GetHisto(pr, "0"); h->SetMarkerColor(s);}
