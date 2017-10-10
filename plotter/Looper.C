@@ -23,7 +23,8 @@ void Looper::SetFormulas(TString systematic){
     stringvar = CraftVar(v, systematic, tree);
     if(verbose) cout << "[Looper::SetFormulas] Variable: " << stringvar << endl;
 
-    if(stringvar.Contains("[") && stringvar.Contains("]")){
+    if(stringvar.Contains("[") && stringvar.Contains("]") && !stringvar.Contains("(")){
+      cout << "Getting instance from:  " << stringvar << endl;
       TString number = TString(stringvar(stringvar.First("["), stringvar.First("]")) );
       stringvar.ReplaceAll(number, "");
       numberInstance = TString(number.ReplaceAll("[", "").ReplaceAll("]","")).Atoi(); 
@@ -46,7 +47,7 @@ void Looper::CreateHisto(TString sys){
 void Looper::Loop(TString sys){
   //SetFormulas(sys); // Change systematic
   Int_t nEntries = tree->GetEntries();
-  Float_t val = 0; Float_t weight = 0;
+  Float_t val = 0; Float_t w = 0;
   //Int_t nInstances = FormulasVars->GetNdata();
   Bool_t doAllInstances(false);
   if(options.Contains("AllInstances")){
@@ -72,34 +73,8 @@ void Looper::Loop(TString sys){
     counter ++;
 
     //>>> Getting values for weight and variable
-    weight  = FormulasCuts->EvalInstance();
-
-   // <<<<<<< NEEDS TO BE REDONE >>>>>>>>
-   /* if(options.Contains("Fake") || options.Contains("fake")){
-      f = 1; nfakes = 0; 
-      if(options.Contains("Sub") || options.Contains("sub")) weight *= -1;
-      ForFLepPt   ->GetNdata();
-      ForFLepEta  ->GetNdata();
-      ForFLepPdgId->GetNdata();
-      ForLepChar  ->GetNdata();
-      FornFakeLep->GetNdata();
-      FornSelLep->GetNdata();
-      FornSelTau->GetNdata();
-      nFakeLeps = FornFakeLep->EvalInstance();
-      nLeps     = FornSelLep->EvalInstance();
-      nTaus     = FornSelTau->EvalInstance();
-      if(nFakeLeps <= 0)           continue;
-      for(Int_t i = 0; i < nFakeLeps ; i++){
-        FLepPt    = ForFLepPt ->EvalInstance(i);
-        FLepEta   = ForFLepEta->EvalInstance(i);
-        FLepPdgId = ForFLepPdgId->EvalInstance(i);
-        if(FLepPdgId == 11) f *= electronFakeRate(FLepPt, FLepEta);
-        if(FLepPdgId == 13) f *=     muonFakeRate(FLepPt, FLepEta);
-        if(f >= 0.99) continue;
-        weight *= f/(1-f);
-        //if(weight != 0) cout << "[" << counter << "] nFakes = " << nFakeLeps << ", weight = " << weight << endl;
-      }
-    }*/
+    w = FormulasCuts->EvalInstance();
+    if(stringcut.Contains("FRweight")) _FW += w;
 
     //>>> Fill the histogram with all the entries in an array
     if(nVars == 1 && doAllInstances){
@@ -107,7 +82,7 @@ void Looper::Loop(TString sys){
       Int_t nInstances = FormulasVars->GetNdata();
       for(Int_t g = 0; g < nInstances; g++){
         val = FormulasVars->EvalInstance(g);
-        Hist->Fill(val, weight);
+        Hist->Fill(val, w);
       }
     }
     //>>> Fill the histogram
@@ -115,7 +90,7 @@ void Looper::Loop(TString sys){
       for(Int_t k = 0; k < nVars; k++){
         vvars.at(k)->GetNdata();
         val     = vvars.at(k)->EvalInstance(vinst.at(k));
-        Hist->Fill(val, weight);
+        Hist->Fill(val, w);
       }
     }
   }
