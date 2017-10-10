@@ -905,6 +905,7 @@ void LeptonSelector::InsideLoop(){
       GetGenLeptonVariables(i);
       if(gpdgMId == 23 || gpdgMId == 24 || gpdgMId == 25){
         tL = Lepton(tP, charge, type);
+        tL.Mid = gpdgMId;
         //if(tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta() < 2.4)) genLeptons.push_back(tL);
         genLeptons.push_back(tL);
       }
@@ -913,6 +914,7 @@ void LeptonSelector::InsideLoop(){
       GetGenLepFromTauVariables(i);
       if(gpdgMId == 23 || gpdgMId == 24 || gpdgMId == 25){
         tL = Lepton(tP, charge, type);
+        tL.Mid = 15;
         nLeptonsFromTau++;
        // if(tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta() < 2.4)i) genLeptons.push_back(tL);
         genLeptons.push_back(tL);
