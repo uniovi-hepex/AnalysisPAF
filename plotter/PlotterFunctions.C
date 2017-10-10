@@ -11,7 +11,12 @@
 //   Using arrays ---> (*pt, *eta, *phi, *m)
 //   Or           ---> (pt1, eta1, phi1, m1, pt2, eta2, phi2, m2)
 
-#include "t4/t3Functions.C"
+#include "TLorentzVector.h"
+#include "t4/t4Functions.C"
+#include "stop/StopFunctions.C"
+
+#ifndef PlotterFunctions_C
+#define PlotterFunctions_C 1
 
 Float_t GetEntry(Float_t *pt, Int_t pos);
 
@@ -19,6 +24,7 @@ Float_t InvMass(Float_t *pt, Float_t *eta, Float_t *phi, Float_t *e);
 Float_t DeltaEta(Float_t *pt, Float_t *eta, Float_t *phi, Float_t *e);
 Float_t DeltaPhi(Float_t *pt, Float_t *eta, Float_t *phi, Float_t *e);
 Float_t DilepPt(Float_t *pt, Float_t *eta, Float_t *phi, Float_t *e);
+Float_t DeltaEta(Float_t e1, Float_t e2);
 
 Float_t InvMass(Float_t pt1, Float_t eta1, Float_t phi1, Float_t e1, Float_t pt2, Float_t eta2, Float_t phi2, Float_t e2);
 Float_t DeltaEta(Float_t pt1, Float_t eta1, Float_t phi1, Float_t e1, Float_t pt2, Float_t eta2, Float_t phi2, Float_t e2);
@@ -99,4 +105,32 @@ Bool_t PassEtaCut(Float_t lep0eta, Float_t lep1eta, Int_t lep0id, Int_t lep1id, 
   return (eta < etamax && eta > etamin);
 }
 
+Float_t InvMass(Float_t pt1, Float_t eta1, Float_t phi1, Float_t m1, Float_t pt2, Float_t eta2, Float_t phi2, Float_t m2){
+  TLorentzVector l1; l1.SetPtEtaPhiM(pt1, eta1, phi1, m1);
+  TLorentzVector l2; l2.SetPtEtaPhiM(pt2, eta2, phi2, m2);
+  return (l1 + l2).M();
+}
 
+Float_t DeltaEta(Float_t pt1, Float_t eta1, Float_t phi1, Float_t m1, Float_t pt2, Float_t eta2, Float_t phi2, Float_t m2){
+  TLorentzVector l1; l1.SetPtEtaPhiM(pt1, eta1, phi1, m1);
+  TLorentzVector l2; l2.SetPtEtaPhiM(pt2, eta2, phi2, m2);
+  return TMath::Abs(l1.Eta() - l2.Eta());
+}
+
+Float_t DeltaEta(Float_t e1, Float_t e2){ return TMath::Abs(e1 - e2);}
+
+Float_t DeltaPhi(Float_t pt1, Float_t eta1, Float_t phi1, Float_t m1, Float_t pt2, Float_t eta2, Float_t phi2, Float_t m2){
+  TLorentzVector l1; l1.SetPtEtaPhiM(pt1, eta1, phi1, m1);
+  TLorentzVector l2; l2.SetPtEtaPhiM(pt2, eta2, phi2, m2);
+  return l1.DeltaPhi(l2);
+}
+
+Float_t DeltaR(Float_t pt1, Float_t eta1, Float_t phi1, Float_t m1, Float_t pt2, Float_t eta2, Float_t phi2, Float_t m2){
+  TLorentzVector l1; l1.SetPtEtaPhiM(pt1, eta1, phi1, m1);
+  TLorentzVector l2; l2.SetPtEtaPhiM(pt2, eta2, phi2, m2);
+  return l1.DeltaR(l2);
+}
+
+
+
+#endif
