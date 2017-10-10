@@ -90,6 +90,7 @@ void Histo::AddToLegend(TLegend* leg, Bool_t doyi){
   TH1F* h2 = (TH1F*) Clone("toLeg");
   TString op = "f";
   if(DrawStyle != "") op = DrawStyle;
+  if(DrawStyle == "hist") op = "l";
   else{
     if      (type == itSignal){
       if(GetFillColor() == 0) op = "l";

@@ -49,8 +49,7 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, TString sys
   Int_t n; Int_t i = 0;
   if(sys != "0") AddToSystematicLabels(sys);
 
-  Bool_t isFakeFromData = (options.Contains("fake") || options.Contains("Fake")) && ! options.Contains("sub");
-  if(type != itData && !isFakeFromData)  h->Scale(Lumi*1000);
+  if(type != itData && !options.Contains("noScaleLumi"))  h->Scale(Lumi*1000);
   if(p == "TTJets_aMCatNLO") h->Scale((1.08*0.9)*(1.08*0.9));
   if(type == itBkg){ // Backgrounds
     n = VBkgs.size();
@@ -273,7 +272,7 @@ void Plot::GroupSystematics(){
         //cout << "    --> No existe un syst " << var << " para el proceso " << VTagProcesses.at(j) << "!! Adding nominal... " << endl;
         hsumSysUp  ->Add((Histo*) GetHisto(VTagProcesses.at(j))->Clone(var+"Up_"+VTagProcesses.at(j)));
         hsumSysDown->Add((Histo*) GetHisto(VTagProcesses.at(j))->Clone(var+"Down_"+VTagProcesses.at(j)));
-	cout << "Integral up is " << GetHisto(VTagProcesses.at(j))->Integral() << endl;
+        //cout << "Integral up is " << GetHisto(VTagProcesses.at(j))->Integral() << endl;
       }
     }
     AddSumHistoSystematicUp(hsumSysUp);
@@ -731,7 +730,7 @@ void Plot::DrawStack(TString tag, bool sav){
   if(doSys && ((Int_t) VSystLabel.size() > 0))  hAllBkg->Draw("same,e2");
 
   //--------- Draw Data
-  //if(doData) hData->Draw("psameE1X0");
+  if(doData) hData->Draw("psameE1X0");
 
   //--------- Draw systematics ratio
   hAllBkg->SetFillStyle(StackErrorStyle);
