@@ -106,11 +106,11 @@ class Looper{
 	 void SetPath(      TString t){path         = t;}
    void SetWeight(    TString t){weight       = t;}
 
-   Histo* GetHisto(TString sampleName, TString sys = "0");
+   virtual Histo* GetHisto(TString sampleName, TString sys = "0");
 
-	 void SetFormulas(TString sys = "0"); 
-	 void CreateHisto(TString sys = "0"); 
-   void Loop(TString sys = "");
+	 virtual void CreateHisto(TString sys = "0"); 
+	 virtual void SetFormulas(TString sys = "0"); 
+   virtual void Loop(TString sys = "");
    void SetOptions(TString p){options = p;}
 
  // protected:
@@ -166,6 +166,60 @@ class Looper{
    std::vector<TH1F*> FRhistos;
 
 };
+
+
+//################################################################
+//
+// MULTILOOPS!!!!!
+//
+class Multilooper : public Looper{
+  
+  //>>> Constructor from Looper...
+  public:
+  Multilooper(TString pathToTree, TString NameOfTree, TString _var, TString _cut, TString _chan, Int_t nb, Float_t b0, Float_t bN) : 
+    Looper(pathToTree, NameOfTree, _var, _cut, _chan, nb, b0, bN) {};
+  Multilooper(TString pathToTree, TString NameOfTree, TString _var, TString _cut, TString _chan, Int_t nb, Float_t* bins) : 
+    Looper(pathToTree, NameOfTree, _var, _cut, _chan, nb, bins){};
+
+  //>>> Redefined methods
+  virtual void CreateHisto(TString sys); 
+  virtual void SetFormulas(TString sys); 
+  virtual void Loop();
+  virtual Histo* GetHisto(TString syst);
+  //>>> Recovered from Loop
+  virtual void Loop(TString sys){Loop(sys);} 
+  virtual Histo* GetHisto(TString sampleName, TString sys){ return GetHisto(sampleName, systematics);}
+
+  //>>> Data Members
+  protected:
+  TString systematics = "";
+  vector<TString> systLabels;
+  vector<Histo*> vHistos;
+  vector<TTreeFormula*> vFormulas;
+  vector<TTreeFormula*> vFormVars;
+
+  //>>> Methods
+  public:
+  void SetSystematics(TString t){ systematics = t; systLabels = TStringToVector(t);}
+  void SetSystematics(vector<TString> t){ systLabels = t;}
+  void CreateHistosAndFormulas();
+  void Fill();
+  vector<Histo*> GetAllHistos(){ return vHistos;}
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //################################################################
 //
@@ -419,17 +473,14 @@ TString CraftFormula(TString cuts, TString chan, TString sys, TString weight, TT
 
   std::vector<TString> AllVars = GetAllVars((TString) cuts);
   Int_t nvars = AllVars.size();
-  for(Int_t i = 0; i < nvars; i++) 
-    if(tree->GetBranchStatus(AllVars.at(i) + sys)){
-      cuts = ReplaceWords((TString) cuts, AllVars.at(i), AllVars.at(i)+sys);
+  if(sys != "" && sys != "0"){
+    for(Int_t i = 0; i < nvars; i++){
+      if(tree->GetBranchStatus(AllVars.at(i) + sys)){
+        cuts = ReplaceWords((TString) cuts, AllVars.at(i), AllVars.at(i)+sys);
+      }
     }
+  }
   TString  formula = TString("(") + cuts + TString(")*(") + schan + TString(")*") + weight;
-/*  if((options.Contains("Fake") || options.Contains("fake"))){
-    if(chan.Contains("Lep")) schan = Form("(TChannel == %i || TChannel == %i)", i2lss_fake, iTriLep_fake);
-    //if(chan.Contains("Tau")) schan = Form("(TChannel == %i)", i1Tau_emufake);
-    if(options.Contains("sub") || options.Contains("Sub"))  formula = TString("(") + cuts + TString(")*(") + schan + TString(")*") + weight;
-    else formula = TString("(") + cuts + TString(")*(") + schan + TString(")");
-  }*/
   if(options.Contains("isr") || options.Contains("ISR"))   formula = "TISRweight*(" + formula + ")";
   if(options.Contains("noWeight"))                         formula = TString("(") + cuts + TString(")*(") + schan + TString(")"); 
   return formula;

@@ -175,11 +175,16 @@ public:
     StackErrorColor = kGray+2;
     StackErrorStyle = 3444;
     weight = "TWeight";
+    systematics = "";
   }
 
 
 	
 	void AddSample(TString p = "TTbar_Powheg", TString pr = "", Int_t type = itBkg, Int_t color = 0, TString tsys = "0", TString options = "");
+  void Multiloop(TString p = "TTbar_Powheg", TString pr = "", Int_t type = itBkg, Int_t color = 0, TString sys = "");
+  void PrepareHisto(vector<Histo*> vH, TString name, TString pr, Int_t type = itBkg, Int_t color = 0, TString sys = "");
+  void PrepareHisto(Histo* h, TString name, TString pr, Int_t type = itBkg, Int_t color = 0, TString sys = "");
+  void Group(Histo* h);
 
 	// ######### Methods ########
   Histo* GetH(TString sample = "TTbar_Powheg", TString s = "0", Int_t type = itBkg);
@@ -237,6 +242,11 @@ public:
 	void AddSystematic(TString s, TString pr = "");
   void AddStatError(TString process = "");
   void AddToSystematicLabels(TString sys){
+    if(sys.Contains(",")){
+      vector<TString> v = TStringToVector(sys, ',');
+      for(Int_t i = 0; i < (Int_t) v.size(); i++) AddToSystematicLabels(v.at(i));
+      return;
+    }
     sys.ReplaceAll("Up", ""); sys.ReplaceAll("Down", "");
     for(Int_t i = 0; i < (Int_t) VSystLabel.size(); i++){
       if(VSystLabel.at(i) == sys) return;
@@ -284,6 +294,7 @@ public:
   void UseEnvelope(TString pr, TString tags, TString newname = "");
 
   void SetWeight(TString t){ weight = t;}
+  void SetSystematics(TString t){ weight = t;}
   void SetRatioMin(Float_t r){ RatioMin = r;}
   void SetRatioMax(Float_t r){ RatioMax = r;}
   void SetScaleMax(Float_t s){ ScaleMax = s;}
@@ -323,6 +334,7 @@ protected:
   TString tableFormats = "%1.2f";
   TString gof = "";
   TString weight;
+  TString systematics;
   
   TFile *f;
 

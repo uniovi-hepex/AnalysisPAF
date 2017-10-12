@@ -28,6 +28,7 @@ Histo* Plot::GetH(TString sample, TString sys, Int_t type){
 }
 
 void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, TString sys, TString options){
+  //>>> Multiprocess...
   p.ReplaceAll(" ", "");
   if(pr == "") pr = p;
   if(p.Contains(",")){
@@ -37,68 +38,32 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, TString sys
     AddSample(theRest, pr, type, color, sys, options);
     return;
   }
-
+  
+  //>>> Propagating options to looper
   SetLoopOptions(options);
   VTagOptions.push_back(options);
+  if(sys != "0" && sys != "") AddToSystematicLabels(sys);
+  if(type == itBkg || type == itSignal){
+    VTagSamples.push_back(p);    // 
+    VTagProcesses.push_back(pr);
+  } 
 
+  //>>> Using MultiLooper??
+  if( (type == itBkg || type == itSignal) && (sys != "" && sys != "0")){
+    VTagSamples.push_back(p);  
+    VTagProcesses.push_back(pr);
+    if(type == itSignal){
+      nSignalSamples++;
+      SetSignalProcess(pr);
+    }
+    Multiloop(p, pr, type, color, sys);
+    return;
+  }
+
+  //>>> Getting histo from looper
   Histo* h = GetH(p, sys, type);
-  h->SetProcess(pr);
-  TString t = (sys == "0")? pr : pr + "_" + sys;
-  h->SetTag(t); // Tag = process + sys
-  h->SetSysTag(sys);
-  Int_t n; Int_t i = 0;
-  if(sys != "0") AddToSystematicLabels(sys);
-
-  if(type != itData && !options.Contains("noScaleLumi"))  h->Scale(Lumi*1000);
-  if(p == "TTJets_aMCatNLO") h->Scale((1.08*0.9)*(1.08*0.9));
-  if(type == itBkg){ // Backgrounds
-    n = VBkgs.size();
-    VTagSamples.push_back(p);    // 
-    VTagProcesses.push_back(pr);
-    for(i = 0; i < n; i++){
-      if(t == VBkgs.at(i)->GetTag()){ // Group backgrounds
-        VBkgs.at(i)->Add((TH1F*) h); 
-        VBkgs.at(i)->SetStyle(); 
-        if(verbose) cout << "[Plot::AddToHistos] Added histogram " << h->GetName() << " to " << h->GetTag() << " group (" << type << ")" << endl;
-        return;
-      }
-    }
-  }
-  else if(type == itSys){ // Systematic!!
-    n = VSyst.size();
-    for(i = 0; i < n; i++){ // Group systematics
-      if(t == VSyst.at(i)->GetTag()){
-        VSyst.at(i)->Add(h); VSyst.at(i)->SetStyle();
-        if(verbose) cout << "[Plot::AddToHistos] Added histogram " << h->GetName() << " to " << h->GetTag() << " group (" << type << ")" << endl;
-        return;
-      }
-    }
-    h->SetName(t);
-  }
-  else if(type == itData){
-    VTagDataSamples.push_back(p);
-    h->SetLineColor(kBlack); 
-    h->SetMarkerStyle(20); 
-    h->SetMarkerSize(1.1); 
-  }
-  else if(type == itSignal){
-    SetSignalProcess(pr);
-    VTagSamples.push_back(p);    // 
-    VTagProcesses.push_back(pr);
-    nSignalSamples++;
-    n = VSignals.size();
-    for(i = 0; i < n; i++){
-      if(t == VSignals.at(i)->GetTag()){ // Group signals 
-        VSignals.at(i)->Add((TH1F*) h); 
-        VSignals.at(i)->SetStyle(); 
-        if(verbose) cout << "[Plot::AddToHistos] Added histogram " << h->GetName() << " to " << h->GetTag() << " group (" << type << ")" << endl;
-        return;
-      }
-    }
-  }
-
-  h->SetType(type); h->SetColor(color); h->SetStyle(); h->SetSysNorm(1);
-  AddToHistos(h);
+  if(type != itData && !LoopOptions.Contains("noScaleLumi"))  h->Scale(Lumi*1000);
+  PrepareHisto(h, p, pr, type, color, sys);
 } 
 
 void Plot::GetStack(){ // Sets the histogram hStack
@@ -280,6 +245,103 @@ void Plot::GroupSystematics(){
   }
 }
 
+
+void Plot::Multiloop(TString p, TString pr, Int_t type, Int_t color, TString sys){
+  TString pathToMiniTree = path;
+  TString sample = p;
+  if     (type == itSignal || sample.Contains("T2tt")) pathToMiniTree = pathSignal;
+  else if(type == itData  ) pathToMiniTree = pathData;
+  else if(sample.Contains("/")){
+    pathToMiniTree = sample(0, sample.Last('/')+1);
+    sample = sample(sample.Last('/')+1, sample.Sizeof());
+  }
+  Multilooper* ah;
+  if(xN != x0) ah = new Multilooper(pathToMiniTree, treeName, var, cut, chan, nb, x0, xN);
+  else         ah = new Multilooper(pathToMiniTree, treeName, var, cut, chan, nb, vbins);
+
+  ah->SetWeight(weight);
+  ah->SetOptions(LoopOptions);
+  ah->SetSampleName(sample);
+  ah->SetSystematics(sys);
+  ah->Fill();
+ 
+  vector<Histo*> vH = ah->GetAllHistos();
+  if(type != itData && !LoopOptions.Contains("noScaleLumi"))
+  for(Int_t i = 0; i < (Int_t) vH.size(); i++) vH.at(i)->Scale(Lumi*1000);
+  PrepareHisto(vH, sample, pr, type, color);
+}
+
+
+void Plot::PrepareHisto(vector<Histo*> vH, TString sampleName, TString pr, Int_t type, Int_t color, TString sys){
+  Int_t n = vH.size(); Int_t i = 0;
+  PrepareHisto(vH.at(0), sampleName, pr, type, color, sys);
+  for(i = 1; i < n; i++) PrepareHisto(vH.at(i), sampleName, pr, itSys, color, sys);
+}
+
+void Plot::PrepareHisto(Histo* h, TString sampleName, TString pr, Int_t type, Int_t color, TString sys){
+  TString s = (sys == "" || sys == "0") ? h->GetSysTag() : sys;
+  TString p = pr;
+  TString name = sampleName;
+  if(s != "0" && s != "")  p    = pr   + "_" + s;
+  if(s != "0" && s != "")  name = name + "_" + s;
+  h->SetProcess(pr); h->SetTag(p); h->SetName(name);
+  h->SetType(type); h->SetColor(color);
+  h->SetStyle();
+  h->SetDirectory(0); 
+  Group(h);
+}
+
+void Plot::Group(Histo* h){
+  TString t = h->GetTag();
+  TString tag; Int_t type = h->GetType();
+  Int_t n; Int_t i;
+  if(type == itBkg){
+    n = VBkgs.size(); 
+    for(i = 0; i < n; i++){
+      tag = VBkgs.at(i)->GetTag();
+      if(t == tag){
+        VBkgs.at(i)->Add((TH1F*) h);
+        VBkgs.at(i)->SetStyle();
+        if(verbose) cout << "[Plot::AddToHistos] Added histogram " << h->GetName() << " to " << h->GetTag() << " group (" << type << ")" << endl;
+        return;
+      }
+    }
+  }
+  else if(type == itSignal){
+    n = VSignals.size();
+     for(i = 0; i < n; i++){
+      tag = VSignals.at(i)->GetTag();
+      if(t == tag){
+        VSignals.at(i)->Add((TH1F*) h);
+        VSignals.at(i)->SetStyle();
+        if(verbose) cout << "[Plot::AddToHistos] Added histogram " << h->GetName() << " to " << h->GetTag() << " group (" << type << ")" << endl;
+        return;
+      }
+    }
+  }
+  else if(type == itSys){
+    n = VSyst.size();
+    for(i = 0; i < n; i++){
+      tag = VSyst.at(i)->GetTag();
+      if(t == tag){
+        VSyst.at(i)->Add((TH1F*) h);
+        VSyst.at(i)->SetStyle();
+        if(verbose) cout << "[Plot::AddToHistos] Added histogram " << h->GetName() << " to " << h->GetTag() << " group (" << type << ")" << endl;
+        return;
+      }
+    }
+    h->SetName(t);
+  }
+  else if(type == itData){
+    VTagDataSamples.push_back(h->GetName());
+    h->SetLineColor(kBlack); 
+    h->SetMarkerStyle(20); 
+    h->SetMarkerSize(1.1); 
+  }
+  AddToHistos(h);
+}
+
+
 //================================================================================
 // Drawing
 //================================================================================
@@ -359,7 +421,7 @@ Float_t Plot::GetYield(TString pr, TString systag){
   Int_t nSyst = VSyst.size();
   Int_t nBkg = VBkgs.size();
   Int_t nSig = VSignals.size();
-  if(systag == "0"){
+  if(systag == "0" || systag == ""){
     for(Int_t i = 0; i < nBkg; i++){
       if(pr == VBkgs.at(i)->GetProcess()) return  VBkgs.at(i)->GetYield();
     }
