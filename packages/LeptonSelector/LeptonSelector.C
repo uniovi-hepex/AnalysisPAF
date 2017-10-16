@@ -107,7 +107,7 @@ Bool_t LeptonSelector::getSIPcut(Float_t cut){
 }
 
 Bool_t LeptonSelector::getGoodVertex(Int_t wp){
-  if (gSelection == ittHSelec || gSelection == i4tSelec || gSelection == iWZSelec) {
+  if (gSelection == ittHSelec || gSelection == i4tSelec || wp == iWZMVA) {
     if (wp == iTight || wp == iMedium || wp == iLoose){
       DumpVar(evt, "dxy", dxy, dxy < 0.05);
       DumpVar(evt, "dz",  dxy, dz  < 0.1);
@@ -115,13 +115,13 @@ Bool_t LeptonSelector::getGoodVertex(Int_t wp){
     }
   } else {
     if(type == 1){ //electrons
-      if(wp == iTight){
+      if(wp == iTight || wp == iWZtopEl){
         if(etaSC <= 1.479 && ((dxy >= 0.05) || (dz  >= 0.10))) return false;
         if(etaSC >  1.479 && ((dxy >= 0.10) || (dz  >= 0.20))) return false;
       }
     }
     else{ // muons
-      if(wp == iMedium && (dxy > 0.2  || dz > 0.5)) return false;
+      if((wp == iMedium || wp == iWZtopMu) && (dxy > 0.2  || dz > 0.5)) return false;
       if(wp == iTight  && (dxy > 0.05 || dz > 0.1)) return false;
     }
   }
@@ -385,22 +385,23 @@ Bool_t LeptonSelector::getMultiIso(Int_t wp){
 Int_t LeptonSelector::getSUSYMVAId(Lepton lep, Int_t ty){//ty = 1 for FO, ty = 2 for tight
   if (ty == 1){//Fakeable Objects
     if (lep.isMuon){
-        if (MVASUSY >  0.65) return 7; //Extra Tight
+        if (ptRatio > 0.30 && jetBTagCSV < 0.3) return 8; //Only for FO. Only if MVA fails
+        else if (MVASUSY >  0.65) return 7; //Extra Tight
         else if (MVASUSY >  0.45) return 6; //Very Tight
         else if (MVASUSY >  0.15) return 5; //Tight
         else if (MVASUSY > -0.20) return 4; //Medium
         else if (MVASUSY > -0.60) return 3; //Loose
         else if (MVASUSY > -0.90) return 2; //Very Loose
-        else if (ptRatio > 0.30 && jetBTagCSV < 0.3) return 8; //Only for FO. Only if MVA fails
     }
     else if (lep.isElec){
-        if (MVASUSY >  0.85) return 7; //Extra Tight
+        if (ptRatio > 0.30 && jetBTagCSV < 0.3 && ( (MVAID > 0.0)*(TMath::Abs(lep.p.Eta()) < 0.8) || (MVAID > 0.0)*(TMath::Abs(lep.p.Eta()) < 1.479)*(TMath::Abs(lep.p.Eta()) > 0.8) || (MVAID > 0.3)*(TMath::Abs(lep.p.Eta()) > 1.479) )) return 8;
+        else if (MVASUSY >  0.85) return 7; //Extra Tight
         else if (MVASUSY >  0.75) return 6; //Very Tight
         else if (MVASUSY >  0.65) return 5; //Tight
         else if (MVASUSY >  0.50) return 4; //Medium
         else if (MVASUSY >  0.25) return 3; //Loose
         else if (MVASUSY > -0.30) return 2; //Very Loose
-        else if (ptRatio > 0.30 && jetBTagCSV < 0.3 && ( (MVAID > 0.0)*(TMath::Abs(lep.p.Eta()) < 0.8) || (MVAID > 0.0)*(TMath::Abs(lep.p.Eta()) < 1.479)*(TMath::Abs(lep.p.Eta()) > 0.8) || (MVAID > 0.3)*(TMath::Abs(lep.p.Eta()) > 1.479) )) return 8; //Only for FO. Only if MVA fails
+         //Only for FO. Only if MVA fails
     }
   }
 
@@ -532,12 +533,14 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
     Bool_t isMVALepton = true;    
     if(lep.isMuon){
       if(!isVetoLepton(lep)) isMVALepton = false;
+      if(!getGoodVertex(iWZMVA)) isMVALepton = false;
       if(TightCharge != 2) isMVALepton = false;
       // Added MVA selection in the analysis
     }
     if(lep.isElec){
       if(!isVetoLepton(lep)) isMVALepton = false;
       if(TightCharge != 2) isMVALepton = false;
+      if(!getGoodVertex(iWZMVA)) isMVALepton = false;
       if(!convVeto){ 
         isMVALepton = false;
         isConvVeto = 0;
@@ -557,8 +560,8 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
       passIso = getRelIso03POG(iTight);
       if(TMath::Abs(etaSC) > 1.4442 && TMath::Abs(etaSC) < 1.566) passId = false;
     }
-    if(lep.p.Pt() < 20 || TMath::Abs(lep.p.Eta()) > 2.4) isTopLepton = false;
-    if(passId && passIso && ( (lep.isElec && getGoodVertex(iTight)) || (lep.isMuon && getGoodVertex(iMedium) ))){
+    if(lep.p.Pt() < 20 || TMath::Abs(lep.p.Eta()) > 2.4 ) passId = false;
+    if(passId && passIso && ( (lep.isElec && getGoodVertex(iWZtopEl)) || (lep.isMuon && getGoodVertex(iWZtopMu) ))){
       isTopLepton = true;
     }
     else isTopLepton = false;
@@ -670,24 +673,24 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
     return true;
   }
   else if(gSelection == iWZSelec){ // Fakeable Objects for the WZ analysis
+    lepMVASUSYId = getSUSYMVAId(lep, 1);
     if(lep.isMuon){
       if(lep.p.Pt() < 10) return false;
       if(!isLooseLepton(lep)) return false;
       if(!mediumMuonId) return false;
-
+      if(!getGoodVertex(iWZMVA)) return false;
     }
     if(lep.isElec){
       if(lep.p.Pt() < 10) return false;
       if(!isLooseLepton(lep)) return false;
+      if(!getGoodVertex(iWZMVA)) return false;
       if(lostHits > 0) return false;
       if((sigmaIEtaIEta > 0.011 )*(TMath::Abs(lep.p.Eta()) < 0.8) || (sigmaIEtaIEta > 0.011)*(TMath::Abs(lep.p.Eta()) < 1.479)*(TMath::Abs(lep.p.Eta()) > 0.8) || (sigmaIEtaIEta > 0.030)*(TMath::Abs(lep.p.Eta()) > 1.479)) return false;
       if((HoE > 0.1)*(TMath::Abs(lep.p.Eta()) < 0.8) || (HoE > 0.1)*(TMath::Abs(lep.p.Eta()) < 1.479)*(TMath::Abs(lep.p.Eta()) > 0.8) || (HoE > 0.07)*(TMath::Abs(lep.p.Eta()) > 1.479)) return false;
       if((dEtaSC > 0.01)*(TMath::Abs(lep.p.Eta()) < 0.8) || (dEtaSC > 0.01)*(TMath::Abs(lep.p.Eta()) < 1.479)*(TMath::Abs(lep.p.Eta()) > 0.8) || (dEtaSC > 0.008)*(TMath::Abs(lep.p.Eta()) > 1.479)) return false;
       if((dPhiSC > 0.04)*(TMath::Abs(lep.p.Eta()) < 0.8) || (dPhiSC > 0.04)*(TMath::Abs(lep.p.Eta()) < 1.479)*(TMath::Abs(lep.p.Eta()) > 0.8) || (dPhiSC > 0.07)*(TMath::Abs(lep.p.Eta()) > 1.479)) return false;
       if((eImpI<-0.05) || (eImpI > 0.01)*(TMath::Abs(lep.p.Eta()) < 0.8) || (eImpI > 0.01)*(TMath::Abs(lep.p.Eta()) < 1.479)*(TMath::Abs(lep.p.Eta()) > 0.8) || (eImpI > 0.005)*(TMath::Abs(lep.p.Eta()) > 1.479)) return false;
-
     }
-    lepMVASUSYId = getSUSYMVAId(lep, 1);
     if (lepMVASUSYId < 0) return false;
     return true;
   }
@@ -775,17 +778,16 @@ Bool_t LeptonSelector::isLooseLepton(Lepton lep){
     if(lep.isMuon){
       if(lep.p.Pt() < 5) return false;
       if(TMath::Abs(lep.p.Eta()) > 2.4) return false;
-      if(!getGoodVertex(iLoose)) return false;
+      //if(!getGoodVertex(iLoose)) return false; //By ID
       if(!getSIPcut(8)) return false;
       if(!getminiRelIso(iLoose)) return false;
     }
     if(lep.isElec){
       if(lep.p.Pt() < 7) return false;
       if(TMath::Abs(lep.p.Eta()) > 2.5) return false;
-      if(!getGoodVertex(iLoose)) return false;    
+      //if(!getGoodVertex(iLoose)) return false; //By ID    
       if(!getSIPcut(8)) return false;
       if(!getminiRelIso(iLoose)) return false;
-      if(!getElecMVAId(iLoose,lep)) return false;  
       if((MVAID < -0.70)*(TMath::Abs(lep.p.Eta()) < 0.8) || (MVAID < -0.83)*(TMath::Abs(lep.p.Eta()) < 1.479)*(TMath::Abs(lep.p.Eta()) > 0.8) || (MVAID < -0.92)*(TMath::Abs(lep.p.Eta()) > 1.479)) return false;
       if(lostHits > 2) return false;
     }
@@ -879,7 +881,10 @@ void LeptonSelector::InsideLoop(){
     else DumpEvent(evt, Form(" >>> Lepton %i (pt = %g, eta = %g, type = %i): NO PASA", i, tP.Pt(), tP.Eta(), type));
     if(isVetoLepton(tL)){ // If you need to veto extra leptons...
       //tL.SetSF(1); tL.SetSFerr(1); // To be updated if ever needed
-      if(gSelection == iWZSelec) tL.idMVA = lepMVASUSYId; // Or just use it as FO for the loose-to-tight fake estimations
+      if(gSelection == iWZSelec){
+        tL.idMVA = lepMVASUSYId;
+        tL.isTight = isGoodLepton(tL)*getSUSYMVAId(tL, 2);
+      }  // Or just use it as FO for the loose-to-tight fake estimations
       if(gSelection == i4tSelec){
         if(!isGoodLepton(tL)) vetoLeptons.push_back(tL);
       }

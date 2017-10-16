@@ -13,20 +13,20 @@ enum eSysts   {inorm, nSysts};
 enum eWPoints  {nolepMVA, veryLoose, loose, medium, tight, veryTight, extraTight, top};
 
 //const int nWPoints = 8;
-const int nWPoints = 3;
+const int nWPoints = 4;
 const int nWeights = 248;
 const TString gChanLabel[nChannels] = {"ElElEl", "ElElMu","ElMuMu","MuMuMu"};
 const TString sCut[nLevels] = {"trilepton","onZ","met","0btag","m3l"};
 //const TString sWPoints[nWPoints] = {"nolepMVA","veryLoose", "loose", "medium", "tight", "veryTight", "extraTight", "top"};
-const TString sWPoints[nWPoints]  = {"nolepMVA", "medium", "top"};
-const Int_t   WPointVal[nWPoints] = {0, 3, 7}; //Just don't want to tinker with maps
+const TString sWPoints[nWPoints]  = {"nolepMVA", "medium", "veryTight", "top"};
+const Int_t   WPointVal[nWPoints] = {0, 3, 5, 7}; //Just don't want to tinker with maps
 const TString gSys[nSysts] = {"0"};
 
 
 class WZAnalysis : public PAFChainItemSelector{
   public:
     WZAnalysis();
-    virtual ~WZAnalysis(){delete leptonSFtop; delete leptonSFEWK;}
+    virtual ~WZAnalysis(){delete leptonSFtop; delete leptonSFEWKM; delete leptonSFEWKVT;}
     virtual void InsideLoop();
     virtual void Initialise();
     virtual void Summary();
@@ -56,7 +56,8 @@ class WZAnalysis : public PAFChainItemSelector{
     std::vector<Jet> vetoJets;
 
     LeptonSF * leptonSFtop;
-    LeptonSF * leptonSFEWK;
+    LeptonSF * leptonSFEWKM;
+    LeptonSF * leptonSFEWKVT;
     TTree* fTree[nWPoints] = {0};
     Float_t TLHEWeight[254];
     void SetLeptonVariables(TTree* iniTree);

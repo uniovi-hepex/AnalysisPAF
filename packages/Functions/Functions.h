@@ -39,7 +39,7 @@ const TString SFTString[nfiles] = {
 };
 
 
-enum wps{iVeto, iVeryLoose, iLoose, iMedium, iTight, iVeryTight, iExtreamlyTight, iWPforStop, iLooseWPforStop};
+enum wps{iVeto, iVeryLoose, iLoose, iMedium, iTight, iVeryTight, iExtreamlyTight, iWPforStop, iLooseWPforStop, iWZMVA, iWZtopEl, iWZtopMu};
 
 enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, iHWWSelec, ittDMSelec, ittHSelec, iWZSelec, i4tSelec, iStopTopSelec, iNSelecs};
 const TString LabSelection[] = {"stop", "top", "tW", "WW", "tt+DM", "ttH", "WZ", "tttt"};
