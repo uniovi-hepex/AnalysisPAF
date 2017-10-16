@@ -30,6 +30,8 @@ TTreeFormula *GetFormula(TString name, TString var, TTree* tree);
 TTree* loadTree(TString path, TString sampleName, TString treeName);
 TH1D* loadHistogram1D(TString path, TString sampleName, TString histoName);
 TH1F* loadHistogram1F(TString path, TString sampleName, TString histoName);
+Histo* GetHistoFromHeppyTrees(TString path, TString sample, TString var, TString cut, TString hName, Int_t nbins, Float_t bin0, Float_t binN, Float_t *bins = nullptr);
+TChain* GetChain(TString path, TString sample);
 
 class Looper{
   public:
@@ -534,7 +536,38 @@ TH1F* loadHistogram1F(TString path, TString sampleName, TString histoName){
   return h;
 }
 
+TChain* GetChain(TString path, TString sample){
+  vector<TString> Files;
+  if(sample.Contains(",")){
+    vector<TString> tempFiles;
+    vector<TString> samples = TStringToVector(sample);
+    Int_t nSamples = samples.size();
+    Files = GetAllFiles(path, samples.at(0));
+    for(Int_t i = 1; i < nSamples; i++){
+      tempFiles = GetAllFiles(path, samples.at(i));
+			Files.insert(Files.end(), (tempFiles).begin(), (tempFiles).end());
+    }
+  }  
+  else  Files = GetAllFiles(path, sample);
 
+  Int_t nFiles = Files.size();
+
+  TChain* t = new TChain("tree", "tree");
+  for(Int_t i = 0; i < nFiles; i++) t->Add(Files.at(i));
+
+  return t;
+}
+
+Histo* GetHistoFromHeppyTrees(TString path, TString sample, TString var, TString cut, TString hName, Int_t nbins, Float_t bin0, Float_t binN, Float_t *bins){
+  Histo* h; 
+  if(bin0 == binN) h = new Histo(hName, hName, nbins, bins);
+  else             h = new Histo(hName, hName, nbins, bin0, binN);
+
+  TChain* t = GetChain(path, sample);
+  t->Draw(var + ">>" + hName, cut);
+  h->SetDirectory(0);
+  return h;
+}
 
 
 
