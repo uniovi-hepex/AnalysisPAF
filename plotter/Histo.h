@@ -22,6 +22,8 @@ const TString DefaultTreeName = "MiniTree";
 
 class Histo : public TH1F{
  public:
+  Bool_t doStackOverflow = true;
+
   Histo(const char *name, const char *title, Int_t nbins, Double_t xlow, Double_t xup);
   Histo(const char *name, const char *title, Int_t nbins, Float_t* bins);
   //Histo(const char *name, const char *title, Int_t nbins, const Float_t* xbins);
@@ -46,6 +48,7 @@ class Histo : public TH1F{
   void SetType(Int_t tipo = 0);
   void SetColor(Int_t c);
   void SetStyle();
+  void ReCalcValues();
   void SetStatUnc();
   Histo* CloneHisto(const char* newname=0) const;
 
@@ -57,7 +60,7 @@ class Histo : public TH1F{
   TString GetProcess(){return process;}
   Float_t GetSysNorm(){return sysNorm;}
   Int_t GetColor(){ return color;}
-  void StackOverflow(Bool_t doStackOverflow = 1);
+  void StackOverflow();
   void SetTag(TString p, TString t="", TString x = "", TString c = "");
   void SetProcess(TString p);
   void SetTitles(TString x, TString c = "");
