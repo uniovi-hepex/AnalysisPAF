@@ -22,12 +22,14 @@ Histo* Plot::GetH(TString sample, TString sys, Int_t type){
   ah->SetOptions(LoopOptions);
   Histo* h = ah->GetHisto(sample, sys);
   h->SetDirectory(0);
+  h->doStackOverflow = doStackOverflow;
   h->SetStyle(); 
   delete ah;
   return h;
 }
 
 void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, TString sys, TString options){
+  //>>> Multiprocess...
   p.ReplaceAll(" ", "");
   if(pr == "") pr = p;
   if(p.Contains(",")){
@@ -37,69 +39,32 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, TString sys
     AddSample(theRest, pr, type, color, sys, options);
     return;
   }
-
+  
+  //>>> Propagating options to looper
   SetLoopOptions(options);
   VTagOptions.push_back(options);
+  if(sys != "0" && sys != "") AddToSystematicLabels(sys);
+  if(type == itBkg || type == itSignal){
+    VTagSamples.push_back(p);    // 
+    VTagProcesses.push_back(pr);
+  } 
 
+  //>>> Using MultiLooper??
+  if( (type == itBkg || type == itSignal) && (sys != "" && sys != "0")){
+    VTagSamples.push_back(p);  
+    VTagProcesses.push_back(pr);
+    if(type == itSignal){
+      nSignalSamples++;
+      SetSignalProcess(pr);
+    }
+    Multiloop(p, pr, type, color, sys);
+    return;
+  }
+
+  //>>> Getting histo from looper
   Histo* h = GetH(p, sys, type);
-  h->SetProcess(pr);
-  TString t = (sys == "0")? pr : pr + "_" + sys;
-  h->SetTag(t); // Tag = process + sys
-  h->SetSysTag(sys);
-  Int_t n; Int_t i = 0;
-  if(sys != "0") AddToSystematicLabels(sys);
-
-  Bool_t isFakeFromData = (options.Contains("fake") || options.Contains("Fake")) && ! options.Contains("sub");
-  if(type != itData && !isFakeFromData)  h->Scale(Lumi*1000);
-  if(p == "TTJets_aMCatNLO") h->Scale((1.08*0.9)*(1.08*0.9));
-  if(type == itBkg){ // Backgrounds
-    n = VBkgs.size();
-    VTagSamples.push_back(p);    // 
-    VTagProcesses.push_back(pr);
-    for(i = 0; i < n; i++){
-      if(t == VBkgs.at(i)->GetTag()){ // Group backgrounds
-        VBkgs.at(i)->Add((TH1F*) h); 
-        VBkgs.at(i)->SetStyle(); 
-        if(verbose) cout << "[Plot::AddToHistos] Added histogram " << h->GetName() << " to " << h->GetTag() << " group (" << type << ")" << endl;
-        return;
-      }
-    }
-  }
-  else if(type == itSys){ // Systematic!!
-    n = VSyst.size();
-    for(i = 0; i < n; i++){ // Group systematics
-      if(t == VSyst.at(i)->GetTag()){
-        VSyst.at(i)->Add(h); VSyst.at(i)->SetStyle();
-        if(verbose) cout << "[Plot::AddToHistos] Added histogram " << h->GetName() << " to " << h->GetTag() << " group (" << type << ")" << endl;
-        return;
-      }
-    }
-    h->SetName(t);
-  }
-  else if(type == itData){
-    VTagDataSamples.push_back(p);
-    h->SetLineColor(kBlack); 
-    h->SetMarkerStyle(20); 
-    h->SetMarkerSize(1.1); 
-  }
-  else if(type == itSignal){
-    SetSignalProcess(pr);
-    VTagSamples.push_back(p);    // 
-    VTagProcesses.push_back(pr);
-    nSignalSamples++;
-    n = VSignals.size();
-    for(i = 0; i < n; i++){
-      if(t == VSignals.at(i)->GetTag()){ // Group signals 
-        VSignals.at(i)->Add((TH1F*) h); 
-        VSignals.at(i)->SetStyle(); 
-        if(verbose) cout << "[Plot::AddToHistos] Added histogram " << h->GetName() << " to " << h->GetTag() << " group (" << type << ")" << endl;
-        return;
-      }
-    }
-  }
-
-  h->SetType(type); h->SetColor(color); h->SetStyle(); h->SetSysNorm(1);
-  AddToHistos(h);
+  if(type != itData && !LoopOptions.Contains("noScaleLumi"))  h->Scale(Lumi*1000);
+  PrepareHisto(h, p, pr, type, color, sys);
 } 
 
 void Plot::GetStack(){ // Sets the histogram hStack
@@ -110,7 +75,8 @@ void Plot::GetStack(){ // Sets the histogram hStack
     hStack->Add((TH1F*) VBkgs.at(i));
   }
   if(hAllBkg) delete hAllBkg;
-  hAllBkg = new Histo(*(TH1F*) hStack->GetStack()->Last(), 3);
+  hAllBkg = (new Histo(*(TH1F*) hStack->GetStack()->Last(), 3))->CloneHisto("AllBkg");
+  hAllBkg->doStackOverflow = doStackOverflow;
   hAllBkg->SetStyle();
   hAllBkg->SetTag("Uncertainty");
   if(doSys && ((Int_t) VSystLabel.size() > 0)) GroupSystematics();
@@ -149,6 +115,7 @@ void Plot::SetData(){  // Returns histogram for Data
   hData->SetLineColor(kBlack); 
   hData->SetMarkerStyle(20); 
   hData->SetMarkerSize(1.1); 
+  hData->doStackOverflow = doStackOverflow;
   hData->SetStyle(); hData->SetType(itData); 
 }
 
@@ -209,9 +176,7 @@ void Plot::AddStatError(TString process){
   if(process == ""){
     for(Int_t i = 0; i < (Int_t) VTagProcesses.size(); i++){
       pr = VTagProcesses.at(i);
-      cout << "i = " << i << ", process = " << pr << endl;
       if(i != 0) if(pr == VTagProcesses.at(i-1)) continue;
-      cout << "Vamos a poner el stat!!" << endl;
       AddStatError(pr);
     }
     return;
@@ -230,6 +195,8 @@ void Plot::AddStatError(TString process){
   hUp->SetSysTag("statUp"); hDown->SetSysTag("statDown");
   hUp->SetTag(process + "_statUp"); hDown->SetTag(process + "_statDown");
   hUp->SetType(itSys); hDown->SetType(itSys);
+  hUp->doStackOverflow = doStackOverflow;
+  hDown->doStackOverflow = doStackOverflow;
   hUp->SetStyle(); hDown->SetStyle();
   AddToHistos(hUp); AddToHistos(hDown);
 }
@@ -275,13 +242,111 @@ void Plot::GroupSystematics(){
         //cout << "    --> No existe un syst " << var << " para el proceso " << VTagProcesses.at(j) << "!! Adding nominal... " << endl;
         hsumSysUp  ->Add((Histo*) GetHisto(VTagProcesses.at(j))->Clone(var+"Up_"+VTagProcesses.at(j)));
         hsumSysDown->Add((Histo*) GetHisto(VTagProcesses.at(j))->Clone(var+"Down_"+VTagProcesses.at(j)));
-	cout << "Integral up is " << GetHisto(VTagProcesses.at(j))->Integral() << endl;
+        //cout << "Integral up is " << GetHisto(VTagProcesses.at(j))->Integral() << endl;
       }
     }
     AddSumHistoSystematicUp(hsumSysUp);
     AddSumHistoSystematicDown(hsumSysDown);
   }
 }
+
+
+void Plot::Multiloop(TString p, TString pr, Int_t type, Int_t color, TString sys){
+  TString pathToMiniTree = path;
+  TString sample = p;
+  if     (type == itSignal || sample.Contains("T2tt")) pathToMiniTree = pathSignal;
+  else if(type == itData  ) pathToMiniTree = pathData;
+  else if(sample.Contains("/")){
+    pathToMiniTree = sample(0, sample.Last('/')+1);
+    sample = sample(sample.Last('/')+1, sample.Sizeof());
+  }
+  Multilooper* ah;
+  if(xN != x0) ah = new Multilooper(pathToMiniTree, treeName, var, cut, chan, nb, x0, xN);
+  else         ah = new Multilooper(pathToMiniTree, treeName, var, cut, chan, nb, vbins);
+
+  ah->SetWeight(weight);
+  ah->SetOptions(LoopOptions);
+  ah->SetSampleName(sample);
+  ah->SetSystematics(sys);
+  ah->Fill();
+ 
+  vector<Histo*> vH = ah->GetAllHistos();
+  if(type != itData && !LoopOptions.Contains("noScaleLumi"))
+  for(Int_t i = 0; i < (Int_t) vH.size(); i++) vH.at(i)->Scale(Lumi*1000);
+  PrepareHisto(vH, sample, pr, type, color);
+}
+
+
+void Plot::PrepareHisto(vector<Histo*> vH, TString sampleName, TString pr, Int_t type, Int_t color, TString sys){
+  Int_t n = vH.size(); Int_t i = 0;
+  PrepareHisto(vH.at(0), sampleName, pr, type, color, sys);
+  for(i = 1; i < n; i++) PrepareHisto(vH.at(i), sampleName, pr, itSys, color, sys);
+}
+
+void Plot::PrepareHisto(Histo* h, TString sampleName, TString pr, Int_t type, Int_t color, TString sys){
+  TString s = (sys == "" || sys == "0") ? h->GetSysTag() : sys;
+  TString p = pr;
+  TString name = sampleName;
+  if(s != "0" && s != "")  p    = pr   + "_" + s;
+  if(s != "0" && s != "")  name = name + "_" + s;
+  h->SetProcess(pr); h->SetTag(p); h->SetName(name);
+  h->SetType(type); h->SetColor(color);
+  h->doStackOverflow = doStackOverflow;
+  h->SetStyle();
+  h->SetDirectory(0); 
+  Group(h);
+}
+
+void Plot::Group(Histo* h){
+  TString t = h->GetTag();
+  TString tag; Int_t type = h->GetType();
+  Int_t n; Int_t i;
+  if(type == itBkg){
+    n = VBkgs.size(); 
+    for(i = 0; i < n; i++){
+      tag = VBkgs.at(i)->GetTag();
+      if(t == tag){
+        VBkgs.at(i)->Add((TH1F*) h);
+        VBkgs.at(i)->ReCalcValues();
+        if(verbose) cout << "[Plot::AddToHistos] Added histogram " << h->GetName() << " to " << h->GetTag() << " group (" << type << ")" << endl;
+        return;
+      }
+    }
+  }
+  else if(type == itSignal){
+    n = VSignals.size();
+     for(i = 0; i < n; i++){
+      tag = VSignals.at(i)->GetTag();
+      if(t == tag){
+        VSignals.at(i)->Add((TH1F*) h);
+        VSignals.at(i)->ReCalcValues();
+        if(verbose) cout << "[Plot::AddToHistos] Added histogram " << h->GetName() << " to " << h->GetTag() << " group (" << type << ")" << endl;
+        return;
+      }
+    }
+  }
+  else if(type == itSys){
+    n = VSyst.size();
+    for(i = 0; i < n; i++){
+      tag = VSyst.at(i)->GetTag();
+      if(t == tag){
+        VSyst.at(i)->Add((TH1F*) h);
+        VSyst.at(i)->ReCalcValues();
+        if(verbose) cout << "[Plot::AddToHistos] Added histogram " << h->GetName() << " to " << h->GetTag() << " group (" << type << ")" << endl;
+        return;
+      }
+    }
+    h->SetName(t);
+  }
+  else if(type == itData){
+    VTagDataSamples.push_back(h->GetName());
+    h->SetLineColor(kBlack); 
+    h->SetMarkerStyle(20); 
+    h->SetMarkerSize(1.1); 
+  }
+  AddToHistos(h);
+}
+
 
 //================================================================================
 // Drawing
@@ -324,7 +389,7 @@ Histo* Plot::GetHisto(TString pr, TString systag){
       return VSignals.at(k);
     }
   }
-  cout << "[Plot::GetHisto] WARNING: No systematic " << systag << " for process " << pr << "........... Returning nominal histo..." << endl;
+  //cout << "[Plot::GetHisto] WARNING: No systematic " << systag << " for process " << pr << "........... Returning nominal histo..." << endl;
   return GetHisto(pr, "0");
 }
 
@@ -362,7 +427,7 @@ Float_t Plot::GetYield(TString pr, TString systag){
   Int_t nSyst = VSyst.size();
   Int_t nBkg = VBkgs.size();
   Int_t nSig = VSignals.size();
-  if(systag == "0"){
+  if(systag == "0" || systag == ""){
     for(Int_t i = 0; i < nBkg; i++){
       if(pr == VBkgs.at(i)->GetProcess()) return  VBkgs.at(i)->GetYield();
     }
@@ -514,7 +579,9 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString options){
   else signal = VSignals.at(0);
   yield = VSignals.at(0)->Integral();
   if(doNorm) signal->Scale(1/yield);
-  signal->SetDrawStyle(drawstyle);
+  TString sD = signal->GetDrawStyle();
+  if(sD == "") sD = drawstyle;
+  signal->SetDrawStyle(sD);
   signal->SetTitle("");
   signal->SetLineWidth(3);
   signal->SetMarkerStyle(24); signal->SetMarkerSize(1.8);
@@ -592,11 +659,16 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString options){
         htemp->SetLineStyle(VSignals.at(i)->GetLineStyle());
         htemp->SetMarkerColor(VSignals.at(i)->GetColor());
         htemp->SetMarkerStyle(VSignals.at(i)->GetMarkerStyle());
+        //htemp->SetDrawStyle(VSignals.at(i)->GetDrawStyle());
         ratios.push_back(htemp);
         i++;
       }        
     }
-    for(Int_t k = 0; k < (Int_t) ratios.size(); k++) ratios.at(k)->Draw(drawstyle + "same");
+    for(Int_t k = 0; k < (Int_t) ratios.size(); k++){
+      //sD = ratios.at(k)->GetDrawStyle();
+      sD = drawstyle;
+      ratios.at(k)->Draw(sD + "same");
+    }
   }
   else{
     for(Int_t  i = 1; i < nsamples; i++){
@@ -610,7 +682,9 @@ void Plot::DrawComp(TString tag, bool sav, bool doNorm, TString options){
       htemp->SetMarkerColor(VSignals.at(i)->GetColor());
       htemp->SetMarkerStyle(VSignals.at(i)->GetMarkerStyle());
       ratios.push_back(htemp);
-      ratios.at(i-1)->Draw(drawstyle + "same");
+      //sD = ratios.at(i-1)->GetDrawStyle();
+      sD = drawstyle;
+      ratios.at(i-1)->Draw(sD + "same");
     }
   }
   if(sav){ // Save the histograms
@@ -714,8 +788,8 @@ void Plot::DrawStack(TString tag, bool sav){
   if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
     for(Int_t  i = 0; i < nSignals; i++) VSignals.at(i)->Draw(SignalDrawStyle + "same");
 
-
   //---------  Draw systematic errors 
+  if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
   hAllBkg->SetFillStyle(3444); // 3444 o 3004 (3145 default here)
   hAllBkg->SetFillColor(StackErrorColor); // kGray+2 as default
   hAllBkg->SetLineColor(StackErrorColor);
@@ -725,7 +799,6 @@ void Plot::DrawStack(TString tag, bool sav){
 
   //--------- Draw Data
   if(doData) hData->Draw("psameE1X0");
-
 
   //--------- Draw systematics ratio
   hAllBkg->SetFillStyle(StackErrorStyle);
@@ -764,12 +837,8 @@ void Plot::DrawStack(TString tag, bool sav){
     else{
       Float_t StoBmean = hSignal->GetYield()/hAllBkg->GetYield();
       hline = new TLine(0, StoBmean, 200, StoBmean); hline->SetLineColor(kOrange-2);
-      //cout << "StoBmean = " << StoBmean << endl;
-      //cout << "Cloning hration..." << endl;
       hratio = (TH1F*)hSignal->Clone("hratio");
-      //cout << "Dividing hratio..." << endl;
       hratio->Divide(hAllBkg);
-      //cout << "Setting hration min max... " << endl;
       Float_t rmax = hratio->GetMaximum()*1.15;
       Float_t rmin = hratio->GetMinimum()*0.85;
       SetRatioMin(rmin);
@@ -820,15 +889,15 @@ void Plot::DrawStack(TString tag, bool sav){
 void Plot::ScaleProcess(TString pr, Float_t SF){
   for(Int_t i = 0; i < (Int_t) VBkgs.size(); i++) if(VBkgs.at(i)->GetProcess() == (pr)){
     VBkgs.at(i)->Scale(SF);
-    VBkgs.at(i)->SetStyle();
+    VBkgs.at(i)->ReCalcValues();
   }
   for(Int_t i = 0; i < (Int_t) VSignals.size(); i++) if(VSignals.at(i)->GetProcess() == (pr)){
     VSignals.at(i)->Scale(SF);
-    VSignals.at(i)->SetStyle();
+    VSignals.at(i)->ReCalcValues();
   }
   for(Int_t i = 0; i < (Int_t) VSyst.size(); i++) if(VSyst.at(i)->GetTag().BeginsWith(pr+"_")){
     VSyst.at(i)->Scale(SF);
-    VSyst.at(i)->SetStyle();
+    VSyst.at(i)->ReCalcValues();
   }
 }
 
@@ -839,7 +908,7 @@ void Plot::ScaleSignal(Float_t SF){
 void Plot::ScaleSys(TString pr, Float_t SF){
   for(Int_t i = 0; i < (Int_t) VSyst.size(); i++) if(VSyst.at(i)->GetTag().BeginsWith(pr)){
     VSyst.at(i)->Scale(SF);
-    VSyst.at(i)->SetStyle();
+    VSyst.at(i)->ReCalcValues();
   }
 }
 
@@ -1012,8 +1081,10 @@ void Plot::UseEnvelope(TString pr, TString tags, TString newname){
 
   envelopeUp   ->GetEnvelope(vhistos,  1);
   envelopeDown ->GetEnvelope(vhistos, -1);
-  envelopeUp  ->SetProcess(pr); envelopeUp  ->SetTag(pr+"_"+newname+"Up");   envelopeUp  ->SetName(pr+"_"+newname+"Up");   envelopeUp  ->SetType(itSys); envelopeUp  ->SetStyle();
-  envelopeDown->SetProcess(pr); envelopeDown->SetTag(pr+"_"+newname+"Down"); envelopeDown->SetName(pr+"_"+newname+"Down"); envelopeDown->SetType(itSys); envelopeDown->SetStyle();
+  envelopeUp  ->SetProcess(pr); envelopeUp  ->SetTag(pr+"_"+newname+"Up");   envelopeUp  ->SetName(pr+"_"+newname+"Up");   
+  envelopeUp  ->SetType(itSys); envelopeUp->doStackOverflow = doStackOverflow; envelopeUp  ->SetStyle();
+  envelopeDown->SetProcess(pr); envelopeDown->SetTag(pr+"_"+newname+"Down"); envelopeDown->SetName(pr+"_"+newname+"Down"); 
+  envelopeDown->SetType(itSys); envelopeDown->doStackOverflow = doStackOverflow; envelopeDown->SetStyle();
   AddToHistos(envelopeUp);
   AddToHistos(envelopeDown);
   AddToSystematicLabels(newname);
@@ -1090,9 +1161,10 @@ void Plot::PrintSystYields(){
   cout << "\033[1;31m      ";
   for(Int_t gs = 0; gs < nSys; gs++) cout << "    " << VSystLabel.at(gs);
   cout << "\033[0m\n";
-  for(Int_t i = 0; i < nBkgs; i++){
-    pr = VBkgs.at(i)->GetProcess();
-    cout << Form("\033[1;33m  %s \033[0m ", VBkgs.at(i)->GetProcess().Data());
+  for(Int_t i = 0; i < nBkgs+nSig; i++){
+    if(i < nBkgs) pr = VBkgs.at(i)         ->GetProcess();
+    else          pr = VSignals.at(i-nBkgs)->GetProcess();
+    cout << Form("\033[1;33m  %s \033[0m ", pr.Data());
     cout << "\033[1;34m";
     for(Int_t j = 0; j < nSys; j++){
       sys = VSystLabel.at(j);
@@ -1197,6 +1269,150 @@ void Plot::PrintYields(TString cuts, TString labels, TString channels, TString o
   if(options.Contains("tex"))  t.SaveAs(gSystem->ExpandPathName(plotFolder + "/" + YieldsTableName + ".tex"));
   if(options.Contains("html")) t.SaveAs(gSystem->ExpandPathName(plotFolder + "/" + YieldsTableName + ".html"));
   if(options.Contains("txt"))  t.SaveAs(gSystem->ExpandPathName(plotFolder + "/" + YieldsTableName + ".txt"));
+}
+
+
+void Plot::PrintBinsYields(TString options){
+  Int_t nBkgs = VBkgs.size();
+  Int_t nSignals = VSignals.size();
+  Int_t nrows = nBkgs + nSignals; 
+  if(nBkgs > 0) nrows++;
+  if(doData) nrows++;
+  Int_t ncolumns = nb; 
+
+  TResultsTable t(nrows, ncolumns, 1); //cout << Form("Creating table with [rows, columns] = [%i, %i]\n", nrows, ncolumns);
+  t.SetRowTitleHeader("Process");
+  t.SetFormatNum(tableFormats);
+
+  // Set row titles
+  for(Int_t i = 0; i < nBkgs; i++) t.SetRowTitle(i, VBkgs.at(i)->GetProcess());
+  t.SetRowTitle(nBkgs, "Total bkg");
+  for(Int_t i = nBkgs+1; i < nSignals+nBkgs+1; i++) t.SetRowTitle(i, VSignals.at(i-(nBkgs+1))->GetProcess());
+  if(doData) t.SetRowTitle(nBkgs+nSignals+1, "Data");
+
+  // Set column titles
+  Float_t l0; Float_t l1;
+  for(Int_t k = 0; k < ncolumns; k++){
+    if(x0 == xN){
+      l0 = vbins[k]; 
+      l1 = vbins[k+1];
+    }
+    else{
+      l0 = x0 + k*(xN - x0)/nb;
+      l1 = x0 + (k+1)*(xN - x0)/nb;
+    }
+    t.SetColumnTitle(k, Form("[%2.0f, %2.0f]", l0, l1));
+  }
+
+  // Fill the table with the yields
+  TString pr; Float_t nom; Float_t var;
+  Float_t bTotBkgSyst= 0; Float_t bTotBkg    = 0;
+  for(Int_t k = 0; k < ncolumns; k++){
+    //>>> Yields for bkg
+    bTotBkgSyst= 0; bTotBkg = 0;
+    for(Int_t i = 0; i < nBkgs; i++){
+      pr = VBkgs.at(i)->GetProcess();
+      nom = GetBinYield(pr, k+1); var = GetBinYield(pr, k+1, "Up");
+      t[i][k] = nom;
+      t[i][k].SetError( TMath::Abs(nom-var));
+      bTotBkg     += nom;
+      bTotBkgSyst += (nom-var)*(nom-var);
+    }
+
+    //>>> Total bkg
+    bTotBkgSyst= TMath::Sqrt(bTotBkgSyst);
+    t[nBkgs][k] = bTotBkg;
+    t[nBkgs][k].SetError(bTotBkgSyst); 
+
+    //>>> Yields for signal
+    for(Int_t i = nBkgs+1; i < nSignals+nBkgs+1; i++){
+      pr = VSignals.at(i-(nBkgs+1))->GetProcess();
+      nom = GetBinYield(pr, k+1); var = GetBinYield(pr, k+1, "Up");
+      t[i][k] = nom;
+      t[i][k].SetError( TMath::Abs(nom-var));
+    }
+    if(doData){
+      pr = "Data";
+      nom = GetBinYield(pr, k+1); var = GetBinYield(pr, k+1, "Up");
+      t[nBkgs+nSignals+1][k] = nom;
+      t[nBkgs+nSignals+1][k].SetError( TMath::Abs(nom-var));
+    }
+  }
+  t.SetDrawHLines(true); t.SetDrawVLines(true); t.Print();
+  if(options.Contains("tex"))  t.SaveAs(gSystem->ExpandPathName(plotFolder + "/" + YieldsTableName + ".tex"));
+  if(options.Contains("html")) t.SaveAs(gSystem->ExpandPathName(plotFolder + "/" + YieldsTableName + ".html"));
+  if(options.Contains("txt"))  t.SaveAs(gSystem->ExpandPathName(plotFolder + "/" + YieldsTableName + ".txt"));
+}
+
+
+
+
+void Plot::AddNormUnc(TString pr, Float_t systUp, Float_t systDown){
+  if(systDown == -99) systDown = systUp;
+  Histo* hUp   = GetHisto(pr)->CloneHisto(pr + "_" + pr + "Up");
+  Histo* hDown = GetHisto(pr)->CloneHisto(pr + "_" + pr + "Down");
+  hUp->SetType(itSys); hDown->SetType(itSys);
+  hUp->SetTag(pr + "_" + pr + "Up"); hDown->SetTag(pr + "_" + pr + "Down");
+  hUp->Scale(1+systUp); hDown->Scale(1-systDown);
+  hUp->SetDirectory(0); hDown->SetDirectory(0);
+  AddToSystematicLabels(pr);
+  AddToHistos(hUp); AddToHistos(hDown);
+  return;
+}
+
+Float_t Plot::GetBinYield(TString pr, Int_t bin, TString systag){
+  if     (systag == "Up"   || systag == "UP"   || systag == "up"  ) systag = "Up"; 
+  else if(systag == "Down" || systag == "DOWN" || systag == "down") systag = "Down"; 
+  if(pr == "Data"){
+    if(!hData) SetData();
+    if(systag == "" || systag == "0") return hData->GetBinContent(bin);
+    else{
+      if(systag.Contains("Down") || systag.Contains("down")) return hData->GetBinContent(bin) - hData->GetBinError(bin);
+      else return hData->GetBinContent(bin) + hData->GetBinError(bin);
+    }
+  }
+  Float_t val = 0; Float_t sys = 0; TString ps; 
+  Int_t nSyst = VSyst.size();
+  Int_t nBkg = VBkgs.size();
+  Int_t nSig = VSignals.size();
+  Float_t var = 0;
+  if(systag == "Up" || systag == "Down"){
+    Float_t nom = GetBinYield(pr, bin, "0");
+    var = 0; Float_t diff = 0; Float_t tempvar = 0;
+    for(int k = 0; k < nSyst; k++){ // Systematics in k
+      ps = VSyst.at(k)->GetTag();
+      if(!ps.BeginsWith(pr+"_"))   continue;
+      if(!ps.Contains(systag)) continue;
+      tempvar = VSyst.at(k)->GetBinContent(bin);
+      //cout << ">>> pr = " << ps << endl;
+      //cout << ">>> nom = " << nom << ", var = " << tempvar << endl;
+      diff += (tempvar-nom)*(tempvar-nom);
+    }
+    var = TMath::Sqrt(diff);
+    if     (var != 0 && systag == "Up")   return nom + var;
+    else if(var != 0 && systag == "Down") return nom - var;
+  }
+  else if(systag == "" || systag == "0"){
+    for(Int_t i = 0; i < nBkg; i++){
+      if(pr == VBkgs.at(i)->GetProcess()) return  VBkgs.at(i)->GetBinContent(bin);
+    }
+    for(Int_t i = 0; i < nSig; i++){
+      if(pr == VSignals.at(i)->GetProcess()) return  VSignals.at(i)->GetBinContent(bin);
+    }
+    return 0;
+  }
+  else{ 
+    var = 0; 
+    for(int k = 0; k < nSyst; k++){ // Systematics in k
+      ps = VSyst.at(k)->GetTag();
+      if(!ps.BeginsWith(pr))   continue;
+      if(!ps.Contains(systag)) continue;
+      var = VSyst.at(k)->GetBinContent(bin);
+      if(var != 0) return var;
+    }
+  }
+  //cout << "[Plot::GetYield] WARNING: No systematic " << systag << " for process " << pr << "!!! ...... Returning nominal value... " << endl;
+  return GetBinYield(pr, bin);
 }
 
 

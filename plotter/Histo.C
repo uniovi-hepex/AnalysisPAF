@@ -33,7 +33,7 @@ void Histo::SetType(Int_t tipo){
   }
 }
 
-void Histo::StackOverflow(Bool_t doStackOverflow){
+void Histo::StackOverflow(){
 	if(!doStackOverflow) return;
 	int lastBin = GetNbinsX();
 	float lastBinContent = GetBinContent(lastBin);
@@ -48,6 +48,11 @@ void Histo::SetStyle(){
 	yield = Integral();
 	max = GetMaximum();
 	GetXaxis()->SetTitle(xlabel);
+}
+
+void Histo::ReCalcValues(){
+	yield = Integral();
+	max = GetMaximum();
 }
 
 void Histo::SetStatUnc(){
@@ -90,6 +95,7 @@ void Histo::AddToLegend(TLegend* leg, Bool_t doyi){
   TH1F* h2 = (TH1F*) Clone("toLeg");
   TString op = "f";
   if(DrawStyle != "") op = DrawStyle;
+  if(DrawStyle == "hist") op = "l";
   else{
     if      (type == itSignal){
       if(GetFillColor() == 0) op = "l";

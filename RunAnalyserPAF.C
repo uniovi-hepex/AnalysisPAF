@@ -28,18 +28,16 @@ void GetCount(vector<TString> Files, Bool_t IsData = false);
 
 // Global variables
 //
-vector<TString> Files;
-Double_t SumOfWeights;
-Int_t Count;
-Int_t nTrueEntries;
-Float_t xsec;
-Float_t NormISRweights;
-Bool_t verbose = true;
-Bool_t nukeIt = true;
-Bool_t G_IsFastSim = false;
+vector<TString> Files = vector<TString>();
+Double_t        SumOfWeights;
+Int_t           Count;
+Int_t           nTrueEntries;
+Float_t         xsec;
+Float_t         NormISRweights;
+Bool_t          verbose = true;
+Bool_t          nukeIt = true;
+Bool_t          G_IsFastSim = false;
 Int_t stopMass; Int_t lspMass;
-//
-//=============================================================================
 
 
 //=============================================================================
@@ -48,9 +46,32 @@ enum  ESelector               {iStopSelec, iTopSelec, iTWSelec, iWWSelec,
 			 iHWWSelec,  ittDMSelec, ittHSelec, iWZSelec, i4tSelec, iStopTopSelec, nSel};
 const TString kTagSel[nSel] = {"Stop",     "Top",     "TW",     "WW", "HWW",    
 "ttDM", "ttH", "WZ", "tttt", "StopTop" };
-//
-//=============================================================================
 
+//=============================================================================
+// Datasets:
+    //>>> 2016 datasets
+    TString data2016[] = {
+    "16B_03Feb2017", "16C_03Feb2017", "16D_03Feb2017", "16E_03Feb2017",
+    "16F_03Feb2017", "16G_03Feb2017", "16H_03Feb2017_v2", "16H_03Feb2017_v3"};
+    const unsigned int nData2016 = 8;
+
+    //>>> 2017 datasets
+    TString data2017[] = { 
+    "Run2017B_12Sep2017_v1", "Run2017C_PromptReco_v1", "Run2017C_PromptReco_v2", 
+    "Run2017C_PromptReco_v3", "Run2017D_PromptReco_v1", "Run2017E_PromptReco_v1"};
+    const unsigned int nData2017 = 6;
+
+    TString *SelectedDataset   = data2017;
+    unsigned int SelectedNdata = nData2017;
+
+//=============================================================================
+// Tabs
+// Tab in the spreadsheet https://docs.google.com/spreadsheets/d/1b4qnWfZrimEGYc1z4dHl21-A9qyJgpqNUbhOlvCzjbE
+const TString tab2016       = "DR80XSummer16asymptoticMiniAODv2_2";
+const TString tab2016noSkim = "DR80XSummer16asymptoticMiniAODv2_2_noSkim"; 
+const TString tab2017       = "2017data";
+
+TString SelectedTab = tab2017;
 
 
 //=============================================================================
@@ -128,38 +149,29 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   TString userhome = "/mnt_pool/fanae105/user/$USER/";
   DatasetManager* dm = DatasetManager::GetInstance();
 
-  // Tab in the spreadsheet https://docs.google.com/spreadsheets/d/1b4qnWfZrimEGYc1z4dHl21-A9qyJgpqNUbhOlvCzjbE
-  dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2");
-  //dm->SetTab("DR80XSummer16asymptoticMiniAODv2_2_noSkim");
+  TString tab = SelectedTab;
+  if(verbose) cout << Form("\033[1;36m >>> Setting tab: %s \033[0m\n", tab.Data());
+  dm->SetTab(tab.Data());
   
   TString pathToFiles = dataPath + dm->FindLocalFolder();
+    
   // Deal with data samples
   if(sampleName == "DoubleEG" || sampleName == "DoubleMuon" || sampleName == "MuonEG" || sampleName.BeginsWith("Single")){
-    G_Event_Weight = 1.;
-    G_IsData = true;
-    TString datasuffix[] = { 
-      "16B_03Feb2017",
-      "16C_03Feb2017",
-      "16D_03Feb2017",
-      "16E_03Feb2017",
-      "16F_03Feb2017",
-      "16G_03Feb2017",
-      "16H_03Feb2017_v2",
-      "16H_03Feb2017_v3"
-    };
-    const unsigned int nDataSamples = 8;
+    if(verbose) cout << ("\033[1;39m >>> DATA SAMPLES \033[0m\n");
+    G_Event_Weight = 1.; G_IsData = true;
+
+    TString *datasuffix             = SelectedDataset;
+    const unsigned int nDataSamples = SelectedNdata;
     for(unsigned int i = 0; i < nDataSamples; i++) {
       TString asample = Form("Tree_%s_%s",sampleName.Data(), datasuffix[i].Data());
       //myProject->AddDataFiles(dm->GetRealDataFiles(asample));
       vector<TString> tempFiles = dm->GetRealDataFiles(asample);
 			Files.insert(Files.end(), (tempFiles).begin(), (tempFiles).end());
+      if(verbose) cout << Form("\033[1;39m >>> Searching for: \033[1;34m %s \033[1;39m ... \033[0m\n", asample.Data());
     }
     GetCount(Files, G_IsData);
-    //cout << "Total events in the dataset: " << Count << endl;
-    //cout << "Will loop on total number of entries: " << nTrueEntries << endl;  
   }
-  else{ // Deal with MC samples           Double_t sumnormFromFiles = GetCount(path, dm->GetRealDataFiles(asample));
-    
+  else{ // Deal with MC samples 
     G_IsData = false; 
     if(options.Contains("IsData") || options.Contains("isData")) G_IsData = true;
     TString theSample = "";
@@ -197,6 +209,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
       if(sampleName.Contains("&")) sampleName = TString(sampleName(0, sampleName.First('&'))); // For output file
       sampleName.ReplaceAll(" ", "");
       Int_t nFiles = sampleChain.CountChar('&') + 1;
+      if(verbose) cout << " [Info] Number of samples: " << nFiles << endl;
       for(Int_t k = 0; k < nFiles; k++){
         if(sampleChain.Contains("&")){
           theSample  = TString(sampleChain(0,sampleChain.First('&')));
@@ -210,6 +223,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
         xsec    = dm->GetCrossSection();
         // if(uxsec != 1) xsec    = uxsec;
       }
+      if(verbose) cout << " [Info] Total number of files: " << Files.size() << endl;
       GetCount(Files);
       if(options.Contains("ISR") || options.Contains("isr")) NormISRweights = GetISRweight(Files, stopMass, lspMass);
       if(SumOfWeights != Count){ // is aMCatNLO

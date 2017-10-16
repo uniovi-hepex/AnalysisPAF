@@ -19,6 +19,7 @@ class t4Analysis : public PAFChainItemSelector{
     virtual void InsideLoop();
     virtual void Initialise();
     virtual void Summary();
+    void ResetParameters();
     std::vector<Lepton> selTaus     ;
     std::vector<Lepton> selLeptons  ;
     std::vector<Lepton> vetoLeptons ;
@@ -139,7 +140,6 @@ class t4Analysis : public PAFChainItemSelector{
     Bool_t  gIsData;
     Bool_t  gIsLHE;
     Bool_t  gDoSyst;
-    Int_t   gSelection;
     TString gSampleName;
 
     ClassDef(t4Analysis, 0);

@@ -1,41 +1,27 @@
 //###################################################################################################
 //
-// Draw multple plots at gen level
-// Uses minitrees produced only with gen info, no cuts on reco variables, no skimmed n-tupples
-// Select your options below:
-//    genModelingT2tt
-//    recoModelingT2tt
-//    topModelingT2tt
-//    genxqcutSimple
-//    recoxqcut
-//    topxqcut
-//    recoFastFull
-//    genStopMass
-//    recoStopMass
-//  Ussage:
-//    root -l -b -q 'GenLevelPlots("")'
+// Draw FullSim/FastSim comparisons and yields
 //
 //###################################################################################################
 R__LOAD_LIBRARY(Histo.C+)
 R__LOAD_LIBRARY(Looper.C+)
-R__LOAD_LIBRARY(TResultsTable.C+)
 R__LOAD_LIBRARY(Plot.C+)
 #include "Histo.h"
 #include "Looper.h"
 #include "Plot.h"
 #include "PlotterFunctions.C"
 
+
+
 //=== Functions
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString name = "0", TString lab = "");
 
 //=== Constants
-//TString pathToTree = "/pool/ciencias/userstorage/juanr/stop/genLevel/";
-TString pathToTree = "/pool/ciencias/userstorage/juanr/stop/sep22/forComp/";
+TString pathToTree = "/pool/ciencias/userstorage/juanr/stop/genLevel/";
 TString NameOfTree = "tree";
 TString chan = "ElMu";
 TString dilepgen = "TNgenLeps >= 2";
 TString dilep    = "TNSelLeps >= 2"; 
-TString BaselineCut = "TNJets >= 2 && TNBtags >= 1 && !TIsSS && TPassTrigger && TPassMETfilters";
 
 //=== The main function
 void GenLevelPlots(TString lab = ""){
@@ -65,19 +51,19 @@ void GenLevelPlots(TString lab = ""){
 
   //>>> Reco vs gen
   else if(lab.Contains("reco")){ 
-    DrawPlot("TLep0_Pt",  BaselineCut + " && TLep0_Id == 11", "ElMu", 15, 0, 200, "Elec p_T [GeV]", "ElecPt", lab);
-    DrawPlot("TLep0_Pt",  BaselineCut + " && TLep0_Id == 13", "ElMu", 15, 0, 200, "Muon p_T [GeV]", "MuonPt", lab);
-    DrawPlot("TLep0_Pt",  BaselineCut , "ElMu", 15, 0, 200, "Leading lep p_T [GeV]",    "Lep0Pt", lab);
-    DrawPlot("TLep1_Pt",  BaselineCut , "ElMu", 15, 0, 200, "Subleading lep p_T [GeV]", "Lep1Pt", lab);
-    DrawPlot("TDeltaPhi", BaselineCut , "ElMu", 15, 0, 3.2, "Delta Phi", "DeltaPhi", lab);
-    DrawPlot("TDeltaEta", BaselineCut , "ElMu", 15, 0, 3.2, "Delta Eta", "DeltaEta", lab);
+    DrawPlot("TLep0_Pt",  dilep + " && TLep0_Id == 11", "ElMu", 15, 0, 200, "Elec p_T [GeV]", "ElecPt", lab);
+    DrawPlot("TLep0_Pt",  dilep + " && TLep0_Id == 13", "ElMu", 15, 0, 200, "Muon p_T [GeV]", "MuonPt", lab);
+    DrawPlot("TLep0_Pt",  dilep, "ElMu", 15, 0, 200, "Leading lep p_T [GeV]",    "Lep0Pt", lab);
+    DrawPlot("TLep1_Pt",  dilep, "ElMu", 15, 0, 200, "Subleading lep p_T [GeV]", "Lep1Pt", lab);
+    DrawPlot("TDeltaPhi", dilep, "ElMu", 15, 0, 3.2, "Delta Phi", "DeltaPhi", lab);
+    DrawPlot("TDeltaEta", dilep, "ElMu", 15, 0, 3.2, "Delta Eta", "DeltaEta", lab);
     DrawPlot("DilepPt(TLep0_Pt, TLep0_Eta, TLep0_Phi, TLep0_E, TLep1_Pt, TLep1_Eta, TLep1_Phi, TLep1_E)",    
-                          BaselineCut , "ElMu", 30, 0, 300, "p_{T}^{#font[12]{ll}} [GeV]",  "DilepPt", lab);
-   DrawPlot("TMll",      BaselineCut , "ElMu", 20, 0, 200, "Mll [GeV]", "InvMass", lab);
-    DrawPlot("TMET",      BaselineCut , "ElMu", 20, 0, 250, "MET [GeV]", "MET", lab);
-    DrawPlot("TMath::Abs(TMET_Phi)",  BaselineCut , "ElMu", 15, 0, 3.2, "MET Phi", "METPhi", lab);
-    DrawPlot("TMT2",      BaselineCut , "ElMu", 20, 0, 120, "M_{T2} [GeV]", "MT2", lab);
-    DrawPlot("TMT2",      BaselineCut + " && TMT2 > 0", "ElMu", 20, 0, 120, "M_{T2} [GeV]", "MT2_no0", lab);
+                          dilep, "ElMu", 30, 0, 300, "p_{T}^{#font[12]{ll}} [GeV]",  "DilepPt", lab);
+    DrawPlot("TMll",      dilep, "ElMu", 20, 0, 200, "Mll [GeV]", "InvMass", lab);
+    DrawPlot("TMET",      dilep, "ElMu", 20, 0, 250, "MET [GeV]", "MET", lab);
+    DrawPlot("TMath::Abs(TMET_Phi)",  dilep, "ElMu", 15, 0, 3.2, "MET Phi", "METPhi", lab);
+    DrawPlot("TMT2",      dilep, "ElMu", 20, 0, 120, "M_{T2} [GeV]", "MT2", lab);
+    DrawPlot("TMT2",      dilep + " && TMT2 > 0", "ElMu", 20, 0, 120, "M_{T2} [GeV]", "MT2_no0", lab);
   }
   else{
     GenLevelPlots("genModelingT2tt");
@@ -97,12 +83,12 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   Plot* p = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
   p->SetPlotFolder("output/genComp/" + lab + "/");
-  p->verbose = true;
+  p->verbose = false;
   p->doYieldsInLeg = false;
   p->SetVarName(name);
 
   //>>> This sample is always on the comparison
-  if(!lab.Contains("FastFull")) p->AddSample("TTbar_Powheg", "tt Powheg Gen", itSignal, 1,       "0", "noWeight");
+  p->AddSample("TTbar_Powheg", "tt Powheg Gen", itSignal, 1,       "0", "noWeight");
 
   //>>> Modeling of T2tt processes
   if(lab.Contains("ModelingT2tt")){
@@ -148,17 +134,11 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     //p->AddSample("T2tt_175_1_FS",          "FullSim [175,1]",  itSignal, kBlue+1,    "0");
     //p->AddSample("T2tt_FastSim_175_1",    "FastSim [175,1]",  itSignal, kBlue+1,   "0");
     p->AddSample("T2tt_200_50_FS_summer",  "FullSim [200,50]", itSignal, kBlue+1,     "0");
-    p->SetWeight("TWeight*TBtagSFFS");
-    p->AddSample("T2tt_mStop200_mLsp50",   "FastSim [200,50]", itSignal, kBlue+1, "0");
-    p->SetWeight("TWeight");
+    p->AddSample("T2tt_FastSim_200_50",   "FastSim [200,50]", itSignal, kBlue+1, "0");
     p->AddSample("T2tt_225_50_FS_summer",  "FullSim [225,50]", itSignal, kRed+1,     "0");
-    p->SetWeight("TWeight*TBtagSFFS");
-    p->AddSample("T2tt_mStop225_mLsp50",   "FastSim [225,50]", itSignal, kRed+1, "0");
-    p->SetWeight("TWeight");
+    p->AddSample("T2tt_FastSim_225_50",   "FastSim [225,50]", itSignal, kRed+1, "0");
     p->AddSample("T2tt_250_50_FS_summer",  "FullSim [250,50]", itSignal, kGreen+1,     "0");
-    p->SetWeight("TWeight*TBtagSFFS");
-    p->AddSample("T2tt_mStop250_mLsp50",   "FastSim [250,50]", itSignal, kGreen+1, "0");
-    p->SetWeight("TWeight");
+    p->AddSample("T2tt_FastSim_250_50",   "FastSim [250,50]", itSignal, kGreen+1, "0");
     p->SetLineStyle("FastSim [200,50]", 2);
     p->SetLineStyle("FastSim [225,50]", 2);
     p->SetLineStyle("FastSim [250,50]", 2);
@@ -186,12 +166,10 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
  // p->AddSample("T2tt_250_50_FS_xqcut20", "FullSim [250,50] xqcut20", itSignal, kBlue+1, "0", "noWeight");
  // p->AddSample("T2tt_250_50_FS_summer", " FullSim [250,50] xqcut30", itSignal, kRed+1,  "0", "noWeight");
 
- //>>> Options and drawing...
+  //>>> Options and drawing...
   TString options;
-  if(lab.Contains("FastFull")){  options = "hist,ratiocolors";
-    //p->PrintYields("", "", "", "txt");
-  }
-  p->SetLegendPosition(0.6, 0.72, 0.92, 0.92);
+  if(lab.Contains("FastFull")) options = "hist,ratiocolors";
+  p->SetLegendPosition(0.6, 0.75, 0.92, 0.92);
   p->SetLegendTextSize(0.04);
   p->SetRatioMin(0.6); p->SetRatioMax(1.4);
   p->doSetLogy = false;

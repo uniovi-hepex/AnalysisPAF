@@ -13,6 +13,7 @@ class Lepton : public TObject{
       charge = 0;
       type = -1;
       isElec = 0; isMuon = 0; isTau = 0;
+      Mid = 0;
     };
     //Lepton(const Lepton &l): p(l.p), charge(l.charge), type(l.type), index(l.index){ };
  Lepton(TLorentzVector vec, 
@@ -47,6 +48,7 @@ class Lepton : public TObject{
     Int_t idAntiE;
     Int_t idAntiMu;
     Int_t type;
+    Int_t Mid; // mother Id, for gen leptons
     Bool_t isElec;
     Bool_t isMuon;
     Bool_t isTau;

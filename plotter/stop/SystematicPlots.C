@@ -20,8 +20,8 @@ void DrawComp(TString systName, Bool_t VariedSample = false);
 TString pathToTree = "/pool/ciencias/userstorage/juanr/stop/sep22/";
 TString NameOfTree = "tree";
 TString outputFolder = "./output/";
-TString BaselineCut = "TNJets >= 2 && TNBtags >= 1 && !TIsSS && TNVetoLeps < 3 && TPassTrigger && TPassMETfilters";
-TString Dilepton    = "!TIsSS && TNVetoLeps < 3 && TPassTrigger && TPassMETfilters";
+TString BaselineCut = "TNJets >= 2 && TNBtags >= 1 && !TIsSS && TPassTrigger && TPassMETfilters";
+TString Dilepton    = "!TIsSS && TPassTrigger && TPassMETfilters";
 const Int_t ngbins = 26;
 Float_t gbins[ngbins+1] = {0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,140,200};
 const TString ttbar = "TTbar_Powheg";
@@ -33,9 +33,9 @@ enum Syst{kJES, kBtag, kMuon, kElec, kPU, kUE, kISR, kFSR, kJER, kTrig, khdamp, 
 
 //=== Main function
 void SystematicPlots(TString chan = "ElMu"){
-//  for(Int_t pl = 0; pl < nSyst; pl++) DrawPlot("TMT2", BaselineCut, chan, ngbins, 0, 0, gbins, "M_{T2} [GeV]", "MT2", pl);
-//  for(Int_t pl = 0; pl < nSyst; pl++) DrawPlot("TMT2", BaselineCut + " && TMT2 > 0", chan, ngbins, 0, 0, gbins, "M_{T2} [GeV]", "MT2no0", pl);
- DrawPlot("TMT2", BaselineCut, chan, ngbins, 0, 0, gbins, "M_{T2} [GeV]", "MT2", kCR);
+  for(Int_t pl = 0; pl < nSyst; pl++) DrawPlot("TMT2", Dilepton, chan, ngbins, 0, 0, gbins, "M_{T2} [GeV]", "MT2_dilep", pl);
+  for(Int_t pl = 0; pl < nSyst; pl++) DrawPlot("TMT2", BaselineCut, chan, ngbins, 0, 0, gbins, "M_{T2} [GeV]", "MT2", pl);
+  for(Int_t pl = 0; pl < nSyst; pl++) DrawPlot("TMT2", BaselineCut + " && TMT2 > 0", chan, ngbins, 0, 0, gbins, "M_{T2} [GeV]", "MT2no0", pl);
 }
 
 //=== Plotting function

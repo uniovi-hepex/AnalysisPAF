@@ -14,6 +14,7 @@ class StopTopAnalysis : public PAFChainItemSelector{
     TH1F* fISRJets;  
     Int_t TNLHEWeight;
     Float_t TLHEWeight[254];
+    Float_t genWeight;
  
     StopTopAnalysis();
     virtual ~StopTopAnalysis(){}
@@ -49,6 +50,7 @@ class StopTopAnalysis : public PAFChainItemSelector{
     Bool_t passMETfilters;
     Bool_t passTrigger;
     Bool_t isSS;
+    Bool_t gIsMCatNLO;
     Float_t NormWeight;
     Bool_t IsT2ttScan = false;
     Bool_t gIsFastSim = false;
@@ -155,6 +157,42 @@ class StopTopAnalysis : public PAFChainItemSelector{
     Float_t TgentopDeltaPhi; 
     Float_t TgentopDeltaR;
 
+    Int_t TnGenW = 0; Int_t TnGenNeutrinos = 0; 
+    Int_t TnGenStop = 0; Int_t TnGenLsp = 0;
+    Float_t TgenNeu1Pt ;
+    Float_t TgenNeu1Eta;
+    Float_t TgenNeu1Phi;
+    Float_t TgenNeu1M  ;
+    Float_t TgenNeu2Pt ;
+    Float_t TgenNeu2Eta;
+    Float_t TgenNeu2Phi;
+    Float_t TgenNeu2M  ;
+    Float_t TgenW1Pt ;
+    Float_t TgenW1Eta;
+    Float_t TgenW1Phi;
+    Float_t TgenW1M  ;
+    Float_t TgenW2Pt ;
+    Float_t TgenW2Eta;
+    Float_t TgenW2Phi;
+    Float_t TgenW2M  ;
+    Float_t TgenStop1Pt ;
+    Float_t TgenStop1Eta;
+    Float_t TgenStop1Phi;
+    Float_t TgenStop1M  ;
+    Float_t TgenStop2Pt ;
+    Float_t TgenStop2Eta;
+    Float_t TgenStop2Phi;
+    Float_t TgenStop2M  ;
+    Float_t TgenLsp1Pt ;
+    Float_t TgenLsp1Eta;
+    Float_t TgenLsp1Phi;
+    Float_t TgenLsp1M  ;
+    Float_t TgenLsp2Pt ;
+    Float_t TgenLsp2Eta;
+    Float_t TgenLsp2Phi;
+    Float_t TgenLsp2M  ;
+
+    Float_t TgenWeight;
     Float_t TgenMET;   // MET_genPt
     Float_t TgenMETPhi;
     Int_t   TNgenLeps;
@@ -164,6 +202,8 @@ class StopTopAnalysis : public PAFChainItemSelector{
     Float_t TgenLep0_Eta;
     Float_t TgenLep1_Pt;
     Float_t TgenLep1_Eta;
+    Int_t   TgenLep0_Mid;
+    Int_t   TgenLep1_Mid;
     Float_t TgenDeltaPhi;
     Float_t TgenDeltaEta;
     Float_t TgenMT2;

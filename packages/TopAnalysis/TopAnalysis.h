@@ -78,19 +78,16 @@ class TopAnalysis : public PAFChainItemSelector{
     Double_t getSysM(const TString& sys = "Norm");
     Double_t getM(vector<TLorentzVector>);
 
-
-
-
-  
-
-      
-
-
-
-
     //Variables
     Float_t TWeight;   // Total nominal weight
     Float_t TMll;      // Invariant mass
+    Float_t TDilep_Pt;
+    Float_t TMuon_Pt;
+    Float_t TElec_Pt;
+    Float_t TMuon_Eta;
+    Float_t TElec_Eta;
+    Int_t   TRun;
+    Int_t   TNVert;
     Float_t TMET;      // MET
     Float_t TGenMET;     
     Float_t TMET_Phi;  // MET phi
@@ -107,7 +104,11 @@ class TopAnalysis : public PAFChainItemSelector{
 
     Int_t TNJets;            // Jets...
     Int_t TNBtags;
+    Float_t TJet0Pt;
+    Float_t TJet0Eta;
+    Float_t TJet0Csv;
     Float_t TJet_Pt[20];
+    Float_t TJet_Csv[20];
     Float_t TJet_Eta[20];
     Float_t TJet_Phi[20];
     Float_t TJet_E[20];
@@ -202,6 +203,7 @@ class TopAnalysis : public PAFChainItemSelector{
   TH1F* fHNBtagJets[nChannels][nLevels][nSysts];
 
   TH1F* fHDYInvMass[nChannels][nLevels][nSysts];
+  TH1F* fHDYInvMassSF[nChannels][nLevels][nSysts];
   TH1F* fHInvMass[nChannels][nLevels][nSysts];
   TH1F* fHInvMass2[nChannels][nLevels][nSysts];
   TH1F* fHNBtagsNJets[nChannels][nLevels][nSysts];

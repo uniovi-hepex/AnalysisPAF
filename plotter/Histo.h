@@ -22,6 +22,8 @@ const TString DefaultTreeName = "MiniTree";
 
 class Histo : public TH1F{
  public:
+  Bool_t doStackOverflow = true;
+
   Histo(const char *name, const char *title, Int_t nbins, Double_t xlow, Double_t xup);
   Histo(const char *name, const char *title, Int_t nbins, Float_t* bins);
   //Histo(const char *name, const char *title, Int_t nbins, const Float_t* xbins);
@@ -40,11 +42,13 @@ class Histo : public TH1F{
   void Init(){ 
     type = 0; color = 0; SysTag = "0";
     tag = "0"; process="0"; cuts="0"; xlabel="0";
+    DrawStyle = "";
   }
   
   void SetType(Int_t tipo = 0);
   void SetColor(Int_t c);
   void SetStyle();
+  void ReCalcValues();
   void SetStatUnc();
   Histo* CloneHisto(const char* newname=0) const;
 
@@ -56,7 +60,7 @@ class Histo : public TH1F{
   TString GetProcess(){return process;}
   Float_t GetSysNorm(){return sysNorm;}
   Int_t GetColor(){ return color;}
-  void StackOverflow(Bool_t doStackOverflow = 1);
+  void StackOverflow();
   void SetTag(TString p, TString t="", TString x = "", TString c = "");
   void SetProcess(TString p);
   void SetTitles(TString x, TString c = "");
@@ -79,7 +83,7 @@ class Histo : public TH1F{
 
  protected:
   Int_t type; 
-  TString DrawStyle = "";
+  TString DrawStyle;
   Int_t color;
   TString tag = "0"; TString process="0"; TString cuts="0"; TString xlabel="0";
   Float_t sysNorm;
