@@ -4,6 +4,7 @@
 //    Main macro.
 //
 //  USAGE:
+//    root -l -b -q 'RunAnalyserPAF("Check:tttt_temp", "tree")'
 //    RunAnalyserPAF("sampleName", "TheAnalysis", nSlots);
 //    RunAnalyserPAF("sampleName", "TheAnalysis", nSlots, nEvents = 0);
 //
@@ -53,16 +54,18 @@ const TString kTagSel[nSel] = {"Stop",     "Top",     "TW",     "WW", "HWW",
     TString data2016[] = {
     "16B_03Feb2017", "16C_03Feb2017", "16D_03Feb2017", "16E_03Feb2017",
     "16F_03Feb2017", "16G_03Feb2017", "16H_03Feb2017_v2", "16H_03Feb2017_v3"};
+    //"16G_03Feb2017", 
+    //"16H_03Feb2017_v2", "16H_03Feb2017_v3"};
     const unsigned int nData2016 = 8;
 
     //>>> 2017 datasets
     TString data2017[] = { 
-    "Run2017B_12Sep2017_v1", "Run2017C_PromptReco_v1", "Run2017C_PromptReco_v2", 
+    "Run2017B_12Sep2017_v1",  "Run2017C_PromptReco_v1", "Run2017C_PromptReco_v2", 
     "Run2017C_PromptReco_v3", "Run2017D_PromptReco_v1", "Run2017E_PromptReco_v1"};
     const unsigned int nData2017 = 6;
 
-    TString *SelectedDataset   = data2017;
-    unsigned int SelectedNdata = nData2017;
+    TString *SelectedDataset   = data2016;
+    unsigned int SelectedNdata = nData2016;
 
 //=============================================================================
 // Tabs
@@ -71,7 +74,7 @@ const TString tab2016       = "DR80XSummer16asymptoticMiniAODv2_2";
 const TString tab2016noSkim = "DR80XSummer16asymptoticMiniAODv2_2_noSkim"; 
 const TString tab2017       = "2017data";
 
-TString SelectedTab = tab2017;
+TString SelectedTab = tab2016;
 
 
 //=============================================================================
@@ -173,7 +176,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   }
   else{ // Deal with MC samples 
     G_IsData = false; 
-    if(options.Contains("IsData") || options.Contains("isData")) G_IsData = true;
+    if(options.Contains("Data") || options.Contains("data")) G_IsData = true;
     TString theSample = "";
     if(sampleName.BeginsWith("LocalFile:")){ // LocalFile
       theSample = sampleName.ReplaceAll("LocalFile:", ""); 
