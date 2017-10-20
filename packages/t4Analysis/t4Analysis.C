@@ -34,21 +34,6 @@ t4Analysis::t4Analysis() : PAFChainItemSelector() {
     TTau_IdMVA      [i] = 0;   
     TTau_IdAntiE    [i] = 0;   
     TTau_IdAntiMu   [i] = 0;   
-
-    TLep_Pt       [i] = 0;
-    TLep_Eta      [i] = 0;
-    TLep_Phi      [i] = 0;
-    TLep_E        [i] = 0;
-    TLep_Charge   [i] = 0;
-    TLep_pdgId    [i] = 0;
-  }
-  for(Int_t i = 0; i < 5; i++){
-    TFLep_Pt       [i] = 0;
-    TFLep_Eta      [i] = 0;
-    TFLep_Phi      [i] = 0;
-    TFLep_E        [i] = 0;
-    TFLep_Charge   [i] = 0;
-    TFLep_pdgId    [i] = 0;
   }
   for(Int_t i = 0; i < 254; i++) TLHEWeight[i] = 0;
 }
@@ -68,7 +53,7 @@ void t4Analysis::Initialise(){
   gIsLHE = false;
   if(gSampleName.Contains("LHE")) gIsLHE = true;
 
-  //>>> Set variables
+  //>>> Set variables in tree
   SetTauVariables();
   SetLeptonVariables();
   SetJetVariables();
@@ -152,68 +137,46 @@ void t4Analysis::InsideLoop(){
   //>>> For tau fake estimate
   bool  tauFakesSelection(false);
   Int_t nReqLeps (tauFakesSelection ? 1        :    2);
-  bool  passJetReq(tauFakesSelection ? TNJets>0 : true);
+  bool  passJetReq(tauFakesSelection ? TNJets>0 : true); 
+ 
+  TChannel = Get4tChannel(selLeptons, xLeptons);
+  Bool_t isFake = (TChannel == i2lss_fake || TChannel == iTriLep_fake || TChannel == i1Tau_emufakeSS);
 
-  //>>> Select the channel... i2lss, iTrilep, iSS1tau, iOS1tau, i2lss_fake, iTrilep_fake, i1Tau_emufakeSS, i1Tau_emufakeOS
-  TChannel = -1;
-  if(TNTaus == 0){
-    if     ( (TNSelLeps == 0 && TNFakeableLeps >= 2) || (TNSelLeps == 1 && TNFakeableLeps == 1)){ // Fakes for 2lss
-      if(IsThereSSpair(xLeptons) && PassLowInvMass(xLeptons, 12))   TChannel = i2lss_fake; 
-    }
-    else if(TNSelLeps == 1 && TNFakeableLeps >= 2){ // Fakes for 2lss
-      if(       IsThere3SS(   xLeptons)) TChannel = -1;
-      else if  (IsThereSSpair(xLeptons)) TChannel = i2lss_fake; 
-      else                               TChannel = iTriLep_fake; // Fakes for 3L
-    }
-    else if(TNSelLeps == 2 && TNFakeableLeps == 0){ // 2lss
-      if(IsThereSSpair(selLeptons)) TChannel = i2lss;
-    }
-    else if(TNSelLeps == 2 && TNFakeableLeps >= 1){ // Fakes for 3L
-      if(IsThereSSpair(selLeptons)) TChannel = i2lss;
-      else{  
-        if(IsThere3SS(xLeptons)) TChannel = -1;
-        else                     TChannel = iTriLep_fake;
-      }  
-    } 
-    else if(TNSelLeps >= 3){
-      TChannel = iTriLep;
-      if(     IsThere3SS(   selLeptons)) TChannel = -1;
-    }
-  }
-  else if(TNTaus >= 1){
-    if(TNSelLeps >= 2){
-      if(IsThereSSpair(selLeptons)) TChannel = iSS1tau;
-      else                          TChannel = iOS1tau;
-    }
-    if( (TNSelLeps == 1 && TNFakeableLeps >= 1) || (TNSelLeps == 0 && TNFakeableLeps >= 2) ){
-      if  (IsThereSSpair(xLeptons)) TChannel = i1Tau_emufakeSS; 
-      else  TChannel = i1Tau_emufakeOS;
-    }
-  }
-  if(TChannel == i2lss_fake || TChannel == iTriLep_fake || TChannel == i1Tau_emufakeOS || TChannel == i1Tau_emufakeSS) if(!PassLowInvMass(xLeptons, 12)) TChannel = -1;
+  if(TChannel <= 0) return;
+  if(!gIsData && TChannel == i2LOS) return;
 
   //>>> We select the events entering on one of the previous defined categories 
-  if(TChannel > 0){ 
-    //>>> Deal with weights:
-    Float_t lepSF = 1; Float_t lepSFUp = 1; Float_t lepSFDo = 0;
-    if((Int_t) selLeptons.size() >= 2){
-      lepSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
-      lepSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1);
-      lepSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1);
-    }
-    TWeight            = NormWeight*lepSF*TrigSF*PUSF;
-    TWeight_LepEffUp   = NormWeight*lepSFUp*TrigSF*PUSF;
-    TWeight_LepEffDown = NormWeight*lepSFDo*TrigSF*PUSF;
-    TWeight_TrigUp     = NormWeight*lepSF*TrigSF_Up*PUSF;
-    TWeight_TrigDown   = NormWeight*lepSF*TrigSF_Down*PUSF;
-    TWeight_PUDown     = NormWeight*lepSF*TrigSF*PUSF_Up;
-    TWeight_PUUp       = NormWeight*lepSF*TrigSF*PUSF_Down;
-    if(gIsData) TWeight = 1;
-
-    // Extra event Selection
-    // ===================================================================================================================
-    if(xLeptons.at(0).p.Pt() > 25) fTree->Fill();
+  //>>> Cuts for prompt lepton evets
+  if(!isFake){
+    if(IsThere3SS(selLeptons))          return; 
+    if(!PassLowInvMass(selLeptons, 12)) return;
+    if(selLeptons.at(0).p.Pt() < 25)    return;
   }
+  //>>> Cuts for events with fake leptons
+  else{
+    if(IsThere3SS(xLeptons))          return; 
+    if(!PassLowInvMass(xLeptons, 12)) return;
+    if(xLeptons.at(0).p.Pt() < 25)    return;
+  }
+
+  //>>> Deal with weights:
+  Float_t lepSF = 1; Float_t lepSFUp = 1; Float_t lepSFDo = 0;
+  if((Int_t) selLeptons.size() >= 2){
+    lepSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
+    lepSFUp = selLeptons.at(0).GetSF( 1)*selLeptons.at(1).GetSF( 1);
+    lepSFDo = selLeptons.at(0).GetSF(-1)*selLeptons.at(1).GetSF(-1);
+  }
+  TWeight            = NormWeight*lepSF*TrigSF*PUSF;
+  TWeight_LepEffUp   = NormWeight*lepSFUp*TrigSF*PUSF;
+  TWeight_LepEffDown = NormWeight*lepSFDo*TrigSF*PUSF;
+  TWeight_TrigUp     = NormWeight*lepSF*TrigSF_Up*PUSF;
+  TWeight_TrigDown   = NormWeight*lepSF*TrigSF_Down*PUSF;
+  TWeight_PUDown     = NormWeight*lepSF*TrigSF*PUSF_Up;
+  TWeight_PUUp       = NormWeight*lepSF*TrigSF*PUSF_Down;
+  if(gIsData) TWeight = 1;
+
+  if(TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TPassTrigger && TPassMETFilters)
+  fTree->Fill();
 }
 
 //#####################################################################
@@ -235,18 +198,53 @@ void t4Analysis::SetTauVariables(){
 void t4Analysis::SetLeptonVariables(){
   fTree->Branch("TNFakeableLeps"  ,&TNFakeableLeps, "TNFakeableLeps/I");
   fTree->Branch("TNSelLeps"       ,&TNSelLeps,      "TNSelLeps/I");
-  fTree->Branch("TLep_Pt"         ,TLep_Pt,         "TLep_Pt[TNSelLeps]/F");
-  fTree->Branch("TLep_Eta"        ,TLep_Eta,        "TLep_Eta[TNSelLeps]/F");
-  fTree->Branch("TLep_Phi"        ,TLep_Phi,        "TLep_Phi[TNSelLeps]/F");
-  fTree->Branch("TLep_E"          ,TLep_E ,         "TLep_E[TNSelLeps]/F");
-  fTree->Branch("TLep_Charge"     ,TLep_Charge,     "TLep_Charge[TNSelLeps]/I");
-  fTree->Branch("TLep_pdgId"      ,TLep_pdgId,      "TLep_pdgId[TNSelLeps]/I");
-  fTree->Branch("TFLep_pdgId",     TFLep_pdgId,     "TFLep_pdgId[TNFakeableLeps]/I");
-  fTree->Branch("TFLep_Pt"        ,TFLep_Pt,        "TFLep_Pt[TNFakeableLeps]/F");
-  fTree->Branch("TFLep_Eta"       ,TFLep_Eta,       "TFLep_Eta[TNFakeableLeps]/F");
-  fTree->Branch("TFLep_Phi"       ,TFLep_Phi,       "TFLep_Phi[TNFakeableLeps]/F");
-  fTree->Branch("TFLep_E"         ,TFLep_E ,        "TFLep_E[TNFakeableLeps]/F");
-  fTree->Branch("TFLep_Charge"    ,TFLep_Charge,    "TFLep_Charge[TNFakeableLeps]/F");
+  //fTree->Branch("TLep_Pt"         ,TLep_Pt,         "TLep_Pt[TNSelLeps]/F");
+  //fTree->Branch("TLep_Eta"        ,TLep_Eta,        "TLep_Eta[TNSelLeps]/F");
+  //fTree->Branch("TLep_Phi"        ,TLep_Phi,        "TLep_Phi[TNSelLeps]/F");
+  //fTree->Branch("TLep_E"          ,TLep_E ,         "TLep_E[TNSelLeps]/F");
+  //fTree->Branch("TLep_pdgId"      ,TLep_pdgId,      "TLep_pdgId[TNSelLeps]/I");
+  //fTree->Branch("TFLep_pdgId",     TFLep_pdgId,     "TFLep_pdgId[TNFakeableLeps]/I");
+  //fTree->Branch("TFLep_Pt"        ,TFLep_Pt,        "TFLep_Pt[TNFakeableLeps]/F");
+  //fTree->Branch("TFLep_Eta"       ,TFLep_Eta,       "TFLep_Eta[TNFakeableLeps]/F");
+  //fTree->Branch("TFLep_Phi"       ,TFLep_Phi,       "TFLep_Phi[TNFakeableLeps]/F");
+  //fTree->Branch("TFLep_E"         ,TFLep_E ,        "TFLep_E[TNFakeableLeps]/F");
+  
+  fTree->Branch("TLep0Pt",         &TLep0Pt,        "TLep0Pt/F");
+  fTree->Branch("TLep0Eta",        &TLep0Eta,       "TLep0Eta/F");
+  fTree->Branch("TLep0Phi",        &TLep0Phi,       "TLep0Phi/F");
+  fTree->Branch("TLep0E",          &TLep0E,         "TLep0E/F");
+  fTree->Branch("TLep0Id",         &TLep0Id,        "TLep0Id/I");
+  fTree->Branch("TLep1Pt",         &TLep1Pt,        "TLep1Pt/F");
+  fTree->Branch("TLep1Eta",        &TLep1Eta,       "TLep1Eta/F");
+  fTree->Branch("TLep1Phi",        &TLep1Phi,       "TLep1Phi/F");
+  fTree->Branch("TLep1E",          &TLep1E,         "TLep1E/F");
+  fTree->Branch("TLep1Id",         &TLep1Id,        "TLep1Id/I");
+  fTree->Branch("TLep2Pt",         &TLep2Pt,        "TLep2Pt/F");
+  fTree->Branch("TLep2Eta",        &TLep2Eta,       "TLep2Eta/F");
+  fTree->Branch("TLep2Phi",        &TLep2Phi,       "TLep2Phi/F");
+  fTree->Branch("TLep2E",          &TLep2E,         "TLep2E/F");
+  fTree->Branch("TLep2Id",         &TLep2Id,        "TLep2Id/I");
+  fTree->Branch("TLep3Pt",         &TLep3Pt,        "TLep3Pt/F");
+  fTree->Branch("TLep3Eta",        &TLep3Eta,       "TLep3Eta/F");
+  fTree->Branch("TLep3Phi",        &TLep3Phi,       "TLep3Phi/F");
+  fTree->Branch("TLep3E",          &TLep3E,         "TLep3E/F");
+  fTree->Branch("TLep3Id",         &TLep3Id,        "TLep3Id/I");
+  fTree->Branch("TLep4Pt",         &TLep4Pt,        "TLep4Pt/F");
+  fTree->Branch("TLep4Eta",        &TLep4Eta,       "TLep4Eta/F");
+  fTree->Branch("TLep4Phi",        &TLep4Phi,       "TLep4Phi/F");
+  fTree->Branch("TLep4E",          &TLep4E,         "TLep4E/F");
+  fTree->Branch("TLep4Id",         &TLep4Id,        "TLep4Id/I");
+  fTree->Branch("TFLep0Pt",         &TFLep0Pt,        "TFLep0Pt/F");
+  fTree->Branch("TFLep0Eta",        &TFLep0Eta,       "TFLep0Eta/F");
+  fTree->Branch("TFLep0Phi",        &TFLep0Phi,       "TFLep0Phi/F");
+  fTree->Branch("TFLep0E",          &TFLep0E,         "TFLep0E/F");
+  fTree->Branch("TFLep0Id",         &TFLep0Id,        "TFLep0Id/I");
+  fTree->Branch("TFLep1Pt",         &TFLep1Pt,        "TFLep1Pt/F");
+  fTree->Branch("TFLep1Eta",        &TFLep1Eta,       "TFLep1Eta/F");
+  fTree->Branch("TFLep1Phi",        &TFLep1Phi,       "TFLep1Phi/F");
+  fTree->Branch("TFLep1E",          &TFLep1E,         "TFLep1E/F");
+  fTree->Branch("TFLep1Id",         &TFLep1Id,        "TFLep1Id/I");
+
   fTree->Branch("TChannel"        ,&TChannel,       "TChannel/I");
   fTree->Branch("TMll"            ,&TMll,           "TMll/F");
   fTree->Branch("TM3l"            ,&TM3l,           "TM3l/F");
@@ -336,22 +334,21 @@ void t4Analysis::GetTauVariables(std::vector<Lepton> selTaus){
 
 void t4Analysis::GetLeptonVariables(std::vector<Lepton> selLeptons){
   TNSelLeps = selLeptons.size();
-  for(Int_t i = 0; i < 10; i++){
-    if(i < TNSelLeps){
-      TLep_Pt[i]     = selLeptons.at(i).Pt();
-      TLep_Eta[i]    = selLeptons.at(i).Eta();
-      TLep_Phi[i]    = selLeptons.at(i).Phi();
-      TLep_E[i]      = selLeptons.at(i).E();
-      TLep_pdgId[i] = selLeptons.at(i).charge;
-    }
-    else{
-      TLep_Pt[i]     = 0;
-      TLep_Eta[i]    = 0;
-      TLep_Phi[i]    = 0;
-      TLep_E[i]      = 0;
-      TLep_Charge[i] = 0;
-      TLep_pdgId[i] = 0;
-    }
+  TLep0Pt = 0; TLep0Eta = 0; TLep0Phi = 0; TLep0E = 0; TLep0Id = 0;
+  TLep1Pt = 0; TLep1Eta = 0; TLep1Phi = 0; TLep1E = 0; TLep1Id = 0;
+  TLep2Pt = 0; TLep2Eta = 0; TLep2Phi = 0; TLep2E = 0; TLep2Id = 0;
+  TLep3Pt = 0; TLep3Eta = 0; TLep3Phi = 0; TLep3E = 0; TLep3Id = 0;
+  if(TNSelLeps >= 1){
+    TLep0Pt = selLeptons.at(0).Pt(); TLep0Eta = selLeptons.at(0).Eta(); TLep0Phi = selLeptons.at(0).Phi(); TLep0E = selLeptons.at(0).E(); TLep0Id = selLeptons.at(0).isMuon? 13 : 11;
+  }
+  if(TNSelLeps >= 2){
+    TLep1Pt = selLeptons.at(1).Pt(); TLep1Eta = selLeptons.at(1).Eta(); TLep1Phi = selLeptons.at(1).Phi(); TLep1E = selLeptons.at(1).E(); TLep1Id = selLeptons.at(1).isMuon? 13 : 11;
+  }
+  if(TNSelLeps >= 3){
+    TLep2Pt = selLeptons.at(2).Pt(); TLep2Eta = selLeptons.at(2).Eta(); TLep2Phi = selLeptons.at(2).Phi(); TLep2E = selLeptons.at(2).E(); TLep2Id = selLeptons.at(2).isMuon? 13 : 11;
+  }
+  if(TNSelLeps >= 4){
+    TLep3Pt = selLeptons.at(3).Pt(); TLep3Eta = selLeptons.at(3).Eta(); TLep3Phi = selLeptons.at(3).Phi(); TLep3E = selLeptons.at(3).E(); TLep3Id = selLeptons.at(3).isMuon? 13 : 11;
   }
   TMll = TNSelLeps < 2 ? 0 : (selLeptons.at(0).p + selLeptons.at(1).p).M();      
   TM3l = TNSelLeps < 3 ? 0 : (selLeptons.at(0).p + selLeptons.at(1).p + selLeptons.at(2).p).M();      
@@ -365,23 +362,13 @@ void t4Analysis::GetLeptonVariables(std::vector<Lepton> selLeptons){
 
 void t4Analysis::GetFakeableLeptonVariables(std::vector<Lepton> vetoLeptons){
   TNFakeableLeps = vetoLeptons.size();
-  for(Int_t i = 0; i < 5; i++){
-    if(i < TNFakeableLeps ){
-      TFLep_Pt[i]     = vetoLeptons.at(i).Pt();
-      TFLep_Eta[i]    = vetoLeptons.at(i).Eta();
-      TFLep_Phi[i]    = vetoLeptons.at(i).Phi();
-      TFLep_E[i]      = vetoLeptons.at(i).E();
-      TFLep_Charge[i] = vetoLeptons.at(i).charge;
-      TFLep_pdgId[i]  = vetoLeptons.at(i).isElec? 11 : 13;
-    }
-    else{
-      TFLep_Pt[i]     = 0;
-      TFLep_Eta[i]    = 0;
-      TFLep_Phi[i]    = 0;
-      TFLep_E[i]      = 0;
-      TFLep_Charge[i] = 0;
-      TFLep_pdgId[i]  = 0;
-    }
+  TFLep0Pt = 0; TFLep0Eta = 0; TFLep0Phi = 0; TFLep0E = 0; TFLep0Id = 0;
+  TFLep1Pt = 0; TFLep1Eta = 0; TFLep1Phi = 0; TFLep1E = 0; TFLep1Id = 0;
+  if(TNFakeableLeps >= 1){
+    TFLep0Pt = vetoLeptons.at(0).Pt(); TFLep0Eta = vetoLeptons.at(0).Eta(); TFLep0Phi = vetoLeptons.at(0).Phi(); TFLep0E = vetoLeptons.at(0).E(); TFLep0Id = vetoLeptons.at(0).isMuon? 13 : 11;
+  }
+  if(TNFakeableLeps >= 2){
+    TFLep1Pt = vetoLeptons.at(1).Pt(); TFLep1Eta = vetoLeptons.at(1).Eta(); TFLep1Phi = vetoLeptons.at(1).Phi(); TFLep1E = vetoLeptons.at(1).E(); TFLep1Id = vetoLeptons.at(1).isMuon? 13 : 11;
   }
 }
 
@@ -413,7 +400,7 @@ void t4Analysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> clea
   TNBtags = selBTags.size();
   if(gIsData) return;  // For systematics...
   for(Int_t i = 0; i < ntotalJets; i++){
-    if(cleanedJets15.at(i).p.Pt() > 20){
+    if(cleanedJets15.at(i).p.Pt() > 25){
       if(cleanedJets15.at(i).isBtag_BtagUp    ) TNBtagsBtagUp++;
       if(cleanedJets15.at(i).isBtag_BtagDown  ) TNBtagsBtagDown++;
       if(cleanedJets15.at(i).isBtag_MisTagUp  ) TNBtagsMisTagUp++;
@@ -457,5 +444,98 @@ void t4Analysis::GetMET(){
   TMETJESUp   = GetParam<Float_t>("MET_JESUp");
   TMETJESDown = GetParam<Float_t>("MET_JESDown");
   if(gIsLHE) for(Int_t i = 0; i < Get<Int_t>("nLHEweight"); i++)   TLHEWeight[i] = Get<Float_t>("LHEweight_wgt", i);
+}
+
+Int_t t4Analysis::Get4tChannel(vector<Lepton> selLeptons, vector<Lepton> xLeptons){
+  //>>> Select the channel... i2lss, iTrilep, iSS1tau, iOS1tau, i2lss_fake, iTrilep_fake, i1Tau_emufakeSS, i1Tau_emufakeOS
+  TNSelLeps = selLeptons.size(); TNFakeableLeps = xLeptons.size() - TNSelLeps;
+  
+  //>>> 2LOS
+  if(TNSelLeps == 2 && TNFakeableLeps == 0 && !IsThereSSpair(selLeptons)) return i2LOS;
+
+  if(TNTaus == 0){
+    // --> 0 Lep
+    if(TNSelLeps == 0){
+      if(TNFakeableLeps < 2) return -1;
+      else if(TNFakeableLeps == 2){
+        if(IsThereSSpair(xLeptons)) return i2lss_fake;
+      }
+      else return -1;
+    }
+    // ---> 1 Lep
+    else if(TNSelLeps == 1){
+      if(TNFakeableLeps < 1) return -1;
+      else if(TNFakeableLeps == 1){
+        if(IsThereSSpair(xLeptons)) return i2lss_fake;
+      }
+      else if(TNFakeableLeps == 2){
+        if(PassLowInvMass(xLeptons, 12)) return iTriLep_fake;
+      }
+      else return -1;
+    }
+    // ---> 2 Lep
+    else if(TNSelLeps == 2){
+      if(IsThereSSpair(selLeptons)) return i2lss;
+      else if(TNFakeableLeps >= 1){
+        return iTriLep_fake;
+      }
+    }
+    // ---> 3 Lep
+    else if(TNSelLeps >= 3) return iTriLep;
+  }
+
+  else if(TNTaus >= 1){
+    if(TNSelLeps >= 2){
+      if(IsThereSSpair(selLeptons)) return iSS1tau;
+      else                          return iOS1tau;
+    }
+    if( (TNSelLeps == 1 && TNFakeableLeps >= 1) || (TNSelLeps == 0 && TNFakeableLeps >= 2) ){
+      if  (IsThereSSpair(xLeptons)) return i1Tau_emufakeSS; 
+      else                          return i1Tau_emufakeOS;
+    }
+  }
+
+  return -1;
+
+
+/*
+
+    if     ( (TNSelLeps == 0 && TNFakeableLeps >= 2) || (TNSelLeps == 1 && TNFakeableLeps == 1)){ // Fakes for 2lss
+      if(IsThereSSpair(xLeptons) && PassLowInvMass(xLeptons, 12))   TChannel = i2lss_fake; 
+    }
+    else if(TNSelLeps == 1 && TNFakeableLeps >= 2){ // Fakes for 2lss
+      if(       IsThere3SS(   xLeptons)) TChannel = -1;
+      else if  (IsThereSSpair(xLeptons)) TChannel = i2lss_fake; 
+      else                               TChannel = iTriLep_fake; // Fakes for 3L
+    }
+    else if(TNSelLeps == 2 && TNFakeableLeps == 0){ // 2lss
+      if(IsThereSSpair(selLeptons)) TChannel = i2lss;
+      else                          TChannel = -1;
+    }
+    else if(TNSelLeps == 2 && TNFakeableLeps >= 1){ // Fakes for 3L
+      if(IsThereSSpair(selLeptons)) TChannel = i2lss;
+      else{  
+        if(IsThere3SS(xLeptons)) TChannel = -1;
+        else                     TChannel = iTriLep_fake;
+      }  
+    } 
+    else if(TNSelLeps >= 3){
+      TChannel = iTriLep;
+      if(     IsThere3SS(   selLeptons)) TChannel = -1;
+    }
+  }
+  else if(TNTaus >= 1){
+    if(TNSelLeps >= 2){
+      if(IsThereSSpair(selLeptons)) TChannel = iSS1tau;
+      else                          TChannel = iOS1tau;
+    }
+    if( (TNSelLeps == 1 && TNFakeableLeps >= 1) || (TNSelLeps == 0 && TNFakeableLeps >= 2) ){
+      if  (IsThereSSpair(xLeptons)) TChannel = i1Tau_emufakeSS; 
+      else  TChannel = i1Tau_emufakeOS;
+    }
+  }
+  if(TChannel == i2lss_fake || TChannel == iTriLep_fake || TChannel == i1Tau_emufakeOS || TChannel == i1Tau_emufakeSS) if(!PassLowInvMass(xLeptons, 12)) TChannel = -1;
+
+*/
 }
 

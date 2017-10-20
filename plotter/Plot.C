@@ -451,7 +451,7 @@ Float_t Plot::GetYield(TString pr, TString systag){
     }
     if(var != 0) return var;
   }
-  cout << "[Plot::GetYield] WARNING: No systematic " << systag << " for process " << pr << "!!! ...... Returning nominal value... " << endl;
+  //cout << "[Plot::GetYield] WARNING: No systematic " << systag << " for process " << pr << "!!! ...... Returning nominal value... " << endl;
   return GetYield(pr);
 }
 
@@ -1081,6 +1081,11 @@ void Plot::UseEnvelope(TString pr, TString tags, TString newname){
 
   envelopeUp   ->GetEnvelope(vhistos,  1);
   envelopeDown ->GetEnvelope(vhistos, -1);
+
+
+//  PrepareHisto(envelopeUp,   pr + "_Up", pr, itSys, 0, newname + "Up");
+//  PrepareHisto(envelopeDown, pr + "_Up", pr, itSys, 0, newname + "Down");
+
   envelopeUp  ->SetProcess(pr); envelopeUp  ->SetTag(pr+"_"+newname+"Up");   envelopeUp  ->SetName(pr+"_"+newname+"Up");   
   envelopeUp  ->SetType(itSys); envelopeUp->doStackOverflow = doStackOverflow; envelopeUp  ->SetStyle();
   envelopeDown->SetProcess(pr); envelopeDown->SetTag(pr+"_"+newname+"Down"); envelopeDown->SetName(pr+"_"+newname+"Down"); 

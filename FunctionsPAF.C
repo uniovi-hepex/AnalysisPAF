@@ -15,6 +15,9 @@
 #include <iostream>
 #include <fstream>
 
+#ifndef FuntionsPAF_C
+#define FuntionsPAF_C 1
+
 //----------------- Working with files and Heppy trees
 //--------------------------------------------------------------------
 
@@ -142,35 +145,35 @@ Double_t GetStopXSec(Int_t StopMass){
   else if (StopMass == 240) return 26.4761;
   else if (StopMass == 245) return 23.8853;
   else if (StopMass == 250) return 21.5949;
-  else if (StopMass == 255) 19.5614;
-  else if (StopMass == 260) 17.6836;
-  else if (StopMass == 265) 16.112;
-  else if (StopMass == 270) 14.6459;
-  else if (StopMass == 275) 13.3231;
-  else if (StopMass == 280) 12.1575;
-  else if (StopMass == 285) 11.0925;
-  else if (StopMass == 290) 10.1363;
-  else if (StopMass == 295) 9.29002;
-  else if (StopMass == 300) 8.51615;
-  else if (StopMass == 305) 7.81428;
-  else if (StopMass == 310) 7.17876;
-  else if (StopMass == 315) 6.60266;
-  else if (StopMass == 320) 6.08444;
-  else if (StopMass == 325) 5.60471;
-  else if (StopMass == 330) 5.17188;
-  else if (StopMass == 335) 4.77871;
-  else if (StopMass == 340) 4.41629;
-  else if (StopMass == 345) 4.08881;
-  else if (StopMass == 350) 3.78661;
-  else if (StopMass == 355) 3.50911;
-  else if (StopMass == 360) 3.25619;
-  else if (StopMass == 365) 3.02472;
-  else if (StopMass == 370) 2.8077; 
-  else if (StopMass == 375) 2.61162;
-  else if (StopMass == 380) 2.43031;
-  else if (StopMass == 385) 2.26365;
-  else if (StopMass == 390) 2.10786;
-  else if (StopMass == 395) 1.9665;
+  else if (StopMass == 255) return 19.5614;
+  else if (StopMass == 260) return 17.6836;
+  else if (StopMass == 265) return 16.112;
+  else if (StopMass == 270) return 14.6459;
+  else if (StopMass == 275) return 13.3231;
+  else if (StopMass == 280) return 12.1575;
+  else if (StopMass == 285) return 11.0925;
+  else if (StopMass == 290) return 10.1363;
+  else if (StopMass == 295) return 9.29002;
+  else if (StopMass == 300) return 8.51615;
+  else if (StopMass == 305) return 7.81428;
+  else if (StopMass == 310) return 7.17876;
+  else if (StopMass == 315) return 6.60266;
+  else if (StopMass == 320) return 6.08444;
+  else if (StopMass == 325) return 5.60471;
+  else if (StopMass == 330) return 5.17188;
+  else if (StopMass == 335) return 4.77871;
+  else if (StopMass == 340) return 4.41629;
+  else if (StopMass == 345) return 4.08881;
+  else if (StopMass == 350) return 3.78661;
+  else if (StopMass == 355) return 3.50911;
+  else if (StopMass == 360) return 3.25619;
+  else if (StopMass == 365) return 3.02472;
+  else if (StopMass == 370) return 2.8077; 
+  else if (StopMass == 375) return 2.61162;
+  else if (StopMass == 380) return 2.43031;
+  else if (StopMass == 385) return 2.26365;
+  else if (StopMass == 390) return 2.10786;
+  else if (StopMass == 395) return 1.9665;
   else if (StopMass == 400) return 1.83537;
   else if (StopMass == 425) return 1.31169;
   else if (StopMass == 450) return 0.948333;
@@ -210,7 +213,7 @@ Double_t GetStopXSec(Int_t StopMass){
     Float_t x  = float(StopMass%pass)/pass;
     Float_t newXsec = v0 + (vf-v0)*x;
 
-    cout << Form("xsec(%g) = %g; xsec(%g) = %g --> xsec(%g) = %g", pmass, v0, nmass, vf, StopMass, newXsec);
+    cout << Form("xsec(%g) = %g; xsec(%g) = %g --> xsec(%g) = %g", pmass, v0, nmass, vf, (Float_t) StopMass, newXsec);
 
     return newXsec;
   }
@@ -362,3 +365,5 @@ Int_t GetLspMass(TString options){
   return mLsp;
 }
 
+
+#endif

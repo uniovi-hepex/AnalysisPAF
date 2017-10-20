@@ -17,7 +17,7 @@
 #include "FRFunctions.C"
 #include "PlotterFunctions.C"
 
-enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau, iOS1tau, i2lss_fake, iTriLep_fake, iElEl, iMuMu, i1Tau_emufakeOS ,i1Tau_emufakeSS, TotalDefinedChannels};
+enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau, iOS1tau, i2lss_fake, iTriLep_fake, iElEl, iMuMu, i1Tau_emufakeOS ,i1Tau_emufakeSS, i2LOS, TotalDefinedChannels};
 std::vector<TString> TStringToVector(TString t, char separator = ',');
 void PrintVector(std::vector<TString> v);
 void PrintVector(std::vector<Float_t> v);
@@ -212,6 +212,64 @@ class Multilooper : public Looper{
 
 
 
+/*
+//################################################################
+//
+// HYPERLOOPER!!!!!
+//
+class Hyperlooper : public Multiooper{
+public:
+  // Constructor
+  Multilooper(TString pathToTree, TString NameOfTree, TString _var, TString _cut, TString _chan, TString nb, TString b0, TString bN, TString bins) : 
+
+  void SetBins(TString a);     void SetBins(Float_t *b, Int_t iPlot);
+  void SetNbins(TString a);    void SetNbins(Int_t b, Int_t iPlot);
+  void SetBin0(TString a);     void SetBin0(Float_t b, Int_t iPlot);
+  void SetBinN(TString a);     void SetBinN(Float_t b, Int_t iPlot);
+  void SetVars(TString a);     void SetVars(TString a, Int_t iPlot);
+  void SetChannels(TString a); void SetChannels(TString a, Int_t iPlot);
+  void SetCuts(TString a);     void SetCuts(TString a, Int_t iPlot);
+
+  protected:
+  // Systenatics
+  TString systematics = "";
+  vector<TString> systLabels;
+  vector<vector<Histo*>>        vHistos;
+  vector<vector<TTreeFormula*>> vFormulas;
+  vector<vector<TTreeFormula*>> vFormVars;
+  vector<TString>  vvars;
+  vector<TString>  vchan;
+  vector<TString>  vcuts;
+  vector<Int_t>    vnbins;
+  vector<Float_t>  vbin0;
+  vector<Float_t>  vbinN;
+  vector<Float_t*> vbins;
+   
+
+  //>>> Redefined methods
+  virtual void CreateHisto(TString sys); 
+  virtual void SetFormulas(TString sys); 
+  virtual void Loop();
+  virtual Histo* GetHisto(TString syst);
+  //>>> Recovered from Loop
+  virtual void Loop(TString sys){Loop(sys);} 
+  virtual Histo* GetHisto(TString sampleName, TString sys){ return GetHisto(sampleName, systematics);}
+
+  //>>> Data Members
+  protected:
+  TString systematics = "";
+  vector<TString> systLabels;
+  vector<Histo*> vHistos;
+  vector<TTreeFormula*> vFormulas;
+  vector<TTreeFormula*> vFormVars;
+
+  //>>> Methods
+  public:
+  void SetSystematics(TString t){ systematics = t; systLabels = TStringToVector(t);}
+  void SetSystematics(vector<TString> t){ systLabels = t;}
+  void CreateHistosAndFormulas();
+  void Fill();
+  vector<Histo*> GetAllHistos(){ return vHistos;}
 
 
 
@@ -219,8 +277,8 @@ class Multilooper : public Looper{
 
 
 
-
-
+}
+*/
 
 
 //################################################################
