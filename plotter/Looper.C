@@ -157,9 +157,7 @@ void Multilooper::SetFormulas(TString systematic){
   
   //>>> Cut
   stringcut = ""; stringvar = "";
-  TString cu = ""; TString ch = ""; 
   stringcut = CraftFormula(cut, chan, systematic, weight, tree, options);
-  if(verbose) cout << "[Looper::SetFormulas] Formula: " << stringcut << endl;
   FormulasCuts = new TTreeFormula("Form_" + sampleName + "_" + systematic + "_cut", stringcut, tree);
 
   //>>> var
@@ -252,4 +250,168 @@ void Multilooper::Fill(){
   loadTree();
   CreateHistosAndFormulas();
   Loop();
+}
+
+
+
+Int_t Hyperlooper::GetPos(TString Name){
+  Int_t nDist = VDist.size();
+  for(Int_t i = 0; i < nDist; i++){
+    if(VDist.at(i).name == Name) return i;
+  }
+  cout << "WARNING: Not found distribution \"" << Name << "\"..." << endl;
+  return 0;
+}
+
+void Hyperlooper::AddDistribution(TString name, TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, Float_t *bins, TString op){
+  if(op == "") op = options;
+  distribution d;
+  d.name = name;
+  d.nbins = nbins;
+  d.bin0 = bin0;
+  d.binN = binN;
+  d.bins = bins;
+  d.var = var;
+  d.chan = chan;
+  d.cut  = cut;
+  d.options = op;
+  //d.weight = weight;
+  //d.sys = sys;
+  d.vf.clear();
+  d.vv.clear();
+  d.vh.clear();
+  VDist.push_back(d); 
+}
+
+void Hyperlooper::SetFormulas(Int_t pos, TString systematic){
+  distribution d = VDist.at(pos); 
+  TTreeFormula* FormulasCuts;
+  TTreeFormula* FormulasVars;
+  
+  //>>> Cut
+  stringcut = ""; stringvar = "";
+  stringcut = CraftFormula(d.cut, d.chan, systematic, weight, tree, d.options);
+  FormulasCuts = new TTreeFormula("Form_" + sampleName + "_" + systematic + "_cut", stringcut, tree);
+
+  //>>> var
+  FormulasVars = NULL;
+  stringvar = CraftVar(d.var, systematic, tree);
+
+  FormulasVars = new TTreeFormula("Form_" + sampleName + "_" + systematic + "_var", stringvar, tree);
+  VDist.at(pos).vf.push_back(FormulasCuts);
+  VDist.at(pos).vv.push_back(FormulasVars);
+} 
+
+void Hyperlooper::CreateHisto(Int_t pos, TString sys){
+  distribution d = VDist.at(pos); 
+  Histo* h;
+  TString name = sampleName;
+  if(d.bin0 != d.binN) h = new Histo(TH1F(name+"_"+sys+"_"+d.name,name+"_"+sys+"_"+d.name, d.nbins, d.bin0, d.binN));
+  else                 h = new Histo(TH1F(name+"_"+sys+"_"+d.name,name+"_"+sys+"_"+d.name, d.nbins, d.bins));
+  if(sys != "0" && sys != ""){
+    name += "_" + sys;
+    h->SetType(itSys);
+    h->SetSysTag(sys);
+  }
+  else{
+    h->SetType(itBkg);
+    h->SetSysTag("");
+  }
+  h->SetProcess(process);
+  h->SetTag(name);
+  VDist.at(pos).vh.push_back(h);
+}
+
+void Hyperlooper::CreateHistosAndFormulas(Int_t  pos){
+  vector<TString> VSyst = TStringToVector(syst);
+  Int_t nSyst = VSyst.size();
+  TString sys;
+  if(type != itSys) CreateHisto(pos, ""); SetFormulas(pos, "");// Nominal
+  for(Int_t i = 0; i < nSyst; i++){ // All variations
+    sys = VSyst.at(i);
+    if(!sys.EndsWith("Up") && !sys.EndsWith("Down")){
+      CreateHisto(pos, sys + "Up");   SetFormulas(pos, sys + "Up");
+      CreateHisto(pos, sys + "Down"); SetFormulas(pos, sys + "Down");
+    }
+    else{
+      CreateHisto(pos, sys);
+      SetFormulas(pos, sys);
+    }
+  }
+}
+
+void Hyperlooper::CreateDistributions(){
+  Int_t nD = VDist.size();
+  for(Int_t i = 0; i < nD; i++) CreateHistosAndFormulas(i);
+  return;
+}
+
+void Hyperlooper::HyperLoop(){
+  Int_t nEntries = tree->GetEntries();
+  Float_t val = 0; Float_t w = 0;
+  Int_t nHistos = 0; Int_t nDist = 0;
+  Bool_t doAllInstances(false);
+  //  if(options.Contains("AllInstances")){
+  //    doAllInstances = true;
+  //  }
+
+  //>>> Starting the loop
+  Int_t counter = 0;
+  for (Long64_t jentry=0; jentry<nEntries; jentry++) {
+    tree->GetEntry(jentry);
+    counter++;
+
+    distribution d;
+    nDist   = VDist.size();
+
+    for(Int_t iD = 0; iD < nDist; iD++){
+      d = VDist.at(iD);
+      nHistos = d.vh.size();
+
+      for(Int_t iH = 0; iH < nHistos; iH++){
+        //>>> Getting values for weight and variable
+        w = d.vf.at(iH)->EvalInstance();
+        d.vv.at(iH)->GetNdata();
+        val = d.vv.at(iH)->EvalInstance();
+
+        //>>> Fill the histogram with all the entries in an array
+        //if(doAllInstances){ TO BE UPDATED WHEN NEEDED
+
+        //>>> Fill the histogram
+        d.vh.at(iH)->Fill(val, w);
+      }
+    }
+  }
+}
+
+void Hyperlooper::Fill(){
+  if(sampleName == ""){
+    cout << "ERROR [Hyperlooper::Fill] Please, give a valid sample name!!!" << endl;
+    return;
+  }
+  loadTree();
+  CreateDistributions();
+  HyperLoop();
+}
+
+
+Histo* Hyperlooper::GetHisto(TString name, TString sys){
+  Histo* h = nullptr;
+  Int_t nDist = VDist.size(); 
+  Int_t iDist = -1;
+  for(Int_t i = 0; i < nDist; i++){
+    if(VDist.at(i).name == name) iDist = i;
+  }
+  if(iDist < 0){
+    cout << "[Hyperlooper::GetHisto] ERROR: not found distribution with name \"" << name << "\"..." << endl;
+    return h;
+  }
+  distribution d = VDist.at(iDist); 
+  Int_t nHistos = d.vh.size();
+  for(Int_t iH = 0; iH < nHistos; iH++){
+    h = d.vh.at(iH);
+    if(h->GetSysTag() == sys) return h;
+  }
+  cout << "WARNING [Hyperlooper::GetHisto] Error: not found histo with sys tag: " << sys << endl;
+  return h;
 }

@@ -183,8 +183,11 @@ void Plot::AddStatError(TString process){
   }
   //cout << " --> process = " << process << endl;
   Float_t nom; Float_t stat;
-  Histo *hUp   = (Histo*)GetHisto(process)->CloneHisto(process + "_statUp");
-  Histo* hDown = (Histo*)GetHisto(process)->CloneHisto(process + "_statDown");
+  TString nameUp = process + "_statUp"; TString nameDown = process + "_statDown";
+  if(gROOT->FindObject(nameUp)) delete gROOT->FindObject(nameUp);
+  if(gROOT->FindObject(nameDown)) delete gROOT->FindObject(nameDown);
+  Histo *hUp   = (Histo*)GetHisto(process)->CloneHisto(nameUp);
+  Histo* hDown = (Histo*)GetHisto(process)->CloneHisto(nameDown);
   hUp->SetDirectory(0); hDown->SetDirectory(0);
   for(Int_t iBin = 0; iBin <= hUp->GetNbinsX(); iBin++){
     nom = hUp->GetBinContent(iBin); stat = hUp->GetBinError(iBin);
@@ -202,49 +205,27 @@ void Plot::AddStatError(TString process){
 }
 
 void Plot::GroupSystematics(){
-  VSumHistoSystUp.clear(); VSumHistoSystDown.clear();
   TString var = ""; TString pr = "";
+  //>>> Here we store the histos
+  VSumHistoSystUp.clear(); VSumHistoSystDown.clear();
+  Histo* hsumSysUp = NULL; Histo* hsumSysDown = NULL; 
+
+  Int_t nBkgs = VBkgs.size();
+
+  //>>> Loop over each systematic
   for(Int_t i = 0; i < (Int_t) VSystLabel.size(); i++){
     var = VSystLabel.at(i);
-    TString tag = var; TString name = ""; Bool_t exists = false;
-    Histo* hsumSysUp = NULL; Histo* hsumSysDown = NULL; 
-    if(gROOT->FindObject(tag + "_SystSumUp"))   delete gROOT->FindObject(tag + "_SystSumUp");
-    if(gROOT->FindObject(tag + "_SystSumDown")) delete gROOT->FindObject(tag + "_SystSumDown");
-    if(x0 != xN){
-      hsumSysUp   = new Histo(TH1F(tag + "_SystSumUp",  tag + "_SystSumUp" ,   nb, x0, xN));
-      hsumSysDown = new Histo(TH1F(tag + "_SystSumDown",tag + "_SystSumDown" , nb, x0, xN));
+    hsumSysUp = NULL; hsumSysDown = NULL; 
+    pr = VBkgs.at(0)->GetProcess();
+    hsumSysUp   = GetHisto(pr, var+"Up"  )->CloneHisto(pr + "_" + var + "Up");
+    hsumSysDown = GetHisto(pr, var+"Down")->CloneHisto(pr + "_" + var + "Down");
+    for(Int_t i = 1; i < nBkgs; i++){
+      pr = VBkgs.at(i)->GetProcess();
+      hsumSysUp  ->Add(GetHisto(pr, var+"Up"  ));
+      hsumSysDown->Add(GetHisto(pr, var+"Down"));
     }
-    else{
-      hsumSysUp   = new Histo(TH1F(tag + "_SystSumUp",  tag + "_SystSumUp" ,   nb, vbins));
-      hsumSysDown = new Histo(TH1F(tag + "_SystSumDown",tag + "_SystSumDown" , nb, vbins));
-    }
-    for(Int_t k = 0; k < (Int_t) VSyst.size(); k++){
-      tag =  VSyst.at(k)->GetTag();
-      name = VSyst.at(k)->GetName();
-      pr   = VSyst.at(k)->GetProcess(); 
-      if(tag.Contains("T2tt") || tag.Contains("FastSim") || tag.Contains("FullSim") ) continue;
-      if(tag.BeginsWith("S_") || tag.BeginsWith("stop") || tag.BeginsWith("Stop")) continue;
-      if(tag.Contains(var+"Up") )   hsumSysUp  ->Add( (Histo*)VSyst.at(k)->Clone(var+"Up_"+pr));
-      if(tag.Contains(var+"Down")) hsumSysDown->Add( (Histo*)VSyst.at(k)->Clone(var+"Down_"+pr));
-    }
-    for(Int_t j = 0; j < (Int_t) VTagProcesses.size(); j++){
-      if(j != 0){
-        if(VTagProcesses.at(j) == VTagProcesses.at(j-1)) continue; // Count each process only once
-      }
-      exists = false;
-      //cout << "Searching for process " << VTagProcesses.at(j) << "..." << endl;
-      for(Int_t k = 0; k < (Int_t) VSyst.size(); k++){
-        tag =  VSyst.at(k)->GetTag();
-        pr   = VSyst.at(k)->GetProcess(); 
-        if(pr == VTagProcesses.at(j) && tag.Contains(var)){ exists = true;}
-      }
-      if(!exists){
-        //cout << "    --> No existe un syst " << var << " para el proceso " << VTagProcesses.at(j) << "!! Adding nominal... " << endl;
-        hsumSysUp  ->Add((Histo*) GetHisto(VTagProcesses.at(j))->Clone(var+"Up_"+VTagProcesses.at(j)));
-        hsumSysDown->Add((Histo*) GetHisto(VTagProcesses.at(j))->Clone(var+"Down_"+VTagProcesses.at(j)));
-        //cout << "Integral up is " << GetHisto(VTagProcesses.at(j))->Integral() << endl;
-      }
-    }
+    hsumSysUp  ->SetName(var  + "_SystSumUp"   );
+    hsumSysDown->SetName(var + "_SystSumDownn");
     AddSumHistoSystematicUp(hsumSysUp);
     AddSumHistoSystematicDown(hsumSysDown);
   }
@@ -848,9 +829,10 @@ void Plot::DrawStack(TString tag, bool sav){
   else if(RatioOptions == "S/sqrtB")   {cout << "Option not implemented yet!!!! Sorry!!!! [DO IT YOURSELF!]\n";}
   else if(RatioOptions == "S/sqrtSpB") {cout << "Option not implemented yet!!!! Sorry!!!! [DO IT YOURSELF!]\n";}
   else{ // ratio Data/MC
-    if(!doData) cout << "[Plot::DrawStack] WARNING: cannot print ratio Data/MC without data!!" << endl;
-    else{
-      hratio = (TH1F*)hData->Clone("hratio");
+    //if(!doData) cout << "[Plot::DrawStack] WARNING: cannot print ratio Data/MC without data!!" << endl;
+    //else{
+      if(doData) hratio = (TH1F*)hData->Clone("hratio");
+      else       hratio = (TH1F*)hAllBkg->Clone("hratio");
       // ratio by hand so systematic (background) errors don't get summed up to statistical ones (data)
       for (int bin = 0; bin < hratio->GetNbinsX(); ++bin){
         if (hratio->GetBinContent(bin+1) > 0){
@@ -859,7 +841,7 @@ void Plot::DrawStack(TString tag, bool sav){
         }
         else{ hratio->SetBinError  ( bin+1, 0.); }
       }
-    }
+    //}
   }
   SetHRatio();
   //if(!RatioOptions.Contains("S")) hratio->SetLineWidth(0); 
@@ -871,7 +853,9 @@ void Plot::DrawStack(TString tag, bool sav){
   //-------- Saving options
   if(sav){ 
     TString dir = plotFolder;
-    TString plotname = (outputName == "")? varname + "_" + tag : outputName + "_" + varname;
+    TString plotname = (outputName == "")? varname : outputName;
+    if(outputName != "" && varname != "")  plotname += "_" + varname;
+    if(outputName != "" && tag != "")      plotname += "_" + tag;
     
     gSystem->mkdir(dir, kTRUE);
     plotname.ReplaceAll(" ","");
@@ -1148,7 +1132,7 @@ void Plot::PrintSamples(){
   for(Int_t i = 0; i < (Int_t) VTagSamples.size(); i++)
     cout << " >>> Sample " << VTagSamples.at(i) << " in process " << VTagProcesses.at(i) << std::endl;
   for(Int_t i = 0; i < (Int_t) VTagDataSamples.size(); i++)
-    cout << " >>> Data sample " << VTagDataSamples.at(i) << std::endl;    
+    cout << " >>> Data sample " << VTagDataSamples.at(i) << std::endl; 
 }
 
 void Plot::PrintSystematics(){
@@ -1419,6 +1403,128 @@ Float_t Plot::GetBinYield(TString pr, Int_t bin, TString systag){
   //cout << "[Plot::GetYield] WARNING: No systematic " << systag << " for process " << pr << "!!! ...... Returning nominal value... " << endl;
   return GetBinYield(pr, bin);
 }
+
+void Plot::Reset(){
+  VData.clear();
+  VBkgs.clear();
+  VSignals.clear();
+  VSignalsErr.clear();
+  VSyst.clear();
+  VSumHistoSystUp.clear();
+  VSumHistoSystDown.clear();
+  VSystLabel.clear();
+  VTagDataSamples.clear();
+  if(hratio) delete hratio;
+  if(TotalSysUp) delete TotalSysUp;
+  if(TotalSysDown) delete TotalSysDown;
+//  if(hData && doData) delete hData;
+//  if(hStack) delete hStack;
+//  if(hAllBkg) delete hAllBkg;
+  VBinLabels.clear();
+}
+
+
+void Plot::AddPlotFromHyperlooper(Hyperlooper *HyperLoop, TString plotname){
+  distribution d = HyperLoop->GetDistribution(plotname);
+  var  = d.var; cut  = d.cut; chan = d.chan; 
+  nb   = d.nbins; x0   = d.bin0;  xN   = d.binN; vbins = d.bins; 
+  LoopOptions = d.options; 
+  weight = HyperLoop->GetWeight();
+  systematics = HyperLoop->GetSyst();
+  if(systematics != "0" && systematics != "")
+    AddToSystematicLabels(systematics);
+
+  Int_t type = HyperLoop->GetType(); Int_t color = HyperLoop->GetColor();
+  TString process = HyperLoop->GetProcess();
+  Int_t nHistos = d.vh.size();
+  TString sampleName = HyperLoop->GetSampleName();
+  TString systag;
+
+  for(Int_t i = 0; i < nHistos; i++){
+    systag = d.vh.at(i)->GetSysTag();
+    if(systag != "0" && systag != "") type = itSys;
+    if(type != itData && !LoopOptions.Contains("noScaleLumi")) d.vh.at(i)->Scale(Lumi*1000);
+    PrepareHisto(d.vh.at(i), sampleName, process, type, color);
+  }
+}
+
+
+//=========================================== MULTIPLOT
+
+void MultiPlot::AddHyperlooper(TString sample, TString process, Int_t type, Int_t color, TString syst, TString weight){
+  nDist = Dname.size(); 
+  TString pathToMiniTree; 
+  pathToMiniTree = path;
+  if     (type == itSignal || sample.Contains("T2tt")) pathToMiniTree = pathSignal;
+  else if(type == itData  ) pathToMiniTree = pathData;
+  else if(sample.Contains("/")){
+    pathToMiniTree = sample(0, sample.Last('/')+1);
+    sample = sample(sample.Last('/')+1, sample.Sizeof());
+  }
+  Hyperlooper* h = new Hyperlooper(pathToMiniTree, treeName, sample, process, type, color, weight, syst); 
+  for(Int_t i = 0; i < nDist; i++)
+    h->AddDistribution(Dname.at(i), Dvar.at(i), Dcut.at(i), Dchan.at(i), Dnbins.at(i), Dbin0.at(i), DbinN.at(i), Dbins.at(i));
+  h->Fill();
+  HL.push_back(h); 
+}
+
+void MultiPlot::Loop(){
+  if((Int_t) HL.size() > 0) return;
+  nSamples = VTagSamples.size();
+  Int_t type; Int_t color;
+  TString stype = "backgroud";
+
+  for(Int_t i = 0; i < nSamples; i++){
+    if     (VTypes.at(i) == itSignal) stype = "signal";
+    else if(VTypes.at(i) == itData)   stype = "data";
+    else if(VTypes.at(i) == itSys)    stype = "systematic";
+    cout << Form("\033[1;39mAnalyzing sample: \033[1;31m%s \033[1;39m(\033[1;35m%s\033[1;39m) as \033[1;34m%s\033[0m\n", VTagSamples.at(i).Data(), VTagProcesses.at(i).Data(), stype.Data());
+    AddHyperlooper(VTagSamples.at(i), VTagProcesses.at(i), VTypes.at(i), VColors.at(i), VSystL.at(i), VWeight.at(i));
+  }
+}
+
+
+
+void MultiPlot::AddDistribution(TString name, TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, Float_t *bins){
+  Dname.push_back(name);
+  Dvar.push_back(var);
+  Dcut.push_back(cut);
+  Dchan.push_back(chan);
+  //Dweight.push_back(weight);
+  //DSyst.push_back(sys);
+  Dnbins.push_back(nbins);
+  Dbin0.push_back(bin0);
+  DbinN.push_back(binN);
+  Dbins.push_back(bins);
+}
+
+void MultiPlot::AddSample(TString p, TString pr, Int_t type, Int_t color, TString syst, TString weight){
+  p.ReplaceAll(" ", "");
+  if(pr == "") pr = p;
+  if(p.Contains(",")){
+    TString First_p = p(0, p.First(','));
+    TString theRest = p(p.First(',')+1, p.Sizeof());
+    AddSample(First_p, pr, type, color, syst, weight);
+    AddSample(theRest, pr, type, color, syst, weight);
+    return;
+  }
+  VTagSamples.push_back(p);
+  VTagProcesses.push_back(pr);
+  VTypes.push_back(type);
+  VColors.push_back(color);
+  VSystL.push_back(syst);
+  VWeight.push_back(weight);
+}
+
+
+void MultiPlot::SetPlot(TString name){
+  Reset();
+  Loop();
+  nSamples = VTagSamples.size();
+  for(Int_t i = 0; i < nSamples; i++) 
+    AddPlotFromHyperlooper(HL.at(i), name);
+} 
+
 
 
 
