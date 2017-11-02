@@ -69,8 +69,10 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, TString sys
 
 void Plot::GetStack(){ // Sets the histogram hStack
   if(hStack) delete hStack;
+
   hStack = new THStack(varname, "");
   Int_t nBkgs = VBkgs.size();
+  if (nBkgs == 0 && verbose){ std::cout << "Having no backgrounds was a mistake, you'll pay for that with a SegFault" << std::endl;}
   for(Int_t i = 0; i < nBkgs; i++){
     hStack->Add((TH1F*) VBkgs.at(i));
   }
@@ -79,13 +81,15 @@ void Plot::GetStack(){ // Sets the histogram hStack
   hAllBkg->doStackOverflow = doStackOverflow;
   hAllBkg->SetStyle();
   hAllBkg->SetTag("Uncertainty");
+
   if(doSys && ((Int_t) VSystLabel.size() > 0)) GroupSystematics();
   if(verbose) cout << Form(" Adding %i systematic to sum of bkg...\n", (Int_t) VSumHistoSystUp.size());
-  
+
   for(Int_t i = 0; i < (Int_t) VSumHistoSystUp.size(); i++){
     hAllBkg->AddToSystematics(VSumHistoSystUp.at(i));
     hAllBkg->AddToSystematics(VSumHistoSystDown.at(i));
   }
+
   if(doSys && ((Int_t) VSystLabel.size() > 0)) hAllBkg->SetBinsErrorFromSyst();
 }
 
@@ -462,7 +466,7 @@ TLegend* Plot::SetLegend(){ // To be executed before using the legend
   leg->SetFillColor(10);
   Float_t MinYield = 0; 
   int nVBkgs = VBkgs.size();
-  if(nVBkgs > 0 && hAllBkg) MinYield = hAllBkg->GetYield()/5000;
+  if(nVBkgs > 0 && hAllBkg) MinYield = hAllBkg->GetYield()/100;
 
   if(doSignal){
     Int_t nSignals = VSignals.size();
@@ -501,7 +505,7 @@ TLegend* Plot::SetLegend(){ // To be executed before using the legend
 
   if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
     for(int i = VSignals.size()-1; i >= 0; i--) VSignals[i]->AddToLegend(leg, doYieldsInLeg);
-  
+  leg->AddEntry(hAllBkg, Form("SM Bkg: %1.0f", hAllBkg->Integral()), "l");
   return leg;
 }
 
@@ -726,13 +730,12 @@ void Plot::DrawStack(TString tag, bool sav){
     }
     else if(SignalStyle == "CrossSection" || SignalStyle == "xsec" || SignalStyle == "Bkg" || SignalStyle == "Fill"){
       hSignal->SetLineWidth(2);
-      hSignal->SetLineColor(hSignal->GetColor());
+      hSignal->SetLineColor(kBlack);
       hSignal->SetFillColor(hSignal->GetColor());
       hStack->Add(hSignal);
     }   
   }
   hStack->Draw("hist");
-
   //--------- Adjust max and min for the plot
   float maxData = doData? hData->GetMax() : hAllBkg->GetMax();
   float maxMC = hAllBkg->GetMax();
@@ -853,9 +856,9 @@ void Plot::DrawStack(TString tag, bool sav){
       hratio = (TH1F*)hData->Clone("hratio");
       // ratio by hand so systematic (background) errors don't get summed up to statistical ones (data)
       for (int bin = 0; bin < hratio->GetNbinsX(); ++bin){
-        if (hratio->GetBinContent(bin+1) > 0){
-          hratio->SetBinContent( bin+1, hratio->GetBinContent(bin+1) / hAllBkg->GetBinContent(bin+1));
-          hratio->SetBinError  ( bin+1, hratio->GetBinError  (bin+1) / hAllBkg->GetBinContent(bin+1));
+        if (hratio->GetBinContent(bin+1) > 0){ 
+          hratio->SetBinContent( bin+1, hratio->GetBinContent(bin+1) / (hAllBkg->GetBinContent(bin+1) + hSignal->GetBinContent(bin+1)));
+          hratio->SetBinError  ( bin+1, hratio->GetBinError  (bin+1) / (hAllBkg->GetBinContent(bin+1) + hSignal->GetBinContent(bin+1)));
         }
         else{ hratio->SetBinError  ( bin+1, 0.); }
       }

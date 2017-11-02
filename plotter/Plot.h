@@ -31,7 +31,7 @@ public:
   bool doData          = true; 
   bool doYieldsInLeg   = true;
   bool doSingleLep     = false;
-  bool doStackOverflow = true;
+  bool doStackOverflow = false;
   bool doSignal        = true;
   bool doSetLogy       = true;
   bool doStatUncInDatacard = true;
@@ -221,6 +221,7 @@ public:
   Float_t GetLumi(){ return Lumi;}
   Float_t GetLumiUnc(){ return sys_lumi;}
   TString GetGoF(){ return gof;}
+  TString GetPlotFolder(){return plotFolder;}
   void SetVar(TString variable){ var = variable; if(varname == "") varname = variable;}
   void SetVarName(TString variable){ varname = variable;}
   void SetChan(TString ch){chan = ch;}
