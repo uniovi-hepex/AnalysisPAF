@@ -61,8 +61,8 @@ const TString kTagSel[nSel] = {"Stop",     "Top",     "TW",     "WW", "HWW",
     "Run2017C_PromptReco_v3", "Run2017D_PromptReco_v1", "Run2017E_PromptReco_v1"};
     const unsigned int nData2017 = 6;
 
-    TString *SelectedDataset   = data2017;
-    unsigned int SelectedNdata = nData2017;
+    TString *SelectedDataset   = data2016;
+    unsigned int SelectedNdata = nData2016;
 
 //=============================================================================
 // Tabs
@@ -71,7 +71,7 @@ const TString tab2016       = "DR80XSummer16asymptoticMiniAODv2_2";
 const TString tab2016noSkim = "DR80XSummer16asymptoticMiniAODv2_2_noSkim"; 
 const TString tab2017       = "2017data";
 
-TString SelectedTab = tab2017;
+TString SelectedTab = tab2016;
 
 
 //=============================================================================
@@ -153,9 +153,11 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   if(verbose) cout << Form("\033[1;36m >>> Setting tab: %s \033[0m\n", tab.Data());
   dm->SetTab(tab.Data());
   
+
   TString pathToFiles = dataPath + dm->FindLocalFolder();
-    
-  // Deal with data samples
+  //Temporal fix
+  //TString pathToFiles = "/pool/ciencias/HeppyTreesSummer16/v2/";
+ // Deal with data samples
   if(sampleName == "DoubleEG" || sampleName == "DoubleMuon" || sampleName == "MuonEG" || sampleName.BeginsWith("Single")){
     if(verbose) cout << ("\033[1;39m >>> DATA SAMPLES \033[0m\n");
     G_Event_Weight = 1.; G_IsData = true;
@@ -452,5 +454,6 @@ void GetCount(std::vector<TString> Files, Bool_t IsData){
 		f->Close();    
 	}
 }
+
 
 
