@@ -334,6 +334,25 @@ Bool_t LeptonSelector::getElecCutBasedId(Int_t wp){
     }
     return true;
   }
+  if(gSelection == iWZSelec){
+    if(TMath::Abs(etaSC) < 1.479){ // central
+      if(TMath::Abs(sigmaIEtaIEta) > 0.00998 ) return false;
+      if(TMath::Abs(dEtaSC) > 0.00308  ) return false;
+      if(TMath::Abs(dPhiSC) > 0.0816 ) return false;
+      if(HoE > 0.0414 ) return false;
+      if(eImpI < -0.0129 || eImpI > 0.0129 ) return false;
+      if(lostHits         >  1      ) return false;
+    }
+    else if(TMath::Abs(etaSC) < 2.5){ // fwd
+      if(TMath::Abs(sigmaIEtaIEta) > 0.0292 ) return false;
+      if(TMath::Abs(dEtaSC) > 0.00605  ) return false;
+      if(TMath::Abs(dPhiSC) > 0.0394 ) return false;
+      if(HoE > 0.0641 ) return false;
+      if(eImpI < -0.0129 || eImpI > 0.0129 ) return false;
+      if(lostHits         >  1      ) return false;
+    }
+    return true;
+  }
   else{
     if(wp == iTight   && tightVar < 3)     return false;
     if(wp == iMedium  && tightVar < 2)     return false;
@@ -560,7 +579,7 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
     }
     if(lep.isElec){
       passId = getElecCutBasedId(iTight);
-      passIso = true;
+      passIso = getRelIso04POG(iTight);
       if(lep.p.Pt() < 10 || TMath::Abs(lep.p.Eta()) > 2.5) passId = false;
       //passIso = getRelIso03POG(iTight);
       //if(TMath::Abs(etaSC) > 1.4442 && TMath::Abs(etaSC) < 1.566) passId = false;
