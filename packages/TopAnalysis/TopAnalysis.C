@@ -72,6 +72,7 @@ void TopAnalysis::Initialise(){
     SetJetVariables();
     SetEventVariables();
   }
+  //nPtBins = 15;
   InitHistos();
 
   // genLeptons  = std::vector<Lepton>();
@@ -117,6 +118,7 @@ void TopAnalysis::InsideLoop(){
   GetGenJetVariables(genJets, mcJets);
   GetMET();
   fhDummy->Fill(1);
+  if(gIsTTbar) FillCorrHistos();
 
   // Number of events in fiducial region
   if(genLeptons.size() >= 2){ // MIND THE POSSIBLE SKIM (on reco leptons) IN THE SAMPLE!!
@@ -149,10 +151,9 @@ void TopAnalysis::InsideLoop(){
     }
   }
   //if((Int_t) genLeptons.size() >=2 && TNSelLeps >= 2 && passTrigger && passMETfilters){ // dilepton event, 2 leptons // && !isSS
-  if (gSelection == iTopSelec){
-    if (gIsTTbar && genLeptons.size() < 2) return; // Dilepton selection for ttbar!!!
-  }
+  if(gIsTTbar && genLeptons.size() < 2) return; // Dilepton selection for ttbar!!!
   if(TNSelLeps >= 2 && passTrigger && passMETfilters){ // dilepton event, 2 leptons // && !isSS
+  //if(TNSelLeps >= 2){// && passMETfilters){ // dilepton event, 2 leptons // && !isSS
     // Deal with weights:
     Float_t lepSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
     Float_t ElecSF = 1; Float_t MuonSF = 1;
@@ -240,12 +241,13 @@ void TopAnalysis::InsideLoop(){
           }
         }
       }
-      if(TChannel == iElMu){// || ((TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15))){
-        if(TChannel == iElMu || TMET > 40){   // MET > 40 in ee, µµ
-          //if (TNBtags > 0 || TNBtagsBtagUp > 0 || TNBtagsBtagDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0){
-         //if(TRun > 297550) fTree->Fill();
-          fTree->Fill();
-          //}
+      if(makeTree){
+        if((TChannel == iElMu) || ((TMath::Abs((selLeptons.at(0).p + selLeptons.at(1).p).M() - 91) > 15))){
+          if(TChannel == iElMu || TMET > 40){   // MET > 40 in ee, µµ
+            //if (TNBtags > 0 || TNBtagsBtagUp > 0 || TNBtagsBtagDown > 0 || TNBtagsMisTagUp > 0 || TNBtagsMisTagDown > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0){
+        
+            fTree->Fill();
+          }
         }
       }
     }   
@@ -301,6 +303,7 @@ void TopAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cle
   TNBtags = 0; TNBtagsBtagUp = 0; TNBtagsBtagDown = 0;
   TNBtagsMisTagUp = 0;  TNBtagsMisTagDown = 0;
   THTJESUp = 0; THTJESDown = 0;
+  TBtagPt = 0;
   for(Int_t i = 0; i < TNJets; i++){
     TJet_Pt[i]     = selJets.at(i).Pt();
     TJet_Eta[i]    = selJets.at(i).Eta();
@@ -309,7 +312,10 @@ void TopAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cle
     TJet_isBJet[i] = selJets.at(i).isBtag;
     TJet_Csv[i]    = selJets.at(i).csv;
     THT += TJet_Pt[i];
-    if(selJets.at(i).isBtag)            TNBtags++;
+    if(selJets.at(i).isBtag){
+      TNBtags++;
+      if(TBtagPt == 0) TBtagPt = selJets.at(i).Pt();
+    }
   }
   SetParam("THT",THT);
   if(TNJets > 0){
@@ -381,6 +387,15 @@ void TopAnalysis::InitHistos(){
     fHSSyields[ch][0]   = CreateH1F("H_SSYields_"+gChanLabel[ch],"", nLevels, -0.5, nLevels-0.5);
   }
   if(!makeHistos) return;
+  hJetPtReco  = CreateH1F("H_JetPtReco",  "H_JetPtReco",  nPtBins, (Float_t*) ptBins);
+  hJetPtGen   = CreateH1F("H_JetPtGen",   "H_JetPtGen",   nPtBins, (Float_t*)ptBins);
+  hJetPtRecoB = CreateH1F("H_JetPtRecoB", "H_JetPtRecoB", nPtBins, (Float_t*)ptBins);
+  hJetPtGenB  = CreateH1F("H_JetPtGenB",  "H_JetPtGenB",  nPtBins, (Float_t*)ptBins);
+  for(Int_t i = 0; i < nPtBins; i++){
+    hJetGenRecoPtRatio[i]  = CreateH1F(Form("H_JetGenRecoPtRatio_%i", i),  Form("H_JetGenRecoPtRatio_%i", i),  30, 0.5, 1.5);
+    hJetGenRecoPtRatio2[i] = CreateH1F(Form("H_JetGenRecoPtRatio2_%i", i), Form("H_JetGenRecoPtRatio2_%i", i), 30, 0.5, 1.5);
+  }
+  
   for(Int_t ch = 0; ch < nChannels; ch++){
     for(Int_t cut = 0; cut < nLevels; cut++){
       fHLHEweights[ch][cut][0]  = CreateH1F("H_LHEweights"  +gChanLabel[ch]+"_"+sCut[cut],"LHEweights", nWeights, -0.5, nWeights - 0.5);
@@ -392,7 +407,7 @@ void TopAnalysis::InitHistos(){
       fHJet0Eta[ch][cut][0]     = CreateH1F("H_Jet0Eta_"  +gChanLabel[ch]+"_"+sCut[cut],"Jet0Eta"   , 50,0,2.5);
       fHJet1Eta[ch][cut][0]     = CreateH1F("H_Jet1Eta_"  +gChanLabel[ch]+"_"+sCut[cut],"Jet1Eta"   , 50,0,2.5);
       fHDYInvMass[ch][cut][0]     = CreateH1F("H_DY_InvMass_"    +gChanLabel[ch]+"_"+sCut[cut],"InvMass"   ,  300,  0., 300.);
-      fHDYInvMassSF[ch][cut][0]   = CreateH1F("H_DY_InvMass_SF_"  +gChanLabel[ch]+"_"+sCut[cut],"InvMass"   ,  300,  0., 300.);
+      fHDYInvMassSF[ch][cut][0]   = CreateH1F("H_DY_SF_InvMass_"  +gChanLabel[ch]+"_"+sCut[cut],"InvMass"   ,  300,  0., 300.);
       fHInvMass[ch][cut][0]       = CreateH1F("H_InvMass_"    +gChanLabel[ch]+"_"+sCut[cut],"InvMass"   ,  300,  0., 300.);
       fHInvMass2[ch][cut][0]      = CreateH1F("H_InvMass2_"   +gChanLabel[ch]+"_"+sCut[cut],"InvMass2"  ,  400, 70., 110.);
       fHNBtagsNJets[ch][cut][0]   = CreateH1F("H_NBtagsNJets_"+gChanLabel[ch]+"_"+sCut[cut]  ,"NBtagsNJets"   ,15 , -0.5, 14.5);
@@ -511,6 +526,32 @@ void TopAnalysis::FillHistos(Int_t ch, Int_t cut){
   if(TNJets == 4) fHNBtagsNJets[ch][cut][sys]   -> Fill(TNBtags+10, EventWeight);
 }
 
+void TopAnalysis::FillCorrHistos(){
+  Float_t pTreco; Float_t pTgen; Float_t dR = 0.3; Float_t dPtoPt; Bool_t isBtag; Bool_t isBJet;
+  Float_t bin0; Float_t bin1;
+  for(Int_t i = 0; i < TNJets; i++){
+    pTreco = selJets.at(i).Pt(); pTgen = mcJets.at(i).Pt();
+    //dR = selJets.at(i).p.DeltaR(mcJets.at(i).p); 
+    dPtoPt = fabs(pTreco - pTgen)/pTreco;
+    isBtag = selJets.at(i).isBtag; isBJet =  mcJets.at(i).isBtag;
+
+  // selJets = std::vector<Jet>();
+  // mcJets  = std::vector<Jet>();
+
+    hJetPtReco ->Fill(pTreco);
+    hJetPtGen  ->Fill(pTgen);
+    if(isBtag) hJetPtRecoB->Fill(pTreco);
+    if(isBJet) hJetPtGenB ->Fill(pTreco);
+    for(Int_t b = 0; b < nPtBins; b++){
+      bin0 = ptBins[b]; bin1 = ptBins[b+1];
+      if(pTreco >= bin0 && pTreco < bin1){
+        hJetGenRecoPtRatio[b]->Fill(pTreco/pTgen); 
+        if(dR < 0.2) hJetGenRecoPtRatio2[b]->Fill(pTreco/pTgen);
+      }
+    }
+  }
+}
+
 void TopAnalysis::SetLeptonVariables(){
   fTree->Branch("TNVetoLeps",     &TNVetoLeps,     "TNVetoLeps/I");
   fTree->Branch("TNSelLeps",     &TNSelLeps,     "TNSelLeps/I");
@@ -535,6 +576,7 @@ void TopAnalysis::SetJetVariables(){
   fTree->Branch("TJet0Pt",       &TJet0Pt,     "TJet0Pt/F");
   fTree->Branch("TJet0Eta",       &TJet0Eta,     "TJet0Eta/F");
   fTree->Branch("TJet0Csv",       &TJet0Csv,     "TJet0Csv/F");
+  fTree->Branch("TBtagPt",        &TBtagPt,       "TBtagPt/F");
   fTree->Branch("TJet_isBJet",       TJet_isBJet,       "TJet_isBJet[TNJets]/I");
   fTree->Branch("TJet_Pt",           TJet_Pt,           "TJet_Pt[TNJets]/F");
   fTree->Branch("TJet_Csv",           TJet_Csv,           "TJet_Csv[TNJets]/F");

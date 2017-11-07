@@ -13,6 +13,8 @@ const int nWeights = 248;
 const TString gChanLabel[nChannels] = {"ElMu", "Muon","Elec"};
 const TString sCut[nLevels] = {"dilepton", "ZVeto", "MET", "2jets", "1btag"};
 const TString gSys[nSysts] = {"0"};
+const Int_t nPtBins = 14;
+const Float_t ptBins[nPtBins+1] = {30, 40, 50, 60, 70, 80, 90, 100, 120, 140, 160, 200, 300, 400, 600};
 
 
 class TopAnalysis : public PAFChainItemSelector{
@@ -63,6 +65,7 @@ class TopAnalysis : public PAFChainItemSelector{
     void InitHistos();
     void FillDYHistos(Int_t ch);
     void FillHistos(Int_t ch, Int_t cut);
+    void FillCorrHistos();
   
     void get20Jets();
     Double_t getDilepMETJetPt(const TString& sys = "Norm");
@@ -130,6 +133,7 @@ class TopAnalysis : public PAFChainItemSelector{
     Float_t TJetJER_Pt[20];
     Float_t THTJESUp;
     Float_t THTJESDown;
+    Float_t TBtagPt;
 
     Int_t   TNISRJets;
     Float_t TMETJESUp;
@@ -217,6 +221,13 @@ class TopAnalysis : public PAFChainItemSelector{
   TH1F*  fHyields[nChannels][nSysts];
   TH1F*  fHFiduYields[nChannels][nSysts];
   TH1F*  fHSSyields[nChannels][nSysts];
+
+  TH1F* hJetPtReco;
+  TH1F* hJetPtGen;
+  TH1F* hJetPtRecoB;
+  TH1F* hJetPtGenB;
+  TH1F* hJetGenRecoPtRatio[nPtBins];
+  TH1F* hJetGenRecoPtRatio2[nPtBins];
 
   protected:
 
