@@ -43,6 +43,11 @@ void JetSelector::Initialise(){
   gIsData    = GetParam<Bool_t>("IsData");
   gSelection = GetParam<Int_t>("iSelection");
   gIsFastSim   = GetParam<Bool_t>("IsFastSim");
+  gSampleName  = GetParam<TString>("sampleName");
+
+  gIsFSRUp = false; gIsFSRDown = false;
+  if     (gSampleName.Contains("TTbar_Powheg") && gSampleName.Contains("fsrUp"))   gIsFSRUp = true;
+  else if(gSampleName.Contains("TTbar_Powheg") && gSampleName.Contains("fsrDown")) gIsFSRDown = true;
 
   //---- Select your wp for b-tagging and pt, eta for the jets
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -147,7 +152,10 @@ void JetSelector::Initialise(){
 
 void JetSelector::GetJetVariables(Int_t i, const TString& jec){
   //tpJ.SetPxPyPzE(Get<Float_t>("Jet"+jec+"_px",i), Get<Float_t>("Jet"+jec+"_py",i), Get<Float_t>("Jet"+jec+"_pz", i), Get<Float_t>("Jet"+jec+"_energy",i));
-  tpJ.SetPtEtaPhiM(Get<Float_t>("Jet"+jec+"_pt",i), Get<Float_t>("Jet"+jec+"_eta",i), Get<Float_t>("Jet"+jec+"_phi", i), Get<Float_t>("Jet"+jec+"_mass",i));
+  Float_t FSRSF = 1;
+  if(gIsFSRUp)   FSRSF = GetFSR_JECSF_Up(  Get<Float_t>("Jet"+jec+"_pt",i));
+  if(gIsFSRDown) FSRSF = GetFSR_JECSF_Down(Get<Float_t>("Jet"+jec+"_pt",i));
+  tpJ.SetPtEtaPhiM(1/FSRSF*Get<Float_t>("Jet"+jec+"_pt",i), Get<Float_t>("Jet"+jec+"_eta",i), Get<Float_t>("Jet"+jec+"_phi", i), Get<Float_t>("Jet"+jec+"_mass",i));
   eta = tpJ.Eta();;
   pt = tpJ.Pt();
   rawPt       = Get<Float_t>("Jet"+jec+"_rawPt",i);
