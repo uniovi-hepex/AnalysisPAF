@@ -100,6 +100,10 @@ Bool_t ByPt(Jet, Jet);
 Int_t GetDileptonicChannel(vector<Lepton> leptons);
 vector<Lepton> AssignWZLeptons(vector<Lepton> leptonList);
 
+Float_t GetFSR_JECSF_Up(Float_t pt);
+Float_t GetFSR_JECSF_Down(Float_t pt);
+Float_t GetTopPtWeight(Float_t Pt1, Float_t Pt2);
+
 Int_t   getCS(vector<Lepton> lepton);
 void co(TString out, TString co);
 void DumpVar(Int_t evt, TString varname, Float_t val, Bool_t pass = false, Bool_t verbose = false);

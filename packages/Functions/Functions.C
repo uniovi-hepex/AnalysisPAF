@@ -600,3 +600,51 @@ std::vector<Lepton> AssignWZLeptons(std::vector<Lepton> leptonList){//Assign W a
   }  
   return WZleps;
 }
+
+Float_t GetTopPtWeight(Float_t Pt1, Float_t Pt2){
+  Float_t a = 0.0615; Float_t b = 0.0005;
+  Float_t SF1; Float_t SF2;
+  SF1 = TMath::Exp(a - Pt1*b);
+  SF2 = TMath::Exp(a - Pt2*b);
+  return TMath::Sqrt(SF1*SF2);
+}
+
+Float_t GetFSR_JECSF_Up(Float_t pt){
+  if(pt < 30.000000) pt = 25.000000;
+  if(pt > 600.000000) pt = 500.000000;
+  if     (pt < 40.000000) return 0.991004;
+  else if(pt < 50.000000) return 0.990483;
+  else if(pt < 60.000000) return 0.991340;
+  else if(pt < 70.000000) return 0.991937;
+  else if(pt < 80.000000) return 0.992754;
+  else if(pt < 90.000000) return 0.992897;
+  else if(pt < 100.000000) return 0.993550;
+  else if(pt < 120.000000) return 0.993843;
+  else if(pt < 140.000000) return 0.993845;
+  else if(pt < 160.000000) return 0.993944;
+  else if(pt < 200.000000) return 0.994771;
+  else if(pt < 300.000000) return 0.995132;
+  else if(pt < 400.000000) return 0.995029;
+  else if(pt < 600.000000) return 0.994988;
+  else return 0.;
+}
+
+Float_t GetFSR_JECSF_Down(Float_t pt){
+  if(pt < 30.000000) pt = 25.000000;
+  if(pt > 600.000000) pt = 500.000000;
+  if     (pt < 40.000000) return 1.005517;
+  else if(pt < 50.000000) return 1.005453;
+  else if(pt < 60.000000) return 1.005394;
+  else if(pt < 70.000000) return 1.005021;
+  else if(pt < 80.000000) return 1.004630;
+  else if(pt < 90.000000) return 1.004254;
+  else if(pt < 100.000000) return 1.004309;
+  else if(pt < 120.000000) return 1.003737;
+  else if(pt < 140.000000) return 1.004052;
+  else if(pt < 160.000000) return 1.003418;
+  else if(pt < 200.000000) return 1.003638;
+  else if(pt < 300.000000) return 1.003605;
+  else if(pt < 400.000000) return 1.003437;
+  else if(pt < 600.000000) return 1.004179;
+  else return 0.;
+}
