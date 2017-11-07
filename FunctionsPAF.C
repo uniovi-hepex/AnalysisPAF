@@ -36,6 +36,12 @@ void SaveCountHistos(TString path, TString  inputfile, TString filename);
 void CheckTreesInDir(TString path, TString treeName = "tree", Int_t verbose = 0);
 void CheckTree(TString filename, TString treeName = "tree", Int_t verbose = 0);
 
+//=== Utils
+TString GetFunctionFromTH1F(TH1F* h, TString funcname = "GetSF", TString varname = "x");
+TString GetFunctionFromTH1F(TString path, TString hname, TString funcname = "GetSF", TString varname = "x");
+
+// ttbar cross section at 13 TeV for a given top mass:
+Float_t ttbar_xsec_top_mass(Float_t m);
 
 //----------------- For Stop
 //--------------------------------------------------------------------
@@ -219,6 +225,17 @@ Double_t GetStopXSec(Int_t StopMass){
   }
 }
 
+Float_t ttbar_xsec_top_mass(Float_t m){
+  // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/TtbarNNLO#Top_quark_pair_cross_sections_at
+  // Using coefficients for 13 TeV, NNPDF2.3 NNLO (5f FFN)
+  Float_t mref = 172.5;
+  Float_t sref = 831.76;
+  Float_t a1 = -0.745047; Float_t a2 = 0.127417;
+  Float_t p = (m-mref)/mref;
+  Float_t s = sref * mref*mref*mref*mref/(m*m*m*m) * (1 + a1*p + a2*p*p);
+  return s;
+}
+
 vector<TString> GetAllFiles(TString path, TString  filename, Bool_t verbose) {
   if(verbose) cout << Form("[GetAllFiles]: Obtaining files of form %s in folder %s\n", filename.Data(), path.Data());
   vector<TString> theFiles;
@@ -366,4 +383,33 @@ Int_t GetLspMass(TString options){
 }
 
 
+TString GetFunctionFromTH1F(TString path, TString hname, TString funcname, TString varname){
+  TFile* f = TFile::Open(path);
+  TH1F* h = (TH1F*) f->Get(hname);
+  h->SetDirectory(0);
+  return GetFunctionFromTH1F(h, funcname, varname);
+}
+
+TString GetFunctionFromTH1F(TH1F* h, TString funcname, TString varname){
+  Int_t nbins = h->GetNbinsX();
+  Float_t minval = h->GetBinLowEdge(1);
+  Float_t secondval = h->GetBinLowEdge(2);
+  Float_t maxval = h->GetBinLowEdge(nbins+1);
+  Float_t penultval = h->GetBinLowEdge(nbins);
+  Float_t val = h->GetBinContent(1);
+  Float_t binval = 0;
+
+  TString out = "Float_t " + funcname + "(Float_t " + varname + "){\n";
+  out += Form("  if(%s < %f) %s = %f;\n", varname.Data(), minval, varname.Data(), minval+(minval-secondval)/2);
+  out += Form("  if(%s > %f) %s = %f;\n", varname.Data(), maxval, varname.Data(), maxval-(maxval-penultval)/2);
+  out += Form("  if     (%s < %f) return %f;\n", varname.Data(), secondval, val);
+  for(Int_t bin = 2; bin <= nbins; bin++){
+    binval = h->GetBinLowEdge(bin+1);
+    val = h->GetBinContent(bin);
+    out += Form("  else if(%s < %f) return %f;\n", varname.Data(), binval, val);
+  }
+  out += "  else return 0.;\n}\n";
+  cout << out;
+  return out;
+}
 #endif
