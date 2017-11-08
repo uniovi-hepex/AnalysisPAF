@@ -62,7 +62,6 @@ public:
   TLatex* texcms = NULL;
   TLatex* texPrelim = NULL;
   TLatex* texchan = NULL;
-  TString chlabel = "";
   TH1F* hratio = NULL;
   Float_t* TotalSysUp = NULL;
   Float_t* TotalSysDown = NULL;
@@ -84,8 +83,8 @@ public:
     xN     = binN;
     title = tit;
     xtitle = xtit;
+    ytitle = xtit;
     varname = variable; if(variable.Contains(" ")) TString(variable(0,variable.First(" ")));
-    f = 0;
     Init();
   }
 
@@ -99,7 +98,6 @@ public:
     vbins  = bins;
     title = tit;
     xtitle = xtit;
-    f = 0;
     varname = variable; if(variable.Contains(" ")) TString(variable(0,variable.First(" ")));
     Init();
   }
@@ -107,7 +105,7 @@ public:
     var  = ""; cut  = ""; chan = ""; 
     nb   = 1; x0   = 0;  xN   = 0; vbins = nullptr; 
     title = "";
-    xtitle = ""; varname = "";
+    xtitle = ""; varname = ""; 
     Init();
   }
 	
@@ -168,12 +166,8 @@ public:
     TotalSysUp = NULL;
     TotalSysDown = NULL;
     nSignalSamples = 0;
-    fLegX1 = 0.66; 
-    fLegY1 = 0.42;
-    fLegX2 = 0.98; 
-    fLegY2 = 0.92;
+    fLegX1 = 0.66;  fLegY1 = 0.42; fLegX2 = 0.98;  fLegY2 = 0.92;
     LegendTextSize  = 0.065;
-    RatioPlotLabel  = "";
     SignalDrawStyle = "hist";
     CMSlabel = "CMS";
     CMSmodeLabel = "Preliminary";
@@ -183,6 +177,28 @@ public:
     StackErrorStyle = 3444;
     weight = "TWeight";
     systematics = "";
+
+    ytitle = "";
+    xtitleOffset = 0.67;
+    xtitleDivisions = 505;
+    xtitleSize = 0.07;
+    ytitleSize = 0.07;
+    ytitleLabelSize = 0.07;
+    ytitleOffset = 0.67;
+    ytitleDivisions = 505;
+
+    chX = 0.15;
+    chY = 0.81;
+    chSize = 22;
+    chlabel = "";
+    f = 0;
+
+    RatioMin = 0.8;
+    RatioMax = 1.2;
+    ScaleMax = 1.2;
+    ScaleLog = 500;
+    PlotMinimum = -999;
+    PlotMaximum = -999;
   }
 
 
@@ -200,8 +216,9 @@ public:
   TLegend* SetLegend();
   virtual void SetLegendPosition(TString);
   virtual void SetLegendPosition(float x1 = 0.70, float y1 = 0.65, float x2 = 0.93, float y2 = 0.93){ fLegX1 = x1; fLegY1 = y1; fLegX2 = x2; fLegY2 = y2;}
-  virtual void SetTexChan(TString cuts); // To be updated
+  virtual void SetTexChan(); 
   virtual void SetHRatio(TH1F* h = nullptr); // To be updated
+  virtual void SetYaxis(TAxis *a = nullptr);
 
   void SetData();
   void GetStack();
@@ -210,8 +227,8 @@ public:
   
   virtual void SetGoF(TString thegof="chi2");
   
-  virtual void DrawStack(TString tag = "", bool sav = 1);
-  virtual void DrawComp(TString tag = "", bool sav = 1, bool doNorm = 0, TString options = "");
+  virtual void DrawStack(TString tag = "");
+  virtual void DrawComp(TString tag = "", bool doNorm = 0, TString options = "");
   virtual void SaveHistograms();
 
   virtual TString GetVar(){  return var;}
@@ -228,11 +245,13 @@ public:
   virtual void SetPlotFolder(TString f){plotFolder = f;} 
   virtual void SetLimitFolder(TString f){limitFolder = f;}   
 	virtual void SetCut(TString cuts){cut = (cuts);}
-	virtual void SetBins(Int_t nbins, Double_t bin0, Double_t binN){
-		nb = nbins; x0 = bin0; xN = binN;
-  }
+	virtual void SetBins(Int_t nbins, Double_t bin0, Double_t binN){ nb = nbins; x0 = bin0; xN = binN;}
 	void SetTitle(TString tit){title = tit;}
-	virtual void SetTitleX(TString xtit){xtitle = xtit;}
+	virtual void SetTitleX(TString xtit, Float_t size = -999){xtitle = xtit; if(size != -999) xtitleSize = size;}
+	virtual void SetTitleY(TString ytit, Float_t size = -999){ytitle = ytit; if(size != -999) ytitleSize = size;}
+
+  virtual void SetYaxisDivisions(Int_t div){ytitleDivisions = div;}
+  virtual void SetYaxisOffset(Float_t Offset, Float_t size = -999){ ytitleOffset = Offset; if(size != -999) ytitleLabelSize = size;}
   virtual void SetBinLabels(TString t, char separator = ','){VBinLabels = TStringToVector(t, separator);}
 
   void AddToHistos(Histo* p);
@@ -275,7 +294,13 @@ public:
 	virtual void PrintSystYields();
 	virtual Float_t GetYield(TString pr = "ttbar", TString systag = "0");
 	virtual Float_t GetBinYield(TString pr = "ttbar", Int_t bin = 1, TString systag = "0");
-	virtual Histo* GetHisto(TString pr = "ttbar", TString systag = "0");
+  virtual Histo* GetHisto(TString pr = "ttbar", TString systag = "0");
+  virtual Int_t GetProcessType(TString pr, TString systag = "");
+  virtual Int_t GetProcessIndex(TString pr, TString systag = "");
+  virtual void RemoveProcess(TString pr, TString systag = "");
+  virtual Bool_t Exists(TString pr, TString systag = "");
+  virtual Bool_t RenameProcess(TString pr, TString newname, TString systag = "");
+  virtual void GroupProcesses(TString pr, TString newProcess);
   virtual void AddNormUnc(TString pr, Float_t systUp = 1, Float_t systDown = - 99);
 	virtual void SetLineStyle(TString pr = "ttbar", Int_t s = 0){  Histo* h = GetHisto(pr, "0"); h->SetLineStyle(s);}
 	virtual void SetLineColor(TString pr = "ttbar", Int_t s = 0){  Histo* h = GetHisto(pr, "0"); h->SetLineColor(s);}
@@ -301,13 +326,12 @@ public:
   virtual void SetPlotMaximum(Float_t p){ PlotMaximum = p;}
   virtual void ScaleProcess(TString process, Float_t factor = 1);
   virtual void ScaleSignal(Float_t factor = 1);
-  virtual void ScaleSys(TString processSys, Float_t factor = 1);
+  virtual void ScaleSys(TString processSys, TString sys = "", Float_t factor = 1);
   virtual void SetTableFormats(TString t){ tableFormats = t;}
   virtual void SetLoopOptions(TString t){LoopOptions = t;}
-  virtual void SetRatioOptions(TString t){RatioOptions = t;}
+  virtual void SetRatioYtitle(TString t){RatioYtitle = t;}
   virtual void SetSignalDrawStyle(TString t){ SignalDrawStyle = t;}
   virtual void SetLegendTextSize(Float_t t){ LegendTextSize = t;} 
-  virtual void SetRatioPlotLabel(TString t){ RatioPlotLabel = t;} 
   virtual void SetRatioErrorColor(Int_t b){ RatioErrorColor = b;}
   virtual void SetRatioErrorStyle(Int_t b){ RatioErrorStyle = b;}
   virtual void SetStackErrorColor(Int_t b){ StackErrorColor = b;}
@@ -342,14 +366,14 @@ protected:
   Int_t nSignalSamples;
   
   // Maximum and minimum value of the ratio plot
-  Float_t RatioMin = 0.8;
-  Float_t RatioMax = 1.2;
+  Float_t RatioMin;
+  Float_t RatioMax;
   
   // Factor to multiply the maximum of the plot to set the maximum
-  Float_t ScaleMax = 1.2;
-  Float_t ScaleLog = 500;
-  Float_t PlotMinimum = -999;
-  Float_t PlotMaximum = -999;
+  Float_t ScaleMax;
+  Float_t ScaleLog;
+  Float_t PlotMinimum;
+  Float_t PlotMaximum;
 
   TString varname = "";
 	TString var;
@@ -359,10 +383,21 @@ protected:
   Int_t nb; Double_t x0; Double_t xN; Float_t *vbins;
   TString  title;
   TString xtitle;
+  TString ytitle;
+  Float_t xtitleOffset;
+  Int_t   xtitleDivisions;
+  Float_t xtitleSize;
+  Float_t ytitleSize;
+  Float_t ytitleLabelSize;
+  Float_t ytitleOffset;
+  Int_t   ytitleDivisions;
+  Float_t chX;
+  Float_t chY;
+  Float_t chSize;
  
   TString SignalProcess;
   TString LoopOptions = "";
-  TString RatioOptions = "";
+  TString RatioYtitle = "Data/MC";
   TString SignalStyle = "";
   TString SignalDrawStyle;
   TString CMSlabel;
@@ -378,13 +413,13 @@ protected:
   TString plotFolder;
   TString limitFolder;
   Bool_t ShowSystematics = false;
+  TString chlabel;
 
   float fLegX1;
   float fLegY1;
   float fLegX2;
   float fLegY2;
   Float_t LegendTextSize;
-  TString RatioPlotLabel;
   
 };
 
@@ -422,7 +457,7 @@ class MultiPlot : public Plot{
   void AddSample(TString sample, TString process = "", Int_t type = itBkg, Int_t color = 1, TString syst = "", TString weight = "TWeight");
   void AddHyperlooper(TString sample, TString process, Int_t type, Int_t color, TString syst, TString weight = "TWeight");
   void Loop();
-  void SetPlot(TString name);
+  void SetPlot(TString name, TString xtit = "", TString ytit = "", TString seltext = "", Float_t ratioMax = 1.2, Float_t rationMin = -999);
 };
 
 #endif

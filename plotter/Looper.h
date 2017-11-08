@@ -445,7 +445,7 @@ Bool_t IsWord(TString s, Int_t pos = 0, TString word = ""){
     cout << "[IsWord] WARNING: no word \"" << word << "\" in string \"" << s << "\"" << endl;
     return false;
   }
-  TString LimitWord = ",. ?:)]([{}@\"'&|<>=!";
+  TString LimitWord = ",. ?:)]([{}@\"'&|<>=!*";
   Int_t nstop = LimitWord.Sizeof()-1;
   Bool_t isword = true;
 
@@ -575,8 +575,8 @@ TString CraftFormula(TString cuts, TString chan, TString sys, TString weight, TT
   else schan = chan;
 
   //TString weight = TString("TWeight");
-  if(tree->GetBranchStatus(weight + "_" + sys)){
-    weight += "_" + sys; 
+  if(weight.Contains("TWeight") && tree->GetBranchStatus("TWeight_" + sys)){
+    weight = ReplaceWords(weight, "TWeight", "TWeight_" + sys); 
   }
 
   std::vector<TString> AllVars = GetAllVars((TString) cuts);

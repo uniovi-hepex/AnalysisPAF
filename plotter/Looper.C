@@ -306,8 +306,8 @@ void Hyperlooper::CreateHisto(Int_t pos, TString sys){
   distribution d = VDist.at(pos); 
   Histo* h;
   TString name = sampleName;
-  if(d.bin0 != d.binN) h = new Histo(TH1F(name+"_"+sys+"_"+d.name,name+"_"+sys+"_"+d.name, d.nbins, d.bin0, d.binN));
-  else                 h = new Histo(TH1F(name+"_"+sys+"_"+d.name,name+"_"+sys+"_"+d.name, d.nbins, d.bins));
+  if(d.bin0 != d.binN) h = new Histo(TH1F(name+"_"+sys+"_"+d.name+"_"+process,name+"_"+sys+"_"+d.name, d.nbins, d.bin0, d.binN));
+  else                 h = new Histo(TH1F(name+"_"+sys+"_"+d.name+"_"+process,name+"_"+sys+"_"+d.name, d.nbins, d.bins));
   if(sys != "0" && sys != ""){
     name += "_" + sys;
     h->SetType(itSys);
@@ -329,6 +329,7 @@ void Hyperlooper::CreateHistosAndFormulas(Int_t  pos){
   if(type != itSys) CreateHisto(pos, ""); SetFormulas(pos, "");// Nominal
   for(Int_t i = 0; i < nSyst; i++){ // All variations
     sys = VSyst.at(i);
+    if(sys == "" || sys == "0") continue;
     if(!sys.EndsWith("Up") && !sys.EndsWith("Down")){
       CreateHisto(pos, sys + "Up");   SetFormulas(pos, sys + "Up");
       CreateHisto(pos, sys + "Down"); SetFormulas(pos, sys + "Down");
