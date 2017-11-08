@@ -579,7 +579,7 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
     }
     if(lep.isElec){
       passId = getElecCutBasedId(iTight);
-      passIso = getRelIso04POG(iTight);
+      passIso = getRelIso03POG(iTight);
       if(lep.p.Pt() < 10 || TMath::Abs(lep.p.Eta()) > 2.5) passId = false;
       //passIso = getRelIso03POG(iTight);
       //if(TMath::Abs(etaSC) > 1.4442 && TMath::Abs(etaSC) < 1.566) passId = false;
