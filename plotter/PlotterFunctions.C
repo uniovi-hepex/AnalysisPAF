@@ -51,8 +51,8 @@ Bool_t PassEtaCut(Float_t lep0eta, Float_t lep1eta, Int_t lep0id, Int_t lep1id, 
 // Funtion definitions below here
 ////////////////////////////////////////////////////////////
 Float_t DilepPt(Float_t pt1, Float_t eta1, Float_t phi1, Float_t e1, Float_t pt2, Float_t eta2, Float_t phi2, Float_t e2){
-  TLorentzVector l1; l1.SetPtEtaPhiE(pt1, eta1, phi1, e1);
-  TLorentzVector l2; l2.SetPtEtaPhiE(pt2, eta2, phi2, e2);
+  TLorentzVector l1; l1.SetPtEtaPhiM(pt1, eta1, phi1, e1);
+  TLorentzVector l2; l2.SetPtEtaPhiM(pt2, eta2, phi2, e2);
   return (l1+l2).Pt();
 }
 
@@ -131,6 +131,21 @@ Float_t DeltaR(Float_t pt1, Float_t eta1, Float_t phi1, Float_t m1, Float_t pt2,
   return l1.DeltaR(l2);
 }
 
+// TopPtReweighting
+Float_t NormTopPtSF = 1.00298; //  7.72293e+07/7.69995e+07
+Float_t GetTopPtWeight(Float_t Pt1, Float_t Pt2){
+  Float_t a = 0.0615; Float_t b = 0.0005;
+  Float_t SF1; Float_t SF2;
+  SF1 = TMath::Exp(a - Pt1*b);
+  SF2 = TMath::Exp(a - Pt2*b);
+  return TMath::Sqrt(SF1*SF2)*1.00298;
+}
 
+Float_t GetFSRsf(Float_t n, Float_t v){
+  Float_t d = TMath::Abs(n-v); 
+  Float_t x = 1/TMath::Sqrt(2);
+  if(n > v) return (n+d*x)/v;
+  else      return (n-d*x)/v;
+}
 
 #endif
