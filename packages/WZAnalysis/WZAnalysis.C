@@ -154,6 +154,7 @@ void WZAnalysis::InsideLoop(){
       TMtWZ = -999;
       TMtW  = -999;
       TMll  = -999;
+      std::cout << "ASSIGNS\n";
       std::vector<Lepton> tempLeps = AssignWZLeptons(fakeableLeptons);
       tempLeps = getMatchGenSelLeptons(tempLeps, tightLeptons, 0.4, true);
 
@@ -185,6 +186,10 @@ void WZAnalysis::InsideLoop(){
       TLep_IsTightW =  (lepW.lepMatch == 0) ? 0 : 1;
       TLep_pdgIdW = lepW.type;
 
+      std::cout << "REMATCHES\n";
+      TLep_IsPromptW = lepW.idDecayMode;
+      TLep_IsPromptZ2 = lepZ2.idDecayMode;
+      TLep_IsPromptZ1 = lepZ1.idDecayMode;
 
       for(Int_t i = 0; i < TNFOLeps; i++){
         TLep_isConvVeto[i]  = tempLeps.at(i).isConvVeto;
@@ -274,6 +279,10 @@ void WZAnalysis::SetLeptonVariables(TTree* iniTree){
   iniTree->Branch("TLep_IsTightZ1",     &TLep_IsTightZ1,     "TLep_IsTightZ1/F");
   iniTree->Branch("TLep_IsTightZ2",     &TLep_IsTightZ2,     "TLep_IsTightZ2/F");
   iniTree->Branch("TLep_IsTightW",      &TLep_IsTightW,     "TLep_IsTightW/F");
+
+  iniTree->Branch("TLep_IsPromptZ1",     &TLep_IsPromptZ1,     "TLep_IsPromptZ1/F");
+  iniTree->Branch("TLep_IsPromptZ2",     &TLep_IsPromptZ2,     "TLep_IsPromptZ2/F");
+  iniTree->Branch("TLep_IsPromptW",      &TLep_IsPromptW,     "TLep_IsPromptW/F");
 
   iniTree->Branch("TLep_pdgIdZ1",     &TLep_pdgIdZ1,     "TLep_pdgIdZ1/F");
   iniTree->Branch("TLep_pdgIdZ2",     &TLep_pdgIdZ2,     "TLep_pdgIdZ2/F");

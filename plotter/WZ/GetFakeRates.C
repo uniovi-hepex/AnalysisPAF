@@ -66,6 +66,10 @@ void GetFakeRates(TString what){
   Float_t TLep_IsTightZ1;
   Float_t TLep_IsTightZ2;
 
+  Float_t TLep_IsPromptW;
+  Float_t TLep_IsPromptZ1;
+  Float_t TLep_IsPromptZ2;
+
   Float_t TLep_pdgIdW;
   Float_t TLep_pdgIdZ1;
   Float_t TLep_pdgIdZ2;
@@ -121,6 +125,9 @@ void GetFakeRates(TString what){
       theTree->SetBranchAddress("TLep_IsTightW", &TLep_IsTightW);
       theTree->SetBranchAddress("TLep_IsTightZ1", &TLep_IsTightZ1);
       theTree->SetBranchAddress("TLep_IsTightZ2", &TLep_IsTightZ2);
+      theTree->SetBranchAddress("TLep_IsPromptW", &TLep_IsPromptW);
+      theTree->SetBranchAddress("TLep_IsPromptZ1", &TLep_IsPromptZ1);
+      theTree->SetBranchAddress("TLep_IsPromptZ2", &TLep_IsPromptZ2);
       theTree->SetBranchAddress("TLep_pdgIdW", &TLep_pdgIdW);
       theTree->SetBranchAddress("TLep_pdgIdZ1", &TLep_pdgIdZ1);
       theTree->SetBranchAddress("TLep_pdgIdZ2", &TLep_pdgIdZ2);
@@ -137,31 +144,40 @@ void GetFakeRates(TString what){
       for (int i = 0; i < theTree->GetEntries(); i++){
         theTree->GetEntry(i);
         //theTreeMVA->GetEntry(i);
-        if (TMath::Abs(TMll - 91.1876)< 15. && TLep_PtZ1 > 25 && TLep_PtZ2 > 15 && TLep_PtW > 20 && TM3l > 100 && TMinMll > 4 && TNBtags == 0 && TMET < 30){//CRDY
+        if (TMath::Abs(TMll - 91.1876)< 15.  && TM3l > 100 && TMinMll > 4 && TNBtags == 0 && TMET > 30){//CRDY && TLep_PtZ1 > 25 && TLep_PtZ2 > 15 && TLep_PtW > 20
 //        if (TMath::Abs(TMll - 91.1876)> 15. && TLep_PtZ1 > 20 && TLep_PtZ2 > 10 && TLep_PtW > 10 && TMinMll > 12 && TMET > 50){
           Int_t nFakes = 0;
           Float_t pt;
-/*
-          pt = (TLep_PtW > 100) ? 99 : TLep_PtW; //std::cout << pt << std::endl;
-          if (TLep_IsTightW == 1){
-            TLep_pdgIdW ? hFRElTi->Fill(pt, TMath::Abs(TLep_EtaW), TWeight) : hFRMuTi->Fill(pt, TMath::Abs(TLep_EtaW), TWeight);
-            //std::cout << TLep_PtW << std::endl;
+          if (!TLep_IsPromptW){
+            pt = (TLep_PtW > 100) ? 99 : TLep_PtW; //std::cout << pt << std::endl;
+            if (TLep_IsTightW == 1){
+              TLep_pdgIdW ? hFRElTi->Fill(pt, TMath::Abs(TLep_EtaW), TWeight) : hFRMuTi->Fill(pt, TMath::Abs(TLep_EtaW), TWeight);
+              //std::cout << TLep_PtW << std::endl;
+              n0++;
+            }
+            TLep_pdgIdW ? hFRElFO->Fill(pt, TMath::Abs(TLep_EtaW), TWeight) : hFRMuFO->Fill(pt, TMath::Abs(TLep_EtaW), TWeight);
+            n1++;
           }
-          TLep_pdgIdW ? hFRElFO->Fill(pt, TMath::Abs(TLep_EtaW), TWeight) : hFRMuFO->Fill(pt, TMath::Abs(TLep_EtaW), TWeight);
-*/
-          pt = (TLep_PtZ1 > 100) ? 99 : TLep_PtZ1; //std::cout << pt << std::endl;
-          if (TLep_IsTightZ1 == 1){
-            TLep_pdgIdZ1 ? hFRElTi->Fill(pt, TMath::Abs(TLep_EtaZ1), TWeight) : hFRMuTi->Fill(pt, TMath::Abs(TLep_EtaZ1), TWeight);
-            //std::cout << TLep_PtW << std::endl;
+          if (!TLep_IsPromptZ1){         
+            pt = (TLep_PtZ1 > 100) ? 99 : TLep_PtZ1; //std::cout << pt << std::endl;
+            if (TLep_IsTightZ1 == 1){
+              TLep_pdgIdZ1 ? hFRElTi->Fill(pt, TMath::Abs(TLep_EtaZ1), TWeight) : hFRMuTi->Fill(pt, TMath::Abs(TLep_EtaZ1), TWeight);
+              //std::cout << TLep_PtW << std::endl;
+              n0++;
+            }
+            TLep_pdgIdZ1 ? hFRElFO->Fill(pt, TMath::Abs(TLep_EtaZ1), TWeight) : hFRMuFO->Fill(pt, TMath::Abs(TLep_EtaZ1), TWeight);
+            n1++;
           }
-          TLep_pdgIdZ1 ? hFRElFO->Fill(pt, TMath::Abs(TLep_EtaZ1), TWeight) : hFRMuFO->Fill(pt, TMath::Abs(TLep_EtaZ1), TWeight);
-
-          pt = (TLep_PtZ2 > 100) ? 99 : TLep_PtZ2; //std::cout << pt << std::endl;
-          if (TLep_IsTightZ2 == 1){
-            TLep_pdgIdZ2 ? hFRElTi->Fill(pt, TMath::Abs(TLep_EtaZ2), TWeight) : hFRMuTi->Fill(pt, TMath::Abs(TLep_EtaZ2), TWeight);
-            //std::cout << TLep_PtW << std::endl;
+          if (!TLep_IsPromptZ2){
+            pt = (TLep_PtZ2 > 100) ? 99 : TLep_PtZ2; //std::cout << pt << std::endl;
+            if (TLep_IsTightZ2 == 1){
+              TLep_pdgIdZ2 ? hFRElTi->Fill(pt, TMath::Abs(TLep_EtaZ2), TWeight) : hFRMuTi->Fill(pt, TMath::Abs(TLep_EtaZ2), TWeight);
+              //std::cout << TLep_PtW << std::endl;
+              n0++;
+            }
+            TLep_pdgIdZ2 ? hFRElFO->Fill(pt, TMath::Abs(TLep_EtaZ2), TWeight) : hFRMuFO->Fill(pt, TMath::Abs(TLep_EtaZ2), TWeight);
+            n1++;
           }
-          TLep_pdgIdZ2 ? hFRElFO->Fill(pt, TMath::Abs(TLep_EtaZ2), TWeight) : hFRMuFO->Fill(pt, TMath::Abs(TLep_EtaZ2), TWeight);
         }
       }
   }
@@ -169,6 +185,12 @@ void GetFakeRates(TString what){
   TFile f("./plotsFR/FR.root", "RECREATE");
   f.cd();
   hFRMuTi->Write(); hFRElTi->Write(); hFRMuFO->Write(); hFRElFO->Write();
+  hFRMuTi->Sumw2();hFRElTi->Sumw2();hFRMuFO->Sumw2();hFRElFO->Sumw2();
+
+  TH2D qMu = (*hFRMuTi)/(*hFRMuFO);   TH2D qEl = (*hFRElTi)/(*hFRElFO);
+  qMu.SetName("qMu"); qEl.SetName("qEl");
+  qMu.Write(); qEl.Write();
+
   f.Close();
 
 

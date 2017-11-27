@@ -158,6 +158,10 @@ class WZAnalysis : public PAFChainItemSelector{
     Float_t TLep_IsTightZ1;    
     Float_t TLep_IsTightZ2;
     Float_t TLep_IsTightW;  
+
+    Float_t TLep_IsPromptZ1;    
+    Float_t TLep_IsPromptZ2;
+    Float_t TLep_IsPromptW;  
   
     Float_t TLep_pdgIdZ1;    
     Float_t TLep_pdgIdZ2;
