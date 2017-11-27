@@ -102,7 +102,7 @@ void WZAnalysis::InsideLoop(){
       //fakeableLeptons = getMatchGenSelLeptons(fakeableLeptons, genLeptons, 0.3, true); // Match gen and sel Leptons, require same Id
       //fakeableLeptons = getMatchGenSelLeptons(fakeableLeptons, genParticles, 0.3, false); // Match gen particles and sel Leptons, do not require same Id (allow for taus)
 
-    if(TNFOLeps == 3 && passTrigger && passMETfilters){ // trilepton event with OSSF + l, passes trigger and MET filters
+    if(TNFOLeps == 3 && TNOSSF > 0 && passTrigger && passMETfilters){ // trilepton event with OSSF + l, passes trigger and MET filters
       // Deal with weights:
     //std::cout << "Pass 3FO\n";
       Float_t lepSF   = fakeableLeptons.at(0).GetSF(0)*fakeableLeptons.at(1).GetSF(0)*fakeableLeptons.at(2).GetSF(0);
@@ -155,6 +155,8 @@ void WZAnalysis::InsideLoop(){
       TMtW  = -999;
       TMll  = -999;
       std::vector<Lepton> tempLeps = AssignWZLeptons(fakeableLeptons);
+      tempLeps = getMatchGenSelLeptons(tempLeps, tightLeptons, 0.4, true);
+
       lepZ1 = tempLeps.at(0);
       lepZ2 = tempLeps.at(1);
       lepW  = tempLeps.at(2);
@@ -164,7 +166,7 @@ void WZAnalysis::InsideLoop(){
       TLep_PhiZ1 = lepZ1.Phi();
       TLep_EZ1 = lepZ1.E();
       TLep_ChargeZ1 = lepZ1.charge;
-      TLep_IsTightZ1 =  (lepZ1.isTight%10 > WPointVal[wP]) ? 1 : 0;
+      TLep_IsTightZ1 =  (lepZ1.lepMatch == 0) ? 0 : 1;
       TLep_pdgIdZ1 = lepZ1.type;
 
       TLep_PtZ2 = lepZ2.Pt();
@@ -172,7 +174,7 @@ void WZAnalysis::InsideLoop(){
       TLep_PhiZ2 = lepZ2.Phi();
       TLep_EZ2 = lepZ2.E();
       TLep_ChargeZ2 = lepZ2.charge;
-      TLep_IsTightZ2 =  (lepZ2.isTight%10 > WPointVal[wP]) ? 1 : 0;
+      TLep_IsTightZ2 =  (lepZ2.lepMatch == 0) ? 0 : 1;
       TLep_pdgIdZ2 = lepZ2.type;
 
       TLep_PtW = lepW.Pt();
@@ -180,7 +182,7 @@ void WZAnalysis::InsideLoop(){
       TLep_PhiW = lepW.Phi();
       TLep_EW = lepW.E();
       TLep_ChargeW = lepW.charge;
-      TLep_IsTightW =  (lepW.isTight%10 > WPointVal[wP]) ? 1 : 0;
+      TLep_IsTightW =  (lepW.lepMatch == 0) ? 0 : 1;
       TLep_pdgIdW = lepW.type;
 
 
@@ -193,7 +195,7 @@ void WZAnalysis::InsideLoop(){
       TMtWZ = (lepZ1.p + lepZ2.p + lepW.p + metVector).Mt();
       TMtW  = (lepW.p + metVector).Mt();
       TMll  = (lepZ1.p + lepZ2.p).M();
-      if(TNOSSF > 0 && passesMCTruth(fakeableLeptons,1,3)){
+      if(passesMCTruth(fakeableLeptons,1,3)){
         //std::cout << "Pass 3Tight, hasOS,passMC\n";
         if (lepZ1.Pt() > 25 && lepZ2.Pt() > 10 && lepW.Pt() > 25){//3 lepton, has OSSF, leptons assigned to W and Z. Fill histos from here onwards
         
@@ -384,7 +386,7 @@ void WZAnalysis::GetLeptonsByWP(Int_t wPValue){
     for (int k = 0; k < nTightLeptons; k++){
       if (selLeptons.at(k).idMVA%10 > WPointVal[wPValue]){
         tightLeptons.push_back(selLeptons.at(k));
-        if (WPointVal[wPValue] == 6){//VT SF
+        if (WPointVal[wPValue] == 5){//VT SF
           tightLeptons.back().SetSF(selLeptons.at(k).GetSF(0)*leptonSFEWKVT->GetLeptonSF(selLeptons.at(k).Pt(), selLeptons.at(k).Eta(), selLeptons.at(k).type));
         }
         else { //M SF
