@@ -579,20 +579,20 @@ std::vector<Lepton> AssignWZLeptons(std::vector<Lepton> leptonList){//Assign W a
         Float_t hypZmass = (leptonList.at(j).p + leptonList.at(i).p).M();
         if (TMath::Abs(hypZmass-91.1876) < dZmass){
           dZmass = TMath::Abs(hypZmass-91.1876);
-          indexZ1 = j;
-          indexZ2 = i;
           if (leptonList.at(j).Pt() > leptonList.at(i).Pt()) {
-            WZleps.push_back(leptonList.at(j));
-            WZleps.push_back(leptonList.at(i));
+            indexZ1 = j;
+            indexZ2 = i;
           }
           else{
-            WZleps.push_back(leptonList.at(i));
-            WZleps.push_back(leptonList.at(j));
+            indexZ2 = j;
+            indexZ1 = i;
           }
         }
       }
     }
   }
+  WZleps.push_back(leptonList.at(indexZ1));
+  WZleps.push_back(leptonList.at(indexZ2));
   for(Int_t i = 0; i < nLeptons; i++){
     if (i != indexZ1 && i != indexZ2){
       WZleps.push_back(leptonList.at(i));
