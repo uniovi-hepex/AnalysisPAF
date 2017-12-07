@@ -18,7 +18,8 @@ bool doLog;
 //TString baseline = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TNTaus == 0 && !TIsOnZ";
 //TString CRZ      = "TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && TNTaus == 0 && TIsOnZ";
 
-TString SR        = "TIsSR == 1 && TNTightLeps == 3";
+TString AR           = "TIsSR == 1 && TNTightLeps < 3";
+TString SR           = "TIsSR == 1 && TNTightLeps == 3";
 TString SRmmm        = "TIsSR == 1 && TNTightLeps == 3 && TChannel == 3";
 TString SRmme        = "TIsSR == 1 && TNTightLeps == 3 && TChannel == 2";
 TString SRmee        = "TIsSR == 1 && TNTightLeps == 3 && TChannel == 1";
@@ -58,6 +59,7 @@ void DrawPlots(TString cutName, TString treeName = ""){
     NameOfTree = "veryTight";
     doMC = true;
   }
+
   TString cut;
   if     (cutName == "SR" ){ cut = SR ; yMax = 1200; yMin = 1;}
   else if(cutName == "CRDY" ){ cut = CRDY ; yMax = 600; yMin = 1;}
@@ -81,6 +83,12 @@ void DrawPlots(TString cutName, TString treeName = ""){
   else if(cutName == "SReee" ){ cut = SReee ; yMax = 200; yMin = 1;}
   else if(cutName == "SRmme" ){ cut = SRmme ; yMax = 350; yMin = 1;}
   else if(cutName == "SRmee" ){ cut = SRmee ; yMax = 200; yMin = 1;}
+  else if (cutName == "AR"){
+    cut = AR;
+    doMC = true;
+    yMax = 1200;
+    yMin = 1;
+  }
   else {cout << "Wrong name!!" << endl; return;}
 
 //  DrawPlot("TM3l",  cut, "All", 21, 80, 300, "M_{3l} [GeV]", cutName);
@@ -88,7 +96,7 @@ void DrawPlots(TString cutName, TString treeName = ""){
   doLog = true;
   DrawPlot("TMET",  cut, "All", 11, 30, 140, "E_{T}^{miss} [GeV]", "TMET_log", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
 //  DrawPlot("TMET",  cut, "All", 11, 30, 140, "E_{T}^{miss} [GeV]", "TMET_log", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/temp/", yMax, yMin);
-//  DrawPlot("TM3l",  cut, "All", 20, 100,300, "M_{3l} [GeV]", "TM3l_log", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
+  DrawPlot("TM3l",  cut, "All", 20, 100,300, "M_{3l} [GeV]", "TM3l_log", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
 //  DrawPlot("TMET",  cut, "All", 39, 30, 420, "E_{T}^{miss} [GeV]", cutName);
 //  Float_t M3lBins[] = {0,100,200,300,400,500,600,700,800,900,1000,1200,1500,2000};
 //  DrawPlot("TM3l",  cut, "All", 13, M3lBins, "M_{3l} [GeV]", cutName);
@@ -105,7 +113,7 @@ void DrawPlots(TString cutName, TString treeName = ""){
 
   doLog = false;
   DrawPlot("TMET",  cut, "All", 11, 30, 140, "E_{T}^{miss} [GeV]", "TMET", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
-//  DrawPlot("TM3l",  cut, "All", 20, 100,300, "M_{3l} [GeV]", "TM3l", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
+  DrawPlot("TM3l",  cut, "All", 20, 100,300, "M_{3l} [GeV]", "TM3l", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
 //  DrawPlot("TMET",  cut, "All", 39, 30, 420, "E_{T}^{miss} [GeV]", cutName);
 //  Float_t M3lBins[] = {0,100,200,300,400,500,600,700,800,900,1000,1200,1500,2000};
 //  DrawPlot("TM3l",  cut, "All", 13, M3lBins, "M_{3l} [GeV]", cutName);
@@ -143,10 +151,10 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   AddFRhisto("fakerate_light_EWKino_Moriond2017_36p5fb.root", "FR_susy_wpV_mu_data_comb", "mvaVTFRhistoMu"); //Book Muon Fake Rate
   std::cout << "_______________________________ADD SAMPLES______________________________________________" << std::endl;
   if (NameOfTree == "top" || doMC){//Load MC FAKES
+    p->SetWeight("TWeight*1.1");
     p->SetCut(cut); //Allow Conversions
     p->AddSample("TGJets, TTGJets, WGToLNuG, ZGTo2LG, WZG_amcatnlo, WWG_amcatnlo",                "X+#gamma", itBkg, kViolet+2);  // X+gamma 
-    p->SetCut(cut + "&& TConvNumber == 0"); //Veto Conversions
-  	p->AddSample("MuonEG, DoubleEG, DoubleMuon, SingleElec, SingleMuon",                     "Data",  itData);             // Data
+    p->SetCut(cut); //Veto Conversions
     p->AddSample("WZTo3LNu",                                                                   "WZ",       itSignal, kYellow);    // WZ
     p->AddSample("WWW, WWZ, WZZ, ZZZ, VHToNonbb_amcatnlo,WWTo2L2Nu, WpWpJJ, WWTo2L2Nu_DoubleScat",    "VVV/VV",  itBkg, kGreen-9); // RareSM
     p->AddSample("ZZTo4L",    "ZZ",  itBkg, kCyan-5); // RareSM
@@ -154,7 +162,9 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     p->AddSample("TTZToLL_M1to10,TTZToLLNuNu,TTWToLNu,TTTT,TTHNonbb",    "ttX",  itBkg, kRed-10); // RareSM
     p->SetCut(cut); //Add the MC fakes
     p->AddSample("TTbar_Powheg, TW_noFullyHadr,T_tch,Tbar_tch,TbarW_noFullyHadr,TToLeptons_sch_amcatnlo", "tt + Single t", itBkg, kRed);
-    p->AddSample("DYJetsToLL_M50_MLM_0,DYJetsToLL_M50_MLM_1,DYJetsToLL_M50_MLM_2,DYJetsToLL_M50_MLM_3,DYJetsToLL_M50_MLM_4,DYJetsToLL_M50_MLM_5,DYJetsToLL_M50_MLM_6,DYJetsToLL_M50_MLM_7, DYJetsToLL_M5to50_MLM", "V + Jets", itBkg, kOrange);
+    p->AddSample("DYJetsToLL_M50_MLM_, DYJetsToLL_M5to50_MLM", "V + Jets", itBkg, kOrange);
+    p->SetWeight("TWeight");
+  	p->AddSample("MuonEG, DoubleEG, DoubleMuon",                     "Data",  itData);             // Data
   }
 
   else if (NameOfTree == "veryTight"){//Load DATA FAKES, APPLY FAKE RATE FILES!!!
@@ -193,7 +203,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     p->AddSample("WZTo3LNu",                                                                   "WZ",       itSignal, kYellow);    // WZ  
     p->AddSample("WWW, WWZ, WZZ, ZZZ, VHToNonbb_amcatnlo,WWTo2L2Nu, WpWpJJ, WWTo2L2Nu_DoubleScat",    "VVV/VV",  itBkg, kGreen-9); // RareSM
     p->AddSample("ZZTo4L",    "ZZ",  itBkg, kCyan-5); // RareSM
-    p->AddSample("tZq_ll_0, tZq_ll_1, tZq_ll_2, tZq_ll_3",    "tZq",  itBkg, kGreen); // RareSM
+    p->AddSample(" tZq_ll_1, tZq_ll_2, tZq_ll_3",    "tZq",  itBkg, kGreen); // RareSM
     p->AddSample("TTZToLL_M1to10,TTZToLLNuNu,TTWToLNu,TTTT,TTHNonbb",    "ttX",  itBkg, kRed-10); // RareSM
     cut.ReplaceAll("TNTightLeps", "TNFOLeps");
     p->SetCut(cut); //Data fakes, relax tight to FO
@@ -208,7 +218,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     p->AddSample("WZTo3LNu",                                                                   "WZ",       itSignal, kYellow);    // WZ
     p->AddSample("WWW, WWZ, WZZ, ZZZ, VHToNonbb_amcatnlo, WWTo2L2Nu, WpWpJJ, WWTo2L2Nu_DoubleScat",    "VVV/VV",  itBkg, kGreen-9); // RareSM
     p->AddSample("ZZTo4L",    "ZZ",  itBkg, kCyan-5); // RareSM
-    p->AddSample("tZq_ll_0, tZq_ll_1, tZq_ll_2, tZq_ll_3",    "tZq",  itBkg, kGreen); // RareSM
+    p->AddSample(" tZq_ll_1, tZq_ll_2, tZq_ll_3",    "tZq",  itBkg, kGreen); // RareSM
     p->AddSample("TTZToLL_M1to10,TTZToLLNuNu,TTWToLNu,TTTT,TTHNonbb",    "ttX",  itBkg, kRed-10); // RareSM
     p->SetCut(cut + " && TConvNumber == 0");
   }
@@ -222,7 +232,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->SetRatioMin(0.5);
   p->SetRatioMax(1.5);
 
-  p->AddSystematic("stat");
+  //p->AddSystematic("stat");
   cout << "Selection = " << varName << endl;
   cout << "Corresponding to cut: " << cut << endl;
   p->PrintYields();

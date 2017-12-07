@@ -19,6 +19,13 @@ void GetFakeRates(TString what){
     sample DY6 = sample("DYJetsToLL_M50_MLM_5", "/mnt_pool/ciencias_users/user/carlosec/AnalysisPAF/WZ_temp/", "Tree_", ".root" , "back", theSamples, PlottingSamples, kRed, "DY","DY");
     sample DY7 = sample("DYJetsToLL_M50_MLM_6", "/mnt_pool/ciencias_users/user/carlosec/AnalysisPAF/WZ_temp/", "Tree_", ".root" , "back", theSamples, PlottingSamples, kRed, "DY","DY");
     sample DY8 = sample("DYJetsToLL_M50_MLM_7", "/mnt_pool/ciencias_users/user/carlosec/AnalysisPAF/WZ_temp/", "Tree_", ".root" , "back", theSamples, PlottingSamples, kRed, "DY","DY");
+    sample DY9 = sample("DYJetsToLL_M5to50_MLM", "/mnt_pool/ciencias_users/user/carlosec/AnalysisPAF/WZ_temp/", "Tree_", ".root" , "back", theSamples, PlottingSamples, kRed, "DY","DY");
+/*    sample tZq0 = sample("tZq_ll_0", "/mnt_pool/ciencias_users/user/carlosec/AnalysisPAF/WZ_temp/", "Tree_", ".root" , "back", theSamples, PlottingSamples, kRed, "DY","DY");
+    sample tZq1 = sample("tZq_ll_1", "/mnt_pool/ciencias_users/user/carlosec/AnalysisPAF/WZ_temp/", "Tree_", ".root" , "back", theSamples, PlottingSamples, kRed, "DY","DY");
+    sample tZq2 = sample("tZq_ll_2", "/mnt_pool/ciencias_users/user/carlosec/AnalysisPAF/WZ_temp/", "Tree_", ".root" , "back", theSamples, PlottingSamples, kRed, "DY","DY");
+    sample tZq3 = sample("tZq_ll_3", "/mnt_pool/ciencias_users/user/carlosec/AnalysisPAF/WZ_temp/", "Tree_", ".root" , "back", theSamples, PlottingSamples, kRed, "DY","DY");*/
+ 
+
   }
   else if (what == "TT"){
     sample TT = sample("TTbar_Powheg", "/mnt_pool/ciencias_users/user/carlosec/AnalysisPAF/WZ_temp/", "Tree_", ".root" , "back", theSamples, PlottingSamples, kRed, "tt","tt");
@@ -144,7 +151,7 @@ void GetFakeRates(TString what){
       for (int i = 0; i < theTree->GetEntries(); i++){
         theTree->GetEntry(i);
         //theTreeMVA->GetEntry(i);
-        if (TMath::Abs(TMll - 91.1876)< 15.  && TM3l > 100 && TMinMll > 4 && TNBtags == 0 && TMET > 30){//CRDY && TLep_PtZ1 > 25 && TLep_PtZ2 > 15 && TLep_PtW > 20
+        if (TMath::Abs(TMll - 91.1876)< 15.  && TM3l > 100 && TMinMll > 4 && TNBtags == 0 && TMET < 30){//CRDY && TLep_PtZ1 > 25 && TLep_PtZ2 > 15 && TLep_PtW > 20
 //        if (TMath::Abs(TMll - 91.1876)> 15. && TLep_PtZ1 > 20 && TLep_PtZ2 > 10 && TLep_PtW > 10 && TMinMll > 12 && TMET > 50){
           Int_t nFakes = 0;
           Float_t pt;

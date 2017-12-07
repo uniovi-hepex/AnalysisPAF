@@ -198,6 +198,7 @@ void WZAnalysis::InsideLoop(){
       metVector.SetPtEtaPhiM(TMET, TMET_Phi, 0., 0.);
       TM3l = (lepZ1.p + lepZ2.p + lepW.p).M();
       TMtWZ = (lepZ1.p + lepZ2.p + lepW.p + metVector).Mt();
+
       TMtW  = (lepW.p + metVector).Mt();
       TMll  = (lepZ1.p + lepZ2.p).M();
       if(passesMCTruth(fakeableLeptons,1,3)){
