@@ -156,10 +156,17 @@ Bool_t LeptonSelector::getRelIso03POG(Int_t wp){
 }
 
 Bool_t LeptonSelector::getRelIso04POG(Int_t wp){ // wps for muons
-  if(type == 1) return false; // electrons
-  if(wp == iLoose  && RelIso04 > 0.25) return false;
-  if(wp == iTight  && RelIso04 > 0.15) return false;
-  return true;
+  if(type == 1 && gSelection != iWZSelec) return false; // electrons
+  else if (type == 1 && gSelection == iWZSelec){
+    if (etaSC <= 1.479 && RelIso04 > 0.0588) return false;
+    if (etaSC >  1.479 && RelIso04 > 0.0571) return false;
+    return true;
+  }
+  else{
+    if(wp == iLoose  && RelIso04 > 0.25) return false;
+    if(wp == iTight  && RelIso04 > 0.15) return false;
+    return true;
+  }
 }
 
 Bool_t LeptonSelector::getminiRelIso(Int_t wp) {
@@ -334,8 +341,8 @@ Bool_t LeptonSelector::getElecCutBasedId(Int_t wp){
     }
     return true;
   }
-  if(gSelection == iWZSelec){
-    if(TMath::Abs(etaSC) < 1.479){ // central
+/*  if(gSelection == iWZSelec){
+    if(TMath::Abs(etaSC) <= 1.479){ // central
       if(TMath::Abs(sigmaIEtaIEta) > 0.00998 ) return false;
       if(TMath::Abs(dEtaSC) > 0.00308  ) return false;
       if(TMath::Abs(dPhiSC) > 0.0816 ) return false;
@@ -352,7 +359,7 @@ Bool_t LeptonSelector::getElecCutBasedId(Int_t wp){
       if(lostHits         >  1      ) return false;
     }
     return true;
-  }
+  }*/
   else{
     if(wp == iTight   && tightVar < 3)     return false;
     if(wp == iMedium  && tightVar < 2)     return false;
@@ -581,11 +588,10 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
       passId = getElecCutBasedId(iTight);
       passIso = getRelIso03POG(iTight);
       if(lep.p.Pt() < 10 || TMath::Abs(lep.p.Eta()) > 2.5) passId = false;
-      //passIso = getRelIso03POG(iTight);
-      //if(TMath::Abs(etaSC) > 1.4442 && TMath::Abs(etaSC) < 1.566) passId = false;
+      if(not(ishltsafeElec)) passId = false;
     }
 
-    if(passId && passIso && ( (lep.isElec && getGoodVertex(iWZtopEl)) || (lep.isMuon && getGoodVertex(iWZtopMu) ))){
+    if(passId && passIso && convVeto && ( (lep.isElec && getGoodVertex(iWZtopEl)) || (lep.isMuon && getGoodVertex(iWZtopMu) ))){
       isTopLepton = true;
     }
     else isTopLepton = false;
@@ -1088,6 +1094,7 @@ void LeptonSelector::GetLeptonVariables(Int_t i){ // Once per muon, get all the 
   SegComp        = Get<Float_t>("LepGood_segmentCompatibility",i);   //*
   isGlobalMuon = Get<Int_t>("LepGood_isGlobalMuon",i);
   isTrackerMuon = Get<Int_t>("LepGood_isTrackerMuon",i);
+  ishltsafeElec = Get<Int_t>("LepGood_hltId",i);
   isPrompt = 1;
   matchId  = 1;
   matchIdGamma = 0;
@@ -1129,6 +1136,7 @@ void LeptonSelector::GetDiscLeptonVariables(Int_t i){ // Once per muon, get all 
   SegComp        = Get<Float_t>("DiscLep_segmentCompatibility",i);   //*
   isGlobalMuon  = Get<Int_t>("DiscLep_isGlobalMuon",i);
   isTrackerMuon = Get<Int_t>("DiscLep_isTrackerMuon",i);
+  ishltsafeElec = Get<Int_t>("DiscLep_hltId",i);
 
   SF = 1;
 }
