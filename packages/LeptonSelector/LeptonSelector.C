@@ -122,7 +122,7 @@ Bool_t LeptonSelector::getGoodVertex(Int_t wp){
       }
     }
     else{ // muons
-      if((wp == iWZtopMu) && (dxy > (0.01 + 0.01*(pt<20))  || dz > 0.1)) return false;
+      if((wp == iWZtopMu) && (dxy > 0.02  || dz > 0.1)) return false;
       if((wp == iMedium) && (dxy > 0.2  || dz > 0.5)) return false;
       if(wp == iTight  && (dxy > 0.05 || dz > 0.1)) return false;
     }
@@ -580,7 +580,7 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
     Bool_t isTopLepton = true;
     //Top/Stop ID    
     if(lep.isMuon){
-      passId  = getMuonId(iTight) && getMuonId(iMedium);
+      passId  = getMuonId(iTight);
       passIso = getRelIso04POG(iTight);
      if(lep.p.Pt() < 10 || TMath::Abs(lep.p.Eta()) > 2.4 ) passId = false;
     }
