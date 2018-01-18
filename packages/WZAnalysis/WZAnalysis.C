@@ -154,6 +154,8 @@ void WZAnalysis::InsideLoop(){
       TMtWZ = -999;
       TMtW  = -999;
       TMll  = -999;
+      TMZ1W = -999;
+      TMZ2W = -999;
       std::cout << "ASSIGNS\n";
       std::vector<Lepton> tempLeps = AssignWZLeptons(fakeableLeptons);
       tempLeps = getMatchGenSelLeptons(tempLeps, tightLeptons, 0.4, true);
@@ -201,6 +203,8 @@ void WZAnalysis::InsideLoop(){
 
       TMtW  = (lepW.p + metVector).Mt();
       TMll  = (lepZ1.p + lepZ2.p).M();
+      TMZ1W  = (lepZ1.p + lepW.p).M();
+      TMZ2W  = (lepZ2.p + lepW.p).M();
       if(passesMCTruth(fakeableLeptons,1,3)){
         //std::cout << "Pass 3Tight, hasOS,passMC\n";
         if (lepZ1.Pt() > 25 && lepZ2.Pt() > 15 && lepW.Pt() > 20){//3 lepton, has OSSF, leptons assigned to W and Z. Fill histos from here onwards
@@ -269,6 +273,8 @@ void WZAnalysis::SetLeptonVariables(TTree* iniTree){
 
   iniTree->Branch("TChannel",      &TChannel,      "TChannel/I");
   iniTree->Branch("TMll",        &TMll,      "TMll/F");
+  iniTree->Branch("TMZ1W",        &TMZ1W,      "TMZ1W/F");
+  iniTree->Branch("TMZ2W",        &TMZ2W,      "TMZ2W/F");
   iniTree->Branch("TM3l",        &TM3l,      "TM3l/F");
   iniTree->Branch("TMtW",        &TMtW,      "TMtW/F");
   iniTree->Branch("TMtWZ",        &TMtWZ,      "TMtWZ/F");

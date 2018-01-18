@@ -111,6 +111,8 @@ class WZAnalysis : public PAFChainItemSelector{
     //Variables
     Float_t TWeight;   // Total nominal weight
     Float_t TMll;      // Invariant mass of OSSF (best Z mass)
+    Float_t TMZ1W;
+    Float_t TMZ2W;
     Float_t TMtW;       // M_T of the W boson
     Float_t TMtWZ;       // M_T of the WZ system
     Float_t TM3l;      // Invariant mass of the three leptons
