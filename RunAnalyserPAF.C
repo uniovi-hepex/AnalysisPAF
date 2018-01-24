@@ -38,7 +38,7 @@ Float_t         NormISRweights;
 Bool_t          verbose = true;
 Bool_t          nukeIt = true;
 Bool_t          G_IsFastSim = false;
-Int_t stopMass; Int_t lspMass;
+Float_t stopMass; Float_t lspMass;
 
 
 //=============================================================================
@@ -52,20 +52,23 @@ const TString kTagSel[nSel] = {"Stop",     "Top",     "TW",     "WW", "HWW",
 // Datasets:
     //>>> 2016 datasets
     TString data2016[] = {
-    "16B_03Feb2017", "16C_03Feb2017", "16D_03Feb2017", "16E_03Feb2017",
-    "16F_03Feb2017", "16G_03Feb2017", "16H_03Feb2017_v2", "16H_03Feb2017_v3"};
-    //"16G_03Feb2017", 
-    //"16H_03Feb2017_v2", "16H_03Feb2017_v3"};
-    const unsigned int nData2016 = 8;
+    //"16B_03Feb2017", "16C_03Feb2017", "16D_03Feb2017", "16E_03Feb2017",
+    //"16F_03Feb2017", 
+    "16G_03Feb2017", "16H_03Feb2017_v2", "16H_03Feb2017_v3"};
+    const unsigned int nData2016 = 3;
 
     //>>> 2017 datasets
     TString data2017[] = { 
-    "Run2017B_12Sep2017_v1",  "Run2017C_PromptReco_v1", "Run2017C_PromptReco_v2", 
-    "Run2017C_PromptReco_v3", "Run2017D_PromptReco_v1", "Run2017E_PromptReco_v1"};
-    const unsigned int nData2017 = 6;
+    //"Run2017B_12Sep2017_v1",  "Run2017C_12Sep2017_v1"};
+    //"Run2017D_PromptReco_v1", 
+    //"Run2017E_PromptReco_v1"
+    "Run2017F_PromptReco_v1"
+    };
 
-    TString *SelectedDataset   = data2016;
-    unsigned int SelectedNdata = nData2016;
+    const unsigned int nData2017 = 1;
+
+    TString *SelectedDataset   = data2017;
+    unsigned int SelectedNdata = nData2017;
 
 //=============================================================================
 // Tabs
@@ -73,8 +76,9 @@ const TString kTagSel[nSel] = {"Stop",     "Top",     "TW",     "WW", "HWW",
 const TString tab2016       = "DR80XSummer16asymptoticMiniAODv2_2";
 const TString tab2016noSkim = "DR80XSummer16asymptoticMiniAODv2_2_noSkim"; 
 const TString tab2017       = "2017data";
+const TString tab2017v2     = "2017data_v2";
 
-TString SelectedTab = tab2016;
+TString SelectedTab = tab2016noSkim;
 
 
 //=============================================================================
@@ -93,11 +97,22 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
     return;
   }
   
+  sampleName.ReplaceAll("&&", "&");
+
   if(options.Contains("noForcedHadd")) nukeIt=false;
 
   Int_t iChunk = Int_t(uxsec);
-  if(FirstEvent != 0) verbose = false;
+  if(FirstEvent != 0) verbose = true;
   TString orig_sampleName = sampleName;
+
+  if(options.Contains("xsec:")){
+    pos = options.First("xsec:") + 5;
+    TString xx = options(pos, options.Sizeof());
+    xx.ReplaceAll(" ", "");
+    pos = xx.Contains(",") ? xx.First(",") : xx.Sizeof();
+    xx = xx(0, pos);
+    uxsec = xx.Atof();
+  }
 
   vector<TString> tempfiles;
   Files.clear();
@@ -178,7 +193,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
     G_IsData = false; 
     if(options.Contains("Data") || options.Contains("data")) G_IsData = true;
     TString theSample = "";
-    if(sampleName.BeginsWith("LocalFile:")){ // LocalFile
+    if(sampleName.BeginsWith("LocalFile:")|| sampleName.BeginsWith("/")){ // LocalFile
       theSample = sampleName.ReplaceAll("LocalFile:", ""); 
       if(verbose) cout << " >>> Analysing a local sample: " << theSample << endl;
       sampleName = TString( theSample(theSample.Last('/')+1, theSample.Sizeof())).ReplaceAll(".root", "").ReplaceAll("Tree_", "").ReplaceAll("_*", "").ReplaceAll("*", "");
@@ -197,13 +212,21 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
       std::vector<TString> tempFiles = dm->GetRealDataFiles(theSample);
       Files.insert(Files.end(), (tempFiles).begin(), (tempFiles).end());
       GetCount(Files);
-      sampleName = Form("T2tt_mStop%i_mLsp%i",stopMass, lspMass);
-      G_IsFastSim = true;
-      xsec = GetStopXSec(stopMass);
-      if(theSample == "T2tt_mStop160to210mLSP1to20")  xsec *= (3*0.108)*(3*0.108); // Dileptonic sample
-      Count = GetSMSnorm(Files, stopMass, lspMass);
-      NormISRweights = GetISRweight(Files, stopMass, lspMass, G_IsFastSim);
+      sampleName = Form("T2tt_mStop%i_mLsp%i",int(stopMass)+10*int(stopMass-int(stopMass)), int(lspMass)+10*int(lspMass-int(lspMass)));
 
+      if(options.Contains("FastSim")) G_IsFastSim = true; else G_IsFastSim = false;
+
+      xsec = GetStopXSec(stopMass);
+      if(options.Contains("Dilep") || options.Contains("dilep")) xsec *= (3*0.108)*(3*0.108); // Dileptonic sample
+
+      if(options.Contains("NormFile:")){
+        TString CountFileName = options(options.Index("NormFile:")+9, options.Sizeof());
+        CountFileName = CountFileName(0, CountFileName.Index(".root")+5);
+        Count = GetSMSnorm(CountFileName, stopMass, lspMass); 
+      }
+      else Count = GetSMSnorm(Files, stopMass, lspMass);
+
+      NormISRweights = GetISRweight(Files, stopMass, lspMass, G_IsFastSim);
       G_Event_Weight = xsec/Count;
     } 
     else{ // Use dataset manager
@@ -224,7 +247,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
         //myProject->AddDataFiles(dm->GetFiles()); 
         Files.insert(Files.end(), (dm->GetFiles()).begin(), (dm->GetFiles()).end());
         xsec    = dm->GetCrossSection();
-        // if(uxsec != 1) xsec    = uxsec;
+        //if(uxsec != 1) xsec    = uxsec;
       }
       if(verbose) cout << " [Info] Total number of files: " << Files.size() << endl;
       GetCount(Files);
@@ -236,7 +259,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
       }
       else{  G_Event_Weight = xsec/Count;}
     }
-    if(sampleName.Contains("FastSim")) G_IsFastSim = true;
+    if(sampleName.Contains("FastSim") || options.Contains("FastSim")) G_IsFastSim = true;
   }
   if(verbose){
     //cout << "\033[1;30m=================================================\033[0m\n";
@@ -303,7 +326,8 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
       //gSystem->Exec("resetpaf -a");
     }
     cout << "\033[1;31m >>> Merging trees... \n\033[0m";
-    TString haddCommand = "hadd " + (nukeIt ? TString("-f ") : TString("") ) + outputDir + "/Tree_" + sampleName + ".root " + outputDir + "/Tree_" + sampleName + "_*.root";
+    TString haddCommand = "hadd " + (nukeIt ? TString("-f ") : TString("") ) + outputDir + "/Tree_" + sampleName + ".root " + outputDir + "/Tree_" + sampleName + "_[0-9].root " + outputDir + "/Tree_" + sampleName + "_[0-9][0-9].root";
+
     //TString haddCommand = "hadd " + outputDir + "/Tree_" + sampleName + ".root " + outputDir + "/Tree_" + sampleName + "_*.root";
     gSystem->Exec(haddCommand);
     cout << "\033[1;37m================================================\n\033[0m";
@@ -380,8 +404,8 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   
   // EXTRA PARAMETERS
   myProject->SetInputParam("IsFastSim"      , G_IsFastSim);
-  myProject->SetInputParam("stopMass"       , stopMass         );
-  myProject->SetInputParam("lspMass"        , lspMass          );
+  myProject->SetInputParam("stopMass"       , int(stopMass)    );
+  myProject->SetInputParam("lspMass"        , int(lspMass)     );
   myProject->SetInputParam("NormISRweights" , NormISRweights   );
   myProject->SetInputParam("doSyst"         , G_DoSystematics  ); 
   
@@ -409,6 +433,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   
   // Additional packages
   //----------------------------------------------------------------------------
+  myProject->AddPackage("ElecScaleClass");
   myProject->AddPackage("Lepton");
   myProject->AddPackage("Jet");
   if(sel == i4tSelec) myProject->AddPackage("SFfor4top");

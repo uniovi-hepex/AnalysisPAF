@@ -12,6 +12,9 @@
 #include "TH1.h"
 #include "TH2.h"
 #include "TH3.h"
+#include "TCanvas.h"
+#include "TStyle.h"
+#include "TChain.h"
 #include <iostream>
 #include <fstream>
 
@@ -26,7 +29,8 @@ vector<TString> GetAllFiles(TString path, TString  filename = "", Bool_t verbose
 
 //=== Get an histogram or values from plenty of Heppy Trees
 TH1D* GetHistoFromFiles(vector<TString> Files, TString histoName);
-Float_t GetSMSnorm(std::vector<TString> Files, Int_t mStop, Int_t mLsp);
+Float_t GetSMSnorm(std::vector<TString> Files, Float_t mStop, Float_t mLsp);
+Float_t GetSMSnorm(TString Files, Float_t mStop, Float_t mLsp);
 
 //=== Saving histos from HeppyTrees in MiniTrees
 void SaveCountHistos(vector<TString> Files, TString filename); 
@@ -37,7 +41,7 @@ void CheckTreesInDir(TString path, TString treeName = "tree", Int_t verbose = 0)
 void CheckTree(TString filename, TString treeName = "tree", Int_t verbose = 0);
 
 //=== Utils
-TString GetFunctionFromTH1F(TH1F* h, TString funcname = "GetSF", TString varname = "x");
+TString GetFunctionFromTH1F(TH1* h, TString funcname = "GetSF", TString varname = "x");
 TString GetFunctionFromTH1F(TString path, TString hname, TString funcname = "GetSF", TString varname = "x");
 
 // ttbar cross section at 13 TeV for a given top mass:
@@ -48,10 +52,10 @@ Float_t ttbar_xsec_top_mass(Float_t m);
 //=== Stop cross section
 Double_t GetStopXSec(Int_t StopMass);
 //=== Get ISR weight for a mStop, mLsp in a scan file
-Float_t  GetISRweight(std::vector<TString> Files, Int_t mStop, Int_t mLsp, Bool_t IsT2ttScan = false);
+Float_t  GetISRweight(std::vector<TString> Files, Float_t mStop, Float_t mLsp, Bool_t IsT2ttScan = false);
 //=== Get stop and LSP masses from a string "T2tt:[225,25]"
-Int_t GetStopMass(TString options);
-Int_t GetLspMass(TString options);
+Float_t GetStopMass(TString options);
+Float_t GetLspMass(TString options);
 
 
 
@@ -61,8 +65,8 @@ Int_t GetLspMass(TString options);
 
 
 //=== Get norm for [mStop, mLsp] in a T2tt scan
-Float_t GetSMSnorm(std::vector<TString> Files, Int_t mStop, Int_t mLsp){
-  cout << Form("\033[1;36m >>> Searching for normalization factor for stop point with masses [%i, %i]... ", mStop, mLsp);
+Float_t GetSMSnorm(std::vector<TString> Files, Float_t mStop, Float_t mLsp){
+  cout << Form("\033[1;36m >>> Searching for normalization factor for stop point with masses [%1.1f, %1.1f]... ", mStop, mLsp);
   Int_t nFiles = Files.size(); TFile *f;
   TH3D *hcount; Float_t val = 0; Float_t ms = 0; Float_t mn = 0;
   Float_t count = 0;
@@ -85,9 +89,17 @@ Float_t GetSMSnorm(std::vector<TString> Files, Int_t mStop, Int_t mLsp){
   return count;
 }
 
+Float_t GetSMSnorm(TString pathToCountFile, Float_t mStop, Float_t mLsp){
+  int mx; int my;
+  TFile* f = TFile::Open(pathToCountFile);
+  TH2D*  h = (TH2D*) f->Get("CountSMS");
+  return h->GetBinContent(h->FindBin(mStop, mLsp));
+}
+
+
 //=== Get sum of weights for ISR reweighting for [mStop, mLsp] in a T2tt scan
-Float_t GetISRweight(std::vector<TString> Files, Int_t mStop, Int_t mLsp, Bool_t IsT2ttScan){
-  cout << Form("\033[1;36m >>> [GetISRweight] Searching for normalization factor for ISR Jets reweighting for stop point with masses [%i, %i]... ", mStop, mLsp);
+Float_t GetISRweight(std::vector<TString> Files, Float_t mStop, Float_t mLsp, Bool_t IsT2ttScan){
+  cout << Form("\033[1;36m >>> [GetISRweight] Searching for normalization factor for ISR Jets reweighting for stop point with masses [%1.1f, %1.1f]... ", mStop, mLsp);
 	Int_t nFiles = Files.size(); TFile *f;
   Float_t weight = 0; Float_t nEntries = 0; Float_t nWeightedEntries = 0; Float_t TotalWeightedEntries = 0; Float_t TotalEntries = 0;
   TTree* t;
@@ -264,6 +276,7 @@ vector<TString> GetAllFiles(TString path, TString  filename, Bool_t verbose) {
   else {
     TString line;
     while (line.Gets(pipe)) {
+      if(line.Contains("13")) continue;
       if (result != "")	result += "\n";
       result += line;
     }
@@ -356,28 +369,28 @@ void SaveCountHistos(TString path, TString  inputfile, TString filename){
 }
 
 //=== Get stop mass from string
-Int_t GetStopMass(TString options){
-  Int_t mStop = 1;
+Float_t GetStopMass(TString options){
+  Float_t mStop = 1;
   options.ReplaceAll(" ", "");
   if(options.Contains("T2tt:")){
     Int_t l = options.First(']');
     Int_t f = options.Index("T2tt:[") + 6;
     TString n = options(f, l-f);
-    mStop = ((TString) n(0, n.First(','))).Atoi();
+    mStop = ((TString) n(0, n.First(','))).Atof();
   }
   return mStop;
 }
 
 //=== Get LSP mass from string
-Int_t GetLspMass(TString options){
-  Int_t mLsp = 1;
+Float_t GetLspMass(TString options){
+  Float_t mLsp = 1;
   options.ReplaceAll(" ", "");
   if(options.Contains("T2tt:")){
     options = options(options.Index("T2tt:["), options.Sizeof());
     Int_t l = options.First(']');
     Int_t f = options.Index("T2tt:[") + 6;
     TString n = options(f, l-f);
-    mLsp = ((TString) n(n.First(',')+1, n.Sizeof())).Atoi();
+    mLsp = ((TString) n(n.First(',')+1, n.Sizeof())).Atof();
   }
   return mLsp;
 }
@@ -385,12 +398,12 @@ Int_t GetLspMass(TString options){
 
 TString GetFunctionFromTH1F(TString path, TString hname, TString funcname, TString varname){
   TFile* f = TFile::Open(path);
-  TH1F* h = (TH1F*) f->Get(hname);
+  TH1* h = (TH1*) f->Get(hname);
   h->SetDirectory(0);
   return GetFunctionFromTH1F(h, funcname, varname);
 }
 
-TString GetFunctionFromTH1F(TH1F* h, TString funcname, TString varname){
+TString GetFunctionFromTH1F(TH1* h, TString funcname, TString varname){
   Int_t nbins = h->GetNbinsX();
   Float_t minval = h->GetBinLowEdge(1);
   Float_t secondval = h->GetBinLowEdge(2);
@@ -412,4 +425,33 @@ TString GetFunctionFromTH1F(TH1F* h, TString funcname, TString varname){
   cout << out;
   return out;
 }
+
+void Print2D(TH2* h, TString name, TString XTitle = "", TString YTitle = ""){
+  TCanvas* c = new TCanvas("c","c",10,10,800,600);
+  c->SetRightMargin(0.15);
+  c->SetGrid(1, 1);
+  
+  gStyle->SetPalette(1);
+  h->SetStats(0);
+  h->Draw("colz");
+  h->SetTitle("");
+  h->GetXaxis()->SetTitle(XTitle);
+  h->GetYaxis()->SetTitle(YTitle);
+  h->GetYaxis()->SetTitleOffset(1.25);
+  
+  if(     name.EndsWith(".png")) c->Print(name, "png");
+  else if(name.EndsWith(".pdf")) c->Print(name, "pdf");
+  else                           c->Print(name+".png", "png");
+}
+
+
+TChain *GetTChain(TString path, TString name, TString treeName = "tree"){
+  TChain* t = new TChain(treeName, treeName);
+  vector<TString> files = GetAllFiles(path, name);
+  for(int i = 0; i < (int) files.size(); i++) t->Add(files.at(i));
+  return t;
+}
+
+
+
 #endif
