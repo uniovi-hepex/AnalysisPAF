@@ -51,6 +51,7 @@ class t4Analysis : public PAFChainItemSelector{
     Int_t   gChannel;
     Bool_t  passMETfilters;
     Bool_t  passTrigger;
+    Bool_t  passTrigger2;
     Bool_t  isSS;
     Float_t NormWeight;
     Bool_t  gIsFastSim = false;
@@ -74,6 +75,7 @@ class t4Analysis : public PAFChainItemSelector{
     Int_t   TNSelLeps;
     Int_t   TChannel;
     Int_t   TPassTrigger;
+    Int_t   TPassTrigger2;
     Int_t   TPassMETFilters;
     Int_t   TPassLowInvMass;
     Float_t TLep0Pt;
