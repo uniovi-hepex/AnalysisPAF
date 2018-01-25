@@ -352,12 +352,12 @@ void Hyperlooper::HyperLoop(){
   Float_t val = 0; Float_t w = 0;
   Int_t nHistos = 0; Int_t nDist = 0;
   Bool_t doAllInstances(false);
-  //  if(options.Contains("AllInstances")){
-  //    doAllInstances = true;
-  //  }
+  if(options.Contains("AllInstances")){
+    doAllInstances = true;
+  }
 
   //>>> Starting the loop
-  Int_t counter = 0;
+  Int_t counter = 0; Int_t nInstances = 0;
   for (Long64_t jentry=0; jentry<nEntries; jentry++) {
     tree->GetEntry(jentry);
     counter++;
@@ -372,14 +372,21 @@ void Hyperlooper::HyperLoop(){
       for(Int_t iH = 0; iH < nHistos; iH++){
         //>>> Getting values for weight and variable
         w = d.vf.at(iH)->EvalInstance();
-        d.vv.at(iH)->GetNdata();
+        nInstances = d.vv.at(iH)->GetNdata();
         val = d.vv.at(iH)->EvalInstance();
 
         //>>> Fill the histogram with all the entries in an array
-        //if(doAllInstances){ TO BE UPDATED WHEN NEEDED
+        if(doAllInstances){ 
+          for(Int_t g = 0; g < nInstances; g++){
+            val = d.vv.at(iH)->EvalInstance(g);
+            d.vh.at(iH)->Fill(val, w);
+          }
+        }
 
-        //>>> Fill the histogram
-        d.vh.at(iH)->Fill(val, w);
+        else{
+          //>>> Fill the histogram
+          d.vh.at(iH)->Fill(val, w);
+        }
       }
     }
   }
