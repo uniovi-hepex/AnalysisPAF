@@ -60,6 +60,7 @@ void Datacard::InitialiseParams(){
   nHistoBins = 1;
   pathToFile = ""; rootFileName = ""; cardName = "temp_datacard.txt";
   IsShapeDatacard = true;
+  doBeestonBarlow = true;
 }
 
 void Datacard::GetParamsFormFile(TString options){
@@ -312,6 +313,7 @@ TextDatacard::TextDatacard(Datacard *datacard){
   nChannels   = 1;
   Init();
 
+  doBeestonBarlow = datacard->doBeestonBarlow;
   shapes = datacard->GetFileString();
   obs_bin.SetElement(    0, datacard->GetBinName());
   observation.SetElement(0, TString(Form("%i",datacard->GetDataRate())));
@@ -326,19 +328,20 @@ TextDatacard::TextDatacard(Datacard *datacard){
   for(Int_t i = 0; i < nProcesses; i++){
     processNorm[i].SetTitle(datacard->GetProcessName(i) + " lnN");
     for(Int_t j = 0; j < nProcesses; j++){
-      if(i == j) processNorm[i].SetElement(j, TString(Form("%1.2f",datacard->GetNormUnc(i))));
+      if(i == j) processNorm[i].SetElement(j, TString(Form("%1.3f",datacard->GetNormUnc(i))));
       else       processNorm[i].SetElement(j,"-");
     }
   }
-
-  for(Int_t i = 0; i < nProcesses; i++){
-    for(Int_t j = 0; j < nHistoBins; j++){
-      statUnc[i*nHistoBins +j].SetTitle(datacard->GetProcessName(i) + "_" + datacard->GetBinName() + Form("_statbin%i shape", j+1));
-      statUnc[i*nHistoBins +j].SetElement(i%nProcesses, "1");
+  if(doBeestonBarlow){
+    for(Int_t i = 0; i < nProcesses; i++){
+      for(Int_t j = 0; j < nHistoBins; j++){
+        statUnc[i*nHistoBins +j].SetTitle(datacard->GetProcessName(i) + "_" + datacard->GetBinName() + Form("_statbin%i shape", j+1));
+        statUnc[i*nHistoBins +j].SetElement(i%nProcesses, "1");
+      }
     }
-  }
-  if(nChannels == 1){
-    for(Int_t i = 0; i < nProcesses*nHistoBins; i++) totalStatDatacard += statUnc[i].GetLine();
+    if(nChannels == 1){
+      for(Int_t i = 0; i < nProcesses*nHistoBins; i++) totalStatDatacard += statUnc[i].GetLine();
+    }
   }
 
   for(Int_t i = 0; i < nNuisances; i++){
@@ -378,9 +381,10 @@ TString TextDatacard::GetText(){
   out += pro_bin.GetLine() + pro_name.GetLine() + pro_num.GetLine() + rates.GetLine() + _separation;
   out += Lumi.GetLine();
   for(i = 0; i < nProcesses; i++)            out += processNorm[i].GetLine();
-  out += totalStatDatacard;
+  if(!doBeestonBarlow) out += totalStatDatacard;
   //for(Int_t i = 0; i < nProcesses*nHistoBins*nChannels; i++) out += statUnc[i].GetLine();
   for(i = 0; i < nNuisances; i++)            out += systUnc[i].GetLine();
+  if(doBeestonBarlow) out += "* autoMCStats 0";
   return out;
 }
 
