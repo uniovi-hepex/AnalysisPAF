@@ -173,11 +173,11 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->SetLegendTextSize(0.04);
   p->SetRatioMin(0.6); p->SetRatioMax(1.4);
   p->doSetLogy = false;
-  p->DrawComp(name, 1, 1,options);
+  p->DrawComp(name, 1,options);
   p->doSetLogy = true;
   p->SetPlotMinimum(5e-4);
   p->SetPlotMaximum(0.5);
-  p->DrawComp("log", 1, 1,options);
+  p->DrawComp("log", 1,options);
 
   delete p;
 }

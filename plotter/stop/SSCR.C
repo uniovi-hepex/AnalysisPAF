@@ -23,20 +23,20 @@ class SSCR{
 
   public:
     SSCR(TString path = "", TString basecut = "", TString sys = ""){
-      if(path    == "") pathToTree = "/pool/ciencias/userstorage/juanr/stop/sep8/";
-      if(basecut == "") BaselineCut = "TNJets > 1 && TNBtags > 0 && !TIsSS && TPassTrigger && TPassMETfilters";
+      if(path    == "") pathToTree = "/pool/ciencias/userstorage/juanr/stop/jan5/";
+      if(basecut == "") BaselineCut = "TNJets >= 2 && TNBtags >= 1 && !TIsSS && TPassTrigger && TPassMETfilters && TNSelLeps == 2 && TLep0_Pt >= 25";
       if(sys     == "") systematics = "stat";
       NameOfTree = "tree";
-      SScut      = "TNJets >= 2 && TNBtags >= 1 && TIsSS && TPassTrigger && TPassMETfilters";
+      SScut      = "TNJets >= 2 && TNBtags >= 1 && TIsSS && TPassTrigger && TPassMETfilters && TNSelLeps == 2 && TLep0_Pt >= 25";
       var        = "TMT2"; 
       chan       = "ElMu"; 
       set        = false;
-      ngbins = 26;
+      ngbins = 21;
       gbins[0]  = 0;   gbins[1]  = 5;   gbins[2]  = 10;  gbins[3]  = 15;  gbins[4] = 20; 
       gbins[5]  = 25;  gbins[6]  = 30;  gbins[7]  = 35;  gbins[8]  = 40;  gbins[9] = 45; 
       gbins[10] = 50;  gbins[11] = 55;  gbins[12] = 60;  gbins[13] = 65;  gbins[14] = 70; 
       gbins[15] = 75;  gbins[16] = 80;  gbins[17] = 85;  gbins[18] = 90;  gbins[19] = 95; 
-      gbins[20] = 100; gbins[21] = 105; gbins[22] = 110; gbins[23] = 115; gbins[24] = 120; gbins[25] = 140; gbins[26] = 200; 
+      gbins[20] = 100; gbins[21] = 200; 
      /* ngbins = 20;
       gbins[0]  = 0;   gbins[1]  = 5;   gbins[2]  = 10;  gbins[3]  = 15;  gbins[4] = 20; 
       gbins[5]  = 25;  gbins[6]  = 30;  gbins[7]  = 35;  gbins[8]  = 40;  gbins[9] = 45; 
@@ -60,7 +60,7 @@ class SSCR{
     void SetPlotFolder(TString t){ plotfolder = t;}
 
   protected:
-    Float_t gbins[27];
+    Float_t gbins[22];
     Int_t ngbins;
 
     TString pathToTree;
@@ -145,7 +145,7 @@ void SSCR::DrawSSCR(TString name){
   if(plotfolder != "") gSystem->mkdir(plotfolder, kTRUE);
   p->SetPlotFolder(plotfolder);
   p->SetLegendTextSize(0.045);
-  p->SetLegendPosition(0.70, 0.60, 0.93, 0.93);
+  p->SetLegendPosition(0.70, 0.70, 0.93, 0.93);
   p->SetRatioErrorColor(kTeal-2);
   p->SetRatioErrorStyle(3244);
   p->SetStackErrorStyle(3244);
@@ -175,8 +175,9 @@ void SSCR::SetPlots(){
   set = true;
   g = new Plot(var, BaselineCut, chan, ngbins, gbins, "Title", "M_{T2} [GeV]");
   g->SetPath(pathToTree); g->SetTreeName(NameOfTree);
-  g->AddSample("WJetsToLNu_MLM, TTbar_Powheg_Semi", "Nonprompt", itBkg, kGray+1, "0");
+  g->AddSample("WJetsToLNu_MLM, TTbar_Powheg_Semi, WGToLNuG", "Nonprompt", itBkg, kGray+1, "0");
   g->AddSystematic(systematics);
+  g->AddNormUnc("Nonprompt", 0.30);
 
   p = new Plot(var, SScut, chan, ngbins, gbins, "Title2", "M_{T2} [GeV]");
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
@@ -189,11 +190,18 @@ void SSCR::SetPlots(){
 	p->AddSample("TTWToLNu, TTWToQQ, TTZToQQ, TTZToLLNuNu",              "ttV",       itBkg, kOrange-3);
 	p->AddSample("DYJetsToLL_M50_aMCatNLO, DYJetsToLL_M10to50_aMCatNLO", "DY",        itBkg, kAzure-8);
 	p->AddSample("TW, TbarW",                                            "tW",        itBkg, kMagenta);
-	p->AddSample("WJetsToLNu_MLM,TTbar_Powheg_Semi",                     "Nonprompt", itBkg, kGray+1, "0");
+	p->AddSample("WJetsToLNu_MLM,TTbar_Powheg_Semi,WGToLNuG",            "Nonprompt", itBkg, kGray+1, "0");
 	p->AddSample("TTbar_Powheg",                                         "ttbar",     itBkg, kRed+1, "0");
 	p->AddSample("MuonEG, SingleMuon, SingleElec, DoubleEG, DoubleMuon", "Data",      itData);
 
   p->AddSystematic(systematics);
+  p->AddNormUnc("ttbar", 0.05);
+  p->AddNormUnc("VV", 0.30);
+  p->AddNormUnc("ttV", 0.30);
+  p->AddNormUnc("DY", 0.15);
+  p->AddNormUnc("tW", 0.30);
+  p->AddNormUnc("Nonprompt", 0.50);
+
 }
 
 void SSCR::SetNumbers(){
