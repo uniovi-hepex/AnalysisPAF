@@ -57,8 +57,8 @@ void JetSelector::Initialise(){
     stringWP = "Medium";
     jet_MaxEta = 2.4;
     jet_MinPt  = 30;
-    vetoJet_minPt = 20;
-    vetoJet_maxEta = 2.4;
+    vetoJet_minPt = 30;
+    vetoJet_maxEta = 5.0;
     minDR = 0.4;
   }
   else if (gSelection == i4tSelec){
@@ -290,47 +290,48 @@ void JetSelector::InsideLoop(){
         else if (gSelection == iWZSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
         else if (gSelection == i4tSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
         else if (gSelection == iWZSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
+        else if (gSelection == iTopSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
         else if (gSelection == iTWSelec){
-	  vetoJets.push_back(tJ);
-	  if (!gIsData){
-	    if ( tJ.p.Pt() < 20.) continue;
-	    Float_t eff   = fBTagSFnom->JetTagEfficiency( tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
-	    Float_t sf    = fBTagSFnom->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
-	    Float_t sfHUp = fBTagSFbUp->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());	    
-	    Float_t sfHDn = fBTagSFbDo->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
-	    Float_t sfLUp = fBTagSFlUp->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
-	    Float_t sfLDn = fBTagSFlDo->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
+          vetoJets.push_back(tJ);
+          if (!gIsData){
+            if ( tJ.p.Pt() < 20.) continue;
+            Float_t eff   = fBTagSFnom->JetTagEfficiency( tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
+            Float_t sf    = fBTagSFnom->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
+            Float_t sfHUp = fBTagSFbUp->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());	    
+            Float_t sfHDn = fBTagSFbDo->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
+            Float_t sfLUp = fBTagSFlUp->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
+            Float_t sfLDn = fBTagSFlDo->GetJetSF(tJ.csv, tJ.flavmc, tJ.p.Pt(), tJ.p.Eta());
 
-	    if (tJ.isBtag){
+            if (tJ.isBtag){
 
-	      mcTag   *= eff;
-	      dataTag *= eff * sf;
+              mcTag   *= eff;
+              dataTag *= eff * sf;
 
-	      if (tJ.flavmc == 5 || tJ.flavmc == 4){
-		errHup += (sfHUp - sf ) / sf;
-		errHdn += (sf - sfHDn ) / sf;
-	      }
-	      else{
-		errLup += (sfLUp - sf ) / sf;
-		errLdn += (sf - sfLDn ) / sf;
-	      }
-	    }
-	    else{
-	      mcNoTag   *= ( 1 - eff    );
-	      dataNoTag *= ( 1 - eff*sf );
-	      if (tJ.flavmc == 5 || tJ.flavmc == 4){
-		errHup -= eff*(sfHUp - sf ) / (1 - eff*sf);
-		errHdn -= eff*(sf - sfHDn ) / (1 - eff*sf);
-	      }
-	      else{
-		errLup -= eff*(sfLUp - sf ) / (1 - eff*sf);
-		errLdn -= eff*(sf - sfLDn ) / (1 - eff*sf);
-	      }
+              if (tJ.flavmc == 5 || tJ.flavmc == 4){
+                errHup += (sfHUp - sf ) / sf;
+                errHdn += (sf - sfHDn ) / sf;
+              }
+              else{
+                errLup += (sfLUp - sf ) / sf;
+                errLdn += (sf - sfLDn ) / sf;
+              }
+            }
+            else{
+              mcNoTag   *= ( 1 - eff    );
+              dataNoTag *= ( 1 - eff*sf );
+              if (tJ.flavmc == 5 || tJ.flavmc == 4){
+                errHup -= eff*(sfHUp - sf ) / (1 - eff*sf);
+                errHdn -= eff*(sf - sfHDn ) / (1 - eff*sf);
+              }
+              else{
+                errLup -= eff*(sfLUp - sf ) / (1 - eff*sf);
+                errLdn -= eff*(sf - sfLDn ) / (1 - eff*sf);
+              }
 
-	    }
-	  }
-	}
-        else                                            vetoJets.push_back(tJ);
+            }
+          }
+        }
+        else  vetoJets.push_back(tJ);
       }
     }
   }
@@ -385,7 +386,7 @@ void JetSelector::InsideLoop(){
           if(tJ.p.Pt() > 15 || tJ.pTJESUp > 15 || tJ.pTJESDown > 15) Jets15.push_back(tJ);
           if(tJ.p.Pt() > jet_MinPt) selJets.push_back(tJ);
         }
-	 if (tJ.p.Pt() > vetoJet_minPt && TMath::Abs(tJ.p.Eta()) < vetoJet_maxEta) vetoJets.push_back(tJ);
+        if (tJ.p.Pt() > vetoJet_minPt && TMath::Abs(tJ.p.Eta()) < vetoJet_maxEta) vetoJets.push_back(tJ);
       }
     }
   }

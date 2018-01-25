@@ -2,6 +2,7 @@
 
 #include "PAFChainItemSelector.h"
 #include "Functions.h"
+#include "BTagSFUtil.h"
 #include <iostream>
 #include <vector>
 
@@ -36,6 +37,8 @@ class TopAnalysis : public PAFChainItemSelector{
     std::vector<Jet> mcJets  ;
     std::vector<Jet> vetoJets;
 
+    BTagSFUtil *fBTagSFLoose;
+
     TTree* fTree;
     Float_t TLHEWeight[254];
     void SetLeptonVariables();
@@ -57,8 +60,8 @@ class TopAnalysis : public PAFChainItemSelector{
     Float_t PUSF_Up;
     Float_t PUSF_Down;
     Int_t   gChannel;
-    Bool_t  passMETfilters;
-    Bool_t  passTrigger;
+    Bool_t  TPassMETFilters;
+    Bool_t  TPassTrigger;
     Bool_t  isSS;
     Float_t NormWeight;
 
@@ -94,28 +97,47 @@ class TopAnalysis : public PAFChainItemSelector{
     Float_t TMET;      // MET
     Float_t TGenMET;     
     Float_t TMET_Phi;  // MET phi
+    Float_t TgenTop1Pt = 0;
+    Float_t TgenTop2Pt = 0;
 
     Int_t   TNVetoLeps;
     Int_t   TNSelLeps;
     Int_t   TChannel;
     Bool_t   TIsSS;
-    Float_t TLep_Pt[10];    
-    Float_t TLep_Eta[10];
-    Float_t TLep_Phi[10];
-    Float_t TLep_E[10];
-    Float_t TLep_Charge[10];
+    Float_t TLep0Pt;    
+    Float_t TLep0Eta;
+    Float_t TLep0Phi;
+    Float_t TLep0M;
+    Int_t   TLep0Id;
+    Float_t TLep1Pt;    
+    Float_t TLep1Eta;
+    Float_t TLep1Phi;
+    Float_t TLep1M;
+    Int_t   TLep1Id;
 
     Int_t TNJets;            // Jets...
+    Int_t TNFwdJets; 
     Int_t TNBtags;
+    Float_t TJet_Pt[20];
+    Float_t TJet_Eta[20];
+    Float_t TJet_Phi[20];
+    Float_t TJet_M[20];
+    Float_t TJet_Csv[20];
+    Int_t TNBtagsLoose;
     Float_t TJet0Pt;
     Float_t TJet0Eta;
     Float_t TJet0Csv;
-    Float_t TJet_Pt[20];
-    Float_t TJet_Csv[20];
-    Float_t TJet_Eta[20];
-    Float_t TJet_Phi[20];
-    Float_t TJet_E[20];
-    Int_t TJet_isBJet[20];
+
+    Float_t TJet0Phi; 
+    Float_t TJet0M; 
+    Int_t TJet0IsBTag;
+    Float_t  TJet1Pt; 
+    Float_t TJet1Eta; 
+    Float_t TJet1Phi; 
+    Float_t TJet1M; 
+    Float_t TJet1Csv; 
+    Float_t TJet1IsBTag;
+
     Float_t THT;       // HT
 
     // For systematics...

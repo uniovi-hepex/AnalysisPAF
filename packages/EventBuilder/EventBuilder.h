@@ -21,6 +21,7 @@ class EventBuilder : public PAFChainItemSelector{
     //Bool_t PassHLT_Elec; Bool_t PassHLT_Muon; Bool_t PassHLT_ElMu;
     Bool_t METfilters;
     Bool_t passTrigger;
+    Bool_t passTrigger2;
     Bool_t isSS;
     Bool_t gIsFastSim;
 
