@@ -225,6 +225,7 @@ public:
   void GetAllBkg();
   void AllBkgSyst();
   
+  Histo* GetAllBkgClone(TString newname = "NewHisto_AllBkg");
   virtual void SetGoF(TString thegof="chi2");
   
   virtual void DrawStack(TString tag = "");

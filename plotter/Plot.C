@@ -24,6 +24,7 @@ Histo* Plot::GetH(TString sample, TString sys, Int_t type){
   h->SetDirectory(0);
   h->doStackOverflow = doStackOverflow;
   h->SetStyle(); 
+  h->Sumw2();
   delete ah;
   return h;
 }
@@ -87,6 +88,13 @@ void Plot::GetStack(){ // Sets the histogram hStack
     hAllBkg->AddToSystematics(VSumHistoSystDown.at(i));
   }
   if(doSys && ((Int_t) VSystLabel.size() > 0)) hAllBkg->SetBinsErrorFromSyst();
+}
+
+Histo* Plot::GetAllBkgClone(TString newname){
+  if(!hStack) GetStack();
+  Histo *h = hAllBkg->CloneHisto(newname);
+  h->SetDirectory(0);
+  return h;
 }
 
 void Plot::SetData(){  // Returns histogram for Data
@@ -691,9 +699,9 @@ void Plot::DrawComp(TString tag, bool doNorm, TString options){
     if(max > themax) themax = max;
     VSignals.at(i)->Draw(drawstyle + "same");
   }
-  VSignals.at(0)->SetMaximum(themax*ScaleMax);
+  signal->SetMaximum(themax*ScaleMax);
   if(!doSetLogy) PlotMinimum = PlotMinimum == -999? 0 : PlotMinimum;
-  VSignals.at(0)->SetMinimum(PlotMinimum);
+  signal->SetMinimum(PlotMinimum);
   if(doSetLogy){
     if(PlotMinimum == 0 || PlotMinimum == -999)  PlotMinimum = 1e-2;
     PlotMaximum = PlotMaximum == -999? themax*50 : PlotMaximum;
@@ -794,8 +802,9 @@ void Plot::DrawComp(TString tag, bool doNorm, TString options){
   TString dir = plotFolder;
   TString plotname = (outputName == "")? varname : outputName;
   if(outputName != "" && varname != "")  plotname += "_" + varname;
-  if(outputName != "" && tag != "")      plotname += "_" + tag;
+  if(plotname != "" && tag != "")      plotname += "_" + tag;
   if(plotname == "" && tag != "")      plotname = tag;
+
   gSystem->mkdir(dir, kTRUE);
   plotname.ReplaceAll(" ","");
   plotname.ReplaceAll("/","_");
@@ -836,6 +845,12 @@ void Plot::DrawStack(TString tag){
       hStack->Add(hSignal);
     }   
   }
+/*  TH1F* hSigDraw;
+  if(doSignal){
+    hSigDraw = (TH1F*) hSignal->Clone("hSigDraw");
+    hSigDraw->Add((TH1F*) hAllBkg->Clone("hAllBkg_clone"));
+    hSigDraw->Draw("hist"); 
+  }*/
   hStack->Draw("hist");
 
   //--------- Adjust max and min for the plot
@@ -866,7 +881,7 @@ void Plot::DrawStack(TString tag){
     for(Int_t  i = 0; i < nSignals; i++) VSignals.at(i)->Draw(SignalDrawStyle + "same");
 
   //---------  Draw systematic errors 
-  if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
+  //if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
   hAllBkg->SetFillStyle(3444); // 3444 o 3004 (3145 default here)
   hAllBkg->SetFillColor(StackErrorColor); // kGray+2 as default
   hAllBkg->SetLineColor(StackErrorColor);
@@ -917,6 +932,15 @@ void Plot::DrawStack(TString tag){
       Float_t rmin = hratio->GetMinimum()*0.85;
       SetRatioMin(rmin);
       SetRatioMax(rmax);
+      for(int bin = 1; bin <= nbins; bin++){  // Set bin error
+        totalerror = hAllBkg->GetBinError(bin); 
+        binval = hAllBkg->GetBinContent(bin);
+        errbin = binval > 0 ? totalerror/binval : 0.0;
+        float signalVal = hSignal->GetBinContent(bin);
+        errbin = errbin*(signalVal/binval);
+        hratioerr->SetBinContent(bin, StoBmean);
+        hratioerr->SetBinError(bin, errbin);
+      }
     }
   }
   else if(RatioYtitle == "S/sqrtB")   {cout << "Option not implemented yet!!!! Sorry!!!! [DO IT YOURSELF!]\n";}
@@ -941,7 +965,7 @@ void Plot::DrawStack(TString tag){
   hratio->Draw("same");
 
   if(RatioYtitle == "S/B") hline->Draw();
-  else{ hratioerr->Draw("same,e2"); hratio->Draw("same");}
+  hratioerr->Draw("same,e2"); //hratio->Draw("same");
 
   //-------- Saving options
     TString dir = plotFolder;
@@ -992,7 +1016,10 @@ void Plot::ScaleSys(TString pr, TString sys, Float_t SF){
 void Plot::SaveHistograms(){
 
   TString filename =  varname;
-  if(outputName != "") filename = outputName;
+  if(outputName != "") {
+    if(varname != "") filename = outputName + "_" + varname;
+    else filename = outputName;
+  }
   gSystem->mkdir(limitFolder, kTRUE);
   f = new TFile(limitFolder + filename + ".root", "recreate");
 
