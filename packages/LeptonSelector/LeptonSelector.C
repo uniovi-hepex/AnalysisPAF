@@ -23,6 +23,7 @@ void LeptonSelector::Initialise(){
   gSelection     = GetParam<Int_t>("iSelection");
   localPath      = GetParam<TString>("WorkingDir");
   LepSF = new LeptonSF(localPath + "/InputFiles/");
+  ElecScale = new ElecScaleClass(localPath + "/InputFiles/ElecScale.dat");
 
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
   // Select SFs for each analysis !!!!!!
@@ -783,6 +784,21 @@ Bool_t LeptonSelector::isLooseLepton(Lepton lep){
     }
     return true;
   }
+  else if(gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec){
+    // Same as good lepton but no looser cut on pT
+    if(lep.isMuon){
+      passId  = getMuonId(iTight);
+      passIso = getRelIso04POG(iTight);
+    }
+    if(lep.isElec){
+      passId = getElecCutBasedId(iTight) && lostHits <= 1;
+      passIso = getRelIso03POG(iTight);
+      if(TMath::Abs(etaSC) > 1.4442 && TMath::Abs(etaSC) < 1.566) return false;
+    }
+    if(lep.p.Pt() < 18 || TMath::Abs(lep.p.Eta()) > 2.4) return false;
+    if(passId && passIso && ( (lep.isElec && getGoodVertex(iTight)) || (lep.isMuon && getGoodVertex(iMedium) ))) return true;
+    else return false;
+  }
   if(gSelection == ittHSelec){
     //   Loose muons for multilepton ttH Analysis:
     // Fakeable muons without jetCSV cut and with pt>5.
@@ -847,8 +863,15 @@ void LeptonSelector::InsideLoop(){
   for(Int_t i = 0; i < nLep; i++){
     GetLeptonVariables(i);
     tL = Lepton(tP, charge, type);
-    if(tL.isMuon) tL.SetIso(RelIso04);
-    else          tL.SetIso(RelIso03);
+    if(tL.isMuon){
+      tL.SetIso(RelIso04);
+      tL.SetEnergyUnc(GetMuonEnergyScale());
+    }
+    else{
+      tL.SetIso(RelIso03);
+      tL.SetR9(R9);
+      tL.SetEnergyUnc(ElecScale->GetUnc(tL.Pt(), tL.Eta(), tL.GetR9()));
+    }
     if(isGoodLepton(tL)){
       DumpEvent(evt, Form(" >>> Lepton %i (pt = %g, eta = %g, type = %i):    PASA", i, tP.Pt(), tP.Eta(), type));
       //if(1){
@@ -870,6 +893,11 @@ void LeptonSelector::InsideLoop(){
       //tL.SetSF(1); tL.SetSFerr(1); // To be updated if ever needed
       if(gSelection == i4tSelec){
         if(!isGoodLepton(tL)) looseLeptons.push_back(tL);
+      }
+      else if(gSelection == iStopTopSelec){
+        tL.SetSF(   LepSF->GetLeptonSF(     pt, eta, tL.type) ); // Set SF and error
+        tL.SetSFerr(LepSF->GetLeptonSFerror(pt, eta, tL.type) );
+        looseLeptons.push_back(tL);
       }
       else looseLeptons.push_back(tL);
     }
@@ -906,7 +934,7 @@ void LeptonSelector::InsideLoop(){
       if(gpdgMId == 23 || gpdgMId == 24 || gpdgMId == 25){
         tL = Lepton(tP, charge, type);
         tL.Mid = gpdgMId;
-        //if(tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta() < 2.4)) genLeptons.push_back(tL);
+        //if(tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta()) < 2.4) genLeptons.push_back(tL);
         genLeptons.push_back(tL);
       }
     }
@@ -916,7 +944,7 @@ void LeptonSelector::InsideLoop(){
         tL = Lepton(tP, charge, type);
         tL.Mid = 15;
         nLeptonsFromTau++;
-       // if(tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta() < 2.4)i) genLeptons.push_back(tL);
+        //if(tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta()) < 2.4) genLeptons.push_back(tL);
         genLeptons.push_back(tL);
       }
     }
@@ -1013,6 +1041,7 @@ void LeptonSelector::GetLeptonVariables(Int_t i){ // Once per muon, get all the 
   SegComp        = Get<Float_t>("LepGood_segmentCompatibility",i);   //*
   isGlobalMuon = Get<Int_t>("LepGood_isGlobalMuon",i);
   isTrackerMuon = Get<Int_t>("LepGood_isTrackerMuon",i);
+  R9            = Get<Float_t>("LepGood_r9",i);
 
   SF = 1;
 }
