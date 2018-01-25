@@ -28,11 +28,11 @@ TString btag1SS    = "TIsSS && TNJets >= 2 && TNBtags > 0";
 // Baseline
 
 //TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/TopTrees/may10/"; // For AN 18 may
-TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/TopTrees/jul7/";
+//TString pathToTree = "/nfs/fanae/user/juanr/AnalysisPAF/TopTrees/jul25/";
+TString pathToTree = "/pool/ciencias/userstorage/juanr/top/nov15/";
 void xsec(){
 
   Float_t DYSF         = GetDYDD(  "ElMu", "1btag");
-  cout << "DDSF = " << DYSF << endl;
   Float_t NonWZ_DD     = GetNonWDD("ElMu", "1btag");
   Float_t DYSF_err     = GetDYDD(  "ElMu", "1btag", true)/DYSF;
   Float_t NonWZ_DD_err = GetNonWDD("ElMu", "1btag", true)/NonWZ_DD;
@@ -50,7 +50,13 @@ void xsec(){
 	p->AddSample("TW, TbarW",                                             "tW",    itBkg, kMagenta);
   p->AddSample("DYJetsToLL_M50_aMCatNLO",                               "DY",    itBkg, kAzure-8);
   //p->AddSample("DYJetsToLL_M50_MLM, DYJetsToLL_M5to50_MLM,",            "DY",    itBkg, kAzure-8);
-  p->AddSample("TTbar_Powheg",                                          "ttbar", itBkg, kRed+1);
+  p->AddSample("TTbar_Powheg",                                          "ttbar", itBkg, kRed+1, "ElecEff,MuonEff,Trig,JES,Btag,MisTag,PU");
+//TTbar_Powheg_mtop1755
+//TTbar_Powheg_mtop1665
+//TTbar_Powheg_mtop1695
+//TTbar_Powheg_mtop1715
+//TTbar_Powheg_mtop1735
+
   p->AddSample("MuonEG, DoubleEG, DoubleMuon, SingleMuon, SingleElec",  "Data",  itData);
 
   p->AddSample("TTbar_Powheg_ueUp",      "ttbar", itSys, 1, "ueUp"     );
@@ -59,9 +65,16 @@ void xsec(){
   p->AddSample("TTbar_Powheg_hdampDown", "ttbar", itSys, 1, "hdampDown");
   p->AddSample("TTbar_Powheg_isrUp",     "ttbar", itSys, 1, "isrUp"    );
   p->AddSample("TTbar_Powheg_isrDown",   "ttbar", itSys, 1, "isrDown"  );
+
+  TString pathToFSRcorrSF = "/nfs/fanae/user/juanr/AnalysisPAF/plotter/top/FSRcorr/SF/";
+  AddFRhisto1D(pathToFSRcorrSF + "FSR_BtagSF.root" , "FSR_btagSF_Up",   "FSR_btagSF_Up");
+  AddFRhisto1D(pathToFSRcorrSF + "FSR_BtagSF.root" , "FSR_btagSF_Down", "FSR_btagSF_Down");
+  p->SetWeight("TWeight*GetFSR_BtagSF_Up(TBtagPt)");
   p->AddSample("TTbar_Powheg_fsrUp",     "ttbar", itSys, 1, "fsrUp"    );
+  p->SetWeight("TWeight*GetFSR_BtagSF_Down(TBtagPt)");
   p->AddSample("TTbar_Powheg_fsrDown",   "ttbar", itSys, 1, "fsrDown"  );
 
+  p->SetWeight("TWeight");
   p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "ScaleUp"    );
   p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "ScaleDown"  );
   p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "pdfUp"      );
@@ -70,15 +83,17 @@ void xsec(){
   p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "JERUp"      );
 //  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "JERDown"    );
 
-  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "ElecEffUp"  );
-  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "ElecEffDown");
 
-  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "MuonEffUp"  );
-  p->AddSample("TTbar_Powheg", "ttbar", itSys, 1, "MuonEffDown");
+  p->AddSample("TTbar_Powheg_erdON", "ttbar", itSys, 1, "Powheg_erdON");
+  p->AddSample("TTbar_QCDbasedCRTune_erdON", "ttbar", itSys, 1, "QCDbasedCRTune_erdON");
+  p->AddSample("TTbar_GluonMoveCRTune", "ttbar", itSys, 1, "GluonMoveCRTune");
+  p->AddSample("TTbar_GluonMoveCRTune_erdON", "ttbar", itSys, 1, "GluonMoveCRTune_erdON");
+
+  p->UseEnvelope("ttbar", "Powheg_erdON, QCDbasedCRTune_erdON, GluonMoveCRTune, GluonMoveCRTune_erdON", "CR");
 
 
   p->AddSystematic("stat");
-  p->AddSystematic("Trig,JES,Btag,MisTag,PU", "ttbar");
+  //p->AddSystematic("ElecEff,MuonEff,Trig,JES,Btag,MisTag,PU", "ttbar");
   p->SetSignalStyle("xsec");
   p->SetTableFormats("2.4");
 
@@ -86,6 +101,10 @@ void xsec(){
 //  p->PrintSystYields();
 //  p->PrintYields("", "", "", "");
 //  p->PrintYields(dileptonSS + ", " + jets2SS + ", " + btag1SS, "Dilepton, 2jets, 1btag", "ElMu, ElMu, ElMu", "html");
+  Float_t n = p->GetYield("ttbar");
+  Float_t fsrUp = p->GetYield("ttbar", "fsrUp");
+  Float_t fsrDo = p->GetYield("ttbar", "fsrDown");
+  
 
   CrossSection *x = new CrossSection(p, "ttbar");
   x->SetTheoXsec(831.8);
@@ -96,7 +115,7 @@ void xsec(){
   x->SetNSimulatedEvents(77229341);
 
   x->SetEfficiencySyst("JES, Btag, MisTag, ElecEff, MuonEff, LepEff, Trig, PU, JER");
-  x->SetAcceptanceSyst("stat, ue, nlo, hdamp, scale, pdf, isr, fsr, q2, ME");
+  x->SetAcceptanceSyst("stat, ue, nlo, hdamp, scale, pdf, isr, fsr, q2, ME, CR");
 
   x->SwitchLabel("VV", "Dibosons");
   x->SwitchLabel("DY", "Drell-Yan");
@@ -117,12 +136,17 @@ void xsec(){
   x->SwitchLabel("Scale", "ME scales");
   x->SwitchLabel("pdf", "PDF");
   x->SwitchLabel("stat", "MC stat");
+  x->SwitchLabel("CR", "Color reconnection");
 
   Float_t y = x->GetYield("ttbar");
   // Scale FSR unc by sqrt
   Float_t diff = TMath::Abs(x->GetYield("ttbar") - x->GetUnc("FSR scale"));
   x->SetUnc("FSR scale", x->GetYield("ttbar")-diff/TMath::Sqrt(2));
   //x->SetUnc("FSR scale", x->GetYield("ttbar"));
+
+  x->SetUnc("PDF", y- y*0.006); 
+  x->SetUnc("ME scales", y- y*0.0014); 
+
   x->SetUnc("Drell-Yan", 0.15);
   x->SetUnc("NonWZ",     0.30);
   x->SetUnc("Dibosons",  0.30);
