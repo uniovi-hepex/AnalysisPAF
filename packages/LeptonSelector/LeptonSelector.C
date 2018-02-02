@@ -895,7 +895,6 @@ void LeptonSelector::InsideLoop(){
   genLeptons.clear();
   vetoLeptons.clear();
   genParticles.clear();
-
   nLeptonsFromTau = 0;
   // Loop over the leptons and select
   nLep     = Get<Int_t>("nLepGood");
@@ -1134,6 +1133,7 @@ void LeptonSelector::GetLeptonVariables(Int_t i){ // Once per muon, get all the 
   if(!gIsData){ matchId      = TMath::Abs(Get<Int_t>("LepGood_mcMatchId",i));}
   if(!gIsData){ matchIdGamma = TMath::Abs(Get<Int_t>("LepGood_mcPromptGamma",i));}
   R9            = Get<Float_t>("LepGood_r9",i);
+
   SF = 1;
 }
 

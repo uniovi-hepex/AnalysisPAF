@@ -78,7 +78,7 @@ const TString tab2016noSkim = "DR80XSummer16asymptoticMiniAODv2_2_noSkim";
 const TString tab2017       = "2017data";
 const TString tab2017v2     = "2017data_v2";
 
-TString SelectedTab = tab2016noSkim;
+TString SelectedTab = tab2016;
 
 //=============================================================================
 // Main function
@@ -169,12 +169,11 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   TString tab = SelectedTab;
   if(verbose) cout << Form("\033[1;36m >>> Setting tab: %s \033[0m\n", tab.Data());
   dm->SetTab(tab.Data());
-  
 
   TString pathToFiles = dataPath + dm->FindLocalFolder();
   //Temporal fix
   //TString pathToFiles = "/pool/ciencias/HeppyTreesSummer16/v2/";
- // Deal with data samples
+  //Deal with data samples
   if(sampleName == "DoubleEG" || sampleName == "DoubleMuon" || sampleName == "MuonEG" || sampleName.BeginsWith("Single")){
     if(verbose) cout << ("\033[1;39m >>> DATA SAMPLES \033[0m\n");
     G_Event_Weight = 1.; G_IsData = true;
@@ -481,6 +480,5 @@ void GetCount(std::vector<TString> Files, Bool_t IsData){
 		f->Close();    
 	}
 }
-
 
 

@@ -83,6 +83,7 @@ void Plot::GetStack(){ // Sets the histogram hStack
   hAllBkg->SetTag("Uncertainty");
   if(doSys && ((Int_t) VSystLabel.size() > 0)) GroupSystematics();
   if(verbose) cout << Form(" Adding %i systematic to sum of bkg...\n", (Int_t) VSumHistoSystUp.size());
+
   for(Int_t i = 0; i < (Int_t) VSumHistoSystUp.size(); i++){
     hAllBkg->AddToSystematics(VSumHistoSystUp.at(i));
     hAllBkg->AddToSystematics(VSumHistoSystDown.at(i));
@@ -946,6 +947,7 @@ void Plot::DrawStack(TString tag){
   else if(RatioYtitle == "S/sqrtB")   {cout << "Option not implemented yet!!!! Sorry!!!! [DO IT YOURSELF!]\n";}
   else if(RatioYtitle == "S/sqrtSpB") {cout << "Option not implemented yet!!!! Sorry!!!! [DO IT YOURSELF!]\n";}
   else if(RatioYtitle == "S/SpB") {      if(doData) hratio = (TH1F*)hData->Clone("hratio");
+    if(doData) hratio = (TH1F*)hData->Clone("hratio");
     else       hratio = (TH1F*)hAllBkg->Clone("hratio");
     // ratio by hand so systematic (background) errors don't get summed up to statistical ones (data)
     for (int bin = 0; bin < hratio->GetNbinsX(); ++bin){
