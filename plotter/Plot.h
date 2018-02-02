@@ -31,7 +31,7 @@ public:
   bool doData          = true; 
   bool doYieldsInLeg   = true;
   bool doSingleLep     = false;
-  bool doStackOverflow = false;
+  bool doStackOverflow = true;
   bool doSignal        = true;
   bool doSetLogy       = true;
   bool doStatUncInDatacard = true;

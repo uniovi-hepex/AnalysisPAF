@@ -67,8 +67,8 @@ const TString kTagSel[nSel] = {"Stop",     "Top",     "TW",     "WW", "HWW",
 
     const unsigned int nData2017 = 1;
 
-    TString *SelectedDataset   = data2016;
-    unsigned int SelectedNdata = nData2016;
+    TString *SelectedDataset   = data2017;
+    unsigned int SelectedNdata = nData2017;
 
 //=============================================================================
 // Tabs
