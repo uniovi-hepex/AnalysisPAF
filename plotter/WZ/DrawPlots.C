@@ -94,38 +94,38 @@ void DrawPlots(TString cutName, TString treeName = ""){
 //  DrawPlot("TM3l",  cut, "All", 21, 80, 300, "M_{3l} [GeV]", cutName);
 
   doLog = true;
-  DrawPlot("TMET",  cut, "All", 11, 30, 140, "E_{T}^{miss} [GeV]", "TMET_log", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
+//  DrawPlot("TMET",  cut, "All", 11, 30, 140, "E_{T}^{miss} [GeV]", "TMET_log", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
 //  DrawPlot("TMET",  cut, "All", 11, 30, 140, "E_{T}^{miss} [GeV]", "TMET_log", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/temp/", yMax, yMin);
-  DrawPlot("TM3l",  cut, "All", 20, 100,300, "M_{3l} [GeV]", "TM3l_log", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
+//  DrawPlot("TM3l",  cut, "All", 20, 100,300, "M_{3l} [GeV]", "TM3l_log", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
 //  DrawPlot("TMET",  cut, "All", 39, 30, 420, "E_{T}^{miss} [GeV]", cutName);
 //  Float_t M3lBins[] = {0,100,200,300,400,500,600,700,800,900,1000,1200,1500,2000};
 //  DrawPlot("TM3l",  cut, "All", 13, M3lBins, "M_{3l} [GeV]", cutName);
 //  DrawPlot("TMtWZ",  cut, "All", 13, M3lBins, "M_{WZ} [GeV]", cutName);
-  DrawPlot("TMtW",  cut, "All", 10 , 0 , 200 , "M_{T}^{W} [GeV]", "TMtW_log", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
-  DrawPlot("TMll",  cut, "All", 8, 70 , 110 , "M^{Z} [GeV]", "TMll_log", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
-  DrawPlot("TLep_PtZ1",  cut, "All", 10,0 , 200 , "p_{T}^{lepZ1} [GeV]", "TLep_PtZ1_log", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
-  DrawPlot("TLep_PtZ2",  cut, "All", 10,0 , 200 , "p_{T}^{lepZ2} [GeV]", "TLep_PtZ2_log",  cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
-  DrawPlot("TLep_PtW",  cut, "All", 10,0 , 200 , "p_{T}^{lepW} [GeV]", "TLep_PtW_log", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
+//  DrawPlot("TMtW",  cut, "All", 10 , 0 , 200 , "M_{T}^{W} [GeV]", "TMtW_log", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
+//  DrawPlot("TMll",  cut, "All", 8, 70 , 110 , "M^{Z} [GeV]", "TMll_log", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
+//  DrawPlot("TLep_PtZ1",  cut, "All", 10,0 , 200 , "p_{T}^{lepZ1} [GeV]", "TLep_PtZ1_log", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
+//  DrawPlot("TLep_PtZ2",  cut, "All", 10,0 , 200 , "p_{T}^{lepZ2} [GeV]", "TLep_PtZ2_log",  cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
+//  DrawPlot("TLep_PtW",  cut, "All", 10,0 , 200 , "p_{T}^{lepW} [GeV]", "TLep_PtW_log", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
 
-  DrawPlot("TLep_EtaZ1",  cut, "All", 10,-2.5 , 2.5 , "#eta^{lepZ1} [GeV]", "TLep_EtaZ1_log", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
-  DrawPlot("TLep_EtaZ2",  cut, "All", 10,-2.5 , 2.5 , "#eta^{lepZ2} [GeV]", "TLep_EtaZ2_log", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
-  DrawPlot("TLep_EtaW",  cut, "All", 10,-2.5 , 2.5 , "#eta^{lepW} [GeV]", "TLep_EtaW_log", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
+//  DrawPlot("TLep_EtaZ1",  cut, "All", 10,-2.5 , 2.5 , "#eta^{lepZ1} [GeV]", "TLep_EtaZ1_log", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
+//  DrawPlot("TLep_EtaZ2",  cut, "All", 10,-2.5 , 2.5 , "#eta^{lepZ2} [GeV]", "TLep_EtaZ2_log", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
+//  DrawPlot("TLep_EtaW",  cut, "All", 10,-2.5 , 2.5 , "#eta^{lepW} [GeV]", "TLep_EtaW_log", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
 
-  doLog = false;
-  DrawPlot("TMET",  cut, "All", 11, 30, 140, "E_{T}^{miss} [GeV]", "TMET", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
-  DrawPlot("TM3l",  cut, "All", 20, 100,300, "M_{3l} [GeV]", "TM3l", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
+    doLog = false;
+//  DrawPlot("TMET",  cut, "All", 11, 30, 140, "E_{T}^{miss} [GeV]", "TMET", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
+//    DrawPlot("TM3l",  cut, "All", 20, 100,300, "M_{3l} [GeV]", "TM3l", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
 //  DrawPlot("TMET",  cut, "All", 39, 30, 420, "E_{T}^{miss} [GeV]", cutName);
 //  Float_t M3lBins[] = {0,100,200,300,400,500,600,700,800,900,1000,1200,1500,2000};
-//  DrawPlot("TM3l",  cut, "All", 13, M3lBins, "M_{3l} [GeV]", cutName);
+//    DrawPlot("TM3l",  cut, "All", 13, M3lBins, "M_{3l} [GeV]", cutName);
 //  DrawPlot("TMtWZ",  cut, "All", 13, M3lBins, "M_{WZ} [GeV]", cutName);
-  DrawPlot("TMtW",  cut, "All", 10 , 0 , 200 , "M_{T}^{W} [GeV]", "TMtW", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
-  DrawPlot("TMll",  cut, "All", 8, 70 , 110 , "M^{Z} [GeV]", "TMll", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
-  DrawPlot("TLep_PtZ1",  cut, "All", 10,0 , 200 , "p_{T}^{lepZ1} [GeV]", "TLep_PtZ1", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
-  DrawPlot("TLep_PtZ2",  cut, "All", 10,0 , 200 , "p_{T}^{lepZ2} [GeV]", "TLep_PtZ2",  cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
-  DrawPlot("TLep_PtW",  cut, "All", 10,0 , 200 , "p_{T}^{lepW} [GeV]", "TLep_PtW", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
+//  DrawPlot("TMtW",  cut, "All", 10 , 0 , 200 , "M_{T}^{W} [GeV]", "TMtW", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
+//  DrawPlot("TMll",  cut, "All", 8, 70 , 110 , "M^{Z} [GeV]", "TMll", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
+//  DrawPlot("TLep_PtZ1",  cut, "All", 10,0 , 200 , "p_{T}^{lepZ1} [GeV]", "TLep_PtZ1", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
+//  DrawPlot("TLep_PtZ2",  cut, "All", 10,0 , 200 , "p_{T}^{lepZ2} [GeV]", "TLep_PtZ2",  cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
+//  DrawPlot("TLep_PtW",  cut, "All", 10,0 , 200 , "p_{T}^{lepW} [GeV]", "TLep_PtW", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
 
-  DrawPlot("TLep_EtaZ1",  cut, "All", 10,-2.5 , 2.5 , "#eta^{lepZ1} [GeV]", "TLep_EtaZ1", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
-  DrawPlot("TLep_EtaZ2",  cut, "All", 10,-2.5 , 2.5 , "#eta^{lepZ2} [GeV]", "TLep_EtaZ2", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
+//  DrawPlot("TLep_EtaZ1",  cut, "All", 10,-2.5 , 2.5 , "#eta^{lepZ1} [GeV]", "TLep_EtaZ1", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
+//  DrawPlot("TLep_EtaZ2",  cut, "All", 10,-2.5 , 2.5 , "#eta^{lepZ2} [GeV]", "TLep_EtaZ2", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
   DrawPlot("TLep_EtaW",  cut, "All", 10,-2.5 , 2.5 , "#eta^{lepW} [GeV]", "TLep_EtaW", cutName, "/mnt_pool/ciencias_users/user/carlosec/www/" + treeName + "_v2/" + cutName + "/", yMax, yMin);
 
 
@@ -139,7 +139,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   if(outFolder!="") p->SetPlotFolder(outFolder);
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
   p->verbose = true;
-//  p->doData = false;
+  p->doData = true;
   if(varName != "") p->SetVarName(varName);
   p->SetOutputName(var);
   //std::cout  << cutName << NameOfTree<< "...............\n";
@@ -150,21 +150,21 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   AddFRhisto("fakerate_light_EWKino_Moriond2017_36p5fb.root", "FR_susy_wpV_el_data_comb", "mvaVTFRhistoEl"); //Book Elec Fake Rate
   AddFRhisto("fakerate_light_EWKino_Moriond2017_36p5fb.root", "FR_susy_wpV_mu_data_comb", "mvaVTFRhistoMu"); //Book Muon Fake Rate
   std::cout << "_______________________________ADD SAMPLES______________________________________________" << std::endl;
-  if (NameOfTree == "top" || doMC){//Load MC FAKES
-    p->SetWeight("TWeight*1.1");
+  if (NameOfTree == "top" ){//Load MC FAKES
+    p->SetWeight("TWeight");
     p->SetCut(cut); //Allow Conversions
     p->AddSample("TGJets, TTGJets, WGToLNuG, ZGTo2LG, WZG_amcatnlo, WWG_amcatnlo",                "X+#gamma", itBkg, kViolet+2);  // X+gamma 
-    p->SetCut(cut); //Veto Conversions
+    p->SetCut(cut ); //Veto Conversions
     p->AddSample("WZTo3LNu",                                                                   "WZ",       itSignal, kYellow);    // WZ
     p->AddSample("WWW, WWZ, WZZ, ZZZ, VHToNonbb_amcatnlo,WWTo2L2Nu, WpWpJJ, WWTo2L2Nu_DoubleScat",    "VVV/VV",  itBkg, kGreen-9); // RareSM
     p->AddSample("ZZTo4L",    "ZZ",  itBkg, kCyan-5); // RareSM
     p->AddSample("tZq_ll_0, tZq_ll_1, tZq_ll_2, tZq_ll_3",    "tZq",  itBkg, kGreen); // RareSM
     p->AddSample("TTZToLL_M1to10,TTZToLLNuNu,TTWToLNu,TTTT,TTHNonbb",    "ttX",  itBkg, kRed-10); // RareSM
-    p->SetCut(cut); //Add the MC fakes
+    p->SetCut(cut + " && TConvNumber == 0"); //Add the MC fakes
     p->AddSample("TTbar_Powheg, TW_noFullyHadr,T_tch,Tbar_tch,TbarW_noFullyHadr,TToLeptons_sch_amcatnlo", "tt + Single t", itBkg, kRed);
-    p->AddSample("DYJetsToLL_M50_MLM_, DYJetsToLL_M5to50_MLM", "V + Jets", itBkg, kOrange);
-    p->SetWeight("TWeight");
-  	p->AddSample("MuonEG, DoubleEG, DoubleMuon",                     "Data",  itData);             // Data
+    p->AddSample("DYJetsToLL_M50_MLM_0, DYJetsToLL_M50_MLM_1, DYJetsToLL_M50_MLM_2, DYJetsToLL_M50_MLM_3, WJetsToLNu_MLM", "V + Jets", itBkg, kOrange);
+    p->SetCut(cut); //Add the MC fakes
+  	p->AddSample("DoubleMuon, DoubleEG, MuonEG, SingleMuon, SingleElec",                     "Data",  itData);             // Data
   }
 
   else if (NameOfTree == "veryTight"){//Load DATA FAKES, APPLY FAKE RATE FILES!!!
@@ -236,7 +236,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   cout << "Selection = " << varName << endl;
   cout << "Corresponding to cut: " << cut << endl;
   p->PrintYields();
-  //p->PrintSamples();
+  p->PrintSamples();
   p->doSetLogy = doLog;
   //p->DrawStack("0", 1);
   //p->doSetLogy = true;
