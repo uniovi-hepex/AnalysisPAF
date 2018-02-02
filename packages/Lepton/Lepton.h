@@ -3,6 +3,7 @@
 
 #include "TLorentzVector.h"
 #include "TString.h"
+#include "ElecScaleClass.h"
 
 class Lepton;
 
@@ -56,12 +57,16 @@ class Lepton : public TObject{
     void SetSF(Float_t val);
     void SetSFerr(Float_t val);
     void SetIso(Float_t val){ Iso = val;}
-    Float_t GetIso(){ return Iso;} 
+    void SetR9(Float_t val){ R9 = val;}
+    void SetEnergyUnc(Float_t val){ EnergyUnc = val;}
 
     Float_t Pt(){return p.Pt();}
     Float_t Eta(){return p.Eta();}
     Float_t Phi(){return p.Phi();}
     Float_t E(){return p.E();}
+    Float_t GetIso(){ return Iso;} 
+    Float_t GetR9(){return R9;}
+    Float_t GetEnergyUnc(){return EnergyUnc;}
 
     Lepton * lepMatch = 0;
     Int_t isPrompt;
@@ -71,6 +76,8 @@ class Lepton : public TObject{
     Float_t SF;
     Float_t SFerr;
     Float_t Iso;
+    Float_t R9;
+    Float_t EnergyUnc;
 
     //ClassDef(Lepton, 0);
 };

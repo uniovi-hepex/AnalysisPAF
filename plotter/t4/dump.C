@@ -3,6 +3,7 @@ R__LOAD_LIBRARY(EventDump.C+)
 //TString baseline = "TPassLowInvMass && TPassTrigger && TPassMETFilters && TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && !TIsOnZ";
 TString baseline = "TPassLowInvMass && TPassTrigger && TMET > 50 && TNJets >= 2 && THT > 300 && TNBtags >= 2 && !TIsOnZ"; //TPassMETFilters
 TString CRW      = baseline + " && TNSelLeps == 2 && TNBtags == 2 && TNJets <= 5";
+// "TPassLowInvMass && TPassTrigger && TMET > 50 && TNJets >= 2 && THT > 300 && !TIsOnZ && TNBtags == 2 && TNJets <= 5"
 //TString NoFake   = Form("TChannel == %i || TChannel == %i || TChannel == %i || TChannel == %i", i2lss, iTriLep, iSS1tau, iOS1tau);
 TString NoFake   = Form("TChannel == %i || TChannel == %i || TChannel == %i", i2lss, iSS1tau, iOS1tau);
 

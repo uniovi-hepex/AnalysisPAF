@@ -2,6 +2,7 @@
 
 #include "PAFChainItemSelector.h"
 #include "Functions.h"
+#include "BTagSFUtil.h"
 #include <iostream>
 #include <vector>
 
@@ -13,6 +14,8 @@ const int nWeights = 248;
 const TString gChanLabel[nChannels] = {"ElMu", "Muon","Elec"};
 const TString sCut[nLevels] = {"dilepton", "ZVeto", "MET", "2jets", "1btag"};
 const TString gSys[nSysts] = {"0"};
+const Int_t nPtBins = 14;
+const Float_t ptBins[nPtBins+1] = {30, 40, 50, 60, 70, 80, 90, 100, 120, 140, 160, 200, 300, 400, 600};
 
 
 class TopAnalysis : public PAFChainItemSelector{
@@ -33,6 +36,8 @@ class TopAnalysis : public PAFChainItemSelector{
     std::vector<Jet> genJets  ;
     std::vector<Jet> mcJets  ;
     std::vector<Jet> vetoJets;
+
+    BTagSFUtil *fBTagSFLoose;
 
     TTree* fTree;
     Float_t TLHEWeight[254];
@@ -55,14 +60,15 @@ class TopAnalysis : public PAFChainItemSelector{
     Float_t PUSF_Up;
     Float_t PUSF_Down;
     Int_t   gChannel;
-    Bool_t  passMETfilters;
-    Bool_t  passTrigger;
+    Bool_t  TPassMETFilters;
+    Bool_t  TPassTrigger;
     Bool_t  isSS;
     Float_t NormWeight;
 
     void InitHistos();
     void FillDYHistos(Int_t ch);
     void FillHistos(Int_t ch, Int_t cut);
+    void FillCorrHistos();
   
     void get20Jets();
     Double_t getDilepMETJetPt(const TString& sys = "Norm");
@@ -91,28 +97,47 @@ class TopAnalysis : public PAFChainItemSelector{
     Float_t TMET;      // MET
     Float_t TGenMET;     
     Float_t TMET_Phi;  // MET phi
+    Float_t TgenTop1Pt = 0;
+    Float_t TgenTop2Pt = 0;
 
     Int_t   TNVetoLeps;
     Int_t   TNSelLeps;
     Int_t   TChannel;
     Bool_t   TIsSS;
-    Float_t TLep_Pt[10];    
-    Float_t TLep_Eta[10];
-    Float_t TLep_Phi[10];
-    Float_t TLep_E[10];
-    Float_t TLep_Charge[10];
+    Float_t TLep0Pt;    
+    Float_t TLep0Eta;
+    Float_t TLep0Phi;
+    Float_t TLep0M;
+    Int_t   TLep0Id;
+    Float_t TLep1Pt;    
+    Float_t TLep1Eta;
+    Float_t TLep1Phi;
+    Float_t TLep1M;
+    Int_t   TLep1Id;
 
     Int_t TNJets;            // Jets...
+    Int_t TNFwdJets; 
     Int_t TNBtags;
+    Float_t TJet_Pt[20];
+    Float_t TJet_Eta[20];
+    Float_t TJet_Phi[20];
+    Float_t TJet_M[20];
+    Float_t TJet_Csv[20];
+    Int_t TNBtagsLoose;
     Float_t TJet0Pt;
     Float_t TJet0Eta;
     Float_t TJet0Csv;
-    Float_t TJet_Pt[20];
-    Float_t TJet_Csv[20];
-    Float_t TJet_Eta[20];
-    Float_t TJet_Phi[20];
-    Float_t TJet_E[20];
-    Int_t TJet_isBJet[20];
+
+    Float_t TJet0Phi; 
+    Float_t TJet0M; 
+    Int_t TJet0IsBTag;
+    Float_t  TJet1Pt; 
+    Float_t TJet1Eta; 
+    Float_t TJet1Phi; 
+    Float_t TJet1M; 
+    Float_t TJet1Csv; 
+    Float_t TJet1IsBTag;
+
     Float_t THT;       // HT
 
     // For systematics...
@@ -130,6 +155,7 @@ class TopAnalysis : public PAFChainItemSelector{
     Float_t TJetJER_Pt[20];
     Float_t THTJESUp;
     Float_t THTJESDown;
+    Float_t TBtagPt;
 
     Int_t   TNISRJets;
     Float_t TMETJESUp;
@@ -217,6 +243,13 @@ class TopAnalysis : public PAFChainItemSelector{
   TH1F*  fHyields[nChannels][nSysts];
   TH1F*  fHFiduYields[nChannels][nSysts];
   TH1F*  fHSSyields[nChannels][nSysts];
+
+  TH1F* hJetPtReco;
+  TH1F* hJetPtGen;
+  TH1F* hJetPtRecoB;
+  TH1F* hJetPtGenB;
+  TH1F* hJetGenRecoPtRatio[nPtBins];
+  TH1F* hJetGenRecoPtRatio2[nPtBins];
 
   protected:
 

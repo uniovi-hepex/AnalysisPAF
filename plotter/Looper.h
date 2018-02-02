@@ -17,7 +17,7 @@
 #include "FRFunctions.C"
 #include "PlotterFunctions.C"
 
-enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau, iOS1tau, i2lss_fake, iTriLep_fake, iElEl, iMuMu, i1Tau_emufakeOS ,i1Tau_emufakeSS, TotalDefinedChannels};
+enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau, iOS1tau, i2lss_fake, iTriLep_fake, iElEl, iMuMu, i1Tau_emufakeOS ,i1Tau_emufakeSS, i2LOS, TotalDefinedChannels};
 std::vector<TString> TStringToVector(TString t, char separator = ',');
 void PrintVector(std::vector<TString> v);
 void PrintVector(std::vector<Float_t> v);
@@ -35,7 +35,13 @@ TChain* GetChain(TString path, TString sample);
 
 class Looper{
   public:
-    Looper(){};
+    Looper(){
+      verbose = false; weight = "TWeight";
+      Hist = NULL; tree = NULL;
+      FormulasCuts = NULL; FormulasVars = NULL;
+      path = ""; treeName = "tree"; 
+      nbins = 1; bin0 = 0; binN = 0; var = ""; cut = ""; chan = "";
+    };
 
     Looper(TString pathToTree, TString NameOfTree, TString _var = "TMET", TString _cut = "1", TString _chan = "ElMu", Int_t nb = 30, Float_t b0 = 0, Float_t bN = 300){
    verbose = false;
@@ -102,6 +108,7 @@ class Looper{
    Bool_t doISRweight = false;
    Bool_t verbose = false;
    Int_t numberInstance;
+   TString GetSampleName(){return sampleName;}
    void SetSampleName(TString t){sampleName   = t;}
    void SetHeppySampleName(TString t){HeppySampleName   = t;}
 	 void SetTreeName(  TString t){treeName     = t;}
@@ -148,23 +155,6 @@ class Looper{
    void loadTree();
    TTree* tree;
 
-   Int_t nLeps; 
-   Int_t nTaus; 
-   Int_t nFakeLeps; 
-   Float_t FLepPt; 
-   Float_t FLepEta; 
-   Float_t FLepCharge; 
-   Float_t LepCharge; 
-   Int_t   FLepPdgId; 
-
-   TTreeFormula *ForFLepPt;
-   TTreeFormula *ForFLepEta; 
-   TTreeFormula *ForFLepPdgId;
-   TTreeFormula *ForLepChar;
-   TTreeFormula *FornSelLep;
-   TTreeFormula *FornSelTau;
-   TTreeFormula *FornFakeLep;
-
    std::vector<TH1F*> FRhistos;
 
 };
@@ -178,6 +168,7 @@ class Multilooper : public Looper{
   
   //>>> Constructor from Looper...
   public:
+  Multilooper(){};
   Multilooper(TString pathToTree, TString NameOfTree, TString _var, TString _cut, TString _chan, Int_t nb, Float_t b0, Float_t bN) : 
     Looper(pathToTree, NameOfTree, _var, _cut, _chan, nb, b0, bN) {};
   Multilooper(TString pathToTree, TString NameOfTree, TString _var, TString _cut, TString _chan, Int_t nb, Float_t* bins) : 
@@ -210,16 +201,131 @@ class Multilooper : public Looper{
 };
 
 
+//################################################################
+//
+// HYPERLOOPER!!!!!
+//
+//
+ 
+struct distribution{
+  TString name;
+  Int_t nbins;
+  Float_t bin0;
+  Float_t binN;
+  Float_t *bins;
+  TString var;
+  TString chan;
+  TString cut;
+  TString weight;
+  TString sys;
+  TString options;
+  vector<Histo*> vh;
+  vector<TTreeFormula*> vf;
+  vector<TTreeFormula*> vv;
+};
 
 
+ 
 
+class Hyperlooper : public Multilooper{
+public:
+  // Constructor
+  Hyperlooper(){
+   verbose = false;
+   tree = NULL;
+   treeName = "tree";
+   systematics = "";
+   weight = "TWeight";
+   path = "";
+   sampleName = "";
+   process = "";
+   syst = "";
+   weight = "";
+   color = 0; type = 0;
+  }
+  Hyperlooper(TString pathToTree, TString NameOfTree = "tree", TString samplename = "", TString pr = "", Int_t ty = 0, Int_t col = 0, TString Weight = "TWeight", TString sys = "", TString op = ""){
+   verbose = false;
+   tree = NULL;
+   path = pathToTree;
+   treeName = NameOfTree;
+   sampleName = samplename;
+   systematics = sys;
+   weight = Weight;
+   options = op;
+   process = pr;
+   syst = sys;
+   weight = Weight;
+   color = col; type = ty;
+  }
 
+  distribution GetDistribution(TString name){
+    Int_t nD = VDist.size();
+    for(Int_t i = 0; i < nD; i++) if(VDist.at(i).name == name) return VDist.at(i);
+    cout << "[Hyperlooper::GetDistribution] ERROR: no distribution \"" << name << "\"..." << endl;
+    return VDist.at(0);
+  }
 
+  void AddDistribution(TString name, TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, Float_t *bins, TString options = "");
+  void SetName(Int_t   iDist, TString Name){   VDist.at(iDist).name = Name;}
+  //void SetWeight(Int_t iDist, TString Weight){ VDist.at(iDist).weight = Weight;}
+  //void SetSys(Int_t    iDist, TString Sys){    VDist.at(iDist).sys = Sys;}
+  void SetBins(Int_t   iDist, Float_t *Bins){  VDist.at(iDist).bins = Bins;}
+  void SetBin0(Int_t   iDist, Float_t Bin0){   VDist.at(iDist).bin0 = Bin0;}
+  void SetBinN(Int_t   iDist, Float_t BinN){   VDist.at(iDist).binN = BinN;}
+  void SetNBins(Int_t   iDist, Int_t Nbins){    VDist.at(iDist).nbins = Nbins;}
+  void SetChan(Int_t    iDist, TString Chan){   VDist.at(iDist).chan = Chan;}
+  void SetVar(Int_t     iDist, TString Var){    VDist.at(iDist).var = Var;}
+  void SetCut(Int_t     iDist, TString Cut){    VDist.at(iDist).cut = Cut;}
+  void SetOptions(Int_t iDist, TString Op){     VDist.at(iDist).options = Op;}
 
+  void SetName(TString   name, TString Name){   Int_t i = GetPos(name); SetName(i, Name);}
+  //void SetWeight(TString name, TString Weight){ Int_t i = GetPos(name); SetWeight(i, Weight);}
+  //void SetSys(TString    name, TString Sys){    Int_t i = GetPos(name); SetSys(i, Sys);}
+  void SetBins(TString   name, Float_t *Bins){  Int_t i = GetPos(name); SetBins(i, Bins);}
+  void SetBin0(TString   name, Float_t Bin0){   Int_t i = GetPos(name); SetBin0(i, Bin0);}
+  void SetBinN(TString   name, Float_t BinN){   Int_t i = GetPos(name); SetBinN(i, BinN);}
+  void SetNBins(TString   name, Int_t Nbins){   Int_t i = GetPos(name); SetNBins(i, Nbins);}
+  void SetChan(TString   name, TString Chan){   Int_t i = GetPos(name); SetChan(i, Chan);}
+  void SetVar(TString    name, TString Var){    Int_t i = GetPos(name); SetVar(i, Var);}
+  void SetCut(TString    name, TString Cut){    Int_t i = GetPos(name); SetCut(i, Cut);}
+  void SetOptions(TString name, TString Op){    Int_t i = GetPos(name); SetOptions(i, Op);}
 
+  void SetColor(Int_t col){ color = col;}
+  void SetType(Int_t ty){ type = ty;}
+  void SetProcess(TString pr){ process = pr;}
+  void SetSyst(TString s){ syst = s;}
+  void SetWeight(TString s){ syst = s;}
+  
+  Int_t GetColor(){ return color;}
+  Int_t GetType(){ return type;}
+  TString GetProcess(){ return process;}
+  TString GetSyst(){ return syst;}
+  TString GetWeight(){ return weight;}
 
+  Int_t GetPos(TString Name);
 
+  void CreateHisto(Int_t   pos, TString t);
+  void SetFormulas(Int_t pos, TString systematic = "");
+  void CreateHistosAndFormulas(Int_t pos);
+  void CreateDistributions();
+  void HyperLoop();
 
+  void Fill();
+  Histo* GetHisto(TString name, TString sys);
+  Histo* GetHisto(TString name){ return GetHisto(name, "");};
+   
+  // To avoid warnings...
+  void CreateHisto(TString t){CreateHisto(t);};
+  void SetFormulas(TString t){SetFormulas(t);};
+
+  protected:
+  TString process;
+  Int_t color;
+  Int_t type;
+  TString syst;
+  TString weight;
+  vector<distribution> VDist;
+};
 
 
 
@@ -339,7 +445,7 @@ Bool_t IsWord(TString s, Int_t pos = 0, TString word = ""){
     cout << "[IsWord] WARNING: no word \"" << word << "\" in string \"" << s << "\"" << endl;
     return false;
   }
-  TString LimitWord = ",. ?:)]([{}@\"'&|<>=!";
+  TString LimitWord = ",. ?:)]([{}@\"'&|<>=!*";
   Int_t nstop = LimitWord.Sizeof()-1;
   Bool_t isword = true;
 
@@ -469,8 +575,8 @@ TString CraftFormula(TString cuts, TString chan, TString sys, TString weight, TT
   else schan = chan;
 
   //TString weight = TString("TWeight");
-  if(tree->GetBranchStatus(weight + "_" + sys)){
-    weight += "_" + sys; 
+  if(weight.Contains("TWeight") && tree->GetBranchStatus("TWeight_" + sys)){
+    weight = ReplaceWords(weight, "TWeight", "TWeight_" + sys); 
   }
 
   std::vector<TString> AllVars = GetAllVars((TString) cuts);

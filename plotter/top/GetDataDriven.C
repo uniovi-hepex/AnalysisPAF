@@ -1,7 +1,8 @@
 //#include "DrawPlots.C"
+R__LOAD_LIBRARY(TResultsTable.C+)
 #include "../TResultsTable.h"
 
-TString path = "/nfs/fanae/user/juanr/AnalysisPAF/TopTrees/jul7/";
+TString path = "/pool/ciencias/userstorage/juanr/top/oct10/";
 TString outputFolder = "/mnt_pool/ciencias_users/user/juanr/AnalysisPAF/plotter/top/xsec/";
 double getYield(TString sample, TString chan = "ElMu", TString level = "2jets", TString syst = "0", bool isSS = false);
 double yield(TString process, TString chan = "ElMu", TString level = "2jets", TString syst = "0", bool isSS = false);
@@ -15,14 +16,16 @@ double GetNonWDD(TString ch = "ElMu", TString lev = "2jets", bool IsErr = false,
 void PrintSFwithLevel();
 
 double Lumi = 35851.45088;
-TString Chan = "ElMu";
+TString Chan = "Elec";
 TString Level = "1btag";
 
 TH1F* loadDYHisto(TString lab, TString ch, TString lev){
+  TString PlotName = "H_DY_InvMass";
+  if(Chan != "ElMu") PlotName = "H_DY_InvMass_SF";
 	TFile* f1; TH1F* h; TH1F* h1; TH1F* h2;
   if(lab != "MC" && lab != "DY" && lab != "data" && lab != "Data"){
     f1 = TFile::Open(path + "Tree_" + lab + ".root");
-    f1->GetObject("H_DY_InvMass_" + ch + "_" + lev, h);
+    f1->GetObject(PlotName + "_" + ch + "_" + lev, h);
     if(!lab.Contains("Single") && !lab.Contains("Double") && !lab.Contains("MuonEG")) h->Scale(Lumi);
   }
   else if(lab == "MC" || lab == "DY"){
@@ -82,6 +85,7 @@ void PrintSFwithLevel(){
 }
 
 double GetDYDD(TString ch, TString lev, bool IsErr, bool docout){
+  Chan = ch;
 //  ch = Chan; lev = Level;
   double Re     = 0; double N_ine  = 0; double N_oute = 0; double k_lle = 0; double SFel = 0;
 	double R_erre = 0; double N_in_erre = 0; double N_out_erre = 0; double k_ll_erre = 0; double SFel_err = 0;
@@ -179,83 +183,62 @@ double GetDYDD(TString ch, TString lev, bool IsErr, bool docout){
   SFem_err = 0.5*SFem*(SFel_err/SFel + SFmu_err/SFmu);
 
   if(docout){
-/*   cout << " DY DD estimation for " << lev << endl;
-   cout << "=============================================================================" << endl;
-   cout << "                  |       El/El      |       Mu/Mu      |       El/Mu      ||" << endl;
-	 cout << "-----------------------------------------------------------------------------" << endl;
-	 cout<< Form(" n_in (MC)        | %7.1f +/- %4.1f | %7.1f +/- %4.1f |                  ||", nin_ee, nin_err_ee, nin_mm, nin_err_mm) << endl;
-	 cout<< Form(" n_out (MC)       | %7.1f +/- %4.1f | %7.1f +/- %4.1f |                  ||", nout_ee, nout_err_ee, nout_mm, nout_err_mm) << endl;
-	 cout<< Form(" R(Nout/Nin)(MC)  | %6.3f +/- %4.3f | %6.3f +/- %4.3f |                  ||", Re, R_erre, Rm, R_errm) << endl;
-	 cout<< Form(" k_ll             | %6.3f +/- %4.3f | %6.3f +/- %4.3f |                  ||", k_lle, k_ll_erre, k_llm, k_ll_errm) << endl;
-	 cout<< Form(" N_in (D)         | %7.1f +/- %4.1f | %7.1f +/- %4.1f | %5.1f +/- %4.1f   ||",	N_ine, N_in_erre, N_inm, N_in_errm, N_inem, N_in_errem) << endl;
-	 cout<< "-----------------------------------------------------------------------------" <<  endl;
-	 cout<< Form(" N_out            | %7.1f +/- %4.1f | %7.1f +/- %4.1f |                  ||",	 N_oute, N_out_erre, N_outm, N_out_errm) << endl;
-	 cout<< "-----------------------------------------------------------------------------" <<  endl;
-	 cout<< Form(" SF (D/MC)        | %6.3f +/- %4.3f | %6.3f +/- %4.3f | %6.3f +/- %4.3f ||", SFel, SFel_err, SFmu, SFmu_err, SFem, SFem_err) << endl;
-	 cout<< "-----------------------------------------------------------------------------" <<  endl;
-	 cout<< Form(" Drell-Yan (MC)   | %7.2f +/- %4.2f | %7.2f +/- %4.2f | %7.2f +/- %4.2f ||", yield("DY", "Elec", lev), getStatError("DY", "Elec", lev), yield("DY", "Muon", lev), getStatError("DY", "Muon", lev), yield("DY", "ElMu", lev), getStatError("DY", "ElMu", lev)) << endl;
-	 cout<< Form(" Drell-Yan (D)    | %7.2f +/- %4.2f | %7.2f +/- %4.2f | %7.2f +/- %4.2f ||", yield("DY", "Elec", lev)*SFel, getStatError("DY", "Elec", lev)*SFel, yield("DY", "Muon", lev)*SFmu, getStatError("DY", "Muon", lev)*SFmu, yield("DY", "ElMu", lev)*SFem, getStatError("DY", "ElMu", lev)*SFem) << endl;
-   cout << "=============================================================================" << endl;
-	 cout<< endl;
-*/
-  TResultsTable a(9, 3, true);
-  a.SetFormatNum("%1.3f");
-  a.SetRowTitleHeader("Level: " + lev);
-  a.AddVSeparation(3); a.AddVSeparation(4); a.AddVSeparation(5);
- 
-  a.SetColumnTitle(0, "$e^{+}e^{-}$");
-  a.SetColumnTitle(1, "$\\mu^{+}\\mu^{-}$");
-  a.SetColumnTitle(2, "$e^{\\pm}\\mu^{\\mp}$");
+    TResultsTable a(7+2, 3, true);
+    a.SetFormatNum("%1.3f");
+    a.SetRowTitleHeader("Level: " + lev);
+    a.AddVSeparation(3); a.AddVSeparation(4); 
+     a.AddVSeparation(5);
 
-  a.SetRowTitle(0, "$N_{in}$ (MC)");
-  a.SetRowTitle(1, "$n_{out}$ (MC)");
-  a.SetRowTitle(2, "$R_{out/in}$  (MC)");
-  a.SetRowTitle(3, "$k_{ll}$");
-  a.SetRowTitle(4, "$N_{in} (D)$");
-  a.SetRowTitle(5, "$N_{out}$");
-  a.SetRowTitle(6, "SF(D/MC)");
-  a.SetRowTitle(7, "Drell-Yan (MC)");
-  a.SetRowTitle(8, "Drell-Yan (D)");
+    a.SetColumnTitle(0, "$e^{+}e^{-}$");
+    a.SetColumnTitle(1, "$\\mu^{+}\\mu^{-}$");
+    a.SetColumnTitle(2, "$e^{\\pm}\\mu^{\\mp}$");
 
-  a[0][0].SetContent(nin_ee); a[0][0].SetError(nin_err_ee);
-  a[0][1].SetContent(nin_mm); a[0][1].SetError(nin_err_mm);
+    a.SetRowTitle(0, "$N_{in}$ (MC)");
+    a.SetRowTitle(1, "$n_{out}$ (MC)");
+    a.SetRowTitle(2, "$R_{out/in}$  (MC)");
+    a.SetRowTitle(3, "$k_{ll}$");
+    a.SetRowTitle(4, "$N_{in} (D)$");
+    a.SetRowTitle(5, "$N_{out}$");
+    a.SetRowTitle(6, "SF(D/MC)");
+      a.SetRowTitle(7, "Drell-Yan (MC)");
+      a.SetRowTitle(8, "Drell-Yan (D)");
 
-  a[1][0].SetContent(nout_ee); a[1][0].SetError(nout_err_ee);
-  a[1][1].SetContent(nout_mm); a[1][1].SetError(nout_err_mm);
+    a[0][0].SetContent(nin_ee); a[0][0].SetError(nin_err_ee);
+    a[0][1].SetContent(nin_mm); a[0][1].SetError(nin_err_mm);
 
-  a[2][0].SetContent(Re); a[2][0].SetError(R_erre);
-  a[2][1].SetContent(Rm); a[2][1].SetError(R_errm);
+    a[1][0].SetContent(nout_ee); a[1][0].SetError(nout_err_ee);
+    a[1][1].SetContent(nout_mm); a[1][1].SetError(nout_err_mm);
 
-  a[3][0].SetContent(k_lle); a[3][0].SetError(k_ll_erre);
-  a[3][1].SetContent(k_llm); a[3][1].SetError(k_ll_errm);
+    a[2][0].SetContent(Re); a[2][0].SetError(R_erre);
+    a[2][1].SetContent(Rm); a[2][1].SetError(R_errm);
 
-  a[4][0].SetContent(N_ine); a[4][0].SetError(N_in_erre);
-  a[4][1].SetContent(N_inm); a[4][1].SetError(N_in_errm);
-  a[4][2].SetContent(N_inem); a[4][2].SetError(N_in_errem);
+    a[3][0].SetContent(k_lle); a[3][0].SetError(k_ll_erre);
+    a[3][1].SetContent(k_llm); a[3][1].SetError(k_ll_errm);
 
-  a[5][0].SetContent(N_oute); a[5][0].SetError(N_out_erre);
-  a[5][1].SetContent(N_outm); a[5][1].SetError(N_out_errm);
+    a[4][0].SetContent(N_ine); a[4][0].SetError(N_in_erre);
+    a[4][1].SetContent(N_inm); a[4][1].SetError(N_in_errm);
+    a[4][2].SetContent(N_inem); a[4][2].SetError(N_in_errem);
 
-  a[6][0].SetContent(SFel); a[6][0].SetError(SFel_err);
-  a[6][1].SetContent(SFmu); a[6][1].SetError(SFmu_err);
-  a[6][2].SetContent(SFem); a[6][2].SetError(SFem_err);
+    a[5][0].SetContent(N_oute); a[5][0].SetError(N_out_erre);
+    a[5][1].SetContent(N_outm); a[5][1].SetError(N_out_errm);
 
-  a[7][0].SetContent(yield("DY", "Elec", lev)); a[7][0].SetError(getStatError("DY", "Elec", lev));
-  a[7][1].SetContent(yield("DY", "Muon", lev)); a[7][1].SetError(getStatError("DY", "Muon", lev));
-  a[7][2].SetContent(yield("DY", "ElMu", lev)); a[7][2].SetError(getStatError("DY", "ElMu", lev));
+    a[6][0].SetContent(SFel); a[6][0].SetError(SFel_err);
+    a[6][1].SetContent(SFmu); a[6][1].SetError(SFmu_err);
+    a[6][2].SetContent(SFem); a[6][2].SetError(SFem_err);
 
-  a[8][0].SetContent(yield("DY", "Elec", lev)*SFel); a[8][0].SetError(getStatError("DY", "Elec", lev)*SFel);
-  a[8][1].SetContent(yield("DY", "Muon", lev)*SFmu); a[8][1].SetError(getStatError("DY", "Muon", lev)*SFmu);
-  a[8][2].SetContent(yield("DY", "ElMu", lev)*SFem); a[8][2].SetError(getStatError("DY", "ElMu", lev)*SFem);
+        a[7][0].SetContent(yield("DY", "Elec", lev)); a[7][0].SetError(getStatError("DY", "Elec", lev));
+        a[7][1].SetContent(yield("DY", "Muon", lev)); a[7][1].SetError(getStatError("DY", "Muon", lev));
+        a[7][2].SetContent(yield("DY", "ElMu", lev)); a[7][2].SetError(getStatError("DY", "ElMu", lev));
 
-  a.SetDrawHLines(false); a.SetDrawVLines(true); a.Print();
-  a.SaveAs(outputFolder + "/DYDD_" + lev + ".tex");
-  a.SaveAs(outputFolder + "/DYDD_" + lev + ".html");
-  a.SaveAs(outputFolder + "/DYDD_" + lev + ".txt");
+        a[8][0].SetContent(yield("DY", "Elec", lev)*SFel); a[8][0].SetError(getStatError("DY", "Elec", lev)*SFel);
+        a[8][1].SetContent(yield("DY", "Muon", lev)*SFmu); a[8][1].SetError(getStatError("DY", "Muon", lev)*SFmu);
+        a[8][2].SetContent(yield("DY", "ElMu", lev)*SFem); a[8][2].SetError(getStatError("DY", "ElMu", lev)*SFem); 
 
-
+    a.SetDrawHLines(false); a.SetDrawVLines(true); a.Print();
+    a.SaveAs(outputFolder + "/DYDD_" + lev + ".tex");
+    a.SaveAs(outputFolder + "/DYDD_" + lev + ".html");
+    a.SaveAs(outputFolder + "/DYDD_" + lev + ".txt");
   }
-
   if(IsErr){
     if     (ch == "ElMu") return SFem_err;
     else if(ch == "Elec") return SFel_err;
@@ -302,32 +285,6 @@ double GetNonWDD(TString ch, TString lev, bool IsErr, bool docout){
   eSF = SF*(eDDfake/DDfake + efake/fake);
 
 	if(docout){
-   /*cout << "Yields for same-sign events after " << lev << " level of selection in " << ch << " channel:\n";
-   cout << "===========================" << endl;
-   cout << " tW           : " << yield("tW", ch, lev, "0", 1) << endl;
-   cout << " Drell-Yan    : " << yield("DY", ch, lev, "0", 1) << endl;
-   cout << " Dibosons     : " << yield("VV", ch, lev, "0", 1) << endl;
-   cout << " ttV          : " << yield("ttV", ch, lev, "0", 1) << endl;
-   cout << " ttbar dilep  : " << yield("ttbar", ch, lev, "0", 1) << endl;
-   cout << "---------------------------" << endl;
-   cout << " ttbar semilep: " << yield("TTbar_Powheg_Semilep", ch, lev, "0", 1) << endl;
-   cout << " WJets        : " << yield("WJetsToLNu_MLM", ch, lev, "0", 1) << endl;
-   cout << "===========================" << endl;
-   cout << endl;
-   cout <<      " NonW leptons DD estimate for " << lev << endl;
-   cout <<      "==================================================================" << endl;
-	 cout << Form(" MC fake estimate    (OS WJets + ttbar semilep)   = %2.2f ± %0.2f", fake, efake) << endl;
-	 cout <<      "------------------------------------------------------------------" << endl;
-	 cout << Form(" MC fake SS (WJets + ttbar semilep)   = %2.2f ± %0.2f", fakeSS, efakeSS)  << endl;
-   cout << Form(" R = fakeOS/fakeSS                    = %2.2f ± %0.2f", R, eR)            << endl;
-	 cout << Form(" MC prompt SS (other sources)         = %2.2f ± %0.2f", bkgSS , ebkgSS )  << endl;
-	 cout << Form(" Data SS events                       = %2.2f ± %0.2f", dataSS , edataSS )  << endl;
-	 cout <<      "------------------------------------------------------------------" << endl;
-   cout << Form(" DD fake estimate = R(DataSS-bkgSS)   = %2.2f ± %0.2f", DDfake , eDDfake )  << endl;
- //  cout << Form(" Scake Factor (DD/MC)                 = %2.2f ± %0.2f", SF , eSF )  << endl;
-   cout <<      "==================================================================" << endl;
-   cout << endl;*/
-
     TResultsTable a(12, 3, true);
     a.SetFormatNum("%1.1f");
     a.SetRowTitleHeader("Source");
@@ -398,25 +355,26 @@ double GetNonWDD(TString ch, TString lev, bool IsErr, bool docout){
 	else      return DDfake;
 }
 
-void GetDataDriven(){
+void GetDataDriven(TString theChan = ""){
+  if(theChan == "") theChan = Chan;
   cout << " ------ Drell-Yan DD (R out/in) ------" << endl;
 	cout << endl;
-	GetDYDD(Chan, "dilepton", 0, 1);
+	GetDYDD(theChan, "dilepton", 0, 1);
 	cout << endl;
-	GetDYDD(Chan, "MET", 0, 1);
+	GetDYDD(theChan, "MET", 0, 1);
 	cout << endl;
-	GetDYDD(Chan, "2jets", 0, 1);
+	GetDYDD(theChan, "2jets", 0, 1);
 	cout << endl;
-	GetDYDD(Chan, "1btag", 0, 1);
+	GetDYDD(theChan, "1btag", 0, 1);
 	cout << endl;
 	cout << endl;
   cout << " ------ NonW leptons estimate ------" << endl;
 	cout << endl;
-  GetNonWDD(Chan, "dilepton", 0, 1);
+  GetNonWDD(theChan, "dilepton", 0, 1);
 	cout << endl;
-  GetNonWDD(Chan, "2jets", 0, 1);
+  GetNonWDD(theChan, "2jets", 0, 1);
 	cout << endl;
-  GetNonWDD(Chan, "1btag", 0, 1);
+  GetNonWDD(theChan, "1btag", 0, 1);
 	cout << endl;
 }
 

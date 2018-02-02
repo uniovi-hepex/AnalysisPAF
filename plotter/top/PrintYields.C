@@ -12,9 +12,9 @@ void PrintYields(){
   //GetNonWDD("ElMu", "1btag", 0, 1);
   //PrintSFwithLevel();
   //PrintTableYields("1btag");
-  //PrintTableYields("1btag", true);
+  PrintTableYields("1btag", true);
   //FiduAccUnc();
-  FSR();
+  //FSR();
 }
 
 

@@ -23,6 +23,7 @@ void LeptonSelector::Initialise(){
   gSelection     = GetParam<Int_t>("iSelection");
   localPath      = GetParam<TString>("WorkingDir");
   LepSF = new LeptonSF(localPath + "/InputFiles/");
+  ElecScale = new ElecScaleClass(localPath + "/InputFiles/ElecScale.dat");
 
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
   // Select SFs for each analysis !!!!!!
@@ -528,8 +529,8 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
   }
   else if(gSelection == i4tSelec){
     if(lep.isMuon){
-      DumpVar(evt, "!isGlobalMuon && !isTrackerMuon", isGlobalMuon || isTrackerMuon, isGlobalMuon || isTrackerMuon);
-      DumpVar(evt, "getMuonId(iMedium)", getMuonId(iMedium), getMuonId(iMedium));
+      //DumpVar(evt, "!isGlobalMuon && !isTrackerMuon", isGlobalMuon || isTrackerMuon, isGlobalMuon || isTrackerMuon);
+      //DumpVar(evt, "getMuonId(iMedium)", getMuonId(iMedium), getMuonId(iMedium));
       if(lep.p.Pt() < 20) return false;
       if(TMath::Abs(lep.p.Eta()) > 2.4) return false;
       if(!isGlobalMuon && !isTrackerMuon) return false; 
@@ -537,21 +538,21 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
       if(!getMultiIso(iMedium)) return false;
     }
     if(lep.isElec){
-      DumpVar(evt, "getElecCutBasedId(iLoose)", getElecCutBasedId(iLoose), getElecCutBasedId(iLoose));
-      DumpVar(evt, "convVeto", convVeto, convVeto);
-      DumpVar(evt, "lostHits", lostHits, lostHits == 0);
-      DumpVar(evt, "getElecMVA(iTight)", getElecMVA(iTight), getElecMVA(iTight));
+      //DumpVar(evt, "getElecCutBasedId(iLoose)", getElecCutBasedId(iLoose), getElecCutBasedId(iLoose));
+      //DumpVar(evt, "convVeto", convVeto, convVeto);
+      //DumpVar(evt, "lostHits", lostHits, lostHits == 0);
+      //DumpVar(evt, "getElecMVA(iTight)", getElecMVA(iTight), getElecMVA(iTight));
       if(lep.p.Pt() < 20) return false;
       if(TMath::Abs(lep.p.Eta()) > 2.5) return false;
-      if(!getElecCutBasedId(iTight)) return false;
+      if(!getElecCutBasedId(iLoose)) return false; // Electron selection criteria used for the emulation
       if(!convVeto) return false;
       if(lostHits != 0) return false;
       if(!getElecMVA(iTight)) return false;
       if(!getMultiIso(iTight)) return false;
     }
     //if(!getminiRelIso(iLoose)) return false;
-    DumpVar(evt, "getSIPcut(4)", sip, getSIPcut(4)); 
-    DumpVar(evt, "TightCharge == 2", TightCharge, TightCharge == 2); 
+    //DumpVar(evt, "getSIPcut(4)", sip, getSIPcut(4)); 
+    //DumpVar(evt, "TightCharge == 2", TightCharge, TightCharge == 2); 
     if(!getGoodVertex(iTight)) return false;
     if(!getSIPcut(4)) return false;
     if(TightCharge != 2) return false;
@@ -681,7 +682,7 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
   }
   else if(gSelection == i4tSelec){
     if(lep.isMuon){
-    if(lep.p.Pt() < 20) return false;
+      if(lep.p.Pt() < 20) return false;
       if(TMath::Abs(lep.p.Eta()) > 2.4) return false;
       if(!isGlobalMuon && !isTrackerMuon) return false; 
       if(!getMuonId(iMedium)) return false;
@@ -690,10 +691,10 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
     if(lep.isElec){
       if(lep.p.Pt() < 20) return false;
       if(TMath::Abs(lep.p.Eta()) > 2.5) return false;
-      if(!getElecCutBasedId(iLoose)) return false;
+      if(!getElecCutBasedId(iLoose)) return false; // Electron selection criteria used for the emulation
       if(!convVeto) return false;
       if(lostHits != 0) return false;
-      if(!getElecMVA(iLoose)) return false;
+        if(!getElecMVA(iLoose)) return false;
       if(!getMultiIso(iLoose)) return false;
     }
     //if(!getminiRelIso(iLoose)) return false;
@@ -823,6 +824,21 @@ Bool_t LeptonSelector::isLooseLepton(Lepton lep){
     }
     return true;
   }
+  else if(gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec){
+    // Same as good lepton but no looser cut on pT
+    if(lep.isMuon){
+      passId  = getMuonId(iTight);
+      passIso = getRelIso04POG(iTight);
+    }
+    if(lep.isElec){
+      passId = getElecCutBasedId(iTight) && lostHits <= 1;
+      passIso = getRelIso03POG(iTight);
+      if(TMath::Abs(etaSC) > 1.4442 && TMath::Abs(etaSC) < 1.566) return false;
+    }
+    if(lep.p.Pt() < 18 || TMath::Abs(lep.p.Eta()) > 2.4) return false;
+    if(passId && passIso && ( (lep.isElec && getGoodVertex(iTight)) || (lep.isMuon && getGoodVertex(iMedium) ))) return true;
+    else return false;
+  }
   if(gSelection == ittHSelec){
     //   Loose muons for multilepton ttH Analysis:
     // Fakeable muons without jetCSV cut and with pt>5.
@@ -893,8 +909,15 @@ void LeptonSelector::InsideLoop(){
       tL = Lepton(tP, charge, type, matchIdGamma, matchId);
       tL.isTight = false;
     }
-    if(tL.isMuon) tL.SetIso(RelIso04);
-    else          tL.SetIso(RelIso03);
+    if(tL.isMuon and gSelection != iWZSelec){
+      tL.SetIso(RelIso04);
+      tL.SetEnergyUnc(GetMuonEnergyScale());
+    }
+    else if (gSelection != iWZSelec){
+      tL.SetIso(RelIso03);
+      tL.SetR9(R9);
+      tL.SetEnergyUnc(ElecScale->GetUnc(tL.Pt(), tL.Eta(), tL.GetR9()));
+    }
     if(isGoodLepton(tL)){
       DumpEvent(evt, Form(" >>> Lepton %i (pt = %g, eta = %g, type = %i):    PASA", i, tP.Pt(), tP.Eta(), type));
       //if(1){
@@ -918,12 +941,21 @@ void LeptonSelector::InsideLoop(){
       if(gSelection == i4tSelec){
         if(!isGoodLepton(tL)) vetoLeptons.push_back(tL);
       }
+      else if(gSelection == iWZSelec){ 
+        tL.idMVA = lepMVASUSYId;
+        vetoLeptons.push_back(tL);  
+      }
       else vetoLeptons.push_back(tL);
     }
     if(isLooseLepton(tL)){ // A loose category... used in ttH, for example
       //tL.SetSF(1); tL.SetSFerr(1); // To be updated if ever needed
       if(gSelection == i4tSelec){
         if(!isGoodLepton(tL)) looseLeptons.push_back(tL);
+      }
+      else if(gSelection == iStopTopSelec){
+        tL.SetSF(   LepSF->GetLeptonSF(     pt, eta, tL.type) ); // Set SF and error
+        tL.SetSFerr(LepSF->GetLeptonSFerror(pt, eta, tL.type) );
+        looseLeptons.push_back(tL);
       }
       else looseLeptons.push_back(tL);
     }
@@ -968,7 +1000,7 @@ void LeptonSelector::InsideLoop(){
       if((gpdgMId == 23 || gpdgMId == 24 || gpdgMId == 25) && gSelection != iWZSelec){
         tL = Lepton(tP, charge, type);
         tL.Mid = gpdgMId;
-        //if(tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta() < 2.4)) genLeptons.push_back(tL);
+        //if(tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta()) < 2.4) genLeptons.push_back(tL);
         genLeptons.push_back(tL);
       }
     }
@@ -986,7 +1018,7 @@ void LeptonSelector::InsideLoop(){
         tL = Lepton(tP, charge, type);
         tL.Mid = 15;
         nLeptonsFromTau++;
-       // if(tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta() < 2.4)i) genLeptons.push_back(tL);
+        //if(tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta()) < 2.4) genLeptons.push_back(tL);
         genLeptons.push_back(tL);
       }
     }
@@ -1101,6 +1133,7 @@ void LeptonSelector::GetLeptonVariables(Int_t i){ // Once per muon, get all the 
   if(!gIsData){ isPrompt = Get<Int_t>("LepGood_mcPrompt",i) + Get<Int_t>("LepGood_mcPromptTau",i); };
   if(!gIsData){ matchId      = TMath::Abs(Get<Int_t>("LepGood_mcMatchId",i));}
   if(!gIsData){ matchIdGamma = TMath::Abs(Get<Int_t>("LepGood_mcPromptGamma",i));}
+  R9            = Get<Float_t>("LepGood_r9",i);
   SF = 1;
 }
 

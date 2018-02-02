@@ -11,7 +11,15 @@ class StopTopAnalysis : public PAFChainItemSelector{
     TTree* fTree;
 
     TH1F* fSumISRJets;  
+    TH1F* fTopPtSumOfWeights;
+    TH1F* fMetResSumOfWeights;
     TH1F* fISRJets;  
+    TH2F* fTopPt12;    
+    TH1F* fDeltaPhi;
+    TH1F* fDeltaEta;
+    TH2F* fDeltaPhiEta;
+    Float_t fNormMetRes;
+
     Int_t TNLHEWeight;
     Float_t TLHEWeight[254];
     Float_t genWeight;
@@ -32,10 +40,12 @@ class StopTopAnalysis : public PAFChainItemSelector{
     void SetLeptonVariables();
     void SetJetVariables();
     void SetEventVariables();
+    void SetMetNoNeutralinos();
 
-    void GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> VetoLeptons);
+    void GetLeptonVariables(std::vector<Lepton> selLeptons);
     void GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut = 30);
     void GetMET();
+    void GetMHT();
     void GetGenInfo();
 
     Float_t TrigSF;
@@ -66,24 +76,45 @@ class StopTopAnalysis : public PAFChainItemSelector{
     Float_t TDeltaEta;
     Float_t TMT2;      // Invariant mass
     Float_t TMET;      // MET
+    Float_t TMHT;      // MHT
     Float_t TPfMET;      // MET
     Float_t TMET_Phi;  // MET phi
     Int_t   TNVert;
     Bool_t  TIsSS;
+    Float_t TBtagPt;;
     Float_t TBtagSFFS;
+    Float_t TMT2_METres;      // Invariant mass
+    Float_t TMET_METres;      // MET
+    Float_t TMET_noSUSY;
+    Float_t TMET_Phi_noSUSY;
+    Float_t TMT2_noSUSY;
+    Float_t TgenMET_noSUSY;
+    Float_t TgenMT2_noSUSY;
 
-    Int_t   TNVetoLeps;
+    Int_t   TNLooseLeps;
     Int_t   TNSelLeps;
+    Int_t   TNSelLepsMuScaleUp;
+    Int_t   TNSelLepsMuScaleDown;
+    Int_t   TNSelLepsElScaleUp;
+    Int_t   TNSelLepsElScaleDown;
     Int_t TChannel;
     Int_t TPassTrigger;
     Int_t TPassMETfilters;
     Float_t TLep0_Pt;    
+    Float_t TLep0_PtMuScaleUp;    
+    Float_t TLep0_PtMuScaleDown;    
+    Float_t TLep0_PtElScaleUp;    
+    Float_t TLep0_PtElScaleDown;    
     Float_t TLep0_Eta;
     Float_t TLep0_Phi;
     Float_t TLep0_E;
     Int_t   TLep0_Id;
     Float_t TLep0_Charge;
     Float_t TLep1_Pt;    
+    Float_t TLep1_PtMuScaleUp;    
+    Float_t TLep1_PtMuScaleDown;    
+    Float_t TLep1_PtElScaleUp;    
+    Float_t TLep1_PtElScaleDown;    
     Float_t TLep1_Eta;
     Float_t TLep1_Phi;
     Float_t TLep1_E;
@@ -126,6 +157,19 @@ class StopTopAnalysis : public PAFChainItemSelector{
     Float_t TMETMETDown;
     Float_t TMT2METUp;
     Float_t TMT2METDown;
+    Float_t TMETunclUp;
+    Float_t TMETunclDown;
+    Float_t TMT2unclUp;
+    Float_t TMT2unclDown;
+  
+    Float_t TMETMuScaleUp;
+    Float_t TMETMuScaleDown;
+    Float_t TMETElScaleUp;
+    Float_t TMETElScaleDown;
+    Float_t TMT2MuScaleUp;
+    Float_t TMT2MuScaleDown;
+    Float_t TMT2ElScaleUp;
+    Float_t TMT2ElScaleDown;
 
     Float_t  TISRweight;
     Float_t  TISRweightUp;
@@ -145,6 +189,8 @@ class StopTopAnalysis : public PAFChainItemSelector{
     Float_t  TWeight_FSDown;
     Float_t  TWeight_ISRUp;
     Float_t  TWeight_ISRDown;
+    Float_t  TWeight_UnclMETUp;
+    Float_t  TWeight_UnclMETDown;
 
     Float_t TgenTop1Pt ;
     Float_t TgenTop1Eta;

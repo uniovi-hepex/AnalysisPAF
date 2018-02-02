@@ -51,11 +51,11 @@ void METcomp(){
   p->SetLegendTextSize(0.04);
   p->SetRatioMin(0.6); p->SetRatioMax(1.4);
   p->doSetLogy = false;
-  p->DrawComp("", 1, 1);
+  p->DrawComp("", 1);
   p->doSetLogy = true;
   p->SetPlotMinimum(5e-4);
   p->SetPlotMaximum(0.5);
-  p->DrawComp("log", 1, 1);
+  p->DrawComp("log", 1);
 
   delete p;
 }

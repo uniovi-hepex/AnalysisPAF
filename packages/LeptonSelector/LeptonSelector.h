@@ -27,6 +27,7 @@ class LeptonSelector : public PAFChainItemSelector{
   protected:
 
     LeptonSF *LepSF;
+    ElecScaleClass *ElecScale;
     Bool_t gIsData;
     Bool_t gIsFastSim;
     Int_t  gSelection;
@@ -83,7 +84,8 @@ class LeptonSelector : public PAFChainItemSelector{
     Int_t matchId;
     Int_t matchIdGamma;    
     Bool_t isConvVeto;    
-
+    Float_t R9;
+    
     // genLeptons
     Int_t ngenLep;
     Int_t ngenLepFromTau;

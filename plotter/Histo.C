@@ -146,7 +146,7 @@ void Histo::SetBinsErrorFromSyst(){
   Float_t max = 0;
   for(Int_t k = 0; k < nbins; k++){
     //max = vsysd[k] > vsysu[k] ? vsysd[k] : vsysu[k];
-    SetBinError(k+1, TMath::Sqrt((vsysu[k]+vsysd[k]))/2);
+    SetBinError(k+1, (TMath::Sqrt(vsysu[k]) + TMath::Sqrt(vsysd[k])) /2);
   }
 }
 

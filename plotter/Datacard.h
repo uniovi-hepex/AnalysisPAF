@@ -29,6 +29,7 @@ class Datacard{
     ~Datacard(){};
 
     Bool_t IsShapeDatacard;
+    Bool_t doBeestonBarlow;
 
     void SetSignalName(TString sn){ signalName = sn;}
     void SetPathToFile(TString g){pathToFile = g; if(!pathToFile.EndsWith("/")) pathToFile += "/";}
@@ -148,6 +149,7 @@ class TextDatacard{
 
     // Initialise all the data members
     void Init(){
+      doBeestonBarlow = true;
       shapes = "";
       obs_bin     = DataLine(nChannels,  "bin");
       observation = DataLine(nChannels,  "observation");
@@ -173,6 +175,8 @@ class TextDatacard{
     TextDatacard operator+(Datacard d){ return *this +  TextDatacard(&d);}
 
   protected:
+    Bool_t doBeestonBarlow;
+
     Int_t nProcesses;
     Int_t nNuisances;
     Int_t nHistoBins;
