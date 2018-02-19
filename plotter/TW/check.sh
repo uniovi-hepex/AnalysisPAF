@@ -4,8 +4,8 @@ cd ../..
 slash="/"
 allok=0
 
-i="Tree_"
-f=".root"
+init="Tree_"
+final=".root"
 
 workingpath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -83,7 +83,7 @@ while [ $allok != ${#samples[@]} ]; do
       echo ${samples[i]}
       echo "Reanalyzing..."
       echo " "
-      root -l -b -q "RunAnalyserPAF.C(\"$i${runsamples[i]}$f\", \"$sel\", $1)"
+      root -l -b -q "RunAnalyserPAF.C(\"$init${runsamples[i]}$final\", \"$sel\", $1)"
       resetpaf -a
       allok=$(($allok-8))
     fi
