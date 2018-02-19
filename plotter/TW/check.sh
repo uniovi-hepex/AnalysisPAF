@@ -80,14 +80,14 @@ while [ $allok != ${#samples[@]} ]; do
   allok=0
   for ((i=0; i<=$uplimit; i++)); do
     unset path
-    path=$plotspath$slash${samples[i]}
+    path=$plotspath$slash$init${samples[i]}$final
     if [ ! -e $path ]; then
       echo " "
       echo "%%%% => ROOT file not found. The sample that is missing is:"
       echo ${samples[i]}
       echo "Reanalyzing..."
       echo " "
-      root -l -b -q "RunAnalyserPAF.C(\"$init${runsamples[i]}$final\", \"$sel\", $1)"
+      root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $1)"
       resetpaf -a
       allok=$(($allok-8))
     fi
