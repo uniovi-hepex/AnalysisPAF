@@ -1,4 +1,8 @@
-source pre_start.sh
+#source pre_start.sh
+
+root6
+source /opt/PAF/PAF_setup.sh
+
 cd ../..
 
 slash="/"
