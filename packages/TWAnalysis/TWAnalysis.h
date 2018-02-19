@@ -54,6 +54,7 @@ class TWAnalysis : public PAFChainItemSelector{
     void GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> VetoLeptons);
     void GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut = 30);
     void GetGenJetVariables(std::vector<Jet> genJets, std::vector<Jet> mcJets);
+    float getTopPtRW();
     void GetMET();
     Int_t nFiduJets; Int_t nFidubJets; 
 
@@ -129,6 +130,12 @@ class TWAnalysis : public PAFChainItemSelector{
     Float_t TMET_PhiJESUp;  // MET phi
     Float_t TMET_PhiJESDown;  // MET phi
     Float_t TMET_PhiJERUp;  // MET phi
+    Float_t TLeadingJetPt    ;
+    Float_t TLeadingJetEta   ;
+    Float_t TLeadingJetCSV   ;
+    Float_t TSubLeadingJetPt ;
+    Float_t TSubLeadingJetEta;
+    Float_t TSubLeadingJetCSV;
 
     Int_t   TNVetoLeps;
     Int_t   TNSelLeps;
@@ -203,11 +210,19 @@ class TWAnalysis : public PAFChainItemSelector{
     Float_t  TWeight_PUDown;
     Float_t  TWeight_PUUp;
     Float_t  TWeight_FSDown;
+
+    Float_t   TWeight_upFrag       ;    
+    Float_t   TWeight_downFrag     ;	
+    Float_t   TWeight_PetersonFrag ;
+    Float_t   TWeight_semilepbrUp  ;	
+    Float_t   TWeight_semilepbrDown;
+
     
     Float_t  TWeight_MistagUp  ;
     Float_t  TWeight_MistagDown;
     Float_t  TWeight_BtagUp    ;
     Float_t  TWeight_BtagDown  ;
+    Float_t  TWeight_TopPt  ;
     
     Float_t   LeadingLeptPt_   ;
     Float_t   LeadingLeptEta_  ;    
@@ -238,8 +253,8 @@ class TWAnalysis : public PAFChainItemSelector{
     Float_t  TJetLooseCentralpt, TJetLooseCentralptJESUp    , TJetLooseCentralptJESDown    , TJetLooseCentralptJERUp    ;
     Float_t  C_jll          , C_jllJESUp          , C_jllJESDown          , C_jllJERUp          ;
     Float_t  DilepJetPt     , DilepJetPtJESUp     , DilepJetPtJESDown     , DilepJetPtJERUp     ;
-    Float_t  TBDTada        , TBDTadaJESUp        , TBDTadaJESDown        , TBDTadaJERUp        ;
-    Float_t  TBDTgrad       , TBDTgradJESUp       , TBDTgradJESDown       , TBDTgradJERUp       ;
+    /* Float_t  TBDTada        , TBDTadaJESUp        , TBDTadaJESDown        , TBDTadaJERUp        ; */
+    /* Float_t  TBDTgrad       , TBDTgradJESUp       , TBDTgradJESDown       , TBDTgradJERUp       ; */
     Float_t  TBDT       , TBDTJESUp       , TBDTJESDown       , TBDTJERUp       ;
     Float_t  TBDT2j1t       , TBDT2j1tJESUp       , TBDT2j1tJESDown       , TBDT2j1tJERUp       ;
     Float_t TBDT2j1t_DR, TBDT2j1t_ot;
@@ -317,14 +332,14 @@ class TWAnalysis : public PAFChainItemSelector{
     Bool_t  gIsTW;
     Bool_t  gIsLHE;
     void    setTWBDT();
-    TMVA::Reader* BDTada;
-    TMVA::Reader* BDTada_JESUp;
-    TMVA::Reader* BDTada_JESDown;
-    TMVA::Reader* BDTada_JER;
-    TMVA::Reader* BDTgrad;
-    TMVA::Reader* BDTgrad_JESUp;
-    TMVA::Reader* BDTgrad_JESDown;
-    TMVA::Reader* BDTgrad_JER;
+    /* TMVA::Reader* BDTada; */
+    /* TMVA::Reader* BDTada_JESUp; */
+    /* TMVA::Reader* BDTada_JESDown; */
+    /* TMVA::Reader* BDTada_JER; */
+    /* TMVA::Reader* BDTgrad; */
+    /* TMVA::Reader* BDTgrad_JESUp; */
+    /* TMVA::Reader* BDTgrad_JESDown; */
+    /* TMVA::Reader* BDTgrad_JER; */
     TMVA::Reader* BDT;
     TMVA::Reader* BDT_JESUp;
     TMVA::Reader* BDT_JESDown;
