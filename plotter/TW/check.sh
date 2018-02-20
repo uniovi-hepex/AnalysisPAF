@@ -93,7 +93,15 @@ while [ $allok != ${#samples[@]} ]; do
       echo ${samples[i]}
       echo "Reanalysing..."
       echo " "
-      root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $1)"
+      if [ ${samples[i]} == "treeProducerSusyMultilepton_tree" ]; then
+        root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/bfrag/treeProducerSusyMultilepton_tree.root\", \"$sel\", $1, 0, 0, 831.76)"
+      elif [ ${samples[i]} == "treeProducerSusyMultilepton_tree_TW" ]; then
+        root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/bfrag/treeProducerSusyMultilepton_tree_TW.root\", \"$sel\", $1, 0, 0, 35.85)"
+      elif [ ${samples[i]} == "treeProducerSusyMultilepton_tree_TbarW" ]; then
+        root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/bfrag/treeProducerSusyMultilepton_tree_TbarW.root\", \"$sel\", $1, 0, 0, 35.85)"
+      else
+        root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $1)"
+      fi
       resetpaf -a
       allok=$(($allok-8))
     fi
