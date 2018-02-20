@@ -1,7 +1,4 @@
-#source pre_start.sh
-
-root6
-source /opt/PAF/PAF_setup.sh
+source pre_start.sh
 
 cd ../..
 
