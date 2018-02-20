@@ -5,6 +5,9 @@ cd ../..
 slash="/"
 allok=0
 
+# Minimum size (in bytes!):
+minimumsize=50000
+
 init="Tree_"
 final=".root"
 
@@ -63,7 +66,9 @@ echo "Checking that all root files exist in..."
 echo $plotspath
 echo "...with selection..."
 echo $sel
-echo "...and with..."
+echo "...with at least..."
+echo $minimumsize
+echo "...bytes of size. If they do not fulfil these requirements, they will be reanalysed with..."
 echo $1
 echo "...cores."
 echo " "
@@ -77,17 +82,34 @@ while [ $allok != ${#samples[@]} ]; do
   allok=0
   for ((i=0; i<=$uplimit; i++)); do
     unset path
+    
     path=$plotspath$slash$init${samples[i]}$final
+    
     if [ ! -e $path ]; then
       echo " "
       echo "%%%% => ROOT file not found. The sample that is missing is:"
       echo ${samples[i]}
-      echo "Reanalyzing..."
+      echo "Reanalysing..."
       echo " "
       root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $1)"
       resetpaf -a
       allok=$(($allok-8))
     fi
+    
+    if [ -e $path ]; then
+      actualsize=$(wc -c <"$path")
+      if [ $actualsize -ge $minimumsize ]; then
+        echo " "
+        echo "%%%% => ROOT file of lower size than the minimum. The sample that is not heavy enough is:"
+        echo ${samples[i]}
+        echo "Reanalysing..."
+        echo " "
+        root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $1)"
+        resetpaf -a
+        allok=$(($allok-8))
+      fi
+    fi
+    
     allok=$(($allok+1))
   done
   if [ $checker == 10 ]; then
