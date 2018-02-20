@@ -76,12 +76,14 @@ echo " "
 path=""
 uplimit=$((${#samples[@]}-1))
 checker=0
+actualsize=0
 
 while [ $allok != ${#samples[@]} ]; do
   checker=$(($checker+1))
   allok=0
   for ((i=0; i<=$uplimit; i++)); do
     unset path
+    unset actualsize
     
     path=$plotspath$slash$init${samples[i]}$final
     
@@ -100,7 +102,9 @@ while [ $allok != ${#samples[@]} ]; do
       actualsize=$(wc -c <"$path")
       if [ $actualsize -ge $minimumsize ]; then
         echo " "
-        echo "%%%% => ROOT file of lower size than the minimum. The sample that is not heavy enough is:"
+        echo "%%%% => ROOT file with..."
+        echo $actualsize
+        echo "...bytes of size, which are lower than the minimum. This sample is:"
         echo ${samples[i]}
         echo "Reanalysing..."
         echo " "
