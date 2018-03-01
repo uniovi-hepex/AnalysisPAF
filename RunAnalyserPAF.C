@@ -67,8 +67,8 @@ const TString kTagSel[nSel] = {"Stop",     "Top",     "TW",     "WW", "HWW",
 
     const unsigned int nData2017 = 1;
 
-    TString *SelectedDataset   = data2017;
-    unsigned int SelectedNdata = nData2017;
+    TString *SelectedDataset   = data2016;
+    unsigned int SelectedNdata = nData2016;
 
 //=============================================================================
 // Tabs
@@ -78,7 +78,7 @@ const TString tab2016noSkim = "DR80XSummer16asymptoticMiniAODv2_2_noSkim";
 const TString tab2017       = "2017data";
 const TString tab2017v2     = "2017data_v2";
 
-TString SelectedTab = tab2016noSkim;
+TString SelectedTab = tab2016;
 
 
 //=============================================================================
