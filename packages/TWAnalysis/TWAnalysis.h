@@ -176,6 +176,15 @@ class TWAnalysis : public PAFChainItemSelector{
     Float_t TDR_L1L2_J1J2   ;
     Float_t TDR_L1L2_J1J2MET;
 
+    // ADDED:
+    
+    Float_t TLeadingJetE    ;
+    Double_t TM_LeadingB    ;
+    Double_t TM_SubLeadingB ;
+    Double_t TE_LLB         ;
+    Double_t TMT_LLMETB     ;
+    Double_t TM_LLB         ;
+    Double_t TPt_LL         ;
 
     // For systematics...
     Int_t   TNJetsJESUp;

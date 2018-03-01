@@ -28,27 +28,27 @@ TWAnalysis::TWAnalysis() : PAFChainItemSelector() {
         fHHT[ch][cut][sys]          = 0;
         fHJet0Eta[ch][cut][sys]     = 0;
         fHJet1Eta[ch][cut][sys]     = 0;
-        fHDYInvMass[ch][cut][sys]       = 0;
-        fHInvMass[ch][cut][sys]       = 0;
-        fHInvMass2[ch][cut][sys]      = 0;
-        fHNBtagsNJets[ch][cut][sys]   = 0;
-        fHNJets[ch][cut][sys]        = 0;
-        fHNBtagJets[ch][cut][sys]    = 0;
-        fHJet0Pt[ch][cut][sys]       = 0;
-        fHJet1Pt[ch][cut][sys]       = 0;
-        fHDiLepPt[ch][cut][sys]      = 0;
-        fHLep0Iso[ch][cut][sys]       = 0;
-        fHLep1Iso[ch][cut][sys]       = 0;
-        fHLep0Pt[ch][cut][sys]       = 0;
-        fHLep1Pt[ch][cut][sys]       = 0;
-        fHJetCSV[ch][cut][sys]       = 0;
-        fHJet0CSV[ch][cut][sys]       = 0;
-        fHJet1CSV[ch][cut][sys]       = 0;
-        fHvertices[ch][cut][sys]     = 0;
+        fHDYInvMass[ch][cut][sys]   = 0;
+        fHInvMass[ch][cut][sys]     = 0;
+        fHInvMass2[ch][cut][sys]    = 0;
+        fHNBtagsNJets[ch][cut][sys] = 0;
+        fHNJets[ch][cut][sys]       = 0;
+        fHNBtagJets[ch][cut][sys]   = 0;
+        fHJet0Pt[ch][cut][sys]      = 0;
+        fHJet1Pt[ch][cut][sys]      = 0;
+        fHDiLepPt[ch][cut][sys]     = 0;
+        fHLep0Iso[ch][cut][sys]     = 0;
+        fHLep1Iso[ch][cut][sys]     = 0;
+        fHLep0Pt[ch][cut][sys]      = 0;
+        fHLep1Pt[ch][cut][sys]      = 0;
+        fHJetCSV[ch][cut][sys]      = 0;
+        fHJet0CSV[ch][cut][sys]     = 0;
+        fHJet1CSV[ch][cut][sys]     = 0;
+        fHvertices[ch][cut][sys]    = 0;
         if(cut == 0){
-          fHyields[ch][sys]     = 0;
-          fHFiduYields[ch][sys]     = 0;
-          fHSSyields[ch][sys]   = 0;
+          fHyields[ch][sys]           = 0;
+          fHFiduYields[ch][sys]       = 0;
+          fHSSyields[ch][sys]         = 0;
         }
       }
     }
@@ -79,6 +79,7 @@ void TWAnalysis::Initialise(){
   
   makeTree = true;
   makeHistos = true;
+  
   if(makeTree){
     fTree       = CreateTree("MiniTree","Created with PAF");
     fMini       = CreateTree("Mini"    , "MiniMiniTree");
@@ -89,57 +90,55 @@ void TWAnalysis::Initialise(){
     SetEventVariables();
     SetTWVariables();
   }
+  
   setTWBDT();
   InitHistos();
 
-  genLeptons  = std::vector<Lepton>();
-  selLeptons  = std::vector<Lepton>();
-  vetoLeptons = std::vector<Lepton>();
-  selJets = std::vector<Jet>();
-  selJetsJecUp = std::vector<Jet>();
-  selJetsJecDown = std::vector<Jet>();
-  selJetsJER     = std::vector<Jet>();
-  Jets15  = std::vector<Jet>();
-  genJets = std::vector<Jet>();
-  mcJets  = std::vector<Jet>();
-  vetoJets = std::vector<Jet>();
+  genLeptons      = std::vector<Lepton>();
+  selLeptons      = std::vector<Lepton>();
+  vetoLeptons     = std::vector<Lepton>();
+  selJets         = std::vector<Jet>();
+  selJetsJecUp    = std::vector<Jet>();
+  selJetsJecDown  = std::vector<Jet>();
+  selJetsJER      = std::vector<Jet>();
+  Jets15          = std::vector<Jet>();
+  genJets         = std::vector<Jet>();
+  mcJets          = std::vector<Jet>();
+  vetoJets        = std::vector<Jet>();
 }
 
 void TWAnalysis::InsideLoop(){
-
-  
-
   ReSetTWVariables();
   // Vectors with the objects
-  genLeptons  = GetParam<vector<Lepton>>("genLeptons");
-  selLeptons  = GetParam<vector<Lepton>>("selLeptons");
-  vetoLeptons = GetParam<vector<Lepton>>("vetoLeptons");
-  selJets     = GetParam<vector<Jet>>("selJets");
-  selJetsJecUp   = GetParam<vector<Jet>>("selJetsJecUp");
-  selJetsJecDown = GetParam<vector<Jet>>("selJetsJecDown");
-  selJetsJER     = GetParam<vector<Jet>>("selJetsJER");
-  Jets15      = GetParam<vector<Jet>>("Jets15");
-  vetoJets    = GetParam<vector<Jet>>("vetoJets");
-  genJets     = GetParam<vector<Jet>>("genJets");
-  mcJets      = GetParam<vector<Jet>>("mcJets");
+  genLeptons        = GetParam<vector<Lepton>>("genLeptons");
+  selLeptons        = GetParam<vector<Lepton>>("selLeptons");
+  vetoLeptons       = GetParam<vector<Lepton>>("vetoLeptons");
+  selJets           = GetParam<vector<Jet>>("selJets");
+  selJetsJecUp      = GetParam<vector<Jet>>("selJetsJecUp");
+  selJetsJecDown    = GetParam<vector<Jet>>("selJetsJecDown");
+  selJetsJER        = GetParam<vector<Jet>>("selJetsJER");
+  Jets15            = GetParam<vector<Jet>>("Jets15");
+  vetoJets          = GetParam<vector<Jet>>("vetoJets");
+  genJets           = GetParam<vector<Jet>>("genJets");
+  mcJets            = GetParam<vector<Jet>>("mcJets");
   // Weights and SFs
-  NormWeight = GetParam<Float_t>("NormWeight");
-  TrigSF       = GetParam<Float_t>("TriggerSF");
-  TrigSFerr    = GetParam<Float_t>("TriggerSFerr");
-  PUSF         = GetParam<Float_t>("PUSF");
-  PUSF_Up      = GetParam<Float_t>("PUSF_Up");
-  PUSF_Down    = GetParam<Float_t>("PUSF_Down");
-  BtagSF           = GetParam<Float_t>("BtagSF"          );
-  BtagSFBtagUp     = GetParam<Float_t>("BtagSFBtagUp"    );
-  BtagSFBtagDown   = GetParam<Float_t>("BtagSFBtagDown"  );
-  BtagSFMistagUp   = GetParam<Float_t>("BtagSFMistagUp"  );
-  BtagSFMistagDown = GetParam<Float_t>("BtagSFMistagDown");
+  NormWeight        = GetParam<Float_t>("NormWeight");
+  TrigSF            = GetParam<Float_t>("TriggerSF");
+  TrigSFerr         = GetParam<Float_t>("TriggerSFerr");
+  PUSF              = GetParam<Float_t>("PUSF");
+  PUSF_Up           = GetParam<Float_t>("PUSF_Up");
+  PUSF_Down         = GetParam<Float_t>("PUSF_Down");
+  BtagSF            = GetParam<Float_t>("BtagSF"          );
+  BtagSFBtagUp      = GetParam<Float_t>("BtagSFBtagUp"    );
+  BtagSFBtagDown    = GetParam<Float_t>("BtagSFBtagDown"  );
+  BtagSFMistagUp    = GetParam<Float_t>("BtagSFMistagUp"  );
+  BtagSFMistagDown  = GetParam<Float_t>("BtagSFMistagDown");
 
   // Event variables
-  gChannel       = GetParam<Int_t>("gChannel");
-  passMETfilters = GetParam<Bool_t>("METfilters");
-  passTrigger    = GetParam<Bool_t>("passTrigger");
-  isSS           = GetParam<Bool_t>("isSS");
+  gChannel          = GetParam<Int_t>("gChannel");
+  passMETfilters    = GetParam<Bool_t>("METfilters");
+  passTrigger       = GetParam<Bool_t>("passTrigger");
+  isSS              = GetParam<Bool_t>("isSS");
   // Leptons and Jets
   GetLeptonVariables(selLeptons, vetoLeptons);
   GetJetVariables(selJets, Jets15);
@@ -175,42 +174,43 @@ void TWAnalysis::InsideLoop(){
 
   TIsFid = false;
 
-  if(genLeptons.size() >= 2){ // MIND THE POSSIBLE SKIM (on reco leptons) IN THE SAMPLE!!
+  if (genLeptons.size() >= 2){ // MIND THE POSSIBLE SKIM (on reco leptons) IN THE SAMPLE!!
     Int_t GenChannel = -1;
     if(genLeptons.at(0).isElec && genLeptons.at(1).isMuon) GenChannel = iElMu; 
     if(genLeptons.at(0).isMuon && genLeptons.at(1).isElec) GenChannel = iElMu; 
     if(genLeptons.at(0).isMuon && genLeptons.at(1).isMuon) GenChannel = iMuon; 
     if(genLeptons.at(0).isElec && genLeptons.at(1).isElec) GenChannel = iElec; 
     // cout << nFiduJets << " " <<  nFidubJets << endl;
-    if( ( (genLeptons.at(0).p.Pt() > 25 && genLeptons.at(1).p.Pt() > 20) || (genLeptons.at(0).p.Pt() > 20 && genLeptons.at(1).p.Pt() > 25) )
+    if ( ( (genLeptons.at(0).p.Pt() > 25 && genLeptons.at(1).p.Pt() > 20) || (genLeptons.at(0).p.Pt() > 20 && genLeptons.at(1).p.Pt() > 25) )
         && (TMath::Abs(genLeptons.at(0).p.Eta()) < 2.4 && TMath::Abs(genLeptons.at(1).p.Eta()) < 2.4) 
         && ( (genLeptons.at(0).p + genLeptons.at(1).p).M() > 20 )
-	&& (nFiduJets == 1 && nFidubJets == 1)){
+        && (nFiduJets == 1 && nFidubJets == 1)){
       TIsFid = true;
       fHFiduYields[GenChannel-1][0] -> Fill(1);
       Int_t nWTree = Get<Int_t>("nLHEweight");
-      for(int i = 0; i<nWeights; i++){
-	fHWeightsFidu->Fill(i, Get<Float_t>("LHEweight_wgt", i));
+      
+      for (int i = 0; i<nWeights; i++){
+        fHWeightsFidu->Fill(i, Get<Float_t>("LHEweight_wgt", i));
       }
-    }	
-    else{
+    }
+    else {
       TIsFid = false;
       fHFiduYields[GenChannel-1][0] -> Fill(2);
       Int_t nWTree = Get<Int_t>("nLHEweight");
-      for(int i = 0; i<nWeights; i++){
-	fHWeightsNotFidu->Fill(i, Get<Float_t>("LHEweight_wgt", i));
+      
+      for (int i = 0; i<nWeights; i++){
+        fHWeightsNotFidu->Fill(i, Get<Float_t>("LHEweight_wgt", i));
       }
     }
-    
   }
   //if((Int_t) genLeptons.size() >=2 && TNSelLeps >= 2 && passTrigger && passMETfilters){ // dilepton event, 2 leptons // && !isSS
   // if (gSelection == iTopSelec){
-  if (gIsTTbar && genLeptons.size() <2 ) return; // Dilepton selection for ttbar!!!
+  if (gIsTTbar && genLeptons.size() < 2 ) return; // Dilepton selection for ttbar!!!
   // }
   // else if (gSelection == iTWSelec){
   //   if (gIsTW && genLeptons.size() < 2) return; // Dilepton selection for tw!!
   // }
-  if(TNSelLeps >= 2 && passTrigger && passMETfilters){ // dilepton event, 2 leptons // && !isSS
+  if (TNSelLeps >= 2 && passTrigger && passMETfilters){ // dilepton event, 2 leptons // && !isSS
     // Deal with weights:
     Float_t lepSF   = selLeptons.at(0).GetSF( 0)*selLeptons.at(1).GetSF( 0);
     Float_t ElecSF = 1; Float_t MuonSF = 1;
@@ -289,19 +289,17 @@ void TWAnalysis::InsideLoop(){
     TWeight_semilepbrUp  =  NormWeight*ElecSF  *MuonSF*TrigSF*PUSF   *  BtagSF * semilepbrUp;
     TWeight_semilepbrDown=  NormWeight*ElecSF  *MuonSF*TrigSF*PUSF   *  BtagSF * semilepbrDown;
 
-
-
-
-
-
-
+    
     if(gIsData) TWeight = 1;
+    
+    
     // Event Selection
     // ===================================================================================================================
     // cout << "We are here" << endl;
-    if((selLeptons.at(0).p + selLeptons.at(1).p).M() > 20 && selLeptons.at(0).p.Pt() > 25){ // mll > 20 GeV, dilepton, leading lepton pT > 25 GeV
-      if(isSS) fHSSyields[gChannel][0] -> Fill(idilepton, TWeight);
-      else{    
+    
+    if ((selLeptons.at(0).p + selLeptons.at(1).p).M() > 20 && selLeptons.at(0).p.Pt() > 25){ // mll > 20 GeV, dilepton, leading lepton pT > 25 GeV
+      if (isSS) fHSSyields[gChannel][0] -> Fill(idilepton, TWeight);
+      else {
         fHyields[gChannel][0] -> Fill(idilepton, TWeight);
         FillHistos(gChannel, idilepton);
         FillDYHistos(gChannel);
@@ -337,65 +335,67 @@ void TWAnalysis::InsideLoop(){
 
             }
           }
-	  if (TNJets == 1 && TNBtags == 1){
-	    if(isSS) fHSSyields[gChannel][0] -> Fill(i1j1b, TWeight);
-	    else{      fHyields[gChannel][0] -> Fill(i1j1b, TWeight);
-	      FillHistos(gChannel, i1j1b); }
-	  }
-	  if (TNJets == 2 && TNBtags == 1){
-	    if(isSS) fHSSyields[gChannel][0] -> Fill(i2j1b, TWeight);
-	    else{      fHyields[gChannel][0] -> Fill(i2j1b, TWeight);
-	      FillHistos(gChannel, i2j1b); }
-	  }
-	  if (TNJets == 2 && TNBtags == 2){
-	    if(isSS) fHSSyields[gChannel][0] -> Fill(i2j2b, TWeight);
-	    else{      fHyields[gChannel][0] -> Fill(i2j2b, TWeight);
-	      FillHistos(gChannel, i2j2b); }
-	  }
+          
+          if (TNJets == 1 && TNBtags == 1){
+            if(isSS) fHSSyields[gChannel][0] -> Fill(i1j1b, TWeight);
+            else{      fHyields[gChannel][0] -> Fill(i1j1b, TWeight);
+              FillHistos(gChannel, i1j1b); }
+          }
+          if (TNJets == 2 && TNBtags == 1){
+            if(isSS) fHSSyields[gChannel][0] -> Fill(i2j1b, TWeight);
+            else{      fHyields[gChannel][0] -> Fill(i2j1b, TWeight);
+              FillHistos(gChannel, i2j1b); }
+          }
+          if (TNJets == 2 && TNBtags == 2){
+          if(isSS) fHSSyields[gChannel][0] -> Fill(i2j2b, TWeight);
+          else{      fHyields[gChannel][0] -> Fill(i2j2b, TWeight);
+            FillHistos(gChannel, i2j2b); }
+          }
         }
 
-      // SERGIO: uncomment from here
-      // Option 1: for signal extraction
-      if(TChannel == iElMu){
-      	if (TNBtags > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0 || TNBtagsJERUp > 0) {
-      	  CalculateTWVariables();
-      	  fTree->Fill();
-      	  // cout << "Filling " << TWeight << endl;
-      	}
-      }
-      
-      // //////////////// NUEVO COMMENT EMPIEZA AQUI
-      // // Option 2: for nB,nJets plot
-      // if(TChannel == iElMu)
-      // 	fMini->Fill();
+        // SERGIO: uncomment from here
+        // Option 1: for signal extraction
+//         if(TChannel == iElMu){
+//           if (TNBtags > 0 || TNBtagsJESUp > 0 || TNBtagsJESDown > 0 || TNBtagsJERUp > 0) {
+//             CalculateTWVariables();
+//             fTree->Fill();
+//             // cout << "Filling " << TWeight << endl;
+//           }
+//         }
+        
+        // //////////////// NUEVO COMMENT EMPIEZA AQUI
+        // Option 2: for nB,nJets plot
+        // if(TChannel == iElMu)
+        //   fMini->Fill();
 
-      // // Option 3: for 1j1t plots
-      // if(TChannel == iElMu){   // MET > 40 in ee, µµ
-      // 	if (TNBtags == 1 || TNBtagsJESUp == 1 || TNBtagsJESDown == 1 || TNBtagsJERUp == 1) {
-      // 	  if (TNJets == 1 || TNJetsJESUp == 1 || TNJetsJESDown == 1 || TNJetsJERUp == 1){
-      // 	    CalculateTWVariables();
-      // 	    // if (TNBtags == 1 && TNJets == 1) cout << "var is " << DilepMETJetPt << " " 
-      // 	    // 					  << " " << THTtot << " "<< DilepmetjetOverHT  << endl;
-      // 	    fMini1j1t->Fill();
-      // 	  }
-      // 	}
-      // }
-
-      // // Option 4: for 2j1t plots
-      // if(TChannel == iElMu){   // MET > 40 in ee, µµ
-      // 	if (TNBtags == 1 || TNBtagsJESUp == 1 || TNBtagsJESDown == 1 || TNBtagsJERUp == 1) {
-      // 	  if (TNJets == 2 || TNJetsJESUp == 2 || TNJetsJESDown == 2 || TNJetsJERUp == 2){
-      // 	    CalculateTWVariables();
-      // 	    fMini2j1t->Fill();
-      // 	  }
-      // 	}
+        // // Option 3: for 1j1t plots
+        if(TChannel == iElMu){   // MET > 40 in ee, µµ
+          if (TNBtags == 1 || TNBtagsJESUp == 1 || TNBtagsJESDown == 1 || TNBtagsJERUp == 1) {
+            if (TNJets == 1 || TNJetsJESUp == 1 || TNJetsJESDown == 1 || TNJetsJERUp == 1){
+              CalculateTWVariables();
+              // if (TNBtags == 1 && TNJets == 1) cout << "var is " << DilepMETJetPt << " " 
+              // 					  << " " << THTtot << " "<< DilepmetjetOverHT  << endl;
+              fMini1j1t->Fill();
+            }
+          }
+        }
+        
+        // // Option 4: for 2j1t plots
+  //       if(TChannel == iElMu){   // MET > 40 in ee, µµ
+  //       	if (TNBtags == 1 || TNBtagsJESUp == 1 || TNBtagsJESDown == 1 || TNBtagsJERUp == 1) {
+  //       	  if (TNJets == 2 || TNJetsJESUp == 2 || TNJetsJESDown == 2 || TNJetsJERUp == 2){
+  //       	    CalculateTWVariables();
+  //       	    fMini2j1t->Fill();
+  //       	  }
+  //       	}
       }
-      // SERGIO: until here (luego comentar las proximas lineas!!)
-    //   if(TChannel == iElMu && (TNBtags == 1 || TNBtagsJESUp == 1 || TNBtagsJESDown == 1 || TNBtagsJERUp == 1))
-    //   	fMini->Fill();
+    
+        // SERGIO: until here (luego comentar las proximas lineas!!)
+  //       if(TChannel == iElMu && (TNBtags == 1 || TNBtagsJESUp == 1 || TNBtagsJESDown == 1 || TNBtagsJERUp == 1))
+  //       	fMini->Fill();
     }
   }
-  }
+}
 
 
 //#####################################################################
@@ -444,7 +444,7 @@ void TWAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> clea
     THT += TJet_Pt[i];
     if(selJets.at(i).isBtag)            TNBtags++;
   }
-
+  
   if (TNJets > 0){
     TLeadingJetPt  = selJets.at(0).Pt();
     TLeadingJetEta = selJets.at(0).Eta();
@@ -991,8 +991,19 @@ void TWAnalysis::SetTWVariables()
   fMini1j1t->Branch("TC_jllJERUp"                , &C_jllJERUp              , "TC_jllJERUp/F"               );
   fMini1j1t->Branch("THTLepOverHTJERUp"          , &HTLepOverHTJERUp        , "THTLepOverHTJERUp/F"         );
   fMini1j1t->Branch("TDilepJetPtJERUp"           , &DilepJetPtJERUp         , "TDilepJetPtJERUp/F"          );
-
-
+  
+  // Things added by me (WOLOLO):
+  fMini1j1t->Branch("TMET",                 &TMET,                    "TMET/F");
+  fMini1j1t->Branch("TLeadingJetE",         &TLeadingJetE,            "TLeadingJetE/F");
+  fMini1j1t->Branch("TM_LeadingB" ,         &TM_LeadingB,             "TM_LeadingB/D");
+  fMini1j1t->Branch("TM_SubLeadingB",       &TM_SubLeadingB,          "TM_SubLeadingB/D");
+  fMini1j1t->Branch("TE_LLB",               &TE_LLB,                  "TE_LLB/D");
+  fMini1j1t->Branch("TMT_LLMETB",           &TMT_LLMETB,              "TMT_LLMETB/D");
+  fMini1j1t->Branch("TM_LLB",               &TM_LLB,                  "TM_LLB/D");
+  fMini1j1t->Branch("TPt_LL",               &TPt_LL,                  "TPt_LL/D");
+  
+  
+  // End of things added by me
 
   fMini2j1t->Branch("TChannel"     , &TChannel     , "TChannel/I"      );
   fMini2j1t->Branch("TIsSS"        , &TIsSS        , "TIsSS/B"         );
@@ -1136,10 +1147,18 @@ void TWAnalysis::ReSetTWVariables()
   TBDTJESUp      = -199;
   TBDTJESDown    = -199;
   
+  // ADDED
+  TLeadingJetE    = -99;
+  TM_LeadingB     = -99;
+  TM_SubLeadingB  = -99;
+  TE_LLB          = -99;
+  TMT_LLMETB      = -99;
+  TM_LLB          = -99;
 }
 
 void TWAnalysis::CalculateTWVariables()
 {
+  
   if (hasTW) return;
   hasTW = true;
 
@@ -1151,7 +1170,7 @@ void TWAnalysis::CalculateTWVariables()
     Lep1METJetPt     =  getLep1METJetPt()    ;
     DPtDilep_JetMET  =  getDPtDilep_JetMET() ;
     DPtDilep_MET     =  getDPtDilep_MET()    ;
-    DPtLep1_MET      =  getDPtLep1_MET()     ;    
+    DPtLep1_MET      =  getDPtLep1_MET()     ;
     DilepMETJet1Pz   =  getDilepMETJet1Pz()  ;
 
     TLorentzVector met; met.SetPtEtaPhiE(TMET,0,TMET_Phi,TMET);
@@ -1162,7 +1181,15 @@ void TWAnalysis::CalculateTWVariables()
     THTtot             = getHTtot();
     DilepmetjetOverHT  = DilepMETJetPt/THTtot          ;
     HTLepOverHT        = (selLeptons.at(0).p.Pt() + selLeptons.at(1).p.Pt())/THTtot    ;
-
+    
+    TLeadingJetE    = selJets.at(0).p.E();
+    TM_LeadingB     = (selJets.at(0).p + selLeptons.at(0).p).M();
+    TM_SubLeadingB  = (selJets.at(0).p + selLeptons.at(1).p).M();
+    TE_LLB          = (selJets.at(0).p + selLeptons.at(0).p + selLeptons.at(1).p).E();
+    TMT_LLMETB      = (selJets.at(0).p + selLeptons.at(0).p + selLeptons.at(1).p + met).Mt();
+    TM_LLB          = (selJets.at(0).p + selLeptons.at(0).p + selLeptons.at(1).p).M();
+    TPt_LL          = (selLeptons.at(0).p + selLeptons.at(1).p).Pt();
+    
   }
   else{
     DilepMETJetPt    =  -99.;
