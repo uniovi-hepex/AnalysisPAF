@@ -8,53 +8,63 @@ R__LOAD_LIBRARY(TW/AdditionalStuff.C+)
 #include "Plot.h"
 #include "TW/AdditionalStuff.C"
 
-void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, bool setLegendLeft=false );
-TString pathToTree = "/pool/cienciasrw/userstorage/sscruz/TW/jul25/";
+void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, bool setLegendLeft=false,TString yAxisTitleStyle="", float max=0. );
+TString pathToTree = "/pool/cienciasrw/userstorage/sscruz/TW/aug21/";
 TString NameOfTree = "Mini1j1t";
 
 
 void run1j1tPlots(){
 
-  DrawPlot("TnBTotal - 1 "         , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu",  3, -0.5, 2.5, "Number of b-tagged loose jets");
-  DrawPlot("TnLooseCentral - 1 "   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu",  5, -0.5, 4.5, "Number of loose jets");
-  DrawPlot("TDilepMETJetPt_THTtot ", "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20,  0.,   1., "p_{T}(e#mu j met) / H_{T}");
-  DrawPlot("TC_jll "		   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20,  0.,   1., "C_{je#mu}");
-  DrawPlot("TTJet1_pt " 	   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 25,  0., 250., "Leading jet p_{T} [GeV]");
-  DrawPlot("TDilepMETJetPt "	   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20,  0., 200., "p_{T}(e#mu j met) [GeV]");
-  DrawPlot("TTHTtot "		   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20, 70., 550., "H_{T} [GeV]");
-  DrawPlot("TTJetLooseCentralpt "  , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 30,  0.,  30., "Loose jet p_{T} [GeV]");
-  DrawPlot("TMSys "		   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20, 50., 750., "m_{sys} [GeV]");
-  DrawPlot("THTLepOverHT "	   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20,  0.,   1., "H_{T}+lep / H_{T}");
-  DrawPlot("TDilepJetPt "	   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 25,  0., 250., "p_{T}^{e#mu, j} [GeV]");
+  DrawPlot("THTLepOverHT "	   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 14,  0.1,   0.8,  "(p_{T}(e)+p_{T}(#mu)) / H_{T}",false,"units,0.05", 1e4);
+
+  cout << "lazy mode on" << endl;
+  return;
+
+  DrawPlot("TDilepMETJetPt "	   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 15,  0., 150.,  "p_{T}^{sys} (GeV)", false,"gev");
+  DrawPlot("TTJet1_pt " 	   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20,  0., 200.,  "Leading jet p_{T} (GeV)",false,"gev");
+
+  cout << "lazy mode on" << endl;
+  return;
+
+
+  DrawPlot("TnBTotal - 1 "         , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu",  3, -0.5, 2.5,  "Number of b-tagged loose jets", false);
+  DrawPlot("TnLooseCentral - 1 "   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu",  5, -0.5, 4.5,  "Number of loose jets", false);
+  DrawPlot("TTHTtot "		   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20, 70., 550.,  "H_{T} (GeV)",false,"gev");
+  DrawPlot("TTJetLooseCentralpt "  , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 30,  0.,  30.,  "Loose jet p_{T} (GeV)",false,"gev");
+  DrawPlot("TMSys "		   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20, 50., 750.,  "M_{sys} (GeV)",false,"gev");
+  DrawPlot("TDilepJetPt "	   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 25,  0., 250.,  "p_{T}^{e#mu, j} (GeV)",false,"gev");
+  DrawPlot("TC_jll "		   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20,  0.,   1., "C_{je#mu}",true,"units,0.05");
+  cout << "Este plot ha cambiado, volver a ponerlo en el binning inicial" << endl;
+  DrawPlot("TDilepMETJetPt_THTtot ", "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 16,  0.1,   0.9,  "p_{T}(e#mu j met) / H_{T}", false,"units,0.05");
 
 }
 
-void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, bool setLegendLeft = false){
+void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, bool setLegendLeft = false, TString yAxisTitleStyle="", float max=0){
   Plot* p = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
   p->SetPathSignal(pathToTree + "");
-  p->verbose = false;
-  // p->SetVarName("forFit");
+  p->verbose = true;
+
+  p->yAxisTitleStyle=yAxisTitleStyle;
 
   TGaxis::SetMaxDigits(3);
-  p->chlabel="e^{#pm}#mu^{#mp} + 1j1b";
+  p->SetChLabel("e^{#pm}#mu^{#mp} + 1j1b");
 
-  p->AddSample("WZ"         , "VV+t#bar{t}V", itBkg, kOrange-3);
-  p->AddSample("WW"         , "VV+t#bar{t}V", itBkg);
-  p->AddSample("ZZ"         , "VV+t#bar{t}V", itBkg);
-  p->AddSample("TTWToLNu"   , "VV+t#bar{t}V", itBkg);
+  p->AddSample("TTWToLNu"    ,"VV+t#bar{t}V", itBkg, 390);
   p->AddSample("TTWToQQ"    , "VV+t#bar{t}V", itBkg);
   p->AddSample("TTZToQQ"    , "VV+t#bar{t}V", itBkg);
   p->AddSample("TTZToLLNuNu", "VV+t#bar{t}V", itBkg);
+  p->AddSample("WZ"         , "VV+t#bar{t}V", itBkg);
+  p->AddSample("WW"         , "VV+t#bar{t}V", itBkg);
+  p->AddSample("ZZ"         , "VV+t#bar{t}V", itBkg);
 
-  p->AddSample("DYJetsToLL_M10to50_aMCatNLO", "Z/#gamma* #rightarrow e^{#pm}#mu^{#mp}", itBkg, TColor::GetColor("#3b0160")); // kRed);
-  p->AddSample("DYJetsToLL_M50_aMCatNLO"    , "Z/#gamma* #rightarrow e^{#pm}#mu^{#mp}", itBkg);
-  p->AddSample("TTbar_Powheg"               , "t#bar{t}" , itBkg, TColor::GetColor("#669966")); // TColor::GetColor("#8ADCFF"));
-  p->AddSample("TTbar_PowhegSemi"           , "Non W/Z"  , itBkg, kGray);
-  p->AddSample("WJetsToLNu_MLM"             , "Non W/Z"  , itBkg, kGray);
-  p->AddSample("TW"                         , "tW"       , itBkg, TColor::GetColor("#ff4800")); // TColor::GetColor("#ffc878"));
-  p->AddSample("TbarW"                      , "tW"       , itBkg);
- 
+  p->AddSample("DYJetsToLL_M10to50_aMCatNLO", "DY", itBkg, 852); // kRed);
+  p->AddSample("DYJetsToLL_M50_aMCatNLO"    , "DY", itBkg);
+  p->AddSample("TTbar_Powheg"               , "t#bar{t}", itBkg, 633);
+  p->AddSample("TTbar_PowhegSemi"           , "Non-W/Z" , itBkg, 413);
+  p->AddSample("WJetsToLNu_MLM"             , "Non-W/Z" , itBkg, 413);
+  p->AddSample("TW"                         , "tW"      , itBkg, TColor::GetColor("#ffcc33")); 
+  p->AddSample("TbarW"                      , "tW"      , itBkg);
 
   p->AddSample("MuonEG"    , "Data", itData);
   p->AddSample("SingleMuon", "Data", itData);
@@ -90,9 +100,17 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample("TTbar_Powheg", "t#bar{t}", itSys, 1, "pdfUp"); 
   p->AddSample("TTbar_Powheg", "t#bar{t}", itSys, 1, "pdfDown"); 
 
+  p->doUncInLegend=true;
 
   p->SetRatioMin( 0.6 );
   p->SetRatioMax( 1.4 );
+
+
+  if (max > 0) p->SetPlotMaximum(max);
+
+
+  p->SetCMSlabel("CMS");
+
 
   p->SetLegendPosition(0.7, 0.45, 0.93, 0.92);
 
@@ -106,7 +124,10 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->doSetLogy = false;
   p->doData = true;
   if (setLegendLeft) p->SetLegendPosition("UL");
-  p->DrawStack("ElMu_0_log", 1);
+
+  
+  p->AddLumiSyst( 0.025);
+  p->DrawStack("ElMu_0_log");
   //cout << "done stack" << endl;
   // p->PrintSystematics();
   //p->PrintSystYields();

@@ -37,6 +37,8 @@ public:
   bool doStatUncInDatacard = true;
   bool doLegend        = true;
   bool doUncInLegend   = false;
+  TString yAxisTitleStyle="";
+
 
   std::vector<Histo*> VBkgs;
   std::vector<Histo*> VSignals;
@@ -250,6 +252,8 @@ public:
 	void SetTitle(TString tit){title = tit;}
 	virtual void SetTitleX(TString xtit, Float_t size = -999){xtitle = xtit; if(size != -999) xtitleSize = size;}
 	virtual void SetTitleY(TString ytit, Float_t size = -999){ytitle = ytit; if(size != -999) ytitleSize = size;}
+	void AddLumiSyst( float);
+	void AddNormSyst( TString, TString, float);
 
   virtual void SetYaxisDivisions(Int_t div){ytitleDivisions = div;}
   virtual void SetYaxisOffset(Float_t Offset, Float_t size = -999){ ytitleOffset = Offset; if(size != -999) ytitleLabelSize = size;}

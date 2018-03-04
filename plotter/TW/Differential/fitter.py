@@ -4,16 +4,17 @@ import copy
 
 
 class FittingSuite: 
-    def __init__(self, cardFile):
+    def __init__(self, cardFile, doExpect=None):
         self.cardFile = cardFile
+        self.doExpect = doExpect
         self.pmap = {}
-        self.readFromCard()
         self.procMap = { 'NonWZ': 0.5,
                          'tW'   : 'Signal',
                          'ttV'  : 0.5,
                          'VV'   : 0.5,
-                         'DY'   : 0.1,
+                         'DY'   : 0.2,
                          'ttbar': 0.06}
+        self.readFromCard()
     
         
 
@@ -52,19 +53,33 @@ class FittingSuite:
                 nProc = len(self.pmap[key])
             else:
                 if nProc != len(self.pmap[key]): raise RuntimeError("Nuisance %s does not have the same number of processes as one the previous ones. Something has gone wrong..."%(key,prevKey))
+        
+        if self.doExpect:
+            self.pmap['obs']['data'].Reset()
+            for key in self.pmap['']:
+                if self.procMap[key]=='Signal':
+                    scaledSignal = copy.deepcopy(self.pmap[''][key])
+                    scaledSignal.Scale(self.doExpect)
+                    self.pmap['obs']['data'].Add(scaledSignal)
+                else:
+                    self.pmap['obs']['data'].Add(self.pmap[''][key])
+                
+            for b in xrange(1,self.pmap['obs']['data'].GetNbinsX()+1):
+                self.pmap['obs']['data'].SetBinContent(b,int(self.pmap['obs']['data'].GetBinContent(b)))
+                                
 
-
+                
         #print 'List of nuisances' + '\n '.join([key for key in self.pmap])
         #print 'List of processes' + ', '.join([key for key in self.pmap['']])
 
     def doAllFits(self):
-        results = {}
+        self.results = {}
         for key in self.pmap:
-            results[key] = self.doFit(key)
+            self.results[key] = self.doFit(key)
 
         for key in self.pmap:
-            if results[key]==None: continue
-            print key, results[key], 100*(results[key]-results[''])/results['']
+            if self.results[key]==None: continue
+            #print key, self.results[key], 100*(self.results[key]-self.results[''])/self.results['']
 
 
 
@@ -132,6 +147,7 @@ class FittingSuite:
                 nuislists = ROOT.RooArgList()
                 tlist = ROOT.TList(); tlist.Add(pmap[p])
                 y, e = pmap[p].GetBinContent(b), pmap[p].GetBinError(b)
+                if not y: continue
                 if e/y    < 0.005: continue
                 if e < 0.2*math.sqrt(y+1): continue
                 hi = pmap[p].Clone(); hi.SetDirectory(None)
@@ -176,19 +192,25 @@ class FittingSuite:
         out = ROOT.TFile.Open("postfit_%s.root"%nuis,'recreate')
         for p in procNormMap:
             #print p, procNormMap[p].getVal(),procNormMap[p].getVal()/pmap[p].Integral()
-         #     output = copy.deepcopy(pmap[p])
-         #     output.Scale( procNormMap[p].getVal()/pmap[p].Integral() )
-         #     output.Write()
-         # data.Write()
-         #w.Write()
-         #out.Close()
-            signal = procNormMap['tW'].getVal()/pmap['tW'].Integral()
+            
+            output = copy.deepcopy(pmap[p])
+            output.SetName('%s_prefit'%p)
+            output.Write()
+            
+            output = copy.deepcopy(pmap[p])
+            output.SetName('%s_postfit'%p)
+            output.Scale( procNormMap[p].getVal()/pmap[p].Integral() )
+            output.Write()
+        data.Write()
+        out.Close()
+        signal = procNormMap['tW'].getVal()/pmap['tW'].Integral()
         w.IsA().Destructor(w)
+        print nuis, signal
         return signal 
 
 if __name__=='__main__':
 
-    a = FittingSuite("forCards_Test.root")
+    a = FittingSuite("~/TW_differential/AnalysisPAF/plotter/TW/inputs/forCards_Test_1.root",True)
     a.doAllFits()
     #a.doFit('')
     #a.doFit('JESUp')
