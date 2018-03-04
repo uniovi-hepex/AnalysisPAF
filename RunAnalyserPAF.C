@@ -52,10 +52,10 @@ const TString kTagSel[nSel] = {"Stop",     "Top",     "TW",     "WW", "HWW",
 // Datasets:
     //>>> 2016 datasets
     TString data2016[] = {
-    //"16B_03Feb2017", "16C_03Feb2017", "16D_03Feb2017", "16E_03Feb2017",
-    //"16F_03Feb2017", 
+    "16B_03Feb2017", "16C_03Feb2017", "16D_03Feb2017", "16E_03Feb2017",
+    "16F_03Feb2017", 
     "16G_03Feb2017", "16H_03Feb2017_v2", "16H_03Feb2017_v3"};
-    const unsigned int nData2016 = 3;
+    const unsigned int nData2016 = 8;
 
     //>>> 2017 datasets
     TString data2017[] = { 
