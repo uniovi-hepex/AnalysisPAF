@@ -179,6 +179,35 @@ void Plot::AddSystematic(TString var, TString pr){
   if(verbose) cout << "[Plot::AddSystematic] Systematic histograms added to the list for variation: " << var << endl;
 }
 
+
+void Plot::AddNormSyst( TString process, TString name, float norm)
+{
+  Histo* hBkgUp = (Histo*) GetHisto(process)->CloneHisto( process + "_" + name + "Up");
+  Histo* hBkgDn = (Histo*) GetHisto(process)->CloneHisto( process + "_" + name + "Down");
+  hBkgUp->Scale( 1 + norm); hBkgDn->Scale( 1 - norm );
+  hBkgUp->SetTag( process + "_" + name + "Up");
+  hBkgDn->SetTag( process + "_" + name + "Down");
+  hBkgUp->SetProcess( process); hBkgDn->SetProcess( process);
+  hBkgUp->SetType( itSys ); hBkgDn->SetType(itSys);
+  AddToHistos( hBkgUp ); AddToHistos(hBkgDn);
+  AddToSystematicLabels(name);
+  return;
+}
+
+
+void Plot::AddLumiSyst( float unc )
+// lumi applied to every process :D                                                                                                                                                                                                            
+{
+  vector<TString> alreadyConsidered;
+  for (auto& proc : VTagProcesses){
+    if (std::find( alreadyConsidered.begin(), alreadyConsidered.end(), proc) == alreadyConsidered.end()){
+      alreadyConsidered.push_back(proc);
+      AddNormSyst(proc, "lumi", unc);
+    }
+  }
+}
+
+
 void Plot::AddStatError(TString process){
   TString pr;
   if(process == ""){
@@ -1095,7 +1124,7 @@ void Plot::SetTexChan(){
   texchan->SetX(chX); 
   texchan->SetY(chY);
   texchan->SetTextFont(42);
-  texchan->SetTextSize(0.05);
+  texchan->SetTextSize(0.06);
   texchan->SetTextSizePixels(chSize);
 }
 
@@ -1131,6 +1160,23 @@ void Plot::SetHRatio(TH1F* h){
 }
 
 void Plot::SetYaxis(TAxis *a){
+  
+  if (yAxisTitleStyle != ""){
+    float binWidth = hStack->GetXaxis()->GetBinWidth(1);
+    ytitle = "Events";
+    if ( yAxisTitleStyle.Contains("units,")){
+      TString tmpStr = yAxisTitleStyle; tmpStr.ReplaceAll("units,","");
+      ytitle +=  "/" + tmpStr + " units";
+    }
+    
+    else if (yAxisTitleStyle == "gev"){
+      ytitle += "/";
+      ytitle +=  binWidth;
+      ytitle += " GeV";
+    }
+  }
+
+
   a->SetTitle(ytitle);
   a->SetTitleSize(ytitleSize);
   a->SetTitleOffset(ytitleOffset);
