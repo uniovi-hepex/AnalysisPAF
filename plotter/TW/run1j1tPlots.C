@@ -26,14 +26,14 @@ void run1j1tPlots(){
   DrawPlot("TMSys "                 , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20, 50., 750., "m_{sys} [GeV]");
   DrawPlot("THTLepOverHT "          , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20,  0.,   1., "H_{T}+lep / H_{T}");
   DrawPlot("TDilepJetPt "           , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 25,  0., 250., "p_{T}^{e#mu, j} [GeV]");
-  DrawPlot("TLeadingJetE"           , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 25,  0., 500., "E^{j} [GeV]");
-  DrawPlot("TMET"                   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 25,  0., 500., "#cancel{E}_{T} [GeV]");
-  DrawPlot("TM_LeadingB"            , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 25,  0., 500., "m^{l_{1}b} [GeV]");
-  DrawPlot("TM_SubLeadingB"         , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 25,  0., 500., "m^{l_{2}b} [GeV]");
-  DrawPlot("TM_LLB"                 , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 25,  0., 800., "m^{llb} [GeV]");
-  DrawPlot("TMT_LLMETB"             , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 25,  0., 800., "m_T^{ll #nu #nu b} [GeV]");
-  DrawPlot("TE_LLB"                 , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 25,  0., 1000., "E^{llb} [GeV]");
-  DrawPlot("TPt_LL"                 , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 25,  0., 500., "p_T^{ll} [GeV]");
+  DrawPlot("TLeadingJetE"           , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20,  0., 500., "E^{j} [GeV]");
+  DrawPlot("TMET"                   , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20,  0., 500., "#cancel{E}_{T} [GeV]");
+  DrawPlot("TM_LeadingB"            , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20,  0., 500., "m^{l_{1}b} [GeV]");
+  DrawPlot("TM_SubLeadingB"         , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20,  0., 500., "m^{l_{2}b} [GeV]");
+  DrawPlot("TM_LLB"                 , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20,  0., 800., "m^{llb} [GeV]");
+  DrawPlot("TMT_LLMETB"             , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20,  0., 800., "m_T^{ll #nu #nu b} [GeV]");
+  DrawPlot("TE_LLB"                 , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20,  0., 1000., "E^{llb} [GeV]");
+  DrawPlot("TPt_LL"                 , "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0) ", "ElMu", 20,  0., 500., "p_T^{ll} [GeV]");
 }
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, bool setLegendLeft = false){
