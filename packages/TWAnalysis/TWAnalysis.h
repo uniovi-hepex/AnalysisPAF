@@ -323,7 +323,7 @@ class TWAnalysis : public PAFChainItemSelector{
   TH1F*  fHSSyields[nChannels][nSysts];
 
   protected:
-
+  
     Bool_t  gIsData;
     Bool_t  gDoSyst;
     Int_t   gSelection;
@@ -331,6 +331,10 @@ class TWAnalysis : public PAFChainItemSelector{
     Bool_t  gIsTTbar;
     Bool_t  gIsTW;
     Bool_t  gIsLHE;
+    Bool_t  gIsFSRUp;
+    Bool_t  gIsFSRDown;
+
+    
     void    setTWBDT();
     /* TMVA::Reader* BDTada; */
     /* TMVA::Reader* BDTada_JESUp; */
