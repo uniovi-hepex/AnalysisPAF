@@ -64,6 +64,7 @@ class TWAnalysis : public PAFChainItemSelector{
     Float_t PUSF_Up;
     Float_t PUSF_Down;
     Int_t   gChannel;
+    TString gPar;
     Bool_t  passMETfilters;
     Bool_t  passTrigger;
     Bool_t  isSS;

@@ -80,6 +80,11 @@ const TString tab2017v2     = "2017data_v2";
 
 TString SelectedTab = tab2016;
 
+  
+  
+//============================================================================
+
+TString par;                                                                    // WOLOLO**********
 
 //=============================================================================
 // Main function
@@ -134,6 +139,16 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
 
   if(options.Contains("FastSim")) G_IsFastSim = true;
 
+  //============================================================================
+  
+  if (Selection.BeginsWith("tW_") || Selection.BeginsWith("TW_")) {             // WOLOLO**********
+    par = Selection.ReplaceAll("tW_", "");
+    par = Selection.ReplaceAll("TW_", "");
+    Selection = "TW";
+  }
+  
+  //============================================================================
+  
   // Selection
   ESelector sel = iStopSelec;
   if     (Selection == "StopDilep" || Selection == "stop"    ) sel = iStopSelec;
@@ -275,7 +290,6 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   
   // ------->>>>> Termporary solution:
   //if(sampleName.Contains("PowhegLHE")) CountLHE = GetCountLHE(Files, arr);
-
   // Output dir and tree name
   //----------------------------------------------------------------------------
 	
@@ -295,6 +309,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   if(sampleName.Contains("_ext2")) sampleName.ReplaceAll("_ext2",""); 
   if(sampleName.Contains("_ext1")) sampleName.ReplaceAll("_ext1",""); 
   if(sampleName.Contains("_ext"))  sampleName.ReplaceAll("_ext",""); 
+  if(par == "Semi")                sampleName += "Semi";                        // WOLOLO**********
   
   //if     (nEvents > 0 && FirstEvent == 0) myProject->SetNEvents(nEvents);
   if(nEvents < 0 && FirstEvent <= 0){ // Divide the sample
@@ -408,6 +423,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   myProject->SetInputParam("lspMass"        , int(lspMass)     );
   myProject->SetInputParam("NormISRweights" , NormISRweights   );
   myProject->SetInputParam("doSyst"         , G_DoSystematics  ); 
+  myProject->SetInputParam("par"            , par              );
   
   
   // Name of analysis class

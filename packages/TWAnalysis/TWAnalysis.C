@@ -61,6 +61,10 @@ void TWAnalysis::Initialise(){
   gSelection   = GetParam<Int_t>("iSelection");
   gSampleName  = GetParam<TString>("sampleName");
   gDoSyst      = GetParam<Bool_t>("doSyst");
+  gPar         = GetParam<TString>("par");
+  if (gPar == "Semi") {
+    cout << "> Running the semileptonic ttbar sample" << endl;
+  }
   gIsTTbar     = false;
   gIsTW        = false;
   gIsLHE       = false;
@@ -205,7 +209,11 @@ void TWAnalysis::InsideLoop(){
   }
   //if((Int_t) genLeptons.size() >=2 && TNSelLeps >= 2 && passTrigger && passMETfilters){ // dilepton event, 2 leptons // && !isSS
   // if (gSelection == iTopSelec){
-  if (gIsTTbar && genLeptons.size() < 2 ) return; // Dilepton selection for ttbar!!!
+  if (gPar == "Semi") {
+    if (gIsTTbar && genLeptons.size() > 1 ) return;
+  } else {
+    if (gIsTTbar && genLeptons.size() < 2 ) return; // Dilepton selection for ttbar!!!
+  }
   // }
   // else if (gSelection == iTWSelec){
   //   if (gIsTW && genLeptons.size() < 2) return; // Dilepton selection for tw!!
