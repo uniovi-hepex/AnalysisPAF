@@ -1188,7 +1188,7 @@ void TWAnalysis::CalculateTWVariables()
     THTtot           =  -99.;
   }
 
-  if (!gIsData || !gIsFSRUp || !gIsFSRDown){
+  if (!gIsData && !gIsFSRUp && !gIsFSRDown){
     if (TNJetsJESUp == 1 && TNBtagsJESUp == 1){
       // cout << "1j1b Up" << endl;
       DilepMETJetPtJESUp   =  getDilepMETJetPt(1)   ;
@@ -1318,6 +1318,7 @@ void TWAnalysis::CalculateTWVariables()
   //   DR_j_b      = -99.;
   // }
 
+
   // if (TNJets == 1 && TNJetsJESUp == 1 && TNJetsJESDown == 1 && TNBtags == 1 && TNBtagsJESUp == 1 && TNBtagsJESDown == 1){
   //   cout << "nLooseCentral"      << "   "<<  nLooseCentralJESUp     << "   "<< nLooseCentral      << "   "<< nLooseCentralJESDown     << endl;
   //   cout << "nLooseFwd"          << "   "<<  nLooseFwdJESUp         << "   "<< nLooseFwd          << "   "<< nLooseFwdJESDown         << endl;
@@ -1350,7 +1351,6 @@ void TWAnalysis::CalculateTWVariables()
   //   cout << "DilepJetPt"         << "   "<< DilepJetPt         << "   "<< DilepJetPtJER        << endl;
 
   // }
-  cout << "The BDTs" << endl;
   TDilepPt                 = getDilepPt();      
 
   if (TNJets == 1 && TNBtags == 1 ){
@@ -1363,7 +1363,7 @@ void TWAnalysis::CalculateTWVariables()
     // TBDTgrad = -99.;
     TBDT = -99.;
   }
-  if (!gIsData || !gIsFSRUp || !gIsFSRDown){
+  if (!gIsData && !gIsFSRUp && !gIsFSRDown){
     if (TNJetsJESUp == 1 && TNBtagsJESUp == 1){
       // TBDTadaJESUp = BDTada_JESUp->EvaluateMVA("BDTada_JESUp");
       // TBDTgradJESUp = BDTgrad_JESUp->EvaluateMVA("BDTgrad_JESUp");
@@ -1442,7 +1442,9 @@ void TWAnalysis::CalculateTWVariables()
     TBDT2j1t_DR   = -99.;
     TBDT2j1t_ot   = -99.;
   }
-  if (!gIsData || !gIsFSRUp || !gIsFSRDown){
+
+
+  if (!gIsData && !gIsFSRUp && !gIsFSRDown){
 
     if (TNJetsJESUp == 2 && TNBtagsJESUp == 1){
       TDilepMETPtJESUp       = getDilepMETPt(+1);
@@ -1586,13 +1588,15 @@ void TWAnalysis::CalculateTWVariables()
 
   if (TNJets > 1)        TJet2_Pt        = selJets.at(1).Pt();
   else                   TJet2_Pt        = -99.;
-  if (TNJetsJESUp > 1)   TJet2_PtJESUp   = selJetsJecUp.at(1).Pt();
-  else                   TJet2_PtJESUp   = -99.;
-  if (TNJetsJESDown > 1) TJet2_PtJESDown = selJetsJecDown.at(1).Pt();
-  else                   TJet2_PtJESDown = -99.;
-  if (TNJetsJERUp > 1)   TJet2_PtJERUp   = selJetsJER.at(1).Pt();
-  else                   TJet2_PtJERUp   = -99.;
- 
+
+  if (!gIsData && !gIsFSRUp && !gIsFSRDown){
+    if (TNJetsJESUp > 1)   TJet2_PtJESUp   = selJetsJecUp.at(1).Pt();
+    else                   TJet2_PtJESUp   = -99.;
+    if (TNJetsJESDown > 1) TJet2_PtJESDown = selJetsJecDown.at(1).Pt();
+    else                   TJet2_PtJESDown = -99.;
+    if (TNJetsJERUp > 1)   TJet2_PtJERUp   = selJetsJER.at(1).Pt();
+    else                   TJet2_PtJERUp   = -99.;
+  }
 
 
   return;
