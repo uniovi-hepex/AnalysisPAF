@@ -44,8 +44,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->SetPath(pathToTree); 
   p->SetTreeName(NameOfTree);
   p->SetPathSignal(pathToTree + "");
-//   p->verbose  = false;
-  p->verbose  = true;
+  p->verbose  = false;
+//   p->verbose  = true;
   // p->SetVarName("forFit");
   TGaxis::SetMaxDigits(3);
   p->SetChLabel("e^{#pm}#mu^{#mp} + 1j1b");
@@ -83,8 +83,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample("TTbar_Powheg_ueDown"          , "t#bar{t}"    , itSys, 1,  "ueDown");
   p->AddSample("TTbar_Powheg_isrUp"           , "t#bar{t}"    , itSys, 1,  "isrUp");
   p->AddSample("TTbar_Powheg_isrDown"         , "t#bar{t}"    , itSys, 1,  "isrDown");
-//   p->AddSample("TTbar_Powheg_fsrUp"           , "t#bar{t}"    , itSys, 1,  "fsrUp");
-//   p->AddSample("TTbar_Powheg_fsrDown"         , "t#bar{t}"    , itSys, 1,  "fsrDown");
+  p->AddSample("TTbar_Powheg_fsrUp"           , "t#bar{t}"    , itSys, 1,  "fsrUp");
+  p->AddSample("TTbar_Powheg_fsrDown"         , "t#bar{t}"    , itSys, 1,  "fsrDown");
 
   p->AddSample("TW_noFullyHadr_isrUp"         ,"tW"           , itSys, 1,  "isrUp");
   p->AddSample("TW_noFullyHadr_isrDown"       ,"tW"           , itSys, 1,  "isrDown");
