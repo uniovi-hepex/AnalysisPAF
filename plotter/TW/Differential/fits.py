@@ -15,7 +15,7 @@ histo = ROOT.TH1F("histo","",3, array.array('d',bins))
 for binDn,binUp in zip(bins, bins[1:]):
     count = count + 1 
     fit = fitter.FittingSuite("~/TW_differential/AnalysisPAF/plotter/TW/inputs/forCards_Test_%d.root"%count, expected)
-    fit.doAllFits()
+    fit.doAllCombFits()
     results = fit.results
 
     content = results['']

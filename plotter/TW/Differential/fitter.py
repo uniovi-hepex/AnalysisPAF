@@ -1,7 +1,7 @@
 import itertools, math
 import ROOT
 import copy
-
+import os 
 
 class FittingSuite: 
     def __init__(self, cardFile, doExpect=None):
@@ -208,10 +208,73 @@ class FittingSuite:
         print nuis, signal
         return signal 
 
+    def makeCardFromCard(self, nuis):
+
+        
+        pmap = self.pmap[nuis]
+        data = self.pmap['obs']['data']
+
+        cardFile = ROOT.TFile.Open('cards/cardFile_%s.root'%nuis,'recreate')
+        data.Write()
+        for proc in pmap:
+            histo = copy.deepcopy(pmap[proc])
+            histo.SetName(proc)
+            histo.Write()
+        cardFile.Close()
+        
+        template = open('datacard_template.txt').read()
+        yields = {key: histo.Integral() for key,histo in pmap.items()}
+        template = template.format(nuis=nuis,obs=int(data.Integral()), p=yields)
+
+        card = open('cards/datacard_%s.txt'%nuis, 'w')
+        card.write(template)
+        card.close()
+
+
+        
+
+
+    def doCombFit(self, nuis):
+        # some good ol' sanity and consistency checks
+        if 'obs' not in self.pmap or 'data' not in self.pmap['obs']: raise RuntimeError("Data not in pmap")
+        if 'obs' in nuis: return
+        if 'statbin' in nuis: return 
+
+
+        # make the card
+        self.makeCardFromCard(nuis)
+
+        # do fthe fit (dont correct the typo, it may be there for a resason...)
+        os.system('combine -M MultiDimFit cards/datacard_{nuis}.txt --name fit_{nuis}'.format(nuis=nuis))
+
+        # harvest the results
+        result = ROOT.TFile.Open('higgsCombinefit_%s.MultiDimFit.mH120.root'%nuis)
+        if result.limit.GetEntries() > 1: raise RuntimeError("More than one entry in the limits tree, something unplanned happened")
+        
+        for limit in result.limit:
+            if limit.r < 0.1 or limit.r > 1.9: 
+                print '[W]: Fit has probably not converged'
+                return 1
+            return limit.r
+
+
+    def doAllCombFits(self):
+        self.results = {}
+        for key in self.pmap:
+            self.results[key] = self.doCombFit(key)
+
+        for key in self.pmap:
+            if self.results[key]==None: continue
+            print key, self.results[key], 100*(self.results[key]-self.results[''])/self.results['']
+
+
+
 if __name__=='__main__':
 
     a = FittingSuite("~/TW_differential/AnalysisPAF/plotter/TW/inputs/forCards_Test_1.root",True)
-    a.doAllFits()
+    #a.doCombFit('')
+    a.doAllCombFits()
+    #a.doAllFits()
     #a.doFit('')
     #a.doFit('JESUp')
     #a.doFit('JESDown')
