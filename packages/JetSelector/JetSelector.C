@@ -360,9 +360,9 @@ void JetSelector::InsideLoop(){
             selJets.push_back(tJ);
             if(tJ.isBtag) nBtagJets++; 
             if(!gIsData){
-              GetmcJetVariables(i);
-              tJ.SetMCjet(tpJ);
-              GetJetVariables(i);
+              TLorentzVector DisctpJ;
+              DisctpJ.SetPxPyPzE(Get<Float_t>("DiscJet_mcPx",i), Get<Float_t>("DiscJet_mcPy",i), Get<Float_t>("DiscJet_mcPz",i), Get<Float_t>("DiscJet_mcEnergy",i));
+              tJ.SetMCjet(DisctpJ);
             }
           } 
         }

@@ -98,7 +98,7 @@ void Histo::AddToLegend(TLegend* leg, Bool_t doyi){
   if(DrawStyle == "hist") op = "l";
   else{
     if      (type == itSignal){
-      if(GetFillColor() == 0) op = "l";
+      if(GetFillColor() == 0) op = "lp";
       else op = "f";
     }
     else if (type == itData)   op = "pe";

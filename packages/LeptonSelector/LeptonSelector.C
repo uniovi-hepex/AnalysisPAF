@@ -459,7 +459,7 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
       passIso = getRelIso03POG(iTight);
       if(TMath::Abs(etaSC) > 1.4442 && TMath::Abs(etaSC) < 1.566) return false;
     }
-    if(lep.p.Pt() < 20 || TMath::Abs(lep.p.Eta()) > 2.4) return false;
+    if(lep.p.Pt() < 18 || TMath::Abs(lep.p.Eta()) > 2.4) return false;
     if(passId && passIso && ( (lep.isElec && getGoodVertex(iTight)) || (lep.isMuon && getGoodVertex(iMedium) ))) return true;
     else return false;
   }
@@ -920,6 +920,8 @@ void LeptonSelector::InsideLoop(){
       }
       if(isLooseLepton(tL)){ // A loose category... used in ttH, for example
         //tL.SetSF(1); tL.SetSFerr(1); // To be updated if ever needed
+        tL.SetSF(   LepSF->GetLeptonSF(     pt, eta, tL.type) ); // Set SF and error
+        tL.SetSFerr(LepSF->GetLeptonSFerror(pt, eta, tL.type) );
         looseLeptons.push_back(tL);
       }
     }
