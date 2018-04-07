@@ -245,27 +245,45 @@ class FittingSuite:
         self.makeCardFromCard(nuis)
 
         # do fthe fit (dont correct the typo, it may be there for a resason...)
-        os.system('combine -M MultiDimFit cards/datacard_{nuis}.txt --name fit_{nuis}'.format(nuis=nuis))
-
-        # harvest the results
-        result = ROOT.TFile.Open('higgsCombinefit_%s.MultiDimFit.mH120.root'%nuis)
-        if result.limit.GetEntries() > 1: raise RuntimeError("More than one entry in the limits tree, something unplanned happened")
+        if nuis != '': 
+            os.system('combine -M MultiDimFit cards/datacard_{nuis}.txt --name fit_{nuis} '.format(nuis=nuis))
         
-        for limit in result.limit:
-            if limit.r < 0.1 or limit.r > 1.9: 
-                print '[W]: Fit has probably not converged'
-                return 1
-            return limit.r
+            # harvest the results
+            result = ROOT.TFile.Open('higgsCombinefit_%s.MultiDimFit.mH120.root'%nuis)
+        
+            if result.limit.GetEntries() > 1: raise RuntimeError("More than one entry in the limits tree, something unplanned happened")
+        
+            for limit in result.limit:
+                if limit.r < 0.1 or limit.r > 1.9: 
+                    print '[W]: Fit has probably not converged'
+                    return 1
+                return limit.r
 
+        else: 
+            os.system('combine -M MultiDimFit cards/datacard_{nuis}.txt --name fit_{nuis} --algo=singles --robustFit=1'.format(nuis=nuis))
+            # harvest the results
+            result = ROOT.TFile.Open('higgsCombinefit_%s.MultiDimFit.mH120.root'%nuis)
+            if result.limit.GetEntries() != 2: raise RuntimeError("Differerent number of entries in the limits tree than expected, something unplanned happened")
+            rslt = []
+            for limit in result.limit:
+                if limit.r < 0.1 or limit.r > 1.9: 
+                    raise RuntimeError('Nominal fit has probably not converged')
+                rslt.append(limit.r) # first is nominal, second and third are up and down variations :)
+            return rslt
 
     def doAllCombFits(self):
         self.results = {}
         for key in self.pmap:
-            self.results[key] = self.doCombFit(key)
+            if key=='':
+                # we have also the uncertainties here
+                rslt = self.doCombFit(key)
+                self.results[key] = [rslt[ind]*self.pmap[key]['tW'].Integral() for ind in [0,1,2]]
+            else:
+                self.results[key] = self.doCombFit(key)*self.pmap[key]['tW'].Integral()
 
         for key in self.pmap:
             if self.results[key]==None: continue
-            print key, self.results[key], 100*(self.results[key]-self.results[''])/self.results['']
+            print key, self.results[key], 100*(self.results[key]-self.results[''][0])/self.results[''][0]
 
 
 
