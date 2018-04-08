@@ -3,7 +3,7 @@ import numpy as np
 nq = 10
 xq=np.zeros(nq)
 yq=np.zeros(nq)
-tf = ROOT.TFile('/nfs/fanae/user/sscruz/TW_jun4/AnalysisPAF/TW_temp/Tree_TW.root')
+tf = ROOT.TFile('/nfs/fanae/user/sscruz/TW_jun4/AnalysisPAF/TW_temp/Tree_TTbar_Powheg.root')
 tree = tf.Mini1j1t
 
 Base='''
