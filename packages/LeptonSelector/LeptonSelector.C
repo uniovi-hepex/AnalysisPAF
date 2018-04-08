@@ -447,7 +447,7 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
     if(passId && passIso && getGoodVertex(iTight) && getSIPcut(4)) return true;
     else return false;
   }
-  else if(gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec){
+  else if(gSelection == iTopSelec || gSelection == iStopTopSelec){
     // Tight cut-based electrons, pT > 20, |eta| < 2.4, RelIso POG, tightIP2D, SIP3D > 4
     // Tight Muon ID, RelIso POG, tightIP2D, SIP3D > 4
     if(lep.isMuon){
@@ -460,6 +460,22 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
       if(TMath::Abs(etaSC) > 1.4442 && TMath::Abs(etaSC) < 1.566) return false;
     }
     if(lep.p.Pt() < 18 || TMath::Abs(lep.p.Eta()) > 2.4) return false;
+    if(passId && passIso && ( (lep.isElec && getGoodVertex(iTight)) || (lep.isMuon && getGoodVertex(iMedium) ))) return true;
+    else return false;
+  }
+  else if(gSelection == iTWSelec){
+    // Tight cut-based electrons, pT > 20, |eta| < 2.4, RelIso POG, tightIP2D, SIP3D > 4
+    // Tight Muon ID, RelIso POG, tightIP2D, SIP3D > 4
+    if(lep.isMuon){
+      passId  = getMuonId(iTight);
+      passIso = getRelIso04POG(iTight);
+    }
+    if(lep.isElec){
+      passId = getElecCutBasedId(iTight) && lostHits <= 1;
+      passIso = getRelIso03POG(iTight);
+      if(TMath::Abs(etaSC) > 1.4442 && TMath::Abs(etaSC) < 1.566) return false;
+    }
+    if(lep.p.Pt() < 20 || TMath::Abs(lep.p.Eta()) > 2.4) return false;
     if(passId && passIso && ( (lep.isElec && getGoodVertex(iTight)) || (lep.isMuon && getGoodVertex(iMedium) ))) return true;
     else return false;
   }
