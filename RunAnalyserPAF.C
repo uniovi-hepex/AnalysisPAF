@@ -244,7 +244,8 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
       }
       else Count = GetSMSnorm(Files, stopMass, lspMass);
 
-      NormISRweights = GetISRweight(Files, stopMass, lspMass, G_IsFastSim);
+      Bool_t doISRweights = G_IsFastSim || options.Contains("NormFile:");
+      NormISRweights = GetISRweight(Files, stopMass, lspMass, doISRweights);
       G_Event_Weight = xsec/Count;
     } 
     else{ // Use dataset manager
@@ -347,7 +348,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
     TString haddCommand = "hadd " + (nukeIt ? TString("-f ") : TString("") ) + outputDir + "/Tree_" + sampleName + ".root " + outputDir + "/Tree_" + sampleName + "_[0-9].root " + outputDir + "/Tree_" + sampleName + "_[0-9][0-9].root";
 
     //TString haddCommand = "hadd " + outputDir + "/Tree_" + sampleName + ".root " + outputDir + "/Tree_" + sampleName + "_*.root";
-    gSystem->Exec(haddCommand);
+    //gSystem->Exec(haddCommand);
     cout << "\033[1;37m================================================\n\033[0m";
     cout << "\033[1;37m >>>>> >>>> >>> >> > Finito! < << <<< <<<< <<<<<\n\033[0m";
     cout << "\033[1;37m================================================\n\033[0m";

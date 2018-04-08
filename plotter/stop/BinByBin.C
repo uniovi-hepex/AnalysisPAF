@@ -30,12 +30,12 @@ TString Dilepton    = "!TIsSS && TPassTrigger && TPassMETfilters && TNSelLeps ==
 Float_t gbins[] = {0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,140,200}; Int_t ngbins = 26;
 Float_t gbins21[] = {0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,200}; Int_t ngbins21 = 21;
 TString bkgSyst = "Trig,JES,Btag,MisTag,ElecEff,MuonEff,PU,MuScale,ElScale";
-TString expSyst = "Trig,JES,Btag,MisTag,ElecEff,MuonEff,PU,MuScale,ElScale,JER";
+TString expSyst = "Trig,JES,Btag,MisTag,ElecEff,MuonEff,PU,MuScale,ElScale,JER,UnclMET";
 
 void BinByBin(TString chan = "ElMu"){
   TString cut = BaselineCut;
-  //DrawPlot("TChannel",        cut, chan, 1, 0, 10, 0, "Counts", "Yields");
-  DrawPlot("TMT2",        cut, chan, ngbins21, 0, 0, gbins21, "M_{T2} [GeV]", "MT2_21");
+  DrawPlot("TChannel",     "TNJets >= 2 && TNBtags >= 0 && !TIsSS && TPassTrigger && TPassMETfilters && TNSelLeps == 2 && TLep0_Pt >= 25", chan, 1, 0, 10, 0, "Counts", "Yields");
+  //DrawPlot("TMT2",        cut, chan, ngbins21, 0, 0, gbins21, "M_{T2} [GeV]", "MT2_21");
 }
 
 
@@ -67,9 +67,11 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample("MuonEG, SingleMuon, SingleElec, DoubleEG, DoubleMuon", "Data",      itData);
 
   //>>> Add signal points 
-  p->AddSample("T2tt_200_50_FS_summer", "T2tt[200,50]", itSignal, kCyan, expSyst);
-  p->AddSample("T2tt_225_50_FS_summer", "T2tt[225,50]", itSignal, kPink, expSyst);
-  p->AddSample("T2tt_250_50_FS_summer", "T2tt[250,50]", itSignal, 1,     expSyst);
+  p->AddSample("T2tt_mStop182_mLsp7",  "T2tt[185.5,7.5]",  itSignal, 1, expSyst);
+  p->AddSample("T2tt_mStop205_mLsp30", "T2tt[205.0,30.0]", itSignal, 1, expSyst);
+  p->AddSample("T2tt_mStop227_mLsp45", "T2tt[227.5,45.0]", itSignal, 1, expSyst);
+  p->AddSample("T2tt_mStop227_mLsp52", "T2tt[227.5,52.5]", itSignal, 1, expSyst);
+  p->AddSample("T2tt_mStop227_mLsp60", "T2tt[227.5,60.0]", itSignal, 1, expSyst);
 
   //>> Add systematics
   p->AddSystematic("stat"); 
@@ -79,22 +81,11 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddNormUnc("DY",  0.15);
   p->AddNormUnc("Nonprompt", 0.60);
   p->AddNormUnc("ttbar",     0.06);
-  p->AddNormUnc("T2tt[200,50]",     0.15);
-  p->AddNormUnc("T2tt[225,50]",     0.15);
-  p->AddNormUnc("T2tt[250,50]",     0.15);
-
-  //>>> Uncl MET for signal
-  p->SetWeight("TWeight*GetMetUnclWeightUp(TMET)");
-  p->AddSample("T2tt_200_50_FS_summer", "T2tt[200,50]", itSys, 1, "unclUp");
-  p->AddSample("T2tt_225_50_FS_summer", "T2tt[225,50]", itSys, 1, "unclUp");
-  p->AddSample("T2tt_250_50_FS_summer", "T2tt[250,50]", itSys, 1, "unclUp");
-  p->SetWeight("TWeight*GetMetUnclWeightDown(TMET)");
-  p->AddSample("T2tt_200_50_FS_summer", "T2tt[200,50]", itSys, 1, "unclDown");
-  p->AddSample("T2tt_225_50_FS_summer", "T2tt[225,50]", itSys, 1, "unclDown");
-  p->AddSample("T2tt_250_50_FS_summer", "T2tt[250,50]", itSys, 1, "unclDown");
-  p->SetWeight("TWeight");
-
-
+  p->AddNormUnc("T2tt[185.5,7.5]", 0.15);
+  p->AddNormUnc("T2tt[205.0,30.0]", 0.15);
+  p->AddNormUnc("T2tt[227.5,45.0]", 0.15);
+  p->AddNormUnc("T2tt[227.5,52.5]", 0.15);
+  p->AddNormUnc("T2tt[227.5,60.0]", 0.15);
 
   //>>> UE, ISR, hdamp
   p->AddSample("TTbar_Powheg_ueUp", "ttbar", itSys, 1, "ueUp");
