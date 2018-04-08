@@ -1282,12 +1282,17 @@ void TWAnalysis::SetTWVariables()
   fMini1j1t->Branch("TWeight_TrigDown",      &TWeight_TrigDown,      "TWeight_TrigDown/F");
   fMini1j1t->Branch("TWeight_PUUp",          &TWeight_PUUp,          "TWeight_PUUp/F");
   fMini1j1t->Branch("TWeight_PUDown",        &TWeight_PUDown,        "TWeight_PUDown/F");
-  fMini1j1t->Branch("TWeight_MistagUp",      &TWeight_MistagUp,      "TWeight_MistagUp/F");
-  fMini1j1t->Branch("TWeight_MistagDown",    &TWeight_MistagDown,    "TWeight_MistagDown/F");
   fMini1j1t->Branch("TWeight_BtagUp",        &TWeight_BtagUp,        "TWeight_BtagUp/F");
   fMini1j1t->Branch("TWeight_BtagDown",      &TWeight_BtagDown,      "TWeight_BtagDown/F");
-  fMini1j1t->Branch("TLHEWeight",            TLHEWeight,             "TLHEWeight[254]/F");
+  fMini1j1t->Branch("TWeight_MistagUp",      &TWeight_MistagUp,      "TWeight_MistagUp/F");
+  fMini1j1t->Branch("TWeight_MistagDown",    &TWeight_MistagDown,    "TWeight_MistagDown/F");
   fMini1j1t->Branch("TWeight_TopPtUp",       &TWeight_TopPt,         "TWeight_TopPtUp/F");
+  fMini1j1t->Branch("TWeight_FragUp",        &TWeight_upFrag,        "TWeight_FragUp/F");
+  fMini1j1t->Branch("TWeight_FragDown",      &TWeight_downFrag,      "TWeight_FragDown/F");
+  fMini1j1t->Branch("TWeight_PetersonFrag",  &TWeight_PetersonFrag,  "TWeight_PetersonFrag/F");
+  fMini1j1t->Branch("TWeight_semilepbrUp",   &TWeight_semilepbrUp,   "TWeight_semilepbrUp/F");
+  fMini1j1t->Branch("TWeight_semilepbrDown", &TWeight_semilepbrDown, "TWeight_semilepbrDown/F");
+  fMini1j1t->Branch("TLHEWeight",            TLHEWeight,             "TLHEWeight[254]/F");
 
   fMini1j1t->Branch("TNJets"       ,         &TNJets,                "TNJets/I"        );
   fMini1j1t->Branch("TNJetsJESUp"  ,         &TNJetsJESUp,           "TNJetsJESUp/I"   );
