@@ -934,8 +934,12 @@ void LeptonSelector::InsideLoop(){
       if(gpdgMId == 23 || gpdgMId == 24 || gpdgMId == 25){
         tL = Lepton(tP, charge, type);
         tL.Mid = gpdgMId;
-        //if(tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta()) < 2.4) genLeptons.push_back(tL);
-        genLeptons.push_back(tL);
+        if (gSelection == iTWSelec) {
+          if (tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta()) < 2.4) genLeptons.push_back(tL);
+        }
+        else {
+          genLeptons.push_back(tL);
+        }
       }
     }
     for(Int_t i = 0; i < ngenLepFromTau; i++){
@@ -943,9 +947,16 @@ void LeptonSelector::InsideLoop(){
       if(gpdgMId == 23 || gpdgMId == 24 || gpdgMId == 25){
         tL = Lepton(tP, charge, type);
         tL.Mid = 15;
-        nLeptonsFromTau++;
-        //if(tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta()) < 2.4) genLeptons.push_back(tL);
-        genLeptons.push_back(tL);
+        if (gSelection == iTWSelec) {
+          if (tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta()) < 2.4) {
+            genLeptons.push_back(tL);
+            nLeptonsFromTau++;
+          }
+        }
+        else {
+          genLeptons.push_back(tL);
+          nLeptonsFromTau++;
+        }
       }
     }
   }
@@ -1036,11 +1047,14 @@ void LeptonSelector::GetLeptonVariables(Int_t i){ // Once per muon, get all the 
   MVATTH        = Get<Float_t>("LepGood_mvaTTH",i);       //*
   MVASUSY        = Get<Float_t>("LepGood_mvaSUSY",i);       //*
   TightCharge    = Get<Int_t>("LepGood_tightCharge",i);      //*
-  MVAID          = Get<Float_t>("LepGood_mvaIdSpring16GP",i);   //*
+//   MVAID          = Get<Float_t>("LepGood_mvaIdSpring16GP",i);   //* REMOVED DUE TO LACK OF IT IN LOCAL SAMPLES
+  MVAID          = 0.;   //*
   jetBTagCSV    = Get<Float_t>("LepGood_jetBTagCSV",i);   //*
   SegComp        = Get<Float_t>("LepGood_segmentCompatibility",i);   //*
-  isGlobalMuon = Get<Int_t>("LepGood_isGlobalMuon",i);
-  isTrackerMuon = Get<Int_t>("LepGood_isTrackerMuon",i);
+//   isGlobalMuon = Get<Int_t>("LepGood_isGlobalMuon",i); REMOVED DUE TO LACK OF IT IN LOCAL SAMPLES
+  isGlobalMuon = 0.;
+//   isTrackerMuon = Get<Int_t>("LepGood_isTrackerMuon",i); REMOVED DUE TO LACK OF IT IN LOCAL SAMPLES
+  isTrackerMuon = 0.;
   R9            = Get<Float_t>("LepGood_r9",i);
 
   SF = 1;
@@ -1073,11 +1087,14 @@ void LeptonSelector::GetDiscLeptonVariables(Int_t i){ // Once per muon, get all 
   MVATTH        = Get<Float_t>("DiscLep_mvaTTH",i);       //*
   MVASUSY        = Get<Float_t>("DiscLep_mvaSUSY",i);       //*
   TightCharge    = Get<Int_t>("DiscLep_tightCharge",i);      //*
-  MVAID          = Get<Float_t>("DiscLep_mvaIdSpring16GP",i);   //*
+//   MVAID          = Get<Float_t>("DiscLep_mvaIdSpring16GP",i);   //* REMOVED DUE TO LACK OF IT IN LOCAL SAMPLES
+  MVAID          = 0.;   //*
   jetBTagCSV    = Get<Float_t>("DiscLep_jetBTagCSV",i);   //*
   SegComp        = Get<Float_t>("DiscLep_segmentCompatibility",i);   //*
-  isGlobalMuon = Get<Int_t>("DiscLep_isGlobalMuon",i);
-  isTrackerMuon = Get<Int_t>("DiscLep_isTrackerMuon",i);
+//   isGlobalMuon = Get<Int_t>("DiscLep_isGlobalMuon",i); REMOVED DUE TO LACK OF IT IN LOCAL SAMPLES
+  isGlobalMuon = 0.;
+//   isTrackerMuon = Get<Int_t>("DiscLep_isTrackerMuon",i); REMOVED DUE TO LACK OF IT IN LOCAL SAMPLES
+  isTrackerMuon = 0.;
 
   SF = 1;
 }
