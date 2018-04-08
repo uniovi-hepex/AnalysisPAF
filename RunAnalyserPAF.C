@@ -146,6 +146,9 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
     par = Selection.ReplaceAll("TW_", "");
     Selection = "TW";
   }
+  if (sampleName.BeginsWith("LocalFile:")|| sampleName.BeginsWith("/")) { // LocalFile
+    par = "Unfolding";
+  }
   
   //============================================================================
   
