@@ -9,7 +9,8 @@ R__LOAD_LIBRARY(TW/AdditionalStuff.C+)
 #include "TW/AdditionalStuff.C"
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString varname, bool setLegendLeft=false );
-TString pathToTree = "/pool/cienciasrw/userstorage/sscruz/TW/jul25/";
+// TString pathToTree = "/pool/cienciasrw/userstorage/sscruz/TW/jul25/";
+TString pathToTree = "../TW_temp/";
 TString NameOfTree = "MiniTree";
 
 
@@ -28,7 +29,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   Plot* p = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
   p->SetPathSignal(pathToTree + "");
-  p->verbose = false;
+//   p->verbose = false;
+  p->verbose  = true;
   p->SetVarName(varname);
 
   TGaxis::SetMaxDigits(3);
@@ -44,7 +46,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample("DYJetsToLL_M10to50_aMCatNLO", "Z/#gamma* #rightarrow e^{#pm}#mu^{#mp}", itBkg, TColor::GetColor("#3b0160")); // kRed);
   p->AddSample("DYJetsToLL_M50_aMCatNLO"    , "Z/#gamma* #rightarrow e^{#pm}#mu^{#mp}", itBkg);
   p->AddSample("TTbar_Powheg"               , "t#bar{t}", itBkg, TColor::GetColor("#669966")); // TColor::GetColor("#8ADCFF"));
-  p->AddSample("TTbar_PowhegSemi"           , "Non W/Z" , itBkg, kGray);
+//   p->AddSample("TTbar_PowhegSemi"           , "Non W/Z" , itBkg, kGray);
   p->AddSample("WJetsToLNu_MLM"             , "Non W/Z" , itBkg, kGray);
   p->AddSample("TW"                         , "tW"      , itBkg, TColor::GetColor("#ff4800")); // TColor::GetColor("#ffc878"));
   p->AddSample("TbarW"                      , "tW"      , itBkg);
@@ -53,33 +55,33 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample("SingleMuon", "Data", itData);
   p->AddSample("SingleElec", "Data", itData);
   
-  p->AddSample("TTbar_Powheg_hdampUp"  , "t#bar{t}", itSys, 1,  "hdampUp"); 
-  p->AddSample("TTbar_Powheg_hdampDown", "t#bar{t}", itSys, 1,  "hdampDown"); 
-
-
-  // SERGIO: nuevo
-
-  p->AddSample("TTbar_Powheg_ueUp"   , "t#bar{t}", itSys, 1,  "ueUp"); 
-  p->AddSample("TTbar_Powheg_ueDown" , "t#bar{t}", itSys, 1,  "ueDown"); 
-  p->AddSample("TTbar_Powheg_isrUp"  , "t#bar{t}", itSys, 1,  "isrUp"); 
-  p->AddSample("TTbar_Powheg_isrDown", "t#bar{t}", itSys, 1,  "isrDown"); 
-  p->AddSample("TTbar_Powheg_fsrUp"  , "t#bar{t}", itSys, 1,  "fsrUp"); 
-  p->AddSample("TTbar_Powheg_fsrDown", "t#bar{t}", itSys, 1,  "fsrDown"); 
-
-  p->AddSample("TW_noFullyHadr_isrUp"  ,"tW", itSys, 1,  "isrUp");
-  p->AddSample("TW_noFullyHadr_isrDown","tW", itSys, 1,  "isrDown");
-  p->AddSample("TW_noFullyHadr_fsrUp"  ,"tW", itSys, 1,  "fsrUp");
-  p->AddSample("TW_noFullyHadr_fsrDown","tW", itSys, 1,  "fsrDown");
-
-  p->AddSample("TW_noFullyHadr_MEscaleUp"  ,"tW", itSys, 1,  "tWMe_s_caleUp");
-  p->AddSample("TW_noFullyHadr_MEscaleDown","tW", itSys, 1,  "tWMe_s_caleDown");
-
-  p->AddSample("TbarW_noFullyHadr_isrUp"      ,"tW", itSys, 1,  "isrUp");
-  p->AddSample("TbarW_noFullyHadr_isrDown"    ,"tW", itSys, 1,  "isrDown");
-  p->AddSample("TbarW_noFullyHadr_fsrUp"      ,"tW", itSys, 1,  "fsrUp");
-  p->AddSample("TbarW_noFullyHadr_fsrDown"    ,"tW", itSys, 1,  "fsrDown");
-  p->AddSample("TbarW_noFullyHadr_MEscaleUp"  ,"tW", itSys, 1,  "tWMe_s_caleUp");
-  p->AddSample("TbarW_noFullyHadr_MEscaleDown","tW", itSys, 1,  "tWMe_s_caleDown");
+//   p->AddSample("TTbar_Powheg_hdampUp"  , "t#bar{t}", itSys, 1,  "hdampUp"); 
+//   p->AddSample("TTbar_Powheg_hdampDown", "t#bar{t}", itSys, 1,  "hdampDown"); 
+// 
+// 
+//   // SERGIO: nuevo
+// 
+//   p->AddSample("TTbar_Powheg_ueUp"   , "t#bar{t}", itSys, 1,  "ueUp"); 
+//   p->AddSample("TTbar_Powheg_ueDown" , "t#bar{t}", itSys, 1,  "ueDown"); 
+//   p->AddSample("TTbar_Powheg_isrUp"  , "t#bar{t}", itSys, 1,  "isrUp"); 
+//   p->AddSample("TTbar_Powheg_isrDown", "t#bar{t}", itSys, 1,  "isrDown"); 
+//   p->AddSample("TTbar_Powheg_fsrUp"  , "t#bar{t}", itSys, 1,  "fsrUp"); 
+//   p->AddSample("TTbar_Powheg_fsrDown", "t#bar{t}", itSys, 1,  "fsrDown"); 
+// 
+//   p->AddSample("TW_noFullyHadr_isrUp"  ,"tW", itSys, 1,  "isrUp");
+//   p->AddSample("TW_noFullyHadr_isrDown","tW", itSys, 1,  "isrDown");
+//   p->AddSample("TW_noFullyHadr_fsrUp"  ,"tW", itSys, 1,  "fsrUp");
+//   p->AddSample("TW_noFullyHadr_fsrDown","tW", itSys, 1,  "fsrDown");
+// 
+//   p->AddSample("TW_noFullyHadr_MEscaleUp"  ,"tW", itSys, 1,  "tWMe_s_caleUp");
+//   p->AddSample("TW_noFullyHadr_MEscaleDown","tW", itSys, 1,  "tWMe_s_caleDown");
+// 
+//   p->AddSample("TbarW_noFullyHadr_isrUp"      ,"tW", itSys, 1,  "isrUp");
+//   p->AddSample("TbarW_noFullyHadr_isrDown"    ,"tW", itSys, 1,  "isrDown");
+//   p->AddSample("TbarW_noFullyHadr_fsrUp"      ,"tW", itSys, 1,  "fsrUp");
+//   p->AddSample("TbarW_noFullyHadr_fsrDown"    ,"tW", itSys, 1,  "fsrDown");
+//   p->AddSample("TbarW_noFullyHadr_MEscaleUp"  ,"tW", itSys, 1,  "tWMe_s_caleUp");
+//   p->AddSample("TbarW_noFullyHadr_MEscaleDown","tW", itSys, 1,  "tWMe_s_caleDown");
   // // SERGIO: end nuevo
 
 //SERGIO: volver a poer  p->AddSample("TW_DS","tW", itSys, 1,  "DiagramSubtractionUp");
@@ -87,10 +89,10 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 
 
   // SERGIO: to addd ME, pdf
-  p->AddSample("TTbar_Powheg", "t#bar{t}", itSys, 1, "ScaleUp"); 
-  p->AddSample("TTbar_Powheg", "t#bar{t}", itSys, 1, "ScaleDown"); 
-  p->AddSample("TTbar_Powheg", "t#bar{t}", itSys, 1, "pdfUp"); 
-  p->AddSample("TTbar_Powheg", "t#bar{t}", itSys, 1, "pdfDown"); 
+//   p->AddSample("TTbar_Powheg", "t#bar{t}", itSys, 1, "ScaleUp"); 
+//   p->AddSample("TTbar_Powheg", "t#bar{t}", itSys, 1, "ScaleDown"); 
+//   p->AddSample("TTbar_Powheg", "t#bar{t}", itSys, 1, "pdfUp"); 
+//   p->AddSample("TTbar_Powheg", "t#bar{t}", itSys, 1, "pdfDown"); 
 
 
   
@@ -106,7 +108,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   //p->SetLegendPosition(0.73, 0.53, 0.96, 0.93);
   p->SetLegendPosition(0.73, 0.46, 0.96, 0.93);
 
-  p->AddSystematic("stat,JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"); //,LepEff
+//   p->AddSystematic("stat,JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"); //,LepEff
   // p->AddSystematic("stat"); //,LepEff
   
   // p->AddSymmetricHisto("ttbar",  "JERUp");
@@ -114,7 +116,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 
 
   p->doYieldsInLeg=false;
-  p->SetPlotFolder("FitPlots/");
+//   p->SetPlotFolder("FitPlots/");
+  p->SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/FitPlots/");
 
 
   // p->AddSystematic("JES,Btag,MisTag,PU,ElecEff,MuonEff"); //,LepEff
@@ -122,7 +125,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->doSetLogy = false;
   p->doData = true;
   //if (setLegendLeft) p->SetLegendPosition("UL");
-  p->DrawStack("ElMu_0_log", 1);
+//   p->DrawStack("ElMu_0_log", 1);
+  p->DrawStack("ElMu_0_log");
   //cout << "done stack" << endl;
   // p->PrintSystematics();
   //p->PrintSystYields();

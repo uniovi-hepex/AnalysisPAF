@@ -120,11 +120,13 @@ TH1D* PUWeight::LoadDataHistogram(float luminosity, const char* year) {
   TFile* fdt = 0;
   if (luminosity > 0) {
     if (fIs3D)
-      dtfile.Form("http://www.hep.uniovi.es/jfernan/PUhistos/Data%s/3D/PUdata_%.1f.root", 
+//       dtfile.Form("http://www.hep.uniovi.es/jfernan/PUhistos/Data%s/3D/PUdata_%.1f.root", 
+      dtfile.Form("~jfernan/www/PUhistos/Data%s/3D/PUdata_%.1f.root", 
       year, luminosity);
     else
       //dtfile.Form("http://www.hep.uniovi.es/jfernan/PUhistos/Data%s/PUdata_%.1f.root", 
-      dtfile.Form("http://www.hep.uniovi.es/palencia/PUhistos/Data%s/PUdata_%.1f.root", 
+//       dtfile.Form("http://www.hep.uniovi.es/palencia/PUhistos/Data%s/PUdata_%.1f.root", 
+      dtfile.Form("~palencia/www/PUhistos/Data%s/PUdata_%.1f.root", 
       year, luminosity);
 
   
