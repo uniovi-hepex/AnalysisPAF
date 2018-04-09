@@ -9,7 +9,7 @@ from array  import array
 r.gROOT.SetBatch(True)
 
 #############################
-print("===== Unfolding procedures - Response matrices & ROOT files production =====")
+print("\n===== Unfolding procedures - Response matrices & ROOT files production =====")
 print("> Setting binning, paths, and other details...")
 # ---------------------------------------------------------------- PRELIMINARIES
 minipath    = "../../../TW_temp/"
@@ -22,14 +22,16 @@ VarNames    = ["E_LLB", "LeadingJetE", "MT_LLMETB", "M_LLB", "M_LeadingB", "M_Su
                "LeadingLepE", "LeadingLepPt", "LeadingLepPhi", "LeadingLepEta", 
                "SubLeadingLepE", "SubLeadingLepPt", "SubLeadingLepPhi", "SubLeadingLepEta",
                "DilepPt", "DilepJetPt", "DilepMETJetPt", "HTtot"]
+nvars       = len(VarNames)
 
 SysList     = ["JESUp", "JESDown", "JERUp", "ElecEffUp", "ElecEffDown", "MuonEffUp",
                "MuonEffDown", "TrigUp", "TrigDown", "PUUp", "PUDown", "BtagUp",
-               "BtagDown", "MistagUp", "MistagDown", "upFrag", "downFrag", "semilepbrUp",
-               "semilepbrDown"]
-
+               "BtagDown", "MistagUp", "MistagDown", "FragUp", "FragDown", "PetersonFrag",
+               "semilepbrUp", "semilepbrDown"]
+nsys        = len(SysList)
 
 def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = ""):
+  '''This function obtains the response matrix combining info. of two trees.'''
   hGen1 = r.TH1F('hGen1', '', nxb, xb)
   hGen2 = r.TH1F('hGen2', '', nxb, xb)
   
@@ -48,8 +50,8 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = ""):
   elif (sys == "modeling"):
     vnametitle  += t1.GetName()
   
-  t1.Draw("TGen" + vnamegen + ">>hGen1", genCut)
-  t2.Draw("TGen" + vnamegen + ">>hGen2", genCut)
+  t1.Draw('TGen'+vnamegen+'>>hGen1', genCut)
+  t2.Draw('TGen'+vnamegen+'>>hGen2', genCut)
 
   hGen1.Add(hGen2)
   hGen2 = None
@@ -79,6 +81,7 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = ""):
 
 
 def PrintResponseMatrix(htemp, vname, nxb, xmin, xmax, nyb, ymin, ymax, prof = 0):
+  '''This function prints the response matrix of a given histogram.'''
   c = r.TCanvas('c', "Response matrix - T" + vname, 200, 10, 700, 500)
   htemp.Scale(100)
   htemp.SetStats(False)
@@ -227,7 +230,6 @@ VarBins_Y.append(B_HTtot)
 
 
 # ------------------------------------------> Number of bins & limits
-nvars   = len(VarNames)
 xmin    = [0,     0,    0,    0,    0,    0,
            0,   -pi,   30, -2.4,  -pi,
            0,     0,    -pi,   -2.4,
@@ -252,7 +254,7 @@ nybins  = [6,  5,  5,  5, 4, 5,
            4,  4,  5,  5]
 
 
-print("> Importing minitrees' information...")
+print("\n> Importing minitrees' information...")
 fTW               = r.TFile.Open(minipath + "Tree_TW.root")
 fTW_DS            = r.TFile.Open(minipath + "Tree_TW_noFullyHadr_DS.root")
 fTW_fsrUp         = r.TFile.Open(minipath + "Tree_TW_noFullyHadr_fsrUp.root")
@@ -315,38 +317,16 @@ treeTbarW_PSUp.SetName("PSUp")
 treeTbarW_PSDown  = fTbarW_PSDown.Get('Mini1j1t')
 treeTbarW_PSDown.SetName("PSDown")
 
-fTW               = None
-fTW_DS            = None
-fTW_fsrUp         = None
-fTW_fsrDown       = None
-fTW_isrUp         = None
-fTW_isrDown       = None
-fTW_MEUp          = None
-fTW_MEDown        = None
-fTW_PSUp          = None
-fTW_PSDown        = None
 
-fTbarW            = None
-fTbarW_DS         = None
-fTbarW_fsrUp      = None
-fTbarW_fsrDown    = None
-fTbarW_isrUp      = None
-fTbarW_isrDown    = None
-fTbarW_MEUp       = None
-fTbarW_MEDown     = None
-fTbarW_PSUp       = None
-fTbarW_PSDown     = None
-
-
-print("> Drawing response matrices in "+str(outputpath))
+print("\n> Drawing response matrices in "+str(outputpath))
 for i in range(nvars):
-  print("    - Drawing the variable "+VarNames[i]+" ...")
+  print("\n    - Drawing the variable "+VarNames[i]+" ...")
   htemp = GetResponseMatrix(treeTW, treeTbarW, VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i])
   PrintResponseMatrix(htemp, VarNames[i], nxbins[i], xmin[i], xmax[i], nybins[i], ymin[i], ymax[i])
   htemp = None
 
 
-print("> Writing ROOT file (old one will be overwritten!) with the matrices and other information in "+str(outputpath)+" ...")
+print("\n> Writing ROOT file (old one will be overwritten!) with the matrices and other information in "+str(outputpath)+" ...")
 
 f       = r.TFile(outputpath + "UnfoldingInfo.root", "recreate")
 for i in range(nvars):
@@ -389,6 +369,7 @@ treeTW_MEDown     = None
 treeTW_MEUp       = None
 treeTW_PSDown     = None
 treeTW_PSUp       = None
+
 treeTbarW         = None
 treeTbarW_DS      = None
 treeTbarW_fsrDown = None
@@ -399,6 +380,29 @@ treeTbarW_MEDown  = None
 treeTbarW_MEUp    = None
 treeTbarW_PSDown  = None
 treeTbarW_PSUp    = None
+
+fTW               = None
+fTW_DS            = None
+fTW_fsrUp         = None
+fTW_fsrDown       = None
+fTW_isrUp         = None
+fTW_isrDown       = None
+fTW_MEUp          = None
+fTW_MEDown        = None
+fTW_PSUp          = None
+fTW_PSDown        = None
+
+fTbarW            = None
+fTbarW_DS         = None
+fTbarW_fsrUp      = None
+fTbarW_fsrDown    = None
+fTbarW_isrUp      = None
+fTbarW_isrDown    = None
+fTbarW_MEUp       = None
+fTbarW_MEDown     = None
+fTbarW_PSUp       = None
+fTbarW_PSDown     = None
+
 htemp             = None
 
 f.Write()
