@@ -80,11 +80,6 @@ const TString tab2017v2     = "2017data_v2";
 
 TString SelectedTab = tab2016;
 
-  
-  
-//============================================================================
-
-TString par;                                                                    // WOLOLO**********
 
 //=============================================================================
 // Main function
@@ -139,17 +134,6 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
 
   if(options.Contains("FastSim")) G_IsFastSim = true;
 
-  //============================================================================
-  
-  if (Selection.BeginsWith("tW_") || Selection.BeginsWith("TW_")) {             // WOLOLO**********
-    par = Selection.ReplaceAll("tW_", "");
-    par = Selection.ReplaceAll("TW_", "");
-    Selection = "TW";
-  }
-  if (sampleName.BeginsWith("LocalFile:")|| sampleName.BeginsWith("/")) { // LocalFile
-    par = "Unfolding";
-  }
-  
   //============================================================================
   
   // Selection
@@ -313,7 +297,8 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   if(sampleName.Contains("_ext2")) sampleName.ReplaceAll("_ext2",""); 
   if(sampleName.Contains("_ext1")) sampleName.ReplaceAll("_ext1",""); 
   if(sampleName.Contains("_ext"))  sampleName.ReplaceAll("_ext",""); 
-  if(par == "Semi")                sampleName += "Semi";                        // WOLOLO**********
+  if(options == "Semi")            sampleName += "Semi";
+  if(options == "Unfolding")       sampleName = "UNF_" + sampleName;
   
   //if     (nEvents > 0 && FirstEvent == 0) myProject->SetNEvents(nEvents);
   if(nEvents < 0 && FirstEvent <= 0){ // Divide the sample
@@ -426,8 +411,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   myProject->SetInputParam("stopMass"       , int(stopMass)    );
   myProject->SetInputParam("lspMass"        , int(lspMass)     );
   myProject->SetInputParam("NormISRweights" , NormISRweights   );
-  myProject->SetInputParam("doSyst"         , G_DoSystematics  ); 
-  myProject->SetInputParam("par"            , par              );
+  myProject->SetInputParam("doSyst"         , G_DoSystematics  );
   
   
   // Name of analysis class
