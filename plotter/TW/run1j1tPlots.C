@@ -64,7 +64,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   
   
   // Adding general-purpose samples
-  p->AddSample("TW"                           , "tW"          , itBkg, TColor::GetColor("#ffcc33")); 
+  p->AddSample("TW"                           , "tW"          , itBkg, TColor::GetColor("#ffcc33"));
   p->AddSample("TbarW"                        , "tW"          , itBkg);
 
   p->AddSample("TTbar_Powheg"                 , "t#bar{t}"    , itBkg, 633);
@@ -95,8 +95,6 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample("TW_noFullyHadr_MEscaleDown"   ,"tW"           , itSys, 1,  "tWMe_s_caleDown");
   p->AddSample("TW_noFullyHadr_PSscaleUp"     ,"tW"           , itSys, 1,  "tWPS_s_caleUp");
   p->AddSample("TW_noFullyHadr_PSscaleDown"   ,"tW"           , itSys, 1,  "tWPS_s_caleDown");
-  p->AddSample("TW_noFullyHadr_DS"            ,"tW"           , itSys, 1,  "tWDSUp");
-  p->AddSample("TW"                           ,"tW"           , itSys, 1,  "tWDSDown");
 
   p->AddSample("TbarW_noFullyHadr_isrUp"      ,"tW"           , itSys, 1,  "isrUp");
   p->AddSample("TbarW_noFullyHadr_isrDown"    ,"tW"           , itSys, 1,  "isrDown");
@@ -106,8 +104,10 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample("TbarW_noFullyHadr_MEscaleDown","tW"           , itSys, 1,  "tWMe_s_caleDown");
   p->AddSample("TbarW_noFullyHadr_PSscaleUp"  ,"tW"           , itSys, 1,  "tWPS_s_caleUp");
   p->AddSample("TbarW_noFullyHadr_PSscaleDown","tW"           , itSys, 1,  "tWPS_s_caleDown");
-  p->AddSample("TbarW_noFullyHadr_DS"         ,"tW"           , itSys, 1,  "tbarWDSUp");
-  p->AddSample("TbarW"                        ,"tW"           , itSys, 1,  "tbarWDSDown");
+  
+  p->AddSample("TW_noFullyHadr_DS"            ,"tW"           , itSys, 1,  "DSUp");
+  p->AddSample("TbarW_noFullyHadr_DS"         ,"tW"           , itSys, 1,  "DSUp");
+  p->AddSymmetricHisto("tW",  "DSUp");
   
   p->AddSample("TTbar_Powheg"                 , "t#bar{t}"    , itSys, 1,  "ScaleUp");
   p->AddSample("TTbar_Powheg"                 , "t#bar{t}"    , itSys, 1,  "ScaleDown");
@@ -121,7 +121,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample("TTbar_Powheg_isrDown"         , "t#bar{t}"    , itSys, 1,  "isrDown");
   p->AddSample("TTbar_Powheg_fsrUp"           , "t#bar{t}"    , itSys, 1,  "fsrUp");
   p->AddSample("TTbar_Powheg_fsrDown"         , "t#bar{t}"    , itSys, 1,  "fsrDown");
-
+  p->UseEnvelope("t#bar{t}", "GluonMoveCRTune,GluonMoveCRTune_erdON,Powheg_erdON,QCDbasedCRTune_erdON", "ColorReconnection");
 
   // Other settings
   p->doUncInLegend=true;
