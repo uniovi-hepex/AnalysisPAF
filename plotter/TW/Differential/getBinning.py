@@ -1,9 +1,11 @@
 import ROOT
 import numpy as np
+import varList
+
 nq = 10
 xq=np.zeros(nq)
 yq=np.zeros(nq)
-tf = ROOT.TFile('/nfs/fanae/user/sscruz/TW_jun4/AnalysisPAF/TW_temp/Tree_TTbar_Powheg.root')
+tf = ROOT.TFile('/nfs/fanae/user/sscruz/TW_jun4/AnalysisPAF/TW_temp/Tree_TW.root') # cambiar por ttbar dileptonico
 tree = tf.Mini1j1t
 
 Base='''
@@ -17,17 +19,20 @@ using namespace std;
 for i in range(0,nq): 
     xq[i] = float(i+1)/nq
 
-
-var = "TLep1Pt"
-varName = 'LeadingLep'
-bins = [0,50,100,150]
+varName = 'LeadingJetPt'
+var     = varList.varList[varName]['var']
+bins    = varList.varList[varName]['binning']
 
 count = 0
+c = ROOT.TCanvas()
 
 for binDn,binUp in zip(bins,bins[1:]):
     count = count + 1
     varBin = "{var} > {binDn} && {var} < {binUp}".format(var=var, binUp=binUp, binDn=binDn)
     tree.Draw("TBDT","TWeight*(TNJets == 1 && TNBtags == 1 && TChannel == 1 && %s)"%varBin)
+    c.Update()
+    print "TBDT","TWeight*(TNJets == 1 && TNBtags == 1 && TChannel == 1 && %s)"%varBin
+    raw_input('wait')
     tree.GetHistogram().GetQuantiles(nq,yq,xq)
 
     Base = Base + '''\n /////////////////////// \n 
