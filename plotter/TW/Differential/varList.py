@@ -12,7 +12,15 @@ varList['LeadingJetPt'] = {
 }
 
 
+varList['LeadingJetPtuncertainties'] = {
+    'xaxis'       : 'Leading jet p_{T} [GeV]',
+    'yaxis'       : 'Relative uncertainty'
+}
+
 varList['LCurve'] = {
     'xaxis'       : 'log L_{1}',
     'yaxis'       : 'log #frac{L_{2}}{#tau^{2}}',
 }
+
+
+Lumi = 35.9

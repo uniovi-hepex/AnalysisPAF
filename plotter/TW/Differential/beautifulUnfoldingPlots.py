@@ -8,6 +8,19 @@ import CMS_lumi
 CMS_lumi.writeExtraText = 1
 
 
+colorMap = [
+    r.TColor.GetColor("#e41a1c"),
+    r.TColor.GetColor("#377eb8"),
+    r.TColor.GetColor("#4daf4a"),
+    r.TColor.GetColor("#984ea3"),
+    r.TColor.GetColor("#ff7f00"),
+    r.TColor.GetColor("#ffff33"),
+    r.TColor.GetColor("#a65628"),
+    r.TColor.GetColor("#f781bf"),
+    ]
+
+
+
 class beautifulUnfoldingPlots: 
     def __init__(self,name):
         r.gROOT.SetBatch(True)
@@ -60,7 +73,7 @@ class beautifulUnfoldingPlots:
     def saveCanvas(self, corner, suffix=''):
         self.canvas.cd()
         
-        textSize = 0.045 if self.doRatio else 0.022
+        textSize = 0.055 if self.doRatio else 0.022
         legWidth = 0.18
         height = (.20 + textSize*max(len(self.objectsInLeg)-3,0))
         if corner == "TR":
@@ -88,7 +101,7 @@ class beautifulUnfoldingPlots:
                 leg.AddEntry( obj, name, opt)
         leg.Draw('same')
 
-        CMS_lumi.lumi_13TeV = "%.1f fb^{-1}" %(35.9)
+        CMS_lumi.lumi_13TeV = "%.1f fb^{-1}" %(varList.Lumi)
         CMS_lumi.extraText  = 'Preliminary'
         CMS_lumi.lumi_sqrtS = '#sqrt{s} = 13 TeV'
         CMS_lumi.CMS_lumi(r.gPad, 4, 0, -0.005 if self.doWide and self.doRatio else 0.01 if self.doWide else 0.05)

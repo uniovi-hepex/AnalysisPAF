@@ -19,6 +19,7 @@ class DataContainer:
         self.listOfSysts = [] 
         self.responseMatrices = {}
         self.unfoldingInputs  = {}
+        self.bkgs             = {}
         self.readAndStore()
 
     def readAndStore(self):
@@ -42,13 +43,25 @@ class DataContainer:
         for key in tfile.GetListOfKeys():
             if key.GetName()[0] != 'R': continue
             if self.var not in key.GetName(): continue
-            print key.GetName()
             if key.GetName() == 'R'+self.var:
                 self.responseMatrices[''] = copy.deepcopy(key.ReadObj())
             else:
                 sysName = '_'.join(key.GetName().split('_')[1:])
                 systListResp.append(sysName)
                 self.responseMatrices[sysName] = copy.deepcopy(key.ReadObj())
+
+        # Getting background (events not passing the fiducial selection, but passing reco)
+        for key in tfile.GetListOfKeys():
+            if key.GetName()[0] != 'F': continue
+            if self.var not in key.GetName(): continue
+            if key.GetName() == 'R'+self.var:
+                self.bkgs[''] = copy.deepcopy(key.ReadObj())
+            else:
+                sysName = '_'.join(key.GetName().split('_')[1:])
+                self.bkgs[sysName] = copy.deepcopy(key.ReadObj())
+
+        
+        tfile.Close()
 
         if '' not in self.responseMatrices:
             raise RuntimeError("Nominal response matrix not there")
@@ -66,7 +79,7 @@ class DataContainer:
     def getMatrixNInput(self,nuis):
         if nuis not in self.listOfSysts + ['']:
             raise RuntimeError("%s is not in the list of response"%nuis)
-        return self.unfoldingInputs[nuis], self.responseMatrices[nuis]
+        return self.unfoldingInputs[nuis], self.responseMatrices[nuis], self.bkgs[nuis]
 
 
 
@@ -77,11 +90,12 @@ class UnfolderHelper:
         self.nuis = nuis
 
     def makeUnfolderCore(self,unfInputNresponse):
-        self.unfInput , self.response = unfInputNresponse
+        self.unfInput , self.response, self.bkg = unfInputNresponse
         self.tunfolder = r.TUnfoldDensity(self.response, r.TUnfold.kHistMapOutputHoriz,
                                              r.TUnfold.kRegModeCurvature, r.TUnfold.kEConstraintNone,
                                              r.TUnfoldDensity.kDensityModeeNone)
         self.tunfolder.SetInput( self.unfInput )
+        self.tunfolder.SubtractBackground( self.bkg , 'Non fiducial events')
 
     def doLCurveScan(self):
         if self.nuis != '': 
@@ -200,10 +214,17 @@ class Unfolder():
         nominal_withErrors.SetLineColor(r.kBlue)
         nominal_withErrors.SetFillStyle(1001)
         plot.addHisto(nominal_withErrors,'E2','Syst. unc.','F')
-
         plot.addHisto(nominal,'P,same','Data','P')
-
         plot.saveCanvas('TR')
+
+
+        plot2 = beautifulUnfoldingPlots.beautifulUnfoldingPlots(self.var + 'uncertainties')
+        uncList = errorPropagator.getUncList( nominal, allHistos )[:5]
+        for i in range(5):
+            uncList[i][1].SetLineColor( beautifulUnfoldingPlots.colorMap[i] )
+            uncList[i][1].SetLineWidth( 2 )
+            plot2.addHisto(uncList[i][1],'H' if i==0 else 'H,same',uncList[i][0],'L')
+        plot2.saveCanvas('TR')
     
 
 
