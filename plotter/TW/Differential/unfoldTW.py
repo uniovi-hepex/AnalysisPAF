@@ -6,7 +6,7 @@ Piece of art for doing the unfolding analysis - with a bit of tW flavor.
 import copy
 import ROOT as r
 import beautifulUnfoldingPlots
-
+import errorPropagator
 
 class DataContainer:
     ''' Class to store all the needed inputs: response matrices 
@@ -25,11 +25,11 @@ class DataContainer:
         # Getting uncertainties in the input
         tfile = r.TFile.Open(self.fileName)
         for key in tfile.GetListOfKeys():
-            print key
             if key.GetName() == 'tW':
                 self.unfoldingInputs[''] = copy.deepcopy(key.ReadObj())
             else:
                 sysName = '_'.join(key.GetName().split('_')[1:])
+                if sysName == 'JERDown': continue # sorry about this (to be changed in the card producer)
                 self.listOfSysts.append(sysName)
                 self.unfoldingInputs[sysName] = copy.deepcopy(key.ReadObj())
         if '' not in self.unfoldingInputs: 
@@ -42,15 +42,22 @@ class DataContainer:
         for key in tfile.GetListOfKeys():
             if key.GetName()[0] != 'R': continue
             if self.var not in key.GetName(): continue
+            print key.GetName()
             if key.GetName() == 'R'+self.var:
                 self.responseMatrices[''] = copy.deepcopy(key.ReadObj())
             else:
                 sysName = '_'.join(key.GetName().split('_')[1:])
-                systListResp.append(systListResp)
+                systListResp.append(sysName)
                 self.responseMatrices[sysName] = copy.deepcopy(key.ReadObj())
 
         if '' not in self.responseMatrices:
             raise RuntimeError("Nominal response matrix not there")
+
+        
+        if not all(sys in systListResp for sys in self.listOfSysts):
+            for sys in self.listOfSysts:
+                if sys not in systListResp: print sys, 'is not there'
+            raise RuntimeError("We dont have reponse matrices for all nuisances")
 
         if (systListResp != self.listOfSysts):
             print RuntimeWarning("Different nuisances in response and inputs")
@@ -148,10 +155,12 @@ class Unfolder():
         print self.sysList
 
     def prepareAllHelpers(self):
+        # maybe protect these boys so they dont get initialized several times
         for nuis in self.sysList:
             self.helpers[nuis].makeUnfolderCore(self.Data.getMatrixNInput(nuis))
 
     def prepareNominalHelper(self):
+        # maybe protect these boys so they dont get initialized several times
         self.helpers[''].makeUnfolderCore(self.Data.getMatrixNInput(''))
 
     def doLCurveScan(self):
@@ -174,16 +183,39 @@ class Unfolder():
         data.GetXaxis().SetNdivisions(505,True)
         plot.addHisto(data,'P,E','Data','P')
         plot.saveCanvas('TR')
-        
-        
+
+    def doUnfoldingForAllNuis(self):
+        self.prepareAllHelpers()
+        allHistos = {} 
+        nominal=copy.deepcopy( a.helpers[''].tunfolder.GetOutput(self.var))
+        for nuis in self.sysList:
+            self.helpers[nuis].tunfolder.DoUnfold( self.helpers[''].tunfolder.GetTau() )
+            allHistos[nuis] = self.helpers[nuis].tunfolder.GetOutput(self.var + '_' + nuis)
+        nominal_withErrors = errorPropagator.propagateHisto( nominal, allHistos )
+
+        plot = beautifulUnfoldingPlots.beautifulUnfoldingPlots(self.var)
+        nominal.SetMarkerStyle(r.kFullCircle)
+        nominal.GetXaxis().SetNdivisions(505,True)
+        nominal_withErrors.SetFillColorAlpha(r.kBlue,0.35)
+        nominal_withErrors.SetLineColor(r.kBlue)
+        nominal_withErrors.SetFillStyle(1001)
+        plot.addHisto(nominal_withErrors,'E2','Syst. unc.','F')
+
+        plot.addHisto(nominal,'P,same','Data','P')
+
+        plot.saveCanvas('TR')
     
+
+
 if __name__=="__main__":
+
     a = Unfolder('LeadingJetPt','cards/cardFile_Jet1_pt.root','~vrbouza/www/TFM/Unfolding/UnfoldingInfo.root')
     a.prepareNominalHelper()
     a.doLCurveScan()
     #a.doTauScan()
     a.doScanPlots()
     a.doNominalPlot()
+    a.doUnfoldingForAllNuis()
 
     ## crap for testing 
     # histo = a.Data.responseMatrices[''].GetXaxis()
