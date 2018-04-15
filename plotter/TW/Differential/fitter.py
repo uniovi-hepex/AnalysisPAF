@@ -8,12 +8,11 @@ class FittingSuite:
         self.cardFile = cardFile
         self.doExpect = doExpect
         self.pmap = {}
-        self.procMap = { 'NonWZ': 0.5,
+        self.procMap = { 'Fakes': 'Bkg',
                          'tW'   : 'Signal',
-                         'ttV'  : 0.5,
-                         'VV'   : 0.5,
-                         'DY'   : 0.2,
-                         'ttbar': 0.06}
+                         'VVttV'   : 'Bkg',
+                         'DY'   : 'Bkg',
+                         'ttbar': 'Bkg'}
         self.readFromCard()
     
         
@@ -27,6 +26,9 @@ class FittingSuite:
             if (obj.InheritsFrom("THStack")): continue
             nuis = '_'.join(name.split('_')[1:])
             proc = name.split('_')[0]
+
+            if 'statbin' in nuis: continue 
+
 
             if nuis not in self.pmap: 
                 self.pmap[nuis] = {proc: copy.deepcopy(obj)} 
@@ -49,10 +51,12 @@ class FittingSuite:
         nProc = -1
         for key in self.pmap:
             if key == 'obs': continue
+            if 'statbin' in key: continue
             if (nProc < 0):
                 nProc = len(self.pmap[key])
+                prevNuis = key
             else:
-                if nProc != len(self.pmap[key]): raise RuntimeError("Nuisance %s does not have the same number of processes as one the previous ones. Something has gone wrong..."%(key,prevKey))
+                if nProc != len(self.pmap[key]): raise RuntimeError("Nuisance %s does not have the same number of processes as one the previous ones (%s). Something has gone wrong..."%(key,prevNuis))
         
         if self.doExpect:
             self.pmap['obs']['data'].Reset()
@@ -258,12 +262,13 @@ class FittingSuite:
                     print '[W]: Fit has probably not converged'
                     return 1
                 return limit.r
+            raise RuntimeError('It shouldnt get here')
 
         else: 
             os.system('combine -M MultiDimFit cards/datacard_{nuis}.txt --name fit_{nuis} --algo=singles --robustFit=1'.format(nuis=nuis))
             # harvest the results
             result = ROOT.TFile.Open('higgsCombinefit_%s.MultiDimFit.mH120.root'%nuis)
-            if result.limit.GetEntries() != 2: raise RuntimeError("Differerent number of entries in the limits tree than expected, something unplanned happened")
+            if result.limit.GetEntries() != 3: raise RuntimeError("Differerent number of entries in the limits tree than expected, something unplanned happened")
             rslt = []
             for limit in result.limit:
                 if limit.r < 0.1 or limit.r > 1.9: 
@@ -274,15 +279,17 @@ class FittingSuite:
     def doAllCombFits(self):
         self.results = {}
         for key in self.pmap:
+            rslt = self.doCombFit(key)
+            if key == 'obs': continue
             if key=='':
                 # we have also the uncertainties here
-                rslt = self.doCombFit(key)
                 self.results[key] = [rslt[ind]*self.pmap[key]['tW'].Integral() for ind in [0,1,2]]
             else:
-                self.results[key] = self.doCombFit(key)*self.pmap[key]['tW'].Integral()
+                self.results[key] = rslt*self.pmap[key]['tW'].Integral()
 
         for key in self.pmap:
-            if self.results[key]==None: continue
+            if key == 'obs': continue
+            if self.results[key]==None or key == '': continue
             print key, self.results[key], 100*(self.results[key]-self.results[''][0])/self.results[''][0]
 
 

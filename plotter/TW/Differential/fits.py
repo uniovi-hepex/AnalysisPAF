@@ -5,8 +5,8 @@ import math
 
 
 expected = True
-bins = [0,40,80,120]
-name = 'Test'
+bins = [0,50,70,90,110,130,150,170,500]
+name = 'Jet1_pt'
 
 
 
@@ -18,7 +18,7 @@ allResults = {}
 
 for binDn,binUp in zip(bins, bins[1:]):
     count = count + 1 
-    fit = fitter.FittingSuite("~/TW_differential/AnalysisPAF/plotter/TW/inputs/forCards_Test_%d.root"%count, expected)
+    fit = fitter.FittingSuite("~/TW_differential/AnalysisPAF/plotter/TW/inputs/forCards_%s_%d.root"%(name,count), expected)
     fit.doAllCombFits()
     results = fit.results
     allResults[(binDn,binUp)] = results
@@ -33,7 +33,6 @@ for binDn,binUp in zip(bins, bins[1:]):
     # Add uncertainty of the fit
         err = err + max(map(abs,[results[''][0]-results[''][1],results[''][0]-results[''][2]]))**2
     
-    print '#',fit.pmap['']['tW'].Integral(), content, math.sqrt(err)
 
     histo.SetBinContent( histo.FindBin( (binDn+binUp)/2), results[''][0]       )
     histo.SetBinError  ( histo.FindBin( (binDn+binUp)/2), math.sqrt(err)       )
