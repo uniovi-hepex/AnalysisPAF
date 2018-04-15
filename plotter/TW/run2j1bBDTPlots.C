@@ -9,7 +9,8 @@ R__LOAD_LIBRARY(TW/AdditionalStuff.C+)
 #include "TW/AdditionalStuff.C"
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle);
-TString pathToTree = "/pool/cienciasrw/userstorage/sscruz/TW/jul25/";
+//TString pathToTree = "/pool/cienciasrw/userstorage/sscruz/TW/jul25/";
+TString pathToTree = "../TW_temp/";
 TString NameOfTree = "Mini2j1t";
 
 
@@ -91,11 +92,13 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   Plot* p = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
   p->SetPathSignal(pathToTree + "");
-  p->verbose = false;
+//   p->verbose = false;
+  p->verbose  = true;
   // p->SetVarName("forFit");
 
   TGaxis::SetMaxDigits(3);
-  p->chlabel="e^{#pm}#mu^{#mp} + 2j1b";
+//   p->chlabel="e^{#pm}#mu^{#mp} + 2j1b";
+  p->SetChLabel("e^{#pm}#mu^{#mp} + 2j1b");
 
   p->AddSample("WZ"         , "VV+t#bar{t}V", itBkg, kOrange-3);
   p->AddSample("WW"         , "VV+t#bar{t}V", itBkg);
@@ -153,7 +156,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 
   p->SetLegendPosition(0.7, 0.45, 0.93, 0.92);
 
-  p->SetPlotFolder("2j1t/");
+//   p->SetPlotFolder("2j1t/");
+  p->SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/2j1t/");
   
   p->AddSystematic("stat,JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"); //,LepEff
   //p->AddSystematic("stat"); //,LepEff
@@ -164,7 +168,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->doSetLogy = false;
   p->doData = true;
   // p->SetLegendPosition("DL");
-  p->DrawStack("ElMu_0_log", 1);
+//   p->DrawStack("ElMu_0_log", 1);
+  p->DrawStack("ElMu_0_log");
   //cout << "done stack" << endl;
   // p->PrintSystematics();
   //p->PrintSystYields();

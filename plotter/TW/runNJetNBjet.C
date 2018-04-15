@@ -9,7 +9,8 @@ R__LOAD_LIBRARY(TW/AdditionalStuff.C+)
 #include "TW/AdditionalStuff.C"
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, bool setLegendLeft=false );
-TString pathToTree = "/pool/cienciasrw/userstorage/sscruz/TW/jul25/";
+// TString pathToTree = "/pool/cienciasrw/userstorage/sscruz/TW/jul25/";
+TString pathToTree = "../TW_temp/";
 TString NameOfTree = "Mini";
 
 
@@ -25,13 +26,15 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   Plot* p = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
   p->SetPathSignal(pathToTree + "");
-  p->verbose = false;
+//   p->verbose = false;
+  p->verbose  = true;
   // p->SetVarName("forFit");
 
   vector<TString> labels = { "(0, 0)","(1, 0)","(1, 1)","(2, 0)","(2, 1)","(2, 2)","(#geq3, #geq0)" };
   p->VBinLabels = labels;
 
-  p->chlabel="e^{#pm}#mu^{#mp}";
+//   p->chlabel="e^{#pm}#mu^{#mp}";
+  p->SetChLabel("e^{#pm}#mu^{#mp}");
 
   p->AddSample("TTWToLNu"   , "VV+t#bar{t}V", itBkg, kOrange-3);
   p->AddSample("TTWToQQ"    , "VV+t#bar{t}V", itBkg);
@@ -91,17 +94,20 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSystematic("stat,JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"); //,LepEff
   //p->AddSystematic("stat"); //,LepEff
 
-  p->SetPlotFolder("Control/");
+//   p->SetPlotFolder("Control/");
+  p->SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/Control/");
 
   p->doYieldsInLeg=false;
   
   //p->SetLegendPosition(0.66, 0.65, 0.98, 0.85);
   p->SetLegendPosition(0.6, 0.52, 0.83, 0.92);
+  p->SetCMSlabel("CMS Academic");
 
   p->doSetLogy = false;
   p->doData = true;
   if (setLegendLeft) p->SetLegendPosition("UL");
-  p->DrawStack("ElMu_0_log", 1);
+//   p->DrawStack("ElMu_0_log", 1);
+  p->DrawStack("ElMu_0_log");
 
 
   delete p;

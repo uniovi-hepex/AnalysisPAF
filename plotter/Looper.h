@@ -19,6 +19,7 @@
 
 enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau, iOS1tau, i2lss_fake, iTriLep_fake, iElEl, iMuMu, i1Tau_emufakeOS ,i1Tau_emufakeSS, i2LOS, TotalDefinedChannels};
 std::vector<TString> TStringToVector(TString t, char separator = ',');
+std::vector<float> TStringToFloat(TString t, char separator = ',', float scale = 1);
 void PrintVector(std::vector<TString> v);
 void PrintVector(std::vector<Float_t> v);
 
@@ -416,6 +417,14 @@ std::vector<TString> TStringToVector(TString t, char separator){
   return v;
 }
 
+std::vector<float> TStringToFloat(TString t, char separator, float scale){
+  std::vector<float> v;
+  std::vector<TString> vstring = TStringToVector(t, separator);
+  int size = vstring.size();
+  for(int i = 0; i < size; i++) v.push_back(vstring.at(i).Atof()*scale);
+  return v;
+}
+
 void PrintVector(std::vector<TString> v){
   Int_t dim = v.size();
   cout << "[size = " << dim << "]: (";
@@ -649,7 +658,9 @@ TChain* GetChain(TString path, TString sample){
     vector<TString> samples = TStringToVector(sample);
     Int_t nSamples = samples.size();
     Files = GetAllFiles(path, samples.at(0));
+    cout << Form("Looping for %i samples!\n", nSamples);
     for(Int_t i = 1; i < nSamples; i++){
+      cout << ">>> Sample: " << samples.at(i) << endl;
       tempFiles = GetAllFiles(path, samples.at(i));
 			Files.insert(Files.end(), (tempFiles).begin(), (tempFiles).end());
     }
@@ -675,9 +686,24 @@ Histo* GetHistoFromHeppyTrees(TString path, TString sample, TString var, TString
   return h;
 }
 
+Histo* LoadHistogram(TString pathToFile, TString name){
+  if(!pathToFile.EndsWith(".root")) pathToFile += ".root";
+  TFile* f = TFile::Open(pathToFile);
+  TH1F* h = (TH1F*) f->Get(name);
+  h->SetStats(0); h->SetDirectory(0);
+  Histo* histo = new Histo(*h);
+  histo->SetDirectory(0);
+  delete f;
+  return histo; 
+}
 
-
-
+bool ExistsHistoInFile(TString pathToTree, TString name){
+  if(!pathToTree.EndsWith(".root")) pathToTree += ".root";
+  TFile* f = TFile::Open(pathToTree); 
+  if(!f) return false;
+  if(!f->GetListOfKeys()->Contains(name)) return false; 
+  return true;
+}
 
 
 

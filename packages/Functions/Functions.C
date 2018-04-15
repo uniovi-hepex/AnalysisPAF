@@ -843,5 +843,5 @@ Float_t GetMuonEnergySigma(Float_t eta){
 
 Float_t GetMuonEnergyScale(){
   // https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonReferenceScaleResolRun2#Results_for_CMSSW_8_0_X_dataset
-  return 0.002; // flat 0.2%
+  return 0.02; // flat 0.2%
 }

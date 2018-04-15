@@ -85,13 +85,13 @@ void StopTopAnalysis::Initialise(){
   gSampleName  = GetParam<TString>("sampleName");
   gDoSyst      = GetParam<Bool_t>("doSyst");
   gIsFastSim   = GetParam<Bool_t>("IsFastSim");
-  if(gSampleName.Contains("T2tt")){
-    gStopMass = GetParam<Int_t>("stopMass");
-    gLspMass  = GetParam<Int_t>("lspMass");
-    NormISRweights = GetParam<Float_t>("NormISRweights");
-    IsT2ttScan = true;
-  }
-  if(gSampleName.BeginsWith("T2tt")) NormISRweights = GetParam<Float_t>("NormISRweights");
+//  if(gSampleName.Contains("T2tt")){
+//    gStopMass = GetParam<Int_t>("stopMass");
+//    gLspMass  = GetParam<Int_t>("lspMass");
+//    NormISRweights = GetParam<Float_t>("NormISRweights");
+//    IsT2ttScan = true;
+//  }
+//  if(gSampleName.BeginsWith("T2tt")) NormISRweights = GetParam<Float_t>("NormISRweights");
   fTree = CreateTree("tree","Created with PAF");
   fSumISRJets = CreateH1F("SumISRweights", "SumISRweights", 1 , 0, 2); 
   fISRJets =    CreateH1F(   "ISRweights",    "ISRweights", 6 , 0, 6); 
@@ -106,8 +106,8 @@ void StopTopAnalysis::Initialise(){
   fMetResSumOfWeights = CreateH1F("hMetResSumOfWeights", "hMetResSumOfWeights", 1, 0, 2);
   fNormMetRes = 0.92631;
 
-  gIsLHE = false; gIsTTbar = false;
-  if(gSampleName == "TTbar_Powheg") gIsLHE = true;
+  gIsLHE = true; gIsTTbar = false;
+  if(gSampleName == "TTbar_Powheg" || gSampleName.Contains("xqcut20")) gIsLHE = true;
   if(gSampleName.Contains("TTbar") || gSampleName.Contains("TTJets")) gIsTTbar = true;
   
   gDoISR = false;
@@ -174,15 +174,15 @@ void StopTopAnalysis::InsideLoop(){
 
 
   // =================== Tree at gen level here! ==================
-/*  if(TNgenLeps >= 2){
-    fDeltaPhi->Fill(TgenDeltaPhi);
-    fDeltaEta->Fill(TgenDeltaEta);
-    fDeltaPhiEta->Fill(TgenDeltaPhi, TgenDeltaEta);
-    TChannel = GetDileptonicChannel(genLeptons);
-    fTree->Fill();
-  }
-  return;
-*/
+//  if(TNgenLeps >= 2){
+//    fDeltaPhi->Fill(TgenDeltaPhi);
+//    fDeltaEta->Fill(TgenDeltaEta);
+//    fDeltaPhiEta->Fill(TgenDeltaPhi, TgenDeltaEta);
+//    TChannel = GetDileptonicChannel(genLeptons);
+//    fTree->Fill();
+//  }
+//  return;
+
   if(gIsTTbar){
     if(genLeptons.size() < 2) return;
   }
@@ -214,7 +214,7 @@ void StopTopAnalysis::InsideLoop(){
         MuonSFUp *= selLeptons.at(0).GetSF( 1);
         MuonSFDo *= selLeptons.at(0).GetSF(-1);
       }
-      else{
+      else if(selLeptons.at(0).isElec){
         ElecSF   *= selLeptons.at(0).GetSF( 0);
         ElecSFUp *= selLeptons.at(0).GetSF( 1);
         ElecSFDo *= selLeptons.at(0).GetSF(-1);
@@ -224,7 +224,7 @@ void StopTopAnalysis::InsideLoop(){
         MuonSFUp *= selLeptons.at(1).GetSF( 1);
         MuonSFDo *= selLeptons.at(1).GetSF(-1);
       }
-      else{
+      else if(selLeptons.at(1).isElec){
         ElecSF   *= selLeptons.at(1).GetSF( 0);
         ElecSFUp *= selLeptons.at(1).GetSF( 1);
         ElecSFDo *= selLeptons.at(1).GetSF(-1);
@@ -237,10 +237,10 @@ void StopTopAnalysis::InsideLoop(){
       PUSF_Down = 1;
     }
     else FSSF = 1;
-    Float_t MuonSF_diffUp   = MuonSFUp - MuonSF;
-    Float_t MuonSF_diffDown = MuonSF - MuonSFDo;
+    Float_t MuonSF_diffUp   = fabs(MuonSFUp - MuonSF);
+    Float_t MuonSF_diffDown = fabs(MuonSF - MuonSFDo);
     MuonSFUp = MuonSF + TMath::Sqrt(0.005*0.005+0.005*0.005 + 0.01*0.01 + MuonSF_diffUp*MuonSF_diffUp);
-    MuonSFDo = MuonSF + TMath::Sqrt(0.005*0.005+0.005*0.005 + 0.01*0.01 + MuonSF_diffDown*MuonSF_diffDown);
+    MuonSFDo = MuonSF - TMath::Sqrt(0.005*0.005+0.005*0.005 + 0.01*0.01 + MuonSF_diffDown*MuonSF_diffDown);
     TWeight             = NormWeight*ElecSF*MuonSF*TrigSF*PUSF*FSSF;
     TWeight_ElecEffUp   = NormWeight*ElecSFUp*MuonSF*TrigSF*PUSF*FSSF;
     TWeight_ElecEffDown = NormWeight*ElecSFDo*MuonSF*TrigSF*PUSF*FSSF;
@@ -468,27 +468,31 @@ void StopTopAnalysis::SetEventVariables(){
 }
 
 void StopTopAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons){
-  float pt; float ptElUp; float ptElDown; float ptMuUp; float ptMuDown; float scale; int id;
+  float pt; float ptUp; float ptDown; float scale; int id;
+  int nMuon = 0; int nElec = 0; int nMuonUp = 0; int nMuonDown = 0; int nElecUp = 0; int nElecDown = 0;
   TNSelLeps = 0; TNSelLepsMuScaleUp = 0; TNSelLepsMuScaleDown = 0; TNSelLepsElScaleUp = 0; TNSelLepsElScaleDown = 0;
   for(int i = 0; i < (int) selLeptons.size(); i++){
     pt    = selLeptons.at(i).Pt();
     scale = selLeptons.at(i).GetEnergyUnc();
     id    = selLeptons.at(i).isMuon ? 13 : 11;
-    ptElUp = pt; ptElDown = pt; ptMuUp = pt; ptMuDown = pt;
+    ptUp  = pt*(1+scale);
+    ptDown= pt*(1-scale);
     if(id == 13){
-      ptMuUp   = pt*(1+scale);
-      ptMuDown = pt*(1-scale);
+      if(pt     > 20) nMuon++;
+      if(ptUp   > 20) nMuonUp++;
+      if(ptDown > 20) nMuonDown++;
     }
     else{
-      ptElUp   = pt*(1+scale);
-      ptElDown = pt*(1-scale);
+      if(pt     > 20) nElec++;
+      if(ptUp   > 20) nElecUp++;
+      if(ptDown > 20) nElecDown++;
     }
-    if(pt       >= 20) TNSelLeps++;
-    if(ptMuUp   >= 20) TNSelLepsMuScaleUp++;
-    if(ptMuDown >= 20) TNSelLepsMuScaleDown++;
-    if(ptElUp   >= 20) TNSelLepsElScaleUp++;
-    if(ptElDown >= 20) TNSelLepsElScaleDown++;
   }
+  TNSelLeps            = nMuon     + nElec;
+  TNSelLepsMuScaleUp   = nMuonUp   + nElec; 
+  TNSelLepsMuScaleDown = nMuonDown + nElec;
+  TNSelLepsElScaleUp   = nMuon     + nElecUp;
+  TNSelLepsElScaleDown = nMuon     + nElecDown;
   TNLooseLeps = selLeptons.size();
   //if(TNSelLeps >= 2 || TNSelLepsMuScaleUp >= 2 || TNSelLepsMuScaleDown >= 2 || TNSelLepsElScaleUp >= 2 || TNSelLepsElScaleDown >= 2) TNLooseLeps = 2;
 
@@ -652,6 +656,8 @@ void StopTopAnalysis::GetMET(){
   Float_t diff   = TMath::Abs(TISRweight - 1)/2;
   TISRweightUp   = TISRweight + diff;
   TISRweightDown = TISRweight - diff;
+  Int_t nLHEweights = Get<Int_t>("nLHEweight");
+ // if(gIsLHE) for(Int_t i = 0; i < 9; i++)   TLHEWeight[i] = Get<Float_t>("LHEweight_wgt", i);
   if(gIsLHE) for(Int_t i = 0; i < Get<Int_t>("nLHEweight"); i++)   TLHEWeight[i] = Get<Float_t>("LHEweight_wgt", i);
 }
 

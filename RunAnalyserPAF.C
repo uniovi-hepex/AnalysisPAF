@@ -52,10 +52,10 @@ const TString kTagSel[nSel] = {"Stop",     "Top",     "TW",     "WW", "HWW",
 // Datasets:
     //>>> 2016 datasets
     TString data2016[] = {
-    //"16B_03Feb2017", "16C_03Feb2017", "16D_03Feb2017", "16E_03Feb2017",
-    //"16F_03Feb2017", 
+    "16B_03Feb2017", "16C_03Feb2017", "16D_03Feb2017", "16E_03Feb2017",
+    "16F_03Feb2017", 
     "16G_03Feb2017", "16H_03Feb2017_v2", "16H_03Feb2017_v3"};
-    const unsigned int nData2016 = 3;
+    const unsigned int nData2016 = 8;
 
     //>>> 2017 datasets
     TString data2017[] = { 
@@ -67,8 +67,8 @@ const TString kTagSel[nSel] = {"Stop",     "Top",     "TW",     "WW", "HWW",
 
     const unsigned int nData2017 = 1;
 
-    TString *SelectedDataset   = data2017;
-    unsigned int SelectedNdata = nData2017;
+    TString *SelectedDataset   = data2016;
+    unsigned int SelectedNdata = nData2016;
 
 //=============================================================================
 // Tabs
@@ -78,8 +78,13 @@ const TString tab2016noSkim = "DR80XSummer16asymptoticMiniAODv2_2_noSkim";
 const TString tab2017       = "2017data";
 const TString tab2017v2     = "2017data_v2";
 
-TString SelectedTab = tab2016noSkim;
+TString SelectedTab = tab2016;
 
+  
+  
+//============================================================================
+
+TString par;                                                                    // WOLOLO**********
 
 //=============================================================================
 // Main function
@@ -134,6 +139,19 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
 
   if(options.Contains("FastSim")) G_IsFastSim = true;
 
+  //============================================================================
+  
+  if (Selection.BeginsWith("tW_") || Selection.BeginsWith("TW_")) {             // WOLOLO**********
+    par = Selection.ReplaceAll("tW_", "");
+    par = Selection.ReplaceAll("TW_", "");
+    Selection = "TW";
+  }
+  if (sampleName.BeginsWith("LocalFile:")|| sampleName.BeginsWith("/")) { // LocalFile
+    par = "Unfolding";
+  }
+  
+  //============================================================================
+  
   // Selection
   ESelector sel = iStopSelec;
   if     (Selection == "StopDilep" || Selection == "stop"    ) sel = iStopSelec;
@@ -226,7 +244,8 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
       }
       else Count = GetSMSnorm(Files, stopMass, lspMass);
 
-      NormISRweights = GetISRweight(Files, stopMass, lspMass, G_IsFastSim);
+      Bool_t doISRweights = G_IsFastSim || options.Contains("NormFile:");
+      NormISRweights = GetISRweight(Files, stopMass, lspMass, doISRweights);
       G_Event_Weight = xsec/Count;
     } 
     else{ // Use dataset manager
@@ -275,7 +294,6 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   
   // ------->>>>> Termporary solution:
   //if(sampleName.Contains("PowhegLHE")) CountLHE = GetCountLHE(Files, arr);
-
   // Output dir and tree name
   //----------------------------------------------------------------------------
 	
@@ -295,6 +313,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   if(sampleName.Contains("_ext2")) sampleName.ReplaceAll("_ext2",""); 
   if(sampleName.Contains("_ext1")) sampleName.ReplaceAll("_ext1",""); 
   if(sampleName.Contains("_ext"))  sampleName.ReplaceAll("_ext",""); 
+  if(par == "Semi")                sampleName += "Semi";                        // WOLOLO**********
   
   //if     (nEvents > 0 && FirstEvent == 0) myProject->SetNEvents(nEvents);
   if(nEvents < 0 && FirstEvent <= 0){ // Divide the sample
@@ -329,7 +348,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
     TString haddCommand = "hadd " + (nukeIt ? TString("-f ") : TString("") ) + outputDir + "/Tree_" + sampleName + ".root " + outputDir + "/Tree_" + sampleName + "_[0-9].root " + outputDir + "/Tree_" + sampleName + "_[0-9][0-9].root";
 
     //TString haddCommand = "hadd " + outputDir + "/Tree_" + sampleName + ".root " + outputDir + "/Tree_" + sampleName + "_*.root";
-    gSystem->Exec(haddCommand);
+    //gSystem->Exec(haddCommand);
     cout << "\033[1;37m================================================\n\033[0m";
     cout << "\033[1;37m >>>>> >>>> >>> >> > Finito! < << <<< <<<< <<<<<\n\033[0m";
     cout << "\033[1;37m================================================\n\033[0m";
@@ -408,6 +427,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   myProject->SetInputParam("lspMass"        , int(lspMass)     );
   myProject->SetInputParam("NormISRweights" , NormISRweights   );
   myProject->SetInputParam("doSyst"         , G_DoSystematics  ); 
+  myProject->SetInputParam("par"            , par              );
   
   
   // Name of analysis class
