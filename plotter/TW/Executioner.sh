@@ -2,7 +2,7 @@
 
 samples=("TW" "TW_noFullyHadr" 
   "TbarW" "TbarW_noFullyHadr" 
-  "TTbar_Powheg" "TTbar2L_powheg" "DYJetsToLL_M50_aMCatNLO" "DYJetsToLL_M10to50_aMCatNLO" 
+  "TTbar_Powheg" "TTbar_PowhegSemi" "TTbar2L_powheg" "DYJetsToLL_M50_aMCatNLO" "DYJetsToLL_M10to50_aMCatNLO" 
   "WJetsToLNu_MLM" "ZZ" "WW" "WZ" "TTWToLNu" "TTZToQQ" "TTZToLLNuNu" "TTWToQQ" "TTGJets" 
   "MuonEG" "SingleElec" "SingleMuon")
 
@@ -21,7 +21,7 @@ samples_unf=("UNF_TW" "UNF_TW_noFullyHadr_isrUp" "UNF_TW_noFullyHadr_isrDown" "U
 
 runsamples=("TW_ext" "TW_noFullyHadr & TW_noFullyHadr_ext & TW_noFullyHadr_ext2" 
   "TbarW_ext" "TbarW_noFullyHadr & TbarW_noFullyHadr_ext & TbarW_noFullyHadr_ext2" 
-  "TTbar_Powheg" "TTbar2L_powheg" "DYJetsToLL_M50_aMCatNLO" "DYJetsToLL_M10to50_aMCatNLO & DYJetsToLL_M10to50_aMCatNLO_ext" 
+  "TTbar_Powheg" "TTbar_Powheg" "TTbar2L_powheg" "DYJetsToLL_M50_aMCatNLO" "DYJetsToLL_M10to50_aMCatNLO & DYJetsToLL_M10to50_aMCatNLO_ext" 
   "WJetsToLNu_MLM & WJetsToLNu_MLM_ext2" "ZZ & ZZ_ext" "WW & WW_ext" "WZ & WZ_ext" "TTWToLNu_ext1 & TTWToLNu_ext2" "TTZToQQ" "TTZToLLNuNu_ext1 & TTZToLLNuNu_ext2" "TTWToQQ" "TTGJets" 
   "MuonEG" "SingleElec" "SingleMuon")
 
@@ -53,7 +53,7 @@ uplimit_unf=$((${#runsamples_unf[@]}-1))
 
 ncores=("30" "30" 
   "30" "30" 
-  "30" "30" "30" "30" 
+  "30" "30" "30" "30" "30"
   "8" "8" "8" "8" "8" "8" "8" "8" "5" 
   "30" "30" "30")
 
@@ -75,8 +75,6 @@ allok=0
 path=""
 checker=0
 actualsize=0
-especial="TTbar_PowhegSemi"
-pathespecial=$plotspath$slash$init$especial$final
 
 # Minimum size (in bytes!):
 minimumsize=50000
@@ -101,11 +99,15 @@ if [ "$1" == "an" ]; then
   if [ "$2" == "opt" ]; then
     echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Running general-purpose samples..."
     for ((i=0; i<=$uplimit; i++)); do
-      root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", ${ncores[i]})"
+      if [ ${samples[i]} == "TTbar2L_powheg" ]; then
+        root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", ${ncores[i]}, -4)"
+      elif [ ${samples[i]} == "TTbar_PowhegSemi" ]; then
+        root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", ${ncores[i]}, 0, 0, 1.0, \"Semi\")"
+      else
+        root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", ${ncores[i]})"
+      fi
       resetpaf -a
     done
-    root -l -b -q "RunAnalyserPAF.C(\"TTbar_Powheg\", \"$sel\", 30, 0, 0, 1.0, \"Semi\")"
-    resetpaf -a
     
     echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Running samples for systematic uncertanties..."
     for ((i=0; i<=$uplimit_syst; i++)); do
@@ -124,11 +126,15 @@ if [ "$1" == "an" ]; then
   else
     echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Running general-purpose samples..."
     for ((i=0; i<=$uplimit; i++)); do
-      root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2)"
+      if [ ${samples[i]} == "TTbar2L_powheg" ]; then
+        root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, -4)"
+      elif [ ${samples[i]} == "TTbar_PowhegSemi" ]; then
+        root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, 0, 0, 1.0, \"Semi\")"
+      else
+        root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2)"
+      fi
       resetpaf -a
     done
-    root -l -b -q "RunAnalyserPAF.C(\"TTbar_Powheg\", \"TW\", 0, 0, 1.0, \"Semi\")"
-    resetpaf -a
     
     echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Running samples for systematic uncertanties..."
     for ((i=0; i<=$uplimit_syst; i++)); do
@@ -170,7 +176,7 @@ elif [ "$1" == "ch" ]; then
   echo $uplimit
   echo "...root files of samples..."
   echo $uplimit_syst
-  echo "...root files of systematic samples..."
+  echo "...root files of systematic samples and..."
   echo $uplimit_unf
   echo "...root files for unfolding procedures exist in..."
   echo $plotspath
@@ -199,8 +205,13 @@ elif [ "$1" == "ch" ]; then
         echo ${samples[i]}
         echo "Reanalysing..."
         echo " "
-        
-        root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2)"
+        if [ ${samples[i]} == "TTbar2L_powheg" ]; then
+          root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, -4)"
+        elif [ ${samples[i]} == "TTbar_PowhegSemi" ]; then
+          root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, 0, 0, 1.0, \"Semi\")"
+        else
+          root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2)"
+        fi
         resetpaf -a
         
         allok=$(($allok-8))
@@ -216,7 +227,13 @@ elif [ "$1" == "ch" ]; then
           echo ${samples[i]}
           echo "Reanalysing..."
           echo " "
-          root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2)"b
+          if [ ${samples[i]} == "TTbar2L_powheg" ]; then
+            root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, -4)"
+          elif [ ${samples[i]} == "TTbar_PowhegSemi" ]; then
+            root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, 0, 0, 1.0, \"Semi\")"
+          else
+            root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2)"
+          fi
           resetpaf -a
           
           allok=$(($allok-8))
@@ -225,37 +242,6 @@ elif [ "$1" == "ch" ]; then
       
       allok=$(($allok+1))
     done
-    
-    if [ ! -e $pathespecial ]; then
-      echo " "
-      echo "%%%% => ROOT file not found. The sample that is missing is:"
-      echo $especial
-      echo "Reanalysing..."
-      echo " "
-      
-      root -l -b -q "RunAnalyserPAF.C(\"TTbar_Powheg\", \"TW\", $2, 0, 0, 1.0, \"Semi\")"
-      resetpaf -a
-      
-      allok=$(($allok-8))
-    fi
-    
-    if [ -e $pathespecial ]; then
-      actualsize=$(wc -c <"$pathespecial")
-      if [ $actualsize -le $minimumsize ]; then
-        echo " "
-        echo "%%%% => ROOT file with..."
-        echo $actualsize
-        echo "...bytes of size, which are lower than the minimum. This sample is:"
-        echo $especial
-        echo "Reanalysing..."
-        echo " "
-        
-        root -l -b -q "RunAnalyserPAF.C(\"TTbar_Powheg\", \"TW\", $2, 0, 0, 1.0, \"Semi\")"
-        resetpaf -a
-        
-        allok=$(($allok-8))
-      fi
-    fi
     
     if [ $checker == 10 ]; then
       echo " "
@@ -336,6 +322,8 @@ elif [ "$1" == "ch" ]; then
     for ((i=0; i<=$uplimit_unf; i++)); do
       unset path
       unset actualsize
+      unset unftmppath
+      unftmppath=$unfpath${runsamples_unf[i]}$final
       
       path=$plotspath$slash$init${samples_unf[i]}$final
       
@@ -345,7 +333,7 @@ elif [ "$1" == "ch" ]; then
         echo ${samples_unf[i]}
         echo "Reanalysing..."
         echo " "
-        root -l -b -q "RunAnalyserPAF.C(\"${runsamples_unf[i]}\", \"$sel\", $2, 0, 0, 35.85, \"Unfolding\")"
+        root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, 35.85, \"Unfolding\")"
         resetpaf -a
         
         allok=$(($allok-8))
@@ -361,7 +349,7 @@ elif [ "$1" == "ch" ]; then
           echo ${samples_unf[i]}
           echo "Reanalysing..."
           echo " "
-          root -l -b -q "RunAnalyserPAF.C(\"${runsamples_unf[i]}\", \"$sel\", $2, 0, 0, 35.85, \"Unfolding\")"
+          root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, 35.85, \"Unfolding\")"
           resetpaf -a
           
           allok=$(($allok-8))
