@@ -63,7 +63,7 @@ void TWAnalysis::Initialise(){
   gSampleName  = GetParam<TString>("sampleName");
   gDoSyst      = GetParam<Bool_t>("doSyst");
   gPar         = GetParam<TString>("_options");
-  if (gPar == "Semi") {
+  if (gPar.Contains("Semi")) {
     cout << "> Running the semileptonic ttbar sample" << endl;
   }
   gIsTTbar     = false;
@@ -156,7 +156,7 @@ void TWAnalysis::InsideLoop(){
   // Leptons and Jets
   GetLeptonVariables(selLeptons, vetoLeptons);
   GetJetVariables(selJets, Jets15);
-  if (gPar == "Unfolding") {
+  if (gPar.Contains("Unfolding")) {
     GetGenLepVariables();
     GetGenMET();
   }
@@ -221,7 +221,7 @@ void TWAnalysis::InsideLoop(){
   }
 
   
-  if (gPar == "Semi") {
+  if (gPar.Contains("Semi")) {
     if (gIsTTbar && genLeptons.size() > 1 ) return;
   } else {
     if (gIsTTbar && genLeptons.size() < 2 ) return; // Dilepton selection for ttbar!!!
@@ -239,7 +239,7 @@ void TWAnalysis::InsideLoop(){
 //     cout << "Tamanyo de los leptones: " << nSergioLeps << endl;
 //     cout << "Tamanyo de los jets: " << nSergioJets << endl;
 //     cout << "Tamanyo de los b-jets: " << nSergiobJets << endl;
-  if ((gPar == "Unfolding") && (nSergioLeps >= 2) && (nSergioJets == 1) && (nSergiobJets == 1)) { // Checking if we pass the selection with gen things
+  if ((gPar.Contains("Unfolding")) && (nSergioLeps >= 2) && (nSergioJets == 1) && (nSergiobJets == 1)) { // Checking if we pass the selection with gen things
     if(SergioLeps.at(0).isElec && SergioLeps.at(1).isMuon) GenChannel = iElMu; // ...but first, let's redefine the GenChannel to get it right
     if(SergioLeps.at(0).isMuon && SergioLeps.at(1).isElec) GenChannel = iElMu;
     if(SergioLeps.at(0).isMuon && SergioLeps.at(1).isMuon) GenChannel = iMuon;
@@ -829,7 +829,7 @@ void TWAnalysis::GetGenJetVariables(std::vector<Jet> genJets, std::vector<Jet> m
   for (Int_t i = 0; i < nGenJets; i++) if(genJets.at(i).p.Pt() > 30 && TMath::Abs(genJets.at(i).p.Eta()) < 2.4)                         nFiduJets++;
   for (Int_t i = 0; i <  nmcJets; i++) if(mcJets.at(i).p.Pt()  > 30 && TMath::Abs(mcJets.at(i).Eta())    < 2.4 && mcJets.at(i).isBtag)  nFidubJets++;
 
-  if (gPar != "Unfolding") return;
+  if (! gPar.Contains("Unfolding")) return;
   
   nSergioGenJets = Get<Int_t>("nGenJetSergio");
   
@@ -1452,7 +1452,7 @@ void TWAnalysis::SetTWVariables()
   fMini1j1t->Branch("TpassrecoJERUp",          &TpassrecoJERUp,             "TpassrecoJERUp/B");
   fMini1j1t->Branch("TBDTJERUp",               &TBDTJERUp,                  "TBDTJERUp/F");
   
-  if (gPar == "Unfolding") {
+  if (gPar.Contains("Unfolding")) {
     fMini1j1t->Branch("Tpassgen",                &Tpassgen,                   "Tpassgen/B");
     fMini1j1t->Branch("TGenChannel",             &GenChannel,                 "GenChannel/I");
     fMini1j1t->Branch("TGenIsSS",                &TGenIsSS,                   "TGenIsSS/B");
