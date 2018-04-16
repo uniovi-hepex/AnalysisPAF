@@ -62,13 +62,9 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->SetChLabel("e^{#pm}#mu^{#mp} + 1j1b");
   
   
-  // Adding general-purpose samples
-
-  p->AddSample("TTbar_Powheg"                 , "t#bar{t}"    , itBkg, 633);
+  // Adding general-purpose samples --- Beware of the ORDER of the samples!!!!!!
   p->AddSample("TTbar_PowhegSemi"             , "Non-W/Z"     , itBkg, 413);
-  p->AddSample("DYJetsToLL_M10to50_aMCatNLO"  , "DY"          , itBkg, 852); // kRed);
-  p->AddSample("DYJetsToLL_M50_aMCatNLO"      , "DY"          , itBkg);
-  p->AddSample("WJetsToLNu_MLM"               , "Non-W/Z"     , itBkg, 413);
+  p->AddSample("WJetsToLNu_MLM"               , "Non-W/Z"     , itBkg);
   
   p->AddSample("TTWToLNu"                     , "VV+t#bar{t}V", itBkg, 390);
   p->AddSample("TTWToQQ"                      , "VV+t#bar{t}V", itBkg);
@@ -77,6 +73,11 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample("WZ"                           , "VV+t#bar{t}V", itBkg);
   p->AddSample("WW"                           , "VV+t#bar{t}V", itBkg);
   p->AddSample("ZZ"                           , "VV+t#bar{t}V", itBkg);
+  
+  p->AddSample("DYJetsToLL_M10to50_aMCatNLO"  , "DY"          , itBkg, 852); // kRed);
+  p->AddSample("DYJetsToLL_M50_aMCatNLO"      , "DY"          , itBkg);
+  
+  p->AddSample("TTbar_Powheg"                 , "t#bar{t}"    , itBkg, 633);
 
   p->AddSample("TW"                           , "tW"          , itBkg, TColor::GetColor("#ffcc33"));
   p->AddSample("TbarW"                        , "tW"          , itBkg);
