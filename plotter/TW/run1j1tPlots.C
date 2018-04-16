@@ -11,8 +11,9 @@ R__LOAD_LIBRARY(TW/AdditionalStuff.C+)
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, bool setLegendLeft=false, TString yAxisTitleStyle="", float max = 0.);
 TString NameOfTree  = "Mini1j1t";
 TString StandardCut = "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0)";
+TString pathToTree  = "../TW_temp/";
 
-void run1j1tPlots(TString pathtotree  = "../TW_temp/"){
+void run1j1tPlots(TString pathToTree  = "../TW_temp/"){
 //   DrawPlot("TnBTotal - 1"           , StandardCut, "ElMu",  3, -0.5, 2.5, "Number of b-tagged loose jets"         , false);
 //   DrawPlot("TnLooseCentral - 1"     , StandardCut, "ElMu",  5, -0.5, 4.5, "Number of loose jets"                  , false);
 //   DrawPlot("TDilepMETJetPt_THTtot"  , StandardCut, "ElMu", 20,  0.,   1., "p_{T}(e#mu j met) / H_{T}"             , false, "units,0.05");
@@ -51,12 +52,11 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   
   
   // Initial configuration
-  
   p->SetPath(pathToTree); 
   p->SetTreeName(NameOfTree);
   p->SetPathSignal(pathToTree + "");
   p->verbose  = false;
-//   p->verbose  = true;
+  p->verbose  = true;
   // p->SetVarName("forFit");
   TGaxis::SetMaxDigits(3);
   p->SetChLabel("e^{#pm}#mu^{#mp} + 1j1b");

@@ -436,6 +436,7 @@ protected:
   Float_t ytitleOffset;
   Float_t xAxisLabelSize;
   Float_t xAxisTitleSize;
+  TString yAxisTitleStyle;
   Int_t   ytitleDivisions;
   Float_t chX;
   Float_t chY;
