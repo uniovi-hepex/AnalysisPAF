@@ -10,10 +10,10 @@ R__LOAD_LIBRARY(TW/AdditionalStuff.C+)
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, bool setLegendLeft=false, TString yAxisTitleStyle="", float max = 0.);
 TString NameOfTree  = "Mini1j1t";
-TString pathToTree  = "../TW_temp/";
 TString StandardCut = "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0)";
+TString pathToTree  = "../TW_temp/";
 
-void run1j1tPlots(){
+void run1j1tPlots(TString pathToTree  = "../TW_temp/"){
 //   DrawPlot("TnBTotal - 1"           , StandardCut, "ElMu",  3, -0.5, 2.5, "Number of b-tagged loose jets"         , false);
 //   DrawPlot("TnLooseCentral - 1"     , StandardCut, "ElMu",  5, -0.5, 4.5, "Number of loose jets"                  , false);
 //   DrawPlot("TDilepMETJetPt_THTtot"  , StandardCut, "ElMu", 20,  0.,   1., "p_{T}(e#mu j met) / H_{T}"             , false, "units,0.05");
@@ -52,19 +52,18 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   
   
   // Initial configuration
-  
   p->SetPath(pathToTree); 
   p->SetTreeName(NameOfTree);
   p->SetPathSignal(pathToTree + "");
   p->verbose  = false;
-//   p->verbose  = true;
+  p->verbose  = true;
   // p->SetVarName("forFit");
   TGaxis::SetMaxDigits(3);
   p->SetChLabel("e^{#pm}#mu^{#mp} + 1j1b");
   
   
   // Adding general-purpose samples
-  p->AddSample("TW"                           , "tW"          , itBkg, TColor::GetColor("#ffcc33")); 
+  p->AddSample("TW"                           , "tW"          , itBkg, TColor::GetColor("#ffcc33"));
   p->AddSample("TbarW"                        , "tW"          , itBkg);
 
   p->AddSample("TTbar_Powheg"                 , "t#bar{t}"    , itBkg, 633);
@@ -95,8 +94,6 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample("TW_noFullyHadr_MEscaleDown"   ,"tW"           , itSys, 1,  "tWMe_s_caleDown");
   p->AddSample("TW_noFullyHadr_PSscaleUp"     ,"tW"           , itSys, 1,  "tWPS_s_caleUp");
   p->AddSample("TW_noFullyHadr_PSscaleDown"   ,"tW"           , itSys, 1,  "tWPS_s_caleDown");
-  p->AddSample("TW_noFullyHadr_DS"            ,"tW"           , itSys, 1,  "tWDSUp");
-  p->AddSample("TW"                           ,"tW"           , itSys, 1,  "tWDSDown");
 
   p->AddSample("TbarW_noFullyHadr_isrUp"      ,"tW"           , itSys, 1,  "isrUp");
   p->AddSample("TbarW_noFullyHadr_isrDown"    ,"tW"           , itSys, 1,  "isrDown");
@@ -106,8 +103,10 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample("TbarW_noFullyHadr_MEscaleDown","tW"           , itSys, 1,  "tWMe_s_caleDown");
   p->AddSample("TbarW_noFullyHadr_PSscaleUp"  ,"tW"           , itSys, 1,  "tWPS_s_caleUp");
   p->AddSample("TbarW_noFullyHadr_PSscaleDown","tW"           , itSys, 1,  "tWPS_s_caleDown");
-  p->AddSample("TbarW_noFullyHadr_DS"         ,"tW"           , itSys, 1,  "tbarWDSUp");
-  p->AddSample("TbarW"                        ,"tW"           , itSys, 1,  "tbarWDSDown");
+  
+  p->AddSample("TW_noFullyHadr_DS"            ,"tW"           , itSys, 1,  "DSUp");
+  p->AddSample("TbarW_noFullyHadr_DS"         ,"tW"           , itSys, 1,  "DSUp");
+  p->AddSymmetricHisto("tW",  "DSUp");
   
   p->AddSample("TTbar_Powheg"                 , "t#bar{t}"    , itSys, 1,  "ScaleUp");
   p->AddSample("TTbar_Powheg"                 , "t#bar{t}"    , itSys, 1,  "ScaleDown");
@@ -121,7 +120,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample("TTbar_Powheg_isrDown"         , "t#bar{t}"    , itSys, 1,  "isrDown");
   p->AddSample("TTbar_Powheg_fsrUp"           , "t#bar{t}"    , itSys, 1,  "fsrUp");
   p->AddSample("TTbar_Powheg_fsrDown"         , "t#bar{t}"    , itSys, 1,  "fsrDown");
-
+  p->UseEnvelope("t#bar{t}", "GluonMoveCRTune,GluonMoveCRTune_erdON,Powheg_erdON,QCDbasedCRTune_erdON", "ColorReconnection");
 
   // Other settings
   p->doUncInLegend=true;
@@ -136,7 +135,6 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->SetLegendPosition(0.7, 0.45, 0.93, 0.92);
 
   p->SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/");
-//   p->SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t_concosasgen/");
 
   p->AddSystematic("stat,JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"); //,LepEff
 //   p->AddSystematic("stat");

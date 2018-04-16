@@ -62,7 +62,7 @@ void TWAnalysis::Initialise(){
   gSelection   = GetParam<Int_t>("iSelection");
   gSampleName  = GetParam<TString>("sampleName");
   gDoSyst      = GetParam<Bool_t>("doSyst");
-  gPar         = GetParam<TString>("par");
+  gPar         = GetParam<TString>("_options");
   if (gPar == "Semi") {
     cout << "> Running the semileptonic ttbar sample" << endl;
   }
@@ -1376,6 +1376,7 @@ void TWAnalysis::SetTWVariables()
   fMini1j1t->Branch("TSubLeadingLepEta",       &TSubLeadingLepEta,          "TSubLeadingLepEta/F");
   fMini1j1t->Branch("TWeight_normal",          &TWeight_normal,             "TWeight_normal/F");
   fMini1j1t->Branch("Tpassreco",               &Tpassreco,                  "Tpassreco/B");
+  fMini1j1t->Branch("TBDT",                    &TBDT,                       "TBDT/F");
   
   fMini1j1t->Branch("TMETJESUp",               &TMETJESUp,                  "TMETJESUp/F");
   fMini1j1t->Branch("TMET_PhiJESUp",           &TMET_PhiJESUp,              "TMET_PhiJESUp/F");
@@ -1399,6 +1400,7 @@ void TWAnalysis::SetTWVariables()
   fMini1j1t->Branch("TSubLeadingLepPhiJESUp",  &TSubLeadingLepPhiJESUp,     "TSubLeadingLepPhiJESUp/F");
   fMini1j1t->Branch("TSubLeadingLepEtaJESUp",  &TSubLeadingLepEtaJESUp,     "TSubLeadingLepEtaJESUp/F");
   fMini1j1t->Branch("TpassrecoJESUp",          &TpassrecoJESUp,             "TpassrecoJESUp/B");
+  fMini1j1t->Branch("TBDTJESUp",               &TBDTJESUp,                  "TBDTJESUp/F");
   
   fMini1j1t->Branch("TMETJESDown",             &TMETJESDown,                "TMETJESDown/F");
   fMini1j1t->Branch("TMET_PhiJESDown",         &TMET_PhiJESDown,            "TMET_PhiJESDown/F");
@@ -1422,6 +1424,7 @@ void TWAnalysis::SetTWVariables()
   fMini1j1t->Branch("TSubLeadingLepPhiJESDown",&TSubLeadingLepPhiJESDown,   "TSubLeadingLepPhiJESDown/F");
   fMini1j1t->Branch("TSubLeadingLepEtaJESDown",&TSubLeadingLepEtaJESDown,   "TSubLeadingLepEtaJESDown/F");
   fMini1j1t->Branch("TpassrecoJESDown",        &TpassrecoJESDown,           "TpassrecoJESDown/B");
+  fMini1j1t->Branch("TBDTJESDown",             &TBDTJESDown,                "TBDTJESDown/F");
   
   fMini1j1t->Branch("TMETJERUp",               &TMETJERUp,                  "TMETJERUp/F");
   fMini1j1t->Branch("TMET_PhiJERUp",           &TMET_PhiJERUp,              "TMET_PhiJERUp/F");
@@ -1445,6 +1448,7 @@ void TWAnalysis::SetTWVariables()
   fMini1j1t->Branch("TSubLeadingLepPhiJERUp",  &TSubLeadingLepPhiJERUp,     "TSubLeadingLepPhiJERUp/F");
   fMini1j1t->Branch("TSubLeadingLepEtaJERUp",  &TSubLeadingLepEtaJERUp,     "TSubLeadingLepEtaJERUp/F");
   fMini1j1t->Branch("TpassrecoJERUp",          &TpassrecoJERUp,             "TpassrecoJERUp/B");
+  fMini1j1t->Branch("TBDTJERUp",               &TBDTJERUp,                  "TBDTJERUp/F");
   
   if (gPar == "Unfolding") {
     fMini1j1t->Branch("Tpassgen",                &Tpassgen,                   "Tpassgen/B");
