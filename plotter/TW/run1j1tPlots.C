@@ -23,7 +23,7 @@ void run1j1tPlots(TString pathToTree  = "../TW_temp/"){
 //   DrawPlot("THTLepOverHT"           , StandardCut, "ElMu", 20,  0.,   1., "H_{T}+lep / H_{T}"                     , false, "units,0.05", 1e4);
   
   DrawPlot("TMET"                   , StandardCut, "ElMu", 20,  0., 500., "#cancel{E}_{T} [GeV]"                  , false, "gev");
-  DrawPlot("TMET_Phi"               , StandardCut, "ElMu", 20,-TMath::Pi(),TMath::Pi(),"#phi(#cancel{E}_{T}) [GeV]", false, "gev");
+  DrawPlot("TMET_Phi"               , StandardCut, "ElMu", 20,-TMath::Pi(),TMath::Pi(),"#varphi(MET) [GeV]"       , false, "gev");
   DrawPlot("TM_LeadingB"            , StandardCut, "ElMu", 20,  0., 500., "m^{l_{1}b} [GeV]"                      , false, "gev");
   DrawPlot("TM_SubLeadingB"         , StandardCut, "ElMu", 20,  0., 500., "m^{l_{2}b} [GeV]"                      , false, "gev");
   DrawPlot("TM_LLB"                 , StandardCut, "ElMu", 20,  0., 800., "m^{llb} [GeV]"                         , false, "gev");
@@ -31,19 +31,19 @@ void run1j1tPlots(TString pathToTree  = "../TW_temp/"){
   DrawPlot("TE_LLB"                 , StandardCut, "ElMu", 20,  0., 1000, "E^{llb} [GeV]"                         , false, "gev");
   DrawPlot("TDilepPt"               , StandardCut, "ElMu", 20,  0., 500., "p_T^{ll} [GeV]"                        , false, "gev");
   DrawPlot("TDilepJetPt"            , StandardCut, "ElMu", 25,  0., 250., "p_{T}^{e#mu, j} [GeV]"                 , false, "gev");
-  DrawPlot("TDilepMETJetPt"         , StandardCut, "ElMu", 20,  0., 500., "p_{T}^{e#mu, j, #cancel{E}_{T}} [GeV]" , false, "gev");
+  DrawPlot("TDilepMETJetPt"         , StandardCut, "ElMu", 20,  0., 500., "p_{T}^{e#mu, j, MET} [GeV]"            , false, "gev");
   DrawPlot("THTtot"                 , StandardCut, "ElMu", 20, 70., 550., "H_{T} [GeV]"                           , false, "gev");
   DrawPlot("TLeadingJetPt"          , StandardCut, "ElMu", 20,  0., 500., "p_{T}^{j} [GeV]"                       , false, "gev");
   DrawPlot("TLeadingJetE"           , StandardCut, "ElMu", 20,  0., 500., "E^{j} [GeV]"                           , false, "gev");
-  DrawPlot("TLeadingJetPhi"         , StandardCut, "ElMu", 20,  -TMath::Pi(), TMath::Pi(), "#phi^{j} [GeV]"       , false, "gev");
+  DrawPlot("TLeadingJetPhi"         , StandardCut, "ElMu", 20,  -TMath::Pi(), TMath::Pi(), "#varphi^{j} [GeV]"       , false, "gev");
   DrawPlot("TLeadingJetEta"         , StandardCut, "ElMu", 20,  -2.4, 2.4, "#eta^{j} [GeV]"                       , false, "gev");
   DrawPlot("TLeadingLepPt"          , StandardCut, "ElMu", 20,  0., 500., "p_{T}^{l_{1}} [GeV]"                   , false, "gev");
   DrawPlot("TLeadingLepE"           , StandardCut, "ElMu", 20,  0., 500., "E^{l_{1}} [GeV]"                       , false, "gev");
-  DrawPlot("TLeadingLepPhi"         , StandardCut, "ElMu", 20,  -TMath::Pi(), TMath::Pi(), "#phi^{l_{1}} [GeV]"   , false, "gev");
+  DrawPlot("TLeadingLepPhi"         , StandardCut, "ElMu", 20,  -TMath::Pi(), TMath::Pi(), "#varphi^{l_{1}} [GeV]"   , false, "gev");
   DrawPlot("TLeadingLepEta"         , StandardCut, "ElMu", 20,  -2.4, 2.4, "#eta^{l_{1}} [GeV]"                   , false, "gev");
   DrawPlot("TSubLeadingLepPt"       , StandardCut, "ElMu", 20,  0., 500., "p_{T}^{l_{2}} [GeV]"                   , false, "gev");
   DrawPlot("TSubLeadingLepE"        , StandardCut, "ElMu", 20,  0., 500., "E^{l_{2}} [GeV]"                       , false, "gev");
-  DrawPlot("TSubLeadingLepPhi"      , StandardCut, "ElMu", 20,  -TMath::Pi(), TMath::Pi(), "#phi^{l_{2}} [GeV]"   , false, "gev");
+  DrawPlot("TSubLeadingLepPhi"      , StandardCut, "ElMu", 20,  -TMath::Pi(), TMath::Pi(), "#varphi^{l_{2}} [GeV]"   , false, "gev");
   DrawPlot("TSubLeadingLepEta"      , StandardCut, "ElMu", 20,  -2.4, 2.4, "#eta^{l_{2}} [GeV]"                   , false, "gev");
 }
 
@@ -63,8 +63,6 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   
   
   // Adding general-purpose samples
-  p->AddSample("TW"                           , "tW"          , itBkg, TColor::GetColor("#ffcc33"));
-  p->AddSample("TbarW"                        , "tW"          , itBkg);
 
   p->AddSample("TTbar_Powheg"                 , "t#bar{t}"    , itBkg, 633);
   p->AddSample("TTbar_PowhegSemi"             , "Non-W/Z"     , itBkg, 413);
@@ -80,6 +78,9 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample("WW"                           , "VV+t#bar{t}V", itBkg);
   p->AddSample("ZZ"                           , "VV+t#bar{t}V", itBkg);
 
+  p->AddSample("TW"                           , "tW"          , itBkg, TColor::GetColor("#ffcc33"));
+  p->AddSample("TbarW"                        , "tW"          , itBkg);
+  
   p->AddSample("MuonEG"                       , "Data"        , itData);
   p->AddSample("SingleMuon"                   , "Data"        , itData);
   p->AddSample("SingleElec"                   , "Data"        , itData);
@@ -139,9 +140,10 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSystematic("stat,JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"); //,LepEff
 //   p->AddSystematic("stat");
 
-  p->doYieldsInLeg=false;
-  p->doSetLogy = false;
-  p->doData = true;
+  p->doYieldsInLeg  = false;
+  p->doSetLogy      = false;
+  p->doData         = true;
+  p->doSignal       = false;
   
   if (setLegendLeft) p->SetLegendPosition("UL");
   p->AddLumiSyst(0.025);
