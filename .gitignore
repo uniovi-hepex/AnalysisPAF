@@ -3,7 +3,7 @@
 *.d
 *.pcm
 .paf/
-
+*.pyc
 # Exclude files by emacs
 *~
 .~*
@@ -17,3 +17,4 @@ inputdata.root
 
 #Higgs combine output :)
 higgsCombine_*.root
+higgsCombinefit_*.root
