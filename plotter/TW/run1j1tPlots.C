@@ -82,48 +82,56 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample("TW"                           , "tW"          , itBkg, TColor::GetColor("#ffcc33"));
   p->AddSample("TbarW"                        , "tW"          , itBkg);
   
-  p->AddSample("MuonEG"                       , "Data"        , itData);
-  p->AddSample("SingleMuon"                   , "Data"        , itData);
-  p->AddSample("SingleElec"                   , "Data"        , itData);
+//   p->AddSample("MuonEG"                       , "Data"        , itData);
+//   p->AddSample("SingleMuon"                   , "Data"        , itData);
+//   p->AddSample("SingleElec"                   , "Data"        , itData);
   
   
   // Adding samples for systematic uncertanties
-  p->AddSample("TW_noFullyHadr_isrUp"         ,"tW"           , itSys, 1,  "isrUp");
-  p->AddSample("TW_noFullyHadr_isrDown"       ,"tW"           , itSys, 1,  "isrDown");
-  p->AddSample("TW_noFullyHadr_fsrUp"         ,"tW"           , itSys, 1,  "fsrUp");
-  p->AddSample("TW_noFullyHadr_fsrDown"       ,"tW"           , itSys, 1,  "fsrDown");
-  p->AddSample("TW_noFullyHadr_MEscaleUp"     ,"tW"           , itSys, 1,  "tWMe_s_caleUp");
-  p->AddSample("TW_noFullyHadr_MEscaleDown"   ,"tW"           , itSys, 1,  "tWMe_s_caleDown");
-  p->AddSample("TW_noFullyHadr_PSscaleUp"     ,"tW"           , itSys, 1,  "tWPS_s_caleUp");
-  p->AddSample("TW_noFullyHadr_PSscaleDown"   ,"tW"           , itSys, 1,  "tWPS_s_caleDown");
+  p->AddSample("TW"   , "tW", itSys, 1, "JERUp");
+  p->AddSample("TW_noFullyHadr_isrUp"         , "tW"          , itSys, 1, "isrUp");
+  p->AddSample("TW_noFullyHadr_isrDown"       , "tW"          , itSys, 1, "isrDown");
+  p->AddSample("TW_noFullyHadr_fsrUp"         , "tW"          , itSys, 1, "fsrUp");
+  p->AddSample("TW_noFullyHadr_fsrDown"       , "tW"          , itSys, 1, "fsrDown");
+  p->AddSample("TW_noFullyHadr_MEscaleUp"     , "tW"          , itSys, 1, "tWMe_s_caleUp");
+  p->AddSample("TW_noFullyHadr_MEscaleDown"   , "tW"          , itSys, 1, "tWMe_s_caleDown");
+  p->AddSample("TW_noFullyHadr_PSscaleUp"     , "tW"          , itSys, 1, "tWPS_s_caleUp");
+  p->AddSample("TW_noFullyHadr_PSscaleDown"   , "tW"          , itSys, 1, "tWPS_s_caleDown");
 
-  p->AddSample("TbarW_noFullyHadr_isrUp"      ,"tW"           , itSys, 1,  "isrUp");
-  p->AddSample("TbarW_noFullyHadr_isrDown"    ,"tW"           , itSys, 1,  "isrDown");
-  p->AddSample("TbarW_noFullyHadr_fsrUp"      ,"tW"           , itSys, 1,  "fsrUp");
-  p->AddSample("TbarW_noFullyHadr_fsrDown"    ,"tW"           , itSys, 1,  "fsrDown");
-  p->AddSample("TbarW_noFullyHadr_MEscaleUp"  ,"tW"           , itSys, 1,  "tWMe_s_caleUp");
-  p->AddSample("TbarW_noFullyHadr_MEscaleDown","tW"           , itSys, 1,  "tWMe_s_caleDown");
-  p->AddSample("TbarW_noFullyHadr_PSscaleUp"  ,"tW"           , itSys, 1,  "tWPS_s_caleUp");
-  p->AddSample("TbarW_noFullyHadr_PSscaleDown","tW"           , itSys, 1,  "tWPS_s_caleDown");
+  p->AddSample("TbarW"                        , "tW"          , itSys, 1, "JERUp");
+  p->AddSample("TbarW_noFullyHadr_isrUp"      , "tW"          , itSys, 1, "isrUp");
+  p->AddSample("TbarW_noFullyHadr_isrDown"    , "tW"          , itSys, 1, "isrDown");
+  p->AddSample("TbarW_noFullyHadr_fsrUp"      , "tW"          , itSys, 1, "fsrUp");
+  p->AddSample("TbarW_noFullyHadr_fsrDown"    , "tW"          , itSys, 1, "fsrDown");
+  p->AddSample("TbarW_noFullyHadr_MEscaleUp"  , "tW"          , itSys, 1, "tWMe_s_caleUp");
+  p->AddSample("TbarW_noFullyHadr_MEscaleDown", "tW"          , itSys, 1, "tWMe_s_caleDown");
+  p->AddSample("TbarW_noFullyHadr_PSscaleUp"  , "tW"          , itSys, 1, "tWPS_s_caleUp");
+  p->AddSample("TbarW_noFullyHadr_PSscaleDown", "tW"          , itSys, 1, "tWPS_s_caleDown");
   
-  p->AddSample("TW_noFullyHadr_DS"            ,"tW"           , itSys, 1,  "DSUp");
-  p->AddSample("TbarW_noFullyHadr_DS"         ,"tW"           , itSys, 1,  "DSUp");
+  p->AddSample("TW_noFullyHadr_DS"            , "tW"          , itSys, 1, "DSUp");
+  p->AddSample("TbarW_noFullyHadr_DS"         , "tW"          , itSys, 1, "DSUp");
   p->AddSymmetricHisto("tW",  "DSUp");
+  p->AddSymmetricHisto("tW",  "JERUp");
   
-  p->AddSample("TTbar_Powheg"                 , "t#bar{t}"    , itSys, 1,  "ScaleUp");
-  p->AddSample("TTbar_Powheg"                 , "t#bar{t}"    , itSys, 1,  "ScaleDown");
-  p->AddSample("TTbar_Powheg"                 , "t#bar{t}"    , itSys, 1,  "pdfUp");
-  p->AddSample("TTbar_Powheg"                 , "t#bar{t}"    , itSys, 1,  "pdfDown");
-  p->AddSample("TTbar_Powheg_hdampUp"         , "t#bar{t}"    , itSys, 1,  "hdampUp");
-  p->AddSample("TTbar_Powheg_hdampDown"       , "t#bar{t}"    , itSys, 1,  "hdampDown");
-  p->AddSample("TTbar_Powheg_ueUp"            , "t#bar{t}"    , itSys, 1,  "ueUp");
-  p->AddSample("TTbar_Powheg_ueDown"          , "t#bar{t}"    , itSys, 1,  "ueDown");
-  p->AddSample("TTbar_Powheg_isrUp"           , "t#bar{t}"    , itSys, 1,  "isrUp");
-  p->AddSample("TTbar_Powheg_isrDown"         , "t#bar{t}"    , itSys, 1,  "isrDown");
-  p->AddSample("TTbar_Powheg_fsrUp"           , "t#bar{t}"    , itSys, 1,  "fsrUp");
-  p->AddSample("TTbar_Powheg_fsrDown"         , "t#bar{t}"    , itSys, 1,  "fsrDown");
+  p->AddSample("TTbar_Powheg"                 , "t#bar{t}"    , itSys, 1, "JERUp");
+  p->AddSample("TTbar_Powheg"                 , "t#bar{t}"    , itSys, 1, "ScaleUp");
+  p->AddSample("TTbar_Powheg"                 , "t#bar{t}"    , itSys, 1, "ScaleDown");
+  p->AddSample("TTbar_Powheg"                 , "t#bar{t}"    , itSys, 1, "pdfUp");
+  p->AddSample("TTbar_Powheg"                 , "t#bar{t}"    , itSys, 1, "pdfDown");
+  p->AddSample("TTbar_Powheg_hdampUp"         , "t#bar{t}"    , itSys, 1, "hdampUp");
+  p->AddSample("TTbar_Powheg_hdampDown"       , "t#bar{t}"    , itSys, 1, "hdampDown");
+  p->AddSample("TTbar_Powheg_ueUp"            , "t#bar{t}"    , itSys, 1, "ueUp");
+  p->AddSample("TTbar_Powheg_ueDown"          , "t#bar{t}"    , itSys, 1, "ueDown");
+  p->AddSample("TTbar_Powheg_isrUp"           , "t#bar{t}"    , itSys, 1, "isrUp");
+  p->AddSample("TTbar_Powheg_isrDown"         , "t#bar{t}"    , itSys, 1, "isrDown");
+  p->AddSample("TTbar_Powheg_fsrUp"           , "t#bar{t}"    , itSys, 1, "fsrUp");
+  p->AddSample("TTbar_Powheg_fsrDown"         , "t#bar{t}"    , itSys, 1, "fsrDown");
   p->UseEnvelope("t#bar{t}", "GluonMoveCRTune,GluonMoveCRTune_erdON,Powheg_erdON,QCDbasedCRTune_erdON", "ColorReconnection");
+  p->AddSymmetricHisto("t#bar{t}",  "JERUp");
 
+  p->AddSystematic("stat,JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"); //,LepEff
+//   p->AddSystematic("stat");
+  
   // Other settings
   p->doUncInLegend=true;
   p->SetRatioMin( 0.6 );
@@ -133,14 +141,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 
   p->SetCMSlabel("CMS");
   p->SetCMSmodeLabel("Preliminary");
-
   p->SetLegendPosition(0.7, 0.45, 0.93, 0.92);
-
   p->SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/");
-
-  p->AddSystematic("stat,JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"); //,LepEff
-//   p->AddSystematic("stat");
-
   p->doYieldsInLeg  = false;
   p->doSetLogy      = false;
   p->doData         = true;
