@@ -7,6 +7,7 @@ import copy
 import ROOT as r
 import beautifulUnfoldingPlots
 import errorPropagator
+import varList
 
 class DataContainer:
     ''' Class to store all the needed inputs: response matrices 
@@ -56,10 +57,11 @@ class DataContainer:
             if self.var not in key.GetName(): continue
             if key.GetName() == 'R'+self.var:
                 self.bkgs[''] = copy.deepcopy(key.ReadObj())
+                self.bkgs[''].Scale(varList.Lumi*1000)
             else:
                 sysName = '_'.join(key.GetName().split('_')[1:])
                 self.bkgs[sysName] = copy.deepcopy(key.ReadObj())
-
+                self.bkgs[sysName].Scale(varList.Lumi*1000)
         
         tfile.Close()
 
@@ -71,7 +73,7 @@ class DataContainer:
             for sys in self.listOfSysts:
                 if sys not in systListResp: print sys, 'is not there'
             raise RuntimeError("We dont have reponse matrices for all nuisances")
-
+            
         if (systListResp != self.listOfSysts):
             print RuntimeWarning("Different nuisances in response and inputs")
             #raise RuntimeWarning("Different nuisances in response and inputs")
@@ -92,7 +94,7 @@ class UnfolderHelper:
     def makeUnfolderCore(self,unfInputNresponse):
         self.unfInput , self.response, self.bkg = unfInputNresponse
         self.tunfolder = r.TUnfoldDensity(self.response, r.TUnfold.kHistMapOutputHoriz,
-                                             r.TUnfold.kRegModeCurvature, r.TUnfold.kEConstraintNone,
+                                             r.TUnfold.kRegModeCurvature, r.TUnfold.kEConstraintArea,
                                              r.TUnfoldDensity.kDensityModeeNone)
         self.tunfolder.SetInput( self.unfInput )
         self.tunfolder.SubtractBackground( self.bkg , 'Non fiducial events')
@@ -230,7 +232,11 @@ class Unfolder():
 
 if __name__=="__main__":
 
+
     a = Unfolder('LeadingJetPt','cards/cardFile_Jet1_pt.root','~vrbouza/www/TFM/Unfolding/UnfoldingInfo.root')
+
+    
+
     a.prepareNominalHelper()
     a.doLCurveScan()
     #a.doTauScan()
