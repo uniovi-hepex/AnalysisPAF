@@ -4,7 +4,7 @@ imax 1
 jmax *
 kmax *
 ##-----------
-shapes * ElMu /nfs/fanae/user/vrbouza/www/TFM/Unfolding/cardFile_{ref}.root $PROCESS $PROCESS_$SYSTEMATIC
+shapes * ElMu temp/cardFile_{ref}.root $PROCESS $PROCESS_$SYSTEMATIC
 ##-----------
 bin ElMu 
 observation {obs} 
