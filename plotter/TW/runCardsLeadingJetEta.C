@@ -4,12 +4,12 @@ R__LOAD_LIBRARY(Looper.C+)
 R__LOAD_LIBRARY(Plot.C+)
 R__LOAD_LIBRARY(Datacard.C+)
 R__LOAD_LIBRARY(CrossSection.C+)
-R__LOAD_LIBRARY(./TW/Differential/temp/LeadingJetPt.C+)
+R__LOAD_LIBRARY(./TW/Differential/temp/LeadingJetEta.C+)
 #include "Histo.h"
 #include "Looper.h"
 #include "Plot.h"
 #include "Datacard.h"
-#include "./TW/Differential/temp/LeadingJetPt.C"
+#include "./TW/Differential/temp/LeadingJetEta.C"
 
 TString pathToTree = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/19_04_2018/";
 TString NameOfTree = "Mini1j1t";
@@ -17,16 +17,16 @@ TString NameOfTree = "Mini1j1t";
 
 void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString chlabel);
 
-void runCardsLeadingJetPt() {
+void runCardsLeadingJetEta() {
   
-  DrawPlot("theBDt_bin1( TBDT )", "(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && TLeadingJetPt < 50 )"                       , "ElMu", 10, 0.5, 10.5, "LeadingJetPt_1","");
-  DrawPlot("theBDt_bin2( TBDT )", "(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && TLeadingJetPt >= 50  && TLeadingJetPt < 70 )", "ElMu", 10, 0.5, 10.5, "LeadingJetPt_2","");
-  DrawPlot("theBDt_bin3( TBDT )", "(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && TLeadingJetPt >= 70  && TLeadingJetPt < 90 )", "ElMu", 10, 0.5, 10.5, "LeadingJetPt_3","");
-  DrawPlot("theBDt_bin4( TBDT )", "(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && TLeadingJetPt >= 90  && TLeadingJetPt <110 )", "ElMu", 10, 0.5, 10.5, "LeadingJetPt_4","");
-  DrawPlot("theBDt_bin5( TBDT )", "(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && TLeadingJetPt >=110  && TLeadingJetPt <130 )", "ElMu", 10, 0.5, 10.5, "LeadingJetPt_5","");
-  DrawPlot("theBDt_bin6( TBDT )", "(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && TLeadingJetPt >=130  && TLeadingJetPt <150 )", "ElMu", 10, 0.5, 10.5, "LeadingJetPt_6","");
-  DrawPlot("theBDt_bin7( TBDT )", "(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && TLeadingJetPt >=150  && TLeadingJetPt <170 )", "ElMu", 10, 0.5, 10.5, "LeadingJetPt_7","");
-  DrawPlot("theBDt_bin8( TBDT )", "(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && TLeadingJetPt >=170  && TLeadingJetPt <500 )", "ElMu", 10, 0.5, 10.5, "LeadingJetPt_8","");
+  DrawPlot("theBDt_bin1( TBDT )", "(Tpassreco == 1 && TLeadingJetEta >= -2.4 && TLeadingJetEta < -1.75)",  "ElMu", 10, 0.5, 10.5, "LeadingJetEta_1","");
+  DrawPlot("theBDt_bin2( TBDT )", "(Tpassreco == 1 && TLeadingJetEta >= -1.75 && TLeadingJetEta < -1.25)", "ElMu", 10, 0.5, 10.5, "LeadingJetEta_2","");
+  DrawPlot("theBDt_bin3( TBDT )", "(Tpassreco == 1 && TLeadingJetEta >= -1.25 && TLeadingJetEta < -0.5)",  "ElMu", 10, 0.5, 10.5, "LeadingJetEta_3","");
+  DrawPlot("theBDt_bin4( TBDT )", "(Tpassreco == 1 && TLeadingJetEta >= -0.5 && TLeadingJetEta < 0)",      "ElMu", 10, 0.5, 10.5, "LeadingJetEta_4","");
+  DrawPlot("theBDt_bin5( TBDT )", "(Tpassreco == 1 && TLeadingJetEta >= 0 && TLeadingJetEta < 0.5)",       "ElMu", 10, 0.5, 10.5, "LeadingJetEta_5","");
+  DrawPlot("theBDt_bin6( TBDT )", "(Tpassreco == 1 && TLeadingJetEta >= 0.5 && TLeadingJetEta < 1.25)",    "ElMu", 10, 0.5, 10.5, "LeadingJetEta_6","");
+  DrawPlot("theBDt_bin7( TBDT )", "(Tpassreco == 1 && TLeadingJetEta >= 1.25 && TLeadingJetEta < 1.75)",   "ElMu", 10, 0.5, 10.5, "LeadingJetEta_7","");
+  DrawPlot("theBDt_bin8( TBDT )", "(Tpassreco == 1 && TLeadingJetEta >= 1.75 && TLeadingJetEta < 2.4)",    "ElMu", 10, 0.5, 10.5, "LeadingJetEta_8","");
   return;
 }
 
