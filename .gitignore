@@ -4,6 +4,7 @@
 *.pcm
 .paf/
 *.pyc
+combine_logger.out
 # Exclude files by emacs
 *~
 .~*
