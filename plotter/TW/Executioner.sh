@@ -100,7 +100,7 @@ if [ "$1" == "an" ]; then
     echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Running general-purpose samples..."
     for ((i=0; i<=$uplimit; i++)); do
       if [ ${samples[i]} == "TTbar2L_powheg" ]; then
-        root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", ${ncores[i]}, -4)"
+        root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", ${ncores[i]}, -4, 0, 1.0, \"makeHadd\")"
       elif [ ${samples[i]} == "TTbar_PowhegSemi" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", ${ncores[i]}, 0, 0, 1.0, \"Semi\")"
       else
@@ -127,7 +127,7 @@ if [ "$1" == "an" ]; then
     echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Running general-purpose samples..."
     for ((i=0; i<=$uplimit; i++)); do
       if [ ${samples[i]} == "TTbar2L_powheg" ]; then
-        root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, -4)"
+        root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, -4, 0, 1.0, \"makeHadd\")"
       elif [ ${samples[i]} == "TTbar_PowhegSemi" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, 0, 0, 1.0, \"Semi\")"
       else
@@ -206,7 +206,7 @@ elif [ "$1" == "ch" ]; then
         echo "Reanalysing..."
         echo " "
         if [ ${samples[i]} == "TTbar2L_powheg" ]; then
-          root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, -4)"
+          root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, -4, 0, 1.0, \"makeHadd\")"
         elif [ ${samples[i]} == "TTbar_PowhegSemi" ]; then
           root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, 0, 0, 1.0, \"Semi\")"
         else
@@ -228,7 +228,7 @@ elif [ "$1" == "ch" ]; then
           echo "Reanalysing..."
           echo " "
           if [ ${samples[i]} == "TTbar2L_powheg" ]; then
-            root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, -4)"
+            root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, -4, 0, 1.0, \"makeHadd\")"
           elif [ ${samples[i]} == "TTbar_PowhegSemi" ]; then
             root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, 0, 0, 1.0, \"Semi\")"
           else

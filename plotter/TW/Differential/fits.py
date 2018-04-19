@@ -2,27 +2,25 @@ import fitter
 import ROOT
 import array
 import math
+import varList
 
+expected    = True
+name        = 'LeadingJetPt'
+bins        = varList.varList[name]['recobinning']
 
-expected = True
-bins = [0,50,70,90,110,130,150,170,500]
-name = 'Jet1_pt'
-
-
-
-
-count = 0
-histo = ROOT.TH1F("histo","",len(bins)-1, array.array('d',bins))
-allResults = {}
+count       = 0
+histo       = ROOT.TH1F("histo", "", len(bins)-1, array.array('d',bins))
+allResults  = {}
 
 
 for binDn,binUp in zip(bins, bins[1:]):
-    count = count + 1 
-    fit = fitter.FittingSuite("~/TW_differential/AnalysisPAF/plotter/TW/inputs/forCards_%s_%d.root"%(name,count), expected)
+    count   = count + 1
+    #fit     = fitter.FittingSuite("~/TW_differential/AnalysisPAF/plotter/TW/inputs/forCards_%s_%d.root"%(name,count), expected)
+    fit     = fitter.FittingSuite("/nfs/fanae/user/vrbouza/www/TFM/Unfolding/forCards_%s_%d.root"%(name,count), expected)
     fit.doAllCombFits()
     results = fit.results
     allResults[(binDn,binUp)] = results
-    err = 0
+    err     = 0
 
     # Add uncertainty of systematics
     for key in results: 
@@ -38,7 +36,8 @@ for binDn,binUp in zip(bins, bins[1:]):
     histo.SetBinError  ( histo.FindBin( (binDn+binUp)/2), math.sqrt(err)       )
 
 
-out = ROOT.TFile('output.root','recreate')
+#out = ROOT.TFile('output.root','recreate')
+out = ROOT.TFile('/nfs/fanae/user/vrbouza/www/TFM/Unfolding/output.root', 'recreate')
 histo.Write()
 out.Close()
 
@@ -58,10 +57,11 @@ for key in allResults[(bins[0],bins[1])]:
 outCard = open('dummy_card_template.txt').read()
 print outCard
 outCard = outCard.format(obs=histoSyst[''].Integral(),tW=histoSyst[''].Integral(),ref=name)
-out = open('dummy_card_%s.txt'%name,'w')
+#out = open('dummy_card_%s.txt'%name,'w')
+out = open('/nfs/fanae/user/vrbouza/www/TFM/Unfolding/dummy_card_%s.txt'%name,'w')
 out.write(outCard)
 
-
-cardInput = ROOT.TFile.Open('cards/cardFile_{ref}.root'.format(ref=name),'recreate')
+#cardInput = ROOT.TFile.Open('cards/cardFile_{ref}.root'.format(ref=name),'recreate')
+cardInput = ROOT.TFile.Open('/nfs/fanae/user/vrbouza/www/TFM/Unfolding/cardFile_{ref}.root'.format(ref=name), 'recreate')
 for key in histoSyst: histoSyst[key].Write()
 cardInput.Close()

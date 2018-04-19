@@ -63,7 +63,7 @@ void TWAnalysis::Initialise(){
   gSampleName  = GetParam<TString>("sampleName");
   gDoSyst      = GetParam<Bool_t>("doSyst");
   gPar         = GetParam<TString>("_options");
-  if (gPar == "Semi") {
+  if (gPar.Contains("Semi")) {
     cout << "> Running the semileptonic ttbar sample" << endl;
   }
   gIsTTbar     = false;
@@ -156,7 +156,7 @@ void TWAnalysis::InsideLoop(){
   // Leptons and Jets
   GetLeptonVariables(selLeptons, vetoLeptons);
   GetJetVariables(selJets, Jets15);
-  if (gPar == "Unfolding") {
+  if (gPar.Contains("Unfolding")) {
     GetGenLepVariables();
     GetGenMET();
   }
@@ -221,7 +221,7 @@ void TWAnalysis::InsideLoop(){
   }
 
   
-  if (gPar == "Semi") {
+  if (gPar.Contains("Semi")) {
     if (gIsTTbar && genLeptons.size() > 1 ) return;
   } else {
     if (gIsTTbar && genLeptons.size() < 2 ) return; // Dilepton selection for ttbar!!!
@@ -239,7 +239,7 @@ void TWAnalysis::InsideLoop(){
 //     cout << "Tamanyo de los leptones: " << nSergioLeps << endl;
 //     cout << "Tamanyo de los jets: " << nSergioJets << endl;
 //     cout << "Tamanyo de los b-jets: " << nSergiobJets << endl;
-  if ((gPar == "Unfolding") && (nSergioLeps >= 2) && (nSergioJets == 1) && (nSergiobJets == 1)) { // Checking if we pass the selection with gen things
+  if ((gPar.Contains("Unfolding")) && (nSergioLeps >= 2) && (nSergioJets == 1) && (nSergiobJets == 1)) { // Checking if we pass the selection with gen things
     if(SergioLeps.at(0).isElec && SergioLeps.at(1).isMuon) GenChannel = iElMu; // ...but first, let's redefine the GenChannel to get it right
     if(SergioLeps.at(0).isMuon && SergioLeps.at(1).isElec) GenChannel = iElMu;
     if(SergioLeps.at(0).isMuon && SergioLeps.at(1).isMuon) GenChannel = iMuon;
@@ -339,6 +339,101 @@ void TWAnalysis::InsideLoop(){
     }
   }
   
+  //   Setting maximum value of the unfolding candidate variables.
+  if (TMET              >= 1000)  TMET              = 999.999;
+  if (TM_LeadingB       >= 1000)  TM_LeadingB       = 999.999;
+  if (TM_SubLeadingB    >= 1000)  TM_SubLeadingB    = 999.999;
+  if (TM_LLB            >= 1000)  TM_LLB            = 999.999;
+  if (TMT_LLMETB        >= 1000)  TMT_LLMETB        = 999.999;
+  if (TE_LLB            >= 1000)  TE_LLB            = 999.999;
+  if (TDilepPt          >= 500)   TDilepPt          = 499.999;
+  if (DilepJetPt        >= 500)   DilepJetPt        = 499.999;
+  if (DilepMETJetPt     >= 500)   DilepMETJetPt     = 499.999;
+  if (THTtot            >= 1000)  THTtot            = 999.999;
+  if (TLeadingJetPt     >= 500)   TLeadingJetPt     = 499.999;
+  if (TLeadingJetE      >= 1000)  TLeadingJetE      = 999.999;
+  if (TLeadingJetPhi    >= TMath::Pi())  TLeadingJetPhi    = 3.14;
+  if (TLeadingJetEta    >= 2.4)   TLeadingJetEta    = 2.39999;
+  if (TLeadingLepPt     >= 1000)  TLeadingLepPt     = 999.999;
+  if (TLeadingLepE      >= 1000)  TLeadingLepE      = 999.999;
+  if (TLeadingLepPhi    >= TMath::Pi())  TLeadingLepPhi    = 3.14;
+  if (TLeadingLepEta    >= 2.4)   TLeadingLepEta    = 2.39999;
+  if (TSubLeadingLepPt  >= 1000)  TSubLeadingLepPt  = 999.999;
+  if (TSubLeadingLepE   >= 1000)  TSubLeadingLepE   = 999.999;
+  if (TSubLeadingLepPhi >= TMath::Pi())  TSubLeadingLepPhi = 3.14;
+  if (TSubLeadingLepEta >= 2.4)   TSubLeadingLepEta = 2.39999;
+    
+  if (TMET              < 0)     TMET              = 0;
+  if (TM_LeadingB       < 0)     TM_LeadingB       = 0;
+  if (TM_SubLeadingB    < 0)     TM_SubLeadingB    = 0;
+  if (TM_LLB            < 0)     TM_LLB            = 0;
+  if (TMT_LLMETB        < 0)     TMT_LLMETB        = 0;
+  if (TE_LLB            < 0)     TE_LLB            = 0;
+  if (TDilepPt          < 0)     TDilepPt          = 0;
+  if (DilepJetPt        < 0)     DilepJetPt        = 0;
+  if (DilepMETJetPt     < 0)     DilepMETJetPt     = 0;
+  if (THTtot            < 0)     THTtot            = 0;
+  if (TLeadingJetPt     < 0)     TLeadingJetPt     = 0;
+  if (TLeadingJetE      < 0)     TLeadingJetE      = 0;
+  if (TLeadingJetPhi    < -TMath::Pi()) TLeadingJetPhi    = -3.14;
+  if (TLeadingJetEta    < -2.4)  TLeadingJetEta    = -2.39999;
+  if (TLeadingLepPt     < 0)     TLeadingLepPt     = 0;
+  if (TLeadingLepE      < 0)     TLeadingLepE      = 0;
+  if (TLeadingLepPhi    < -TMath::Pi()) TLeadingLepPhi    = -3.14;
+  if (TLeadingLepEta    < -2.4)  TLeadingLepEta    = -2.39999;
+  if (TSubLeadingLepPt  < 0)     TSubLeadingLepPt  = 0;
+  if (TSubLeadingLepE   < 0)     TSubLeadingLepE   = 0;
+  if (TSubLeadingLepPhi < -TMath::Pi()) TSubLeadingLepPhi = -3.14;
+  if (TSubLeadingLepEta < -2.4)  TSubLeadingLepEta = -2.39999;
+  
+  if (TGenMET              >= 1000)  TGenMET              = 999.999;
+  if (TGenM_LeadingB       >= 1000)  TGenM_LeadingB       = 999.999;
+  if (TGenM_SubLeadingB    >= 1000)  TGenM_SubLeadingB    = 999.999;
+  if (TGenM_LLB            >= 1000)  TGenM_LLB            = 999.999;
+  if (TGenMT_LLMETB        >= 1000)  TGenMT_LLMETB        = 999.999;
+  if (TGenE_LLB            >= 1000)  TGenE_LLB            = 999.999;
+  if (TGenDilepPt          >= 500)   TGenDilepPt          = 499.999;
+  if (TGenDilepJetPt       >= 500)   TGenDilepJetPt       = 499.999;
+  if (TGenDilepMETJetPt    >= 500)   TGenDilepMETJetPt    = 499.999;
+  if (TGenHTtot            >= 1000)  TGenHTtot            = 999.999;
+  if (TGenLeadingJetPt     >= 500)   TGenLeadingJetPt     = 499.999;
+  if (TGenLeadingJetE      >= 1000)  TGenLeadingJetE      = 999.999;
+  if (TGenLeadingJetPhi    >= TMath::Pi())  TGenLeadingJetPhi    = 3.14;
+  if (TGenLeadingJetEta    >= 2.4)   TGenLeadingJetEta    = 2.39999;
+  if (TGenLeadingLepPt     >= 1000)  TGenLeadingLepPt     = 999.999;
+  if (TGenLeadingLepE      >= 1000)  TGenLeadingLepE      = 999.999;
+  if (TGenLeadingLepPhi    >= TMath::Pi())  TGenLeadingLepPhi    = 3.14;
+  if (TGenLeadingLepEta    >= 2.4)   TGenLeadingLepEta    = 2.39999;
+  if (TGenSubLeadingLepPt  >= 1000)  TGenSubLeadingLepPt  = 999.999;
+  if (TGenSubLeadingLepE   >= 1000)  TGenSubLeadingLepE   = 999.999;
+  if (TGenSubLeadingLepPhi >= TMath::Pi())  TGenSubLeadingLepPhi = 3.14;
+  if (TGenSubLeadingLepEta >= 2.4)   TGenSubLeadingLepEta = 2.39999;
+  
+  if (TGenMET              < 0)  TGenMET              = 0;
+  if (TGenM_LeadingB       < 0)  TGenM_LeadingB       = 0;
+  if (TGenM_SubLeadingB    < 0)  TGenM_SubLeadingB    = 0;
+  if (TGenM_LLB            < 0)  TGenM_LLB            = 0;
+  if (TGenMT_LLMETB        < 0)  TGenMT_LLMETB        = 0;
+  if (TGenE_LLB            < 0)  TGenE_LLB            = 0;
+  if (TGenDilepPt          < 0)  TGenDilepPt          = 0;
+  if (TGenDilepJetPt       < 0)  TGenDilepJetPt       = 0;
+  if (TGenDilepMETJetPt    < 0)  TGenDilepMETJetPt    = 0;
+  if (TGenHTtot            < 0)  TGenHTtot            = 0;
+  if (TGenLeadingJetPt     < 0)  TGenLeadingJetPt     = 0;
+  if (TGenLeadingJetE      < 0)  TGenLeadingJetE      = 0;
+  if (TGenLeadingJetPhi    < -TMath::Pi())  TGenLeadingJetPhi    = -3.14;
+  if (TGenLeadingJetEta    < -2.4)   TGenLeadingJetEta    = -2.39999;
+  if (TGenLeadingLepPt     < 0)  TGenLeadingLepPt     = 0;
+  if (TGenLeadingLepE      < 0)  TGenLeadingLepE      = 0;
+  if (TGenLeadingLepPhi    < -TMath::Pi())  TGenLeadingLepPhi    = -3.14;
+  if (TGenLeadingLepEta    < -2.4)   TGenLeadingLepEta    = -2.39999;
+  if (TGenSubLeadingLepPt  < 0)  TGenSubLeadingLepPt  = 0;
+  if (TGenSubLeadingLepE   < 0)  TGenSubLeadingLepE   = 0;
+  if (TGenSubLeadingLepPhi < -TMath::Pi())  TGenSubLeadingLepPhi = -3.14;
+  if (TGenSubLeadingLepEta < -2.4)   TGenSubLeadingLepEta = -2.39999;
+  
+  //   Setting dummy value for gen events that don't pass the reco selection for
+  // unfolding procedures.
   if (Tpassgen && !Tpassreco) {
     TMET              = 99999;
     TMET_Phi          = 99999;
@@ -829,7 +924,7 @@ void TWAnalysis::GetGenJetVariables(std::vector<Jet> genJets, std::vector<Jet> m
   for (Int_t i = 0; i < nGenJets; i++) if(genJets.at(i).p.Pt() > 30 && TMath::Abs(genJets.at(i).p.Eta()) < 2.4)                         nFiduJets++;
   for (Int_t i = 0; i <  nmcJets; i++) if(mcJets.at(i).p.Pt()  > 30 && TMath::Abs(mcJets.at(i).Eta())    < 2.4 && mcJets.at(i).isBtag)  nFidubJets++;
 
-  if (gPar != "Unfolding") return;
+  if (! gPar.Contains("Unfolding")) return;
   
   nSergioGenJets = Get<Int_t>("nGenJetSergio");
   
@@ -1452,7 +1547,7 @@ void TWAnalysis::SetTWVariables()
   fMini1j1t->Branch("TpassrecoJERUp",          &TpassrecoJERUp,             "TpassrecoJERUp/B");
   fMini1j1t->Branch("TBDTJERUp",               &TBDTJERUp,                  "TBDTJERUp/F");
   
-  if (gPar == "Unfolding") {
+  if (gPar.Contains("Unfolding")) {
     fMini1j1t->Branch("Tpassgen",                &Tpassgen,                   "Tpassgen/B");
     fMini1j1t->Branch("TGenChannel",             &GenChannel,                 "GenChannel/I");
     fMini1j1t->Branch("TGenIsSS",                &TGenIsSS,                   "TGenIsSS/B");
