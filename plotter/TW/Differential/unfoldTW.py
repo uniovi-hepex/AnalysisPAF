@@ -167,6 +167,7 @@ class Unfolder():
         self.sysList = self.Data.listOfSysts
         self.helpers = { nuis : UnfolderHelper(self.var, nuis) for nuis in self.sysList }
         self.helpers[''] = UnfolderHelper(self.var, '')
+        self.plotspath  = ""
         
         print self.sysList
 
@@ -198,6 +199,7 @@ class Unfolder():
         data.SetMarkerStyle(r.kFullCircle)
         data.GetXaxis().SetNdivisions(505,True)
         plot.addHisto(data,'P,E','Data','P')
+        plot.plotspath  = self.plotspath
         plot.saveCanvas('TR')
 
     def doUnfoldingForAllNuis(self):
@@ -217,6 +219,7 @@ class Unfolder():
         nominal_withErrors.SetFillStyle(1001)
         plot.addHisto(nominal_withErrors,'E2','Syst. unc.','F')
         plot.addHisto(nominal,'P,same','Data','P')
+        plot.plotspath  = self.plotspath
         plot.saveCanvas('TR')
 
 
@@ -226,6 +229,7 @@ class Unfolder():
             uncList[i][1].SetLineColor( beautifulUnfoldingPlots.colorMap[i] )
             uncList[i][1].SetLineWidth( 2 )
             plot2.addHisto(uncList[i][1],'H' if i==0 else 'H,same',uncList[i][0],'L')
+        plot2.plotspath = self.plotspath
         plot2.saveCanvas('TR')
     
 
@@ -233,7 +237,7 @@ class Unfolder():
 if __name__=="__main__":
     
     #a = Unfolder('LeadingJetPt','cards/cardFile_Jet1_pt.root','~vrbouza/www/TFM/Unfolding/UnfoldingInfo.root')
-    a = Unfolder('LeadingJetPt', '/nfs/fanae/user/vrbouza/www/TFM/Unfolding/cardFile_LeadingJetPt.root', '~vrbouza/www/TFM/Unfolding/UnfoldingInfo.root')
+    a = Unfolder('LeadingJetPt', 'temp/cardFile_LeadingJetPt.root', 'temp/UnfoldingInfo.root')
     
     a.prepareNominalHelper()
     a.doLCurveScan()

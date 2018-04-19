@@ -21,12 +21,13 @@ colorMap = [
 
 
 
-class beautifulUnfoldingPlots: 
+class beautifulUnfoldingPlots:
     def __init__(self,name):
         r.gROOT.SetBatch(True)
         self.name = name
         self.initCanvasAndAll()
         self.objectsInLeg = []
+        self.plotspath  = ""
 
     def initCanvasAndAll(self):
 
@@ -108,7 +109,7 @@ class beautifulUnfoldingPlots:
 
 
 
-        self.canvas.SaveAs(self.name + suffix +'.pdf')
-        self.canvas.SaveAs(self.name + suffix +'.png')
+        self.canvas.SaveAs(plotspath + self.name + suffix +'.pdf')
+        self.canvas.SaveAs(plotspath + self.name + suffix +'.png')
 
         self.canvas.IsA().Destructor(self.canvas)
