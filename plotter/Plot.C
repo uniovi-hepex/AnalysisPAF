@@ -1220,6 +1220,7 @@ void Plot::SaveHistograms(){
   if(outputName != "") {
     if(varname != "") filename = outputName + "_" + varname;
     else filename = outputName;
+    if (NoShowVarName) filename = outputName;
   }
   gSystem->mkdir(limitFolder, kTRUE);
   f = new TFile(limitFolder + filename + ".root", "recreate");
