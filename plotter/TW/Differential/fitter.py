@@ -218,7 +218,8 @@ class FittingSuite:
         pmap = self.pmap[nuis]
         data = self.pmap['obs']['data']
 
-        cardFile = ROOT.TFile.Open('cards/cardFile_%s.root'%nuis,'recreate')
+        #cardFile = ROOT.TFile.Open('cards/cardFile_%s.root'%nuis,'recreate')
+        cardFile = ROOT.TFile.Open('/nfs/fanae/user/vrbouza/www/TFM/Unfolding/cardFile_%s.root'%nuis,'recreate')
         data.Write()
         for proc in pmap:
             histo = copy.deepcopy(pmap[proc])
@@ -230,7 +231,8 @@ class FittingSuite:
         yields = {key: histo.Integral() for key,histo in pmap.items()}
         template = template.format(nuis=nuis,obs=int(data.Integral()), p=yields)
 
-        card = open('cards/datacard_%s.txt'%nuis, 'w')
+        #card = open('cards/datacard_%s.txt'%nuis, 'w')
+        card = open('/nfs/fanae/user/vrbouza/www/TFM/Unfolding/datacard_%s.txt'%nuis, 'w')
         card.write(template)
         card.close()
 
@@ -250,7 +252,8 @@ class FittingSuite:
 
         # do fthe fit (dont correct the typo, it may be there for a resason...)
         if nuis != '': 
-            os.system('combine -M MultiDimFit cards/datacard_{nuis}.txt --name fit_{nuis} '.format(nuis=nuis))
+            #os.system('combine -M MultiDimFit cards/datacard_{nuis}.txt --name fit_{nuis} '.format(nuis=nuis))
+            os.system('combine -M MultiDimFit /nfs/fanae/user/vrbouza/www/TFM/Unfolding/datacard_{nuis}.txt --name fit_{nuis} '.format(nuis=nuis))
         
             # harvest the results
             result = ROOT.TFile.Open('higgsCombinefit_%s.MultiDimFit.mH120.root'%nuis)
@@ -265,7 +268,8 @@ class FittingSuite:
             raise RuntimeError('It shouldnt get here')
 
         else: 
-            os.system('combine -M MultiDimFit cards/datacard_{nuis}.txt --name fit_{nuis} --algo=singles --robustFit=1'.format(nuis=nuis))
+            #os.system('combine -M MultiDimFit cards/datacard_{nuis}.txt --name fit_{nuis} --algo=singles --robustFit=1'.format(nuis=nuis))
+            os.system('combine -M MultiDimFit /nfs/fanae/user/vrbouza/www/TFM/Unfolding/datacard_{nuis}.txt --name fit_{nuis} --algo=singles --robustFit=1'.format(nuis=nuis))
             # harvest the results
             result = ROOT.TFile.Open('higgsCombinefit_%s.MultiDimFit.mH120.root'%nuis)
             if result.limit.GetEntries() != 3: raise RuntimeError("Differerent number of entries in the limits tree than expected, something unplanned happened")

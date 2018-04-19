@@ -5,12 +5,11 @@ varList = {}
 
 varList['LeadingJetPt'] = {
     'xaxis'       : 'Leading jet p_{T} [GeV]',
-    'recobinning' : [0,50,70,90,110,130,150,170,500], # binning in reco space
-    'var'         : 'TTJet1_pt',                      # name of the variable in the tree to make cards
-    'var_response': 'LeadingJetPt',                   # name of the variable in the response matrix 
     'yaxis'       : 'Events',
+    'recobinning' : [0,50,70,90,110,130,150,170,500], # binning in reco space
+    'var'         : 'TLeadingJetPt',                  # name of the variable in the tree to make cards
+    'var_response': 'LeadingJetPt',                   # name of the variable in the response matrix without the M
 }
-
 
 varList['LeadingJetPtuncertainties'] = {
     'xaxis'       : 'Leading jet p_{T} [GeV]',

@@ -8,7 +8,7 @@ from array  import array
 r.gROOT.SetBatch(True)
 
 #############################
-print("\n===== Unfolding procedures - Response matrices & ROOT files production =====")
+print("\n===== Unfolding procedures: Response matrices & ROOT files production =====")
 print("> Setting binning, paths, and other details...")
 # ---------------------------------------------------------------- PRELIMINARIES
 storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
@@ -30,7 +30,8 @@ if (len(sys.argv) > 1):
 outputpath  = "/nfs/fanae/user/vrbouza/www/TFM/Unfolding/"
 genCut      = "TWeight_normal * (Tpassgen == 1)"
 recoCut     = "TWeight_normal * (Tpassreco == 1)"
-Cut         = "TWeight * ((Tpassreco == 1) && (Tpassgen == 1))"
+#Cut         = "TWeight * ((Tpassreco == 1) && (Tpassgen == 1))"
+Cut         = "TWeight * (Tpassgen == 1)"
 fiduCut     = "TWeight * ((Tpassreco == 1) && (Tpassgen == 0))"
 
 VarNames    = ["E_LLB", "LeadingJetE", "MT_LLMETB", "M_LLB", "M_LeadingB", "M_SubLeadingB", 
@@ -76,8 +77,8 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = ""):
   hGen2 = None
   hGen  = r.TH2F('Gen', '', nxb, xb, nyb, yb)
   
-  for i in range(1, nxb+1):
-    for j in range(1, nyb+1):
+  for i in range(0, nxb+2):
+    for j in range(0, nyb+2):
       hGen.SetBinContent(i, j, hGen1.GetBinContent(i))
   
   h1    = r.TH2F('h1', "Response matrix - " + vnametitle, nxb, xb, nyb, yb)
@@ -85,7 +86,6 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = ""):
   
   t1.Project('h1', "T" + vnamereco + ":TGen" + vnamegen, tmpcut)
   t2.Project('h2', "T" + vnamereco + ":TGen" + vnamegen, tmpcut)
-  
   h1.Add(h2)
   h2      = None
   if (sys == ""):
@@ -117,8 +117,59 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = ""):
     hReco1  = None
   
   hGen1 = None
+  
+  #print "PRINTING INFO RELATED TO UNDER/OVERFLOW: GENINFO"
+  #for i in range(nxb+2):
+    #print(str(i) + ", 0 : " + str(hGen.GetBinContent(i, 0)))
+  #for i in range(nxb+2):
+    #print(str(i) + ", nybins+2 : "+ str(hGen.GetBinContent(i, nyb+2)))
+  
+  #for j in range(nyb+2):
+    #print("0, " + str(j) + " : " + str(hGen.GetBinContent(0, j)))
+  #for j in range(nyb+2):
+    #print("nxbins+2, " +  str(j) + " : " + str(hGen.GetBinContent(nxb+2, j)))
+  
+  #print "PRINTING INFO RELATED TO UNDER/OVERFLOW: NUMINFO"
+  #for i in range(nxb+2):
+    #print(str(i) +", 0 : "+ str(h1.GetBinContent(i, 0)))
+  #for i in range(nxb+2):
+    #print(str(i)+ ", nybins+2 : "+ str(h1.GetBinContent(i, nyb+2)))
+  
+  #for j in range(nyb+2):
+    #print("0, " + str(j)+ " : " +str(h1.GetBinContent(0, j)))
+  #for j in range(nyb+2):
+    #print("nxbins+2, "+ str(j)+" : "+ str(h1.GetBinContent(nxb+2, j)))
+  
   h1.Divide(hGen)
   hGen  = None
+  
+  #print "PRINTING INFO RELATED TO UNDER/OVERFLOW: RESPONSEMATRIXINFO"
+  #for i in range(nxb+2):
+    #print(str(i) + ", 0 : " + str(h1.GetBinContent(i, 0)))
+  #for i in range(nxb+2):
+    #print(str(i) + ", nybins+2 : "+  str(h1.GetBinContent(i, nyb+2)))
+  
+  #for j in range(nyb+2):
+    #print("0, " + str(j) + " : "+ str(h1.GetBinContent(0, j)))
+  #for j in range(nyb+2):
+    #print("nxbins+2, " +  str(j) + " : " +str(h1.GetBinContent(nxb+2, j)))
+  
+  #print "PRINTING SUMS OF COLUMNS"
+  #for i in range(nxb+2):
+    #tmpsum  = 0
+    #for j in range(nyb+2):
+      #tmpsum += h1.GetBinContent(i, j)
+    #print(str(i) + " : " + str(tmpsum))
+    
+  
+  #print "PRINTING SUMS OF LINES"
+  #for j in range(nyb+2):
+    #tmpsum  = 0
+    #for i in range(nxb+2):
+      #tmpsum += h1.GetBinContent(i, j)
+    #print(str(j) + " : " + str(tmpsum))
+    
+  
   
   # Lower cutoff for the values of the matrices
   for i in range(1, nxb+1):
