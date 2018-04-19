@@ -180,6 +180,7 @@ class UnfolderHelper:
 class Unfolder():
     def __init__(self, var, fileName, fileNameReponse):
         self.var  = var
+        self.doSanityCheck   = True
         self.Data = DataContainer(var,fileName, fileNameReponse)
         self.sysList = self.Data.listOfSysts
         self.helpers = { nuis : UnfolderHelper(self.var, nuis) for nuis in self.sysList }
@@ -215,14 +216,20 @@ class Unfolder():
         plot = beautifulUnfoldingPlots.beautifulUnfoldingPlots(self.var)
         data.SetMarkerStyle(r.kFullCircle)
         data.GetXaxis().SetNdivisions(505,True)
-        plot.addHisto(data,'P,E','Data','P')
-        if self.doClosure:
+        if self.doSanityCheck:
             tmptfile = r.TFile.Open('/nfs/fanae/user/sscruz/TW_differential/AnalysisPAF/plotter/./Datacards/closuretest_TGenLeadingJet_trueUnFoldedSpace_TGenLeadingJetPt.root')
             tru = copy.deepcopy(tmptfile.Get('tW'))
             tru.SetLineWidth(2)
-            plot.addHisto(data,'L,SAME','Truth','L')
+            tru.SetLineColor(beautifulUnfoldingPlots.colorMap[0])
+            #tru.SetFillColor(beautifulUnfoldingPlots.colorMap[0])
+            plot.addHisto(tru,'L','Truth','L')
+            plot.addHisto(data,'P,E,same','Data','P')
+            plot.saveCanvas('TR')
             tmptfile.Close()
-        plot.saveCanvas('TR')
+
+        else:
+            plot.addHisto(data,'P,E','Data','P')
+            plot.saveCanvas('TR')
 
 
 
@@ -251,7 +258,7 @@ class Unfolder():
         for i in range(5):
             uncList[i][1].SetLineColor( beautifulUnfoldingPlots.colorMap[i] )
             uncList[i][1].SetLineWidth( 2 )
-            plot2.addHisto(uncList[i][1],'H' if i==0 else 'H,same',uncList[i][0],'L')
+            plot2.addHisto(uncList[i][1], 'H,same',uncList[i][0],'L')
         plot2.saveCanvas('TR')
     
 
@@ -269,7 +276,7 @@ if __name__=="__main__":
     # #a.doTauScan()
     a.doScanPlots()
     a.doNominalPlot()
-    a.doUnfoldingForAllNuis()
+    #a.doUnfoldingForAllNuis()
 
     #a.prepareNominalHelper()
     #a.getConditionNumber('')

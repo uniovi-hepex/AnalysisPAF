@@ -61,7 +61,7 @@ class beautifulUnfoldingPlots:
         histo.GetXaxis().SetLabelOffset(0.007)
         histo.GetYaxis().SetTitleFont(42)
         histo.GetYaxis().SetTitleSize(0.05)
-        histo.GetYaxis().SetTitleOffset(0.9 if self.doWide else 2.0)
+        histo.GetYaxis().SetTitleOffset(0.8 if self.doWide else 2.0)
         histo.GetYaxis().SetLabelFont(42)
         histo.GetYaxis().SetLabelSize(0.05)
         histo.GetYaxis().SetLabelOffset(0.007)
