@@ -14,7 +14,7 @@ Datasets/
 .DS_Store
 *_temp/
 inputdata.root
-./plotter/TW/Differential/temp/*
+plotter/TW/Differential/temp/*
 
 #Higgs combine output :)
 higgsCombine_*.root
