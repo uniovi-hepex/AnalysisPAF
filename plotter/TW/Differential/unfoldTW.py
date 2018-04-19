@@ -55,9 +55,10 @@ class DataContainer:
         for key in tfile.GetListOfKeys():
             if key.GetName()[0] != 'F': continue
             if self.var not in key.GetName(): continue
-            if key.GetName() == 'R'+self.var:
+            if key.GetName() == 'F'+self.var:
                 self.bkgs[''] = copy.deepcopy(key.ReadObj())
                 self.bkgs[''].Scale(varList.Lumi*1000)
+
             else:
                 sysName = '_'.join(key.GetName().split('_')[1:])
                 self.bkgs[sysName] = copy.deepcopy(key.ReadObj())
@@ -158,8 +159,24 @@ class UnfolderHelper:
 
         plot.saveCanvas('TR','_%s'%self.var)
 
+
+    def getConditionNumber(self):
+        # prob = self.response.Clone( self.response.GetName() + '_probMatrix' )
+        prob = copy.deepcopy( self.response )
+        prob.SetName(self.response.GetName() + '_probMatrix' )
+        self.tunfolder.GetProbabilityMatrix(self.response.GetName() + '_probMatrix', '',r.TUnfold.kHistMapOutputHoriz)
+        matrx = r.TMatrixD( prob.GetYaxis().GetNbins(), prob.GetXaxis().GetNbins()) # rows are y, x are columns
+        for i in range(prob.GetXaxis().GetNbins()):
+            for j in range(prob.GetYaxis().GetNbins()):
+                matrx[j][i] = prob.GetBinContent( prob.GetBin(i+1,j+1) )
+                
+        matrx.Print()
         
-    
+        decomp = r.TDecompSVD(matrx)
+
+        print 'Matrix condition is', decomp.Condition()
+        
+
 class Unfolder():
     def __init__(self, var, fileName, fileNameReponse):
         self.var  = var
@@ -194,11 +211,20 @@ class Unfolder():
         
     def doNominalPlot(self):
         data = self.helpers[''].tunfolder.GetOutput('forPlot')
+        print 'Unfolded distribution integral', data.Integral()
         plot = beautifulUnfoldingPlots.beautifulUnfoldingPlots(self.var)
         data.SetMarkerStyle(r.kFullCircle)
         data.GetXaxis().SetNdivisions(505,True)
         plot.addHisto(data,'P,E','Data','P')
+        if self.doClosure:
+            tmptfile = r.TFile.Open('/nfs/fanae/user/sscruz/TW_differential/AnalysisPAF/plotter/./Datacards/closuretest_TGenLeadingJet_trueUnFoldedSpace_TGenLeadingJetPt.root')
+            tru = copy.deepcopy(tmptfile.Get('tW'))
+            tru.SetLineWidth(2)
+            plot.addHisto(data,'L,SAME','Truth','L')
+            tmptfile.Close()
         plot.saveCanvas('TR')
+
+
 
     def doUnfoldingForAllNuis(self):
         self.prepareAllHelpers()
@@ -229,6 +255,9 @@ class Unfolder():
         plot2.saveCanvas('TR')
     
 
+    def getConditionNumber(self, nuis):
+        return self.helpers[nuis].getConditionNumber()
+        
 
 if __name__=="__main__":
 
@@ -239,10 +268,14 @@ if __name__=="__main__":
 
     a.prepareNominalHelper()
     a.doLCurveScan()
-    #a.doTauScan()
+    # #a.doTauScan()
     a.doScanPlots()
     a.doNominalPlot()
     a.doUnfoldingForAllNuis()
+
+    #a.prepareNominalHelper()
+    #a.getConditionNumber('')
+
 
     ## crap for testing 
     # histo = a.Data.responseMatrices[''].GetXaxis()
