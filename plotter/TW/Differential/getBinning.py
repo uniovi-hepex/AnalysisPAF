@@ -5,8 +5,7 @@ from array import array
 ROOT.gROOT.SetBatch(True)
 
 varName = 'LeadingJetPt'
-#nq    = 10
-nq    = len(varList.varList[varName]['recobinning']) + 1
+nq    = 10
 #xq    = np.zeros(nq)
 #yq    = np.zeros(nq)
 xq    = array('d', [0]*nq)

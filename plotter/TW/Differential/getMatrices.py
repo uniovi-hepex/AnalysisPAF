@@ -8,7 +8,7 @@ from array  import array
 r.gROOT.SetBatch(True)
 
 #############################
-print("\n===== Unfolding procedures - Response matrices & ROOT files production =====")
+print("\n===== Unfolding procedures: Response matrices & ROOT files production =====")
 print("> Setting binning, paths, and other details...")
 # ---------------------------------------------------------------- PRELIMINARIES
 storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
