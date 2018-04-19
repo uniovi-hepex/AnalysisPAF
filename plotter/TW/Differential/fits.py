@@ -37,7 +37,7 @@ for binDn,binUp in zip(bins, bins[1:]):
 
 
 #out = ROOT.TFile('output.root','recreate')
-out = ROOT.TFile('/nfs/fanae/user/vrbouza/www/TFM/Unfolding/output.root', 'recreate')
+out = ROOT.TFile('cards/output.root', 'recreate')
 histo.Write()
 out.Close()
 
@@ -54,14 +54,14 @@ for key in allResults[(bins[0],bins[1])]:
             histoSyst[key].SetBinContent( histoSyst[key].FindBin((binUp+binDn)/2), allResults[(binDn,binUp)][key][0])
             histoSyst[key].SetBinError  ( histoSyst[key].FindBin((binUp+binDn)/2), max( map(abs, [allResults[(binDn,binUp)][key][0]-allResults[(binDn,binUp)][key][1],allResults[(binDn,binUp)][key][0]-allResults[(binDn,binUp)][key][2]])))
 
-outCard = open('dummy_card_template.txt').read()
-print outCard
-outCard = outCard.format(obs=histoSyst[''].Integral(),tW=histoSyst[''].Integral(),ref=name)
-#out = open('dummy_card_%s.txt'%name,'w')
-out = open('/nfs/fanae/user/vrbouza/www/TFM/Unfolding/dummy_card_%s.txt'%name,'w')
-out.write(outCard)
+# outCard = open('dummy_card_template.txt').read()
+# print outCard
+# outCard = outCard.format(obs=histoSyst[''].Integral(),tW=histoSyst[''].Integral(),ref=name)
+# #out = open('dummy_card_%s.txt'%name,'w')
+# out = open('cards/dummy_card_%s.txt'%name,'w')
+# out.write(outCard)
 
 #cardInput = ROOT.TFile.Open('cards/cardFile_{ref}.root'.format(ref=name),'recreate')
-cardInput = ROOT.TFile.Open('/nfs/fanae/user/vrbouza/www/TFM/Unfolding/cardFile_{ref}.root'.format(ref=name), 'recreate')
+cardInput = ROOT.TFile.Open('cards/cardFile_{ref}.root'.format(ref=name), 'recreate')
 for key in histoSyst: histoSyst[key].Write()
 cardInput.Close()

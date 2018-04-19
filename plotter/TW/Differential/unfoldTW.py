@@ -262,7 +262,7 @@ class Unfolder():
 if __name__=="__main__":
     
     #a = Unfolder('LeadingJetPt','cards/cardFile_Jet1_pt.root','~vrbouza/www/TFM/Unfolding/UnfoldingInfo.root')
-    a = Unfolder('LeadingJetPt', '/nfs/fanae/user/vrbouza/www/TFM/Unfolding/cardFile_LeadingJetPt.root', '~vrbouza/www/TFM/Unfolding/UnfoldingInfo.root')
+    a = Unfolder('LeadingJetPt', 'cards/cardFile_LeadingJetPt.root', '~vrbouza/www/TFM/Unfolding/UnfoldingInfo.root')
     
     a.prepareNominalHelper()
     a.doLCurveScan()
