@@ -16,7 +16,7 @@ Datasets/
 *_temp/
 inputdata.root
 plotter/TW/Differential/temp/*
-
+plotter/TW/Differential/results/*
 #Higgs combine output :)
 higgsCombine_*.root
 higgsCombinefit_*.root
