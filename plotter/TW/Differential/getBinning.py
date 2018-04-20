@@ -1,46 +1,69 @@
 import ROOT
-#import numpy as np
 import varList
+import sys, os
 from array import array
+
 ROOT.gROOT.SetBatch(True)
 
-varName = 'LeadingJetPt'
-nq    = 10
-#xq    = np.zeros(nq)
-#yq    = np.zeros(nq)
-xq    = array('d', [0]*nq)
-yq    = array('d', [0]*nq)
+print "===== Setting binning of the BDT procedure"
+print "> Preliminaries..."
+nq          = 10  # Number of bins in which to divide the BDT distribution.
+xq          = array('d', [0]*nq)
+yq          = array('d', [0]*nq)
+storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
+minipath    = ""
 
-print "> Importing files..."
-#tf    = ROOT.TFile('/nfs/fanae/user/sscruz/TW_jun4/AnalysisPAF/TW_temp/Tree_TW.root') # cambiar por ttbar dileptonico
-tf    = ROOT.TFile('/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/16_04_2018/Tree_TW.root')
+def GetLastFolder(stpth):
+    savefolders   = next(os.walk(stpth))[1]
+    saveyears     = map(int, [i[6:]  for i in savefolders])
+    savefolders   = [i for i in savefolders if int(i[6:]) == max(saveyears)]
+    savemonths    = map(int, [i[3:5] for i in savefolders])
+    savefolders   = [i for i in savefolders if int(i[3:5]) == max(savemonths)]
+    savedays      = map(int, [i[:2]  for i in savefolders])
+    savefolders   = [i for i in savefolders if int(i[:2]) == max(savedays)]
+    return (stpth + savefolders[0] + "/")
+    
+
+if (len(sys.argv) > 1):
+    varName     = sys.argv[1]
+    if (len(sys.argv) > 2):
+        minipath    = storagepath + sys.argv[2] + "/"
+    else:
+        minipath    = GetLastFolder(storagepath)
+else:
+    print "> Default choice of variable and minitrees\n"
+    varName     = 'LeadingJetPt'
+    minipath    = '/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/19_04_2018/'
+
+
+tf    = ROOT.TFile(minipath + 'Tree_TW.root')
 tree  = tf.Mini1j1t
 
-Base='''
+Base  ='''
 #ifndef ADDSTUFF_H
 #define ADDSTUFF_H
 #include<iostream>
 using namespace std;
 '''
 
-
-for i in range(0,nq): 
+for i in range(0,nq):
     xq[i] = float(i+1)/nq
 
-var     = varList.varList[varName]['var']
-bins    = varList.varList[varName]['recobinning']
+var   = varList.varList[varName]['var']
+bins  = varList.varList[varName]['recobinning']
 
 count = 0
-c = ROOT.TCanvas()
+c     = ROOT.TCanvas()
 
-print "> Constructing file.C..."
+
+print "\n> Constructing C++ file of the binning"
 for binDn,binUp in zip(bins, bins[1:]):
     count   = count + 1
-    varBin  = "{var} > {binDn} && {var} < {binUp}".format(var=var, binUp=binUp, binDn=binDn)
-    tree.Draw("TBDT","TWeight*(TNJets == 1 && TNBtags == 1 && TChannel == 1 && %s)"%varBin)
+    varBin  = "{var} >= {binDn} && {var} < {binUp}".format(var=var, binUp=binUp, binDn=binDn)
+    tree.Draw("TBDT","TWeight * (Tpassreco == 1 && %s)"%varBin)
     c.Update()
-    print "TBDT","TWeight*(TNJets == 1 && TNBtags == 1 && TChannel == 1 && %s)"%varBin
-    raw_input('wait')
+    print "TBDT","(Tpassreco == 1 && %s)"%varBin
+    raw_input('Copy this string into your .C DrawPlots-like file and press enter.')
     tree.GetHistogram().GetQuantiles(nq, yq, xq)
     
     Base = Base + '''\n /////////////////////// \n 
@@ -58,14 +81,18 @@ Float_t theBDt_bin%d(Double_t BDT){
 
 Base = Base + '#endif'
 
+print "> Saving file"
 #output = open(varName+'.C', 'w')
-output = open('/nfs/fanae/user/vrbouza/www/TFM/Unfolding/' + varName + '.C', 'w')
+output = open('./temp/' + varName + '.C', 'w')
 output.write(Base)
 output.close()
 
-ROOT.gROOT.LoadMacro('/nfs/fanae/user/vrbouza/www/TFM/Unfolding/' + varName + '.C+')
+print "> Doing sanity checks..."
+ROOT.gROOT.LoadMacro('./temp/' + varName + '.C+')
 
 for k in range(1, len(bins)):
     if not hasattr(ROOT, 'theBDt_bin%d'%k): print 'Something went wrong'
     else: print 'Bin', k, 'ok'
 
+
+print "> Done!"
