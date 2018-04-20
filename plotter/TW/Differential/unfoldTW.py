@@ -205,7 +205,7 @@ class Unfolder():
     def doUnfoldingForAllNuis(self):
         self.prepareAllHelpers()
         allHistos = {} 
-        nominal=copy.deepcopy( a.helpers[''].tunfolder.GetOutput(self.var))
+        nominal=copy.deepcopy(self.helpers[''].tunfolder.GetOutput(self.var))
         for nuis in self.sysList:
             self.helpers[nuis].tunfolder.DoUnfold( self.helpers[''].tunfolder.GetTau() )
             allHistos[nuis] = self.helpers[nuis].tunfolder.GetOutput(self.var + '_' + nuis)
