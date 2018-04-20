@@ -1,8 +1,7 @@
 import ROOT as r
-import sys
-import os
-import shutil
-from math   import *
+import sys, os, shutil
+import varList
+from math   import pi
 from array  import array
 
 r.gROOT.SetBatch(True)
@@ -18,6 +17,7 @@ def GetLastFolder(stpth):
     savefolders   = [i for i in savefolders if int(i[:2]) == max(savedays)]
     return (stpth + savefolders[0] + "/")
 
+
 #############################
 print("\n===== Unfolding procedures: Response matrices & ROOT files production =====")
 print("> Setting binning, paths, and other details...")
@@ -30,6 +30,7 @@ if (len(sys.argv) > 1):
     minipath  = GetLastFolder(storagepath)
   else:
     minipath  = storagepath + sys.argv[1] + "/"
+
 print "    - The minitrees' path is:\n", minipath
 plotsoutputpath  = "/nfs/fanae/user/vrbouza/www/TFM/Unfolding/"
 matrixoutputpath = "./temp/"
@@ -300,135 +301,25 @@ def PrintFiducialHisto(htemp, vname):
   return
 
 
-# ---------------------------------------------------------------- BINNING SETTING
-# ------------------------------------------> Generation / X axis
-VarBins_X         = []
-B_E_LLB           = array('f', [0, 200, 350, 500, 700, 1000])
-VarBins_X.append(B_E_LLB)
-B_LeadingJetE     = array('f', [0, 100, 200, 300, 420, 1000])
-VarBins_X.append(B_LeadingJetE)
-B_MT_LLMETB       = array('f', [0, 150, 250, 350, 500, 1000])
-VarBins_X.append(B_MT_LLMETB)
-B_M_LLB           = array('f', [0, 50, 150, 250, 400, 1000])
-VarBins_X.append(B_M_LLB)
-B_M_LeadingB      = array('f', [0, 75, 175, 300, 1000])
-VarBins_X.append(B_M_LeadingB)
-B_M_SubLeadingB   = array('f', [0, 25, 75, 125, 175, 1000])
-VarBins_X.append(B_M_SubLeadingB)
+# ---------------------------------------------------------------- BINNING IMPORTING FROM varList
+VarBins_X = []
+VarBins_Y = []
 
-B_MET             = array('f', [0, 25, 75, 125, 1000])
-VarBins_X.append(B_MET)
-B_MET_Phi         = array('f', [-pi, -1.5, 0, 1.5, pi])
-VarBins_X.append(B_MET_Phi)
-B_LeadingJetPt    = array('f', [0, 50, 100, 150, 500])
-VarBins_X.append(B_LeadingJetPt)
-B_LeadingJetEta   = array('f', [-2.4, -1.2, 0, 1.2, 2.4])
-VarBins_X.append(B_LeadingJetEta)
-B_LeadingJetPhi   = array('f', [-pi, -1.5, 0, 1.5, pi])
-VarBins_X.append(B_LeadingJetPhi)
+#print varList.varList[VarNames[3]]['genbinning']
 
-B_LeadingLepE     = array('f', [0, 100, 200, 300, 400, 1000])
-VarBins_X.append(B_LeadingLepE)
-B_LeadingLepPt    = array('f', [0, 100, 200, 300, 400, 1000])
-VarBins_X.append(B_LeadingLepPt)
-B_LeadingLepPhi   = array('f', [-pi, -1.5, 0, 1.5, pi])
-VarBins_X.append(B_LeadingLepPhi)
-B_LeadingLepEta   = array('f', [-2.4, -1.2, 0, 1.2, 2.4])
-VarBins_X.append(B_LeadingLepEta)
+for i in range(len(VarNames)):
+  VarBins_X.append(array('f', varList.varList[VarNames[i]]['genbinning']))
+  VarBins_Y.append(array('f', varList.varList[VarNames[i]]['recobinning']))
 
-B_SubLeadingLepE  = array('f', [0, 100, 200, 300, 400, 1000])
-VarBins_X.append(B_SubLeadingLepE)
-B_SubLeadingLepPt = array('f', [0, 100, 200, 300, 400, 1000])
-VarBins_X.append(B_SubLeadingLepPt)
-B_SubLeadingLepPhi= array('f', [-pi, -1.5, 0, 1.5, pi])
-VarBins_X.append(B_SubLeadingLepPhi)
-B_SubLeadingLepEta= array('f', [-2.4, -1.2, 0, 1.2, 2.4])
-VarBins_X.append(B_SubLeadingLepEta)
-
-B_DilepPt         = array('f', [0, 50, 100, 150, 500])
-VarBins_X.append(B_DilepPt)
-B_DilepJetPt      = array('f', [0, 50, 100, 150, 500])
-VarBins_X.append(B_DilepJetPt)
-B_DilepMETJetPt   = array('f', [0, 20, 40, 60, 80, 500])
-VarBins_X.append(B_DilepMETJetPt)
-B_HTtot           = array('f', [0, 100, 200, 300, 400, 1000])
-VarBins_X.append(B_HTtot)
-
-
-# ------------------------------------------> Reconstruction / Y axis: DOUBLE of nxbins
-VarBins_Y         = []
-B_E_LLB           = array('f', [0, 150, 200, 250, 300, 350, 400, 500, 600, 700, 1000])
-VarBins_Y.append(B_E_LLB)
-B_LeadingJetE     = array('f', [0, 75, 125, 175, 250, 320, 420, 1000])
-VarBins_Y.append(B_LeadingJetE)
-B_MT_LLMETB       = array('f', [0, 100, 150, 200, 250, 300, 350, 400, 450, 500, 1000])
-VarBins_Y.append(B_MT_LLMETB)
-B_M_LLB           = array('f', [0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 1000])
-VarBins_Y.append(B_M_LLB)
-B_M_LeadingB      = array('f', [0, 50, 100, 150, 200, 250, 300, 350, 1000])
-VarBins_Y.append(B_M_LeadingB)
-B_M_SubLeadingB   = array('f', [0, 25, 50, 75, 100, 125, 150, 175, 200, 250, 1000])
-VarBins_Y.append(B_M_SubLeadingB)
-
-B_MET             = array('f', [0, 25, 50, 75, 100, 125, 150, 175, 1000])
-VarBins_Y.append(B_MET)
-B_MET_Phi         = array('f', [-pi, -2, -1.5, -.75, 0, .75, 1.5, 2, pi])
-VarBins_Y.append(B_MET_Phi)
-B_LeadingJetPt    = array('f', [0, 50, 70, 90, 110, 130, 150, 170, 500])
-VarBins_Y.append(B_LeadingJetPt)
-B_LeadingJetEta   = array('f', [-2.4, -1.75, -1.25, -.5, 0, .5, 1.25, 1.75, 2.4])
-VarBins_Y.append(B_LeadingJetEta)
-B_LeadingJetPhi   = array('f', [-pi, -2, -1.5, -.75, 0, .75, 1.5, 2, pi])
-VarBins_Y.append(B_LeadingJetPhi)
-
-B_LeadingLepE     = array('f', [0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 1000])
-VarBins_Y.append(B_LeadingLepE)
-B_LeadingLepPt    = array('f', [0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 1000])
-VarBins_Y.append(B_LeadingLepPt)
-B_LeadingLepPhi   = array('f', [-pi, -2, -1.5, -.75, 0, .75, 1.5, 2, pi])
-VarBins_Y.append(B_LeadingLepPhi)
-B_LeadingLepEta   = array('f', [-2.4, -1.75, -1.25, -.5, 0, .5, 1.25, 1.75, 2.4])
-VarBins_Y.append(B_LeadingLepEta)
-
-B_SubLeadingLepE  = array('f', [0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 1000])
-VarBins_Y.append(B_SubLeadingLepE)
-B_SubLeadingLepPt = array('f', [0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 1000])
-VarBins_Y.append(B_SubLeadingLepPt)
-B_SubLeadingLepPhi= array('f', [-pi, -2, -1.5, -.75, 0, .75, 1.5, 2, pi])
-VarBins_Y.append(B_SubLeadingLepPhi)
-B_SubLeadingLepEta= array('f', [-2.4, -1.75, -1.25, -.5, 0, .5, 1.25, 1.75, 2.4])
-VarBins_Y.append(B_SubLeadingLepEta)
-
-B_DilepPt         = array('f', [0, 25, 50, 75, 100, 125, 150, 175, 500])
-VarBins_Y.append(B_DilepPt)
-B_DilepJetPt      = array('f', [0, 20, 40, 60, 80, 100, 120, 140, 500])
-VarBins_Y.append(B_DilepJetPt)
-B_DilepMETJetPt   = array('f', [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 500])
-VarBins_Y.append(B_DilepMETJetPt)
-B_HTtot           = array('f', [0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 1000])
-VarBins_Y.append(B_HTtot)
-
-# ------------------------------------------> Number of bins & limits
-xmin    = [B_E_LLB[0],            B_LeadingJetE[0],       B_MT_LLMETB[0],         B_M_LLB[0],           B_M_LeadingB[0],    B_M_SubLeadingB[0],
-           B_MET[0],              B_MET_Phi[0],           B_LeadingJetPt[0],      B_LeadingJetEta[0],   B_LeadingJetPhi[0],
-           B_LeadingLepE[0],      B_LeadingLepPt[0],      B_LeadingLepPhi[0],     B_LeadingLepEta[0],
-           B_SubLeadingLepE[0],   B_SubLeadingLepPt[0],   B_SubLeadingLepPhi[0],  B_SubLeadingLepEta[0],
-           B_DilepPt[0],          B_DilepJetPt[0],        B_DilepMETJetPt[0],     B_HTtot[0]]
-xmax    = [B_E_LLB[-1],           B_LeadingJetE[-1],      B_MT_LLMETB[-1],        B_M_LLB[-1],          B_M_LeadingB[-1],   B_M_SubLeadingB[-1],
-           B_MET[-1],             B_MET_Phi[-1],          B_LeadingJetPt[-1],     B_LeadingJetEta[-1],  B_LeadingJetPhi[-1],
-           B_LeadingLepE[-1],     B_LeadingLepPt[-1],     B_LeadingLepPhi[-1],    B_LeadingLepEta[-1],
-           B_SubLeadingLepE[-1],  B_SubLeadingLepPt[-1],  B_SubLeadingLepPhi[-1], B_SubLeadingLepEta[-1],
-           B_DilepPt[-1],         B_DilepJetPt[-1],       B_DilepMETJetPt[-1],    B_HTtot[-1]]
+xmin    = [i[0]  for i in VarBins_X]
+xmax    = [i[-1] for i in VarBins_Y]
 ymin    = xmin
 ymax    = xmax
-nybins  = [len(B_E_LLB)-1,           len(B_LeadingJetE)-1,      len(B_MT_LLMETB)-1,        len(B_M_LLB)-1,          len(B_M_LeadingB)-1,   len(B_M_SubLeadingB)-1,
-           len(B_MET)-1,             len(B_MET_Phi)-1,          len(B_LeadingJetPt)-1,     len(B_LeadingJetEta)-1,  len(B_LeadingJetPhi)-1,
-           len(B_LeadingLepE)-1,     len(B_LeadingLepPt)-1,     len(B_LeadingLepPhi)-1,    len(B_LeadingLepEta)-1,
-           len(B_SubLeadingLepE)-1,  len(B_SubLeadingLepPt)-1,  len(B_SubLeadingLepPhi)-1, len(B_SubLeadingLepEta)-1,
-           len(B_DilepPt)-1,         len(B_DilepJetPt)-1,       len(B_DilepMETJetPt)-1,    len(B_HTtot)-1]
+nybins  = [len(i)-1  for i in VarBins_Y]
 nxbins  = [int(i/2) for i in nybins]  ### IMPORTANT!!!! The relation 1(gen):2(reco) in the number of bins MUST be preserved
 
 
+# ---------------------------------------------------------------- INFO IMPORTING FROM MINITREES
 print("\n> Importing minitrees' information...")
 fTW               = r.TFile.Open(minipath + "Tree_UNF_TW.root")
 fTW_DS            = r.TFile.Open(minipath + "Tree_UNF_TW_noFullyHadr_DS.root")
