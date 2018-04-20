@@ -13,12 +13,13 @@ if (len(sys.argv) > 1):
     
 else:
     print "> Default variable and path chosen\n"
-    varName = 'LeadingJetPt'
+    varName       = 'LeadingJetPt'
+    pathtothings  = 'temp/'
 
 
 print "> Beginning unfolding"
 a = unf.Unfolder(varName, pathtothings + 'cardFile_' + varName + '.root', pathtothings + 'UnfoldingInfo.root')
-a.plotspath = "results"
+a.plotspath = "results/"
 a.prepareNominalHelper()
 a.doLCurveScan()
 #a.doTauScan()
