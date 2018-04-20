@@ -68,5 +68,6 @@ out.write(outCard)
 
 #cardInput = ROOT.TFile.Open('cards/cardFile_{ref}.root'.format(ref=name),'recreate')
 cardInput = ROOT.TFile.Open('temp/cardFile_{ref}.root'.format(ref=name), 'recreate')
+
 for key in histoSyst: histoSyst[key].Write()
 cardInput.Close()

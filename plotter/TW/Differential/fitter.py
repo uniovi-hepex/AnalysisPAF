@@ -3,6 +3,7 @@ import ROOT
 import copy
 import os 
 
+
 class FittingSuite: 
     def __init__(self, cardFile, doExpect=None):
         self.cardFile = cardFile
@@ -67,9 +68,9 @@ class FittingSuite:
                     self.pmap['obs']['data'].Add(scaledSignal)
                 else:
                     self.pmap['obs']['data'].Add(self.pmap[''][key])
-                
+            random = ROOT.TRandom3()
             for b in xrange(1,self.pmap['obs']['data'].GetNbinsX()+1):
-                self.pmap['obs']['data'].SetBinContent(b,int(self.pmap['obs']['data'].GetBinContent(b)))
+                self.pmap['obs']['data'].SetBinContent(b,int(  random.Poisson(self.pmap['obs']['data'].GetBinContent(b))  ))
                                 
 
                 
@@ -219,6 +220,7 @@ class FittingSuite:
         data = self.pmap['obs']['data']
 
         #cardFile = ROOT.TFile.Open('cards/cardFile_%s.root'%nuis,'recreate')
+        print 'we are coming here:', 'temp/cardFile_%s.root'%nuis
         cardFile = ROOT.TFile.Open('temp/cardFile_%s.root'%nuis,'recreate')
         data.Write()
         for proc in pmap:
