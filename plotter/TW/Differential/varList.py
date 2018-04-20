@@ -165,7 +165,7 @@ varList['LeadingLepE'] = {
     'var'         : 'TLeadingLepE',
     'var_response': 'LeadingLepE',
 }
-varList['LeadingLepELepuncertainties'] = {
+varList['LeadingLepEuncertainties'] = {
     'xaxis'       : 'Leading lep energy [GeV]',
     'yaxis'       : 'Relative uncertainty'
 }
@@ -178,7 +178,7 @@ varList['LeadingLepPt'] = {
     'var'         : 'TLeadingLepPt',
     'var_response': 'LeadingLepPt',
 }
-varList['LeadingLepPtLepuncertainties'] = {
+varList['LeadingLepPtuncertainties'] = {
     'xaxis'       : 'Leading lep p_{T} [GeV]',
     'yaxis'       : 'Relative uncertainty'
 }
@@ -191,7 +191,7 @@ varList['LeadingLepPhi'] = {
     'var'         : 'TLeadingLepPhi',
     'var_response': 'LeadingLepPhi',
 }
-varList['LeadingLepPhiLepuncertainties'] = {
+varList['LeadingLepPhiuncertainties'] = {
     'xaxis'       : 'Leading lep #phi [rad]',
     'yaxis'       : 'Relative uncertainty'
 }
@@ -204,7 +204,7 @@ varList['LeadingLepEta'] = {
     'var'         : 'TLeadingLepEta',
     'var_response': 'LeadingLepEta',
 }
-varList['LeadingLepEtaLepuncertainties'] = {
+varList['LeadingLepEtauncertainties'] = {
     'xaxis'       : 'Leading lep #eta',
     'yaxis'       : 'Relative uncertainty'
 }
@@ -217,7 +217,7 @@ varList['SubLeadingLepE'] = {
     'var'         : 'TSubLeadingLepE',
     'var_response': 'SubLeadingLepE',
 }
-varList['SubLeadingLepELepuncertainties'] = {
+varList['SubLeadingLepEuncertainties'] = {
     'xaxis'       : 'Subleading lep energy [GeV]',
     'yaxis'       : 'Relative uncertainty'
 }
@@ -230,7 +230,7 @@ varList['SubLeadingLepPt'] = {
     'var'         : 'TSubLeadingLepPt',
     'var_response': 'SubLeadingLepPt',
 }
-varList['SubLeadingLepPtLepuncertainties'] = {
+varList['SubLeadingLepPtuncertainties'] = {
     'xaxis'       : 'Subleading lep p_{T} [GeV]',
     'yaxis'       : 'Relative uncertainty'
 }
@@ -243,7 +243,7 @@ varList['SubLeadingLepPhi'] = {
     'var'         : 'TSubLeadingLepPhi',
     'var_response': 'SubLeadingLepPhi',
 }
-varList['SubLeadingLepPhiLepuncertainties'] = {
+varList['SubLeadingLepPhiuncertainties'] = {
     'xaxis'       : 'Subleading lep #phi [rad]',
     'yaxis'       : 'Relative uncertainty'
 }
@@ -256,7 +256,7 @@ varList['SubLeadingLepEta'] = {
     'var'         : 'TSubLeadingLepEta',
     'var_response': 'SubLeadingLepEta',
 }
-varList['SubLeadingLepEtaLepuncertainties'] = {
+varList['SubLeadingLepEtauncertainties'] = {
     'xaxis'       : 'Subleading lep #eta',
     'yaxis'       : 'Relative uncertainty'
 }
