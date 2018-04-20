@@ -57,7 +57,7 @@ varList['LeadingLepEta'] = {
     'var_response': 'LeadingLepEta',                          # name of the variable in the response matrix without the M
 }
 
-varList['LeadingLepEtaLepuncertainties'] = {
+varList['LeadingLepEtauncertainties'] = {
     'xaxis'       : 'Leading lep #eta',
     'yaxis'       : 'Relative uncertainty'
 }

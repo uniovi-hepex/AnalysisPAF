@@ -259,8 +259,15 @@ class Unfolder():
         plot.saveCanvas('TR')
 
 
-        plot2 = beautifulUnfoldingPlots.beautifulUnfoldingPlots(self.var + 'uncertainties')
         uncList = errorPropagator.getUncList( nominal, allHistos )[:5]
+        uncList[0][1].Draw()
+
+        plot2 = beautifulUnfoldingPlots.beautifulUnfoldingPlots(self.var + 'uncertainties')
+
+        if uncList[0][1].GetMaximum() < 0.5:
+            uncList[0][1].GetYaxis().SetRangeUser(0,0.5)
+        else:
+            uncList[0][1].GetYaxis().SetRangeUser(0,0.75)
         for i in range(5):
             uncList[i][1].SetLineColor( beautifulUnfoldingPlots.colorMap[i] )
             uncList[i][1].SetLineWidth( 2 )
