@@ -109,7 +109,7 @@ class beautifulUnfoldingPlots:
 
 
 
-        self.canvas.SaveAs(plotspath + self.name + suffix +'.pdf')
-        self.canvas.SaveAs(plotspath + self.name + suffix +'.png')
+        self.canvas.SaveAs(self.plotspath + self.name + suffix +'.pdf')
+        self.canvas.SaveAs(self.plotspath + self.name + suffix +'.png')
 
         self.canvas.IsA().Destructor(self.canvas)
