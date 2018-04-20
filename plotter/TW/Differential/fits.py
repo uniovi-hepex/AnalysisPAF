@@ -1,13 +1,18 @@
-import fitter
+import fitter, varList
 import ROOT
-import array
-import math
-import varList
+import array, math, sys
 
+print "===== Fitting procedure"
 expected    = True
-name        = 'LeadingJetPt'
-bins        = varList.varList[name]['recobinning']
 
+if (len(sys.argv) > 1):
+    name = sys.argv[1]
+    print "> Variable to be unfolded:\n", name
+else:
+    print "> Default variable chosen\n"
+    name        = 'LeadingJetPt'
+
+bins        = varList.varList[name]['recobinning']
 count       = 0
 histo       = ROOT.TH1F("histo", "", len(bins)-1, array.array('d',bins))
 allResults  = {}
@@ -16,7 +21,7 @@ allResults  = {}
 for binDn,binUp in zip(bins, bins[1:]):
     count   = count + 1
     #fit     = fitter.FittingSuite("~/TW_differential/AnalysisPAF/plotter/TW/inputs/forCards_%s_%d.root"%(name,count), expected)
-    fit     = fitter.FittingSuite("/nfs/fanae/user/vrbouza/www/TFM/Unfolding/forCards_%s_%d.root"%(name,count), expected)
+    fit     = fitter.FittingSuite("temp/forCards_%s_%d.root"%(name,count), expected)
     fit.doAllCombFits()
     results = fit.results
     allResults[(binDn,binUp)] = results
@@ -37,7 +42,7 @@ for binDn,binUp in zip(bins, bins[1:]):
 
 
 #out = ROOT.TFile('output.root','recreate')
-out = ROOT.TFile('/nfs/fanae/user/vrbouza/www/TFM/Unfolding/output.root', 'recreate')
+out = ROOT.TFile('temp/output.root', 'recreate')
 histo.Write()
 out.Close()
 
@@ -58,10 +63,10 @@ outCard = open('dummy_card_template.txt').read()
 print outCard
 outCard = outCard.format(obs=histoSyst[''].Integral(),tW=histoSyst[''].Integral(),ref=name)
 #out = open('dummy_card_%s.txt'%name,'w')
-out = open('/nfs/fanae/user/vrbouza/www/TFM/Unfolding/dummy_card_%s.txt'%name,'w')
+out = open('temp/dummy_card_%s.txt'%name, 'w')
 out.write(outCard)
 
 #cardInput = ROOT.TFile.Open('cards/cardFile_{ref}.root'.format(ref=name),'recreate')
-cardInput = ROOT.TFile.Open('/nfs/fanae/user/vrbouza/www/TFM/Unfolding/cardFile_{ref}.root'.format(ref=name), 'recreate')
+cardInput = ROOT.TFile.Open('temp/cardFile_{ref}.root'.format(ref=name), 'recreate')
 for key in histoSyst: histoSyst[key].Write()
 cardInput.Close()
