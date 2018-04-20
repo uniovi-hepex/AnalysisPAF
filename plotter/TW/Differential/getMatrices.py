@@ -7,6 +7,17 @@ from array  import array
 
 r.gROOT.SetBatch(True)
 
+
+def GetLastFolder(stpth):
+    savefolders   = next(os.walk(stpth))[1]
+    saveyears     = map(int, [i[6:]  for i in savefolders])
+    savefolders   = [i for i in savefolders if int(i[6:]) == max(saveyears)]
+    savemonths    = map(int, [i[3:5] for i in savefolders])
+    savefolders   = [i for i in savefolders if int(i[3:5]) == max(savemonths)]
+    savedays      = map(int, [i[:2]  for i in savefolders])
+    savefolders   = [i for i in savefolders if int(i[:2]) == max(savedays)]
+    return (stpth + savefolders[0] + "/")
+
 #############################
 print("\n===== Unfolding procedures: Response matrices & ROOT files production =====")
 print("> Setting binning, paths, and other details...")
@@ -14,20 +25,14 @@ print("> Setting binning, paths, and other details...")
 storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
 minipath    = "../../../TW_temp/"
 if (len(sys.argv) > 1):
-  print("    - Particular minitrees' folder choice!\n")
+  print("    - Manual minitrees' folder input!\n")
   if (sys.argv[1] == "last"):
-    savefolders   = next(os.walk(storagepath))[1]
-    saveyears     = map(int, [i[6:]  for i in savefolders])
-    savefolders   = [i for i in savefolders if int(i[6:]) == max(saveyears)]
-    savemonths    = map(int, [i[3:5] for i in savefolders])
-    savefolders   = [i for i in savefolders if int(i[3:5]) == max(savemonths)]
-    savedays      = map(int, [i[:2]  for i in savefolders])
-    savefolders   = [i for i in savefolders if int(i[:2]) == max(savedays)]
-    minipath      = storagepath + savefolders[0] + "/"
+    minipath  = GetLastFolder(storagepath)
   else:
-    minipath      = storagepath + sys.argv[1] + "/"
-
-outputpath  = "/nfs/fanae/user/vrbouza/www/TFM/Unfolding/"
+    minipath  = storagepath + sys.argv[1] + "/"
+print "    - The minitrees' path is:\n", minipath
+plotsoutputpath  = "/nfs/fanae/user/vrbouza/www/TFM/Unfolding/"
+matrixoutputpath = "./temp/"
 genCut      = "TWeight_normal * (Tpassgen == 1)"
 recoCut     = "TWeight_normal * (Tpassreco == 1)"
 #Cut         = "TWeight * ((Tpassreco == 1) && (Tpassgen == 1))"
@@ -218,10 +223,10 @@ def GetFiducialHisto(t1, t2, vname, nyb, yb, sys = ""):
 
 def PrintResponseMatrix(htemp, vname, nxb, xmin, xmax, nyb, ymin, ymax, prof = 0, pur = None, stab = None):
   '''This function prints the response matrix of a given histogram.'''
-  if not os.path.exists(outputpath + vname):
-    os.makedirs(outputpath + vname)
-  if not os.path.isfile(outputpath + vname + "/index.php"):
-    shutil.copy2(outputpath + "index.php", outputpath + vname + "/index.php")
+  if not os.path.exists(plotsoutputpath + vname):
+    os.makedirs(plotsoutputpath + vname)
+  if not os.path.isfile(plotsoutputpath + vname + "/index.php"):
+    shutil.copy2(plotsoutputpath + "index.php", plotsoutputpath + vname + "/index.php")
   vnametitle = htemp.GetName()[1:]
   c = r.TCanvas('c', "Response matrix - T" + vnametitle, 200, 10, 700, 500)
   htemp.Scale(100)
@@ -229,7 +234,7 @@ def PrintResponseMatrix(htemp, vname, nxb, xmin, xmax, nyb, ymin, ymax, prof = 0
   htemp.Draw("colz text")
   r.gStyle.SetPaintTextFormat("4.1f")
   r.gPad.Update()
-  c.SaveAs(outputpath + vname + "/R_T" + vnametitle + ".png")
+  c.SaveAs(plotsoutputpath + vname + "/R_T" + vnametitle + ".png")
   c     = None
   
   if (prof == 0):
@@ -253,7 +258,7 @@ def PrintResponseMatrix(htemp, vname, nxb, xmin, xmax, nyb, ymin, ymax, prof = 0
   secaxis = r.TGaxis(c.GetUxmin(), c.GetUymax(), c.GetUxmax(), c.GetUymax(), xmin, xmax, 510, "-")
   secaxis.Draw()
   r.gPad.Update()
-  c.SaveAs(outputpath + vname + "/P_X_T" + vnametitle + ".png")
+  c.SaveAs(plotsoutputpath + vname + "/P_X_T" + vnametitle + ".png")
   c       = None
   hX      = None
   secaxis = None
@@ -271,7 +276,7 @@ def PrintResponseMatrix(htemp, vname, nxb, xmin, xmax, nyb, ymin, ymax, prof = 0
   secaxis = r.TGaxis(c.GetUxmin(), c.GetUymax(), c.GetUxmax(), c.GetUymax(), ymin, ymax, 510, "-")
   secaxis.Draw()
   r.gPad.Update()
-  c.SaveAs(outputpath + vname + "/P_Y_T" + vnametitle + ".png")
+  c.SaveAs(plotsoutputpath + vname + "/P_Y_T" + vnametitle + ".png")
   c       = None
   hY      = None
   secaxis = None
@@ -280,17 +285,17 @@ def PrintResponseMatrix(htemp, vname, nxb, xmin, xmax, nyb, ymin, ymax, prof = 0
 
 def PrintFiducialHisto(htemp, vname):
   '''This function prints the fiducial histo of a variable.'''
-  if not os.path.exists(outputpath + vname):
-    os.makedirs(outputpath + vname)
-  if not os.path.isfile(outputpath + vname + "/index.php"):
-    shutil.copy2(outputpath + "index.php", outputpath + vname + "/index.php")
+  if not os.path.exists(plotsoutputpath + vname):
+    os.makedirs(plotsoutputpath + vname)
+  if not os.path.isfile(plotsoutputpath + vname + "/index.php"):
+    shutil.copy2(plotsoutputpath + "index.php", plotsoutputpath + vname + "/index.php")
   vnametitle = htemp.GetName()[1:]
   c = r.TCanvas('c', "Fiducial histogram - T" + vnametitle, 200, 10, 700, 500)
   #htemp.SetStats(False)
   htemp.Draw()
   r.gStyle.SetPaintTextFormat("4.1f")
   r.gPad.Update()
-  c.SaveAs(outputpath + vname + "/F_T" + vnametitle + ".png")
+  c.SaveAs(plotsoutputpath + vname + "/F_T" + vnametitle + ".png")
   c     = None
   return
 
@@ -488,10 +493,12 @@ treeTbarW_PSDown  = fTbarW_PSDown.Get('Mini1j1t')
 treeTbarW_PSDown.SetName("PSDown")
 
 
-print("\n> Drawing matrices and writing ROOT file (old one will be overwritten!) with the matrices and other information in "+str(outputpath)+" ...")
-f       = r.TFile(outputpath + "UnfoldingInfo.root", "recreate")
+print "\n> Drawing matrices and writing ROOT file (old one will be overwritten!)."
+print "The matrices will be saved in " + str(matrixoutputpath)
+print "The plots will be drawn in " + str(plotsoutputpath)
+f       = r.TFile(matrixoutputpath + "UnfoldingInfo.root", "recreate")
 for i in range(nvars):
-  print("\n    - Drawing and saving the response matrices of the variable "+VarNames[i]+" ...")
+  print("\n    - Drawing and saving the response matrices of the variable "+ VarNames[i] + " ...")
   # Normal response matrices
   htemp = GetResponseMatrix(treeTW, treeTbarW, VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i])
   htemp.Write()
