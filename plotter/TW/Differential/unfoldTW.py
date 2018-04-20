@@ -211,8 +211,11 @@ class Unfolder():
         if tau:
             self.helpers[''].DoUnfold(tau)
         
-    def doNominalPlot(self):
+    def doNominalPlot(self, tau=None):
+        if tau:
+            self.helpers[''].tunfolder.DoUnfold(tau)
         data = self.helpers[''].tunfolder.GetOutput('forPlot')
+
         print 'Unfolded distribution integral', data.Integral()
         plot = beautifulUnfoldingPlots.beautifulUnfoldingPlots(self.var)
         data.SetMarkerStyle(r.kFullCircle)
