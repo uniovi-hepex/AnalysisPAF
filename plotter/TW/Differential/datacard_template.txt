@@ -2,7 +2,7 @@ imax 1
 jmax *
 kmax *
 ##-----------
-shapes * ElMu  cards/cardFile_{nuis}.root $PROCESS $PROCESS_$SYSTEMATIC
+shapes * ElMu temp/cardFile_{nuis}.root $PROCESS $PROCESS_$SYSTEMATIC
 ##-----------
 bin ElMu 
 observation {obs} 

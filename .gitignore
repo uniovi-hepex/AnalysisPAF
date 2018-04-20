@@ -4,6 +4,7 @@
 *.pcm
 .paf/
 *.pyc
+combine_logger.out
 # Exclude files by emacs
 *~
 .~*
@@ -14,6 +15,7 @@ Datasets/
 .DS_Store
 *_temp/
 inputdata.root
+plotter/TW/Differential/temp/*
 
 #Higgs combine output :)
 higgsCombine_*.root

@@ -39,7 +39,7 @@ public:
   bool doLegend        = true;
   bool doUncInLegend   = false;
   bool doExternalSyst  = false;
-
+  bool NoShowVarName   = false;
 
   std::vector<Histo*> VBkgs;
   std::vector<Histo*> VSignals;
