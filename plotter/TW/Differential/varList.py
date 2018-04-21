@@ -31,7 +31,7 @@ varList['LeadingJetE'] = {
     'xaxis'       : 'j(1) energy [GeV]',
     'yaxis'       : 'Events',
     'genbinning'  : [0, 100, 200, 300, 420, 1000],
-    'recobinning' : [0, 75, 125, 175, 250, 320, 420, 1000],
+    'recobinning' : [0., 50., 100., 150., 200., 250., 300., 350., 400., 450., 1000.],
     'var'         : 'TLeadingJetE',
     'var_response': 'LeadingJetE',
 }
@@ -121,7 +121,7 @@ varList['MET_Phiuncertainties'] = {
 varList['LeadingJetPt'] = {
     'xaxis'       : 'Leading jet p_{T} [GeV]',
     'yaxis'       : 'Events',
-    'genbinning' : [0, 50, 100, 150, 500],
+    'genbinning'  : [0, 50, 100, 150, 500],
     'recobinning' : [0, 50, 70, 90, 110, 130, 150, 170, 500],
     'var'         : 'TLeadingJetPt',
     'var_response': 'LeadingJetPt',
