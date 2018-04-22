@@ -23,8 +23,8 @@ void run1j1tPlots(TString pathToTree  = "../TW_temp/"){
 //   DrawPlot("TMSys"                  , StandardCut, "ElMu", 20, 50., 750., "m_{sys} [GeV]"                         , false, "gev");
 //   DrawPlot("THTLepOverHT"           , StandardCut, "ElMu", 20,  0.,   1., "H_{T}+lep / H_{T}"                     , false, "units,0.05", 1e4);
   
-//   DrawPlot("TMET"                   , StandardCut, "ElMu", 20,  0., 500., "MET [GeV]"                             , false, "gev");
-//   DrawPlot("TMET_Phi"               , StandardCut, "ElMu", 20,-TMath::Pi(),TMath::Pi(),"#varphi(MET) [GeV]"       , false, "gev");
+//   DrawPlot("TMET"                   , StandardCut, "ElMu", 20,  0., 500., "#slash{E}_{T} [GeV]"                   , false, "gev");
+//   DrawPlot("TMET_Phi"               , StandardCut, "ElMu", 20,-TMath::Pi(),TMath::Pi(),"#varphi(#slash{E}_{T}) [GeV]", false, "gev");
 //   DrawPlot("TM_LeadingB"            , StandardCut, "ElMu", 20,  0., 500., "m^{l_{1}b} [GeV]"                      , false, "gev");
 //   DrawPlot("TM_SubLeadingB"         , StandardCut, "ElMu", 20,  0., 500., "m^{l_{2}b} [GeV]"                      , false, "gev");
 //   DrawPlot("TM_LLB"                 , StandardCut, "ElMu", 20,  0., 800., "m^{llb} [GeV]"                         , false, "gev");
@@ -71,8 +71,8 @@ void run1j1tPlots(TString pathToTree  = "../TW_temp/"){
   Float_t RB_TSubLeadingLepPhi[]= {(Float_t) -TMath::Pi(), -2., -1.5, -.75, 0., .75, 1.5, 2., (Float_t) TMath::Pi()};
   Float_t RB_TSubLeadingLepEta[]= {-2.4, -1.75, -1.25, -.5, 0., .5, 1.25, 1.75, 2.4};
   
-  DrawCustomPlot("TMET"                   , StandardCut, "ElMu", 8,  RB_TMET             , "MET [GeV]"                 , false, "gev");
-  DrawCustomPlot("TMET_Phi"               , StandardCut, "ElMu", 8,  RB_TMET_Phi         , "#varphi(MET) [GeV]"        , false, "gev");
+  DrawCustomPlot("TMET"                   , StandardCut, "ElMu", 8,  RB_TMET             , "#slash{E}_{T} [GeV]"       , false, "gev");
+  DrawCustomPlot("TMET_Phi"               , StandardCut, "ElMu", 8,  RB_TMET_Phi         , "#varphi(#slash{E}_T) [GeV]", false, "gev");
   DrawCustomPlot("TM_LeadingB"            , StandardCut, "ElMu", 8,  RB_TM_LeadingB      , "m^{l_{1}b} [GeV]"          , false, "gev");
   DrawCustomPlot("TM_SubLeadingB"         , StandardCut, "ElMu", 10, RB_TM_SubLeadingB   , "m^{l_{2}b} [GeV]"          , false, "gev");
   DrawCustomPlot("TM_LLB"                 , StandardCut, "ElMu", 10, RB_TM_LLB           , "m^{llb} [GeV]"             , false, "gev");
