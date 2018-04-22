@@ -12,6 +12,7 @@ xq          = array('d', [0]*nq)
 yq          = array('d', [0]*nq)
 storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
 minipath    = ""
+printthings = 1
 
 def GetLastFolder(stpth):
     savefolders   = next(os.walk(stpth))[1]
@@ -27,8 +28,10 @@ def GetLastFolder(stpth):
 if (len(sys.argv) > 1):
     varName     = sys.argv[1]
     if (len(sys.argv) > 2):
-        minipath    = storagepath + sys.argv[2] + "/"
-    else:
+      printthings = sys.argv[2]
+      if (len(sys.argv) > 3):
+        minipath    = storagepath + sys.argv[3] + "/"
+      else:
         minipath    = GetLastFolder(storagepath)
 else:
     print "> Default choice of variable and minitrees\n"
@@ -54,16 +57,15 @@ bins  = varList.varList[varName]['recobinning']
 
 count = 0
 c     = ROOT.TCanvas()
-
-
 print "\n> Constructing C++ file of the binning"
 for binDn,binUp in zip(bins, bins[1:]):
     count   = count + 1
     varBin  = "{var} >= {binDn} && {var} < {binUp}".format(var=var, binUp=binUp, binDn=binDn)
     tree.Draw("TBDT","TWeight * (Tpassreco == 1 && %s)"%varBin)
     c.Update()
-    print "TBDT","(Tpassreco == 1 && %s)"%varBin
-    raw_input('Copy this string into your .C DrawPlots-like file and press enter.')
+    if (printthings == 1):
+      print "TBDT","(Tpassreco == 1 && %s)"%varBin
+      raw_input('Copy this string into your .C DrawPlots-like file and press enter.')
     tree.GetHistogram().GetQuantiles(nq, yq, xq)
     
     Base = Base + '''\n /////////////////////// \n 
