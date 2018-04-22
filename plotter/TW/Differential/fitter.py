@@ -1,8 +1,9 @@
 import itertools, math
 import ROOT
-import copy
-import os 
+import copy, os
+from warnings import warn,simplefilter
 
+simplefilter("always", UserWarning)
 
 class FittingSuite: 
     def __init__(self, cardFile, doExpect=None):
@@ -220,7 +221,7 @@ class FittingSuite:
         data = self.pmap['obs']['data']
 
         #cardFile = ROOT.TFile.Open('cards/cardFile_%s.root'%nuis,'recreate')
-        print 'we are coming here:', 'temp/cardFile_%s.root'%nuis
+        #print 'we are coming here:', 'temp/cardFile_%s.root'%nuis
         cardFile = ROOT.TFile.Open('temp/cardFile_%s.root'%nuis,'recreate')
         data.Write()
         for proc in pmap:
@@ -248,10 +249,11 @@ class FittingSuite:
         if 'obs' in nuis: return
         if 'statbin' in nuis: return 
 
-
         # make the card
+        print "\n> Creating card for nuisance", nuis, "\n"
         self.makeCardFromCard(nuis)
 
+        print "> Fitting...\n"
         # do fthe fit (dont correct the typo, it may be there for a resason...)
         if nuis != '': 
             #os.system('combine -M MultiDimFit cards/datacard_{nuis}.txt --name fit_{nuis} '.format(nuis=nuis))
@@ -264,8 +266,9 @@ class FittingSuite:
         
             for limit in result.limit:
                 if limit.r < 0.1 or limit.r > 1.9: 
-                    print '[W]: Fit has probably not converged'
-                    return 1
+                    warn('Nuisance fit has probably noy converged. Limit:' + str(limit.r), UserWarning)
+                    #raise RuntimeError('Nuisance fit has probably not converged. Limit: ' + str(limit.r))
+                    #return 1
                 return limit.r
             raise RuntimeError('It shouldnt get here')
 
@@ -274,11 +277,12 @@ class FittingSuite:
             os.system('combine -M MultiDimFit temp/datacard_{nuis}.txt --name fit_{nuis} --algo=singles --robustFit=1'.format(nuis=nuis))
             # harvest the results
             result = ROOT.TFile.Open('higgsCombinefit_%s.MultiDimFit.mH120.root'%nuis)
-            if result.limit.GetEntries() != 3: raise RuntimeError("Differerent number of entries in the limits tree than expected, something unplanned happened")
+            if result.limit.GetEntries() != 3: raise RuntimeError("Different number of entries in the limits tree than expected, something unplanned happened")
             rslt = []
             for limit in result.limit:
-                if limit.r < 0.1 or limit.r > 1.9: 
-                    raise RuntimeError('Nominal fit has probably not converged')
+                if limit.r < 0.1 or limit.r > 1.9:
+                    warn('Nominal fit has probably not converged. Limit: ' + str(limit.r), UserWarning)
+                    #raise RuntimeError('Nominal fit has probably not converged. Limit: ' + str(limit.r))
                 rslt.append(limit.r) # first is nominal, second and third are up and down variations :)
             return rslt
 
