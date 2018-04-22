@@ -278,7 +278,9 @@ class FittingSuite:
             rslt = []
             for limit in result.limit:
                 if limit.r < 0.1 or limit.r > 1.9: 
-                    raise RuntimeError('Nominal fit has probably not converged')
+                    print limit.r
+                    print 'Nominal fit far from nominal'
+                    #raise RuntimeError('Nominal fit has probably not converged')
                 rslt.append(limit.r) # first is nominal, second and third are up and down variations :)
             return rslt
 

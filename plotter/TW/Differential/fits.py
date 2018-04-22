@@ -1,6 +1,7 @@
 import fitter, varList
 import ROOT
 import array, math, sys
+import beautifulUnfoldingPlots
 
 print "===== Fitting procedure"
 expected    = True
@@ -44,6 +45,11 @@ for binDn,binUp in zip(bins, bins[1:]):
 #out = ROOT.TFile('output.root','recreate')
 out = ROOT.TFile('temp/output.root', 'recreate')
 histo.Write()
+
+plot = beautifulUnfoldingPlots.beautifulUnfoldingPlots(name)
+plot.addHisto(histo, 'hist', 'Folded distribution', 'L')
+plot.saveCanvas('TR','_folded')
+
 out.Close()
 
 

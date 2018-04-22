@@ -25,16 +25,19 @@ class beautifulUnfoldingPlots:
     def __init__(self,name):
         r.gROOT.SetBatch(True)
         self.name = name
-        self.initCanvasAndAll()
+        self.inited=False
         self.objectsInLeg = []
         self.plotspath  = ""
-
-    def initCanvasAndAll(self):
-
-        tdrstyle.setTDRStyle()
-
         self.doWide = False
         self.doRatio= False
+
+
+    def initCanvasAndAll(self):
+        if self.inited: return
+        self.inited = True
+        tdrstyle.setTDRStyle()
+
+
         topSpamSize = 1.2
         doOfficialCMS = True
 
@@ -50,6 +53,8 @@ class beautifulUnfoldingPlots:
 
         
     def addHisto(self, histo, options, name, legOptions):
+        if not self.inited: self.initCanvasAndAll()
+
         self.canvas.cd()
         histo.GetXaxis().SetTitle( varList.varList[self.name]['xaxis'] )
         histo.GetYaxis().SetTitle( varList.varList[self.name]['yaxis'] )
@@ -62,16 +67,16 @@ class beautifulUnfoldingPlots:
         histo.GetXaxis().SetLabelOffset(0.007)
         histo.GetYaxis().SetTitleFont(42)
         histo.GetYaxis().SetTitleSize(0.05)
-        histo.GetYaxis().SetTitleOffset(0.8 if self.doWide else 2.0)
+        histo.GetYaxis().SetTitleOffset(0.4 if self.doWide else 2.0)
         histo.GetYaxis().SetLabelFont(42)
         histo.GetYaxis().SetLabelSize(0.05)
         histo.GetYaxis().SetLabelOffset(0.007)
 
-
+        print 'Drawing with options', options
         histo.Draw(options)
         self.objectsInLeg.append( (histo,name, legOptions) ) 
         
-    def saveCanvas(self, corner, suffix=''):
+    def saveCanvas(self, corner, suffix='', leg=True):
         self.canvas.cd()
         
         textSize = 0.055 if self.doRatio else 0.022
@@ -91,16 +96,17 @@ class beautifulUnfoldingPlots:
             (x1,y1,x2,y2) = (.2, .16 + height, .2+legWidth, .15)
             
 
-        leg = r.TLegend(x1,y1,x2,y2)
-        leg.SetTextFont(42)
-        leg.SetTextSize(textSize)
-        leg.SetBorderSize(0)
-        leg.SetFillColor(10)
 
-        for obj,name,opt in self.objectsInLeg:
-            if opt:
-                leg.AddEntry( obj, name, opt)
-        leg.Draw('same')
+        if leg:
+            leg = r.TLegend(x1,y1,x2,y2)
+            leg.SetTextFont(42)
+            leg.SetTextSize(textSize)
+            leg.SetBorderSize(0)
+            leg.SetFillColor(10)
+            for obj,name,opt in self.objectsInLeg:
+                if opt:
+                    leg.AddEntry( obj, name, opt)
+            leg.Draw('same')
 
         CMS_lumi.lumi_13TeV = "%.1f fb^{-1}" %(varList.Lumi)
         CMS_lumi.extraText  = 'Preliminary'

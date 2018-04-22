@@ -8,28 +8,29 @@ R__LOAD_LIBRARY(CrossSection.C+)
 #include "Looper.h"
 #include "Plot.h"
 #include "Datacard.h"
-#include "/nfs/fanae/user/vrbouza/www/TFM/Unfolding/LeadingJetPt.C"
 
 TString pathToTree = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/16_04_2018/";
 TString NameOfTree = "Mini1j1t";
 
 
-void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString chlabel);
+void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t* bins, TString Xtitle, TString chlabel);
 
 void runClosureTest() {
-  
-  DrawPlot("TGenLeadingJetPt", "1/TWeight*TWeight_normal*(Tpassgen == 1)", "All", 50, 0, 500, "TGenLeadingJet","");
-//   DrawPlot("TGenLeadingJetPt", "TWeight_normal*(Tpassgen == 1)", "ElMu", 50, 0, 500, "TGenLeadingJet","");
+  Float_t binsJetPt[] = {0,50,100,150,500};
+  Float_t binsJetEta[] = {-2.4,-1.2,0,1.2,2.4};
+  DrawPlot("TGenLeadingJetPt", "1/TWeight*TWeight_normal*(Tpassgen == 1)", "All", 4, binsJetPt, "TGenLeadingJet","");
+  DrawPlot("TGenLeadingJetEta", "1/TWeight*TWeight_normal*(Tpassgen == 1)", "All", 4, binsJetEta , "TGenLeadingJet","");
+    DrawPlot("TGenLeadingLepEta", "1/TWeight*TWeight_normal*(Tpassgen == 1)", "All", 4, binsJetEta, "TGenLeadingJet","");
+
   return;
 }
 
-void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, TString Xtitle, TString chlabel) {
+void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t* bins, TString Xtitle, TString chlabel) {
   cout << "Xtitle is " << Xtitle << endl;
 
-  Plot* p = new Plot(var, cut, chan, nbins, bin0, binN, "Title", Xtitle);
+  Plot* p = new Plot(var, cut, chan, nbins, bins, "Title", Xtitle);
 
   p->SetPath(pathToTree); p->SetTreeName(NameOfTree);
-  p->SetLimitFolder("/nfs/fanae/user/vrbouza/www/TFM/Unfolding/");
   p->SetPathSignal(pathToTree + "");
   // p->verbose = false;
   p->verbose = true;
