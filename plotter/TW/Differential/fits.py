@@ -19,6 +19,7 @@ allResults  = {}
 
 
 for binDn,binUp in zip(bins, bins[1:]):
+    print "\n/////////// FITTING BIN NUMBER", count, "///////////\n"
     count   = count + 1
     #fit     = fitter.FittingSuite("~/TW_differential/AnalysisPAF/plotter/TW/inputs/forCards_%s_%d.root"%(name,count), expected)
     fit     = fitter.FittingSuite("temp/forCards_%s_%d.root"%(name,count), expected)
