@@ -183,6 +183,16 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = ""):
       if (h1.GetBinContent(i, j) < 1e-4):
         h1.SetBinContent(i, j, 0)
   
+  # Fixing the over and underflow bins to one.
+  #for i in range(0, nxb+2):
+  #  tmpsum = 0
+  #  h1.SetBinContent(i, 0, 0.)
+  #  for j in range(0, nyb+1):
+  #    tmpsum += h1.GetBinContent(i, j)
+  #  h1.SetBinContent(i, nxb+1, tmpsum)
+  #for j in range(0, nyb+2):
+  #  h1.SetBinContent(0, j, 0.)
+  
   h1.SetXTitle("Generated events")
   h1.SetYTitle("Reconstructed events")
   h1.SetName("R" + vnametitle)
