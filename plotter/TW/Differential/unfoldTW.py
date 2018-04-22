@@ -223,7 +223,7 @@ class Unfolder():
         plot.plotspath  = self.plotspath
         
         if self.doSanityCheck:
-            tmptfile = r.TFile.Open('/nfs/fanae/user/sscruz/TW_differential/AnalysisPAF/plotter/./Datacards/closuretest_TGenLeadingJet_trueUnFoldedSpace_TGenLeadingJetPt.root')
+            tmptfile = r.TFile.Open('/nfs/fanae/user/sscruz/TW_differential/AnalysisPAF/plotter/./Datacards/closuretest_TGenLeadingJet_TGen{var}.root'.format(var=self.var))
             tru = copy.deepcopy(tmptfile.Get('tW'))
             tru.SetLineWidth(2)
             tru.SetLineColor(beautifulUnfoldingPlots.colorMap[0])
@@ -238,6 +238,30 @@ class Unfolder():
             plot.saveCanvas('TR')
 
 
+    def doRegularizationComparison(self):
+        self.prepareNominalHelper()
+        self.doLCurveScan()
+        regularized = self.helpers[''].tunfolder.GetOutput('forPlot_regu')
+        self.helpers[''].tunfolder.DoUnfold(0.)
+        unregularized = self.helpers[''].tunfolder.GetOutput('forPlot_nuregu')
+        
+        regularized  .SetLineWidth(2)
+        unregularized.SetLineWidth(2)
+        regularized  .SetLineColor( beautifulUnfoldingPlots.colorMap[0])
+        unregularized.SetLineColor( beautifulUnfoldingPlots.colorMap[1])
+
+        
+        print regularized  .GetBinContent(1), unregularized.GetBinContent(1)
+
+        plot = beautifulUnfoldingPlots.beautifulUnfoldingPlots(self.var)
+        regularized.Draw()
+        regularized.GetYaxis().SetRangeUser(0, 1.1*regularized.GetMaximum())
+        plot.addHisto(regularized  ,'hist'     ,'Regularized'  ,'L')
+        plot.addHisto(unregularized,'hist,same','UnRegularized','L')
+        plot.saveCanvas('TR','comparison')
+        
+
+
     def doUnfoldingForAllNuis(self):
         self.prepareAllHelpers()
         allHistos = {} 
@@ -248,30 +272,43 @@ class Unfolder():
         nominal_withErrors = errorPropagator.propagateHisto( nominal, allHistos )
 
         plot = beautifulUnfoldingPlots.beautifulUnfoldingPlots(self.var)
+        plot.plotspath  = self.plotspath
         nominal.SetMarkerStyle(r.kFullCircle)
         nominal.GetXaxis().SetNdivisions(505,True)
         nominal_withErrors.SetFillColorAlpha(r.kBlue,0.35)
         nominal_withErrors.SetLineColor(r.kBlue)
         nominal_withErrors.SetFillStyle(1001)
-        plot.addHisto(nominal_withErrors,'E2','Syst. unc.','F')
-        plot.addHisto(nominal,'P,same','Data','P')
-        plot.plotspath  = self.plotspath
-        plot.saveCanvas('TR')
+
+        if self.doSanityCheck:
+            tmptfile = r.TFile.Open('/nfs/fanae/user/sscruz/TW_differential/AnalysisPAF/plotter/./Datacards/closuretest_TGenLeadingJet_TGen{var}.root'.format(var=self.var))
+            tru = copy.deepcopy(tmptfile.Get('tW'))
+            tru.SetLineWidth(2)
+            tru.SetLineColor(beautifulUnfoldingPlots.colorMap[0])
+            plot.addHisto(nominal_withErrors,'E2','Syst. unc.','F')
+            plot.addHisto(nominal,'P,same','Data','P')
+            plot.addHisto(tru,'L,same','Truth','L')
+            plot.saveCanvas('TR')
+            tmptfile.Close()
+
+        else:
+            plot.addHisto(nominal_withErrors,'E2','Syst. unc.','F')
+            plot.addHisto(nominal,'P,same','Data','P')
+            plot.saveCanvas('TR')
 
 
+        plot2 = beautifulUnfoldingPlots.beautifulUnfoldingPlots(self.var + 'uncertainties')
         uncList = errorPropagator.getUncList( nominal, allHistos )[:5]
         uncList[0][1].Draw()
 
-        plot2 = beautifulUnfoldingPlots.beautifulUnfoldingPlots(self.var + 'uncertainties')
-
         if uncList[0][1].GetMaximum() < 0.5:
+
             uncList[0][1].GetYaxis().SetRangeUser(0,0.5)
         else:
             uncList[0][1].GetYaxis().SetRangeUser(0,0.75)
         for i in range(5):
             uncList[i][1].SetLineColor( beautifulUnfoldingPlots.colorMap[i] )
             uncList[i][1].SetLineWidth( 2 )
-            plot2.addHisto(uncList[i][1], 'H,same',uncList[i][0],'L')
+            plot2.addHisto(uncList[i][1], 'H,same' if i else 'H',uncList[i][0],'L')
         
         plot2.plotspath = self.plotspath
         plot2.saveCanvas('TR')
@@ -283,15 +320,18 @@ class Unfolder():
 
 if __name__=="__main__":
     
-    #a = Unfolder('LeadingJetPt','cards/cardFile_Jet1_pt.root','~vrbouza/www/TFM/Unfolding/UnfoldingInfo.root')
-    a = Unfolder('LeadingJetPt', 'temp/cardFile_LeadingJetPt.root', 'temp/UnfoldingInfo.root')
-    
+    a = Unfolder('LeadingLepEta','temp/cardFile_LeadingLepEta.root','temp/UnfoldingInfo.root')
+    #a = Unfolder('LeadingJetEta', 'temp/cardFile_LeadingJetEta.root', 'temp/UnfoldingInfo.root')
+    a.doRegularizationComparison()
+
+    print k
+
     a.prepareNominalHelper()
     a.doLCurveScan()
-    # #a.doTauScan()
+    # # #a.doTauScan()
     a.doScanPlots()
-    a.doNominalPlot()
-    #a.doUnfoldingForAllNuis()
+    # a.doNominalPlot()
+    # #a.doUnfoldingForAllNuis()
 
     #a.prepareNominalHelper()
     #a.getConditionNumber('')

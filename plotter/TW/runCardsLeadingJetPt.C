@@ -65,24 +65,25 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample("TW"   ,                       "tW",    itSys, 1, "JERUp");
   p->AddSample("TbarW",                       "tW",    itSys, 1, "JERUp");
 
-  p->AddSample("MuonEG",                      "Data",  itData);
-  p->AddSample("SingleMuon",                  "Data",  itData);
-  p->AddSample("SingleElec",                  "Data",  itData);
+  // p->AddSample("MuonEG",                      "Data",  itData);
+  // p->AddSample("SingleMuon",                  "Data",  itData);
+  // p->AddSample("SingleElec",                  "Data",  itData);
 
   p->AddSystematic("JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"); //,LepEff
   
   p->AddSymmetricHisto("ttbar", "JERUp");
   p->AddSymmetricHisto("tW",    "JERUp");
 
+  p->doSignal=false;
 
   // Other settingsX fan
   p->SetLegendPosition(20, 20, 20, 20);
   p->doSetLogy = false;
   
-  p->SetOutputName("forCards_" + Xtitle);
+  // p->SetOutputName("forCards_" + Xtitle);
   p->NoShowVarName = true;
-  p->SaveHistograms();
-  
+  // p->SaveHistograms();
+  p->DrawStack(Xtitle);
   delete p;
 }
 

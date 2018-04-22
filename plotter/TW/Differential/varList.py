@@ -130,6 +130,10 @@ varList['LeadingJetPtuncertainties'] = {
     'xaxis'       : 'Leading jet p_{T} [GeV]',
     'yaxis'       : 'Relative uncertainty'
 }
+varList['ResponseLeadingJetPt'] = {
+    'xaxis'       : 'Gen Leading jet p_{T} [GeV]',
+    'yaxis'       : 'Leading jet p_{T} [GeV]'
+}
 
 varList['LeadingJetEta'] = {
     'xaxis'       : 'Leading jet #eta',
@@ -142,6 +146,10 @@ varList['LeadingJetEta'] = {
 varList['LeadingJetEtauncertainties'] = {
     'xaxis'       : 'Leading jet #eta',
     'yaxis'       : 'Relative uncertainty'
+}
+varList['ResponseLeadingJetEta'] = {
+    'xaxis'       : 'Gen Leading Jet #eta',
+    'yaxis'       : 'Leading Jet #eta'
 }
 
 varList['LeadingJetPhi'] = {
@@ -182,6 +190,10 @@ varList['LeadingLepPtuncertainties'] = {
     'xaxis'       : 'Leading lep p_{T} [GeV]',
     'yaxis'       : 'Relative uncertainty'
 }
+varList['ResponseLeadingLepPt'] = {
+    'xaxis'       : 'Gen Leading lep p_{T} [GeV]',
+    'yaxis'       : 'Leading lep p_{T} [GeV]'
+}
 
 varList['LeadingLepPhi'] = {
     'xaxis'       : 'Leading lep #varphi [rad]',
@@ -207,6 +219,10 @@ varList['LeadingLepEta'] = {
 varList['LeadingLepEtauncertainties'] = {
     'xaxis'       : 'Leading lep #eta',
     'yaxis'       : 'Relative uncertainty'
+}
+varList['ResponseLeadingLepEta'] = {
+    'xaxis'       : 'Gen Leading lep #eta',
+    'yaxis'       : 'Leading lep #eta'
 }
 
 varList['SubLeadingLepE'] = {
