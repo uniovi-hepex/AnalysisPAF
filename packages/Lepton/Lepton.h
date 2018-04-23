@@ -5,6 +5,8 @@
 #include "TString.h"
 #include "ElecScaleClass.h"
 
+enum genLepMatch{kLGMtoGenLep, kLGMgood, kLGMfake, kLGMflip, kLGMconv, kLGMtoGenB, kLGMother};
+
 class Lepton : public TObject{
   public:
     Lepton(){
@@ -57,6 +59,7 @@ class Lepton : public TObject{
     void SetIso(Float_t val){ Iso = val;}
     void SetR9(Float_t val){ R9 = val;}
     void SetEnergyUnc(Float_t val){ EnergyUnc = val;}
+    void SetGenMatch(Int_t m){ genMatch = m;}
 
     Float_t Pt(){return p.Pt();}
     Float_t Eta(){return p.Eta();}
@@ -65,6 +68,8 @@ class Lepton : public TObject{
     Float_t GetIso(){ return Iso;} 
     Float_t GetR9(){return R9;}
     Float_t GetEnergyUnc(){return EnergyUnc;}
+    Int_t   GetGenMatch(){return genMatch;}
+    
 
   protected:
     Float_t SF;
@@ -72,6 +77,7 @@ class Lepton : public TObject{
     Float_t Iso;
     Float_t R9;
     Float_t EnergyUnc;
+    Int_t   genMatch;
 
     //ClassDef(Lepton, 0);
 };
