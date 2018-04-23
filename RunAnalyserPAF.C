@@ -106,7 +106,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   TString orig_sampleName = sampleName;
 
   if(options.Contains("xsec:")){
-    pos = options.First("xsec:") + 5;
+    pos = options.Index("xsec:") + 5;
     TString xx = options(pos, options.Sizeof());
     xx.ReplaceAll(" ", "");
     pos = xx.Contains(",") ? xx.First(",") : xx.Sizeof();
