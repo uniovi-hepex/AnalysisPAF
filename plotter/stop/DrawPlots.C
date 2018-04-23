@@ -44,10 +44,10 @@ Float_t gbins5b[] =  {0,5, 40, 80, 100, 200}; Int_t ngbins5b = 5;
 TString binLabelsSR = "150-200, > 200,  0.4, 0.8, 1.2, 1.6, 2.0, > 2.0, 20, 40, 60, 80, 100, > 100";
 
 //=== Change here your options
-Bool_t _PrintDataPlots   = true; Bool_t doAllSyst  = true;
+Bool_t _PrintDataPlots   = false; Bool_t doAllSyst  = true;
 Bool_t _PrintWZestimate  = false;
 Bool_t _PrintYieldTable  = false;
-Bool_t _PrintSignalPlots = false;
+Bool_t _PrintSignalPlots = true;
 Bool_t doTopPtReweighting = false;
 TString systematics = "Trig,JES,Btag,MisTag,ElecEff,MuonEff,PU";
 
@@ -57,28 +57,31 @@ void DrawPlots(TString chan = "ElMu"){
   //>>> if b-tag requirement --> weight = "TWeight*TBtagSFFS";
 
   if(_PrintDataPlots){ //>>> Plots with data (Control plots)
+    chan = "ElMu";
     cut = Dilepton;
-//    DrawPlot("TNJets", cut, chan, 9, 0, 8, 0, "#Jets", "NJets");
-//    DrawPlot("NBtagNJets(TNJets,TNBtags)", cut, chan, 16, 0, 15, 0, "[#Jets|#BJets]", "NBtagsNJets");
+   // DrawPlot("TNJets", cut, chan, 9, 0, 8, 0, "#Jets", "NJets");
+   // DrawPlot("NBtagNJets(TNJets,TNBtags)", cut, chan, 16, 0, 15, 0, "[#Jets|#BJets]", "NBtagsNJets");
     cut = BaselineCut;
-    DrawPlot("TMET",  cut + " && TMET > 100", chan, 10,    100,  400, 0, "MET [GeV]",                    "MET");
-    //DrawPlot("TMT2",        cut, chan, ngbins, 0, 0, gbins, "M_{T2} [GeV]", "MT2_21");
+//    DrawPlot("TMET",  cut + " && TMET > 100", chan, 10,    100,  400, 0, "MET [GeV]",                    "MET");
+//    DrawPlot("TMT2",        cut, chan, ngbins5b, 0, 0, gbins5b, "M_{T2} [GeV]", "MT2_5b");
+    //DrawPlot("TMT2",        cut + " && TMT2 > 0", chan, ngbins, 0, 0, gbins, "M_{T2} [GeV]", "MT2_21");
+    DrawPlot("TMT2",        cut + " && TMT2 > 0", chan, 21, 0, 105, 0, "M_{T2} [GeV]", "MT2_21");
 //    DrawPlot("GetMT2orDeltaEtaBins(TMT2, TMET, TDeltaEta)", cut, chan, 14, 1, 15, 0, "Signal regions", "SignalRegions");
-//    DrawPlot("TDeltaPhi",   cut, chan, 30,    0, 3.15, 0, "#Delta#varphi_{#font[12]{ll}} [rad]",   "DeltaPhi");
-/*    DrawPlot("TLep0_Pt",    cut, chan, 25,   25,  250, 0, "Leading lepton p_{T} [GeV]",   "Lep0Pt");
-    DrawPlot("TMll",        cut, chan, 40,    0,  600, 0, "M_{#font[12]{ll}} [GeV]",               "InvMass");
-    DrawPlot("DilepPt(TLep0_Pt, TLep0_Eta, TLep0_Phi, TLep0_E, TLep1_Pt, TLep1_Eta, TLep1_Phi, TLep1_E)",    cut, chan, 30,    0,  300, 0, "p_{T}^{#font[12]{ll}} [GeV]",  "DilepPt");
-    DrawPlot("TDeltaEta",   cut, chan, 30,    0,  2.4, 0, "#Delta#eta_{#font[12]{ll}} [rad]",      "DeltaEta");
-//    DrawPlot("TLep1_Pt",    cut, chan, 30,    0,  200, 0, "Subleading lepton p_T [GeV]",  "Lep1Pt");
-//    DrawPlot("TLep0_Eta",   cut, chan, 20, -2.4,  2.4, 0, "Leading lepton #eta [rad]",    "Lep0Eta");
-//    DrawPlot("TLep1_Eta",   cut, chan, 20, -2.4,  2.4, 0, "Subleading lepton #eta [rad]", "Lep1Eta");
+  //  DrawPlot("TDeltaPhi",   cut, chan, 20,    0, 3.15, 0, "#Delta#varphi_{#font[12]{ll}} [rad]",   "DeltaPhi");
+  //  DrawPlot("TLep0_Pt",    cut, chan, 25,   25,  250, 0, "Leading lepton p_{T} [GeV]",   "Lep0Pt");
+  //  DrawPlot("TMll",        cut, chan, 40,    0,  600, 0, "M_{#font[12]{ll}} [GeV]",               "InvMass");
+  //  DrawPlot("DilepPt(TLep0_Pt, TLep0_Eta, TLep0_Phi, TLep0_E, TLep1_Pt, TLep1_Eta, TLep1_Phi, TLep1_E)",    cut, chan, 30,    0,  300, 0, "p_{T}^{#font[12]{ll}} [GeV]",  "DilepPt");
+  //  DrawPlot("TDeltaEta",   cut, chan, 30,    0,  2.4, 0, "#Delta#eta_{#font[12]{ll}} [rad]",      "DeltaEta");
+  //  DrawPlot("TLep1_Pt",    cut, chan, 30,    0,  200, 0, "Subleading lepton p_T [GeV]",  "Lep1Pt");
+  //  DrawPlot("TLep0_Eta",   cut, chan, 20, -2.4,  2.4, 0, "Leading lepton #eta [rad]",    "Lep0Eta");
+  //  DrawPlot("TLep1_Eta",   cut, chan, 20, -2.4,  2.4, 0, "Subleading lepton #eta [rad]", "Lep1Eta");
 //    DrawPlot("TChannel",    cut, chan, 1,     0,   10, 0, "Events",                       "Events");
     //DrawPlot("TJet_Eta[0]", cut, chan, 20, -2.4,  2.4, 0, "Leading jet #eta [rad]",       "Jet0Eta");
     //DrawPlot("TJet_Eta[1]", cut, chan, 20, -2.4,  2.4, 0, "Subleading jet #eta [rad]",    "Jet1Eta");
     //DrawPlot("TJet_Pt[0]",  cut, chan, 27,   30,  300, 0, "Leading jet p_T [GeV]",        "Jet0Pt");
     //DrawPlot("TJet_Pt[1]",  cut, chan, 30,    0,  300, 0, "Subleading jet p_T [GeV]",     "Jet1Pt");
-    DrawPlot("TNBtags", cut, chan, 5, 0, 4, 0, "#b jets", "NBtags");
-*/  }
+   // DrawPlot("TNBtags", cut, chan, 5, 0, 4, 0, "#b jets", "NBtags");
+  }
   
   //>>> Nonprompt estimate
   if(_PrintWZestimate)  PrintNonWZestimate(chan, cut);
@@ -88,8 +91,9 @@ void DrawPlots(TString chan = "ElMu"){
 
   //>>> Plot with S/B ratio
   if(_PrintSignalPlots){
-    DrawSignalPlot("TMT2",        cut, chan, ngbins, 0, 0, gbins, "M_{T2} [GeV]", "MT2_21");
-    //DrawSignalPlot("TMT2",        cut, chan, ngbins5b, 0, 0, gbins5b, "M_{T2} [GeV]", "MT2_5b");
+    DrawSignalPlot("TMT2",        cut, chan, ngbins, 0, 105, 0, "M_{T2} [GeV]", "MT2_21");
+    //DrawSignalPlot("TMT2",        cut, chan, ngbins, 0, 0, gbins, "M_{T2} [GeV]", "MT2_21");
+  //  DrawSignalPlot("TMT2",        cut, chan, ngbins5b, 0, 0, gbins5b, "M_{T2} [GeV]", "MT2_5b");
     //DrawSignalPlot("TMET",        cut, chan, 40,    0,  400, 0, "MET [GeV]",                    "MET");
     //DrawSignalPlot("TDeltaPhi",   cut, chan, 30,    0, 3.15, 0, "#Delta#varphi_{#font[12]{ll}} [rad]",   "DeltaPhi");
     //DrawSignalPlot("TDeltaEta",   cut, chan, 30,    0,  2.4, 0, "#Delta#eta_{#font[12]{ll}} [rad]",      "DeltaEta");
@@ -147,7 +151,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 
   //>>> Add signal points 
   //p->AddSample("T2tt_mStop175_mLsp1",   "Stop[175, 1]",    itSignal, kGreen+1);
-  //p->AddSample("T2tt_225_50_FS_summer", "Stop[225,50]", itSignal, kCyan); 
+  //p->AddSample("T2tt_225_50_FS_xqcut20", "Stop[225,50]", itSignal, kCyan); 
 
   //>> Add systematics
   p->AddSystematic("stat"); 
@@ -158,7 +162,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddNormUnc("tW", 0.30);
   p->AddNormUnc("Nonprompt", 0.50);
   if(doAllSyst){
-
+/*
   if(doTopPtReweighting) p->SetWeight("TWeight*GetTopPtWeight(TgenTop1Pt, TgenTop2Pt)");
     // ttbar modeling
     p->AddSample("TTbar_Powheg_ueUp", "ttbar", itSys, 1, "ueUp");
@@ -174,8 +178,9 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     p->AddSample("TTbar_GluonMoveCRTune", "ttbar", itSys, 1, "GluonMoveCRTune");
     p->AddSample("TTbar_GluonMoveCRTune_erdON", "ttbar", itSys, 1, "GluonMoveCRTune_erdON");
     p->UseEnvelope("ttbar", "Powheg_erdON, QCDbasedCRTune_erdON, GluonMoveCRTune, GluonMoveCRTune_erdON", "CR");
-
+*/
     //>>> PDF and scale using LHE weights...
+    /*
     PDFunc *pdf;
     if(bin0 == binN) pdf = new PDFunc(pathToTree, "TTbar_Powheg", NameOfTree, cut, chan, var, nbins, bins);
     else             pdf = new PDFunc(pathToTree, "TTbar_Powheg", NameOfTree, cut, chan, var, nbins, bin0, binN);
@@ -190,7 +195,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     hPDFUp->SetType(itSys); hPDFDown->SetType(itSys); hMEUp->SetType(itSys); hMEDown->SetType(itSys);
     hPDFUp->SetStyle(); hPDFDown->SetStyle(); hMEUp->SetStyle(); hMEDown->SetStyle();
     p->AddToHistos(hPDFUp); p->AddToHistos(hPDFDown); p->AddToHistos(hMEUp); p->AddToHistos(hMEDown);
-
+*/
   p->SetWeight("TWeight");
   }
 
@@ -202,10 +207,22 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   Float_t fakeSS = 1.5;
   p->ScaleProcess("Nonprompt", fakeSS);
 
+//  p->ScaleProcess("ttbar", 805./831.8);
+  float ydata = 0; float yttbar = 0; float ybkg = 0; float factor;
+/*  for(int i = 1;i <= nbins; i++){
+    ydata  = p->GetYield("Data", "", i);
+    yttbar = p->GetYield("ttbar", "", i);
+    ybkg   = p->GetYield("AllBkg", "", i);
+    factor = (ydata - ybkg + yttbar)/yttbar;
+    cout << Form("[%i] factor = %1.3f\n", i, factor);
+    p->ScaleProcessBin("ttbar", factor, i);
+  }*/
+
   //>>> Print and save
   p->SetPlotFolder(outputFolder+"/ControlPlotsDilepton/");
   p->doData = true;
   p->doSetLogy = false;
+  p->doLegend = false;
   p->DrawStack();
   p->SetOutputName("Data_log");
   p->doSetLogy = true;
@@ -251,18 +268,9 @@ void PrintYieldTalbe(TString chan, TString cut){
 	p->AddSample("MuonEG, SingleMuon, SingleElec, DoubleEG, DoubleMuon", "Data", itData);
 
   //>>> Signal samples
-  p->AddSample("T2tt_200_50_FS_summer", "SFS_200_50", itSignal, kGray); 
-  p->AddSample("T2tt_225_50_FS_summer", "SFS_225_50", itSignal, kViolet); 
-  p->AddSample("T2tt_250_50_FS_summer", "SFS_250_50", itSignal, kTeal-3); 
-  p->SetPathSignal("/pool/ciencias/userstorage/juanr/stop/sep22/T2tt/ISR/");
-  p->AddSample("T2tt_200_50_FS_summer", "SFS_200_50_2", itSignal, kGray); 
-  p->AddSample("T2tt_225_50_FS_summer", "SFS_225_50_2", itSignal, kViolet); 
-  p->AddSample("T2tt_250_50_FS_summer", "SFS_250_50_2", itSignal, kTeal-3); 
-  p->SetWeight("TWeight*TISRweight");
-  p->AddSample("T2tt_200_50_FS_summer", "SFS_200_50/ISRweight", itSignal, kGray); 
-  p->AddSample("T2tt_225_50_FS_summer", "SFS_225_50/ISRweight", itSignal, kViolet); 
-  p->AddSample("T2tt_250_50_FS_summer", "SFS_250_50/ISRweight", itSignal, kTeal-3); 
-  p->SetWeight("TWeight");
+  p->AddSample("T2tt_200_50_FS_xqcut20", "SFS_200_50", itSignal, kGray); 
+  p->AddSample("T2tt_225_50_FS_xqcut20", "SFS_225_50", itSignal, kViolet); 
+  p->AddSample("T2tt_250_50_FS_xqcut20", "SFS_250_50", itSignal, kTeal-3); 
 
   //>>> Systematics
   p->AddSystematic("stat"); // Only stat //p->AddSystematic("stat,JES,Btag,MisTag,LepEff,PU");
@@ -383,16 +391,18 @@ void DrawSignalPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t
   //>>> Adding signal sample (only one at a time, for now...)
   //p->SetWeight("TWeight*TBtagSFFS");
   //p->AddSample("T2tt_mStop175_mLsp1",   "Stop[175, 1]",    itSignal, kGreen+1);
-  p->AddSample("T2tt_225_50_FS_summer", "Stop[225,50]", itSignal, kCyan); 
+  p->AddSample("T2tt_mStop227_mLsp52", "Stop[227.5,52.5]", itSignal, kCyan); 
   p->SetOutputName("Signal");
 
   //>>> Setting StoB ratio... NO DATA  
-  p->SetSignalProcess("Stop[225,50]");
+  p->SetSignalProcess("Stop[227.5,52.5]");
   p->SetSignalStyle("SM");
   p->SetRatioMin(0.0);
   p->SetRatioMax(0.1);
+  p->SetPlotMinimum(1);
+  p->SetPlotMinimum(1e5);
   //p->SetRatioOptions("S/B");
-  p->doData = true;
+  p->doData = false;
 
   //>>> Add systematics
   p->AddSystematic("stat"); //p->AddSystematic("JES,Btag,MisTag,LepEff,PU");
@@ -404,6 +414,12 @@ void DrawSignalPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t
   Float_t fakeSS = a->GetFakeSF(); */
   Float_t fakeSS = 1.50;
   p->ScaleProcess("Nonprompt", fakeSS);
+
+  p->GroupProcesses("VV", "Others");
+  p->GroupProcesses("ttV", "Others");
+  p->GroupProcesses("DY", "Others");
+  p->GroupProcesses("Nonprompt", "Others");
+  p->SetLineColor("Others", kSpring-2);
 
   //>>> Options and printing
   p->SetPlotFolder(outputFolder);

@@ -44,7 +44,7 @@ void GenLevelPlots(TString lab = ""){
   if(lab.Contains("gen")){ 
 //    DrawPlot("fabs(TgenLep0_Eta) : fabs(TgenLep1_Eta)",      dilepgen, chan, 20, 0, 2.4, "gen lep #eta",             "genEta", lab);
 //    DrawPlot("TgenLep0_Pt : TgenLep1_Pt",      dilepgen, "TChannel >= 0", 20, 0, 200, "gen lep p_{T} [GeV]",   "genPt", lab);
-    DrawPlot("TgenMT2",      dilepgen, chan, 20, 0, 120, "gen M_{T2} [GeV]",             "genMT2", lab);
+    DrawPlot("TgenMT2",      dilepgen, chan, 21, 0, 105, "gen M_{T2} [GeV]",             "genMT2", lab);
 /*    DrawPlot("TgenMT2",      dilepgen, chan, 20, 0, 120, "gen M_{T2} [GeV]",             "genMT2", lab);
     //DrawPlot("TgenMT2",      dilepgen + " && TgenMT2 > 0", "ElMu", 20, 0, 120, "gen M_{T2} [GeV]", "genMT2_no0", lab);
     DrawPlot("TgenLep0_Pt",  dilepgen, chan, 15, 0, 200, "gen Leading lep p_{T} [GeV]",    "genLep0Pt", lab);

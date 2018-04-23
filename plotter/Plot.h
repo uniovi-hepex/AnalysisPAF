@@ -205,6 +205,9 @@ public:
     yRatioTitleLabelSize = 0.12;
     yRatioTitleOffset = 0.26;
 
+    dataStyle = "psameE1X0";
+    dataTag   = "Data";
+
     chX = 0.15; chY = 0.81; chSize = 22; chlabel = ""; f = 0;
     RatioMin = 0.8; RatioMax = 1.2;
     ScaleMax = 1.2; ScaleLog = 500;
@@ -257,7 +260,10 @@ public:
   virtual void SaveHistograms();
 
   int GetNbins(){  return nb;}
+  Float_t GetBin0(){  return x0;}
+  Float_t GetBinN(){  return xN;}
   virtual TString GetVar(){  return var;}
+  virtual TString GetCut(){  return cut;}
   virtual TString GetChan(){ return chan;}
   virtual TString GetSignal(){ return signal;}
   virtual Float_t GetLumi(){ return Lumi;}
@@ -272,10 +278,14 @@ public:
   virtual void SetLimitFolder(TString f){limitFolder = f;}   
 	virtual void SetCut(TString cuts){cut = (cuts);}
 	virtual void SetBins(Int_t nbins, Double_t bin0, Double_t binN){ nb = nbins; x0 = bin0; xN = binN;}
+	virtual void SetBins(Histo* h){ nb = h->GetXaxis()->GetNbins(); x0 = h->GetXaxis()->GetBinLowEdge(1); xN = h->GetXaxis()->GetBinLowEdge(nb+1);}
+	virtual void SetBins(TH1* h){ nb = h->GetXaxis()->GetNbins(); x0 = h->GetXaxis()->GetBinLowEdge(1); xN = h->GetXaxis()->GetBinLowEdge(nb+1);}
 	void SetTitle(TString tit){title = tit;}
 	virtual void SetTitleX(TString xtit, Float_t size = -999){xtitle = xtit; if(size != -999) xtitle = size;}
 	virtual void SetTitleY(TString ytit, Float_t size = -999){ytitle = ytit; if(size != -999) ytitleSize = size;}
 
+  void SetDataTag(TString t){dataTag = t;}
+  void SetDataStyle(TString t){dataStyle = t;}
   virtual void SetYaxisDivisions(Int_t div){ytitleDivisions = div;}
   virtual void SetYaxisOffset(Float_t Offset, Float_t size = -999){ ytitleOffset = Offset; if(size != -999) ytitleLabelSize = size;}
   virtual void SetYratioOffset(Float_t offset, Float_t size = -999){ yRatioTitleOffset = offset; if(size != -999) yRatioTitleSize = size;}
@@ -315,6 +325,7 @@ public:
   virtual void SetYieldsTableName(TString p){ YieldsTableName = p;}
   virtual TString GetOutputName(){ return outputName;}
   virtual TString GetPathToHeppyTrees(){ return pathToHeppyTrees;}
+  virtual TString GetPath(){ return path;}
 
   virtual void PrintSamples();
   void PrintSystematics(); 
@@ -438,6 +449,8 @@ protected:
   Float_t chY;
   Float_t chSize;
  
+  TString dataStyle;
+  TString dataTag;
   TString SignalProcess;
   TString LoopOptions = "";
   TString RatioYtitle;
@@ -504,12 +517,14 @@ class MultiPlot : public Plot{
   vector<Int_t> VColors;
   vector<TString> VSystL;
   vector<TString> VWeight;
+  vector<TString> VOptions;
+  vector<TString> VPaths;
   // VSamples, VProcesses --> From Plot
 
   public:
   void AddDistribution(TString name, TString var, TString cut, TString chan, Int_t nbins, Float_t bin0, Float_t binN, Float_t *bins = nullptr);
-  void AddSample(TString sample, TString process = "", Int_t type = itBkg, Int_t color = 1, TString syst = "", TString weight = "TWeight");
-  void AddHyperlooper(TString sample, TString process, Int_t type, Int_t color, TString syst, TString weight = "TWeight");
+  void AddSample(TString sample, TString process = "", Int_t type = itBkg, Int_t color = 1, TString syst = "", TString weight = "TWeight", TString options = "");
+  void AddHyperlooper(TString sample, TString process, Int_t type, Int_t color, TString syst, TString weight = "TWeight", TString options = "", TString path = "");
   void Loop();
   void SetPlot(TString name, TString xtit = "", TString ytit = "", TString seltext = "", Float_t ratioMax = 1.2, Float_t rationMin = -999);
 };

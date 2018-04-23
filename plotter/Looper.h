@@ -240,6 +240,7 @@ public:
    path = "";
    sampleName = "";
    process = "";
+   sampleOptions = "";
    syst = "";
    weight = "";
    color = 0; type = 0;
@@ -252,7 +253,7 @@ public:
    sampleName = samplename;
    systematics = sys;
    weight = Weight;
-   options = op;
+   sampleOptions = op;
    process = pr;
    syst = sys;
    weight = Weight;
@@ -302,6 +303,7 @@ public:
   TString GetProcess(){ return process;}
   TString GetSyst(){ return syst;}
   TString GetWeight(){ return weight;}
+  TString GetSampleOptions(){ return sampleOptions;}
 
   Int_t GetPos(TString Name);
 
@@ -321,6 +323,7 @@ public:
 
   protected:
   TString process;
+  TString sampleOptions;
   Int_t color;
   Int_t type;
   TString syst;
@@ -568,6 +571,7 @@ TString CraftVar(TString varstring, TString sys, TTree *tree){
 }
 
 TString CraftFormula(TString cuts, TString chan, TString sys, TString weight, TTree* tree, TString options){
+  if(options.Contains("noSys")) sys = "";
   TString schan = ("1");
   if     (chan == "ElMu")  schan = (Form("(TChannel == %i)", iElMu));
   else if(chan == "Muon")  schan = (Form("(TChannel == %i)", iMuon));

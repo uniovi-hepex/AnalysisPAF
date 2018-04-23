@@ -41,6 +41,7 @@ class StopTopAnalysis : public PAFChainItemSelector{
     void SetJetVariables();
     void SetEventVariables();
     void SetMetNoNeutralinos();
+    void SetPolWeights();
 
     void GetLeptonVariables(std::vector<Lepton> selLeptons);
     void GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut = 30);
@@ -110,6 +111,7 @@ class StopTopAnalysis : public PAFChainItemSelector{
     Float_t TLep0_E;
     Int_t   TLep0_Id;
     Float_t TLep0_Charge;
+    Int_t   TLep0_GenMatch;    
     Float_t TLep1_Pt;    
     Float_t TLep1_PtMuScaleUp;    
     Float_t TLep1_PtMuScaleDown;    
@@ -119,6 +121,7 @@ class StopTopAnalysis : public PAFChainItemSelector{
     Float_t TLep1_Phi;
     Float_t TLep1_E;
     Int_t   TLep1_Id;
+    Int_t   TLep1_GenMatch;    
     Float_t TLep1_Charge;
 
     Int_t TNJets;            // Jets...
@@ -191,6 +194,8 @@ class StopTopAnalysis : public PAFChainItemSelector{
     Float_t  TWeight_ISRDown;
     Float_t  TWeight_UnclMETUp;
     Float_t  TWeight_UnclMETDown;
+    Float_t  TWeight_PolR;
+    Float_t  TWeight_PolL;
 
     Float_t TgenTop1Pt ;
     Float_t TgenTop1Eta;
@@ -202,6 +207,7 @@ class StopTopAnalysis : public PAFChainItemSelector{
     Float_t TgenTop2M  ;
     Float_t TgentopDeltaPhi; 
     Float_t TgentopDeltaR;
+    Int_t TgenTop1ID; Int_t TgenTop2ID;
 
     Int_t TnGenW = 0; Int_t TnGenNeutrinos = 0; 
     Int_t TnGenStop = 0; Int_t TnGenLsp = 0;
@@ -237,10 +243,12 @@ class StopTopAnalysis : public PAFChainItemSelector{
     Float_t TgenLsp2Eta;
     Float_t TgenLsp2Phi;
     Float_t TgenLsp2M  ;
+    Int_t TgenStop1ID; Int_t TgenStop2ID;
 
     Float_t TgenWeight;
     Float_t TgenMET;   // MET_genPt
     Float_t TgenMETPhi;
+    Int_t   TEventTruth;
     Int_t   TNgenLeps;
     Int_t   TgenLep0_Id;
     Int_t   TgenLep1_Id;
@@ -248,8 +256,10 @@ class StopTopAnalysis : public PAFChainItemSelector{
     Float_t TgenLep0_Eta;
     Float_t TgenLep1_Pt;
     Float_t TgenLep1_Eta;
+    Float_t TgenLep0_Phi; Float_t TgenLep1_Phi; Float_t TgenLep1_M; Float_t TgenLep0_M;
     Int_t   TgenLep0_Mid;
     Int_t   TgenLep1_Mid;
+    Int_t TgenLep0_Ch; Int_t TgenLep1_Ch;
     Float_t TgenDeltaPhi;
     Float_t TgenDeltaEta;
     Float_t TgenMT2;

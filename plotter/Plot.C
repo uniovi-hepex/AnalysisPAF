@@ -115,8 +115,8 @@ void Plot::SetData(){  // Returns histogram for Data
   if(hData) delete hData;
   if(gROOT->FindObject("HistoData")) delete gROOT->FindObject("HistoData");
   
-  if(x0 != xN) hData = new Histo(TH1F("HistoData", "Data", nb, x0, xN));
-  else         hData = new Histo(TH1F("HistoData", "Data", nb, vbins));
+  if(x0 != xN) hData = new Histo(TH1F("HistoData", dataTag, nb, x0, xN));
+  else         hData = new Histo(TH1F("HistoData", dataTag, nb, vbins));
   if(VData.size() < 1) doData = false;
   TString p = "";
 
@@ -556,7 +556,10 @@ void Plot::GroupProcesses(TString pr, TString newProcess){
     if(Exists(pr, s) && Exists(newProcess,s))                 GetHisto(newProcess, s)->Add(GetHisto(pr,s));
     if(Exists(pr, s + "Up"  ) && Exists(newProcess,s+"Up"))   GetHisto(newProcess, s+"Up")->Add(GetHisto(pr,s+"Up"));
     if(Exists(pr, s + "Down") && Exists(newProcess,s+"Down")) GetHisto(newProcess, s+"Down")->Add(GetHisto(pr,s+"Down"));
+    GetHisto(newProcess, s+"Up")->ReCalcValues();
+    GetHisto(newProcess, s+"Down")->ReCalcValues();
   }
+  GetHisto(newProcess, s)->ReCalcValues();
   // TODO: Add proper norm uncertainties!!
   RemoveProcess(pr);
 }
@@ -703,8 +706,8 @@ TLegend* Plot::SetLegend(){ // To be executed before using the legend
   }
 
   if(doData && hData && VData.size() > 0){
-    hData->SetTag("Data");
-    hData->SetProcess("Data");
+    hData->SetTag(dataTag);
+    hData->SetProcess(dataTag);
     hData->AddToLegend(leg,doYieldsInLeg);
   }
 
@@ -823,7 +826,7 @@ void Plot::DrawComp(TString tag, bool doNorm, TString options){
   signal->SetMaximum(themax*ScaleMax);
   if(!doSetLogy){
     PlotMinimum = PlotMinimum == -999? 0 : PlotMinimum;
-    //plot->SetLogy(0);
+    plot->SetLogy(0);
   }
   signal->SetMinimum(PlotMinimum);
   if(doSetLogy){
@@ -950,6 +953,7 @@ void Plot::DrawStack(TString tag){
   TCanvas* c = SetCanvas(); plot->cd(); 
   GetStack();
   SetData();
+  if(dataStyle.Contains("l")  || dataStyle.Contains("L") || dataStyle.Contains("hist")){ hData->SetLineWidth(2); hData->SetLineColor(1);}
 
   //--------- Plotting options for the signal
   Int_t nSignals = 0;
@@ -1037,7 +1041,7 @@ void Plot::DrawStack(TString tag){
   if(doSys && ((Int_t) VSystLabel.size() > 0 || doExternalSyst))  hAllBkg->Draw("same,e2");
 
   //--------- Draw Data
-  if(doData && RatioYtitle != "S/B") hData->Draw("psameE1X0");
+  if(doData && RatioYtitle != "S/B") hData->Draw(dataStyle);
 
   //--------- Draw systematics ratio
   hAllBkg->SetFillStyle(StackErrorStyle);
@@ -1762,7 +1766,7 @@ void Plot::AddPlotFromHyperlooper(Hyperlooper *HyperLoop, TString plotname){
   for(Int_t i = 0; i < nHistos; i++){
     systag = d.vh.at(i)->GetSysTag();
     if(systag != "0" && systag != "") type = itSys;
-    if(type != itData && !LoopOptions.Contains("noScaleLumi")) d.vh.at(i)->Scale(Lumi*1000);
+    if(type != itData && !((HyperLoop->GetSampleOptions()).Contains("noScaleLumi")) ) d.vh.at(i)->Scale(Lumi*1000);
     PrepareHisto(d.vh.at(i), sampleName, process, type, color);
   }
 }
@@ -1770,17 +1774,17 @@ void Plot::AddPlotFromHyperlooper(Hyperlooper *HyperLoop, TString plotname){
 
 //=========================================== MULTIPLOT
 
-void MultiPlot::AddHyperlooper(TString sample, TString process, Int_t type, Int_t color, TString syst, TString weight){
+void MultiPlot::AddHyperlooper(TString sample, TString process, Int_t type, Int_t color, TString syst, TString weight, TString options, TString pathS){
   nDist = Dname.size(); 
   TString pathToMiniTree; 
-  pathToMiniTree = path;
-  if     (type == itSignal || sample.Contains("T2tt")) pathToMiniTree = pathSignal;
-  else if(type == itData  ) pathToMiniTree = pathData;
-  else if(sample.Contains("/")){
+  pathToMiniTree = pathS == ""? path : pathS;
+  //if     (type == itSignal || sample.Contains("T2tt")) pathToMiniTree = pathSignal;
+  //else if(type == itData  ) pathToMiniTree = pathData;
+  if(sample.Contains("/")){
     pathToMiniTree = sample(0, sample.Last('/')+1);
     sample = sample(sample.Last('/')+1, sample.Sizeof());
   }
-  Hyperlooper* h = new Hyperlooper(pathToMiniTree, treeName, sample, process, type, color, weight, syst); 
+  Hyperlooper* h = new Hyperlooper(pathToMiniTree, treeName, sample, process, type, color, weight, syst, options); 
   for(Int_t i = 0; i < nDist; i++)
     h->AddDistribution(Dname.at(i), Dvar.at(i), Dcut.at(i), Dchan.at(i), Dnbins.at(i), Dbin0.at(i), DbinN.at(i), Dbins.at(i));
   h->Fill();
@@ -1798,7 +1802,7 @@ void MultiPlot::Loop(){
     else if(VTypes.at(i) == itData)   stype = "data";
     else if(VTypes.at(i) == itSys)    stype = "systematic";
     cout << Form("\033[1;39mAnalyzing sample: \033[1;31m%s \033[1;39m(\033[1;35m%s\033[1;39m) as \033[1;34m%s\033[0m\n", VTagSamples.at(i).Data(), VTagProcesses.at(i).Data(), stype.Data());
-    AddHyperlooper(VTagSamples.at(i), VTagProcesses.at(i), VTypes.at(i), VColors.at(i), VSystL.at(i), VWeight.at(i));
+    AddHyperlooper(VTagSamples.at(i), VTagProcesses.at(i), VTypes.at(i), VColors.at(i), VSystL.at(i), VWeight.at(i), VOptions.at(i), VPaths.at(i));
   }
 }
 
@@ -1817,22 +1821,27 @@ void MultiPlot::AddDistribution(TString name, TString var, TString cut, TString 
   Dbins.push_back(bins);
 }
 
-void MultiPlot::AddSample(TString p, TString pr, Int_t type, Int_t color, TString syst, TString weight){
+void MultiPlot::AddSample(TString p, TString pr, Int_t type, Int_t color, TString syst, TString weight, TString options){
   p.ReplaceAll(" ", "");
   if(pr == "") pr = p;
   if(p.Contains(",")){
     TString First_p = p(0, p.First(','));
     TString theRest = p(p.First(',')+1, p.Sizeof());
-    AddSample(First_p, pr, type, color, syst, weight);
-    AddSample(theRest, pr, type, color, syst, weight);
+    AddSample(First_p, pr, type, color, syst, weight, options);
+    AddSample(theRest, pr, type, color, syst, weight, options);
     return;
   }
+  TString pathSample = path;
+  if(type == itData) pathSample  = pathData;
+  if(type == itSignal) pathSample  = pathSignal;
   VTagSamples.push_back(p);
   VTagProcesses.push_back(pr);
   VTypes.push_back(type);
   VColors.push_back(color);
   VSystL.push_back(syst);
   VWeight.push_back(weight);
+  VOptions.push_back(options);
+  VPaths.push_back(pathSample);
 }
 
 

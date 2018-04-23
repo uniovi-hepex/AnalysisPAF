@@ -7,11 +7,12 @@ R__LOAD_LIBRARY(Plot.C+)
 
 TString treename = "tree";
 TString path = "/pool/ciencias/userstorage/juanr/stop/genLevel/";
-TString outpath = "/nfs/fanae/user/juanr/AnalysisPAF/plotter/stop/TopMass/";
+//TString outpath = "/nfs/fanae/user/juanr/AnalysisPAF/plotter/stop/TopMass/";
+TString outpath = "~/www/stop/feb2018/topMassComp/";
 
 TString dilepgen = "TNgenLeps >= 2";
 TString dilep    = "TNSelLeps >= 2"; 
-TString BaselineCut = "TNJets >= 2 && TNBtags >= 1 && !TIsSS && TPassTrigger && TPassMETfilters";
+TString BaselineCut = "TNJets >= 2 && TNBtags >= 1 && !TIsSS && TPassTrigger && TPassMETfilters && TNSelLeps == 2 && TLep0_Pt >= 25";
 TString Dilepton    = "!TIsSS && TPassTrigger && TPassMETfilters";
 
 Float_t ttbar_xsec_top_mass(Float_t m);
@@ -36,13 +37,15 @@ void DrawComp(){
   mp->AddDistribution("DeltaPhi", "TgenDeltaPhi", dilepgen, chan, 15, 0, 3.2);
   mp->AddDistribution("DeltaEta", "TgenDeltaEta", dilepgen, chan, 15, 0, 3.2);
 
-  mp->AddSample("TTbar_Powheg",           "t#bar{t}, m_{t} = 172.5 GeV/c^{2}",  itSignal, 1,         "", weight);
+  mp->AddSample("TTbar_Powheg",           "t#bar{t}, m_{t} = 172.5 GeV/c^{2}",  itSignal, kGray+2,   "", weight);
   mp->AddSample("TTbar_Powheg_mtop1665",  "t#bar{t}, m_{t} = 165.5 GeV/c^{2}",  itSignal, kViolet-1, "", weight);
   mp->AddSample("TTbar_Powheg_mtop1695",  "t#bar{t}, m_{t} = 169.5 GeV/c^{2}",  itSignal, kBlue+1,   "", weight);
   mp->AddSample("TTbar_Powheg_mtop1715",  "t#bar{t}, m_{t} = 171.5 GeV/c^{2}",  itSignal, kGreen+2,  "", weight);
   mp->AddSample("TTbar_Powheg_mtop1735",  "t#bar{t}, m_{t} = 173.5 GeV/c^{2}",  itSignal, kOrange,   "", weight);
   mp->AddSample("TTbar_Powheg_mtop1755",  "t#bar{t}, m_{t} = 175.5 GeV/c^{2}",  itSignal, kOrange+2, "", weight);
   mp->AddSample("TTbar_Powheg_mtop1785",  "t#bar{t}, m_{t} = 178.5 GeV/c^{2}",  itSignal, kRed+1,    "", weight);
+
+  mp->AddSample("T2tt_mStop227_mLsp52", "T2tt[227.5,52.5]", itSignal, 1, weight);
 
   mp->SetLegendTextSize(0.04);
   mp->SetLegendPosition(0.50, 0.60, 0.93, 0.93);
@@ -103,9 +106,9 @@ void Graph(){
 
 
 void TopMassVar(){
-  PrintXsec();
+  //PrintXsec();
   //Graph();
-  //DrawComp();
+  DrawComp();
 }
 
 Float_t ttbar_xsec_top_mass(Float_t m){
