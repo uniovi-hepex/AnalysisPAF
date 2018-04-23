@@ -71,7 +71,7 @@ TH1D* PUWeight::LoadMCHistogram(const char* mcfolder, const char* mcproccess) {
 #endif
   
   TString dsfile;
-  dsfile.Form("http://www.hep.uniovi.es/jfernan/PUhistos/%s/%s.root", 
+  dsfile.Form("/nfs/fanae/user/jfernan/www/PUhistos/%s/%s.root", 
         mcfolder, mcproccess);
 #if (DEBUGPUWEIGHT > 1)
   PAF_DEBUG("PUWeight", Form("   + Opening %s", dsfile.Data()));
@@ -120,11 +120,11 @@ TH1D* PUWeight::LoadDataHistogram(float luminosity, const char* year) {
   TFile* fdt = 0;
   if (luminosity > 0) {
     if (fIs3D)
-      dtfile.Form("http://www.hep.uniovi.es/jfernan/PUhistos/Data%s/3D/PUdata_%.1f.root", 
+      dtfile.Form("/nfs/fanae/user/jfernan/www/PUhistos/Data%s/3D/PUdata_%.1f.root", 
       year, luminosity);
     else
-      //dtfile.Form("http://www.hep.uniovi.es/jfernan/PUhistos/Data%s/PUdata_%.1f.root", 
-      dtfile.Form("http://www.hep.uniovi.es/palencia/PUhistos/Data%s/PUdata_%.1f.root", 
+      //dtfile.Form("/nfs/fanae/user/jfernan/www/PUhistos/Data%s/PUdata_%.1f.root", 
+      dtfile.Form("/nfs/fanae/user/palencia/www/PUhistos/Data%s/PUdata_%.1f.root", 
       year, luminosity);
 
   
@@ -140,7 +140,7 @@ TH1D* PUWeight::LoadDataHistogram(float luminosity, const char* year) {
   }
 
   if (!fdt) {
-    dtfile="http://www.hep.uniovi.es/jfernan/PUhistos/Data2011A/PUdata.root";
+    dtfile="/nfs/fanae/user/jfernan/www/PUhistos/Data2011A/PUdata.root";
 
 #if (DEBUGPUWEIGHT > 1)
     PAF_DEBUG("PUWeight", Form("   + Opening %s", dtfile));
@@ -622,7 +622,7 @@ TH1D* PUWeight::IdealMCHistogram(EMCDistribution mcdistr) {
     fMC->FillN(nbins, bins, idealpu);
   }
   else if (mcdistr == Summer2015_50ns_poisson){
-    //https://github.com/cms-sw/cmssw/blob/CMSSW_7_4_X/SimGeneral/MixingModule/python/mix_2015_50ns_Startup_PoissonOOTPU_cfi.py
+    ///nfs/fanae/userw/cmssw/www/blob/CMSSW_7_4_X/SimGeneral/MixingModule/python/mix_2015_50ns_Startup_PoissonOOTPU_cfi.py
     nbins = 53;
     double idealpu[]= {4.71E-09, 2.86E-06, 4.85E-06, 1.53E-05, 3.14E-05, 6.28E-05, 1.26E-04, 
                        3.93E-04, 1.42E-03, 6.13E-03, 1.40E-02, 2.18E-02, 2.94E-02, 4.00E-02, 
@@ -636,7 +636,7 @@ TH1D* PUWeight::IdealMCHistogram(EMCDistribution mcdistr) {
     fMC->FillN(nbins, bins, idealpu);
   }
   else if (mcdistr == Summer2015_25ns_poisson){
-    //https://github.com/cms-sw/cmssw/blob/CMSSW_7_4_X/SimGeneral/MixingModule/python/mix_2015_25ns_Startup_PoissonOOTPU_cfi.py
+    ///nfs/fanae/userw/cmssw/www/blob/CMSSW_7_4_X/SimGeneral/MixingModule/python/mix_2015_25ns_Startup_PoissonOOTPU_cfi.py
     nbins = 53;
     double idealpu[]= {4.8551E-07 , 1.74806E-06, 3.30868E-06, 1.62972E-05, 4.95667E-05, 0.000606966,
                        0.003307249, 0.010340741, 0.022852296, 0.041948781, 0.058609363, 0.067475755,
@@ -651,7 +651,7 @@ TH1D* PUWeight::IdealMCHistogram(EMCDistribution mcdistr) {
     fMC->FillN(nbins, bins, idealpu);
   }
   else if (mcdistr == Fall2015_25ns_matchData_poisson){
-    //https://github.com/cms-sw/cmssw/blob/CMSSW_7_6_X/SimGeneral/MixingModule/python/mix_2015_25ns_FallMC_matchData_PoissonOOTPU_cfi.py
+    ///nfs/fanae/userw/cmssw/www/blob/CMSSW_7_6_X/SimGeneral/MixingModule/python/mix_2015_25ns_FallMC_matchData_PoissonOOTPU_cfi.py
     nbins = 51;
     double idealpu[]= {0.000108643, 0.000388957, 0.000332882, 0.00038397 , 0.000549167, 0.00105412 ,
                        0.00459007 , 0.0210314  , 0.0573688  , 0.103986   , 0.142369   , 0.157729   ,
@@ -666,7 +666,7 @@ TH1D* PUWeight::IdealMCHistogram(EMCDistribution mcdistr) {
     fMC->FillN(nbins, bins, idealpu);
   }
   else if (mcdistr == Spring2016_25ns_poisson_OOTPU){
-    //https://github.com/cms-sw/cmssw/blob/CMSSW_8_1_X/SimGeneral/MixingModule/python/mix_2016_25ns_SpringMC_PUScenarioV1_PoissonOOTPU_cfi.py
+    ///nfs/fanae/userw/cmssw/www/blob/CMSSW_8_1_X/SimGeneral/MixingModule/python/mix_2016_25ns_SpringMC_PUScenarioV1_PoissonOOTPU_cfi.py
     nbins = 51;
     double idealpu[]= {0.000829312873542, 0.00124276120498 , 0.00339329181587, 0.00408224735376,  0.00383036590008, 0.00659159288946 ,
            0.00816022734493 , 0.00943640833116 , 0.0137777376066 , 0.017059392038  ,  0.0213193035468 , 0.0247343174676  ,
@@ -681,7 +681,7 @@ TH1D* PUWeight::IdealMCHistogram(EMCDistribution mcdistr) {
     fMC->FillN(nbins, bins, idealpu);
   }
   else if (mcdistr == Moriond17MC_PoissonOOTPU){
-    // https://github.com/cms-sw/cmssw/blob/CMSSW_8_1_X/SimGeneral/MixingModule/python/mix_2016_25ns_Moriond17MC_PoissonOOTPU_cfi.py
+    // /nfs/fanae/userw/cmssw/www/blob/CMSSW_8_1_X/SimGeneral/MixingModule/python/mix_2016_25ns_Moriond17MC_PoissonOOTPU_cfi.py
     nbins = 76;
     double idealpu[]= {1.78653e-05 , 2.56602e-05 , 5.27857e-05 , 8.88954e-05 , 0.000109362 , 0.000140973 ,
                        0.000240998 , 0.00071209  , 0.00130121  , 0.00245255  , 0.00502589  , 0.00919534  ,
@@ -733,7 +733,7 @@ TH3D* PUWeight::CalculateWeight3D(float ScaleFactor) {
   fWeight3D = new TH3D("fWeight3D","3D weights",50,-.5,49.5,50,-.5,49.5,50,-.5,49.5 );
 
   //////////////
-  // From http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/PhysicsTools/Utilities/src/Lumi3DReWeighting.cc?view=markup
+  // From /nfs/fanae/user/cgi/www-bin/cmssw.cgi/CMSSW/PhysicsTools/Utilities/src/Lumi3DReWeighting.cc?view=markup
 
   TH3D* DHist = new TH3D("DHist","3D weights",50,-.5,49.5,50,-.5,49.5,50,-.5,49.5 );
   TH3D* MHist = new TH3D("MHist","3D weights",50,-.5,49.5,50,-.5,49.5,50,-.5,49.5 );
