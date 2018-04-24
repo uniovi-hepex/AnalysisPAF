@@ -324,7 +324,7 @@ if __name__=="__main__":
     #a = Unfolder('LeadingJetEta', 'temp/cardFile_LeadingJetEta.root', 'temp/UnfoldingInfo.root')
     a.doRegularizationComparison()
 
-    print k
+    #print k
 
     a.prepareNominalHelper()
     a.doLCurveScan()
