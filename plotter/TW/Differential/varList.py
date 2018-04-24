@@ -211,8 +211,9 @@ varList['LeadingLepPhiuncertainties'] = {
 varList['LeadingLepEta'] = {
     'xaxis'       : 'Leading lep #eta',
     'yaxis'       : 'Events',
-    'genbinning'  : [-2.4, -1., 0, 1., 2.4],
-    'recobinning' : [-2.4, -2.1, -1.2, -.5, 0, .4, 1.25, 1.75, 2.4],
+    'genbinning'  : [-2.4, -1.2, 0, 1.2, 2.4],
+    #'recobinning' : [-2.4, -2.1, -1.2, -.5, 0, .4, 1.25, 1.75, 2.4],
+    'recobinning' : [-2.4, -1.75, -1.25, -.5, 0, .5, 1.25, 1.75, 2.4],
     'var'         : 'TLeadingLepEta',
     'var_response': 'LeadingLepEta',
 }
