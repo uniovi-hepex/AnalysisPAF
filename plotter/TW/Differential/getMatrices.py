@@ -184,14 +184,14 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = ""):
         h1.SetBinContent(i, j, 0)
   
   # Fixing the over and underflow bins to one.
-  #for i in range(0, nxb+2):
-  #  tmpsum = 0
-  #  h1.SetBinContent(i, 0, 0.)
-  #  for j in range(0, nyb+1):
-  #    tmpsum += h1.GetBinContent(i, j)
-  #  h1.SetBinContent(i, nxb+1, tmpsum)
-  #for j in range(0, nyb+2):
-  #  h1.SetBinContent(0, j, 0.)
+  for i in range(0, nxb+2):
+    tmpsum = 0.
+    h1.SetBinContent(i, 0, 0.)
+    for j in range(0, nyb+1):
+      tmpsum += h1.GetBinContent(i, j)
+    h1.SetBinContent(i, nxb+1, 1 - tmpsum)
+  for j in range(0, nyb+2):
+    h1.SetBinContent(0, j, 0.)
   
   h1.SetXTitle("Generated events")
   h1.SetYTitle("Reconstructed events")
@@ -321,8 +321,8 @@ for i in range(len(VarNames)):
   VarBins_X.append(array('f', varList.varList[VarNames[i]]['genbinning']))
   VarBins_Y.append(array('f', varList.varList[VarNames[i]]['recobinning']))
 
-xmin    = [i[0]  for i in VarBins_X]
-xmax    = [i[-1] for i in VarBins_Y]
+xmin    = [int(round(i[0]))  for i in VarBins_X]
+xmax    = [int(round(i[-1])) for i in VarBins_Y]
 ymin    = xmin
 ymax    = xmax
 nybins  = [len(i)-1  for i in VarBins_Y]
