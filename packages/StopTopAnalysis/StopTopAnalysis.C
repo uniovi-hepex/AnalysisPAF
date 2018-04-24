@@ -27,14 +27,16 @@ void StopTopAnalysis::ResetVariables(){
   TMETJERUp = 0; TMETJESUp = 0; TMETJESDown = 0; TMT2JERUp = 0; TMT2JESUp = 0; TMT2JESDown = 0;
   TWeight_LepEffUp = 0; TWeight_LepEffDown = 0; TWeight_TrigUp = 0; TWeight_TrigDown = 0;
   TWeight_FSUp = 0; TWeight_FSDown = 0; TWeight_PUDown = 0; TWeight_PUUp = 0;
+  TWeight_PolR = 0; TWeight_PolL = 0;
   TIsSS = false; TNLHEWeight = 0; TISRweight = 0; TISRweightUp = 0; TISRweightDown = 0; TWeight_ISRUp = 0; TWeight_ISRDown = 0;
   TWeight_UnclMETUp   = 0;  TWeight_UnclMETDown = 0;
   TLep0_Pt = 0; TLep0_Eta = 0; TLep0_Phi = 0; TLep0_E = 0; TLep0_Charge = 0; TLep0_Id = 0; TgenLep0_Mid = 0; 
-  TLep0_PtMuScaleUp = 0; TLep0_PtMuScaleDown = 0; TLep0_PtElScaleUp = 0; TLep0_PtElScaleDown = 0;
+  TLep0_PtMuScaleUp = 0; TLep0_PtMuScaleDown = 0; TLep0_PtElScaleUp = 0; TLep0_PtElScaleDown = 0; TLep0_GenMatch = 0; TLep1_GenMatch = 0;
   TLep1_PtMuScaleUp = 0; TLep1_PtMuScaleDown = 0; TLep1_PtElScaleUp = 0; TLep1_PtElScaleDown = 0;
-  TLep1_Pt = 0; TLep1_Eta = 0; TLep1_Phi = 0; TLep1_E = 0; TLep1_Charge = 0; TLep1_Id = 0; TgenLep1_Mid = 0;
-  TgenMETPhi = 0; TNgenLeps = 0;
+  TLep1_Pt = 0; TLep1_Eta = 0; TLep1_Phi = 0; TLep1_E = 0; TLep1_Charge = 0; TLep1_Id = 0; TgenLep1_Mid = 0; TgenLep0_Ch = 0; TgenLep1_Ch = 0; 
+  TgenMETPhi = 0; TNgenLeps = 0; TEventTruth = 0;
   TgenLep0_Pt = 0; TgenLep0_Eta = 0; TgenLep1_Pt = 0; TgenLep1_Eta = 0; TgenLep0_Id = 0; TgenLep1_Id = 0;
+  TgenLep0_Phi = 0; TgenLep1_Phi = 0; TgenLep1_M = 0; TgenLep0_M = 0;
   TgenDeltaPhi = 0; TgenDeltaEta = 0; TgenMT2 = 0; TNgenJets = 0;  TgenHT = 0;
   TgentopDeltaPhi = 0; TgentopDeltaR = 0;
   TMETMETDown = 0; TMETMETUp = 0; TMT2METUp = 0; TMT2METDown = 0;
@@ -72,6 +74,8 @@ void StopTopAnalysis::ResetVariables(){
   TgenLsp1Eta = 0; TgenLsp2Eta = 0;
   TgenLsp1Phi = 0; TgenLsp2Phi = 0;
   TgenLsp1M   = 0; TgenLsp2M   = 0;
+  TgenStop1ID = 0; TgenStop2ID = 0;
+  TgenTop1ID  = 0; TgenTop2ID  = 0;
 
   selLeptons.clear(); //looseLeptons.clear();
   genLeptons.clear();
@@ -85,12 +89,12 @@ void StopTopAnalysis::Initialise(){
   gSampleName  = GetParam<TString>("sampleName");
   gDoSyst      = GetParam<Bool_t>("doSyst");
   gIsFastSim   = GetParam<Bool_t>("IsFastSim");
-//  if(gSampleName.Contains("T2tt")){
-//    gStopMass = GetParam<Int_t>("stopMass");
-//    gLspMass  = GetParam<Int_t>("lspMass");
-//    NormISRweights = GetParam<Float_t>("NormISRweights");
-//    IsT2ttScan = true;
-//  }
+  if(gSampleName.Contains("T2tt")){
+    gStopMass = GetParam<Int_t>("stopMass");
+    gLspMass  = GetParam<Int_t>("lspMass");
+    NormISRweights = GetParam<Float_t>("NormISRweights");
+    IsT2ttScan = true;
+  }
 //  if(gSampleName.BeginsWith("T2tt")) NormISRweights = GetParam<Float_t>("NormISRweights");
   fTree = CreateTree("tree","Created with PAF");
   fSumISRJets = CreateH1F("SumISRweights", "SumISRweights", 1 , 0, 2); 
@@ -106,7 +110,7 @@ void StopTopAnalysis::Initialise(){
   fMetResSumOfWeights = CreateH1F("hMetResSumOfWeights", "hMetResSumOfWeights", 1, 0, 2);
   fNormMetRes = 0.92631;
 
-  gIsLHE = true; gIsTTbar = false;
+  gIsLHE = false; gIsTTbar = false;
   if(gSampleName == "TTbar_Powheg" || gSampleName.Contains("xqcut20")) gIsLHE = true;
   if(gSampleName.Contains("TTbar") || gSampleName.Contains("TTJets")) gIsTTbar = true;
   
@@ -171,6 +175,8 @@ void StopTopAnalysis::InsideLoop(){
   if(gIsTTbar) fTopPtSumOfWeights->Fill(1, GetTopPtWeight(TgenTop1Pt, TgenTop2Pt));
   fSumISRJets->Fill(1, getISRJetsWeight(TNISRJets)); 
   fTopPt12->Fill(TgenTop1Pt, TgenTop2Pt);
+
+  if(IsT2ttScan || gDoISR) SetPolWeights();
 
 
   // =================== Tree at gen level here! ==================
@@ -286,12 +292,14 @@ void StopTopAnalysis::SetLeptonVariables(){
   fTree->Branch("TLep0_E" ,     &TLep0_E ,     "TLep0_E/F");
   fTree->Branch("TLep0_Id" ,     &TLep0_Id ,     "TLep0_Id/I");
   fTree->Branch("TLep0_Charge", &TLep0_Charge, "TLep0_Charge/F");
+  fTree->Branch("TLep0_GenMatch", &TLep0_GenMatch, "TLep0_GenMatch/I");
   fTree->Branch("TLep1_Pt",     &TLep1_Pt,     "TLep1_Pt/F");
   fTree->Branch("TLep1_Eta",     &TLep1_Eta,     "TLep1_Eta/F");
   fTree->Branch("TLep1_Phi",     &TLep1_Phi,     "TLep1_Phi/F");
   fTree->Branch("TLep1_E" ,     &TLep1_E ,     "TLep1_E/F");
   fTree->Branch("TLep1_Charge",  &TLep1_Charge, "TLep1_Charge/F");
   fTree->Branch("TLep1_Id" ,     &TLep1_Id ,     "TLep1_Id/I");
+  fTree->Branch("TLep1_GenMatch", &TLep1_GenMatch, "TLep1_GenMatch/I");
   fTree->Branch("TChannel",      &TChannel,      "TChannel/I");
   fTree->Branch("TPassTrigger",  &TPassTrigger,  "TPassTrigger/I");
   fTree->Branch("TPassMETfilters",  &TPassMETfilters,  "TPassMETfilters/I");
@@ -392,11 +400,17 @@ void StopTopAnalysis::SetEventVariables(){
   fTree->Branch("TWeight_TrigDown",      &TWeight_TrigDown,      "TWeight_TrigDown/F");
   fTree->Branch("TWeight_PUUp",        &TWeight_PUUp,        "TWeight_PUUp/F");
   fTree->Branch("TWeight_PUDown",        &TWeight_PUDown,        "TWeight_PUDown/F");
+  fTree->Branch("TWeight_ISRUp",        &TWeight_ISRUp,        "TWeight_ISRUp/F");
+  fTree->Branch("TWeight_ISRDown",        &TWeight_ISRDown,        "TWeight_ISRDown/F");
+  fTree->Branch("TWeight_UnclMETUp",        &TWeight_UnclMETUp,        "TWeight_UnclMETUp/F");
+  fTree->Branch("TWeight_UnclMETDown",        &TWeight_UnclMETDown,        "TWeight_UnclMETDown/F");
   fTree->Branch("TWeight_FSUp",        &TWeight_FSUp,        "TWeight_FSUp/F");
   fTree->Branch("TWeight_FSDown",        &TWeight_FSDown,        "TWeight_FSDown/F");
+  fTree->Branch("TWeight_PolR",        &TWeight_PolR,        "TWeight_PolR/F");
+  fTree->Branch("TWeight_PolL",        &TWeight_PolL,        "TWeight_PolL/F");
 
   //fTree->Branch("TNLHEWeight",        &TNLHEWeight,         "TNLHEWeight/I");
-  fTree->Branch("TLHEWeight",        TLHEWeight,         "TLHEWeight[254]/F");
+  if(gIsLHE) fTree->Branch("TLHEWeight",        TLHEWeight,         "TLHEWeight[254]/F");
   fTree->Branch("TMETJERUp",    &TMETJERUp,    "TMETJERUp/F");
   fTree->Branch("TMETJESUp",    &TMETJESUp,    "TMETJESUp/F");
   fTree->Branch("TMETJESDown",  &TMETJESDown,  "TMETJESDown/F");
@@ -414,6 +428,7 @@ void StopTopAnalysis::SetEventVariables(){
   fTree->Branch("TMT2unclDown",  &TMT2unclDown,  "TMT2unclDown/F");
 
   fTree->Branch("TgenWeight"  , &TgenWeight,  "TgenWeight/F" ); 
+  fTree->Branch("TEventTruth"  , &TEventTruth,  "TEventTruth/I" ); 
   fTree->Branch("TgenMETPhi"  , &TgenMETPhi , "TgenMETPhi/F" ); 
   fTree->Branch("TgenTop1Pt"  , &TgenTop1Pt , "TgenTop1Pt/F" );
   fTree->Branch("TgenTop1Eta" , &TgenTop1Eta, "TgenTop1Eta/F"); 
@@ -516,6 +531,7 @@ void StopTopAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons){
     TLep0_E      = selLeptons.at(0).E();    
     TLep0_Charge = selLeptons.at(0).charge;    
     TLep0_Id     = selLeptons.at(0).isElec ? 11 : 13;
+    TLep0_GenMatch = selLeptons.at(0).GetGenMatch();
   }
   if(TNLooseLeps > 1){
     scale = selLeptons.at(1).GetEnergyUnc();
@@ -529,6 +545,7 @@ void StopTopAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons){
     TLep1_E      = selLeptons.at(1).E();    
     TLep1_Charge = selLeptons.at(1).charge;    
     TLep1_Id     = selLeptons.at(1).isElec ? 11 : 13;
+    TLep1_GenMatch = selLeptons.at(1).GetGenMatch();
     TMll = (selLeptons.at(0).p + selLeptons.at(1).p).M();      
     TDeltaPhi = (selLeptons.at(0).p.DeltaPhi(selLeptons.at(1).p));
     TDeltaEta = TMath::Abs(TMath::Abs(selLeptons.at(0).p.Eta()) - TMath::Abs(selLeptons.at(1).p.Eta()));
@@ -665,6 +682,13 @@ void StopTopAnalysis::GetGenInfo(){
   if(gIsData) return; 
   TgenMETPhi = Get<Float_t>("met_genPhi");
   TgenWeight = genWeight;
+  TEventTruth = kLGMgood;
+  if(TLep0_GenMatch == kLGMflip     || TLep1_GenMatch == kLGMflip    ) TEventTruth = kLGMflip;
+  if(TLep0_GenMatch == kLGMconv     || TLep1_GenMatch == kLGMconv    ) TEventTruth = kLGMconv;
+  if(TLep0_GenMatch == kLGMother    || TLep1_GenMatch == kLGMother   ) TEventTruth = kLGMother;
+  if(TLep0_GenMatch == kLGMfake     || TLep1_GenMatch == kLGMfake    ) TEventTruth = kLGMfake;
+//  if(TLep0_GenMatch == kLGMtoGenB   || TLep1_GenMatch == kLGMtoGenB  ) TEventTruth = kLGMtoGenB;
+//  if(TLep0_GenMatch == kLGMtoGenLep && TLep1_GenMatch == kLGMtoGenLep) TEventTruth = kLGMtoGenLep;
 
   TLorentzVector top1; 
   TLorentzVector top2; 
@@ -673,6 +697,7 @@ void StopTopAnalysis::GetGenInfo(){
     TgenTop1Eta = Get<Float_t>("GenTop_eta" , 0);   TgenTop2Eta = Get<Float_t>("GenTop_eta" , 1);
     TgenTop1Phi = Get<Float_t>("GenTop_phi" , 0);   TgenTop2Phi = Get<Float_t>("GenTop_phi" , 1);
     TgenTop1M   = Get<Float_t>("GenTop_mass", 0);   TgenTop2M   = Get<Float_t>("GenTop_mass", 1);
+    TgenTop1ID  = Get<Int_t>("GenTop_pdgId", 0);    TgenTop2ID  = Get<Int_t>("GenTop_pdgId", 1);
   }
   top1.SetPtEtaPhiM(TgenTop1Pt, TgenTop1Eta, TgenTop1Phi, TgenTop1M);
   top2.SetPtEtaPhiM(TgenTop2Pt, TgenTop2Eta, TgenTop2Phi, TgenTop2M);
@@ -684,12 +709,18 @@ void StopTopAnalysis::GetGenInfo(){
   if(TNgenLeps >= 2){
     TgenLep0_Pt     = genLeptons.at(0).Pt();    
     TgenLep0_Eta    = genLeptons.at(0).Eta();    
+    TgenLep0_Phi    = genLeptons.at(0).Phi();    
+    TgenLep0_M      = genLeptons.at(0).p.M();    
     TgenLep0_Id     = genLeptons.at(0).isMuon? 13 : 11;
     TgenLep0_Mid    = genLeptons.at(0).Mid;
+    TgenLep0_Ch     = genLeptons.at(0).charge;    
     TgenLep1_Pt     = genLeptons.at(1).Pt();    
     TgenLep1_Eta    = genLeptons.at(1).Eta();    
+    TgenLep1_Phi    = genLeptons.at(1).Phi();    
+    TgenLep1_M      = genLeptons.at(1).p.M();    
     TgenLep1_Id     = genLeptons.at(1).isMuon? 13 : 11;
     TgenLep1_Mid    = genLeptons.at(1).Mid;
+    TgenLep1_Ch     = genLeptons.at(1).charge;    
     TgenDeltaPhi = (genLeptons.at(0).p.DeltaPhi(genLeptons.at(1).p));
     TgenDeltaEta = TMath::Abs(TMath::Abs(genLeptons.at(0).p.Eta()) - TMath::Abs(genLeptons.at(1).p.Eta()));
     TgenMT2 = getMT2ll(genLeptons.at(0), genLeptons.at(1), TgenMET,     Get<Float_t>("met_genPhi"));
@@ -761,12 +792,14 @@ void StopTopAnalysis::GetGenInfo(){
         TgenStop1Eta = Get<Float_t>("GenPart_eta" , i);
         TgenStop1Phi = Get<Float_t>("GenPart_phi" , i);
         TgenStop1M   = Get<Float_t>("GenPart_mass", i);
+        TgenStop1ID  = Get<Int_t>("GenPart_pdgId",i);
       }
       else if(TnGenStop >=2){
         TgenStop2Pt  = Get<Float_t>("GenPart_pt"  , i);   
         TgenStop2Eta = Get<Float_t>("GenPart_eta" , i);
         TgenStop2Phi = Get<Float_t>("GenPart_phi" , i);
         TgenStop2M   = Get<Float_t>("GenPart_mass", i);
+        TgenStop2ID   = Get<Int_t>("GenPart_pdgId",i);
       }
     }
     //>>> This is a neutralino
@@ -868,4 +901,40 @@ void StopTopAnalysis::GetMHT(){
   Int_t npart = particles.size();
   for(i = 1; i < npart; i++) pMHT += particles.at(i);
   TMHT = pMHT.Et();
+}
+
+void StopTopAnalysis::SetPolWeights(){
+  TWeight_PolR = 1; TWeight_PolL = 1;
+  TLorentzVector stop1; TLorentzVector top1; TLorentzVector lep1;
+  TLorentzVector stop2; TLorentzVector top2; TLorentzVector lep2;
+  
+  // 1 --> elec/muon, antitop, antistop
+  // 2 --> ppositron/antimuon, top, stop
+  if(TgenLep0_Ch == -1){ // 1 
+    lep1.SetPtEtaPhiM(TgenLep0_Pt, TgenLep0_Eta, TgenLep0_Phi, TgenLep0_M);
+    lep2.SetPtEtaPhiM(TgenLep1_Pt, TgenLep1_Eta, TgenLep1_Phi, TgenLep1_M);
+  }
+  else{ // 2
+    lep2.SetPtEtaPhiM(TgenLep0_Pt, TgenLep0_Eta, TgenLep0_Phi, TgenLep0_M);
+    lep1.SetPtEtaPhiM(TgenLep1_Pt, TgenLep1_Eta, TgenLep1_Phi, TgenLep1_M);
+  }
+  if(TgenTop1ID == -6){
+    top1.SetPtEtaPhiM(TgenTop1Pt, TgenTop1Eta, TgenTop1Phi, TgenTop1M);
+    top2.SetPtEtaPhiM(TgenTop2Pt, TgenTop2Eta, TgenTop2Phi, TgenTop2M);
+  }
+  else{
+    top2.SetPtEtaPhiM(TgenTop1Pt, TgenTop1Eta, TgenTop1Phi, TgenTop1M);
+    top1.SetPtEtaPhiM(TgenTop2Pt, TgenTop2Eta, TgenTop2Phi, TgenTop2M);
+  }
+  if(TgenStop1ID == -1000006){
+    stop1.SetPtEtaPhiM(TgenStop1Pt, TgenStop1Eta, TgenStop1Phi, TgenStop1M);
+    stop2.SetPtEtaPhiM(TgenStop2Pt, TgenStop2Eta, TgenStop2Phi, TgenStop2M);
+  }
+  else{
+    stop2.SetPtEtaPhiM(TgenStop1Pt, TgenStop1Eta, TgenStop1Phi, TgenStop1M);
+    stop1.SetPtEtaPhiM(TgenStop2Pt, TgenStop2Eta, TgenStop2Phi, TgenStop2M);
+  }
+
+  TWeight_PolR = GetWeightPolRight(stop1, top1, lep1) * GetWeightPolRight(stop2, top2, lep2); 
+  TWeight_PolL = GetWeightPolLetf( stop1, top1, lep1) * GetWeightPolLetf( stop2, top2, lep2); 
 }
