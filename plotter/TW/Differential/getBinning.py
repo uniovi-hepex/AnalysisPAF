@@ -33,6 +33,8 @@ if (len(sys.argv) > 1):
         minipath    = storagepath + sys.argv[3] + "/"
       else:
         minipath    = GetLastFolder(storagepath)
+    else:
+      minipath    = GetLastFolder(storagepath)
 else:
     print "> Default choice of variable and minitrees\n"
     varName     = 'LeadingJetPt'
