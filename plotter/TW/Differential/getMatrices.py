@@ -184,14 +184,15 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = ""):
         h1.SetBinContent(i, j, 0)
   
   # Fixing the over and underflow bins to one.
-  for i in range(0, nxb+2):
+  for i in range(1, nxb+1):
     tmpsum = 0.
-    h1.SetBinContent(i, 0, 0.)
-    for j in range(0, nyb+1):
+    for j in range(1, nyb+1):
       tmpsum += h1.GetBinContent(i, j)
-    h1.SetBinContent(i, nxb+1, 1 - tmpsum)
+    h1.SetBinContent(i, 0, 0.)
+    h1.SetBinContent(i, nyb + 1, 1 - tmpsum)
   for j in range(0, nyb+2):
     h1.SetBinContent(0, j, 0.)
+    h1.SetBinContent(nxb+1, j, 0.)
   
   h1.SetXTitle("Generated events")
   h1.SetYTitle("Reconstructed events")
@@ -259,7 +260,7 @@ def PrintResponseMatrix(htemp, vname, nxb, xmin, xmax, nyb, ymin, ymax, prof = 0
   c       = r.TCanvas('c', "X-Profiled response matrix - T" + vnametitle)
   hX.SetStats(False)
   hX.SetXTitle("Stabilities per bin")
-  hX.SetYTitle("Events")
+  hX.SetYTitle("Mean Y/Reco. value")
   hX.Draw()
   for i in range(1, htemp.GetNbinsX()+1):
     hX.GetXaxis().SetBinLabel(i, "S = " + str(round(stab[i-1], 2)))
@@ -277,7 +278,7 @@ def PrintResponseMatrix(htemp, vname, nxb, xmin, xmax, nyb, ymin, ymax, prof = 0
   c = r.TCanvas('c', "Y-Profiled response matrix - T" + vnametitle)
   hY.SetStats(False)
   hY.SetXTitle("Purities per bin")
-  hY.SetYTitle("Events")
+  hY.SetYTitle("Mean X/Gen. value")
   hY.Draw()
   r.gStyle.SetPaintTextFormat("4.1f")
   for i in range(1, htemp.GetNbinsY() + 1):
@@ -291,6 +292,44 @@ def PrintResponseMatrix(htemp, vname, nxb, xmin, xmax, nyb, ymin, ymax, prof = 0
   c       = None
   hY      = None
   secaxis = None
+  
+  hStab   = r.TH1F('hStab', '', nxb, xmin, xmax)
+  for i in range(1, hStab.GetNbinsX() + 1):
+    hStab.SetBinContent(i, stab[i - 1])
+  hPur    = r.TH1F('hPur',  '', nyb, ymin, ymax)
+  for j in range(1, hPur.GetNbinsX() + 1):
+    hPur.SetBinContent(j, pur[j - 1])
+  
+  c = r.TCanvas('c', "Purities and stabilities of " + vnametitle)
+  hPur.SetXTitle(vnametitle)
+  hPur.SetStats(False)
+  hPur.SetYTitle("Purities and stabilities")
+  hStab.SetLineColor(r.kBlue)
+  hPur.SetLineColor(r.kRed)
+  hPur.SetMaximum(1.)
+  hPur.SetMinimum(0.)
+  hPur.Draw('')
+  hStab.Draw('same')
+  r.gPad.Update()
+  
+  textSize      = 0.022
+  legWidth      = 0.05
+  height        = .15
+  (x1,y1,x2,y2) = (.85-legWidth, .9 - height, .90, .89)
+  l             = r.TLegend(x1, y1, x2, y2);
+  l.AddEntry(hStab, 'Stability')
+  l.AddEntry(hPur, 'Purity')
+  l.SetTextFont(42)
+  l.SetTextSize(textSize)
+  l.SetBorderSize(0)
+  l.SetFillColor(10)
+  l.Draw()
+  r.gPad.Update()
+  
+  c.SaveAs(plotsoutputpath + vname + "/PurStab_" + vnametitle + ".png")
+  c     = None
+  hStab = None
+  hPur  = None
   return
 
 
