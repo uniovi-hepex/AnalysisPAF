@@ -114,7 +114,7 @@ for binDn,binUp in zip(binning, binning[1:]):
     p.AddSample("TTbar_GluonMoveCRTune",        "ttbar", ROOT.itSys, 1, "GluonMoveCRTune");
     p.AddSample("TTbar_GluonMoveCRTune_erdON",  "ttbar", ROOT.itSys, 1, "GluonMoveCRTune_erdON");
     p.AddSample("TTbar_Powheg_erdON",           "ttbar", ROOT.itSys, 1, "Powheg_erdON");
-    p.AddSample("TTbar_QCDbasedCRTune_erdON",   "ttbar", ROOT.itSys, 1, "QCDbasedCRTune_erdON";
+    p.AddSample("TTbar_QCDbasedCRTune_erdON",   "ttbar", ROOT.itSys, 1, "QCDbasedCRTune_erdON");
     p.UseEnvelope("ttbar", "GluonMoveCRTune,GluonMoveCRTune_erdON,Powheg_erdON,QCDbasedCRTune_erdON", "ColorReconnection");
     p.AddSymmetricHisto("ttbar",  "JERUp");
     
