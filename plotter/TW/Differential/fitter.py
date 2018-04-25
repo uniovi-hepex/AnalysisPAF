@@ -12,7 +12,7 @@ class FittingSuite:
         self.pmap = {}
         self.procMap = { 'Fakes': 'Bkg',
                          'tW'   : 'Signal',
-                         'VVttV'   : 'Bkg',
+                         'VVttV': 'Bkg',
                          'DY'   : 'Bkg',
                          'ttbar': 'Bkg'}
         self.readFromCard()

@@ -19,7 +19,8 @@ else:
 
 print "> Beginning unfolding"
 a = unf.Unfolder(varName, pathtothings + 'cardFile_' + varName + '.root', pathtothings + 'UnfoldingInfo.root')
-a.plotspath = "results/"
+a.plotspath     = "results/"
+a.doSanityCheck = False
 a.prepareNominalHelper()
 a.doLCurveScan()
 #a.doTauScan()
@@ -27,5 +28,5 @@ a.doScanPlots()
 a.doNominalPlot()
 a.doUnfoldingForAllNuis()
 
-a   = None
+a = None
 print "> Unfolding done!"
