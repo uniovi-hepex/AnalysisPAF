@@ -23,29 +23,29 @@ void run1j1tPlots(TString pathToTree  = "../TW_temp/"){
 //   DrawPlot("TMSys"                  , StandardCut, "ElMu", 20, 50., 750., "m_{sys} [GeV]"                         , false, "gev");
 //   DrawPlot("THTLepOverHT"           , StandardCut, "ElMu", 20,  0.,   1., "H_{T}+lep / H_{T}"                     , false, "units,0.05", 1e4);
   
-//   DrawPlot("TMET"                   , StandardCut, "ElMu", 20,  0., 500., "#slash{E}_{T} [GeV]"                   , false, "gev");
-//   DrawPlot("TMET_Phi"               , StandardCut, "ElMu", 20,-TMath::Pi(),TMath::Pi(),"#varphi(#slash{E}_{T}) [GeV]", false, "gev");
-//   DrawPlot("TM_LeadingB"            , StandardCut, "ElMu", 20,  0., 500., "m^{l_{1}b} [GeV]"                      , false, "gev");
-//   DrawPlot("TM_SubLeadingB"         , StandardCut, "ElMu", 20,  0., 500., "m^{l_{2}b} [GeV]"                      , false, "gev");
-//   DrawPlot("TM_LLB"                 , StandardCut, "ElMu", 20,  0., 800., "m^{llb} [GeV]"                         , false, "gev");
-//   DrawPlot("TMT_LLMETB"             , StandardCut, "ElMu", 20,  0., 800., "m_T^{ll #nu #nu b} [GeV]"              , false, "gev");
-//   DrawPlot("TE_LLB"                 , StandardCut, "ElMu", 20,  0., 1000, "E^{llb} [GeV]"                         , false, "gev");
-//   DrawPlot("TDilepPt"               , StandardCut, "ElMu", 20,  0., 500., "p_T^{ll} [GeV]"                        , false, "gev");
-//   DrawPlot("TDilepJetPt"            , StandardCut, "ElMu", 25,  0., 250., "p_{T}^{e#mu, j} [GeV]"                 , false, "gev");
-//   DrawPlot("TDilepMETJetPt"         , StandardCut, "ElMu", 20,  0., 500., "p_{T}^{e#mu, j, MET} [GeV]"            , false, "gev");
-//   DrawPlot("THTtot"                 , StandardCut, "ElMu", 20, 70., 550., "H_{T} [GeV]"                           , false, "gev");
-//   DrawPlot("TLeadingJetPt"          , StandardCut, "ElMu", 20,  0., 500., "p_{T}^{j} [GeV]"                       , false, "gev");
-//   DrawPlot("TLeadingJetE"           , StandardCut, "ElMu", 20,  0., 500., "E^{j} [GeV]"                           , false, "gev");
-//   DrawPlot("TLeadingJetPhi"         , StandardCut, "ElMu", 20,  -TMath::Pi(), TMath::Pi(), "#varphi^{j} [GeV]"    , false, "gev");
-//   DrawPlot("TLeadingJetEta"         , StandardCut, "ElMu", 20,  -2.4, 2.4, "#eta^{j} [GeV]"                       , false, "gev");
-//   DrawPlot("TLeadingLepPt"          , StandardCut, "ElMu", 20,  0., 500., "p_{T}^{l_{1}} [GeV]"                   , false, "gev");
-//   DrawPlot("TLeadingLepE"           , StandardCut, "ElMu", 20,  0., 500., "E^{l_{1}} [GeV]"                       , false, "gev");
-//   DrawPlot("TLeadingLepPhi"         , StandardCut, "ElMu", 20,  -TMath::Pi(), TMath::Pi(), "#varphi^{l_{1}} [GeV]", false, "gev");
-//   DrawPlot("TLeadingLepEta"         , StandardCut, "ElMu", 20,  -2.4, 2.4, "#eta^{l_{1}} [GeV]"                   , false, "gev");
-//   DrawPlot("TSubLeadingLepPt"       , StandardCut, "ElMu", 20,  0., 500., "p_{T}^{l_{2}} [GeV]"                   , false, "gev");
-//   DrawPlot("TSubLeadingLepE"        , StandardCut, "ElMu", 20,  0., 500., "E^{l_{2}} [GeV]"                       , false, "gev");
-//   DrawPlot("TSubLeadingLepPhi"      , StandardCut, "ElMu", 20,  -TMath::Pi(), TMath::Pi(), "#varphi^{l_{2}} [GeV]", false, "gev");
-//   DrawPlot("TSubLeadingLepEta"      , StandardCut, "ElMu", 20,  -2.4, 2.4, "#eta^{l_{2}} [GeV]"                   , false, "gev");
+  DrawPlot("TMET"                   , StandardCut, "ElMu", 20,  0., 500., "#slash{E}_{T} [GeV]"                   , false, "gev");
+  DrawPlot("TMET_Phi"               , StandardCut, "ElMu", 20,-TMath::Pi(),TMath::Pi(),"#varphi(#slash{E}_{T}) [GeV]", false, "gev");
+  DrawPlot("TM_LeadingB"            , StandardCut, "ElMu", 20,  0., 500., "m^{l_{1}b} [GeV]"                      , false, "gev");
+  DrawPlot("TM_SubLeadingB"         , StandardCut, "ElMu", 20,  0., 500., "m^{l_{2}b} [GeV]"                      , false, "gev");
+  DrawPlot("TM_LLB"                 , StandardCut, "ElMu", 20,  0., 800., "m^{llb} [GeV]"                         , false, "gev");
+  DrawPlot("TMT_LLMETB"             , StandardCut, "ElMu", 20,  0., 800., "m_T^{ll #nu #nu b} [GeV]"              , false, "gev");
+  DrawPlot("TE_LLB"                 , StandardCut, "ElMu", 20,  0., 1000, "E^{llb} [GeV]"                         , false, "gev");
+  DrawPlot("TDilepPt"               , StandardCut, "ElMu", 20,  0., 500., "p_T^{ll} [GeV]"                        , false, "gev");
+  DrawPlot("TDilepJetPt"            , StandardCut, "ElMu", 25,  0., 250., "p_{T}^{e#mu, j} [GeV]"                 , false, "gev");
+  DrawPlot("TDilepMETJetPt"         , StandardCut, "ElMu", 20,  0., 500., "p_{T}^{e#mu, j, MET} [GeV]"            , false, "gev");
+  DrawPlot("THTtot"                 , StandardCut, "ElMu", 20, 70., 550., "H_{T} [GeV]"                           , false, "gev");
+  DrawPlot("TLeadingJetPt"          , StandardCut, "ElMu", 20,  0., 500., "p_{T}^{j} [GeV]"                       , false, "gev");
+  DrawPlot("TLeadingJetE"           , StandardCut, "ElMu", 20,  0., 500., "E^{j} [GeV]"                           , false, "gev");
+  DrawPlot("TLeadingJetPhi"         , StandardCut, "ElMu", 20,  -TMath::Pi(), TMath::Pi(), "#varphi^{j} [GeV]"    , false, "gev");
+  DrawPlot("TLeadingJetEta"         , StandardCut, "ElMu", 20,  -2.4, 2.4, "#eta^{j} [GeV]"                       , false, "gev");
+  DrawPlot("TLeadingLepPt"          , StandardCut, "ElMu", 20,  0., 500., "p_{T}^{l_{1}} [GeV]"                   , false, "gev");
+  DrawPlot("TLeadingLepE"           , StandardCut, "ElMu", 20,  0., 500., "E^{l_{1}} [GeV]"                       , false, "gev");
+  DrawPlot("TLeadingLepPhi"         , StandardCut, "ElMu", 20,  -TMath::Pi(), TMath::Pi(), "#varphi^{l_{1}} [GeV]", false, "gev");
+  DrawPlot("TLeadingLepEta"         , StandardCut, "ElMu", 20,  -2.4, 2.4, "#eta^{l_{1}} [GeV]"                   , false, "gev");
+  DrawPlot("TSubLeadingLepPt"       , StandardCut, "ElMu", 20,  0., 500., "p_{T}^{l_{2}} [GeV]"                   , false, "gev");
+  DrawPlot("TSubLeadingLepE"        , StandardCut, "ElMu", 20,  0., 500., "E^{l_{2}} [GeV]"                       , false, "gev");
+  DrawPlot("TSubLeadingLepPhi"      , StandardCut, "ElMu", 20,  -TMath::Pi(), TMath::Pi(), "#varphi^{l_{2}} [GeV]", false, "gev");
+  DrawPlot("TSubLeadingLepEta"      , StandardCut, "ElMu", 20,  -2.4, 2.4, "#eta^{l_{2}} [GeV]"                   , false, "gev");
   
   Float_t RB_TMET[]             = {0., 25., 50., 75., 100., 125., 150., 175., 1000.};
   Float_t RB_TMET_Phi[]         = {(Float_t) -TMath::Pi(), -2., -1.5, -.75, 0., .75, 1.5, 2., (Float_t) TMath::Pi()};
@@ -175,6 +175,10 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample("TTbar_Powheg_isrDown"         , "t#bar{t}"    , itSys, 1, "isrDown");
   p->AddSample("TTbar_Powheg_fsrUp"           , "t#bar{t}"    , itSys, 1, "fsrUp");
   p->AddSample("TTbar_Powheg_fsrDown"         , "t#bar{t}"    , itSys, 1, "fsrDown");
+  p->AddSample("TTbar_GluonMoveCRTune"        , "t#bar{t}"    , itSys, 1, "GluonMoveCRTune");
+  p->AddSample("TTbar_GluonMoveCRTune_erdON"  , "t#bar{t}"    , itSys, 1, "GluonMoveCRTune_erdON");
+  p->AddSample("TTbar_Powheg_erdON"           , "t#bar{t}"    , itSys, 1, "Powheg_erdON");
+  p->AddSample("TTbar_QCDbasedCRTune_erdON"   , "t#bar{t}"    , itSys, 1, "QCDbasedCRTune_erdON");
   p->UseEnvelope("t#bar{t}", "GluonMoveCRTune,GluonMoveCRTune_erdON,Powheg_erdON,QCDbasedCRTune_erdON", "ColorReconnection");
   p->AddSymmetricHisto("t#bar{t}",  "JERUp");
 
@@ -305,6 +309,10 @@ void DrawCustomPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t
   p->AddSample("TTbar_Powheg_isrDown"         , "t#bar{t}"    , itSys, 1, "isrDown");
   p->AddSample("TTbar_Powheg_fsrUp"           , "t#bar{t}"    , itSys, 1, "fsrUp");
   p->AddSample("TTbar_Powheg_fsrDown"         , "t#bar{t}"    , itSys, 1, "fsrDown");
+  p->AddSample("TTbar_GluonMoveCRTune"        , "t#bar{t}"    , itSys, 1, "GluonMoveCRTune");
+  p->AddSample("TTbar_GluonMoveCRTune_erdON"  , "t#bar{t}"    , itSys, 1, "GluonMoveCRTune_erdON");
+  p->AddSample("TTbar_Powheg_erdON"           , "t#bar{t}"    , itSys, 1, "Powheg_erdON");
+  p->AddSample("TTbar_QCDbasedCRTune_erdON"   , "t#bar{t}"    , itSys, 1, "QCDbasedCRTune_erdON");
   p->UseEnvelope("t#bar{t}", "GluonMoveCRTune,GluonMoveCRTune_erdON,Powheg_erdON,QCDbasedCRTune_erdON", "ColorReconnection");
   p->AddSymmetricHisto("t#bar{t}",  "JERUp");
 
