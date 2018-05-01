@@ -14,6 +14,23 @@ varList['LCurve'] = {
     'yaxis'       : 'log #frac{L_{2}}{#tau^{2}}',
 }
 
+varList['Names'] = {
+    'Variables'   : ["E_LLB", "LeadingJetE", "MT_LLMETB", "M_LLB", "M_LeadingB", "M_SubLeadingB", 
+                     "MET", "MET_Phi", "LeadingJetPt", "LeadingJetEta", "LeadingJetPhi", 
+                     "LeadingLepE", "LeadingLepPt", "LeadingLepPhi", "LeadingLepEta", 
+                     "SubLeadingLepE", "SubLeadingLepPt", "SubLeadingLepPhi", "SubLeadingLepEta",
+                     "DilepPt", "DilepJetPt", "DilepMETJetPt", "HTtot"],
+    'ExpSysts'    : ["JESUp", "JESDown", "JERUp", "ElecEffUp", "ElecEffDown", "MuonEffUp",
+                     "MuonEffDown", "TrigUp", "TrigDown", "PUUp", "PUDown", "BtagUp",
+                     "BtagDown", "MistagUp", "MistagDown", "FragUp", "FragDown", "PetersonFrag",
+                     "semilepbrUp", "semilepbrDown"],
+    'ttbarSysts'  : ["ScaleUp", "ScaleDown", "pdfUp", "pdfDown", "hdampUp", "hdampDown",
+                     "ueUp", "ueDown", "isrUp", "isrDown", "fsrUp", "fsrDown", "ColorReconnectionUp",
+                     "ColorReconnectionDown"],
+    'specialSysts': ["JERDown", "DSDown"],
+    'colorSysts'  : ["GluonMoveCRTune_erdON", "Powheg_erdON", "QCDbasedCRTune_erdON", "GluonMoveCRTune"],
+}
+
 varList['E_LLB'] = {
     'xaxis'       : '#ell(1), #ell(2), j(1) energy [GeV]',
     'yaxis'       : 'Events',
