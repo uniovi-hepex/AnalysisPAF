@@ -10,6 +10,14 @@ logpath=$logpath$ext
 
 workingpath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+unfoldingvars=("E_LLB" "LeadingJetE" "MT_LLMETB" "M_LLB" "M_LeadingB" "M_SubLeadingB" 
+               "MET" "MET_Phi" "LeadingJetPt" "LeadingJetEta" "LeadingJetPhi" 
+               "LeadingLepE" "LeadingLepPt" "LeadingLepPhi" "LeadingLepEta" 
+               "SubLeadingLepE" "SubLeadingLepPt" "SubLeadingLepPhi" "SubLeadingLepEta" 
+               "DilepPt" "DilepJetPt" "DilepMETJetPt" "HTtot")
+
+uplimit=$((${#unfoldingvars[@]}-1))
+
 if [ ! -e "temp/UnfoldingInfo.root" ]; then
   echo "%%%%% FATAL ERROR: the ROOT file with the histograms of the response matrix do not exist."
   echo "%%%%% Please, execute getMatrices.py correctly to obtain the response matrix before beginning the unfolding procedure."
@@ -20,11 +28,23 @@ else
   echo " "
 fi
 
-echo "> The variable to be unfolded is"
-echo $1
-echo " "
+if [ $1 != "All" ]; then
+  echo "> The variable to be unfolded is"
+  echo $1
+  echo " "
 
-echo "> Creating job for queue unfolding..."
-Job=$(qsub -q proof -o $logpath -e $logpath -d $workingpath -F "$1 $2" ExecuteUnfolding.sh)
-echo $Job
-echo "> Job created!"
+  echo "> Creating job for queue unfolding procedures..."
+  Job=$(qsub -q proof -o $logpath -e $logpath -d $workingpath -F "$1 $2" ExecuteUnfolding.sh)
+  echo $Job
+  echo "> Job created!"
+  
+else
+  echo "> We are going to unfold all the variables!! Yey!"
+
+  echo "> Creating jobs for all the queue unfolding procedures..."
+  for ((i=0; i<=$uplimit; i++)); do
+    Job=$(qsub -q proof -o $logpath -e $logpath -d $workingpath -F "${unfoldingvars[i]} $2" ExecuteUnfolding.sh)
+    echo $Job
+  done
+  echo "> Jobs created!"
+fi
