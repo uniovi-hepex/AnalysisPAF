@@ -8,14 +8,14 @@ r.gROOT.SetBatch(True)
 
 
 def GetLastFolder(stpth):
-    savefolders   = next(os.walk(stpth))[1]
-    saveyears     = map(int, [i[6:]  for i in savefolders])
-    savefolders   = [i for i in savefolders if int(i[6:]) == max(saveyears)]
-    savemonths    = map(int, [i[3:5] for i in savefolders])
-    savefolders   = [i for i in savefolders if int(i[3:5]) == max(savemonths)]
-    savedays      = map(int, [i[:2]  for i in savefolders])
-    savefolders   = [i for i in savefolders if int(i[:2]) == max(savedays)]
-    return (stpth + savefolders[0] + "/")
+  savefolders   = next(os.walk(stpth))[1]
+  saveyears     = map(int, [i[6:]  for i in savefolders])
+  savefolders   = [i for i in savefolders if int(i[6:]) == max(saveyears)]
+  savemonths    = map(int, [i[3:5] for i in savefolders])
+  savefolders   = [i for i in savefolders if int(i[3:5]) == max(savemonths)]
+  savedays      = map(int, [i[:2]  for i in savefolders])
+  savefolders   = [i for i in savefolders if int(i[:2]) == max(savedays)]
+  return (stpth + savefolders[0] + "/")
 
 
 #############################
@@ -36,21 +36,13 @@ plotsoutputpath  = "/nfs/fanae/user/vrbouza/www/TFM/Unfolding/"
 matrixoutputpath = "./temp/"
 genCut      = "TWeight_normal * (Tpassgen == 1)"
 recoCut     = "TWeight_normal * (Tpassreco == 1)"
-#Cut         = "TWeight * ((Tpassreco == 1) && (Tpassgen == 1))"
 Cut         = "TWeight * (Tpassgen == 1)"
 fiduCut     = "TWeight * ((Tpassreco == 1) && (Tpassgen == 0))"
 
-VarNames    = ["E_LLB", "LeadingJetE", "MT_LLMETB", "M_LLB", "M_LeadingB", "M_SubLeadingB", 
-               "MET", "MET_Phi", "LeadingJetPt", "LeadingJetEta", "LeadingJetPhi", 
-               "LeadingLepE", "LeadingLepPt", "LeadingLepPhi", "LeadingLepEta", 
-               "SubLeadingLepE", "SubLeadingLepPt", "SubLeadingLepPhi", "SubLeadingLepEta",
-               "DilepPt", "DilepJetPt", "DilepMETJetPt", "HTtot"]
+VarNames    = varList.varList["Names"]["Variables"]
 nvars       = len(VarNames)
 
-SysList     = ["JESUp", "JESDown", "JERUp", "ElecEffUp", "ElecEffDown", "MuonEffUp",
-               "MuonEffDown", "TrigUp", "TrigDown", "PUUp", "PUDown", "BtagUp",
-               "BtagDown", "MistagUp", "MistagDown", "FragUp", "FragDown", "PetersonFrag",
-               "semilepbrUp", "semilepbrDown"]
+SysList     = varList.varList["Names"]["ExpSysts"]
 nsys        = len(SysList)
 
 purities    = []
@@ -371,7 +363,7 @@ nxbins  = [int(i/2) for i in nybins]  ### IMPORTANT!!!! The relation 1(gen):2(re
 # ---------------------------------------------------------------- INFO IMPORTING FROM MINITREES
 print("\n> Importing minitrees' information...")
 fTW               = r.TFile.Open(minipath + "Tree_UNF_TW.root")
-fTW_DS            = r.TFile.Open(minipath + "Tree_UNF_TW_noFullyHadr_DS.root")
+fTW_DSUp          = r.TFile.Open(minipath + "Tree_UNF_TW_noFullyHadr_DS.root")
 fTW_fsrUp         = r.TFile.Open(minipath + "Tree_UNF_TW_noFullyHadr_fsrUp.root")
 fTW_fsrDown       = r.TFile.Open(minipath + "Tree_UNF_TW_noFullyHadr_fsrDown.root")
 fTW_isrUp         = r.TFile.Open(minipath + "Tree_UNF_TW_noFullyHadr_isrUp.root")
@@ -382,7 +374,7 @@ fTW_PSUp          = r.TFile.Open(minipath + "Tree_UNF_TW_noFullyHadr_PSscaleUp.r
 fTW_PSDown        = r.TFile.Open(minipath + "Tree_UNF_TW_noFullyHadr_PSscaleDown.root")
 
 fTbarW            = r.TFile.Open(minipath + "Tree_UNF_TbarW.root")
-fTbarW_DS         = r.TFile.Open(minipath + "Tree_UNF_TbarW_noFullyHadr_DS.root")
+fTbarW_DSUp       = r.TFile.Open(minipath + "Tree_UNF_TbarW_noFullyHadr_DS.root")
 fTbarW_fsrUp      = r.TFile.Open(minipath + "Tree_UNF_TbarW_noFullyHadr_fsrUp.root")
 fTbarW_fsrDown    = r.TFile.Open(minipath + "Tree_UNF_TbarW_noFullyHadr_fsrDown.root")
 fTbarW_isrUp      = r.TFile.Open(minipath + "Tree_UNF_TbarW_noFullyHadr_isrUp.root")
@@ -393,8 +385,8 @@ fTbarW_PSUp       = r.TFile.Open(minipath + "Tree_UNF_TbarW_noFullyHadr_PSscaleU
 fTbarW_PSDown     = r.TFile.Open(minipath + "Tree_UNF_TbarW_noFullyHadr_PSscaleDown.root")
 
 treeTW            = fTW.Get('Mini1j1t')
-treeTW_DS         = fTW_DS.Get('Mini1j1t')
-treeTW_DS.SetName("DS")
+treeTW_DSUp       = fTW_DSUp.Get('Mini1j1t')
+treeTW_DSUp.SetName("DSUp")
 treeTW_fsrUp      = fTW_fsrUp.Get('Mini1j1t')
 treeTW_fsrUp.SetName("fsrUp")
 treeTW_fsrDown    = fTW_fsrDown.Get('Mini1j1t')
@@ -413,8 +405,8 @@ treeTW_PSDown     = fTW_PSDown.Get('Mini1j1t')
 treeTW_PSDown.SetName("PSDown")
 
 treeTbarW         = fTbarW.Get('Mini1j1t')
-treeTbarW_DS      = fTbarW_DS.Get('Mini1j1t')
-treeTbarW_DS.SetName("DS")
+treeTbarW_DSUp    = fTbarW_DSUp.Get('Mini1j1t')
+treeTbarW_DSUp.SetName("DSUp")
 treeTbarW_fsrUp   = fTbarW_fsrUp.Get('Mini1j1t')
 treeTbarW_fsrUp.SetName("fsrUp")
 treeTbarW_fsrDown = fTbarW_fsrDown.Get('Mini1j1t')
@@ -457,10 +449,10 @@ for i in range(nvars):
     PrintFiducialHisto(htemp, VarNames[i])
   
   # Modeling systematics response matrices
-  htemp = GetResponseMatrix(treeTW_DS,      treeTbarW_DS,       VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling")
+  htemp = GetResponseMatrix(treeTW_DSUp,    treeTbarW_DSUp,       VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling")
   htemp.Write()
   PrintResponseMatrix(htemp, VarNames[i], nxbins[i], xmin[i], xmax[i], nybins[i], ymin[i], ymax[i])
-  htemp = GetFiducialHisto(treeTW_DS,       treeTbarW_DS,       VarNames[i], nybins[i], VarBins_Y[i], "modeling")
+  htemp = GetFiducialHisto(treeTW_DSUp,     treeTbarW_DSUp,       VarNames[i], nybins[i], VarBins_Y[i], "modeling")
   htemp.Write()
   PrintFiducialHisto(htemp, VarNames[i])
   htemp = GetResponseMatrix(treeTW_fsrUp,   treeTbarW_fsrUp,    VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling")
@@ -513,7 +505,7 @@ for i in range(nvars):
   PrintFiducialHisto(htemp, VarNames[i])
 
 treeTW            = None
-treeTW_DS         = None
+treeTW_DSUp       = None
 treeTW_fsrDown    = None
 treeTW_fsrUp      = None
 treeTW_isrDown    = None
@@ -524,7 +516,7 @@ treeTW_PSDown     = None
 treeTW_PSUp       = None
 
 treeTbarW         = None
-treeTbarW_DS      = None
+treeTbarW_DSUp    = None
 treeTbarW_fsrDown = None
 treeTbarW_fsrUp   = None
 treeTbarW_isrDown = None
@@ -535,7 +527,7 @@ treeTbarW_PSDown  = None
 treeTbarW_PSUp    = None
 
 fTW               = None
-fTW_DS            = None
+fTW_DSUp          = None
 fTW_fsrUp         = None
 fTW_fsrDown       = None
 fTW_isrUp         = None
@@ -546,7 +538,7 @@ fTW_PSUp          = None
 fTW_PSDown        = None
 
 fTbarW            = None
-fTbarW_DS         = None
+fTbarW_DSUp       = None
 fTbarW_fsrUp      = None
 fTbarW_fsrDown    = None
 fTbarW_isrUp      = None
