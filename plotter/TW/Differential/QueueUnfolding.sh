@@ -4,8 +4,8 @@
 #
 #===============================================================================
 
-logpath="/nfs/fanae/user/vrbouza/Documents/TFM/Unfolding_logs/"
-ext="UNF"
+logpath="/nfs/fanae/user/vrbouza/Documents/TFM/Queue_logs/"
+ext="Unfolding"
 logpath=$logpath$ext
 
 workingpath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
