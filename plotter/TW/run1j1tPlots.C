@@ -137,25 +137,25 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   
   
   // Adding samples for systematic uncertanties
-  p->AddSample("TW"   , "tW", itSys, 1, "JERUp");
+  p->AddSample("TW"                           , "tW"          , itSys, 1, "JERUp");
   p->AddSample("TW_noFullyHadr_isrUp"         , "tW"          , itSys, 1, "isrUp");
   p->AddSample("TW_noFullyHadr_isrDown"       , "tW"          , itSys, 1, "isrDown");
   p->AddSample("TW_noFullyHadr_fsrUp"         , "tW"          , itSys, 1, "fsrUp");
   p->AddSample("TW_noFullyHadr_fsrDown"       , "tW"          , itSys, 1, "fsrDown");
-  p->AddSample("TW_noFullyHadr_MEscaleUp"     , "tW"          , itSys, 1, "tWMe_s_caleUp");
-  p->AddSample("TW_noFullyHadr_MEscaleDown"   , "tW"          , itSys, 1, "tWMe_s_caleDown");
-  p->AddSample("TW_noFullyHadr_PSscaleUp"     , "tW"          , itSys, 1, "tWPS_s_caleUp");
-  p->AddSample("TW_noFullyHadr_PSscaleDown"   , "tW"          , itSys, 1, "tWPS_s_caleDown");
+  p->AddSample("TW_noFullyHadr_MEscaleUp"     , "tW"          , itSys, 1, "MEUp");
+  p->AddSample("TW_noFullyHadr_MEscaleDown"   , "tW"          , itSys, 1, "MEDown");
+  p->AddSample("TW_noFullyHadr_PSscaleUp"     , "tW"          , itSys, 1, "PSUp");
+  p->AddSample("TW_noFullyHadr_PSscaleDown"   , "tW"          , itSys, 1, "PSDown");
 
   p->AddSample("TbarW"                        , "tW"          , itSys, 1, "JERUp");
   p->AddSample("TbarW_noFullyHadr_isrUp"      , "tW"          , itSys, 1, "isrUp");
   p->AddSample("TbarW_noFullyHadr_isrDown"    , "tW"          , itSys, 1, "isrDown");
   p->AddSample("TbarW_noFullyHadr_fsrUp"      , "tW"          , itSys, 1, "fsrUp");
   p->AddSample("TbarW_noFullyHadr_fsrDown"    , "tW"          , itSys, 1, "fsrDown");
-  p->AddSample("TbarW_noFullyHadr_MEscaleUp"  , "tW"          , itSys, 1, "tWMe_s_caleUp");
-  p->AddSample("TbarW_noFullyHadr_MEscaleDown", "tW"          , itSys, 1, "tWMe_s_caleDown");
-  p->AddSample("TbarW_noFullyHadr_PSscaleUp"  , "tW"          , itSys, 1, "tWPS_s_caleUp");
-  p->AddSample("TbarW_noFullyHadr_PSscaleDown", "tW"          , itSys, 1, "tWPS_s_caleDown");
+  p->AddSample("TbarW_noFullyHadr_MEscaleUp"  , "tW"          , itSys, 1, "MEUp");
+  p->AddSample("TbarW_noFullyHadr_MEscaleDown", "tW"          , itSys, 1, "MEDown");
+  p->AddSample("TbarW_noFullyHadr_PSscaleUp"  , "tW"          , itSys, 1, "PSUp");
+  p->AddSample("TbarW_noFullyHadr_PSscaleDown", "tW"          , itSys, 1, "PSDown");
   
   p->AddSample("TW_noFullyHadr_DS"            , "tW"          , itSys, 1, "DSUp");
   p->AddSample("TbarW_noFullyHadr_DS"         , "tW"          , itSys, 1, "DSUp");
@@ -271,25 +271,25 @@ void DrawCustomPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t
   
   
   // Adding samples for systematic uncertanties
-  p->AddSample("TW"   , "tW", itSys, 1, "JERUp");
+  p->AddSample("TW"                           , "tW"          , itSys, 1, "JERUp");
   p->AddSample("TW_noFullyHadr_isrUp"         , "tW"          , itSys, 1, "isrUp");
   p->AddSample("TW_noFullyHadr_isrDown"       , "tW"          , itSys, 1, "isrDown");
   p->AddSample("TW_noFullyHadr_fsrUp"         , "tW"          , itSys, 1, "fsrUp");
   p->AddSample("TW_noFullyHadr_fsrDown"       , "tW"          , itSys, 1, "fsrDown");
-  p->AddSample("TW_noFullyHadr_MEscaleUp"     , "tW"          , itSys, 1, "tWMe_s_caleUp");
-  p->AddSample("TW_noFullyHadr_MEscaleDown"   , "tW"          , itSys, 1, "tWMe_s_caleDown");
-  p->AddSample("TW_noFullyHadr_PSscaleUp"     , "tW"          , itSys, 1, "tWPS_s_caleUp");
-  p->AddSample("TW_noFullyHadr_PSscaleDown"   , "tW"          , itSys, 1, "tWPS_s_caleDown");
+  p->AddSample("TW_noFullyHadr_MEscaleUp"     , "tW"          , itSys, 1, "MEUp");
+  p->AddSample("TW_noFullyHadr_MEscaleDown"   , "tW"          , itSys, 1, "MEDown");
+  p->AddSample("TW_noFullyHadr_PSscaleUp"     , "tW"          , itSys, 1, "PSUp");
+  p->AddSample("TW_noFullyHadr_PSscaleDown"   , "tW"          , itSys, 1, "PSDown");
 
   p->AddSample("TbarW"                        , "tW"          , itSys, 1, "JERUp");
   p->AddSample("TbarW_noFullyHadr_isrUp"      , "tW"          , itSys, 1, "isrUp");
   p->AddSample("TbarW_noFullyHadr_isrDown"    , "tW"          , itSys, 1, "isrDown");
   p->AddSample("TbarW_noFullyHadr_fsrUp"      , "tW"          , itSys, 1, "fsrUp");
   p->AddSample("TbarW_noFullyHadr_fsrDown"    , "tW"          , itSys, 1, "fsrDown");
-  p->AddSample("TbarW_noFullyHadr_MEscaleUp"  , "tW"          , itSys, 1, "tWMe_s_caleUp");
-  p->AddSample("TbarW_noFullyHadr_MEscaleDown", "tW"          , itSys, 1, "tWMe_s_caleDown");
-  p->AddSample("TbarW_noFullyHadr_PSscaleUp"  , "tW"          , itSys, 1, "tWPS_s_caleUp");
-  p->AddSample("TbarW_noFullyHadr_PSscaleDown", "tW"          , itSys, 1, "tWPS_s_caleDown");
+  p->AddSample("TbarW_noFullyHadr_MEscaleUp"  , "tW"          , itSys, 1, "MEUp");
+  p->AddSample("TbarW_noFullyHadr_MEscaleDown", "tW"          , itSys, 1, "MEDown");
+  p->AddSample("TbarW_noFullyHadr_PSscaleUp"  , "tW"          , itSys, 1, "PSUp");
+  p->AddSample("TbarW_noFullyHadr_PSscaleDown", "tW"          , itSys, 1, "PSDown");
   
   p->AddSample("TW_noFullyHadr_DS"            , "tW"          , itSys, 1, "DSUp");
   p->AddSample("TbarW_noFullyHadr_DS"         , "tW"          , itSys, 1, "DSUp");

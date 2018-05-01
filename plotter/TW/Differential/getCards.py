@@ -78,20 +78,20 @@ for binDn,binUp in zip(binning, binning[1:]):
     p.AddSample("TW_noFullyHadr_isrDown",       "tW",    ROOT.itSys, 1, "isrDown");
     p.AddSample("TW_noFullyHadr_fsrUp",         "tW",    ROOT.itSys, 1, "fsrUp");
     p.AddSample("TW_noFullyHadr_fsrDown",       "tW",    ROOT.itSys, 1, "fsrDown");
-    p.AddSample("TW_noFullyHadr_MEscaleUp",     "tW",    ROOT.itSys, 1, "tWMe_s_caleUp");
-    p.AddSample("TW_noFullyHadr_MEscaleDown",   "tW",    ROOT.itSys, 1, "tWMe_s_caleDown");
-    p.AddSample("TW_noFullyHadr_PSscaleUp",     "tW",    ROOT.itSys, 1, "tWPS_s_caleUp");
-    p.AddSample("TW_noFullyHadr_PSscaleDown",   "tW",    ROOT.itSys, 1, "tWPS_s_caleDown");
+    p.AddSample("TW_noFullyHadr_MEscaleUp",     "tW",    ROOT.itSys, 1, "MEUp");
+    p.AddSample("TW_noFullyHadr_MEscaleDown",   "tW",    ROOT.itSys, 1, "MEDown");
+    p.AddSample("TW_noFullyHadr_PSscaleUp",     "tW",    ROOT.itSys, 1, "PSUp");
+    p.AddSample("TW_noFullyHadr_PSscaleDown",   "tW",    ROOT.itSys, 1, "PSDown");
     
     p.AddSample("TbarW",                        "tW",    ROOT.itSys, 1, "JERUp");
     p.AddSample("TbarW_noFullyHadr_isrUp",      "tW",    ROOT.itSys, 1, "isrUp");
     p.AddSample("TbarW_noFullyHadr_isrDown",    "tW",    ROOT.itSys, 1, "isrDown");
     p.AddSample("TbarW_noFullyHadr_fsrUp",      "tW",    ROOT.itSys, 1, "fsrUp");
     p.AddSample("TbarW_noFullyHadr_fsrDown",    "tW",    ROOT.itSys, 1, "fsrDown");
-    p.AddSample("TbarW_noFullyHadr_MEscaleUp",  "tW",    ROOT.itSys, 1, "tWMe_s_caleUp");
-    p.AddSample("TbarW_noFullyHadr_MEscaleDown","tW",    ROOT.itSys, 1, "tWMe_s_caleDown");
-    p.AddSample("TbarW_noFullyHadr_PSscaleUp"  ,"tW",    ROOT.itSys, 1, "tWPS_s_caleUp");
-    p.AddSample("TbarW_noFullyHadr_PSscaleDown","tW",    ROOT.itSys, 1, "tWPS_s_caleDown");
+    p.AddSample("TbarW_noFullyHadr_MEscaleUp",  "tW",    ROOT.itSys, 1, "MEUp");
+    p.AddSample("TbarW_noFullyHadr_MEscaleDown","tW",    ROOT.itSys, 1, "MEDown");
+    p.AddSample("TbarW_noFullyHadr_PSscaleUp"  ,"tW",    ROOT.itSys, 1, "PSUp");
+    p.AddSample("TbarW_noFullyHadr_PSscaleDown","tW",    ROOT.itSys, 1, "PSDown");
     
     p.AddSample("TW_noFullyHadr_DS",            "tW",    ROOT.itSys, 1, "DSUp");
     p.AddSample("TbarW_noFullyHadr_DS",         "tW",    ROOT.itSys, 1, "DSUp");
