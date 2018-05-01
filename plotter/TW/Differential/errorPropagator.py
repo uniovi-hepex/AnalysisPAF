@@ -11,7 +11,7 @@ def propagateQuantity( nom, varDict ):
     for key in varDict: 
         if 'Down' in key: continue
         if not 'Up' in key: 
-            raise RuntimeError('Use case is not supported yet (compatibility mode with JER')
+            raise RuntimeError('Use case is not supported yet')
 
         if key.replace('Up','Down') in varDict:
             tot = tot + max( map(lambda x : x*x, [nom - varDict[key], nom - varDict[key.replace('Up','Down')]]))

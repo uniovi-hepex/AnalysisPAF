@@ -1,6 +1,7 @@
 import itertools, math
 import ROOT
 import copy, os
+import varList
 from warnings import warn,simplefilter
 
 simplefilter("always", UserWarning)
@@ -10,13 +11,13 @@ class FittingSuite:
         self.cardFile = cardFile
         self.doExpect = doExpect
         self.pmap = {}
-        self.procMap = { 'Fakes': 'Bkg',
+        self.procMap  = {'Fakes': 'Bkg',
                          'tW'   : 'Signal',
                          'VVttV': 'Bkg',
                          'DY'   : 'Bkg',
                          'ttbar': 'Bkg'}
         self.readFromCard()
-    
+        self.VarName  = 'LeadingJetPt'
         
 
     def readFromCard(self):
@@ -30,7 +31,7 @@ class FittingSuite:
             proc = name.split('_')[0]
 
             if 'statbin' in nuis: continue 
-
+            if nuis in varList.varList['Names']['colorSysts']: continue
 
             if nuis not in self.pmap: 
                 self.pmap[nuis] = {proc: copy.deepcopy(obj)} 
@@ -215,14 +216,11 @@ class FittingSuite:
         return signal 
 
     def makeCardFromCard(self, nuis):
-
-        
         pmap = self.pmap[nuis]
         data = self.pmap['obs']['data']
 
-        #cardFile = ROOT.TFile.Open('cards/cardFile_%s.root'%nuis,'recreate')
         #print 'we are coming here:', 'temp/cardFile_%s.root'%nuis
-        cardFile = ROOT.TFile.Open('temp/cardFile_%s.root'%nuis,'recreate')
+        cardFile = ROOT.TFile.Open('temp/cardFile_%s_%s.root'%(self.VarName, nuis),'recreate')
         data.Write()
         for proc in pmap:
             histo = copy.deepcopy(pmap[proc])
@@ -232,15 +230,11 @@ class FittingSuite:
         
         template = open('datacard_template.txt').read()
         yields = {key: histo.Integral() for key,histo in pmap.items()}
-        template = template.format(nuis=nuis,obs=int(data.Integral()), p=yields)
+        template = template.format(name = self.VarName, nuis=nuis, obs=int(data.Integral()), p=yields)
 
-        #card = open('cards/datacard_%s.txt'%nuis, 'w')
-        card = open('temp/datacard_%s.txt'%nuis, 'w')
+        card = open('temp/datacard_%s_%s.txt'%(self.VarName, nuis), 'w')
         card.write(template)
         card.close()
-
-
-        
 
 
     def doCombFit(self, nuis):
@@ -256,11 +250,10 @@ class FittingSuite:
         print "> Fitting...\n"
         # do fthe fit (dont correct the typo, it may be there for a resason...)
         if nuis != '': 
-            #os.system('combine -M MultiDimFit cards/datacard_{nuis}.txt --name fit_{nuis} '.format(nuis=nuis))
-            os.system('combine -M MultiDimFit temp/datacard_{nuis}.txt --name fit_{nuis} '.format(nuis=nuis))
+            os.system('combine -M MultiDimFit temp/datacard_{name}_{nuis}.txt --name fit_{name}_{nuis} '.format(name = self.VarName, nuis = nuis))
         
             # harvest the results
-            result = ROOT.TFile.Open('higgsCombinefit_%s.MultiDimFit.mH120.root'%nuis)
+            result = ROOT.TFile.Open('higgsCombinefit_%s_%s.MultiDimFit.mH120.root'%(self.VarName, nuis))
         
             if result.limit.GetEntries() > 1: raise RuntimeError("More than one entry in the limits tree, something unplanned happened")
         
@@ -272,11 +265,10 @@ class FittingSuite:
                 return limit.r
             raise RuntimeError('It shouldnt get here')
 
-        else: 
-            #os.system('combine -M MultiDimFit cards/datacard_{nuis}.txt --name fit_{nuis} --algo=singles --robustFit=1'.format(nuis=nuis))
-            os.system('combine -M MultiDimFit temp/datacard_{nuis}.txt --name fit_{nuis} --algo=singles --robustFit=1'.format(nuis=nuis))
+        else:
+            os.system('combine -M MultiDimFit temp/datacard_{name}_{nuis}.txt --name fit_{name}_{nuis} --algo=singles --robustFit=1'.format(name = self.VarName, nuis = nuis))
             # harvest the results
-            result = ROOT.TFile.Open('higgsCombinefit_%s.MultiDimFit.mH120.root'%nuis)
+            result = ROOT.TFile.Open('higgsCombinefit_%s_%s.MultiDimFit.mH120.root'%(self.VarName, nuis))
             if result.limit.GetEntries() != 3: raise RuntimeError("Different number of entries in the limits tree than expected, something unplanned happened")
             rslt = []
             for limit in result.limit:
