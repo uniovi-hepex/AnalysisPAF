@@ -19,7 +19,7 @@ const TString Bkg =      "ttV,  VV,   DY,   tW,   Nonprompt, ttbar";
 
 //=== Normalization uncertainties for the backgrounds and the signal
 float normxsec = TMath::Sqrt(2.8*2.8 + 5.3*5.3);
-const TString NormSyst = Form("1.30, 1.30, 1.15, 1.30, 1.60,  %1.3f, 1.15", 1 + normxsec/100);
+const TString NormSyst = Form("1.30, 1.30, 1.15, 1.30, 1.30, %1.3f, 1.15", 1 + normxsec/100);
 
 //=== Luminosity uncertainty (relative)
 const Float_t LumiSys = 2.5/100;
@@ -30,7 +30,7 @@ const TString chan[nChannels]   = {"ElMu"};//{"Elec", "ElMu", "Muon"};
 
 //=== Select variables
 const Int_t nVars     = 1;
-const TString vars[nVars] = {"CutAndCount"};//, "MT2_DeltaEta_24", "MT2_MET_DeltaEta_26", "MT2_MET_DeltaEta3", "MT2_DeltaEta_31"};
+const TString vars[nVars] = {"MT2"};//, "MT2_DeltaEta_24", "MT2_MET_DeltaEta_26", "MT2_MET_DeltaEta3", "MT2_DeltaEta_31"};
 //const Int_t nVars     = 11;
 //const TString vars[nVars]       = {"CutAndCount", "MT2_26", "MT2_25", "MT2_20", "MT2_15", "MT2_9", "MT2_5", "MT2_3", "MT2_252", "MT2_4", "MT2_32"};
 //const Int_t nVars     = 4;
@@ -84,7 +84,7 @@ const TString signals[nSignals] = {"T2tt_167p5_1p0", "T2tt_175p0_1p0", "T2tt_175
 //const TString path = "/nfs/fanae/user/juanr/CMSSW_8_1_0/src/StopDatacards/feb9/";
 //const TString path = "/nfs/fanae/user/juanr/CMSSW_8_1_0/src/StopDatacards/unblinding/";
 //const TString path = "output/Unblind_MT2_21_scale0.955/";
-const TString path = "/mnt_pool/ciencias_users/user/juanr/CMSSW_8_1_0/src/StopDatacards/preapproval/CutAndCount/";
+const TString path = "/mnt_pool/ciencias_users/user/juanr/CMSSW_8_1_0/src/StopDatacards/apr2018/";
 
 Datacard *CreateDatacard(TString signal, TString var, TString chan = "ElMu"){
   // Create a Datacard with the inputs above

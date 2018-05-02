@@ -74,6 +74,8 @@ class JetSelector : public PAFChainItemSelector{
     TString gSampleName;
     Bool_t gIsFSRUp;
     Bool_t gIsFSRDown;
+    Bool_t gIs2017eccop;
+    TString gOptions;
 
     // Jets
     Int_t nJet;

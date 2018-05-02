@@ -1,16 +1,17 @@
 import ROOT as r
-import math
-import copy
+import math, copy
+
 
 def quadSum( elements):
     return math.sqrt( sum( map( lambda x : x*x, elements)))
+
 
 def propagateQuantity( nom, varDict ):
     tot = 0 
     for key in varDict: 
         if 'Down' in key: continue
         if not 'Up' in key: 
-            raise RuntimeError('Use case is not supported yet (compatibility mode with JER')
+            raise RuntimeError('Use case is not supported yet')
 
         if key.replace('Up','Down') in varDict:
             tot = tot + max( map(lambda x : x*x, [nom - varDict[key], nom - varDict[key.replace('Up','Down')]]))
@@ -31,9 +32,12 @@ def propagateHisto( nom, varDict ):
     return out
 
 
-
 def maxRelativeError(histo):
-    return max( [histo.GetBinError(bin) / histo.GetBinContent(bin) for bin in range(1, histo.GetNbinsX()+1)])
+    try:
+        return max( [histo.GetBinError(bin) / histo.GetBinContent(bin) for bin in range(1, histo.GetNbinsX()+1)])
+    except ZeroDivisionError:
+        raise RuntimeError('There is (at least) one bin with zero contents')
+
 
 def relativeErrorHist(histo):
     relErr = histo.Clone( histo.GetName() + 'relErr')
@@ -42,11 +46,13 @@ def relativeErrorHist(histo):
         relErr.SetBinError(bin,0)
     return relErr
 
+
 def maximumHisto(histo1, histo2):
     maxHist = histo1.Clone( histo1.GetName() + 'max' ) 
     for bin in range(1, maxHist.GetNbinsX()+1):
         maxHist.SetBinContent( bin, max(histo1.GetBinContent(bin), histo2.GetBinContent(bin)))
     return maxHist
+
 
 def getUncList(nom, varDict):
     medDict = [('Fit',nom)]
@@ -70,7 +76,5 @@ def getUncList(nom, varDict):
             outDict.append( (key[0].replace('Up',''), hist) )
         else:
             outDict.append( (key[0].replace('Up',''), key[1]) )
-        
-        
-
+    
     return map( lambda x : (x[0], relativeErrorHist(x[1])), outDict)

@@ -21,8 +21,11 @@ void LeptonSelector::Initialise(){
   gIsData        = GetParam<Bool_t>("IsData");
   gIsFastSim     = GetParam<Bool_t>("IsFastSim");
   gSelection     = GetParam<Int_t>("iSelection");
+  gOptions       = GetParam<TString>("_options");
+  gIs2017 = false;
+  if(gOptions.Contains("2017")) gIs2017 = true;
   localPath      = GetParam<TString>("WorkingDir");
-  LepSF = new LeptonSF(localPath + "/InputFiles/");
+  LepSF = new LeptonSF(localPath + "/InputFiles/", gOptions);
   ElecScale = new ElecScaleClass(localPath + "/InputFiles/ElecScale.dat");
 
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -356,6 +359,42 @@ Bool_t LeptonSelector::getElecCutBasedId(Int_t wp){
     return true;
   }
 }
+
+Bool_t LeptonSelector::getElecCutBasedId2017(Int_t wp){
+  // https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Cut_Based_Electron_ID_for_Run_2
+  float b_full5x5_sigmaIetaIeta, b_absdEtaSeed, b_absdPhiIn, b_C0, b_relIsoWithEA, b_abs1oEm1op, b_missinnerhits; // eta < 1.479
+  float e_full5x5_sigmaIetaIeta, e_absdEtaSeed, e_absdPhiIn, e_C0, e_relIsoWithEA, e_abs1oEm1op, e_missinnerhits; // eta > 1.479
+
+  float aetaSC = TMath::Abs(etaSC); float rho = Get<Float_t>("rho");
+  if(wp == iTight){
+    b_full5x5_sigmaIetaIeta = aetaSC < 1.479 ? 0.0104  : 0.0305;
+    b_absdEtaSeed           = aetaSC < 1.479 ? 0.00353 : 0.00567;
+    b_absdPhiIn             = aetaSC < 1.479 ? 0.0499  : 0.0165;
+    b_C0                    = aetaSC < 1.479 ? 0.026   : 0.026;
+    b_relIsoWithEA          = aetaSC < 1.479 ? 0.0361  : 0.094;
+    b_abs1oEm1op            = aetaSC < 1.479 ? 0.0278  : 0.0158;
+    b_missinnerhits         = aetaSC < 1.479 ? 1       : 1;
+  }
+  float b_effC0 = aetaSC < 1.479 ? b_C0 + 1.12/energy + 0.0368*rho/energy : b_C0 + 0.50/energy + 0.2010*rho/energy;
+
+  if(TMath::Abs(sigmaIEtaIEta) > b_full5x5_sigmaIetaIeta)   return false;
+  if(TMath::Abs(dEtaSC)        > b_absdEtaSeed  )           return false;
+  if(TMath::Abs(dPhiSC)        > b_absdPhiIn )              return false;
+  if(HoE                       > b_effC0)                   return false;
+  if(TMath::Abs(RelIso03)      > b_relIsoWithEA)            return false;
+  if(TMath::Abs(eImpI)         > b_abs1oEm1op)              return false;
+  if(lostHits                  > b_missinnerhits)           return false;
+  if(!convVeto) return false;
+
+  /*
+    if(wp == iTight   && tightVar < 3)     return false;
+    if(wp == iMedium  && tightVar < 2)     return false;
+    if(wp == iLoose   && tightVar < 1)     return false;
+    if(wp == iVeto    && tightVar < 0)     return false;
+    */
+  return true;
+}
+
 
 Bool_t LeptonSelector::getMultiIso(Int_t wp){
   if(wp == iVeryTight) return (miniIso < 0.09 && (ptRatio > 0.84 || ptRel > 7.2));
@@ -808,6 +847,7 @@ Bool_t LeptonSelector::isLooseLepton(Lepton lep){
     }
     if(lep.isElec){
       passId = getElecCutBasedId(iTight) && lostHits <= 1;
+      if(gIs2017)  passId = getElecCutBasedId2017(iTight);
       passIso = getRelIso03POG(iTight);
       if(TMath::Abs(etaSC) > 1.4442 && TMath::Abs(etaSC) < 1.566) return false;
     }
@@ -870,12 +910,41 @@ void LeptonSelector::InsideLoop(){
   looseLeptons.clear();
   genLeptons.clear();
   vetoLeptons.clear();
+  vGenBquarks.clear();
   nLeptonsFromTau = 0;
   // Loop over the leptons and select
   nLep     = Get<Int_t>("nLepGood");
   DumpEvent(evt, "========================================");
   DumpEvent(evt, Form("Event: %i", evt));
   DumpEvent(evt, Form("N Leptons: %i", nLep));
+  if(!gIsData) GetGenBquarks();
+
+  // Loop over the gen leptons and get gen info...
+  if(!gIsData){
+    ngenLep         = Get<Int_t>("ngenLep");
+    ngenLepFromTau  = Get<Int_t>("ngenLepFromTau");
+    for(Int_t i = 0; i < ngenLep; i++){
+      GetGenLeptonVariables(i);
+      if(gpdgMId == 23 || gpdgMId == 24 || gpdgMId == 25){
+        tL = Lepton(tP, charge, type);
+        tL.Mid = gpdgMId;
+        //if(tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta()) < 2.4) genLeptons.push_back(tL);
+        genLeptons.push_back(tL);
+      }
+    }
+    for(Int_t i = 0; i < ngenLepFromTau; i++){
+      GetGenLepFromTauVariables(i);
+      if(gpdgMId == 23 || gpdgMId == 24 || gpdgMId == 25){
+        tL = Lepton(tP, charge, type);
+        tL.Mid = 15;
+        nLeptonsFromTau++;
+        //if(tL.p.Pt() > 20 && TMath::Abs(tL.p.Eta()) < 2.4) genLeptons.push_back(tL);
+        genLeptons.push_back(tL);
+      }
+    }
+  }
+
+  // Loop over reco leptons
   for(Int_t i = 0; i < nLep; i++){
     GetLeptonVariables(i);
     tL = Lepton(tP, charge, type);
@@ -888,6 +957,19 @@ void LeptonSelector::InsideLoop(){
       tL.SetR9(R9);
       tL.SetEnergyUnc(ElecScale->GetUnc(tL.Pt(), tL.Eta(), tL.GetR9()));
     }
+
+    // Set status: Good, conv, flip, fake
+    if(!gIsData){
+      tL.SetGenMatch(kLGMgood);
+      if(abs(mcMatchPDGID) != abs(pdgid))            tL.SetGenMatch(kLGMother);
+      if(mcPromptGamma == 1)                         tL.SetGenMatch(kLGMconv);
+//      if(IsMatchedDeltaR(tL.p, genLeptons,  0.4))    tL.SetGenMatch(kLGMtoGenLep);
+//      if(IsMatchedDeltaR(tL.p, vGenBquarks, 0.3))    tL.SetGenMatch(kLGMtoGenB);
+      if( (tL.GetGenMatch() == kLGMtoGenLep || tL.GetGenMatch() == kLGMgood) && charge*mcMatchPDGID > 0 && abs(mcMatchPDGID) == abs(pdgid))  tL.SetGenMatch(kLGMflip); // flip and no fake
+      if(mcMatchID == 0 || mcMatchID == -99)         tL.SetGenMatch(kLGMfake);
+//      if(!mcPrompt)   tL.SetGenMatch(kLGMfake);
+    }
+
     if(isGoodLepton(tL)){
       DumpEvent(evt, Form(" >>> Lepton %i (pt = %g, eta = %g, type = %i):    PASA", i, tP.Pt(), tP.Eta(), type));
       //if(1){
@@ -918,6 +1000,7 @@ void LeptonSelector::InsideLoop(){
       else looseLeptons.push_back(tL);
     }
   }
+
   if(gSelection == iStopSelec || gSelection == iStopTopSelec){ // Adding leptons for the discarded collection
     nLep     = Get<Int_t>("nDiscLep");
     for(Int_t i = 0; i < nLep; i++){
@@ -925,6 +1008,19 @@ void LeptonSelector::InsideLoop(){
       tL = Lepton(tP, charge, type);
       if(tL.isMuon) tL.SetIso(RelIso04);
       else          tL.SetIso(RelIso03);
+      tL.SetGenMatch(kLGMgood);
+
+      if(!gIsData){
+        tL.SetGenMatch(kLGMgood);
+        if(abs(mcMatchPDGID) != abs(pdgid))            tL.SetGenMatch(kLGMother);
+        if(mcPromptGamma == 1)                         tL.SetGenMatch(kLGMconv);
+        if(mcMatchID == 0 || mcMatchID == -99)         tL.SetGenMatch(kLGMfake);
+//        if(!mcPrompt)   tL.SetGenMatch(kLGMfake);
+       // if(IsMatchedDeltaR(tL.p, vGenBquarks, 0.4))    tL.SetGenMatch(kLGMtoGenB);
+       // if(IsMatchedDeltaR(tL.p, genLeptons,  0.4))    tL.SetGenMatch(kLGMtoGenLep);
+        if( (tL.GetGenMatch() == kLGMtoGenLep || tL.GetGenMatch() == kLGMgood) && charge*mcMatchPDGID > 0 && abs(mcMatchPDGID) == abs(pdgid))  tL.SetGenMatch(kLGMflip); // flip and no fake
+      }
+
       if(isGoodLepton(tL)){
         tL.SetSF(   LepSF->GetLeptonSF(     pt, eta, tL.type) ); // Set SF and error
         tL.SetSFerr(LepSF->GetLeptonSFerror(pt, eta, tL.type) );
@@ -943,28 +1039,6 @@ void LeptonSelector::InsideLoop(){
     }
   }
 
-  // Loop over the gen leptons and get gen info...
-  if(!gIsData){
-    ngenLep         = Get<Int_t>("ngenLep");
-    ngenLepFromTau  = Get<Int_t>("ngenLepFromTau");
-    for(Int_t i = 0; i < ngenLep; i++){
-      GetGenLeptonVariables(i);
-      if(gpdgMId == 23 || gpdgMId == 24 || gpdgMId == 25){
-        tL = Lepton(tP, charge, type);
-        tL.Mid = gpdgMId;
-        genLeptons.push_back(tL);
-      }
-    }
-    for(Int_t i = 0; i < ngenLepFromTau; i++){
-      GetGenLepFromTauVariables(i);
-      if(gpdgMId == 23 || gpdgMId == 24 || gpdgMId == 25){
-        tL = Lepton(tP, charge, type);
-        tL.Mid = 15;
-        genLeptons.push_back(tL);
-        nLeptonsFromTau++;
-      }
-    }
-  }
   nSelLeptons   = selLeptons.size();
   nVetoLeptons   = vetoLeptons.size();
   nLooseLeptons = looseLeptons.size();
@@ -1029,8 +1103,10 @@ void LeptonSelector::GetLeptonVariables(Int_t i){ // Once per muon, get all the 
   tP.SetPtEtaPhiM(Get<Float_t>("LepGood_pt", i), Get<Float_t>("LepGood_eta", i), Get<Float_t>("LepGood_phi", i), Get<Float_t>("LepGood_mass", i));
   pt             = tP.Pt();
   eta           = tP.Eta();
+  energy        = tP.Energy();
   charge         = Get<Int_t>("LepGood_charge", i);
   type           = TMath::Abs(Get<Int_t>("LepGood_pdgId",i)) == 11 ? 1 : 0;
+  pdgid          = Get<Int_t>("LepGood_pdgId",i);
   tightVar       = Get<Int_t>("LepGood_tightId", i);
   mediumMuonId   = Get<Int_t>("LepGood_mediumMuonId",i);
   etaSC         = TMath::Abs(Get<Float_t>("LepGood_etaSc",i));
@@ -1061,6 +1137,12 @@ void LeptonSelector::GetLeptonVariables(Int_t i){ // Once per muon, get all the 
 //   isTrackerMuon = Get<Int_t>("LepGood_isTrackerMuon",i); REMOVED DUE TO LACK OF IT IN LOCAL SAMPLES
   isTrackerMuon = 0.;
   R9            = Get<Float_t>("LepGood_r9",i);
+  if(!gIsData){
+    mcPrompt       = Get<Int_t>("LepGood_mcPrompt", i);
+    mcMatchID       = Get<Int_t>("LepGood_mcMatchId", i);
+    mcPromptGamma   = Get<Int_t>("LepGood_mcPromptGamma", i);
+    mcMatchPDGID    = Get<Int_t>("LepGood_mcMatchPdgId", i);
+  }
 
   SF = 1;
 }
@@ -1069,8 +1151,10 @@ void LeptonSelector::GetDiscLeptonVariables(Int_t i){ // Once per muon, get all 
   tP.SetPxPyPzE(Get<Float_t>("DiscLep_px", i), Get<Float_t>("DiscLep_py", i), Get<Float_t>("DiscLep_pz", i), Get<Float_t>("DiscLep_energy", i));
   pt             = tP.Pt();
   eta           = tP.Eta();
+  energy         = tP.Energy();
   charge         = Get<Int_t>("DiscLep_charge", i);
   type           = TMath::Abs(Get<Int_t>("DiscLep_pdgId",i)) == 11 ? 1 : 0;
+  pdgid          = Get<Int_t>("DiscLep_pdgId",i);
   tightVar       = Get<Int_t>("DiscLep_tightId", i);
   mediumMuonId   = Get<Int_t>("DiscLep_mediumMuonId",i);
   etaSC         = TMath::Abs(Get<Float_t>("DiscLep_etaSc",i));
@@ -1100,7 +1184,10 @@ void LeptonSelector::GetDiscLeptonVariables(Int_t i){ // Once per muon, get all 
   isGlobalMuon = 0.;
 //   isTrackerMuon = Get<Int_t>("DiscLep_isTrackerMuon",i); REMOVED DUE TO LACK OF IT IN LOCAL SAMPLES
   isTrackerMuon = 0.;
-
+//   mcPrompt       = Get<Int_t>("DiscLep_mcPrompt", i); REMOVED DUE TO UNKONWN OF EXISTENCE OF IT IN LOCAL SAMPLES
+//   mcMatchID       = Get<Int_t>("DiscLep_mcMatchId", i); REMOVED DUE TO UNKONWN OF EXISTENCE OF IT IN LOCAL SAMPLES
+//   mcPromptGamma   = Get<Int_t>("DiscLep_mcPromptGamma", i); REMOVED DUE TO UNKONWN OF EXISTENCE OF IT IN LOCAL SAMPLES
+//   mcMatchPDGID    = Get<Int_t>("DiscLep_mcMatchPdgId", i); REMOVED DUE TO UNKONWN OF EXISTENCE OF IT IN LOCAL SAMPLES
   SF = 1;
 }
 void LeptonSelector::GetGenLeptonVariables(Int_t i){
@@ -1115,4 +1202,15 @@ void LeptonSelector::GetGenLepFromTauVariables(Int_t i){
   charge = Get<Int_t>("genLepFromTau_charge", i);
   gpdgMId = TMath::Abs(Get<Int_t>("genLepFromTau_grandmotherId", i));
   type = TMath::Abs(Get<Int_t>("genLepFromTau_pdgId",i)) == 11 ? 1 : 0;
+}
+
+void LeptonSelector::GetGenBquarks(){
+  Int_t nPart = Get<Int_t>("nGenPart"); 
+  TLorentzVector p; int pdg;
+  for(Int_t i = 0; i < nPart; i++){
+    pdg = Get<Int_t>("GenPart_pdgId", i);
+    if(TMath::Abs(pdg) != 5) continue; // b quarks
+    p.SetPtEtaPhiM(Get<Float_t>("GenPart_pt", i), Get<Float_t>("GenPart_eta", i), Get<Float_t>("GenPart_phi", i), Get<Float_t>("GenPart_mass", i));
+    vGenBquarks.push_back(p);
+  }
 }

@@ -12,8 +12,7 @@
 //   Or           ---> (pt1, eta1, phi1, m1, pt2, eta2, phi2, m2)
 
 #include "TLorentzVector.h"
-#include "t4/t4Functions.C"
-#include "stop/StopFunctions.C"
+//#include "t4/t4Functions.C"
 
 #ifndef PlotterFunctions_C
 #define PlotterFunctions_C 1
@@ -46,6 +45,12 @@ Int_t NBtagNJets(Int_t nJets, Int_t nBtags);
 //#################### EXTRA
 Float_t GetPt(Float_t lep0pt, Float_t lep1pt, Int_t lep0id, Int_t lep1id, Int_t id);
 Bool_t PassEtaCut(Float_t lep0eta, Float_t lep1eta, Int_t lep0id, Int_t lep1id, Float_t etamin, Float_t etamax, Int_t id);
+
+
+Int_t IsEmuFromWW(Int_t mid1, Int_t mid2);
+Int_t IsEmuFromWTau(Int_t mid1, Int_t mid2);
+Int_t IsEmuFromTauTau(Int_t mid1, Int_t mid2);
+
 
 ////////////////////////////////////////////////////////////
 // Funtion definitions below here
@@ -370,6 +375,31 @@ int GetMT2orDiPtorDeltaEtaBins(float mt2, float lep0pt, float lep1pt, float dphi
   }
   return 0;
 }
+
+Int_t IsEmuFromWW(Int_t mid1, Int_t mid2){
+  Float_t w = 0;
+  mid1 = TMath::Abs(mid1);
+  mid2 = TMath::Abs(mid2);
+  if( (mid1 + mid2) == (24*2) ) w = 1;
+  return w;
+}
+
+Int_t IsEmuFromWTau(Int_t mid1, Int_t mid2){
+  Float_t w = 0;
+  mid1 = TMath::Abs(mid1);
+  mid2 = TMath::Abs(mid2);
+  if( (mid1 + mid2) == (24+15) ) w = 1;
+  return w;
+}
+
+Int_t IsEmuFromTauTau(Int_t mid1, Int_t mid2){
+  Float_t w = 0;
+  mid1 = TMath::Abs(mid1);
+  mid2 = TMath::Abs(mid2);
+  if( (mid1 + mid2) == (15*2) ) w = 1;
+  return w;
+}
+
 
 
 #endif

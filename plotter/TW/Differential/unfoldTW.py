@@ -31,7 +31,7 @@ class DataContainer:
                 self.unfoldingInputs[''] = copy.deepcopy(key.ReadObj())
             else:
                 sysName = '_'.join(key.GetName().split('_')[1:])
-                if sysName == 'JERDown': continue # sorry about this (to be changed in the card producer)
+                if (sysName in varList.varList['Names']['specialSysts'] ): continue
                 self.listOfSysts.append(sysName)
                 self.unfoldingInputs[sysName] = copy.deepcopy(key.ReadObj())
         if '' not in self.unfoldingInputs: 
@@ -55,10 +55,9 @@ class DataContainer:
         for key in tfile.GetListOfKeys():
             if key.GetName()[0] != 'F': continue
             if self.var not in key.GetName(): continue
-            if key.GetName() == 'F'+self.var:
+            if key.GetName() == 'F' + self.var:
                 self.bkgs[''] = copy.deepcopy(key.ReadObj())
                 self.bkgs[''].Scale(varList.Lumi*1000)
-
             else:
                 sysName = '_'.join(key.GetName().split('_')[1:])
                 self.bkgs[sysName] = copy.deepcopy(key.ReadObj())
@@ -69,20 +68,31 @@ class DataContainer:
         if '' not in self.responseMatrices:
             raise RuntimeError("Nominal response matrix not there")
 
-        
+        pleaseraise = False
         if not all(sys in systListResp for sys in self.listOfSysts):
             for sys in self.listOfSysts:
-                if sys not in systListResp: print sys, 'is not there'
-            raise RuntimeError("We dont have reponse matrices for all nuisances")
-            
-        if (systListResp != self.listOfSysts):
+                if sys not in systListResp:
+                    if sys not in varList.varList['Names']['ttbarSysts'] + varList.varList['Names']['specialSysts']:
+                        print '>', sys, 'is not in the response matrix file!'
+                        pleaseraise = True
+            if pleaseraise: 
+                raise RuntimeError("We dont have reponse matrices for all nuisances")
+            else:
+                print '\n> TTbar systematic uncertanties considered.\n'
+        
+        if ((systListResp != self.listOfSysts) and not pleaseraise):
             print RuntimeWarning("Different nuisances in response and inputs")
             #raise RuntimeWarning("Different nuisances in response and inputs")
-
+        pleaseraise = None
+        
+        
     def getMatrixNInput(self,nuis):
-        if nuis not in self.listOfSysts + ['']:
+        if nuis not in self.listOfSysts + [''] + varList.varList['Names']['ttbarSysts']:
             raise RuntimeError("%s is not in the list of response"%nuis)
-        return self.unfoldingInputs[nuis], self.responseMatrices[nuis], self.bkgs[nuis]
+        if nuis in varList.varList['Names']['ttbarSysts']:
+            return self.unfoldingInputs[nuis], self.responseMatrices[''], self.bkgs['']
+        else:
+            return self.unfoldingInputs[nuis], self.responseMatrices[nuis], self.bkgs[nuis]
 
 
 
@@ -324,7 +334,7 @@ if __name__=="__main__":
     #a = Unfolder('LeadingJetEta', 'temp/cardFile_LeadingJetEta.root', 'temp/UnfoldingInfo.root')
     a.doRegularizationComparison()
 
-    print k
+    #print k
 
     a.prepareNominalHelper()
     a.doLCurveScan()

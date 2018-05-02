@@ -1,10 +1,11 @@
-TString path = "/mnt_pool/ciencias_users/user/juanr/AnalysisPAF/plotter/output/Datacards_jan5/";
-//TString path = "/mnt_pool/ciencias_users/user/juanr/CMSSW_8_1_0/src/StopDatacards/jan5/";
+//TString path = "/mnt_pool/ciencias_users/user/juanr/AnalysisPAF/plotter/output/Datacards_jan5/";
+//TString path = "/mnt_pool/ciencias_users/user/juanr/AnalysisPAF/StopTop_temp/T2tt/";
+TString path = "/nfs/fanae/user/juanr/CMSSW_8_1_0/src/StopDatacards/preapproval/";
 TH1F* GetHisto(TString var = "", TString bkg = "ttbar", TString filename = "MT2", bool norm = true);
 void DrawSystematic(TString var, TString bkg = "ttbar", TString filename = "MT2", TString xtit = "M_{T2} (GeV)", TString varname = "Unclustered MET", float lsize = 0.045, float lx0 = 0.65, float ly0 = 0.7, float lx1 = 0.9, float ly1 = 0.9);
 
 void DrawSyst(){
-  DrawSystematic("unclMET", "ttbar", "MT2_21");
+  DrawSystematic("unclMET", "ttbar", "MT2_ElMu");
   //DrawSystematic("uncl", "ttbar", "MET");
 }
 
