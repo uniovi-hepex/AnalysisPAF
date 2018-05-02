@@ -92,10 +92,13 @@ Bool_t EventBuilder::PassesDoubleElecTrigger(){
   gIsData = GetParam<Bool_t>("IsData");
   if (gIsData) run     = Get<Int_t>("run");
 
-  if(gIsData2017){
-    pass = Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
-  }
-  else if(gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec || gSelection == i4tSelec){
+  // SAME FOR 2017... if(gIsData2017)  pass = Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
+  if(gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec || gSelection == i4tSelec){
+    if(gIs2017){
+      pass = Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+             Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v");
+      return pass;
+    }
     // Run B-G, same as H
     pass = (Get<Int_t>("HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"));
   }
@@ -123,11 +126,17 @@ Bool_t EventBuilder::PassesDoubleMuonTrigger(){
   Bool_t pass = false;
   if (gIsData) run     = Get<Int_t>("run");
 
-  if(gIsData2017){
+  /*if(gIsData2017){
     pass = Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");
     return pass;
-  }
-  else if(gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec || gSelection == i4tSelec){
+  }*/
+  //else 
+  if(gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec || gSelection == i4tSelec){
+    if(gIs2017){
+      pass = Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v") ||
+             Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v"); 
+      return pass;
+    }
     // Run B-G or MC
     if ( (gIsData && run <= 280385) || (!gIsData)){
       pass = (Get<Int_t>("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v")  ||
@@ -166,7 +175,7 @@ Bool_t EventBuilder::PassesElMuTrigger(){
   if(gIsFastSim) return true; // no triger in FastSim samples
   Bool_t pass = false;
   if (gIsData) run     = Get<Int_t>("run");
-  if(gIsData2017){
+  /*if(gIsData2017){
     if ( run < 299368){
       pass = ( Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v") 
                || Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v") );
@@ -178,8 +187,14 @@ Bool_t EventBuilder::PassesElMuTrigger(){
 	   //          || Get<Int_t>("HLT_BIT_HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v")  );
     }
     return pass;
-  }
+  }*/
   if( gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec || gSelection == i4tSelec){
+    if(gIs2017){
+      pass = Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v") ||
+      Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v") ||
+      Get<Int_t>("HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
+      return pass;
+    }
     // Run B-G or MC
     if ( (gIsData && run <= 280385) || (!gIsData)){
       pass = ( Get<Int_t>("HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v")  ||
@@ -233,6 +248,10 @@ Bool_t EventBuilder::PassesSingleElecTrigger(){
     pass =  Get<Int_t>("HLT_BIT_HLT_Ele27_WPTight_Gsf_v") ||
       Get<Int_t>("HLT_BIT_HLT_Ele25_eta2p1_WPTight_Gsf_v");
   else if( gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec || gSelection == i4tSelec) 
+    if(gIs2017){
+      pass = Get<Int_t>("HLT_BIT_HLT_Ele32_WPTight_Gsf_v") || Get<Int_t>("HLT_BIT_HLT_Ele35_WPTight_Gsf_v");
+      return pass;
+    }
     pass =  Get<Int_t>("HLT_BIT_HLT_Ele27_WPTight_Gsf_v");
   return pass;
 }
@@ -241,6 +260,10 @@ Bool_t EventBuilder::PassesSingleMuonTrigger(){
   if(gIsFastSim) return true; // no triger in FastSim samples
   Bool_t pass = false;
   //if(gSelection == iStopSelec || gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec || gSelection == iWWSelec || gSelection == iWZSelec)
+  if(gIs2017){
+    pass = Get<Int_t>("HLT_BIT_HLT_IsoMu24_v") || Get<Int_t>("HLT_BIT_HLT_IsoMu27_v");
+    return pass;
+  }
     pass = (
 	    Get<Int_t>("HLT_BIT_HLT_IsoTkMu24_v") ||
 	    Get<Int_t>("HLT_BIT_HLT_IsoMu24_v") );
@@ -307,6 +330,8 @@ void EventBuilder::Initialise(){
   gNEntries    = GetParam<Int_t>("nEntries");
   gSumOfWeights= GetParam<Double_t>("SumOfWeights");
   gOptions     = GetParam<TString>("_options");
+  gIs2017 = false;
+  if(gOptions.Contains("2017")) gIs2017 = true;
   gChannel = -1;
   nProcessedEvents = 0; 
   //if(gSelection == iTopSelec) gIsFastSim = true;
@@ -412,7 +437,7 @@ void EventBuilder::InsideLoop(){
     if      (gChannel == iElMu && TrigElMu()) passTrigger = true;
     else if (gChannel == iMuon && TrigMuMu()) passTrigger = true;
     else if (gChannel == iElec && TrigElEl()) passTrigger = true;
-    else if ((gChannel == iTriLep || gChannel == iFourLep) && Trig3l4l()) passTrigger = true;
+    //else if ((gChannel == iTriLep || gChannel == iFourLep) && Trig3l4l()) passTrigger = true;
   }
 
   METfilters = PassesMETfilters();
@@ -428,6 +453,9 @@ void EventBuilder::InsideLoop(){
     PUSF      = fPUWeight    ->GetWeight(nTrueInt);
     PUSF_Up   = fPUWeightUp  ->GetWeight(nTrueInt);
     PUSF_Down = fPUWeightDown->GetWeight(nTrueInt);
+    if(gIs2017){
+      PUSF = 1; PUSF_Up = 1; PUSF_Down = 1;
+    }
   } else{
     PUSF      = 1;
     PUSF_Up   = 1;

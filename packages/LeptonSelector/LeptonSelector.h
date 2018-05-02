@@ -22,6 +22,7 @@ class LeptonSelector : public PAFChainItemSelector{
     std::vector<Lepton> looseLeptons;
     std::vector<Lepton> genLeptons;
     std::vector<Lepton> vetoLeptons;
+    std::vector<TLorentzVector> vGenBquarks;
 
   protected:
 
@@ -30,6 +31,8 @@ class LeptonSelector : public PAFChainItemSelector{
     Bool_t gIsData;
     Bool_t gIsFastSim;
     Int_t  gSelection;
+    Bool_t gIs2017;
+    TString gOptions;
     Int_t  gChannel;
     TString localPath;
 
@@ -48,8 +51,10 @@ class LeptonSelector : public PAFChainItemSelector{
     TLorentzVector tP; 
     Float_t pt;
     Float_t eta;
+    Float_t energy;
     Int_t   charge; 
     Int_t   type;
+    Int_t   pdgid;
     Int_t   tightVar;
     Int_t   mediumMuonId;
     Float_t etaSC;
@@ -79,6 +84,10 @@ class LeptonSelector : public PAFChainItemSelector{
     Int_t isTrackerMuon;
     Int_t lepMVASUSYId;
     Float_t R9;
+    Int_t mcMatchID;
+    Int_t mcPrompt;
+    Int_t mcPromptGamma;
+    Int_t mcMatchPDGID;
     
     // genLeptons
     Int_t ngenLep;
@@ -95,6 +104,7 @@ class LeptonSelector : public PAFChainItemSelector{
     void GetDiscLeptonVariables(Int_t i);
     void GetGenLeptonVariables(Int_t i);
     void GetGenLepFromTauVariables(Int_t i);
+    void GetGenBquarks();
     Bool_t getSIPcut(Float_t cut); 
     Bool_t getGoodVertex(Int_t wp); 
     Bool_t getRelIso03POG(Int_t wp); 
@@ -104,6 +114,7 @@ class LeptonSelector : public PAFChainItemSelector{
     Bool_t getElecMVA(Int_t wp);
     Bool_t getElecMVAId(Int_t wp, Lepton lep); 
     Bool_t getElecCutBasedId(Int_t wp); 
+    Bool_t getElecCutBasedId2017(Int_t wp); 
     Bool_t getMultiIso(Int_t wp);
     Bool_t isGoodLepton(Lepton lep);
     Bool_t isLooseLepton(Lepton lep);

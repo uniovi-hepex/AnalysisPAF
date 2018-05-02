@@ -20,9 +20,10 @@ allResults  = {}
 
 
 for binDn,binUp in zip(bins, bins[1:]):
+    print "\n/////////// FITTING BIN NUMBER", count, "///////////\n"
     count   = count + 1
-    #fit     = fitter.FittingSuite("~/TW_differential/AnalysisPAF/plotter/TW/inputs/forCards_%s_%d.root"%(name,count), expected)
     fit     = fitter.FittingSuite("temp/forCards_%s_%d.root"%(name,count), expected)
+    fit.VarName = name
     fit.doAllCombFits()
     results = fit.results
     allResults[(binDn,binUp)] = results
@@ -42,12 +43,12 @@ for binDn,binUp in zip(bins, bins[1:]):
     histo.SetBinError  ( histo.FindBin( (binDn+binUp)/2), math.sqrt(err)       )
 
 
-#out = ROOT.TFile('output.root','recreate')
-out = ROOT.TFile('temp/output.root', 'recreate')
+out = ROOT.TFile('temp/output_%s.root'%name, 'recreate')
 histo.Write()
 
 plot = beautifulUnfoldingPlots.beautifulUnfoldingPlots(name)
 plot.addHisto(histo, 'hist', 'Folded distribution', 'L')
+plot.plotspath  = "results/"
 plot.saveCanvas('TR','_folded')
 
 out.Close()
@@ -68,11 +69,9 @@ for key in allResults[(bins[0],bins[1])]:
 outCard = open('dummy_card_template.txt').read()
 print outCard
 outCard = outCard.format(obs=histoSyst[''].Integral(),tW=histoSyst[''].Integral(),ref=name)
-#out = open('dummy_card_%s.txt'%name,'w')
 out = open('temp/dummy_card_%s.txt'%name, 'w')
 out.write(outCard)
 
-#cardInput = ROOT.TFile.Open('cards/cardFile_{ref}.root'.format(ref=name),'recreate')
 cardInput = ROOT.TFile.Open('temp/cardFile_{ref}.root'.format(ref=name), 'recreate')
 
 for key in histoSyst: histoSyst[key].Write()

@@ -4,21 +4,23 @@ import sys
 print "===== Unfolding procedure\n"
 if (len(sys.argv) > 1):
     varName = sys.argv[1]
-    print "> Variable to be unfolded:\n", varName
+    print "> Variable to be unfolded:", varName, "\n"
     if (len(sys.argv) > 2):
         pathtothings    = sys.argv[2]
-        print "> Special path to things chose:\n", pathtothings
+        print "> Special path to things chose:", pathtothings, "\n"
     else:
         pathtothings    = 'temp/'
     
 else:
     print "> Default variable and path chosen\n"
-    varName = 'LeadingJetPt'
+    varName       = 'LeadingJetPt'
+    pathtothings  = 'temp/'
 
 
-print "> Beginning unfolding"
+print "\n> Beginning unfolding...\n"
 a = unf.Unfolder(varName, pathtothings + 'cardFile_' + varName + '.root', pathtothings + 'UnfoldingInfo.root')
-a.plotspath = "results/"
+a.plotspath     = "results/"
+a.doSanityCheck = False
 a.prepareNominalHelper()
 a.doLCurveScan()
 #a.doTauScan()
@@ -26,5 +28,5 @@ a.doScanPlots()
 a.doNominalPlot()
 a.doUnfoldingForAllNuis()
 
-a   = None
+a = None
 print "> Unfolding done!"

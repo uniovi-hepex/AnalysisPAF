@@ -87,6 +87,7 @@ class EventBuilder : public PAFChainItemSelector{
     Int_t nProcessedEvents;
 
     TString gOptions;
+    Bool_t gIs2017;
     Bool_t gIsData2017;
   
 

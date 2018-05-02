@@ -17,16 +17,19 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 void DrawComp(TString systName, Bool_t VariedSample = false);
 
 //=== Constants
-TString pathToTree = "/pool/ciencias/userstorage/juanr/stop/jan5/";
+//TString pathToTree = "/pool/ciencias/userstorage/juanr/stop/jan5/";
+TString pathToTree = "/mnt_pool/ciencias_users/user/juanr/AnalysisPAF/StopTop_temp/T2tt/";
 TString NameOfTree = "tree";
 TString outputFolder = "./output/";
-TString BaselineCut = "TNJets >= 2 && TNBtags >= 1 && !TIsSS && TPassTrigger && TPassMETfilters && TNSelLeps == 2 && TLep0_Pt >= 25";
+TString BaselineCut = "TNJets >= 2 && TNBtags >= 1 && !TIsSS && TPassTrigger && TPassMETfilters && TNSelLeps == 2 && TLep0_Pt >= 25 && TMT2 > 0";
 TString Dilepton    = "!TIsSS && TPassTrigger && TPassMETfilters && TNSelLeps == 2 && TLep0_Pt >= 25";
 const Int_t ngbins = 26;
 const Int_t ngbins21 = 21;
 Float_t gbins[ngbins+1] = {0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,140,200};
 Float_t gbins21[ngbins21+1] = {0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,200};
 const TString ttbar = "TTbar_Powheg";
+//const TString sampleName = "TTbar_Powheg";
+const TString sampleName = "T2tt_225_50_FS_xqcut20";
 Plot* p = nullptr;
 PDFunc *pdf = nullptr;
 
@@ -35,14 +38,14 @@ enum Syst{kMuon, kTrig, kJES, kBtag, kElec, kPU, kJER, kUE, kISR, khdamp, kME, k
 
 //=== Main function
 void SystematicPlots(TString chan = "ElMu"){
-  //DrawPlot("TMT2", BaselineCut, chan, ngbins, 0, 0, gbins, "M_{T2} [GeV]", "MT2", kTopPt);
+  DrawPlot("TMT2", BaselineCut, chan, 21, 0, 105, gbins, "M_{T2} [GeV]", "MT2", kME);
   //DrawPlot("TMT2", BaselineCut, chan, ngbins, 0, 0, gbins, "M_{T2} [GeV]", "MT2", kMass);
   //DrawPlot("TMT2", BaselineCut, chan, ngbins, 0, 0, gbins, "M_{T2} [GeV]", "MT2", kMass);
   //for(Int_t pl = 0; pl < nSyst; pl++) DrawPlot("TMT2", Dilepton, chan, ngbins, 0, 0, gbins, "M_{T2} [GeV]", "MT2_dilep", kBtag);
   //for(Int_t pl = 0; pl < nSyst; pl++) DrawPlot("TMT2", Dilepton, chan, ngbins, 0, 0, gbins, "M_{T2} [GeV]", "MT2_dilep", pl);
 //for(Int_t pl = 0; pl < nSyst; pl++) DrawPlot("TMT2", BaselineCut, chan, ngbins21, 0, 0, gbins21, "M_{T2} [GeV]", "MT2", pl);
   //DrawPlot("TMT2", BaselineCut, chan, ngbins21, 0, 0, gbins21, "M_{T2} [GeV]", "MT2", kUnclustMET);
-  DrawPlot("TMET", BaselineCut, chan, 20, 0, 200, 0, "MET [GeV]", "MET", kUnclustMET);
+  //DrawPlot("TMET", BaselineCut, chan, 20, 0, 200, 0, "MET [GeV]", "MET", kMuScale);
   //for(Int_t pl = 0; pl < nSyst; pl++) DrawPlot("TMT2", BaselineCut + " && TMT2 > 0", chan, ngbins, 0, 0, gbins, "M_{T2} [GeV]", "MT2no0", pl);
 }
 
@@ -62,11 +65,12 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   if(pl == kCR || pl == kTrig || pl == kElec || pl == kMuon || pl == kJER || pl == kPDF){ RatioMax = 1.03; RatioMin = 0.97;} 
   if(pl == kBtag){ RatioMax = 1.05; RatioMin = 0.95;} 
   if(pl == kJES || pl == kPU || pl == kUE || pl == khdamp || pl == kUnclustMET){ RatioMax = 1.1; RatioMin = 0.9;} 
-  if(pl == kMuScale || pl == kElScale){ RatioMax = 1.02; RatioMin = 0.98;}
+  if(pl == kMuScale || pl == kElScale || pl == kME){ RatioMax = 1.02; RatioMin = 0.98;}
   p->SetRatioMin(RatioMin); p->SetRatioMax(RatioMax);
 
   //>>> Add nominal samples
-  p->AddSample("TTbar_Powheg", "Nominal", itSignal, 1);
+  p->AddSample(sampleName, "Nominal", itSignal, 1);
+  p->doSetLogy = false;
 
   //>>> The different systematics...
   if(pl == kTrig)   DrawComp("Trig");
@@ -85,7 +89,6 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     p->AddSample(ttbar, "ttbarUnclMETUp",   itSignal, kGreen+1, "Uncl MET Up");
     p->SetWeight("TWeight*GetMetUnclWeightDown(TMET)");
     p->AddSample(ttbar, "ttbarUnclMETDown", itSignal, kRed+1, "Uncl MET Down");
-    p->doSetLogy = false;
     p->DrawComp("UnclMET");
   }
 
@@ -93,8 +96,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
     p->AddSample(ttbar, "ttbarMUP", itSignal, kGreen+1, "MuonEffUp");
     p->AddSample(ttbar, "ttbarMDO", itSignal, kRed+1,   "MuonEffDown");
     float fac = sqrt(2 + 0.25 + 0.25);
-    p->ScaleProcess("ttbarMUP",  1 + fac/100);
-    p->ScaleProcess("ttbarMDO",  1 - fac/100);
+    //p->ScaleProcess("ttbarMUP",  1 + fac/100);
+    //p->ScaleProcess("ttbarMDO",  1 - fac/100);
     p->DrawComp("MuonEff");
   }
 
@@ -170,24 +173,31 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
 
   // The PDF and Scale ME variations
   if(pl == kPDF || pl == kME){
-    if(bin0 == binN) pdf = new PDFunc(pathToTree, "TTbar_Powheg", NameOfTree, cut, chan, var, nbins, bins, "");
-    else             pdf = new PDFunc(pathToTree, "TTbar_Powheg", NameOfTree, cut, chan, var, nbins, bin0, binN, ""); 
+    if(bin0 == binN) pdf = new PDFunc(pathToTree, sampleName, NameOfTree, cut, chan, var, nbins, bins, "");
+    else             pdf = new PDFunc(pathToTree, sampleName, NameOfTree, cut, chan, var, nbins, bin0, binN, ""); 
+    pdf->verbose = false;
 
-    Histo* hPDFUp   =  pdf->GetSystHisto("up",   "pdf")->CloneHisto("ttbar_PDFUp");
-    Histo* hPDFDown =  pdf->GetSystHisto("down", "pdf")->CloneHisto("ttbar_PDFDown");
+    Histo* hPDFUp   =  pdf->GetSystHisto("up",   "pdf")->CloneHisto("PDFUp");
+    Histo* hPDFDown =  pdf->GetSystHisto("down", "pdf")->CloneHisto("PDFDown");
     hPDFUp->SetDirectory(0); hPDFDown->SetDirectory(0);
-    Histo* hMEUp    =  pdf->GetSystHisto("up",   "ME")->CloneHisto("ttbar_Scale_ME_Up");
-    Histo* hMEDown  =  pdf->GetSystHisto("down", "ME")->CloneHisto("ttbar_Scale_ME_Down");
+    Histo* hMEUp    =  pdf->GetSystHisto("up",   "ME")->CloneHisto("Scale_ME_Up");
+    Histo* hMEDown  =  pdf->GetSystHisto("down", "ME")->CloneHisto("Scale_ME_Down");
     hPDFUp->SetProcess("ttbar"); hPDFDown->SetProcess("ttbar"); hMEUp->SetProcess("ttbar"); hMEDown->SetProcess("ttbar");
     hPDFUp->SetSysTag("PDFUp"); hPDFDown->SetSysTag("PDFDown"); hMEUp->SetSysTag("Scale_ME_Up");  hMEDown->SetSysTag("Scale_ME_Down");
-    hPDFUp->SetTag("ttbar_PDFUp"); hPDFDown->SetTag("ttbar_PDFDown"); hMEUp->SetTag("ttbar_Scale_ME_Up"); hMEDown->SetTag("ttbar_Scale_ME_Down");
-    hPDFUp->SetName("ttbar_PDFUp"); hPDFDown->SetName("ttbar_PDFDown"); hMEUp->SetName("ttbar_Scale_ME_Up"); hMEDown->SetName("ttbar_Scale_ME_Down");
+    hPDFUp->SetTag("PDFUp"); hPDFDown->SetTag("PDFDown"); hMEUp->SetTag("Scale_ME_Up"); hMEDown->SetTag("Scale_ME_Down");
+    hPDFUp->SetName("PDFUp"); hPDFDown->SetName("PDFDown"); hMEUp->SetName("Scale_ME_Up"); hMEDown->SetName("Scale_ME_Down");
     hPDFUp->SetType(itSignal); hPDFDown->SetType(itSignal); hMEUp->SetType(itSignal); hMEDown->SetType(itSignal);
     hPDFUp->SetStyle(); hPDFDown->SetStyle(); hMEUp->SetStyle(); hMEDown->SetStyle();
     hPDFUp->SetColor(kGreen+1); hPDFDown->SetColor(kRed+1); hMEUp->SetColor(kGreen+1); hMEDown->SetColor(kRed+1);
 
     if(pl == kPDF){p->AddToHistos(hPDFUp); p->AddToHistos(hPDFDown); p->DrawComp("PDF");     }
     else{          p->AddToHistos(hMEUp);  p->AddToHistos(hMEDown);  p->DrawComp("ScaleME"); }
+
+    for(int i = 0; i < nbins; i++){
+  //    pdf->SetBin(i);
+  //    cout << Form("Bin: %i", i+1) << endl;
+  //    pdf->PrintMuRMuFvariations();
+    }
   }
 
   if(p) delete p;
@@ -202,8 +212,8 @@ void DrawComp(TString systName, Bool_t VariedSample){
     p->AddSample(ttbar + "_" + systName + "Down", systName + "Down", itSignal, kRed+1);
   }
   else{
-    p->AddSample(ttbar, "ttbar", itSignal, kGreen+1, systName+"Up");
-    p->AddSample(ttbar, "ttbar", itSignal, kRed+1,   systName+"Down");
+    p->AddSample(sampleName, "ttbar", itSignal, kGreen+1, systName+"Up");
+    p->AddSample(sampleName, "ttbar", itSignal, kRed+1,   systName+"Down");
   }
   p->DrawComp(systName,1);
 }
