@@ -2,7 +2,8 @@ from math   import pi
 # Library of all the variables so everything is centralized and theres no confusions
 # TODO: port the card producer to python so it can also use this
 
-Lumi = 35.9
+Lumi        = 35.9
+nBinsInBDT  = 10
 
 # var           := name of the variable in the tree to make cards
 # var_response  := name of the variable in the response matrix without the M

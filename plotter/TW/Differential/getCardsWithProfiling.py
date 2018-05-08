@@ -1,4 +1,4 @@
-import ROOT 
+import ROOT
 import varList
 import sys, os
 from multiprocessing import Pool
@@ -10,19 +10,19 @@ nCores = 40
 
 systMap = {
     'fsrUp' : { 'TW'             : 'TW_noFullyHadr_fsrUp',
-                'TbarW'          : 'TbarW_noFullyHadr_fsrUp', 
+                'TbarW'          : 'TbarW_noFullyHadr_fsrUp',
                 'TTbar_Powheg'   : 'TTbar_Powheg_fsrUp'
                 },
     'fsrDown' : { 'TW'           : 'TW_noFullyHadr_fsrDown',
-                  'TbarW'        : 'TbarW_noFullyHadr_fsrDown', 
+                  'TbarW'        : 'TbarW_noFullyHadr_fsrDown',
                   'TTbar_Powheg' : 'TTbar_Powheg_fsrDown'
                   },
     'isrUp' : { 'TW'             : 'TW_noFullyHadr_isrUp',
-                'TbarW'          : 'TbarW_noFullyHadr_isrUp', 
+                'TbarW'          : 'TbarW_noFullyHadr_isrUp',
                 'TTbar_Powheg'   : 'TTbar_Powheg_isrUp'
                 },
     'isrDown' : { 'TW'           : 'TW_noFullyHadr_isrDown',
-                  'TbarW'        : 'TbarW_noFullyHadr_isrDown', 
+                  'TbarW'        : 'TbarW_noFullyHadr_isrDown',
                   'TTbar_Powheg' : 'TTbar_Powheg_isrDown'
                   },
     'ME_tW_Up': { 'TW'           : 'TW_noFullyHadr_MEscaleUp',
@@ -93,11 +93,11 @@ systMap = {
                     'TbarW'        : 'TbarW',
                     'TTbar_Powheg' : 'TTbar_Powheg'
                     },
-
     }
 
+
 systWeight = {
-    'fsrUp'                  : '',  
+    'fsrUp'                  : '',
     'fsrDown'                : '',
     'isrUp'                  : '',
     'isrDown'                : '',
@@ -120,6 +120,7 @@ systWeight = {
     'scaleDown'              : 'ScaleDown',
 }
 
+
 def GetLastFolder(stpth):
     savefolders   = next(os.walk(stpth))[1]
     saveyears     = map(int, [i[6:]  for i in savefolders])
@@ -129,7 +130,7 @@ def GetLastFolder(stpth):
     savedays      = map(int, [i[:2]  for i in savefolders])
     savefolders   = [i for i in savefolders if int(i[:2]) == max(savedays)]
     return (stpth + savefolders[0] + "/")
-    
+
 
 if (len(sys.argv) > 1):
     varName     = sys.argv[1]
@@ -153,11 +154,10 @@ ROOT.gROOT.LoadMacro('../../Plot.C+')
 ROOT.gROOT.LoadMacro('../../PlotToPy.C+')
 ROOT.gROOT.LoadMacro('../../Datacard.C+')
 ROOT.gROOT.LoadMacro('temp/' + varName + '.C+')
-#ROOT.gROOT.ProcessLine('.L temp/' + varName + '.C+')
 print '> Succesfully loaded binning information from temp/' + varName + '.C', "\n"
 
-#print ROOT.theBDt_bin1
-def getCardsNominal(task): 
+
+def getCardsNominal(task):
     binDn, binUp, indx, asimov = task
 
     p = ROOT.PlotToPy(ROOT.TString('theBDt_bin%d( TBDT )'%indx), ROOT.TString('(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && T%s >= %4.2f  && T%s < %4.2f )'%(varName, binDn, varName, binUp)), ROOT.TString('ElMu'), varList.nBinsInBDT, ROOT.Double(0.5), ROOT.Double(varList.nBinsInBDT+0.5), ROOT.TString(varName + '_%d'%indx), ROOT.TString(''))
@@ -165,7 +165,6 @@ def getCardsNominal(task):
     p.SetLimitFolder("temp/");
     p.SetPathSignal(pathToTree);
 
-    
     p.AddSample("WZ",                           "VVttV_%d"%indx, ROOT.itBkg, 390);
     p.AddSample("WW",                           "VVttV_%d"%indx, ROOT.itBkg);
     p.AddSample("ZZ",                           "VVttV_%d"%indx, ROOT.itBkg);
@@ -182,7 +181,6 @@ def getCardsNominal(task):
     p.AddSample("TTbar_PowhegSemi",             "Fakes_%d"%indx, ROOT.itBkg, 413)
     p.AddSample("WJetsToLNu_MLM",               "Fakes_%d"%indx, ROOT.itBkg)
     
-    
     p.AddSample("TW",                           "tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
     p.AddSample("TbarW",                        "tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
     p.AddSample("TTbar_Powheg",                 "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp");
@@ -195,7 +193,7 @@ def getCardsNominal(task):
         p.AddSample("MuonEG",                       "Data",  ROOT.itData);
         p.AddSample("SingleMuon",                   "Data",  ROOT.itData);
         p.AddSample("SingleElec",                   "Data",  ROOT.itData);
-    else: 
+    else:
         hData=ROOT.Histo(p.GetHisto('tW_%d'%indx).Clone("Data"))
         for proc in ['ttbar_%d'%indx,"VVttV_%d"%indx, "DY_%d"%indx, "Fakes_%d"%indx]:
             hData.Add( p.GetHisto(proc) )
@@ -213,10 +211,10 @@ def getCardsNominal(task):
     card = ROOT.Datacard('tW_%d'%indx, 'ttbar_{idx},DY_{idx},VVttV_{idx},Fakes_{idx}'.format(idx=indx) , "JES, Btag, Mistag, PU, ElecEff, MuonEff, Trig, JER", "ElMu_%d"%indx)
     card.SetRootFileName('temp/forCards_' + varName + '_%d'%indx)
     card.GetParamsFormFile()
-    card.SetNormUnc("Fakes_%d"%indx   , 1.50)
-    card.SetNormUnc("DY_%d"%indx      , 1.50)
-    card.SetNormUnc("VVttV_%d"%indx   , 1.50);
-    card.SetNormUnc("ttbar_%d"%indx   , 1.06);
+    card.SetNormUnc("Fakes_%d"%indx, 1.50)
+    card.SetNormUnc("DY_%d"%indx   , 1.50)
+    card.SetNormUnc("VVttV_%d"%indx, 1.50);
+    card.SetNormUnc("ttbar_%d"%indx, 1.06);
     card.SetLumiUnc(1.025)
     card.PrintDatacard("temp/datacard_" + varName + '_%d'%indx);
   
@@ -233,7 +231,8 @@ def getCardsNominal(task):
     outCarta = open('temp/datacard_' + varName + '_%d.txt'%indx,'w')
     outCarta.write(out)
 
-def getCardsSyst(task): 
+
+def getCardsSyst(task):
 
     binDn, binUp, indx, asimov, syst = task
 
@@ -254,15 +253,15 @@ def getCardsSyst(task):
     p.AddSample("DYJetsToLL_M10to50_aMCatNLO",  "DY_%d"%indx,    ROOT.itBkg, 852)
     p.AddSample("DYJetsToLL_M50_aMCatNLO",      "DY_%d"%indx,    ROOT.itBkg);
     p.AddSample("TTbar_Powheg",                 "ttbar_%d"%indx, ROOT.itBkg, 633 , systWeight[syst])
-    p.AddSample(systMap[syst]["TW"],                           "tW_%d"%indx,    ROOT.itBkg, 2)
-    p.AddSample(systMap[syst]["TbarW"],                        "tW_%d"%indx,    ROOT.itBkg);
+    p.AddSample(systMap[syst]["TW"],            "tW_%d"%indx,    ROOT.itBkg, 2)
+    p.AddSample(systMap[syst]["TbarW"],         "tW_%d"%indx,    ROOT.itBkg);
     p.AddSample("TTbar_PowhegSemi",             "Fakes_%d"%indx, ROOT.itBkg, 413)
     p.AddSample("WJetsToLNu_MLM",               "Fakes_%d"%indx, ROOT.itBkg)
     
     
-    p.AddSample(systMap[syst]["TW"],   "tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
-    p.AddSample(systMap[syst]["TbarW"],"tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
-    p.AddSample(systMap[syst]["TTbar_Powheg"],        "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp");
+    p.AddSample(systMap[syst]["TW"],            "tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
+    p.AddSample(systMap[syst]["TbarW"],         "tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
+    p.AddSample(systMap[syst]["TTbar_Powheg"],  "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp");
     p.AddSymmetricHisto("ttbar_%d"%indx,  "JERUp");
     p.AddSymmetricHisto("tW_%d"%indx,  "JERUp");
 
@@ -276,9 +275,9 @@ def getCardsSyst(task):
     else: 
         # get asimov from the nominal one
         tfile = ROOT.TFile.Open("temp/forCards_" + varName + '_%d.root'%indx)
-        if not tfile: 
+        if not tfile:
             raise RuntimeError("No nominal card in place")
-        hData = ROOT.Histo( tfile.Get('data_obs') ) 
+        hData = ROOT.Histo( tfile.Get('data_obs') )
         hData.SetProcess("Data")
         hData.SetTag("Data")
         hData.SetType(ROOT.itData)
@@ -293,10 +292,10 @@ def getCardsSyst(task):
     card = ROOT.Datacard('tW_%d'%indx, 'ttbar_{idx},DY_{idx},VVttV_{idx},Fakes_{idx}'.format(idx=indx) , "JES, Btag, Mistag, PU, ElecEff, MuonEff, Trig, JER", "ElMu_%d"%indx)
     card.SetRootFileName('temp/forCards_' + varName  + '_' + syst  + '_%d'%indx)
     card.GetParamsFormFile()
-    card.SetNormUnc("Fakes_%d"%indx   , 1.50)
-    card.SetNormUnc("DY_%d"%indx      , 1.50)
-    card.SetNormUnc("VVttV_%d"%indx   , 1.50);
-    card.SetNormUnc("ttbar_%d"%indx   , 1.06);
+    card.SetNormUnc("Fakes_%d"%indx, 1.50)
+    card.SetNormUnc("DY_%d"%indx   , 1.50)
+    card.SetNormUnc("VVttV_%d"%indx, 1.50);
+    card.SetNormUnc("ttbar_%d"%indx, 1.06);
     card.SetLumiUnc(1.025)
     card.PrintDatacard("temp/datacard_" + varName + '_' + syst + '_%d'%indx);
   
@@ -314,19 +313,16 @@ def getCardsSyst(task):
     outCarta.write(out)
 
 
-
-
-
-indx = 0
-binning = varList.varList[varName]['recobinning']
 print "> Beginning to produce histograms", "\n"
-tasks = []
-asimov = True
+indx    = 0
+binning = varList.varList[varName]['recobinning']
+tasks   = []
+asimov  = True
 for binDn,binUp in zip(binning, binning[1:]):
     indx = indx+1
     tasks.append( (binDn, binUp, indx, asimov) )
 
-pool = Pool(nCores)
+pool    = Pool(nCores)
 pool.map(getCardsNominal,tasks)
 
 

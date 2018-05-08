@@ -3,7 +3,7 @@ Piece of art for doing the unfolding analysis - with a bit of tW flavor.
 
 ''' 
 
-import copy
+import copy, os
 import ROOT as r
 import beautifulUnfoldingPlots
 import errorPropagator
@@ -301,13 +301,19 @@ class Unfolder():
             nominal_withErrors.SetFillStyle(1001)
         
         if self.doSanityCheck:
-            tmptfile = r.TFile.Open('/nfs/fanae/user/sscruz/TW_differential/AnalysisPAF/plotter/./Datacards/closuretest_TGenLeadingJet_TGen{var}.root'.format(var=self.var))
+            #tmptfile = r.TFile.Open('/nfs/fanae/user/sscruz/TW_differential/AnalysisPAF/plotter/./Datacards/closuretest_TGenLeadingJet_TGen{var}.root'.format(var=self.var))
+            if not os.path.isfile('temp/ClosureTest_{var}.root'.format(var = self.var)):
+                raise RuntimeError('The rootfile with the generated information does not exist')
+            tmptfile = r.TFile.Open('temp/ClosureTest_{var}.root'.format(var = self.var))
             tru = copy.deepcopy(tmptfile.Get('tW'))
             tru.SetLineWidth(2)
             tru.SetLineColor(beautifulUnfoldingPlots.colorMap[0])
-            plot.addHisto(nominal_withErrors,'E2','Syst. unc.','F')
-            plot.addHisto(nominal,'P,same','Pseudodata','P')
-            plot.addHisto(tru,'L,same','Truth','L')
+            if asym:
+                plot.addHisto(nominal_withErrors, 'hist', 'Syst. unc.', 'F')
+            else:
+                plot.addHisto(nominal_withErrors, 'E2', 'Syst. unc.', 'F')
+            plot.addHisto(nominal, 'P,same', 'Pseudodata', 'P')
+            plot.addHisto(tru, 'L,same', 'Truth', 'L')
             plot.saveCanvas('TR')
             tmptfile.Close()
         else:

@@ -20,7 +20,7 @@ else:
 print "\n> Beginning unfolding...\n"
 a = unf.Unfolder(varName, pathtothings + 'cardFile_' + varName + '.root', pathtothings + 'UnfoldingInfo.root')
 a.plotspath       = "results/"
-a.doSanityCheck   = False
+a.doSanityCheck   = True
 a.doColorEnvelope = True
 a.prepareNominalHelper()
 a.doLCurveScan()

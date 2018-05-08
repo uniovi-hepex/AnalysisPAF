@@ -1,4 +1,4 @@
-import ROOT 
+import ROOT
 import varList
 import sys, os
 print "===== BDT's histograms procedure"
@@ -35,11 +35,10 @@ NameOfTree = "Mini1j1t";
 ROOT.gROOT.SetBatch(True)
 ROOT.gROOT.LoadMacro('../../Histo.C+')
 ROOT.gROOT.LoadMacro('../../Looper.C+')
-ROOT.gROOT.LoadMacro('../../Plot_sub.C+')
+ROOT.gROOT.LoadMacro('../../PlotToPy.C+')
 ROOT.gROOT.ProcessLine('.L temp/' + varName + '.C+')
 print '> Succesfully loaded binning information from temp/' + varName + '.C', "\n"
 
-#print ROOT.theBDt_bin1
 
 indx = 0
 binning = varList.varList[varName]['recobinning']
@@ -47,9 +46,9 @@ print "> Beginning to produce histograms", "\n"
 
 for binDn,binUp in zip(binning, binning[1:]):
     indx = indx+1
-    p = ROOT.Plot_sub(ROOT.TString('theBDt_bin%d( TBDT )'%indx), ROOT.TString('(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && T%s >= %4.2f  && T%s < %4.2f )'%(varName, binDn, varName, binUp)), ROOT.TString('ElMu'), 10, ROOT.Double(0.5), ROOT.Double(10.5), ROOT.TString(varName + '_%d'%indx), ROOT.TString(''))
+    p = ROOT.PlotToPy(ROOT.TString('theBDt_bin%d( TBDT )'%indx), ROOT.TString('(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && T%s >= %4.2f  && T%s < %4.2f )'%(varName, binDn, varName, binUp)), ROOT.TString('ElMu'), varList.nBinsInBDT, ROOT.Double(0.5), ROOT.Double(varList.nBinsInBDT+0.5), ROOT.TString(varName + '_%d'%indx), ROOT.TString(''))
     p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
-    p.SetLimitFolder("../../TW/Differential/temp/");
+    p.SetLimitFolder("temp/");
     p.SetPathSignal(pathToTree);
     p.verbose = True
 
