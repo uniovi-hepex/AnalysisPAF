@@ -58,7 +58,12 @@ else
   echo " "
   python getCards.py $variable
 
-  # 3) Do a fit in each bin of your histograms and for all the systematics.
+  # 3) Get the histograms for the closure test.
+  echo "> Obtaining histograms for closure test..."
+  echo " "
+  python getClosureHistos.py $variable
+  
+  # 4) Do a fit in each bin of your histograms and for all the systematics.
   echo "> Performing fits to each bin of the BDT's distribution..."
   echo " "
   cd
@@ -66,7 +71,7 @@ else
   cd Documents/TFM/AnalysisPAF/plotter/TW/Differential/
   python fits.py $variable
 
-  # 4) Do a proper unfolding as you were taught by your mother when you were a child.
+  # 5) Do a proper unfolding as you were taught by your mother when you were a child.
   source ../pre_start.sh
   echo "> Unfolding chosen variable..."
   echo " "
