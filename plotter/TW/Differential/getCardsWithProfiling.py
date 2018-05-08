@@ -8,119 +8,6 @@ storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
 pathToTree    = ""
 nCores = 40
 
-systMap = {
-    'fsrUp' : { 'TW'             : 'TW_noFullyHadr_fsrUp',
-                'TbarW'          : 'TbarW_noFullyHadr_fsrUp',
-                'TTbar_Powheg'   : 'TTbar_Powheg_fsrUp'
-                },
-    'fsrDown' : { 'TW'           : 'TW_noFullyHadr_fsrDown',
-                  'TbarW'        : 'TbarW_noFullyHadr_fsrDown',
-                  'TTbar_Powheg' : 'TTbar_Powheg_fsrDown'
-                  },
-    'isrUp' : { 'TW'             : 'TW_noFullyHadr_isrUp',
-                'TbarW'          : 'TbarW_noFullyHadr_isrUp',
-                'TTbar_Powheg'   : 'TTbar_Powheg_isrUp'
-                },
-    'isrDown' : { 'TW'           : 'TW_noFullyHadr_isrDown',
-                  'TbarW'        : 'TbarW_noFullyHadr_isrDown',
-                  'TTbar_Powheg' : 'TTbar_Powheg_isrDown'
-                  },
-    'ME_tW_Up': { 'TW'           : 'TW_noFullyHadr_MEscaleUp',
-                  'TbarW'        : 'TbarW_noFullyHadr_MEscaleUp',
-                  'TTbar_Powheg' : 'TTbar_Powheg'
-                  },
-    'ME_tW_Down': { 'TW'         : 'TW_noFullyHadr_MEscaleDown',
-                  'TbarW'        : 'TbarW_noFullyHadr_MEscaleDown',
-                  'TTbar_Powheg' : 'TTbar_Powheg'
-                  },
-    'PS_tW_Up': { 'TW'           : 'TW_noFullyHadr_PSscaleUp',
-                  'TbarW'        : 'TbarW_noFullyHadr_PSscaleUp',
-                  'TTbar_Powheg' : 'TTbar_Powheg'
-                  },
-    'PS_tW_Down': { 'TW'           : 'TW_noFullyHadr_PSscaleDown',
-                    'TbarW'        : 'TbarW_noFullyHadr_PSscaleDown',
-                    'TTbar_Powheg' : 'TTbar_Powheg'
-                  },
-    'DS'        : { 'TW'           : 'TW_noFullyHadr_DS',
-                    'TbarW'        : 'TbarW_noFullyHadr_DS',
-                    'TTbar_Powheg' : 'TTbar_Powheg'
-                  },
-    'hDampUp'   : { 'TW'           : 'TW',
-                    'TbarW'        : 'TbarW',
-                    'TTbar_Powheg' : 'TTbar_Powheg_hdampUp'
-                  },
-    'hDampDown'   : { 'TW'           : 'TW',
-                      'TbarW'        : 'TbarW',
-                      'TTbar_Powheg' : 'TTbar_Powheg_hdampDown'
-                      },
-    'UEUp'        : { 'TW'           : 'TW',
-                      'TbarW'        : 'TbarW',
-                      'TTbar_Powheg' : 'TTbar_Powheg_ueUp'
-                      },
-    'UEDown'      : { 'TW'           : 'TW',
-                      'TbarW'        : 'TbarW',
-                      'TTbar_Powheg' : 'TTbar_Powheg_ueDown'
-                      },
-    'GluonMoveCRTune' : { 'TW'           : 'TW',
-                          'TbarW'        : 'TbarW',
-                          'TTbar_Powheg' : 'TTbar_GluonMoveCRTune'
-                          },
-    'GluonMoveCRTune_erdOn' : { 'TW'           : 'TW',
-                                'TbarW'        : 'TbarW',
-                                'TTbar_Powheg' : 'TTbar_GluonMoveCRTune_erdON'
-                                },
-    'Powheg_erdON' : { 'TW'           : 'TW',
-                       'TbarW'        : 'TbarW',
-                       'TTbar_Powheg' : 'TTbar_Powheg_erdON'
-                       },
-    'QCDbasedCRTune_erdON' : { 'TW'           : 'TW',
-                               'TbarW'        : 'TbarW',
-                               'TTbar_Powheg' : 'TTbar_QCDbasedCRTune_erdON'
-                               },
-    'pdfUp' : { 'TW'           : 'TW',
-                'TbarW'        : 'TbarW',
-                'TTbar_Powheg' : 'TTbar_Powheg'
-                },
-    'pdfDown' : { 'TW'           : 'TW',
-                  'TbarW'        : 'TbarW',
-                  'TTbar_Powheg' : 'TTbar_Powheg'
-                  },
-    'scaleUp' : { 'TW'           : 'TW',
-                  'TbarW'        : 'TbarW',
-                  'TTbar_Powheg' : 'TTbar_Powheg'
-                },
-    'scaleDown' : { 'TW'           : 'TW',
-                    'TbarW'        : 'TbarW',
-                    'TTbar_Powheg' : 'TTbar_Powheg'
-                    },
-    }
-
-
-systWeight = {
-    'fsrUp'                  : '',
-    'fsrDown'                : '',
-    'isrUp'                  : '',
-    'isrDown'                : '',
-    'ME_tW_Up'               : '',
-    'ME_tW_Down'             : '',
-    'PS_tW_Up'               : '',
-    'PS_tW_Down'             : '',
-    'DS'                     : '',
-    'hDampUp'                : '',
-    'hDampDown'              : '',
-    'UEUp'                   : '',
-    'UEDown'                 : '',
-    'GluonMoveCRTune'        : '',
-    'GluonMoveCRTune_erdOn'  : '', 
-    'Powheg_erdON'           : '',
-    'QCDbasedCRTune_erdON'   : '',
-    'pdfUp'                  : 'pdfUp',
-    'pdfDown'                : 'pdfDown',
-    'scaleUp'                : 'ScaleUp',
-    'scaleDown'              : 'ScaleDown',
-}
-
-
 def GetLastFolder(stpth):
     savefolders   = next(os.walk(stpth))[1]
     saveyears     = map(int, [i[6:]  for i in savefolders])
@@ -240,32 +127,29 @@ def getCardsSyst(task):
     p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
     p.SetLimitFolder("temp/");
     p.SetPathSignal(pathToTree);
+    
+    p.AddSample("WZ",                                  "VVttV_%d"%indx, ROOT.itBkg, 390);
+    p.AddSample("WW",                                  "VVttV_%d"%indx, ROOT.itBkg);
+    p.AddSample("ZZ",                                  "VVttV_%d"%indx, ROOT.itBkg);
+    p.AddSample("TTWToLNu",                            "VVttV_%d"%indx, ROOT.itBkg);
+    p.AddSample("TTWToQQ" ,                            "VVttV_%d"%indx, ROOT.itBkg);
+    p.AddSample("TTZToQQ" ,                            "VVttV_%d"%indx, ROOT.itBkg);
+    p.AddSample("TTZToLLNuNu",                         "VVttV_%d"%indx, ROOT.itBkg);
 
+    p.AddSample("DYJetsToLL_M10to50_aMCatNLO",         "DY_%d"%indx,    ROOT.itBkg, 852)
+    p.AddSample("DYJetsToLL_M50_aMCatNLO",             "DY_%d"%indx,    ROOT.itBkg);
+    p.AddSample(varList.systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itBkg, 633 , varList.systWeight[syst])
+    p.AddSample(varList.systMap[syst]["TW"],           "tW_%d"%indx,    ROOT.itBkg, 2)
+    p.AddSample(varList.systMap[syst]["TbarW"],        "tW_%d"%indx,    ROOT.itBkg);
+    p.AddSample("TTbar_PowhegSemi",                    "Fakes_%d"%indx, ROOT.itBkg, 413)
+    p.AddSample("WJetsToLNu_MLM",                      "Fakes_%d"%indx, ROOT.itBkg)
     
-    p.AddSample("WZ",                           "VVttV_%d"%indx, ROOT.itBkg, 390);
-    p.AddSample("WW",                           "VVttV_%d"%indx, ROOT.itBkg);
-    p.AddSample("ZZ",                           "VVttV_%d"%indx, ROOT.itBkg);
-    p.AddSample("TTWToLNu",                     "VVttV_%d"%indx, ROOT.itBkg);
-    p.AddSample("TTWToQQ" ,                     "VVttV_%d"%indx, ROOT.itBkg);
-    p.AddSample("TTZToQQ" ,                     "VVttV_%d"%indx, ROOT.itBkg);
-    p.AddSample("TTZToLLNuNu",                  "VVttV_%d"%indx, ROOT.itBkg);
-
-    p.AddSample("DYJetsToLL_M10to50_aMCatNLO",  "DY_%d"%indx,    ROOT.itBkg, 852)
-    p.AddSample("DYJetsToLL_M50_aMCatNLO",      "DY_%d"%indx,    ROOT.itBkg);
-    p.AddSample("TTbar_Powheg",                 "ttbar_%d"%indx, ROOT.itBkg, 633 , systWeight[syst])
-    p.AddSample(systMap[syst]["TW"],            "tW_%d"%indx,    ROOT.itBkg, 2)
-    p.AddSample(systMap[syst]["TbarW"],         "tW_%d"%indx,    ROOT.itBkg);
-    p.AddSample("TTbar_PowhegSemi",             "Fakes_%d"%indx, ROOT.itBkg, 413)
-    p.AddSample("WJetsToLNu_MLM",               "Fakes_%d"%indx, ROOT.itBkg)
-    
-    
-    p.AddSample(systMap[syst]["TW"],            "tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
-    p.AddSample(systMap[syst]["TbarW"],         "tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
-    p.AddSample(systMap[syst]["TTbar_Powheg"],  "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp");
+    p.AddSample(varList.systMap[syst]["TW"],           "tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
+    p.AddSample(varList.systMap[syst]["TbarW"],        "tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
+    p.AddSample(varList.systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp");
     p.AddSymmetricHisto("ttbar_%d"%indx,  "JERUp");
     p.AddSymmetricHisto("tW_%d"%indx,  "JERUp");
-
-
+    
     p.AddSystematic("JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig")
 
     if not asimov:
@@ -288,7 +172,7 @@ def getCardsSyst(task):
     p.SetOutputName("forCards_" + varName + '_' + syst + '_%d'%indx);
     p.SaveHistograms();
     del p
-
+    
     card = ROOT.Datacard('tW_%d'%indx, 'ttbar_{idx},DY_{idx},VVttV_{idx},Fakes_{idx}'.format(idx=indx) , "JES, Btag, Mistag, PU, ElecEff, MuonEff, Trig, JER", "ElMu_%d"%indx)
     card.SetRootFileName('temp/forCards_' + varName  + '_' + syst  + '_%d'%indx)
     card.GetParamsFormFile()
@@ -298,9 +182,9 @@ def getCardsSyst(task):
     card.SetNormUnc("ttbar_%d"%indx, 1.06);
     card.SetLumiUnc(1.025)
     card.PrintDatacard("temp/datacard_" + varName + '_' + syst + '_%d'%indx);
-  
+    
     del card
-
+    
     # All this crap so i dont have to tamper with the DataCard.C
     out = ''
     datacarta = open('temp/datacard_' + varName + '_' + syst +  '_%d.txt'%indx,'r')
@@ -313,31 +197,29 @@ def getCardsSyst(task):
     outCarta.write(out)
 
 
-print "> Beginning to produce histograms", "\n"
-indx    = 0
-binning = varList.varList[varName]['recobinning']
-tasks   = []
-asimov  = True
-for binDn,binUp in zip(binning, binning[1:]):
-    indx = indx+1
-    tasks.append( (binDn, binUp, indx, asimov) )
+if __name__ == '__main__':
+    indx = 0
+    binning = varList.varList[varName]['recobinning']
+    print "> Beginning to produce histograms", "\n"
+    tasks = []
+    asimov = True
+    for binDn,binUp in zip(binning, binning[1:]):
+        indx = indx+1
+        tasks.append( (binDn, binUp, indx, asimov) )
 
-pool    = Pool(nCores)
-pool.map(getCardsNominal,tasks)
+    pool = Pool(nCores)
+    pool.map(getCardsNominal,tasks)
+    
+    tasksSyst = []
+    indx = 0
+    for binDn,binUp in zip(binning, binning[1:]):
+        indx = indx+1
+        for syst in varList.systMap: 
+            if 'fsr' in syst: 
+                print 'FSR not yet working :)'
+                continue
+            tasksSyst.append( (binDn, binUp, indx, asimov, syst) )
 
-
-tasksSyst = []
-indx = 0
-for binDn,binUp in zip(binning, binning[1:]):
-    indx = indx+1
-    for syst in systMap: 
-        print syst
-        if 'fsr' in syst: 
-            print 'FSR not yet working :)'
-            continue
-        print 'appending', syst
-        tasksSyst.append( (binDn, binUp, indx, asimov, syst) )
-
-pool.map(getCardsSyst, tasksSyst)
-
-print "> Done!", "\n"
+    pool.map(getCardsSyst, tasksSyst)
+    
+    print "> Done!", "\n"

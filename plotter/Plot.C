@@ -1275,7 +1275,7 @@ void Plot::SaveHistograms(){
   hData->SetTag("data_obs");
   hData->Write();
   hStack->Write();  
-
+  f->Close();
   cout << "All histograms saved in " << limitFolder + filename + ".root\n";
 }
 

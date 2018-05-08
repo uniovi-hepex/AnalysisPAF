@@ -9,7 +9,7 @@ nBinsInBDT  = 10
 # var_response  := name of the variable in the response matrix without the M
 
 varList = {}
-
+nBinsInBDT = 10
 varList['LCurve'] = {
     'xaxis'       : 'log L_{1}',
     'yaxis'       : 'log #frac{L_{2}}{#tau^{2}}',
@@ -346,4 +346,119 @@ varList['HTtot'] = {
 varList['HTtotuncertainties'] = {
     'xaxis'       : 'H_{T}(tot.) [GeV]',
     'yaxis'       : 'Relative uncertainty'
+}
+
+
+
+
+systMap = {
+    'fsrUp' : { 'TW'             : 'TW_noFullyHadr_fsrUp',
+                'TbarW'          : 'TbarW_noFullyHadr_fsrUp', 
+                'TTbar_Powheg'   : 'TTbar_Powheg_fsrUp'
+                },
+    'fsrDown' : { 'TW'           : 'TW_noFullyHadr_fsrDown',
+                  'TbarW'        : 'TbarW_noFullyHadr_fsrDown', 
+                  'TTbar_Powheg' : 'TTbar_Powheg_fsrDown'
+                  },
+    'isrUp' : { 'TW'             : 'TW_noFullyHadr_isrUp',
+                'TbarW'          : 'TbarW_noFullyHadr_isrUp', 
+                'TTbar_Powheg'   : 'TTbar_Powheg_isrUp'
+                },
+    'isrDown' : { 'TW'           : 'TW_noFullyHadr_isrDown',
+                  'TbarW'        : 'TbarW_noFullyHadr_isrDown', 
+                  'TTbar_Powheg' : 'TTbar_Powheg_isrDown'
+                  },
+    'MEUp': { 'TW'           : 'TW_noFullyHadr_MEscaleUp',
+                  'TbarW'        : 'TbarW_noFullyHadr_MEscaleUp',
+                  'TTbar_Powheg' : 'TTbar_Powheg'
+                  },
+    'MEDown': { 'TW'         : 'TW_noFullyHadr_MEscaleDown',
+                  'TbarW'        : 'TbarW_noFullyHadr_MEscaleDown',
+                  'TTbar_Powheg' : 'TTbar_Powheg'
+                  },
+    'PSUp': { 'TW'           : 'TW_noFullyHadr_PSscaleUp',
+                  'TbarW'        : 'TbarW_noFullyHadr_PSscaleUp',
+                  'TTbar_Powheg' : 'TTbar_Powheg'
+                  },
+    'PSDown': { 'TW'           : 'TW_noFullyHadr_PSscaleDown',
+                    'TbarW'        : 'TbarW_noFullyHadr_PSscaleDown',
+                    'TTbar_Powheg' : 'TTbar_Powheg'
+                  },
+    'DSUp'        : { 'TW'           : 'TW_noFullyHadr_DS',
+                    'TbarW'        : 'TbarW_noFullyHadr_DS',
+                    'TTbar_Powheg' : 'TTbar_Powheg'
+                  },
+    'hDampUp'   : { 'TW'           : 'TW',
+                    'TbarW'        : 'TbarW',
+                    'TTbar_Powheg' : 'TTbar_Powheg_hdampUp'
+                  },
+    'hDampDown'   : { 'TW'           : 'TW',
+                      'TbarW'        : 'TbarW',
+                      'TTbar_Powheg' : 'TTbar_Powheg_hdampDown'
+                      },
+    'UEUp'        : { 'TW'           : 'TW',
+                      'TbarW'        : 'TbarW',
+                      'TTbar_Powheg' : 'TTbar_Powheg_ueUp'
+                      },
+    'UEDown'      : { 'TW'           : 'TW',
+                      'TbarW'        : 'TbarW',
+                      'TTbar_Powheg' : 'TTbar_Powheg_ueDown'
+                      },
+    'GluonMoveCRTune' : { 'TW'           : 'TW',
+                          'TbarW'        : 'TbarW',
+                          'TTbar_Powheg' : 'TTbar_GluonMoveCRTune'
+                          },
+    'GluonMoveCRTune_erdOn' : { 'TW'           : 'TW',
+                                'TbarW'        : 'TbarW',
+                                'TTbar_Powheg' : 'TTbar_GluonMoveCRTune_erdON'
+                                },
+    'Powheg_erdON' : { 'TW'           : 'TW',
+                       'TbarW'        : 'TbarW',
+                       'TTbar_Powheg' : 'TTbar_Powheg_erdON'
+                       },
+    'QCDbasedCRTune_erdON' : { 'TW'           : 'TW',
+                               'TbarW'        : 'TbarW',
+                               'TTbar_Powheg' : 'TTbar_QCDbasedCRTune_erdON'
+                               },
+    'pdfUp' : { 'TW'           : 'TW',
+                'TbarW'        : 'TbarW',
+                'TTbar_Powheg' : 'TTbar_Powheg'
+                },
+    'pdfDown' : { 'TW'           : 'TW',
+                  'TbarW'        : 'TbarW',
+                  'TTbar_Powheg' : 'TTbar_Powheg'
+                  },
+    'scaleUp' : { 'TW'           : 'TW',
+                  'TbarW'        : 'TbarW',
+                  'TTbar_Powheg' : 'TTbar_Powheg'
+                },
+    'scaleDown' : { 'TW'           : 'TW',
+                    'TbarW'        : 'TbarW',
+                    'TTbar_Powheg' : 'TTbar_Powheg'
+                    },
+
+    }
+
+systWeight = {
+    'fsrUp'                  : '',  
+    'fsrDown'                : '',
+    'isrUp'                  : '',
+    'isrDown'                : '',
+    'MEUp'               : '',
+    'MEDown'             : '',
+    'PSUp'               : '',
+    'PSDown'             : '',
+    'DSUp'                     : '',
+    'hDampUp'                : '',
+    'hDampDown'              : '',
+    'UEUp'                   : '',
+    'UEDown'                 : '',
+    'GluonMoveCRTune'        : '',
+    'GluonMoveCRTune_erdOn'  : '', 
+    'Powheg_erdON'           : '',
+    'QCDbasedCRTune_erdON'   : '',
+    'pdfUp'                  : 'pdfUp',
+    'pdfDown'                : 'pdfDown',
+    'scaleUp'                : 'ScaleUp',
+    'scaleDown'              : 'ScaleDown',
 }
