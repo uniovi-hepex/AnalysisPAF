@@ -9,7 +9,6 @@ nBinsInBDT  = 10
 # var_response  := name of the variable in the response matrix without the M
 
 varList = {}
-nBinsInBDT = 10
 varList['LCurve'] = {
     'xaxis'       : 'log L_{1}',
     'yaxis'       : 'log #frac{L_{2}}{#tau^{2}}',

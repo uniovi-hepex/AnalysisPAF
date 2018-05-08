@@ -7,7 +7,7 @@ ROOT.gROOT.SetBatch(True)
 
 print "===== Setting binning of the BDT procedure"
 print "> Preliminaries..."
-nq          = 10  # Number of bins in which to divide the BDT distribution.
+nq          = varList.nBinsInBDT  # Number of bins in which to divide the BDT distribution.
 xq          = array('d', [0]*nq)
 yq          = array('d', [0]*nq)
 storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
