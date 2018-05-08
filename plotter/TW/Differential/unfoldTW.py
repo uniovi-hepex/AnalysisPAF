@@ -236,16 +236,17 @@ class Unfolder():
         plot.plotspath  = self.plotspath
         
         if self.doSanityCheck:
-            tmptfile    = r.TFile.Open('/nfs/fanae/user/sscruz/TW_differential/AnalysisPAF/plotter/./Datacards/closuretest_TGenLeadingJet_TGen{var}.root'.format(var=self.var))
-            tru         = copy.deepcopy(tmptfile.Get('tW'))
+            #tmptfile = r.TFile.Open('/nfs/fanae/user/sscruz/TW_differential/AnalysisPAF/plotter/./Datacards/closuretest_TGenLeadingJet_TGen{var}.root'.format(var=self.var))
+            if not os.path.isfile('temp/ClosureTest_{var}.root'.format(var = self.var)):
+                raise RuntimeError('The rootfile with the generated information does not exist')
+            tmptfile = r.TFile.Open('temp/ClosureTest_{var}.root'.format(var = self.var))
+            tru = copy.deepcopy(tmptfile.Get('tW'))
             tru.SetLineWidth(2)
             tru.SetLineColor(beautifulUnfoldingPlots.colorMap[0])
-            #tru.SetFillColor(beautifulUnfoldingPlots.colorMap[0])
-            plot.addHisto(tru,'L','Truth','L')
-            plot.addHisto(data,'P,E,same','Data','P')
+            plot.addHisto(tru, 'L', 'Truth', 'L')
+            plot.addHisto(data, 'P,E,same', 'Pseudodata', 'P')
             plot.saveCanvas('TR')
             tmptfile.Close()
-
         else:
             plot.addHisto(data,'P,E','Data','P')
             plot.saveCanvas('TR')
