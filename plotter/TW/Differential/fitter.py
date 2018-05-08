@@ -30,8 +30,7 @@ class FittingSuite:
             nuis = '_'.join(name.split('_')[1:])
             proc = name.split('_')[0]
 
-            if 'statbin' in nuis: continue 
-            if nuis in varList.varList['Names']['colorSysts']: continue
+            if 'statbin' in nuis: continue
 
             if nuis not in self.pmap: 
                 self.pmap[nuis] = {proc: copy.deepcopy(obj)} 

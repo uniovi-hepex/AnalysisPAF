@@ -57,7 +57,7 @@ out.Close()
 histoSyst = {}
 for key in allResults[(bins[0],bins[1])]: 
     if key == 'obs' or 'statbin' in key: continue
-    histoSyst[key] =  ROOT.TH1F("tW"+("_" + key if key != "" else ''),"",len(bins)-1, array.array('d',bins))
+    histoSyst[key] =  ROOT.TH1F("tW" + ("_" + key if key != "" else ''), "", len(bins) - 1, array.array('d', bins))
 
     for binDn,binUp in zip(bins, bins[1:]):
         if key != '':
