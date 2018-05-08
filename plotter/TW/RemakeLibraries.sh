@@ -1,6 +1,6 @@
 cd ..
 
-rm Looper_* Histo_* Plot_C* TResultsTable_* TW/AdditionalStuff_* Plot_sub_*
+rm Looper_* Histo_* Plot_C* TResultsTable_* TW/AdditionalStuff_*
 
 # source TW/pre_start.sh
 
