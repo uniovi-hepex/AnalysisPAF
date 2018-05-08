@@ -14,13 +14,14 @@ class DataContainer:
     and varied input distributions'''
 
     def __init__(self, var, fileName, fileNameReponse):
-        self.var             = var
-        self.fileName        = fileName
-        self.fileNameReponse = fileNameReponse
-        self.listOfSysts = [] 
-        self.responseMatrices = {}
-        self.unfoldingInputs  = {}
-        self.bkgs             = {}
+        self.var                = var
+        self.varresp            = varList.varList[var]['var_response']
+        self.fileName           = fileName
+        self.fileNameReponse    = fileNameReponse
+        self.listOfSysts        = [] 
+        self.responseMatrices   = {}
+        self.unfoldingInputs    = {}
+        self.bkgs               = {}
         self.readAndStore()
 
     def readAndStore(self):
@@ -43,8 +44,8 @@ class DataContainer:
         systListResp = [] # just for sanity checks
         for key in tfile.GetListOfKeys():
             if key.GetName()[0] != 'R': continue
-            if self.var not in key.GetName(): continue
-            if key.GetName() == 'R'+self.var:
+            if self.varresp != key.GetName().split('_')[0][1:]: continue
+            if key.GetName() == 'R' + self.varresp:
                 self.responseMatrices[''] = copy.deepcopy(key.ReadObj())
             else:
                 sysName = '_'.join(key.GetName().split('_')[1:])
@@ -54,8 +55,8 @@ class DataContainer:
         # Getting background (events not passing the fiducial selection, but passing reco)
         for key in tfile.GetListOfKeys():
             if key.GetName()[0] != 'F': continue
-            if self.var not in key.GetName(): continue
-            if key.GetName() == 'F' + self.var:
+            if self.varresp != key.GetName().split('_')[0][1:]: continue
+            if key.GetName() == 'F' + self.varresp:
                 self.bkgs[''] = copy.deepcopy(key.ReadObj())
                 self.bkgs[''].Scale(varList.Lumi*1000)
             else:
@@ -72,7 +73,7 @@ class DataContainer:
         if not all(sys in systListResp for sys in self.listOfSysts):
             for sys in self.listOfSysts:
                 if sys not in systListResp:
-                    if sys not in varList.varList['Names']['ttbarSysts'] + varList.varList['Names']['specialSysts']:
+                    if sys not in varList.varList['Names']['ttbarSysts'] + varList.varList['Names']['specialSysts'] + varList.varList['Names']['colorSysts']:
                         print '>', sys, 'is not in the response matrix file!'
                         pleaseraise = True
             if pleaseraise: 
@@ -87,9 +88,10 @@ class DataContainer:
         
         
     def getMatrixNInput(self,nuis):
-        if nuis not in self.listOfSysts + [''] + varList.varList['Names']['ttbarSysts']:
+        #if nuis not in self.listOfSysts + [''] + varList.varList['Names']['ttbarSysts']:
+        if nuis not in self.listOfSysts + ['']:
             raise RuntimeError("%s is not in the list of response"%nuis)
-        if nuis in varList.varList['Names']['ttbarSysts']:
+        if nuis in varList.varList['Names']['ttbarSysts'] + varList.varList['Names']['colorSysts']:
             return self.unfoldingInputs[nuis], self.responseMatrices[''], self.bkgs['']
         else:
             return self.unfoldingInputs[nuis], self.responseMatrices[nuis], self.bkgs[nuis]
@@ -196,6 +198,7 @@ class Unfolder():
         self.helpers = { nuis : UnfolderHelper(self.var, nuis) for nuis in self.sysList }
         self.helpers[''] = UnfolderHelper(self.var, '')
         self.plotspath  = ""
+        self.doColorEnvelope = False
         
         print self.sysList
 
@@ -233,8 +236,8 @@ class Unfolder():
         plot.plotspath  = self.plotspath
         
         if self.doSanityCheck:
-            tmptfile = r.TFile.Open('/nfs/fanae/user/sscruz/TW_differential/AnalysisPAF/plotter/./Datacards/closuretest_TGenLeadingJet_TGen{var}.root'.format(var=self.var))
-            tru = copy.deepcopy(tmptfile.Get('tW'))
+            tmptfile    = r.TFile.Open('/nfs/fanae/user/sscruz/TW_differential/AnalysisPAF/plotter/./Datacards/closuretest_TGenLeadingJet_TGen{var}.root'.format(var=self.var))
+            tru         = copy.deepcopy(tmptfile.Get('tW'))
             tru.SetLineWidth(2)
             tru.SetLineColor(beautifulUnfoldingPlots.colorMap[0])
             #tru.SetFillColor(beautifulUnfoldingPlots.colorMap[0])
@@ -260,7 +263,6 @@ class Unfolder():
         regularized  .SetLineColor( beautifulUnfoldingPlots.colorMap[0])
         unregularized.SetLineColor( beautifulUnfoldingPlots.colorMap[1])
 
-        
         print regularized  .GetBinContent(1), unregularized.GetBinContent(1)
 
         plot = beautifulUnfoldingPlots.beautifulUnfoldingPlots(self.var)
@@ -269,45 +271,55 @@ class Unfolder():
         plot.addHisto(regularized  ,'hist'     ,'Regularized'  ,'L')
         plot.addHisto(unregularized,'hist,same','UnRegularized','L')
         plot.saveCanvas('TR','comparison')
-        
 
 
-    def doUnfoldingForAllNuis(self):
+    def doUnfoldingForAllNuis(self, asym = False):
         self.prepareAllHelpers()
-        allHistos = {} 
-        nominal=copy.deepcopy(self.helpers[''].tunfolder.GetOutput(self.var))
+        allHistos = {}
+        nominal   = copy.deepcopy(self.helpers[''].tunfolder.GetOutput(self.var))
         for nuis in self.sysList:
             self.helpers[nuis].tunfolder.DoUnfold( self.helpers[''].tunfolder.GetTau() )
             allHistos[nuis] = self.helpers[nuis].tunfolder.GetOutput(self.var + '_' + nuis)
-        nominal_withErrors = errorPropagator.propagateHisto( nominal, allHistos )
+        
+        if asym:
+            nominal_withErrors = errorPropagator.propagateHistoAsym(nominal, allHistos, self.doColorEnvelope)
+        else:
+            nominal_withErrors = errorPropagator.propagateHisto(nominal, allHistos, self.doColorEnvelope)
 
         plot = beautifulUnfoldingPlots.beautifulUnfoldingPlots(self.var)
         plot.plotspath  = self.plotspath
         nominal.SetMarkerStyle(r.kFullCircle)
-        nominal.GetXaxis().SetNdivisions(505,True)
-        nominal_withErrors.SetFillColorAlpha(r.kBlue,0.35)
-        nominal_withErrors.SetLineColor(r.kBlue)
-        nominal_withErrors.SetFillStyle(1001)
-
+        nominal.GetXaxis().SetNdivisions(505, True)
+        
+        if asym:
+            nominal_withErrors[0].SetFillColorAlpha(r.kBlue,0.35)
+            nominal_withErrors[0].SetLineColor(r.kBlue)
+            nominal_withErrors[0].SetFillStyle(1001)
+        else:
+            nominal_withErrors.SetFillColorAlpha(r.kBlue,0.35)
+            nominal_withErrors.SetLineColor(r.kBlue)
+            nominal_withErrors.SetFillStyle(1001)
+        
         if self.doSanityCheck:
             tmptfile = r.TFile.Open('/nfs/fanae/user/sscruz/TW_differential/AnalysisPAF/plotter/./Datacards/closuretest_TGenLeadingJet_TGen{var}.root'.format(var=self.var))
             tru = copy.deepcopy(tmptfile.Get('tW'))
             tru.SetLineWidth(2)
             tru.SetLineColor(beautifulUnfoldingPlots.colorMap[0])
             plot.addHisto(nominal_withErrors,'E2','Syst. unc.','F')
-            plot.addHisto(nominal,'P,same','Data','P')
+            plot.addHisto(nominal,'P,same','Pseudodata','P')
             plot.addHisto(tru,'L,same','Truth','L')
             plot.saveCanvas('TR')
             tmptfile.Close()
-
         else:
-            plot.addHisto(nominal_withErrors,'E2','Syst. unc.','F')
-            plot.addHisto(nominal,'P,same','Data','P')
+            if asym:
+                plot.addHisto(nominal_withErrors, 'hist', 'Syst. unc.', 'F')
+            else:
+                plot.addHisto(nominal_withErrors, 'E2', 'Syst. unc.', 'F')
+            plot.addHisto(nominal, 'P,same', 'Pseudodata', 'P')
             plot.saveCanvas('TR')
 
-
         plot2 = beautifulUnfoldingPlots.beautifulUnfoldingPlots(self.var + 'uncertainties')
-        uncList = errorPropagator.getUncList( nominal, allHistos )[:5]
+        uncList = errorPropagator.getUncList( nominal, allHistos, self.doColorEnvelope)[:5]
         uncList[0][1].Draw()
 
         if uncList[0][1].GetMaximum() < 0.5:

@@ -19,14 +19,16 @@ else:
 
 print "\n> Beginning unfolding...\n"
 a = unf.Unfolder(varName, pathtothings + 'cardFile_' + varName + '.root', pathtothings + 'UnfoldingInfo.root')
-a.plotspath     = "results/"
-a.doSanityCheck = False
+a.plotspath       = "results/"
+a.doSanityCheck   = False
+a.doColorEnvelope = True
 a.prepareNominalHelper()
 a.doLCurveScan()
 #a.doTauScan()
 a.doScanPlots()
 a.doNominalPlot()
-a.doUnfoldingForAllNuis()
+#a.doUnfoldingForAllNuis()    # Symmetric uncertainties
+a.doUnfoldingForAllNuis(True) # Asymmetric uncertainties
 
 a = None
 print "> Unfolding done!"
