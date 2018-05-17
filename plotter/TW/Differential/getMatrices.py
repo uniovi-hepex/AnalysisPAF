@@ -7,17 +7,6 @@ from array  import array
 r.gROOT.SetBatch(True)
 
 
-def GetLastFolder(stpth):
-  savefolders   = next(os.walk(stpth))[1]
-  saveyears     = map(int, [i[6:]  for i in savefolders])
-  savefolders   = [i for i in savefolders if int(i[6:]) == max(saveyears)]
-  savemonths    = map(int, [i[3:5] for i in savefolders])
-  savefolders   = [i for i in savefolders if int(i[3:5]) == max(savemonths)]
-  savedays      = map(int, [i[:2]  for i in savefolders])
-  savefolders   = [i for i in savefolders if int(i[:2]) == max(savedays)]
-  return (stpth + savefolders[0] + "/")
-
-
 #############################
 print("\n===== Unfolding procedures: Response matrices & ROOT files production =====")
 print("> Setting binning, paths, and other details...")
@@ -27,7 +16,7 @@ minipath    = "../../../TW_temp/"
 if (len(sys.argv) > 1):
   print("    - Manual minitrees' folder input!\n")
   if (sys.argv[1] == "last"):
-    minipath  = GetLastFolder(storagepath)
+    minipath  = varList.GetLastFolder(storagepath)
   else:
     minipath  = storagepath + sys.argv[1] + "/"
 
