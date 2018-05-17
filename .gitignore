@@ -21,7 +21,7 @@ plotter/TW/Differential/temp/*
 plotter/TW/Differential/results/*
 
 #Higgs combine output :)
-higgsCombine_*.root
+higgsCombine*.root
 higgsCombinefit_*.root
 roostats-*
 LCurve*
