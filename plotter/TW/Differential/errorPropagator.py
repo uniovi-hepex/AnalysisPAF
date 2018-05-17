@@ -80,7 +80,7 @@ def propagateHistoAsym(nom, varDict, doEnv = False):
     
     if doEnv:
         for bin in range(1, nom.GetNbinsX() + 1):
-            err         = outUp.GetBinError(bin)    # <== Statistic error taken here
+            err         = outUp.GetBinError(bin)    # <==  Fit unc. taken here
             cont        = outUp.GetBinContent(bin)
             tmpDict     = dict([(key, histo.GetBinContent(bin)) for (key, histo) in varDict.iteritems()])
             tmpuncUp    = 0.
@@ -98,7 +98,7 @@ def propagateHistoAsym(nom, varDict, doEnv = False):
             outDown.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, -1), err/2, abs(tmpuncDown)]))
     else:
         for bin in range(1, nom.GetNbinsX() + 1):
-            err     = outUp.GetBinError(bin)    # <== Statistic error taken here
+            err     = outUp.GetBinError(bin)    # <==  Fit unc. taken here
             cont    = outUp.GetBinContent(bin)
             tmpDict = dict([(key, histo.GetBinContent(bin)) for (key, histo) in varDict.iteritems()])
             outUp.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, +1), err/2]))
@@ -157,16 +157,40 @@ def getUncList(nom, varDict, doEnv = False):
     
     #kk = lambda x : maxRelativeError(x[1])
     medDict.sort(key = lambda x : maxRelativeError(x[1]), reverse = True)
+    #for key in medDict:
+        #print key
+        #if 'Down' in key[0]: continue
+        #down = None
+        #for key2 in medDict:
+            #if key2[0] == key[0].replace('Up','Down'):
+                #down = key2
+        #if down:
+            #hist = maximumHisto(key[1], key2[1])
+            #outDict.append( (key[0].replace('Up',''), hist) )
+        #else:
+            #outDict.append( (key[0].replace('Up',''), key[1]) )
     for key in medDict:
-        if 'Down' in key[0]: continue
-        down = None
-        for key2 in medDict:
-            if key2[0] == key[0].replace('Up','Down'):
-                down = key2
-        if down:
+        #print key
+        done = False
+        for i in range(len(outDict)):
+            if key[0].replace('Up', '').replace('Down', '') == outDict[i][0]: done = True
+        if done: continue
+        if 'Down' in key[0]:
+            for key2 in medDict:
+                if key2[0] == key[0].replace('Down','Up'):
+                    down = key2
             hist = maximumHisto(key[1], key2[1])
-            outDict.append( (key[0].replace('Up',''), hist) )
-        else:
-            outDict.append( (key[0].replace('Up',''), key[1]) )
+            outDict.append( (key[0].replace('Down',''), hist) )
+        elif 'Up' in key[0]:
+            for key2 in medDict:
+                if key2[0] == key[0].replace('Up','Down'):
+                    down = key2
+            if key[0].replace('Up', 'Down') in medDict:
+                hist = maximumHisto(key[1], key2[1])
+                outDict.append( (key[0].replace('Up',''), hist) )
+            else:
+                outDict.append( (key[0].replace('Up',''), key[1]) )
+        else: # We expect only the fit unc. to arrive here
+            outDict.append( (key[0], key[1]) )
     
     return map( lambda x : (x[0], relativeErrorHist(x[1])), outDict)
