@@ -3,7 +3,7 @@ import ROOT
 import array, math, sys
 import beautifulUnfoldingPlots
 
-print "===== Fitting procedure"
+print "===== Fitting procedure\n"
 expected    = True
 
 if (len(sys.argv) > 1):
@@ -38,22 +38,17 @@ for binDn,binUp in zip(bins, bins[1:]):
     # Add uncertainty of the fit
         err = err + max(map(abs,[results[''][0]-results[''][1],results[''][0]-results[''][2]]))**2
     
-
     histo.SetBinContent( histo.FindBin( (binDn+binUp)/2), results[''][0]       )
     histo.SetBinError  ( histo.FindBin( (binDn+binUp)/2), math.sqrt(err)       )
 
 
+print '> Saving folded distribution in rootfile\n'
 out = ROOT.TFile('temp/output_%s.root'%name, 'recreate')
 histo.Write()
-
-plot = beautifulUnfoldingPlots.beautifulUnfoldingPlots(name)
-plot.addHisto(histo, 'hist', 'Folded distribution', 'L')
-plot.plotspath  = "results/"
-plot.saveCanvas('TR','_folded')
-
 out.Close()
 
 
+print "> Treating unc. histograms and constructing dummy card for Pietro's code\n"
 histoSyst = {}
 for key in allResults[(bins[0],bins[1])]: 
     if key == 'obs' or 'statbin' in key: continue
@@ -76,3 +71,12 @@ cardInput = ROOT.TFile.Open('temp/cardFile_{ref}.root'.format(ref=name), 'recrea
 
 for key in histoSyst: histoSyst[key].Write()
 cardInput.Close()
+
+
+print "> Saving folded-space histogram of the variable"
+plot = beautifulUnfoldingPlots.beautifulUnfoldingPlots(name)
+plot.addHisto(histo, 'hist', 'Folded distribution', 'L')
+plot.plotspath  = "results/"
+plot.saveCanvas('TR','_folded')
+
+print "> Fitting procedure done!"
