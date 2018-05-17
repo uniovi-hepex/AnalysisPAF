@@ -44,32 +44,32 @@ if [ "$variable" == "All" ]; then
   fi
   
   
-#   for ((i=0; i<=$uplimit; i++)); do
-#     # 1) Get the binning in order to obtain the BDT histograms.
-#     echo "> Obtaining BDT's binning..."
-#     echo " "
-#     python getBinning.py ${unfoldingvars[i]} 0
-# 
-#     # 2) Get those histograms.
-#     echo "> Obtaining histograms per BDT's bin with profiling..."
-#     echo " "
-#     python getCardsWithProfiling.py $ncores ${unfoldingvars[i]}
-#     
-#     # 3) Get the histograms for the closure test.
-#     echo "> Obtaining histograms for closure test..."
-#     echo " "
-#     python getClosureHistos.py ${unfoldingvars[i]}
-#   done
-# 
-#   cd
-#   source pre_start_CMS.sh
-#   cd Documents/TFM/AnalysisPAF/plotter/TW/Differential/
-#   for ((i=0; i<=$uplimit; i++)); do
-#     # 4) Do a fit in each bin of your histograms and for all the systematics.
-#     echo "> Performing fits to each bin of the BDT's distribution with profiling..."
-#     echo " "
-#     python makeFits.py $ncores ${unfoldingvars[i]}
-#   done
+  for ((i=0; i<=$uplimit; i++)); do
+    # 1) Get the binning in order to obtain the BDT histograms.
+    echo "> Obtaining BDT's binning..."
+    echo " "
+    python getBinning.py ${unfoldingvars[i]} 0
+
+    # 2) Get those histograms.
+    echo "> Obtaining histograms per BDT's bin with profiling..."
+    echo " "
+    python getCardsWithProfiling.py $ncores ${unfoldingvars[i]}
+    
+    # 3) Get the histograms for the closure test.
+    echo "> Obtaining histograms for closure test..."
+    echo " "
+    python getClosureHistos.py ${unfoldingvars[i]}
+  done
+
+  cd
+  source pre_start_CMS.sh
+  cd Documents/TFM/AnalysisPAF/plotter/TW/Differential/
+  for ((i=0; i<=$uplimit; i++)); do
+    # 4) Do a fit in each bin of your histograms and for all the systematics.
+    echo "> Performing fits to each bin of the BDT's distribution with profiling..."
+    echo " "
+    python makeFits.py $ncores ${unfoldingvars[i]}
+  done
 
   
   source ../pre_start.sh
