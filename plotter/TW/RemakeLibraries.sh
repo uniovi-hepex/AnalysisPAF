@@ -1,8 +1,8 @@
 cd ..
 
-rm Looper_* Histo_* Plot_C* TResultsTable_* TW/AdditionalStuff_*
+rm Looper_* Histo_* Plot_C* TResultsTable_* TW/AdditionalStuff_* PlotToPy_* PlotToPyC_*
 
-# source TW/pre_start.sh
+source TW/pre_start.sh
 
 root -b -l -q 'TW/CreateLibraries.C'
 
