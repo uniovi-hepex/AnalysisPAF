@@ -1,13 +1,24 @@
 from math   import pi
+import os
 # Library of all the variables so everything is centralized and theres no confusions
 # TODO: port the card producer to python so it can also use this
 
 Lumi        = 35.9
 nBinsInBDT  = 10
 
+def GetLastFolder(stpth):
+    savefolders   = next(os.walk(stpth))[1]
+    saveyears     = map(int, [i[6:]  for i in savefolders])
+    savefolders   = [i for i in savefolders if int(i[6:]) == max(saveyears)]
+    savemonths    = map(int, [i[3:5] for i in savefolders])
+    savefolders   = [i for i in savefolders if int(i[3:5]) == max(savemonths)]
+    savedays      = map(int, [i[:2]  for i in savefolders])
+    savefolders   = [i for i in savefolders if int(i[:2]) == max(savedays)]
+    return (stpth + savefolders[0] + "/")
+
+
 # var           := name of the variable in the tree to make cards
 # var_response  := name of the variable in the response matrix without the M
-
 varList = {}
 varList['LCurve'] = {
     'xaxis'       : 'log L_{1}',
@@ -348,8 +359,7 @@ varList['HTtotuncertainties'] = {
 }
 
 
-
-
+# Profiling things
 systMap = {
     'fsrUp' : { 'TW'             : 'TW_noFullyHadr_fsrUp',
                 'TbarW'          : 'TbarW_noFullyHadr_fsrUp', 
@@ -407,15 +417,15 @@ systMap = {
                           'TbarW'        : 'TbarW',
                           'TTbar_Powheg' : 'TTbar_GluonMoveCRTune'
                           },
-    'GluonMoveCRTune_erdOn' : { 'TW'           : 'TW',
+    'GluonMoveCRTuneerdON' : { 'TW'           : 'TW',
                                 'TbarW'        : 'TbarW',
                                 'TTbar_Powheg' : 'TTbar_GluonMoveCRTune_erdON'
                                 },
-    'Powheg_erdON' : { 'TW'           : 'TW',
+    'PowhegerdON' : { 'TW'           : 'TW',
                        'TbarW'        : 'TbarW',
                        'TTbar_Powheg' : 'TTbar_Powheg_erdON'
                        },
-    'QCDbasedCRTune_erdON' : { 'TW'           : 'TW',
+    'QCDbasedCRTuneerdON' : { 'TW'           : 'TW',
                                'TbarW'        : 'TbarW',
                                'TTbar_Powheg' : 'TTbar_QCDbasedCRTune_erdON'
                                },
@@ -439,25 +449,25 @@ systMap = {
     }
 
 systWeight = {
-    'fsrUp'                  : '',  
-    'fsrDown'                : '',
-    'isrUp'                  : '',
-    'isrDown'                : '',
-    'MEUp'               : '',
-    'MEDown'             : '',
-    'PSUp'               : '',
-    'PSDown'             : '',
-    'DSUp'                     : '',
-    'hDampUp'                : '',
-    'hDampDown'              : '',
-    'UEUp'                   : '',
-    'UEDown'                 : '',
-    'GluonMoveCRTune'        : '',
-    'GluonMoveCRTune_erdOn'  : '', 
-    'Powheg_erdON'           : '',
-    'QCDbasedCRTune_erdON'   : '',
-    'pdfUp'                  : 'pdfUp',
-    'pdfDown'                : 'pdfDown',
-    'scaleUp'                : 'ScaleUp',
-    'scaleDown'              : 'ScaleDown',
+    'fsrUp'                : '',  
+    'fsrDown'              : '',
+    'isrUp'                : '',
+    'isrDown'              : '',
+    'MEUp'                 : '',
+    'MEDown'               : '',
+    'PSUp'                 : '',
+    'PSDown'               : '',
+    'DSUp'                 : '',
+    'hDampUp'              : '',
+    'hDampDown'            : '',
+    'UEUp'                 : '',
+    'UEDown'               : '',
+    'GluonMoveCRTune'      : '',
+    'GluonMoveCRTuneerdON' : '', 
+    'PowhegerdON'          : '',
+    'QCDbasedCRTuneerdON'  : '',
+    'pdfUp'                : 'pdfUp',
+    'pdfDown'              : 'pdfDown',
+    'scaleUp'              : 'ScaleUp',
+    'scaleDown'            : 'ScaleDown',
 }
