@@ -894,7 +894,7 @@ void TWAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> clea
     if (jet.isBtag) TNBtagsJERUp++;
   }
   
-  if (!gIsData && !gIsFSRUp && !gIsFSRDown) {
+  if (!gIsData) {
     if (TNJetsJESUp >= 1) {
       TLeadingJetPtJESUp  = selJetsJecUp.at(0).Pt();
       TLeadingJetEJESUp   = selJetsJecUp.at(0).E();
@@ -1907,7 +1907,7 @@ void TWAnalysis::CalculateTWVariables()
     TM_LLB           =  -99.;
   }
 
-  if (!gIsData && !gIsFSRUp && !gIsFSRDown) {
+  if (!gIsData) {
     if (TNJetsJESUp == 1 && TNBtagsJESUp == 1) {
       // cout << "1j1b Up" << endl;
       met.SetPtEtaPhiE(TMETJESUp,0,TMET_PhiJESUp,TMETJESUp);
@@ -2123,7 +2123,7 @@ void TWAnalysis::CalculateTWVariables()
     // TBDTgrad = -99.;
     TBDT = -99.;
   }
-  if (!gIsData && !gIsFSRUp && !gIsFSRDown){
+  if (!gIsData){
     if (TNJetsJESUp == 1 && TNBtagsJESUp == 1){
       // TBDTadaJESUp = BDTada_JESUp->EvaluateMVA("BDTada_JESUp");
       // TBDTgradJESUp = BDTgrad_JESUp->EvaluateMVA("BDTgrad_JESUp");
@@ -2204,7 +2204,7 @@ void TWAnalysis::CalculateTWVariables()
   }
 
 
-  if (!gIsData && !gIsFSRUp && !gIsFSRDown){
+  if (!gIsData){
 
     if (TNJetsJESUp == 2 && TNBtagsJESUp == 1){
       TDilepMETPtJESUp       = getDilepMETPt(+1);
@@ -2349,7 +2349,7 @@ void TWAnalysis::CalculateTWVariables()
   if (TNJets > 1)        TJet2_Pt        = selJets.at(1).Pt();
   else                   TJet2_Pt        = -99.;
 
-  if (!gIsData && !gIsFSRUp && !gIsFSRDown){
+  if (!gIsData){
     if (TNJetsJESUp > 1)   TJet2_PtJESUp   = selJetsJecUp.at(1).Pt();
     else                   TJet2_PtJESUp   = -99.;
     if (TNJetsJESDown > 1) TJet2_PtJESDown = selJetsJecDown.at(1).Pt();
