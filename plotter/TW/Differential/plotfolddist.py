@@ -26,7 +26,6 @@ errors      = copy.deepcopy(fitinfo.Get('hFitResult_forPlotting_%s_'%varName))
 
 allHistos = {}
 for nuis in varList.systMap:
-    if 'fsr' in nuis: continue
     if 'hFitResult_%s_%s'%(varName, nuis) not in listofkeys:
         raise RuntimeError('Variations of the variable ' + varName + ' with the systematic ' + nuis + ' were not found.')
     allHistos[nuis] = copy.deepcopy(fitinfo.Get('hFitResult_%s_%s'%(varName, nuis)))

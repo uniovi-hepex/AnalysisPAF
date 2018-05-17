@@ -150,9 +150,6 @@ makeFit((varName,''))
 tasks = []
 from varList import systMap
 for sys in systMap:
-    if 'fsr' in sys:
-        print 'FSR aun no esta :)'
-        continue
     tasks.append( (varName, sys) )
 
 #pool = Pool(nCores)
