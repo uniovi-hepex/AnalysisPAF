@@ -1128,14 +1128,20 @@ void LeptonSelector::GetLeptonVariables(Int_t i){ // Once per muon, get all the 
   MVATTH        = Get<Float_t>("LepGood_mvaTTH",i);       //*
   MVASUSY        = Get<Float_t>("LepGood_mvaSUSY",i);       //*
   TightCharge    = Get<Int_t>("LepGood_tightCharge",i);      //*
-//   MVAID          = Get<Float_t>("LepGood_mvaIdSpring16GP",i);   //* REMOVED DUE TO LACK OF IT IN LOCAL SAMPLES
-  MVAID          = 0.;   //*
+  if (gSelection != iTWSelec){
+    MVAID          = Get<Float_t>("LepGood_mvaIdSpring16GP",i);
+    isGlobalMuon = Get<Int_t>("LepGood_isGlobalMuon",i); 
+    isTrackerMuon = Get<Int_t>("LepGood_isTrackerMuon",i); 
+  }
+  else {
+    MVAID          = 0.;  
+    isGlobalMuon = 0.;
+    isTrackerMuon = 0.;
+  }
+
   jetBTagCSV    = Get<Float_t>("LepGood_jetBTagCSV",i);   //*
   SegComp        = Get<Float_t>("LepGood_segmentCompatibility",i);   //*
-//   isGlobalMuon = Get<Int_t>("LepGood_isGlobalMuon",i); REMOVED DUE TO LACK OF IT IN LOCAL SAMPLES
-  isGlobalMuon = 0.;
-//   isTrackerMuon = Get<Int_t>("LepGood_isTrackerMuon",i); REMOVED DUE TO LACK OF IT IN LOCAL SAMPLES
-  isTrackerMuon = 0.;
+
   R9            = Get<Float_t>("LepGood_r9",i);
   if(!gIsData){
     mcPrompt       = Get<Int_t>("LepGood_mcPrompt", i);
