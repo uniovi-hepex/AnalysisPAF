@@ -17,6 +17,7 @@ if [ $3 == "onlyunf" ]; then
   echo " "
   mkdir -p temp
   mkdir -p results
+  mkdir -p results/Cardplots
 
   if [ ! -e "temp/UnfoldingInfo.root" ]; then
     echo "%%%%% FATAL ERROR: the ROOT file with the histograms of the response matrix do not exist."
@@ -38,6 +39,7 @@ else
   echo " "
   mkdir -p temp
   mkdir -p results
+  mkdir -p results/Cardplots
 
   if [ ! -e "temp/UnfoldingInfo.root" ]; then
     echo "%%%%% FATAL ERROR: the ROOT file with the histograms of the response matrix do not exist."
