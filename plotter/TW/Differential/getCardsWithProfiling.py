@@ -36,6 +36,8 @@ ROOT.gROOT.LoadMacro('../../Looper.C+')
 ROOT.gROOT.LoadMacro('../../Plot.C+')
 ROOT.gROOT.LoadMacro('../../PlotToPy.C+')
 ROOT.gROOT.LoadMacro('../../Datacard.C+')
+ROOT.gROOT.LoadMacro('../../PDFunc.C+')
+
 ROOT.gROOT.LoadMacro('temp/' + varName + '.C+')
 print '> Succesfully loaded binning information from temp/' + varName + '.C', "\n"
 
@@ -159,7 +161,7 @@ def getCardsSyst(task):
     p.AddSample("DYJetsToLL_M10to50_aMCatNLO",         "DY_%d"%indx,    ROOT.itBkg, 852)
     p.AddSample("DYJetsToLL_M50_aMCatNLO",             "DY_%d"%indx,    ROOT.itBkg);
     
-    p.AddSample(varList.systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itBkg, 633 , varList.systWeight[syst])
+    p.AddSample(varList.systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itBkg, 633 , '')
     
     p.AddSample(varList.systMap[syst]["TW"],           "tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
     p.AddSample(varList.systMap[syst]["TbarW"],        "tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
@@ -229,6 +231,126 @@ def getCardsSyst(task):
     outCarta.write(out)
 
 
+def getCardsPdf(task): 
+
+    binDn, binUp, indx, asimov, syst = task
+
+    p = ROOT.PlotToPy(ROOT.TString('theBDt_bin%d( TBDT )'%indx), ROOT.TString('(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && T%s >= %4.2f  && T%s < %4.2f )'%(varName, binDn, varName, binUp)), ROOT.TString('ElMu'), varList.nBinsInBDT, ROOT.Double(0.5), ROOT.Double(varList.nBinsInBDT+0.5), ROOT.TString(varName + '_%d'%indx), ROOT.TString(''))
+    p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
+    p.SetLimitFolder("temp/");
+    p.SetPathSignal(pathToTree);
+
+    
+    p.AddSample("WZ",                           "VVttV_%d"%indx, ROOT.itBkg, 390);
+    p.AddSample("WW",                           "VVttV_%d"%indx, ROOT.itBkg);
+    p.AddSample("ZZ",                           "VVttV_%d"%indx, ROOT.itBkg);
+    p.AddSample("TTWToLNu",                     "VVttV_%d"%indx, ROOT.itBkg);
+    p.AddSample("TTWToQQ" ,                     "VVttV_%d"%indx, ROOT.itBkg);
+    p.AddSample("TTZToQQ" ,                     "VVttV_%d"%indx, ROOT.itBkg);
+    p.AddSample("TTZToLLNuNu",                  "VVttV_%d"%indx, ROOT.itBkg);
+
+    p.AddSample("DYJetsToLL_M10to50_aMCatNLO",  "DY_%d"%indx,    ROOT.itBkg, 852)
+    p.AddSample("DYJetsToLL_M50_aMCatNLO",      "DY_%d"%indx,    ROOT.itBkg);
+    p.AddSample("TW",                           "tW_%d"%indx,    ROOT.itBkg, 2)
+    p.AddSample("TbarW",                        "tW_%d"%indx,    ROOT.itBkg);
+    p.AddSample("TTbar_PowhegSemi",             "Fakes_%d"%indx, ROOT.itBkg, 413)
+    p.AddSample("WJetsToLNu_MLM",               "Fakes_%d"%indx, ROOT.itBkg)
+
+    p.AddSample("TW",   "tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
+    p.AddSample("TbarW","tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
+    p.AddSymmetricHisto("tW_%d"%indx,  "JERUp");
+
+    p.AddSystematic("JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig")
+
+
+
+    pdf = ROOT.PDFToPy(pathToTree, "TTbar_Powheg", NameOfTree, ROOT.TString('(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && T%s >= %4.2f  && T%s < %4.2f )'%(varName, binDn, varName, binUp)), ROOT.TString('ElMu'), ROOT.TString('theBDt_bin%d( TBDT )'%indx), varList.nBinsInBDT,ROOT.Double(0.5), ROOT.Double(varList.nBinsInBDT+0.5))
+
+    if 'pdfUp'==syst: 
+        histo = pdf.GetSystHisto("up","pdf").CloneHisto()
+    elif 'pdfDown'==syst: 
+        histo = pdf.GetSystHisto("Down","pdf").CloneHisto()
+    elif 'MEUp'==syst: 
+        histo = pdf.GetSystHisto("up","ME").CloneHisto()
+    elif 'MEDown'==syst: 
+        histo = pdf.GetSystHisto("Down","ME").CloneHisto()
+    else:
+        raise RuntimeError("Systematic %s is not of 'pdf' type"%syst)
+
+    p.PrepareHisto(histo, 'TTbar_Powheg', 'ttbar_%d'%indx, ROOT.itBkg,633)
+
+    # now get systematic variations from nominal
+    for s in 'JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig,JER'.split(','):
+        tfile = ROOT.TFile.Open("temp/forCards_" + varName + '_%d.root'%indx)
+        nom   = tfile.Get('ttbar_%d'%indx)
+        nomUp = tfile.Get('ttbar_%d_%sUp'%(indx,s))
+        nomDn = tfile.Get('ttbar_%d_%sDown'%(indx,s))
+
+        # remove stats just in case
+        for i in range(nom.GetNbinsX()):
+            nom  .SetBinError(i+1,0.)
+            nomUp.SetBinError(i+1,0.)
+            nomDn.SetBinError(i+1,0.)
+
+        nomUp.Divide(nom)
+        nomDn.Divide(nom)
+
+        histoUp = histo.CloneHisto()
+        histoDn = histo.CloneHisto()
+
+        histoUp.Multiply(nomUp)
+        histoDn.Multiply(nomDn)
+
+        p.PrepareHisto( histoUp, "TTbar_Powheg", 'ttbar_%d'%indx, ROOT.itSys, 0, s+"Up")
+        p.PrepareHisto( histoDn, "TTbar_Powheg", 'ttbar_%d'%indx, ROOT.itSys, 0, s+"Down")
+
+        p.AddToSystematicLabels(s)
+
+    if not asimov:
+        p.AddSample("MuonEG",                       "Data",  ROOT.itData);
+        p.AddSample("SingleMuon",                   "Data",  ROOT.itData);
+        p.AddSample("SingleElec",                   "Data",  ROOT.itData);
+    else: 
+        # get asimov from the nominal one
+        tfile = ROOT.TFile.Open("temp/forCards_" + varName + '_%d.root'%indx)
+        if not tfile: 
+            raise RuntimeError("No nominal card in place")
+        hData = ROOT.Histo( tfile.Get('data_obs') ) 
+        hData.SetProcess("Data")
+        hData.SetTag("Data")
+        hData.SetType(ROOT.itData)
+        hData.SetColor(ROOT.kBlack)
+        p.AddToHistos(hData)
+
+    p.NoShowVarName = True;
+    p.SetOutputName("forCards_" + varName + '_' + syst + '_%d'%indx);
+    p.SaveHistograms();
+    del p
+
+    card = ROOT.Datacard('tW_%d'%indx, 'ttbar_{idx},DY_{idx},VVttV_{idx},Fakes_{idx}'.format(idx=indx) , "JES, Btag, Mistag, PU, ElecEff, MuonEff, Trig, JER", "ElMu_%d"%indx)
+    card.SetRootFileName('temp/forCards_' + varName  + '_' + syst  + '_%d'%indx)
+    card.GetParamsFormFile()
+    card.SetNormUnc("Fakes_%d"%indx   , 1.50)
+    card.SetNormUnc("DY_%d"%indx      , 1.50)
+    card.SetNormUnc("VVttV_%d"%indx   , 1.50);
+    card.SetNormUnc("ttbar_%d"%indx   , 1.06);
+    card.SetLumiUnc(1.025)
+    card.PrintDatacard("temp/datacard_" + varName + '_' + syst + '_%d'%indx);
+  
+    del card
+
+    # All this crap so i dont have to tamper with the DataCard.C
+    out = ''
+    datacarta = open('temp/datacard_' + varName + '_' + syst +  '_%d.txt'%indx,'r')
+    for lin in datacarta.readlines():
+        nuLine = lin
+        if 'process' in nuLine: nuLine = nuLine.replace('-1', '-%d'%indx)
+        out = out + nuLine
+    datacarta.close()
+    outCarta = open('temp/datacard_' + varName + '_' + syst + '_%d.txt'%indx,'w')
+    outCarta.write(out)
+
+
 if __name__ == '__main__':
     indx    = 0
     binning = varList.varList[varName]['recobinning']
@@ -254,12 +376,25 @@ if __name__ == '__main__':
             if 'fsr' in syst: 
                 print 'FSR not yet working :)'
                 continue
+            if 'pdf' or 'ME' in syst: continue # these boys are handled differently
             tasksSyst.append( (binDn, binUp, indx, asimov, syst) )
-
+    
     print '> Creating rootfiles with histograms and datacards for all systematics'
     pool    = Pool(nCores)
     pool.map(getCardsSyst, tasksSyst)
     pool.close()
     pool.join()
     
+    tasksPdf = [] 
+    indx = 0
+    for binDn,binUp in zip(binning, binning[1:]):
+        indx = indx+1
+        tasksPdf.append( (binDn, binUp, indx, asimov, 'pdfUp') )
+        tasksPdf.append( (binDn, binUp, indx, asimov, 'MEUp') )
+        tasksPdf.append( (binDn, binUp, indx, asimov, 'pdfDown') )
+        tasksPdf.append( (binDn, binUp, indx, asimov, 'MEDown') )
+
+    pool.map(getCardsPdf, tasksPdf)
+
+
     print "> Done!", "\n"

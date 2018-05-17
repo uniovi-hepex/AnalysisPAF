@@ -49,8 +49,8 @@ void JetSelector::Initialise(){
   if(gOptions.Contains("2017eccop")) gIs2017eccop = true;
 
   gIsFSRUp = false; gIsFSRDown = false;
-  if     (gSampleName.Contains("TTbar_Powheg") && gSampleName.Contains("fsrUp"))   gIsFSRUp = true;
-  else if(gSampleName.Contains("TTbar_Powheg") && gSampleName.Contains("fsrDown")) gIsFSRDown = true;
+  if     (gSampleName.Contains("fsrUp"))   gIsFSRUp = true;
+  else if(gSampleName.Contains("fsrDown")) gIsFSRDown = true;
 
   //---- Select your wp for b-tagging and pt, eta for the jets
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -164,7 +164,7 @@ void JetSelector::GetJetVariables(Int_t i, const TString& jec){
   tpJ.SetPtEtaPhiM(1/FSRSF*Get<Float_t>("Jet"+jec+"_pt",i), Get<Float_t>("Jet"+jec+"_eta",i), Get<Float_t>("Jet"+jec+"_phi", i), Get<Float_t>("Jet"+jec+"_mass",i));
   eta = tpJ.Eta();;
   pt = tpJ.Pt();
-  rawPt       = Get<Float_t>("Jet"+jec+"_rawPt",i);
+  rawPt       = Get<Float_t>("Jet"+jec+"_rawPt",i)/FSRSF;
   pt_corrUp   = Get<Float_t>("Jet"+jec+"_corr_JECUp",i); 
   pt_corrDown = Get<Float_t>("Jet"+jec+"_corr_JECDown",i);
   jetId       = Get<Int_t>("Jet"+jec+"_id",i);

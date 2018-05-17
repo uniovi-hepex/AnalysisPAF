@@ -429,45 +429,45 @@ systMap = {
                                'TbarW'        : 'TbarW',
                                'TTbar_Powheg' : 'TTbar_QCDbasedCRTune_erdON'
                                },
-    'pdfUp' : { 'TW'           : 'TW',
-                'TbarW'        : 'TbarW',
-                'TTbar_Powheg' : 'TTbar_Powheg'
-                },
-    'pdfDown' : { 'TW'           : 'TW',
-                  'TbarW'        : 'TbarW',
-                  'TTbar_Powheg' : 'TTbar_Powheg'
-                  },
-    'scaleUp' : { 'TW'           : 'TW',
-                  'TbarW'        : 'TbarW',
-                  'TTbar_Powheg' : 'TTbar_Powheg'
-                },
-    'scaleDown' : { 'TW'           : 'TW',
-                    'TbarW'        : 'TbarW',
-                    'TTbar_Powheg' : 'TTbar_Powheg'
-                    },
+    # 'pdfUp' : { 'TW'           : 'TW',
+    #             'TbarW'        : 'TbarW',
+    #             'TTbar_Powheg' : 'TTbar_Powheg'
+    #             },
+    # 'pdfDown' : { 'TW'           : 'TW',
+    #               'TbarW'        : 'TbarW',
+    #               'TTbar_Powheg' : 'TTbar_Powheg'
+    #               },
+    # 'MEUp' : { 'TW'           : 'TW',
+    #               'TbarW'        : 'TbarW',
+    #               'TTbar_Powheg' : 'TTbar_Powheg'
+    #             },
+    # 'MEDown' : { 'TW'           : 'TW',
+    #                 'TbarW'        : 'TbarW',
+    #                 'TTbar_Powheg' : 'TTbar_Powheg'
+    #                 },
 
     }
 
-systWeight = {
-    'fsrUp'                : '',  
-    'fsrDown'              : '',
-    'isrUp'                : '',
-    'isrDown'              : '',
-    'MEUp'                 : '',
-    'MEDown'               : '',
-    'PSUp'                 : '',
-    'PSDown'               : '',
-    'DSUp'                 : '',
-    'hDampUp'              : '',
-    'hDampDown'            : '',
-    'UEUp'                 : '',
-    'UEDown'               : '',
-    'GluonMoveCRTune'      : '',
-    'GluonMoveCRTuneerdON' : '', 
-    'PowhegerdON'          : '',
-    'QCDbasedCRTuneerdON'  : '',
-    'pdfUp'                : 'pdfUp',
-    'pdfDown'              : 'pdfDown',
-    'scaleUp'              : 'ScaleUp',
-    'scaleDown'            : 'ScaleDown',
-}
+# systWeight = {
+#     'fsrUp'                  : '',  
+#     'fsrDown'                : '',
+#     'isrUp'                  : '',
+#     'isrDown'                : '',
+#     'MEUp'               : '',
+#     'MEDown'             : '',
+#     'PSUp'               : '',
+#     'PSDown'             : '',
+#     'DSUp'                     : '',
+#     'hDampUp'                : '',
+#     'hDampDown'              : '',
+#     'UEUp'                   : '',
+#     'UEDown'                 : '',
+#     'GluonMoveCRTune'        : '',
+#     'GluonMoveCRTune_erdOn'  : '', 
+#     'Powheg_erdON'           : '',
+#     'QCDbasedCRTune_erdON'   : '',
+#     'pdfUp'                  : 'pdfUp',
+#     'pdfDown'                : 'pdfDown',
+#     'scaleUp'                : 'ScaleUp',
+#     'scaleDown'              : 'ScaleDown',
+# }
