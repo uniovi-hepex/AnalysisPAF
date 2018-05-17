@@ -1,21 +1,10 @@
 import ROOT
 import varList
 import sys, os
-print "===== BDT's histograms procedure"
+print "===== BDT's histograms procedure\n"
 
 storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
 pathToTree    = ""
-
-def GetLastFolder(stpth):
-    savefolders   = next(os.walk(stpth))[1]
-    saveyears     = map(int, [i[6:]  for i in savefolders])
-    savefolders   = [i for i in savefolders if int(i[6:]) == max(saveyears)]
-    savemonths    = map(int, [i[3:5] for i in savefolders])
-    savefolders   = [i for i in savefolders if int(i[3:5]) == max(savemonths)]
-    savedays      = map(int, [i[:2]  for i in savefolders])
-    savefolders   = [i for i in savefolders if int(i[:2]) == max(savedays)]
-    return (stpth + savefolders[0] + "/")
-    
 
 if (len(sys.argv) > 1):
     varName     = sys.argv[1]
@@ -23,7 +12,7 @@ if (len(sys.argv) > 1):
     if (len(sys.argv) > 2):
       pathToTree    = storagepath + sys.argv[2] + "/"
     else:
-      pathToTree    = GetLastFolder(storagepath)
+      pathToTree    = varList.GetLastFolder(storagepath)
     print "> Minitrees will be read from:", pathToTree, "\n"
 else:
     print "> Default choice of variable and minitrees\n"
@@ -50,8 +39,15 @@ for binDn,binUp in zip(binning, binning[1:]):
     p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
     p.SetLimitFolder("temp/");
     p.SetPathSignal(pathToTree);
+    p.SetChLabel("e^{#pm}#mu^{#mp} + 1j1b");
     p.verbose = True
-
+    
+    p.AddSample("TW",                           "tW",    ROOT.itBkg, ROOT.TColor.GetColor("#ffcc33"))
+    p.AddSample("TbarW",                        "tW",    ROOT.itBkg);
+    
+    p.AddSample("TTbar_PowhegSemi",             "Fakes", ROOT.itBkg, 413)
+    p.AddSample("WJetsToLNu_MLM",               "Fakes", ROOT.itBkg)
+    
     p.AddSample("WZ",                           "VVttV", ROOT.itBkg, 390);
     p.AddSample("WW",                           "VVttV", ROOT.itBkg);
     p.AddSample("ZZ",                           "VVttV", ROOT.itBkg);
@@ -62,11 +58,8 @@ for binDn,binUp in zip(binning, binning[1:]):
 
     p.AddSample("DYJetsToLL_M10to50_aMCatNLO",  "DY",    ROOT.itBkg, 852)
     p.AddSample("DYJetsToLL_M50_aMCatNLO",      "DY",    ROOT.itBkg);
+    
     p.AddSample("TTbar_Powheg",                 "ttbar", ROOT.itBkg, 633)
-    p.AddSample("TW",                           "tW",    ROOT.itBkg, 2)
-    p.AddSample("TbarW",                        "tW",    ROOT.itBkg);
-    p.AddSample("TTbar_PowhegSemi",             "Fakes", ROOT.itBkg, 413)
-    p.AddSample("WJetsToLNu_MLM",               "Fakes", ROOT.itBkg)
     
     p.AddSample("MuonEG",                       "Data",  ROOT.itData);
     p.AddSample("SingleMuon",                   "Data",  ROOT.itData);
@@ -122,8 +115,23 @@ for binDn,binUp in zip(binning, binning[1:]):
     #       The rest of the uncertanties must be plugged here (or through the 
     #       "AddSample" format).
     p.AddSystematic("JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig")
+    
+    p.doUncInLegend  = True;
+    p.SetRatioMin( 0.6 );
+    p.SetRatioMax( 1.4 );
 
+    p.SetCMSlabel("CMS");
+    p.SetCMSmodeLabel("Preliminary");
+    p.SetLegendPosition(0.7, 0.45, 0.93, 0.92);
+    p.SetPlotFolder("results/Cardplots/");
+    p.doYieldsInLeg  = False;
+    p.doSetLogy      = False;
+    #p.doData         = False;
+    p.doSignal       = False;
+    
     p.NoShowVarName = True;
+    p.SetOutputName("forCards_" + varName + '_%d'%indx);
+    p.DrawStack();
     p.SetOutputName("forCards_" + varName + '_%d'%indx);
     p.SaveHistograms();
     del p
