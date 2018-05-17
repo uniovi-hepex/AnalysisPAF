@@ -1,10 +1,7 @@
 import ROOT  as r
-import tdrstyle
+import tdrstyle, varList, CMS_lumi
 from ROOT import TH1, TEfficiency, TFile, TCanvas, TAxis
 
-import varList
-
-import CMS_lumi
 CMS_lumi.writeExtraText = 1
 
 
@@ -65,9 +62,12 @@ class beautifulUnfoldingPlots:
             for bin in range(asymhisto.GetN()):
                 asymhisto.SetPointEYhigh(bin, histo.GetBinError(bin + 1))
                 asymhisto.SetPointEYlow(bin, histos[1].GetBinError(bin + 1))
-            asymhisto.GetXaxis().SetTitle( varList.varList[self.name]['xaxis'] )
-            asymhisto.GetYaxis().SetTitle( varList.varList[self.name]['yaxis'] )
-
+            asymhisto.GetXaxis().SetTitle( varList.varList[self.name.replace('_folded', '')]['xaxis'] )
+            asymhisto.GetYaxis().SetTitle( varList.varList[self.name.replace('_folded', '')]['yaxis'] )
+            
+            if '_folded' in self.name:
+                asymhisto.GetXaxis().SetRangeUser(histo.GetXaxis().GetBinLowEdge(1), histo.GetXaxis().GetBinUpEdge(histo.GetNbinsX()))
+            
             asymhisto.GetXaxis().SetTitleFont(42)
             asymhisto.GetXaxis().SetTitleSize(0.05)
             asymhisto.GetXaxis().SetTitleOffset(1.1)
@@ -86,8 +86,8 @@ class beautifulUnfoldingPlots:
             asymhisto.Draw('a2')
             self.objectsInLeg.append( (asymhisto, name, legOptions) )
         else:
-            histo.GetXaxis().SetTitle( varList.varList[self.name]['xaxis'] )
-            histo.GetYaxis().SetTitle( varList.varList[self.name]['yaxis'] )
+            histo.GetXaxis().SetTitle( varList.varList[self.name.replace('_folded', '')]['xaxis'] )
+            histo.GetYaxis().SetTitle( varList.varList[self.name.replace('_folded', '')]['yaxis'] )
 
             histo.GetXaxis().SetTitleFont(42)
             histo.GetXaxis().SetTitleSize(0.05)
@@ -112,12 +112,12 @@ class beautifulUnfoldingPlots:
         self.canvas.cd()
         
         textSize = 0.055 if self.doRatio else 0.022
-        legWidth = 0.18
-        height = (.20 + textSize*max(len(self.objectsInLeg)-3,0))
+        legWidth = 0.12
+        height = (.19 + textSize*max(len(self.objectsInLeg)-3,0))
         if corner == "TR":
-            (x1,y1,x2,y2) = (0.97-legWidth if self.doWide else .85-legWidth, .9 - height, .90, .91)
+            (x1,y1,x2,y2) = (0.97-legWidth if self.doWide else .85-legWidth, .9 - height, .90, .93)
         elif corner == "TC":
-            (x1,y1,x2,y2) = (.5, .9 - height, .55+legWidth, .91)
+            (x1,y1,x2,y2) = (.5, .9 - height, .55+legWidth, .93)
         elif corner == "TL":
             (x1,y1,x2,y2) = (.2, .9 - height, .25+legWidth, .91)
         elif corner == "BR":
