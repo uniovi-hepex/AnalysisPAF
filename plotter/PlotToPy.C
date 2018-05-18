@@ -1,4 +1,4 @@
-#ifndef PLOTTOPY_H 
+#ifndef PLOTTOPY_H
 #define PLOTTOPY_H 1
 
 #include"Plot.h"

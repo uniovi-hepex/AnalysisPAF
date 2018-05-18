@@ -28,7 +28,31 @@ else
   echo " "
 fi
 
-if [ $1 != "All" ]; then
+cd ..
+source RemakeLibraries.sh
+cd Differential
+
+if [ "$1" == "All" ]; then
+  echo "> We are going to do all the unfolding procedures for all the variables!! Yey!"
+
+  echo "> Creating jobs for all the queue unfolding procedures..."
+  for ((i=0; i<=$uplimit; i++)); do
+    Job=$(qsub -q proof -o $logpath -e $logpath -d $workingpath -F "${unfoldingvars[i]} $2" ExecuteUnfolding.sh)
+    echo $Job
+  done
+  echo "> Jobs created!"
+  
+elif [ "$1" == "AllUnf" ]; then
+  echo "> We are going to ONLY unfold all the variables!! Yey!"
+  tres="onlyunf"
+  echo "> Creating jobs for all the queue unfolding procedures..."
+  for ((i=0; i<=$uplimit; i++)); do
+    Job=$(qsub -q proof -o $logpath -e $logpath -d $workingpath -F "${unfoldingvars[i]} $2 ${tres}" ExecuteUnfolding.sh)
+    echo $Job
+  done
+  echo "> Jobs created!"
+  
+else
   echo "> The variable to be unfolded is"
   echo $1
   echo " "
@@ -37,14 +61,4 @@ if [ $1 != "All" ]; then
   Job=$(qsub -q proof -o $logpath -e $logpath -d $workingpath -F "$1 $2" ExecuteUnfolding.sh)
   echo $Job
   echo "> Job created!"
-  
-else
-  echo "> We are going to unfold all the variables!! Yey!"
-
-  echo "> Creating jobs for all the queue unfolding procedures..."
-  for ((i=0; i<=$uplimit; i++)); do
-    Job=$(qsub -q proof -o $logpath -e $logpath -d $workingpath -F "${unfoldingvars[i]} $2" ExecuteUnfolding.sh)
-    echo $Job
-  done
-  echo "> Jobs created!"
 fi

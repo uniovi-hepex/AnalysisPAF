@@ -1156,6 +1156,7 @@ void Plot::DrawStack(TString tag){
     TString dir = plotFolder;
     TString plotname = (outputName == "")? varname : outputName;
     if(outputName != "" && varname != "")  plotname += "_" + varname;
+    if(outputName != "" && NoShowVarName)  plotname = outputName;
     if(outputName != "" && tag != "")      plotname += "_" + tag;
     else outputName = tag;
     

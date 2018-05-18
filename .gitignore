@@ -5,9 +5,11 @@
 .paf/
 *.pyc
 combine_logger.out
+
 # Exclude files by emacs
 *~
 .~*
+
 # Exclude downloaded Datasets
 Datasets/
 
@@ -17,6 +19,9 @@ Datasets/
 inputdata.root
 plotter/TW/Differential/temp/*
 plotter/TW/Differential/results/*
+
 #Higgs combine output :)
-higgsCombine_*.root
+higgsCombine*.root
 higgsCombinefit_*.root
+roostats-*
+LCurve*

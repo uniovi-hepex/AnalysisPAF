@@ -7,17 +7,6 @@ from array  import array
 r.gROOT.SetBatch(True)
 
 
-def GetLastFolder(stpth):
-  savefolders   = next(os.walk(stpth))[1]
-  saveyears     = map(int, [i[6:]  for i in savefolders])
-  savefolders   = [i for i in savefolders if int(i[6:]) == max(saveyears)]
-  savemonths    = map(int, [i[3:5] for i in savefolders])
-  savefolders   = [i for i in savefolders if int(i[3:5]) == max(savemonths)]
-  savedays      = map(int, [i[:2]  for i in savefolders])
-  savefolders   = [i for i in savefolders if int(i[:2]) == max(savedays)]
-  return (stpth + savefolders[0] + "/")
-
-
 #############################
 print("\n===== Unfolding procedures: Response matrices & ROOT files production =====")
 print("> Setting binning, paths, and other details...")
@@ -27,7 +16,7 @@ minipath    = "../../../TW_temp/"
 if (len(sys.argv) > 1):
   print("    - Manual minitrees' folder input!\n")
   if (sys.argv[1] == "last"):
-    minipath  = GetLastFolder(storagepath)
+    minipath  = varList.GetLastFolder(storagepath)
   else:
     minipath  = storagepath + sys.argv[1] + "/"
 
@@ -67,6 +56,8 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = ""):
     vnametitle  = vnametitle.replace("_", "") + "_" + sys
   elif (sys == "modeling"):
     vnametitle  = vnametitle.replace("_", "") + "_" + t1.GetName()
+  else:
+    vnametitle  = vnametitle.replace("_", "")
   
   t1.Draw('TGen'+vnamegen+'>>hGen1', genCut)
   t2.Draw('TGen'+vnamegen+'>>hGen2', genCut)
@@ -211,6 +202,8 @@ def GetFiducialHisto(t1, t2, vname, nyb, yb, sys = ""):
     vnametitle  = vnametitle.replace("_", "") + "_" + sys
   elif (sys == "modeling"):
     vnametitle  = vnametitle.replace("_", "") + "_" + t1.GetName()
+  else:
+    vnametitle  = vnametitle.replace("_", "")
   
   t1.Draw('T' + vnamereco + '>>h1', tmpcut)
   t2.Draw('T' + vnamereco + '>>h2', tmpcut)
@@ -225,7 +218,7 @@ def GetFiducialHisto(t1, t2, vname, nyb, yb, sys = ""):
   return h1
 
 
-def PrintResponseMatrix(htemp, vname, nxb, xmin, xmax, nyb, ymin, ymax, prof = 0, pur = None, stab = None):
+def PrintResponseMatrix(htemp, vname, nxb, xb, xmin, xmax, nyb, yb, ymin, ymax, prof = 0, pur = None, stab = None):
   '''This function prints the response matrix of a given histogram.'''
   if not os.path.exists(plotsoutputpath + vname):
     os.makedirs(plotsoutputpath + vname)
@@ -244,8 +237,8 @@ def PrintResponseMatrix(htemp, vname, nxb, xmin, xmax, nyb, ymin, ymax, prof = 0
   if (prof == 0):
     return
   
-  hX          = r.TProfile('hX', '', nxb, xmin, xmax)
-  hY          = r.TProfile('hY', '', nyb, ymin, ymax)
+  hX          = r.TProfile('hX', '', nxb, xb)
+  hY          = r.TProfile('hY', '', nyb, yb)
   htemp.ProfileX("hX", 1, -1, "s")
   htemp.ProfileY("hY", 1, -1, "s")
   
@@ -285,10 +278,10 @@ def PrintResponseMatrix(htemp, vname, nxb, xmin, xmax, nyb, ymin, ymax, prof = 0
   hY      = None
   secaxis = None
   
-  hStab   = r.TH1F('hStab', '', nxb, xmin, xmax)
+  hStab   = r.TH1F('hStab', '', nxb, xb)
   for i in range(1, hStab.GetNbinsX() + 1):
     hStab.SetBinContent(i, stab[i - 1])
-  hPur    = r.TH1F('hPur',  '', nyb, ymin, ymax)
+  hPur    = r.TH1F('hPur',  '', nyb, yb)
   for j in range(1, hPur.GetNbinsX() + 1):
     hPur.SetBinContent(j, pur[j - 1])
   
@@ -396,13 +389,13 @@ treeTW_isrUp.SetName("isrUp")
 treeTW_isrDown    = fTW_isrDown.Get('Mini1j1t')
 treeTW_isrDown.SetName("isrDown")
 treeTW_MEUp       = fTW_MEUp.Get('Mini1j1t')
-treeTW_MEUp.SetName("MEUp")
+treeTW_MEUp.SetName("tWMEUp")
 treeTW_MEDown     = fTW_MEDown.Get('Mini1j1t')
-treeTW_MEDown.SetName("MEDown")
+treeTW_MEDown.SetName("tWMEDown")
 treeTW_PSUp       = fTW_PSUp.Get('Mini1j1t')
-treeTW_PSUp.SetName("PSUp")
+treeTW_PSUp.SetName("tWPSUp")
 treeTW_PSDown     = fTW_PSDown.Get('Mini1j1t')
-treeTW_PSDown.SetName("PSDown")
+treeTW_PSDown.SetName("tWPSDown")
 
 treeTbarW         = fTbarW.Get('Mini1j1t')
 treeTbarW_DSUp    = fTbarW_DSUp.Get('Mini1j1t')
@@ -416,13 +409,13 @@ treeTbarW_isrUp.SetName("isrUp")
 treeTbarW_isrDown = fTbarW_isrDown.Get('Mini1j1t')
 treeTbarW_isrDown.SetName("isrDown")
 treeTbarW_MEUp    = fTbarW_MEUp.Get('Mini1j1t')
-treeTbarW_MEUp.SetName("MEUp")
+treeTbarW_MEUp.SetName("tWMEUp")
 treeTbarW_MEDown  = fTbarW_MEDown.Get('Mini1j1t')
-treeTbarW_MEDown.SetName("MEDown")
+treeTbarW_MEDown.SetName("tWMEDown")
 treeTbarW_PSUp    = fTbarW_PSUp.Get('Mini1j1t')
-treeTbarW_PSUp.SetName("PSUp")
+treeTbarW_PSUp.SetName("tWPSUp")
 treeTbarW_PSDown  = fTbarW_PSDown.Get('Mini1j1t')
-treeTbarW_PSDown.SetName("PSDown")
+treeTbarW_PSDown.SetName("tWPSDown")
 
 
 print "\n> Drawing matrices and writing ROOT file (old one will be overwritten!)."
@@ -434,7 +427,7 @@ for i in range(nvars):
   # Normal response matrices
   htemp = GetResponseMatrix(treeTW, treeTbarW, VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i])
   htemp.Write()
-  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], xmin[i], xmax[i], nybins[i], ymin[i], ymax[i], 1, purities[i], stabilities[i])
+  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i], 1, purities[i], stabilities[i])
   htemp = GetFiducialHisto(treeTW, treeTbarW, VarNames[i], nybins[i], VarBins_Y[i])
   htemp.Write()
   PrintFiducialHisto(htemp, VarNames[i])
@@ -443,7 +436,7 @@ for i in range(nvars):
   for j in range(nsys):
     htemp = GetResponseMatrix(treeTW, treeTbarW, VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], SysList[j])
     htemp.Write()
-    PrintResponseMatrix(htemp, VarNames[i], nxbins[i], xmin[i], xmax[i], nybins[i], ymin[i], ymax[i])
+    PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
     htemp = GetFiducialHisto(treeTW, treeTbarW, VarNames[i], nybins[i], VarBins_Y[i], SysList[j])
     htemp.Write()
     PrintFiducialHisto(htemp, VarNames[i])
@@ -451,55 +444,55 @@ for i in range(nvars):
   # Modeling systematics response matrices
   htemp = GetResponseMatrix(treeTW_DSUp,    treeTbarW_DSUp,       VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling")
   htemp.Write()
-  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], xmin[i], xmax[i], nybins[i], ymin[i], ymax[i])
+  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
   htemp = GetFiducialHisto(treeTW_DSUp,     treeTbarW_DSUp,       VarNames[i], nybins[i], VarBins_Y[i], "modeling")
   htemp.Write()
   PrintFiducialHisto(htemp, VarNames[i])
   htemp = GetResponseMatrix(treeTW_fsrUp,   treeTbarW_fsrUp,    VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling")
   htemp.Write()
-  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], xmin[i], xmax[i], nybins[i], ymin[i], ymax[i])
+  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
   htemp = GetFiducialHisto(treeTW_fsrUp,    treeTbarW_fsrUp,    VarNames[i], nybins[i], VarBins_Y[i], "modeling")
   htemp.Write()
   PrintFiducialHisto(htemp, VarNames[i])
   htemp = GetResponseMatrix(treeTW_fsrDown, treeTbarW_fsrDown,  VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling")
   htemp.Write()
-  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], xmin[i], xmax[i], nybins[i], ymin[i], ymax[i])
+  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
   htemp = GetFiducialHisto(treeTW_fsrDown,  treeTbarW_fsrDown,  VarNames[i], nybins[i], VarBins_Y[i], "modeling")
   htemp.Write()
   PrintFiducialHisto(htemp, VarNames[i])
   htemp = GetResponseMatrix(treeTW_isrDown, treeTbarW_isrDown,  VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling")
   htemp.Write()
-  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], xmin[i], xmax[i], nybins[i], ymin[i], ymax[i])
+  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
   htemp = GetFiducialHisto(treeTW_isrDown,  treeTbarW_isrDown,  VarNames[i], nybins[i], VarBins_Y[i], "modeling")
   htemp.Write()
   PrintFiducialHisto(htemp, VarNames[i])
   htemp = GetResponseMatrix(treeTW_isrUp,   treeTbarW_isrUp,    VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling")
   htemp.Write()
-  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], xmin[i], xmax[i], nybins[i], ymin[i], ymax[i])
+  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
   htemp = GetFiducialHisto(treeTW_isrUp,    treeTbarW_isrUp,    VarNames[i], nybins[i], VarBins_Y[i], "modeling")
   htemp.Write()
   PrintFiducialHisto(htemp, VarNames[i])
   htemp = GetResponseMatrix(treeTW_MEUp,    treeTbarW_MEUp,     VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling")
   htemp.Write()
-  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], xmin[i], xmax[i], nybins[i], ymin[i], ymax[i])
+  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
   htemp = GetFiducialHisto(treeTW_MEUp,     treeTbarW_MEUp,     VarNames[i], nybins[i], VarBins_Y[i], "modeling")
   htemp.Write()
   PrintFiducialHisto(htemp, VarNames[i])
   htemp = GetResponseMatrix(treeTW_MEDown,  treeTbarW_MEDown,   VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling")
   htemp.Write()
-  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], xmin[i], xmax[i], nybins[i], ymin[i], ymax[i])
+  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
   htemp = GetFiducialHisto(treeTW_MEDown,   treeTbarW_MEDown,   VarNames[i], nybins[i], VarBins_Y[i], "modeling")
   htemp.Write()
   PrintFiducialHisto(htemp, VarNames[i])
   htemp = GetResponseMatrix(treeTW_PSUp,    treeTbarW_PSUp,     VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling")
   htemp.Write()
-  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], xmin[i], xmax[i], nybins[i], ymin[i], ymax[i])
+  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
   htemp = GetFiducialHisto(treeTW_PSUp,     treeTbarW_PSUp,   VarNames[i], nybins[i], VarBins_Y[i], "modeling")
   htemp.Write()
   PrintFiducialHisto(htemp, VarNames[i])
   htemp = GetResponseMatrix(treeTW_PSDown,  treeTbarW_PSDown,   VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling")
   htemp.Write()
-  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], xmin[i], xmax[i], nybins[i], ymin[i], ymax[i])
+  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
   htemp = GetFiducialHisto(treeTW_PSDown,   treeTbarW_PSDown,   VarNames[i], nybins[i], VarBins_Y[i], "modeling")
   htemp.Write()
   PrintFiducialHisto(htemp, VarNames[i])

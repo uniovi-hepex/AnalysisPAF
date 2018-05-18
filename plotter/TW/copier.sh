@@ -10,8 +10,8 @@ savepath=$storagepath$savefolder
 
 plotspath="/nfs/fanae/user/vrbouza/www/TFM/Unfolding/Results/"
 
+
 if [ "$1" == "p" ]; then
-  
   echo "===> Copying unfolding results!"
   echo " "
   echo "Plots will be copied into..."
@@ -23,36 +23,34 @@ if [ "$1" == "p" ]; then
 
   echo " "
   echo "Done!"
-  
+  return
+elif [ "$1" != "" ]; then
+  d=$1
 else
-  if [ "$1" != "" ]; then
-    d=$1
-  else
-    d=$(date +%d)
-  fi
-  if [ "$2" != "" ]; then
-    m=$2
-  else
-    m=$(date +%m)
-  fi
-  if [ "$3" != "" ]; then
-    y=$3
-  else
-    y=$(date +%Y)
-  fi
-
-  echo "===> Copying minitrees!"
-  echo " "
-  echo "Files will be copied into..."
-  echo $savepath
-  mkdir -p $savepath
-
-  echo " "
-  echo "Copying files (note that this process can last even minutes depending on the size of the minitrees)..."
-  savepath=$savepath$slash
-  cp -R ../../TW_temp/. $savepath
-
-  echo " "
-  echo "Done!"
-
+  d=$(date +%d)
 fi
+if [ "$2" != "" ]; then
+  m=$2
+else
+  m=$(date +%m)
+fi
+if [ "$3" != "" ]; then
+  y=$3
+else
+  y=$(date +%Y)
+fi
+
+echo "===> Copying minitrees!"
+echo " "
+echo "Files will be copied into..."
+echo $savepath
+mkdir -p $savepath
+
+echo " "
+echo "Copying files (note that this process can last even minutes depending on the size of the minitrees)..."
+savepath=$savepath$slash
+cp -R ../../TW_temp/. $savepath
+
+echo " "
+echo "Done!"
+
