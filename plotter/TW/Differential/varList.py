@@ -377,11 +377,11 @@ systMap = {
                   'TbarW'        : 'TbarW_noFullyHadr_isrDown', 
                   'TTbar_Powheg' : 'TTbar_Powheg_isrDown'
                   },
-    'MEUp': { 'TW'           : 'TW_noFullyHadr_MEscaleUp',
+    'TW_MEUp': { 'TW'           : 'TW_noFullyHadr_MEscaleUp',
                   'TbarW'        : 'TbarW_noFullyHadr_MEscaleUp',
                   'TTbar_Powheg' : 'TTbar_Powheg'
                   },
-    'MEDown': { 'TW'         : 'TW_noFullyHadr_MEscaleDown',
+    'TW_MEDown': { 'TW'         : 'TW_noFullyHadr_MEscaleDown',
                   'TbarW'        : 'TbarW_noFullyHadr_MEscaleDown',
                   'TTbar_Powheg' : 'TTbar_Powheg'
                   },

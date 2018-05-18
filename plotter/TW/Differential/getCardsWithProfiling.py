@@ -388,7 +388,7 @@ if __name__ == '__main__':
     for binDn,binUp in zip(binning, binning[1:]):
         indx = indx+1
         for syst in varList.systMap:
-            if 'pdf' in syst or 'ME' in syst: continue # these boys are handled differently
+            #if 'pdf' in syst or 'ME' in syst: continue # these boys are handled differently
             tasksSyst.append( (binDn, binUp, indx, asimov, syst) )
     
     pool    = Pool(nCores)
