@@ -270,9 +270,9 @@ def getCardsPdf(task):
         histo = pdf.GetSystHisto("up","pdf").CloneHisto()
     elif 'pdfDown'==syst: 
         histo = pdf.GetSystHisto("Down","pdf").CloneHisto()
-    elif 'MEUp'==syst: 
+    elif 'ttbarMEUp'==syst: 
         histo = pdf.GetSystHisto("up","ME").CloneHisto()
-    elif 'MEDown'==syst: 
+    elif 'ttbarMEDown'==syst: 
         histo = pdf.GetSystHisto("Down","ME").CloneHisto()
     else:
         raise RuntimeError("Systematic %s is not of 'pdf' type"%syst)
