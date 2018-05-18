@@ -350,7 +350,7 @@ if __name__ == '__main__':
             if 'fsr' in syst: 
                 print 'FSR not yet working :)'
                 continue
-            if 'pdf' or 'ME' in syst: continue # these boys are handled differently
+            #if 'pdf' or 'ME' in syst: continue # these boys are handled differently
             tasksSyst.append( (binDn, binUp, indx, asimov, syst) )
             
     pool.map(getCardsSyst, tasksSyst)
