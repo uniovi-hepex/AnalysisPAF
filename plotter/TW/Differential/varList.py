@@ -35,7 +35,7 @@ varList['Names'] = {
                      "MuonEffDown", "TrigUp", "TrigDown", "PUUp", "PUDown", "BtagUp",
                      "BtagDown", "MistagUp", "MistagDown", "FragUp", "FragDown", "PetersonFrag",
                      "semilepbrUp", "semilepbrDown"],
-    'ttbarSysts'  : ["ScaleUp", "ScaleDown", "pdfUp", "pdfDown", "hdampUp", "hdampDown",
+    'ttbarSysts'  : ["ttbarMEUp", "ttbarMEDown", "pdfUp", "pdfDown", "hdampUp", "hdampDown",
                      "ueUp", "ueDown", "isrUp", "isrDown", "fsrUp", "fsrDown", "ColorReconnectionUp",
                      "ColorReconnectionDown"],
     'specialSysts': ["JERDown", "DSDown"],
@@ -377,19 +377,19 @@ systMap = {
                   'TbarW'        : 'TbarW_noFullyHadr_isrDown', 
                   'TTbar_Powheg' : 'TTbar_Powheg_isrDown'
                   },
-    'TW_MEUp': { 'TW'           : 'TW_noFullyHadr_MEscaleUp',
+    'tWMEUp': { 'TW'           : 'TW_noFullyHadr_MEscaleUp',
                   'TbarW'        : 'TbarW_noFullyHadr_MEscaleUp',
                   'TTbar_Powheg' : 'TTbar_Powheg'
                   },
-    'TW_MEDown': { 'TW'         : 'TW_noFullyHadr_MEscaleDown',
+    'tWMEDown': { 'TW'         : 'TW_noFullyHadr_MEscaleDown',
                   'TbarW'        : 'TbarW_noFullyHadr_MEscaleDown',
                   'TTbar_Powheg' : 'TTbar_Powheg'
                   },
-    'PSUp': { 'TW'           : 'TW_noFullyHadr_PSscaleUp',
+    'tWPSUp': { 'TW'           : 'TW_noFullyHadr_PSscaleUp',
                   'TbarW'        : 'TbarW_noFullyHadr_PSscaleUp',
                   'TTbar_Powheg' : 'TTbar_Powheg'
                   },
-    'PSDown': { 'TW'           : 'TW_noFullyHadr_PSscaleDown',
+    'tWPSDown': { 'TW'           : 'TW_noFullyHadr_PSscaleDown',
                     'TbarW'        : 'TbarW_noFullyHadr_PSscaleDown',
                     'TTbar_Powheg' : 'TTbar_Powheg'
                   },

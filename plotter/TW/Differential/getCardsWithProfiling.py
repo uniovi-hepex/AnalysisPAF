@@ -401,9 +401,9 @@ if __name__ == '__main__':
     for binDn,binUp in zip(binning, binning[1:]):
         indx = indx+1
         tasksPdf.append( (binDn, binUp, indx, asimov, 'pdfUp') )
-        tasksPdf.append( (binDn, binUp, indx, asimov, 'MEUp') )
+        tasksPdf.append( (binDn, binUp, indx, asimov, 'ttbarMEUp') )
         tasksPdf.append( (binDn, binUp, indx, asimov, 'pdfDown') )
-        tasksPdf.append( (binDn, binUp, indx, asimov, 'MEDown') )
+        tasksPdf.append( (binDn, binUp, indx, asimov, 'ttbarMEDown') )
 
     pool    = Pool(nCores)
     pool.map(getCardsPdf, tasksPdf)

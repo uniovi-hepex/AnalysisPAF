@@ -70,20 +70,20 @@ for binDn,binUp in zip(binning, binning[1:]):
     p.AddSample("TW_noFullyHadr_isrDown",       "tW",    ROOT.itSys, 1, "isrDown");
     p.AddSample("TW_noFullyHadr_fsrUp",         "tW",    ROOT.itSys, 1, "fsrUp");
     p.AddSample("TW_noFullyHadr_fsrDown",       "tW",    ROOT.itSys, 1, "fsrDown");
-    p.AddSample("TW_noFullyHadr_MEscaleUp",     "tW",    ROOT.itSys, 1, "MEUp");
-    p.AddSample("TW_noFullyHadr_MEscaleDown",   "tW",    ROOT.itSys, 1, "MEDown");
-    p.AddSample("TW_noFullyHadr_PSscaleUp",     "tW",    ROOT.itSys, 1, "PSUp");
-    p.AddSample("TW_noFullyHadr_PSscaleDown",   "tW",    ROOT.itSys, 1, "PSDown");
+    p.AddSample("TW_noFullyHadr_MEscaleUp",     "tW",    ROOT.itSys, 1, "tWMEUp");
+    p.AddSample("TW_noFullyHadr_MEscaleDown",   "tW",    ROOT.itSys, 1, "tWMEDown");
+    p.AddSample("TW_noFullyHadr_PSscaleUp",     "tW",    ROOT.itSys, 1, "tWPSUp");
+    p.AddSample("TW_noFullyHadr_PSscaleDown",   "tW",    ROOT.itSys, 1, "tWPSDown");
     
     p.AddSample("TbarW",                        "tW",    ROOT.itSys, 1, "JERUp");
     p.AddSample("TbarW_noFullyHadr_isrUp",      "tW",    ROOT.itSys, 1, "isrUp");
     p.AddSample("TbarW_noFullyHadr_isrDown",    "tW",    ROOT.itSys, 1, "isrDown");
     p.AddSample("TbarW_noFullyHadr_fsrUp",      "tW",    ROOT.itSys, 1, "fsrUp");
     p.AddSample("TbarW_noFullyHadr_fsrDown",    "tW",    ROOT.itSys, 1, "fsrDown");
-    p.AddSample("TbarW_noFullyHadr_MEscaleUp",  "tW",    ROOT.itSys, 1, "MEUp");
-    p.AddSample("TbarW_noFullyHadr_MEscaleDown","tW",    ROOT.itSys, 1, "MEDown");
-    p.AddSample("TbarW_noFullyHadr_PSscaleUp"  ,"tW",    ROOT.itSys, 1, "PSUp");
-    p.AddSample("TbarW_noFullyHadr_PSscaleDown","tW",    ROOT.itSys, 1, "PSDown");
+    p.AddSample("TbarW_noFullyHadr_MEscaleUp",  "tW",    ROOT.itSys, 1, "tWMEUp");
+    p.AddSample("TbarW_noFullyHadr_MEscaleDown","tW",    ROOT.itSys, 1, "tWMEDown");
+    p.AddSample("TbarW_noFullyHadr_PSscaleUp"  ,"tW",    ROOT.itSys, 1, "tWPSUp");
+    p.AddSample("TbarW_noFullyHadr_PSscaleDown","tW",    ROOT.itSys, 1, "tWPSDown");
     
     p.AddSample("TW_noFullyHadr_DS",            "tW",    ROOT.itSys, 1, "DSUp");
     p.AddSample("TbarW_noFullyHadr_DS",         "tW",    ROOT.itSys, 1, "DSUp");
@@ -91,10 +91,10 @@ for binDn,binUp in zip(binning, binning[1:]):
     p.AddSymmetricHisto("tW",  "JERUp");
     
     p.AddSample("TTbar_Powheg",                 "ttbar", ROOT.itSys, 1, "JERUp");
-    p.AddSample("TTbar_Powheg",                 "ttbar", ROOT.itSys, 1, "ScaleUp");
-    p.AddSample("TTbar_Powheg",                 "ttbar", ROOT.itSys, 1, "ScaleDown");
-    p.AddSample("TTbar_Powheg",                 "ttbar", ROOT.itSys, 1, "pdfUp");
-    p.AddSample("TTbar_Powheg",                 "ttbar", ROOT.itSys, 1, "pdfDown");
+    #p.AddSample("TTbar_Powheg",                 "ttbar", ROOT.itSys, 1, "ScaleUp");
+    #p.AddSample("TTbar_Powheg",                 "ttbar", ROOT.itSys, 1, "ScaleDown");
+    #p.AddSample("TTbar_Powheg",                 "ttbar", ROOT.itSys, 1, "pdfUp");
+    #p.AddSample("TTbar_Powheg",                 "ttbar", ROOT.itSys, 1, "pdfDown");
     p.AddSample("TTbar_Powheg_hdampUp",         "ttbar", ROOT.itSys, 1, "hdampUp");
     p.AddSample("TTbar_Powheg_hdampDown",       "ttbar", ROOT.itSys, 1, "hdampDown");
     p.AddSample("TTbar_Powheg_ueUp",            "ttbar", ROOT.itSys, 1, "ueUp");
