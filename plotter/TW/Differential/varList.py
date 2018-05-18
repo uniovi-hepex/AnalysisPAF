@@ -36,7 +36,7 @@ varList['Names'] = {
                      "BtagDown", "MistagUp", "MistagDown", "FragUp", "FragDown", "PetersonFrag",
                      "semilepbrUp", "semilepbrDown"],
     'ttbarSysts'  : ["ttbarMEUp", "ttbarMEDown", "pdfUp", "pdfDown", "hdampUp", "hdampDown",
-                     "ueUp", "ueDown", "isrUp", "isrDown", "fsrUp", "fsrDown", "ColorReconnectionUp",
+                     "UEUp", "UEDown", "isrUp", "isrDown", "fsrUp", "fsrDown", "ColorReconnectionUp",
                      "ColorReconnectionDown"],
     'specialSysts': ["JERDown", "DSDown"],
     'colorSysts'  : ["GluonMoveCRTuneerdON", "PowhegerdON", "QCDbasedCRTuneerdON", "GluonMoveCRTune"],

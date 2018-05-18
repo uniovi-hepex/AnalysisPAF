@@ -97,8 +97,8 @@ for binDn,binUp in zip(binning, binning[1:]):
     #p.AddSample("TTbar_Powheg",                 "ttbar", ROOT.itSys, 1, "pdfDown");
     p.AddSample("TTbar_Powheg_hdampUp",         "ttbar", ROOT.itSys, 1, "hdampUp");
     p.AddSample("TTbar_Powheg_hdampDown",       "ttbar", ROOT.itSys, 1, "hdampDown");
-    p.AddSample("TTbar_Powheg_ueUp",            "ttbar", ROOT.itSys, 1, "ueUp");
-    p.AddSample("TTbar_Powheg_ueDown",          "ttbar", ROOT.itSys, 1, "ueDown");
+    p.AddSample("TTbar_Powheg_ueUp",            "ttbar", ROOT.itSys, 1, "UEUp");
+    p.AddSample("TTbar_Powheg_ueDown",          "ttbar", ROOT.itSys, 1, "UEDown");
     p.AddSample("TTbar_Powheg_isrUp",           "ttbar", ROOT.itSys, 1, "isrUp");
     p.AddSample("TTbar_Powheg_isrDown",         "ttbar", ROOT.itSys, 1, "isrDown");
     p.AddSample("TTbar_Powheg_fsrUp",           "ttbar", ROOT.itSys, 1, "fsrUp");
