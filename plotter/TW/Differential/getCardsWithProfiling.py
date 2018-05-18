@@ -27,7 +27,7 @@ if (len(sys.argv) > 2):
 else:
     print "> Default choice of variable and minitrees\n"
     varName     = 'LeadingLepEta'
-    pathToTree  = '/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/19_04_2018/'
+    pathToTree  = "../../../TW_temp/"
 
 
 ROOT.gROOT.SetBatch(True)

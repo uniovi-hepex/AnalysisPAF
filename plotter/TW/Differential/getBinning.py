@@ -27,7 +27,7 @@ if (len(sys.argv) > 1):
 else:
     print "> Default choice of variable and minitrees\n"
     varName     = 'LeadingJetPt'
-    minipath    = '/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/19_04_2018/'
+    minipath    = "../../../TW_temp/"
 
 
 tf    = ROOT.TFile(minipath + 'Tree_TW.root')
