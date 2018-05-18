@@ -23,7 +23,7 @@ if [ "$1" == "p" ]; then
 
   echo " "
   echo "Done!"
-  exit
+  return
 elif [ "$1" != "" ]; then
   d=$1
 else

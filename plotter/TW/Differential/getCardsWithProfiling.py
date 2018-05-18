@@ -20,9 +20,12 @@ if (len(sys.argv) > 2):
     varName     = sys.argv[2]
     print "> Chosen variable:", varName, "\n"
     if (len(sys.argv) > 3):
-      pathToTree    = storagepath + sys.argv[3] + "/"
+        if sys.argv[2] == 'last':
+            pathToTree    = varList.GetLastFolder(storagepath)
+        else:
+            pathToTree    = storagepath + sys.argv[3] + "/"
     else:
-      pathToTree    = varList.GetLastFolder(storagepath)
+        pathToTree  = "../../../TW_temp/"
     print "> Minitrees will be read from:", pathToTree, "\n"
 else:
     print "> Default choice of variable and minitrees\n"
@@ -231,7 +234,7 @@ def getCardsSyst(task):
     outCarta.write(out)
 
 
-def getCardsPdf(task): 
+def getCardsPdf(task):
 
     binDn, binUp, indx, asimov, syst = task
 
@@ -239,7 +242,6 @@ def getCardsPdf(task):
     p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
     p.SetLimitFolder("temp/");
     p.SetPathSignal(pathToTree);
-
     
     p.AddSample("WZ",                           "VVttV_%d"%indx, ROOT.itBkg, 390);
     p.AddSample("WW",                           "VVttV_%d"%indx, ROOT.itBkg);
@@ -261,8 +263,6 @@ def getCardsPdf(task):
     p.AddSymmetricHisto("tW_%d"%indx,  "JERUp");
 
     p.AddSystematic("JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig")
-
-
 
     pdf = ROOT.PDFToPy(pathToTree, "TTbar_Powheg", NameOfTree, ROOT.TString('(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && T%s >= %4.2f  && T%s < %4.2f )'%(varName, binDn, varName, binUp)), ROOT.TString('ElMu'), ROOT.TString('theBDt_bin%d( TBDT )'%indx), varList.nBinsInBDT,ROOT.Double(0.5), ROOT.Double(varList.nBinsInBDT+0.5))
 
@@ -322,7 +322,22 @@ def getCardsPdf(task):
         hData.SetColor(ROOT.kBlack)
         p.AddToHistos(hData)
 
+    p.doUncInLegend = True;
+    p.SetRatioMin( 0.6 );
+    p.SetRatioMax( 1.4 );
+    
+    p.SetCMSlabel("CMS");
+    p.SetCMSmodeLabel("Preliminary");
+    p.SetLegendPosition(0.7, 0.45, 0.93, 0.92);
+    p.SetPlotFolder("results/Cardplots/");
+    p.doYieldsInLeg = False;
+    p.doSetLogy     = False;
+    #p.doData        = False;
+    p.doSignal      = False;
+    
     p.NoShowVarName = True;
+    p.SetOutputName("forCards_" + varName + '_' + syst + '_%d'%indx);
+    p.DrawStack();
     p.SetOutputName("forCards_" + varName + '_' + syst + '_%d'%indx);
     p.SaveHistograms();
     del p
@@ -336,7 +351,6 @@ def getCardsPdf(task):
     card.SetNormUnc("ttbar_%d"%indx   , 1.06);
     card.SetLumiUnc(1.025)
     card.PrintDatacard("temp/datacard_" + varName + '_' + syst + '_%d'%indx);
-  
     del card
 
     # All this crap so i dont have to tamper with the DataCard.C
@@ -357,26 +371,26 @@ if __name__ == '__main__':
     print "> Beginning to produce histograms", "\n"
     tasks   = []
     asimov  = True
+    print '> Creating nominal rootfiles with histograms and datacards'
     for binDn,binUp in zip(binning, binning[1:]):
         indx = indx+1
         tasks.append( (binDn, binUp, indx, asimov) )
 
     pool    = Pool(nCores)
-    print '> Creating nominal rootfiles with histograms and datacards'
     pool.map(getCardsNominal,tasks)
     pool.close()
     pool.join()
     del pool
     
+    print '> Creating rootfiles with histograms and datacards for all systematics'
     tasksSyst = []
     indx    = 0
     for binDn,binUp in zip(binning, binning[1:]):
         indx = indx+1
         for syst in varList.systMap:
-            if 'pdf' or 'ME' in syst: continue # these boys are handled differently
+            if 'pdf' in syst or 'ME' in syst: continue # these boys are handled differently
             tasksSyst.append( (binDn, binUp, indx, asimov, syst) )
     
-    print '> Creating rootfiles with histograms and datacards for all systematics'
     pool    = Pool(nCores)
     pool.map(getCardsSyst, tasksSyst)
     pool.close()
@@ -391,7 +405,10 @@ if __name__ == '__main__':
         tasksPdf.append( (binDn, binUp, indx, asimov, 'pdfDown') )
         tasksPdf.append( (binDn, binUp, indx, asimov, 'MEDown') )
 
+    pool    = Pool(nCores)
     pool.map(getCardsPdf, tasksPdf)
+    pool.close()
+    pool.join()
 
 
     print "> Done!", "\n"

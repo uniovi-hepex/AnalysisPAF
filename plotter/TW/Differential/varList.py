@@ -445,7 +445,6 @@ systMap = {
     #                 'TbarW'        : 'TbarW',
     #                 'TTbar_Powheg' : 'TTbar_Powheg'
     #                 },
-
     }
 
 # systWeight = {
