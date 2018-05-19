@@ -14,6 +14,8 @@ storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
 minipath    = ""
 printthings = 1
 
+print '> Number of bins of the BDT distribution:', nq
+
 if (len(sys.argv) > 1):
     varName     = sys.argv[1]
     if (len(sys.argv) > 2):

@@ -243,6 +243,12 @@ def getCardsPdf(task):
     p.SetLimitFolder("temp/");
     p.SetPathSignal(pathToTree);
     
+    p.AddSample("TW",                           "tW_%d"%indx,    ROOT.itBkg, ROOT.TColor.GetColor("#ffcc33"))
+    p.AddSample("TbarW",                        "tW_%d"%indx,    ROOT.itBkg);
+    
+    p.AddSample("TTbar_PowhegSemi",             "Fakes_%d"%indx, ROOT.itBkg, 413)
+    p.AddSample("WJetsToLNu_MLM",               "Fakes_%d"%indx, ROOT.itBkg)
+    
     p.AddSample("WZ",                           "VVttV_%d"%indx, ROOT.itBkg, 390);
     p.AddSample("WW",                           "VVttV_%d"%indx, ROOT.itBkg);
     p.AddSample("ZZ",                           "VVttV_%d"%indx, ROOT.itBkg);
@@ -253,10 +259,6 @@ def getCardsPdf(task):
 
     p.AddSample("DYJetsToLL_M10to50_aMCatNLO",  "DY_%d"%indx,    ROOT.itBkg, 852)
     p.AddSample("DYJetsToLL_M50_aMCatNLO",      "DY_%d"%indx,    ROOT.itBkg);
-    p.AddSample("TW",                           "tW_%d"%indx,    ROOT.itBkg, 2)
-    p.AddSample("TbarW",                        "tW_%d"%indx,    ROOT.itBkg);
-    p.AddSample("TTbar_PowhegSemi",             "Fakes_%d"%indx, ROOT.itBkg, 413)
-    p.AddSample("WJetsToLNu_MLM",               "Fakes_%d"%indx, ROOT.itBkg)
 
     p.AddSample("TW",   "tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
     p.AddSample("TbarW","tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
