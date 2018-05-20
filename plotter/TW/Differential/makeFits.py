@@ -1,9 +1,11 @@
 import ROOT  as r
-import os,sys
+import os, sys
 import varList, tdrstyle
 from array import array
 from multiprocessing import Pool
+from warnings import warn, simplefilter
 
+simplefilter("always", UserWarning)
 r.gROOT.SetBatch(True)
 print "===== Fitting procedure with syst. profiling\n"
 
@@ -63,11 +65,22 @@ def makeFit(task):
     # Ahora recogemos la virutilla
     tfile     = r.TFile.Open('temp/{var}_{sys}/fitdiagnostics/fitDiagnostics{var}_{sys}.root'.format(var=varName,sys=syst))
     tfile2    = r.TFile.Open('higgsCombine{var}_{sys}.FitDiagnostics.mH120.root'.format(var=varName,sys=syst))
+    fitsb     = tfile.Get('tree_fit_sb')
+    fitsb.GetEntry(0)
+    fitstatus = fitsb.fit_status
+    
+    if fitstatus == -1:
+        raise RuntimeError('Fit of variable {var} with syst. {sys} has not converged.'.format(var = varName, sys = syst))
+    elif fitstatus != 0:
+        warn('Fit of variable {var} with syst. {sys} has a nonzero fit status value.'.format(var = varName, sys = syst), UserWarning)
+    print '\n> Fit status value:', fitstatus, '\n'
+    
     fitResult = tfile.Get('fit_s')
+    fitResult.Print()
     covar     = fitResult.correlationHist()
 
     # Tambien necesitamos el workspace
-    w=tfile2.Get('w')
+    w       = tfile2.Get('w')
     poiList = r.RooArgList('poiList')
     for i in range(1,len(binning)):
         var = w.var('r_tW_%d'%i)
@@ -75,7 +88,7 @@ def makeFit(task):
     cov = fitResult.reducedCovarianceMatrix(poiList)
 
     results = {}
-    count = 0 
+    count   = 0
     for var in fitResult.floatParsFinal():
         if count == fitResult.floatParsFinal().getSize()-1: break
         count = count + 1
@@ -134,32 +147,28 @@ def makeFit(task):
             cardx.Close()
             cardy.Close()
 
-    outFile = r.TFile.Open('temp/fitOutput_%s.root'%varName,'recreate' if syst == '' else 'update')
-    outHisto.Write()
-    errors.Write()
-    hCov.Write()
-    outFile.Close()
     print '\n> Syst.', syst, 'of the variable', varName, 'fitted!\n'
-
-
-
-# el fit nominal tiene que ir primero y por separado SIEMPRE (porque es el que crea el file de output)
-makeFit((varName,''))
+    return [outHisto, errors, hCov]
 
 
 tasks = []
+tasks.append((varName,''))
 from varList import systMap
 for sys in systMap:
     tasks.append( (varName, sys) )
 
-#pool = Pool(nCores)
-pool = Pool(1)
-# thing in paralel wont work because its trying to modify many
-# pool should deliver the histograms and they should be stored afterwards
-pool.map(makeFit, tasks)
+pool = Pool(nCores)
+finalresults = pool.map(makeFit, tasks)
 pool.close()
 pool.join()
 
+print '> Saving fit results...'
+outFile = r.TFile.Open('temp/fitOutput_%s.root'%varName,'recreate')
+for el in finalresults:
+    for subel in el:
+        subel.Write()
+
+outFile.Close()
 print '> Fitting procedure for variable', varName, 'succesfully completed'
 
 # outHisto.SetMarkerStyle(r.kFullCircle)
