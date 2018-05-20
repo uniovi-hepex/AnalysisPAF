@@ -110,12 +110,12 @@ def getCardsNominal(task):
     
     for i in range(1, varList.nBinsInBDT + 1):
         if (p.GetHisto("DY_%d"%indx).GetBinContent(i) < 0):
-            p.GetHisto("DY_%d"%indx).SetBinContent(i, 0.)
+            p.GetHisto("DY_%d"%indx).SetBinContent(i, 1e-4)
         for sys in (systlist + ',JER').split(','):
             if (p.GetHisto("DY_%d"%indx, sys + 'Up').GetBinContent(i) < 0):
-                p.GetHisto("DY_%d"%indx, sys + 'Up').SetBinContent(i, 0.)
+                p.GetHisto("DY_%d"%indx, sys + 'Up').SetBinContent(i, 1e-4)
             if (p.GetHisto("DY_%d"%indx, sys + 'Down').GetBinContent(i) < 0):
-                p.GetHisto("DY_%d"%indx, sys + 'Down').SetBinContent(i, 0.)
+                p.GetHisto("DY_%d"%indx, sys + 'Down').SetBinContent(i, 1e-4)
     
     p.GetHisto("DY_%d"%indx).ReCalcValues()
     for sys in (systlist + ',JER').split(','):
@@ -219,12 +219,12 @@ def getCardsSyst(task):
     
     for i in range(1, varList.nBinsInBDT + 1):
         if (p.GetHisto("DY_%d"%indx).GetBinContent(i) < 0):
-            p.GetHisto("DY_%d"%indx).SetBinContent(i, 0.)
+            p.GetHisto("DY_%d"%indx).SetBinContent(i, 1e-4)
         for sys in (systlist + ',JER').split(','):
             if (p.GetHisto("DY_%d"%indx, sys + 'Up').GetBinContent(i) < 0):
-                p.GetHisto("DY_%d"%indx, sys + 'Up').SetBinContent(i, 0.)
+                p.GetHisto("DY_%d"%indx, sys + 'Up').SetBinContent(i, 1e-4)
             if (p.GetHisto("DY_%d"%indx, sys + 'Down').GetBinContent(i) < 0):
-                p.GetHisto("DY_%d"%indx, sys + 'Down').SetBinContent(i, 0.)
+                p.GetHisto("DY_%d"%indx, sys + 'Down').SetBinContent(i, 1e-4)
     
     p.GetHisto("DY_%d"%indx).ReCalcValues()
     for sys in (systlist + ',JER').split(','):
@@ -367,12 +367,12 @@ def getCardsPdf(task):
     
     for i in range(1, varList.nBinsInBDT + 1):
         if (p.GetHisto("DY_%d"%indx).GetBinContent(i) < 0):
-            p.GetHisto("DY_%d"%indx).SetBinContent(i, 0.)
+            p.GetHisto("DY_%d"%indx).SetBinContent(i, 1e-4)
         for sys in (systlist + ',JER').split(','):
             if (p.GetHisto("DY_%d"%indx, sys + 'Up').GetBinContent(i) < 0):
-                p.GetHisto("DY_%d"%indx, sys + 'Up').SetBinContent(i, 0.)
+                p.GetHisto("DY_%d"%indx, sys + 'Up').SetBinContent(i, 1e-4)
             if (p.GetHisto("DY_%d"%indx, sys + 'Down').GetBinContent(i) < 0):
-                p.GetHisto("DY_%d"%indx, sys + 'Down').SetBinContent(i, 0.)
+                p.GetHisto("DY_%d"%indx, sys + 'Down').SetBinContent(i, 1e-4)
     
     p.GetHisto("DY_%d"%indx).ReCalcValues()
     for sys in (systlist + ',JER').split(','):

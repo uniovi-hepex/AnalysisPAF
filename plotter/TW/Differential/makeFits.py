@@ -70,10 +70,9 @@ def makeFit(task):
     fitstatus = fitsb.fit_status
     
     if fitstatus == -1:
-        raise RuntimeError('Fit of variable {var} with syst. {sys} has not converged.'.format(var = varName, sys = syst))
+        raise RuntimeError('Fit of variable {var} with syst. {sys} has not converged (fit status value: {fitv})'.format(var = varName, sys = syst, fitv = fitstatus))
     elif fitstatus != 0:
-        warn('Fit of variable {var} with syst. {sys} has a nonzero fit status value.'.format(var = varName, sys = syst), UserWarning)
-    print '\n> Fit status value:', fitstatus, '\n'
+        warn('Fit of variable {var} with syst. {sys} has a nonzero fit status value: {fitv}'.format(var = varName, sys = syst, fitv = fitstatus), UserWarning)
     
     fitResult = tfile.Get('fit_s')
     fitResult.Print()
