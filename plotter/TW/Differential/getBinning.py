@@ -32,7 +32,8 @@ else:
     minipath    = "../../../TW_temp/"
 
 
-tf    = ROOT.TFile(minipath + 'Tree_TW.root')
+tf    = ROOT.TFile(minipath + 'Tree_TW.root')             # Uncomment this for equal-tW BDT distribution shape
+#tf    = ROOT.TFile(minipath + 'Tree_TTbar_Powheg.root')  # Uncomment this for equal-ttbar BDT distribution shape
 tree  = tf.Mini1j1t
 
 Base  ='''
