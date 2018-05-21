@@ -36,7 +36,7 @@ varList['Names'] = {
                      "BtagDown", "MistagUp", "MistagDown", "FragUp", "FragDown", "PetersonFrag",
                      "semilepbrUp", "semilepbrDown"],
     'ttbarSysts'  : ["ttbarMEUp", "ttbarMEDown", "pdfUp", "pdfDown", "hdampUp", "hdampDown",
-                     "ueUp", "ueDown", "isrUp", "isrDown", "fsrUp", "fsrDown", "ColorReconnectionUp",
+                     "UEUp", "UEDown", "isrUp", "isrDown", "fsrUp", "fsrDown", "ColorReconnectionUp",
                      "ColorReconnectionDown"],
     'specialSysts': ["JERDown", "DSDown"],
     'colorSysts'  : ["GluonMoveCRTuneerdON", "PowhegerdON", "QCDbasedCRTuneerdON", "GluonMoveCRTune"],
@@ -98,7 +98,7 @@ varList['M_LeadingB'] = {
     'xaxis'       : '#ell(1), j(1) m [GeV]',
     'yaxis'       : 'Events',
     'genbinning'  : [0, 80, 170, 300, 1000],
-    'recobinning' : [0, 45, 75, 105, 140, 190, 230, 300, 1000],
+    'recobinning' : [0., 45., 75., 105., 140., 190., 230., 300., 1000.],
     'var'         : 'TM_LeadingB',
     'var_response': 'MLeadingB',
 }
@@ -124,7 +124,7 @@ varList['MET'] = {
     'xaxis'       : '#slash{E}_{T} [GeV]',
     'yaxis'       : 'Events',
     'genbinning'  : [0, 50, 140, 1000],
-    'recobinning' : [0, 20, 35, 50, 70, 140, 1000],
+    'recobinning' : [0., 20., 35., 50., 70., 140., 1000.],
     'var'         : 'TMET',
     'var_response': 'MET',
 }
@@ -150,7 +150,7 @@ varList['LeadingJetPt'] = {
     'xaxis'       : 'Leading jet p_{T} [GeV]',
     'yaxis'       : 'Events',
     'genbinning'  : [0, 75, 200, 500],
-    'recobinning' : [0, 50, 75, 110, 150, 200, 500],
+    'recobinning' : [0., 50., 75., 110., 150., 200., 500.],
     'var'         : 'TLeadingJetPt',
     'var_response': 'LeadingJetPt',
 }
@@ -167,7 +167,7 @@ varList['LeadingJetEta'] = {
     'xaxis'       : 'Leading jet #eta',
     'yaxis'       : 'Events',
     'genbinning'  : [-2.4, -1.2, 0, 1.2, 2.4],
-    'recobinning' : [-2.4, -1.6, -1.25, -.5, 0, .5, 1.25, 1.6, 2.4],
+    'recobinning' : [-2.4, -1.6, -1.25, -.5, 0., .5, 1.25, 1.6, 2.4],
     'var'         : 'TLeadingJetEta',
     'var_response': 'LeadingJetEta',
 }
@@ -197,7 +197,7 @@ varList['LeadingLepE'] = {
     'xaxis'       : 'Leading lep energy [GeV]',
     'yaxis'       : 'Events',
     'genbinning'  : [0, 70, 120, 250, 1000],
-    'recobinning' : [0, 40, 60, 80, 100, 120, 150, 250, 1000],
+    'recobinning' : [0., 40., 60., 80., 100., 120., 150., 250., 1000.],
     'var'         : 'TLeadingLepE',
     'var_response': 'LeadingLepE',
 }
@@ -210,7 +210,7 @@ varList['LeadingLepPt'] = {
     'xaxis'       : 'Leading lep p_{T} [GeV]',
     'yaxis'       : 'Events',
     'genbinning'  : [0, 50, 90, 160, 1000],
-    'recobinning' : [0, 50, 65, 75, 90, 110, 130, 160, 1000],
+    'recobinning' : [0., 50., 65., 75., 90., 110., 130., 160., 1000.],
     'var'         : 'TLeadingLepPt',
     'var_response': 'LeadingLepPt',
 }
@@ -258,7 +258,7 @@ varList['SubLeadingLepE'] = {
     'xaxis'       : 'Subleading lep energy [GeV]',
     'yaxis'       : 'Events',
     'genbinning'  : [0, 50, 100, 175, 1000],
-    'recobinning' : [0, 30, 50, 70, 90, 115, 140, 175, 1000],
+    'recobinning' : [0., 30., 50., 70., 90., 115., 140., 175., 1000.],
     'var'         : 'TSubLeadingLepE',
     'var_response': 'SubLeadingLepE',
 }
@@ -271,7 +271,7 @@ varList['SubLeadingLepPt'] = {
     'xaxis'       : 'Subleading lep p_{T} [GeV]',
     'yaxis'       : 'Events',
     'genbinning'  : [0, 30, 60, 100, 1000],
-    'recobinning' : [0, 30, 40, 50, 58, 68, 78, 100, 1000],
+    'recobinning' : [0., 30., 40., 50., 58., 68., 78., 100., 1000.],
     'var'         : 'TSubLeadingLepPt',
     'var_response': 'SubLeadingLepPt',
 }
@@ -310,7 +310,7 @@ varList['DilepPt'] = {
     'xaxis'       : '#ell(1), #ell(2) p_{T} [GeV]',
     'yaxis'       : 'Events',
     'genbinning'  : [0, 50, 100, 150, 500],
-    'recobinning' : [0, 40, 60, 80, 90, 110, 130, 150, 500],
+    'recobinning' : [0., 40., 60., 80., 90., 110., 130., 150., 500.],
     'var'         : 'TDilepPt',
     'var_response': 'DilepPt',
 }
@@ -323,7 +323,7 @@ varList['DilepJetPt'] = {
     'xaxis'       : '#ell(1) ,#ell(2), j(1) p_{T} [GeV]',
     'yaxis'       : 'Events',
     'genbinning'  : [0, 50, 90, 140, 500],
-    'recobinning' : [0, 20, 30, 50, 60, 90, 100, 140, 500],
+    'recobinning' : [0., 20., 30., 50., 60., 90., 100., 140., 500.],
     'var'         : 'TDilepJetPt',
     'var_response': 'DilepJetPt',
 }
@@ -336,7 +336,7 @@ varList['DilepMETJetPt'] = {
     'xaxis'       : '#ell(1) ,#ell(2), j(1), #slash{E}_{T} p_{T} [GeV]',
     'yaxis'       : 'Events',
     'genbinning'  : [0, 20, 40, 80, 500],
-    'recobinning' : [0, 20, 30, 40, 50, 60, 70, 80, 500],
+    'recobinning' : [0., 20., 30., 40., 50., 60., 70., 80., 500.],
     'var'         : 'TDilepMETJetPt',
     'var_response': 'DilepMETJetPt',
 }
@@ -349,7 +349,7 @@ varList['HTtot'] = {
     'xaxis'       : '#ell(1) ,#ell(2), j(1), #slash{E}_{T} p_{T} [GeV]',
     'yaxis'       : 'Events',
     'genbinning'  : [0, 200, 300, 450, 1000],
-    'recobinning' : [0, 150, 200, 250, 300, 350, 400, 450, 1000],
+    'recobinning' : [0., 150., 200., 250., 300., 350., 400., 450., 1000.],
     'var'         : 'THTtot',
     'var_response': 'HTtot',
 }
