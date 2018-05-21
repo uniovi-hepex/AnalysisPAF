@@ -58,7 +58,7 @@ uncList[0][1].Draw()
 if uncList[0][1].GetMaximum() < 0.5:
     uncList[0][1].GetYaxis().SetRangeUser(0, 0.5)
 else:
-    uncList[0][1].GetYaxis().SetRangeUser(0, 0.75)
+    uncList[0][1].GetYaxis().SetRangeUser(0, 0.9)
 for i in range(5):
     uncList[i][1].SetLineColor(colorMap[i])
     uncList[i][1].SetLineWidth( 2 )

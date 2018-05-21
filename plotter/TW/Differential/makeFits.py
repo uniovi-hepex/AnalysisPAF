@@ -115,6 +115,7 @@ def makeFit(task):
     for i in range( 1, len(binning)):
         #upVar = outHisto.GetBinContent(i) + results['r_tW_%d'%i][2]
         #dnVar = outHisto.GetBinContent(i) + results['r_tW_%d'%i][1]
+        #print 'Nominal:', results['r_tW_%d'%i][0]
         #print 'El 1', results['r_tW_%d'%i][1], 'El 2', results['r_tW_%d'%i][2]
         #errors.SetBinContent(i, ( upVar + dnVar ) / 2)
         #errors.SetBinError  (i, abs( upVar - dnVar) / 2)
