@@ -13,7 +13,7 @@ else:
     varName     = 'LeadingLepEta'
 
 print '> Plotting the nominal folded distribution with uncertainties for the variable', varName
-fitinfo     = r.TFile.Open('temp/fitOutput_%s.root'%varName, 'read')
+fitinfo     = r.TFile.Open('temp/{var}_/fitOutput_{var}.root'.format(var = varName), 'read')
 listofkeys  = fitinfo.GetListOfKeys()
 nominal     = r.TH1F()
 errors      = r.TH1F()

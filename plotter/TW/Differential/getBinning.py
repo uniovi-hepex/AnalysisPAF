@@ -79,12 +79,12 @@ Base = Base + '#endif'
 print "> Saving file"
 if not os.path.isdir('temp/{var}_'.format(var = varName)):
     os.system('mkdir -p temp/{var}_'.format(var = varName))
-output = open('./temp/{var}_'.format(var = varName) + varName + '.C', 'w')
+output = open('./temp/{var}_/'.format(var = varName) + varName + '.C', 'w')
 output.write(Base)
 output.close()
 
 print "> Doing sanity checks..."
-ROOT.gROOT.LoadMacro('./temp/{var}_'.format(var = varName) + varName + '.C+')
+ROOT.gROOT.LoadMacro('./temp/{var}_/'.format(var = varName) + varName + '.C+')
 
 for k in range(1, len(bins)):
     if not hasattr(ROOT, 'theBDt_bin%d'%k): print 'Something went wrong'
