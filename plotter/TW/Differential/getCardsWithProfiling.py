@@ -347,7 +347,7 @@ def getCardsPdf(task):
         p.AddSample("SingleElec",                   "Data",  ROOT.itData);
     else: 
         # get asimov from the nominal one
-        tfile = ROOT.TFile.Open("temp/{var}_/forCards_".format(var = varName) + varName + '_%d.root'%indx))
+        tfile = ROOT.TFile.Open("temp/{var}_/forCards_".format(var = varName) + varName + '_%d.root'%indx)
         hData = ROOT.Histo( tfile.Get('data_obs') ) 
         hData.SetProcess("Data")
         hData.SetTag("Data")
