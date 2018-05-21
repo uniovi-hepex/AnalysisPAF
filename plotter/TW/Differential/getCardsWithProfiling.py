@@ -41,7 +41,7 @@ ROOT.gROOT.LoadMacro('../../PlotToPy.C+')
 ROOT.gROOT.LoadMacro('../../Datacard.C+')
 ROOT.gROOT.LoadMacro('../../PDFunc.C+')
 
-ROOT.gROOT.LoadMacro('temp/' + varName + '.C+')
+ROOT.gROOT.LoadMacro('./temp/{var}_/'.format(var = varName) + varName + '.C+')
 print '> Succesfully loaded binning information from temp/' + varName + '.C', "\n"
 
 
@@ -50,7 +50,7 @@ def getCardsNominal(task):
 
     p = ROOT.PlotToPy(ROOT.TString('theBDt_bin%d( TBDT )'%indx), ROOT.TString('(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && T%s >= %4.2f  && T%s < %4.2f )'%(varName, binDn, varName, binUp)), ROOT.TString('ElMu'), varList.nBinsInBDT, ROOT.Double(0.5), ROOT.Double(varList.nBinsInBDT + 0.5), ROOT.TString(varName + '_%d'%indx), ROOT.TString('BDT disc. (bin %s)'%(str(indx))))
     p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
-    p.SetLimitFolder("temp/");
+    p.SetLimitFolder('./temp/{var}_/'.format(var = varName));
     p.SetPathSignal(pathToTree);
     
     p.AddSample("TW",                           "tW_%d"%indx,    ROOT.itBkg, ROOT.TColor.GetColor("#ffcc33"), systlist)
@@ -130,35 +130,37 @@ def getCardsNominal(task):
     del p
     
     card = ROOT.Datacard('tW_%d'%indx, 'ttbar_{idx},DY_{idx},VVttV_{idx},Fakes_{idx}'.format(idx=indx) , systlist + ', JER', "ElMu_%d"%indx)
-    card.SetRootFileName('temp/forCards_' + varName + '_%d'%indx)
+    card.SetRootFileName('./temp/{var}_/forCards_'.format(var = varName) + varName + '_%d'%indx)
     card.GetParamsFormFile()
     card.SetNormUnc("Fakes_%d"%indx, 1.50)
     card.SetNormUnc("DY_%d"%indx   , 1.50)
     card.SetNormUnc("VVttV_%d"%indx, 1.50);
     card.SetNormUnc("ttbar_%d"%indx, 1.06);
     card.SetLumiUnc(1.025)
-    card.PrintDatacard("temp/datacard_" + varName + '_%d'%indx);
+    card.PrintDatacard("temp/{var}_/datacard_".format(var = varName) + varName + '_%d'%indx);
     del card
 
     # All this crap so i dont have to tamper with the DataCard.C
     out = ''
-    datacarta = open('temp/datacard_' + varName + '_%d.txt'%indx,'r')
+    datacarta = open('temp/{var}_/datacard_'.format(var = varName) + varName + '_%d.txt'%indx,'r')
     for lin in datacarta.readlines():
         nuLine = lin
         if 'process' in nuLine: nuLine = nuLine.replace('-1', '-%d'%indx)
         if 'rate' in nuLine and '-' in nuLine: nuLine = nuLine.replace('-', '0')
         out = out + nuLine
     datacarta.close()
-    outCarta = open('temp/datacard_' + varName + '_%d.txt'%indx,'w')
+    outCarta = open('temp/{var}_/datacard_'.format(var = varName) + varName + '_%d.txt'%indx,'w')
     outCarta.write(out)
 
 
 def getCardsSyst(task):
     binDn, binUp, indx, asimov, syst = task
-
+    if not os.path.isdir('temp/{var}_{sys}'.format(var = varName, sys = syst)):
+        os.system('mkdir -p temp/{var}_{sys}'.format(var = varName, sys = syst))
+    
     p = ROOT.PlotToPy(ROOT.TString('theBDt_bin%d( TBDT )'%indx), ROOT.TString('(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && T%s >= %4.2f  && T%s < %4.2f )'%(varName, binDn, varName, binUp)), ROOT.TString('ElMu'), varList.nBinsInBDT, ROOT.Double(0.5), ROOT.Double(varList.nBinsInBDT+0.5), ROOT.TString(varName + '_%d'%indx), ROOT.TString(''))
     p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
-    p.SetLimitFolder("temp/");
+    p.SetLimitFolder("temp/{var}_{sys}/".format(var = varName, sys = syst));
     p.SetPathSignal(pathToTree);
     
     p.AddSample(varList.systMap[syst]["TW"],           "tW_%d"%indx,    ROOT.itBkg, ROOT.TColor.GetColor("#ffcc33"), systlist)
@@ -193,10 +195,10 @@ def getCardsSyst(task):
         p.AddSample("SingleMuon",                   "Data",  ROOT.itData);
         p.AddSample("SingleElec",                   "Data",  ROOT.itData);
     else: 
-        # get asimov from the nominal one
-        tfile = ROOT.TFile.Open("temp/forCards_" + varName + '_%d.root'%indx)
+        # get asimov from the nominal one"
+        tfile = ROOT.TFile.Open("temp/{var}_/forCards_".format(var = varName) + varName + '_%d.root'%indx)
         if not tfile:
-            raise RuntimeError("No nominal card in place")
+            raise RuntimeError('Nominal card rootfile for variable {var} has not been found while considering syst. {sys}'.format(var = varName, sys = syst))
         hData = ROOT.Histo( tfile.Get('data_obs') )
         hData.SetProcess("Data")
         hData.SetTag("Data")
@@ -239,36 +241,37 @@ def getCardsSyst(task):
     del p
     
     card = ROOT.Datacard('tW_%d'%indx, 'ttbar_{idx},DY_{idx},VVttV_{idx},Fakes_{idx}'.format(idx=indx) , systlist + ', JER', "ElMu_%d"%indx)
-    card.SetRootFileName('temp/forCards_' + varName  + '_' + syst  + '_%d'%indx)
+    card.SetRootFileName("temp/{var}_{sys}/forCards_".format(var = varName, sys = syst) + varName  + '_' + syst  + '_%d'%indx)
     card.GetParamsFormFile()
     card.SetNormUnc("Fakes_%d"%indx, 1.50)
     card.SetNormUnc("DY_%d"%indx   , 1.50)
     card.SetNormUnc("VVttV_%d"%indx, 1.50);
     card.SetNormUnc("ttbar_%d"%indx, 1.06);
     card.SetLumiUnc(1.025)
-    card.PrintDatacard("temp/datacard_" + varName + '_' + syst + '_%d'%indx);
+    card.PrintDatacard("temp/{var}_{sys}/datacard_".format(var = varName, sys = syst) + varName + '_' + syst + '_%d'%indx);
     del card
     
     # All this crap so i dont have to tamper with the DataCard.C
     out = ''
-    datacarta = open('temp/datacard_' + varName + '_' + syst +  '_%d.txt'%indx,'r')
+    datacarta = open('temp/{var}_{sys}/datacard_'.format(var = varName, sys = syst) + varName + '_' + syst +  '_%d.txt'%indx,'r')
     for lin in datacarta.readlines():
         nuLine = lin
         if 'process' in nuLine: nuLine = nuLine.replace('-1', '-%d'%indx)
         if 'rate' in nuLine and '-' in nuLine: nuLine = nuLine.replace('-', '0')
         out = out + nuLine
     datacarta.close()
-    outCarta = open('temp/datacard_' + varName + '_' + syst + '_%d.txt'%indx,'w')
+    outCarta = open('temp/{var}_{sys}/datacard_'.format(var = varName, sys = syst) + varName + '_' + syst + '_%d.txt'%indx,'w')
     outCarta.write(out)
 
 
 def getCardsPdf(task):
-
     binDn, binUp, indx, asimov, syst = task
+    if not os.path.isdir('temp/{var}_{sys}'.format(var = varName, sys = syst)):
+        os.system('mkdir -p temp/{var}_{sys}'.format(var = varName, sys = syst))
 
     p = ROOT.PlotToPy(ROOT.TString('theBDt_bin%d( TBDT )'%indx), ROOT.TString('(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && T%s >= %4.2f  && T%s < %4.2f )'%(varName, binDn, varName, binUp)), ROOT.TString('ElMu'), varList.nBinsInBDT, ROOT.Double(0.5), ROOT.Double(varList.nBinsInBDT+0.5), ROOT.TString(varName + '_%d'%indx), ROOT.TString(''))
     p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
-    p.SetLimitFolder("temp/");
+    p.SetLimitFolder("temp/{var}_{sys}/".format(var = varName, sys = syst));
     p.SetPathSignal(pathToTree);
     
     p.AddSample("TW",                           "tW_%d"%indx,    ROOT.itBkg, ROOT.TColor.GetColor("#ffcc33"), systlist)
@@ -311,7 +314,9 @@ def getCardsPdf(task):
 
     # now get systematic variations from nominal
     for s in (systlist + ',JER').split(','):
-        tfile = ROOT.TFile.Open("temp/forCards_" + varName + '_%d.root'%indx)
+        tfile = ROOT.TFile.Open("temp/{var}_/forCards_".format(var = varName) + varName + '_%d.root'%indx)
+        if not tfile: 
+            raise RuntimeError('Nominal card rootfile for variable {var} has not been found while considering syst. {sys}'.format(var = varName, sys = syst))
         nom   = tfile.Get('ttbar_%d'%indx)
         nomUp = tfile.Get('ttbar_%d_%sUp'%(indx,s))
         nomDn = tfile.Get('ttbar_%d_%sDown'%(indx,s))
@@ -342,9 +347,7 @@ def getCardsPdf(task):
         p.AddSample("SingleElec",                   "Data",  ROOT.itData);
     else: 
         # get asimov from the nominal one
-        tfile = ROOT.TFile.Open("temp/forCards_" + varName + '_%d.root'%indx)
-        if not tfile: 
-            raise RuntimeError("No nominal card in place")
+        tfile = ROOT.TFile.Open("temp/{var}_/forCards_".format(var = varName) + varName + '_%d.root'%indx))
         hData = ROOT.Histo( tfile.Get('data_obs') ) 
         hData.SetProcess("Data")
         hData.SetTag("Data")
@@ -387,25 +390,25 @@ def getCardsPdf(task):
     del p
 
     card = ROOT.Datacard('tW_%d'%indx, 'ttbar_{idx},DY_{idx},VVttV_{idx},Fakes_{idx}'.format(idx=indx) , systlist + ', JER', "ElMu_%d"%indx)
-    card.SetRootFileName('temp/forCards_' + varName  + '_' + syst  + '_%d'%indx)
+    card.SetRootFileName('temp/{var}_{sys}/forCards_'.format(var = varName, sys = syst) + varName  + '_' + syst  + '_%d'%indx)
     card.GetParamsFormFile()
     card.SetNormUnc("Fakes_%d"%indx   , 1.50)
     card.SetNormUnc("DY_%d"%indx      , 1.50)
     card.SetNormUnc("VVttV_%d"%indx   , 1.50);
     card.SetNormUnc("ttbar_%d"%indx   , 1.06);
     card.SetLumiUnc(1.025)
-    card.PrintDatacard("temp/datacard_" + varName + '_' + syst + '_%d'%indx);
+    card.PrintDatacard("temp/{var}_{sys}/datacard_".format(var = varName, sys = syst) + varName + '_' + syst + '_%d'%indx);
     del card
 
     # All this crap so i dont have to tamper with the DataCard.C
     out = ''
-    datacarta = open('temp/datacard_' + varName + '_' + syst +  '_%d.txt'%indx,'r')
+    datacarta = open('temp/{var}_{sys}/datacard_'.format(var = varName, sys = syst) + varName + '_' + syst +  '_%d.txt'%indx,'r')
     for lin in datacarta.readlines():
         nuLine = lin
         if 'process' in nuLine: nuLine = nuLine.replace('-1', '-%d'%indx)
         out = out + nuLine
     datacarta.close()
-    outCarta = open('temp/datacard_' + varName + '_' + syst + '_%d.txt'%indx,'w')
+    outCarta = open('temp/{var}_{sys}/datacard_'.format(var = varName, sys = syst) + varName + '_' + syst + '_%d.txt'%indx,'w')
     outCarta.write(out)
 
 

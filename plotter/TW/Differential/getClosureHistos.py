@@ -45,7 +45,9 @@ print "> Beginning to produce the histogram", "\n"
 
 p = r.PlotToPyC(r.TString('TGen' + varName), r.TString('1/TWeight*TWeight_normal*(Tpassgen == 1)'), r.TString('All'), len(binning)-1, binning, r.TString('TGen' + varName), r.TString(''))
 p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
-p.SetLimitFolder("temp/");
+if not os.path.isdir('temp/{var}_'.format(var = varName)):
+    os.system('mkdir -p temp/{var}_'.format(var = varName))
+p.SetLimitFolder('temp/{var}_/'.format(var = varName));
 p.SetPathSignal(pathToTree);
 p.verbose = True
 
