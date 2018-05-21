@@ -12,15 +12,19 @@ else:
     print "> Default choice of variable\n"
     varName     = 'LeadingLepEta'
 
-print '> Plotting the nominal folded distribution with uncertainties for the variable', varName
+print '\n> Plotting the nominal folded distribution with uncertainties for the variable', varName, '\n'
 fitinfo     = r.TFile.Open('temp/{var}_/fitOutput_{var}.root'.format(var = varName), 'read')
+if not fitinfo:
+    raise RuntimeError('Post-fit info. of variable {var} has not been found. This might have happened because the fit did not converge: check fit procedure logs.'.format(var = varName))
+
 listofkeys  = fitinfo.GetListOfKeys()
-nominal     = r.TH1F()
-errors      = r.TH1F()
 if 'hFitResult_%s_'%varName not in listofkeys:
     raise RuntimeError('Nominal histogram was not found.')
 if 'hFitResult_forPlotting_%s_'%varName not in listofkeys:
     raise RuntimeError('Fit uncertainties from nominal values were not found.')
+
+nominal     = r.TH1F()
+errors      = r.TH1F()
 nominal     = copy.deepcopy(fitinfo.Get('hFitResult_%s_'%varName))
 errors      = copy.deepcopy(fitinfo.Get('hFitResult_forPlotting_%s_'%varName))
 
