@@ -3,8 +3,20 @@ import os
 # Library of all the variables so everything is centralized and theres no confusions
 # TODO: port the card producer to python so it can also use this
 
-Lumi        = 35.9
-nBinsInBDT  = 10
+Lumi            = 35.9
+nBinsInBDT      = 10
+
+sigma_ttbar     = 831.76
+sigma_dilep     = 88.28769753
+
+nUEUp_ttbar     = 58953660
+nUEUp_dilep     = 9907537
+nUEDown_ttbar   = 58338240
+nUEDown_dilep   = 9691700
+nhDampUp_ttbar  = 58858606
+nhDampUp_dilep  = 9672473
+nhDampDown_ttbar= 58163976
+nhDampDown_dilep= 9634312
 
 def GetLastFolder(stpth):
     savefolders   = next(os.walk(stpth))[1]
@@ -166,9 +178,11 @@ varList['ResponseLeadingJetPt'] = {
 varList['LeadingJetEta'] = {
     'xaxis'       : 'Leading jet #eta',
     'yaxis'       : 'Events',
-    'genbinning'  : [-2.4, -1.2, 0, 1.2, 2.4],
-    'recobinning' : [-2.4, -1.6, -1.25, -.5, 0., .5, 1.25, 1.6, 2.4],
-    'var'         : 'TLeadingJetEta',
+    'genbinning'  : [0., 0.6, 1.2, 1.8, 2.4],
+    #'genbinning'  : [-2.4, -1.2, 0, 1.2, 2.4],
+    'recobinning' : [0., 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4],
+    #'recobinning' : [-2.4, -1.6, -1.25, -.5, 0., .5, 1.25, 1.6, 2.4],
+    'var'         : 'abs(TLeadingJetEta)',
     'var_response': 'LeadingJetEta',
 }
 varList['LeadingJetEtauncertainties'] = {
@@ -239,10 +253,11 @@ varList['LeadingLepPhiuncertainties'] = {
 varList['LeadingLepEta'] = {
     'xaxis'       : 'Leading lep #eta',
     'yaxis'       : 'Events',
-    'genbinning'  : [-2.4, -1.2, 0, 1.2, 2.4],
-    #'recobinning' : [-2.4, -2.1, -1.2, -.5, 0, .4, 1.25, 1.75, 2.4],
-    'recobinning' : [-2.4, -1.75, -1.25, -.5, 0, .5, 1.25, 1.75, 2.4],
-    'var'         : 'TLeadingLepEta',
+    'genbinning'  : [0., 0.6, 1.2, 1.8, 2.4],
+    #'genbinning'  : [-2.4, -1.2, 0, 1.2, 2.4],
+    'recobinning' : [0., 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4],
+    #'recobinning' : [-2.4, -1.6, -1.25, -.5, 0., .5, 1.25, 1.6, 2.4],
+    'var'         : 'abs(TLeadingLepEta)',
     'var_response': 'LeadingLepEta',
 }
 varList['LeadingLepEtauncertainties'] = {
@@ -296,9 +311,11 @@ varList['SubLeadingLepPhiuncertainties'] = {
 varList['SubLeadingLepEta'] = {
     'xaxis'       : 'Subleading lep #eta',
     'yaxis'       : 'Events',
-    'genbinning'  : [-2.4, -1.2, 0, 1.2, 2.4],
-    'recobinning' : [-2.4, -1.75, -1.25, -.5, 0, .5, 1.25, 1.75, 2.4],
-    'var'         : 'TSubLeadingLepEta',
+    'genbinning'  : [0., 0.6, 1.2, 1.8, 2.4],
+    #'genbinning'  : [-2.4, -1.2, 0, 1.2, 2.4],
+    'recobinning' : [0., 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4],
+    #'recobinning' : [-2.4, -1.6, -1.25, -.5, 0., .5, 1.25, 1.6, 2.4],
+    'var'         : 'abs(TSubLeadingLepEta)',
     'var_response': 'SubLeadingLepEta',
 }
 varList['SubLeadingLepEtauncertainties'] = {
