@@ -366,7 +366,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   }
 
   // Create PAF Project whith that environment
-  myProject = new PAFProject(pafmode); 
+  myProject = new PAFProject(pafmode);
   
   // Add TMVA library for TMVA Analysis
   if(sel == ittDMSelec || sel == iTWSelec){
@@ -398,7 +398,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   myProject->SetInputParam("sampleName",        sampleName       );
   myProject->SetInputParam("IsData",            G_IsData         );
   myProject->SetInputParam("weight",            G_Event_Weight   );
-  myProject->SetInputParam("IsMCatNLO",         G_IsMCatNLO      );  
+  myProject->SetInputParam("IsMCatNLO",         G_IsMCatNLO      );
   myProject->SetInputParam("iSelection",        (int) sel        );
   myProject->SetInputParam("WorkingDir",        WorkingDir       );
   myProject->SetInputParam("pathToHeppyTrees",  pathToFiles);
