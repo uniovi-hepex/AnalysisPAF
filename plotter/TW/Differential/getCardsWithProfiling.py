@@ -1,5 +1,5 @@
 import ROOT
-import varList
+from varList import *
 import sys, os
 from multiprocessing import Pool
 print "===== BDT's histograms procedure with systs. profiling\n"
@@ -21,7 +21,7 @@ if (len(sys.argv) > 2):
     print "> Chosen variable:", varName, "\n"
     if (len(sys.argv) > 3):
         if sys.argv[2] == 'last':
-            pathToTree    = varList.GetLastFolder(storagepath)
+            pathToTree    = GetLastFolder(storagepath)
         else:
             pathToTree    = storagepath + sys.argv[3] + "/"
     else:
@@ -48,7 +48,7 @@ print '> Succesfully loaded binning information from temp/' + varName + '.C', "\
 def getCardsNominal(task):
     binDn, binUp, indx, asimov = task
 
-    p = ROOT.PlotToPy(ROOT.TString('theBDt_bin%d( TBDT )'%indx), ROOT.TString('(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && T%s >= %4.2f  && T%s < %4.2f )'%(varName, binDn, varName, binUp)), ROOT.TString('ElMu'), varList.nBinsInBDT, ROOT.Double(0.5), ROOT.Double(varList.nBinsInBDT + 0.5), ROOT.TString(varName + '_%d'%indx), ROOT.TString('BDT disc. (bin %s)'%(str(indx))))
+    p = ROOT.PlotToPy(ROOT.TString('theBDt_bin%d( TBDT )'%indx), ROOT.TString('(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && %s >= %4.2f  && %s < %4.2f )'%(varList[varName]['var'], binDn, varList[varName]['var'], binUp)), ROOT.TString('ElMu'), nBinsInBDT, ROOT.Double(0.5), ROOT.Double(nBinsInBDT + 0.5), ROOT.TString(varName + '_%d'%indx), ROOT.TString('BDT disc. (bin %s)'%(str(indx))))
     p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
     p.SetLimitFolder('./temp/{var}_/'.format(var = varName));
     p.SetPathSignal(pathToTree);
@@ -106,9 +106,9 @@ def getCardsNominal(task):
     p.doSetLogy     = False;
     #p.doData        = False;
     p.doSignal      = False;
-    p.SetTitleY(ROOT.TString(varList.varList[varName]['yaxis']))
+    p.SetTitleY(ROOT.TString(varList[varName]['yaxis']))
     
-    for i in range(1, varList.nBinsInBDT + 1):
+    for i in range(1, nBinsInBDT + 1):
         if (p.GetHisto("DY_%d"%indx).GetBinContent(i) < 0):
             p.GetHisto("DY_%d"%indx).SetBinContent(i, 1e-4)
         for sys in (systlist + ',JER').split(','):
@@ -158,13 +158,13 @@ def getCardsSyst(task):
     if not os.path.isdir('temp/{var}_{sys}'.format(var = varName, sys = syst)):
         os.system('mkdir -p temp/{var}_{sys}'.format(var = varName, sys = syst))
     
-    p = ROOT.PlotToPy(ROOT.TString('theBDt_bin%d( TBDT )'%indx), ROOT.TString('(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && T%s >= %4.2f  && T%s < %4.2f )'%(varName, binDn, varName, binUp)), ROOT.TString('ElMu'), varList.nBinsInBDT, ROOT.Double(0.5), ROOT.Double(varList.nBinsInBDT+0.5), ROOT.TString(varName + '_%d'%indx), ROOT.TString(''))
+    p = ROOT.PlotToPy(ROOT.TString('theBDt_bin%d( TBDT )'%indx), ROOT.TString('(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && %s >= %4.2f  && %s < %4.2f )'%(varList[varName]['var'], binDn, varList[varName]['var'], binUp)), ROOT.TString('ElMu'), nBinsInBDT, ROOT.Double(0.5), ROOT.Double(nBinsInBDT+0.5), ROOT.TString(varName + '_%d'%indx), ROOT.TString(''))
     p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
     p.SetLimitFolder("temp/{var}_{sys}/".format(var = varName, sys = syst));
     p.SetPathSignal(pathToTree);
     
-    p.AddSample(varList.systMap[syst]["TW"],           "tW_%d"%indx,    ROOT.itBkg, ROOT.TColor.GetColor("#ffcc33"), systlist)
-    p.AddSample(varList.systMap[syst]["TbarW"],        "tW_%d"%indx,    ROOT.itBkg, ROOT.TColor.GetColor("#ffcc33"), systlist);
+    p.AddSample(systMap[syst]["TW"],           "tW_%d"%indx,    ROOT.itBkg, ROOT.TColor.GetColor("#ffcc33"), systlist)
+    p.AddSample(systMap[syst]["TbarW"],        "tW_%d"%indx,    ROOT.itBkg, ROOT.TColor.GetColor("#ffcc33"), systlist)
     
     p.AddSample("TTbar_PowhegSemi",                    "Fakes_%d"%indx, ROOT.itBkg, 413, systlist)
     p.AddSample("WJetsToLNu_MLM",                      "Fakes_%d"%indx, ROOT.itBkg, 413, systlist)
@@ -180,12 +180,62 @@ def getCardsSyst(task):
     p.AddSample("DYJetsToLL_M10to50_aMCatNLO",         "DY_%d"%indx,    ROOT.itBkg, 852, systlist)
     p.AddSample("DYJetsToLL_M50_aMCatNLO",             "DY_%d"%indx,    ROOT.itBkg, 852, systlist);
     
-    p.AddSample(varList.systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itBkg, 633, systlist)
-    
-    p.AddSample(varList.systMap[syst]["TW"],           "tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
-    p.AddSample(varList.systMap[syst]["TbarW"],        "tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
-    p.AddSample(varList.systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp");
-    p.AddSymmetricHisto("ttbar_%d"%indx,  "JERUp");
+    if 'UEUp' in syst:
+        specialweight = nUEUp_ttbar/sigma_ttbar/(nUEUp_ttbar/sigma_ttbar + nUEUp_dilep/sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample(systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itBkg, 633, systlist)
+        p.AddSample(systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp");
+        
+        specialweight = nUEUp_dilep/sigma_dilep/(nUEUp_ttbar/sigma_ttbar + nUEUp_dilep/sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample('TTbar2L_Powheg_ueUp',                 "ttbar_%d"%indx, ROOT.itBkg, 633, systlist)
+        p.AddSample('TTbar2L_Powheg_ueUp',                 "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp")
+        p.AddSymmetricHisto("ttbar_%d"%indx,  "JERUp");
+        p.SetWeight('TWeight')
+    elif 'UEDown' in syst:
+        specialweight = nUEDown_ttbar/sigma_ttbar/(nUEDown_ttbar/sigma_ttbar + nUEDown_dilep/sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample(systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itBkg, 633, systlist)
+        p.AddSample(systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp")
+        
+        specialweight = nUEDown_dilep/sigma_dilep/(nUEDown_ttbar/sigma_ttbar + nUEDown_dilep/sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample('TTbar2L_Powheg_ueDown',               "ttbar_%d"%indx, ROOT.itBkg, 633, systlist)
+        p.AddSample('TTbar2L_Powheg_ueDown',               "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp")
+        p.AddSymmetricHisto("ttbar_%d"%indx,  "JERUp");
+        p.SetWeight('TWeight')
+    elif 'hDampUp' in syst:
+        specialweight = nhDampUp_ttbar/sigma_ttbar/(nhDampUp_ttbar/sigma_ttbar + nhDampUp_dilep/sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample(systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itBkg, 633, systlist)
+        p.AddSample(systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp")
+        
+        specialweight = nhDampUp_dilep/sigma_dilep/(nhDampUp_ttbar/sigma_ttbar + nhDampUp_dilep/sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample('TTbar2L_Powheg_hdampUp',              "ttbar_%d"%indx, ROOT.itBkg, 633, systlist)
+        p.AddSample('TTbar2L_Powheg_hdampUp',              "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp")
+        p.AddSymmetricHisto("ttbar_%d"%indx,  "JERUp");
+        p.SetWeight('TWeight')
+    elif 'hDampDown' in syst:
+        specialweight = nhDampDown_ttbar/sigma_ttbar/(nhDampDown_ttbar/sigma_ttbar + nhDampDown_dilep/sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample(systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itBkg, 633, systlist)
+        p.AddSample(systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp")
+        
+        specialweight = nhDampDown_dilep/sigma_dilep/(nhDampDown_ttbar/sigma_ttbar + nhDampDown_dilep/sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample('TTbar2L_Powheg_hdampDown',            "ttbar_%d"%indx, ROOT.itBkg, 633, systlist)
+        p.AddSample('TTbar2L_Powheg_hdampDown',            "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp")
+        p.AddSymmetricHisto("ttbar_%d"%indx,  "JERUp");
+        p.SetWeight('TWeight')
+    else:
+        p.AddSample(systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itBkg, 633, systlist)
+        p.AddSample(systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp")
+        p.AddSymmetricHisto("ttbar_%d"%indx,  "JERUp");
+
+
+    p.AddSample(systMap[syst]["TW"],           "tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
+    p.AddSample(systMap[syst]["TbarW"],        "tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
     p.AddSymmetricHisto("tW_%d"%indx,  "JERUp");
     
     #p.AddSystematic(systlist)
@@ -219,7 +269,7 @@ def getCardsSyst(task):
     #p.doData        = False;
     p.doSignal      = False;
     
-    for i in range(1, varList.nBinsInBDT + 1):
+    for i in range(1, nBinsInBDT + 1):
         if (p.GetHisto("DY_%d"%indx).GetBinContent(i) < 0):
             p.GetHisto("DY_%d"%indx).SetBinContent(i, 1e-4)
         for sys in (systlist + ',JER').split(','):
@@ -269,7 +319,7 @@ def getCardsPdf(task):
     if not os.path.isdir('temp/{var}_{sys}'.format(var = varName, sys = syst)):
         os.system('mkdir -p temp/{var}_{sys}'.format(var = varName, sys = syst))
 
-    p = ROOT.PlotToPy(ROOT.TString('theBDt_bin%d( TBDT )'%indx), ROOT.TString('(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && T%s >= %4.2f  && T%s < %4.2f )'%(varName, binDn, varName, binUp)), ROOT.TString('ElMu'), varList.nBinsInBDT, ROOT.Double(0.5), ROOT.Double(varList.nBinsInBDT+0.5), ROOT.TString(varName + '_%d'%indx), ROOT.TString(''))
+    p = ROOT.PlotToPy(ROOT.TString('theBDt_bin%d( TBDT )'%indx), ROOT.TString('(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && %s >= %4.2f  && %s < %4.2f )'%(varList[varName]['var'], binDn, varList[varName]['var'], binUp)), ROOT.TString('ElMu'), nBinsInBDT, ROOT.Double(0.5), ROOT.Double(nBinsInBDT+0.5), ROOT.TString(varName + '_%d'%indx), ROOT.TString(''))
     p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
     p.SetLimitFolder("temp/{var}_{sys}/".format(var = varName, sys = syst));
     p.SetPathSignal(pathToTree);
@@ -297,7 +347,7 @@ def getCardsPdf(task):
 
     #p.AddSystematic(systlist)
 
-    pdf = ROOT.PDFToPy(pathToTree, "TTbar_Powheg", NameOfTree, ROOT.TString('(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && T%s >= %4.2f  && T%s < %4.2f )'%(varName, binDn, varName, binUp)), ROOT.TString('ElMu'), ROOT.TString('theBDt_bin%d( TBDT )'%indx), varList.nBinsInBDT,ROOT.Double(0.5), ROOT.Double(varList.nBinsInBDT+0.5))
+    pdf = ROOT.PDFToPy(pathToTree, "TTbar_Powheg", NameOfTree, ROOT.TString('(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && %s >= %4.2f  && %s < %4.2f )'%(varList[varName]['var'], binDn, varList[varName]['var'], binUp)), ROOT.TString('ElMu'), ROOT.TString('theBDt_bin%d( TBDT )'%indx), nBinsInBDT,ROOT.Double(0.5), ROOT.Double(nBinsInBDT+0.5))
 
     if 'pdfUp' == syst:
         histo = pdf.GetSystHisto("up","pdf").CloneHisto()
@@ -368,7 +418,7 @@ def getCardsPdf(task):
     #p.doData        = False;
     p.doSignal      = False;
     
-    for i in range(1, varList.nBinsInBDT + 1):
+    for i in range(1, nBinsInBDT + 1):
         if (p.GetHisto("DY_%d"%indx).GetBinContent(i) < 0):
             p.GetHisto("DY_%d"%indx).SetBinContent(i, 1e-4)
         for sys in (systlist + ',JER').split(','):
@@ -414,7 +464,7 @@ def getCardsPdf(task):
 
 if __name__ == '__main__':
     indx    = 0
-    binning = varList.varList[varName]['recobinning']
+    binning = varList[varName]['recobinning']
     print "> Beginning to produce histograms", "\n"
     tasks   = []
     asimov  = True
@@ -434,8 +484,9 @@ if __name__ == '__main__':
     indx    = 0
     for binDn,binUp in zip(binning, binning[1:]):
         indx = indx+1
-        for syst in varList.systMap:
+        for syst in systMap:
             #if 'pdf' in syst or 'ME' in syst: continue # these boys are handled differently
+            #if 'UE' not in syst: continue
             tasksSyst.append( (binDn, binUp, indx, asimov, syst) )
     
     pool    = Pool(nCores)
@@ -443,7 +494,7 @@ if __name__ == '__main__':
     pool.close()
     pool.join()
     
-    tasksPdf = [] 
+    tasksPdf = []
     indx = 0
     for binDn,binUp in zip(binning, binning[1:]):
         indx = indx+1
