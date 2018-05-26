@@ -52,41 +52,42 @@ def getCardsNominal(task):
     p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
     p.SetLimitFolder('./temp/{var}_/'.format(var = varName));
     p.SetPathSignal(pathToTree);
+    p.SetTitleY("Events")
     
-    p.AddSample("TW",                           "tW_%d"%indx,    ROOT.itBkg, ROOT.TColor.GetColor("#ffcc33"), systlist)
-    p.AddSample("TbarW",                        "tW_%d"%indx,    ROOT.itBkg, ROOT.TColor.GetColor("#ffcc33"), systlist);
+    p.AddSample("TW",                           "tW_%d"%indx,           ROOT.itBkg, ROOT.TColor.GetColor("#ffcc33"), systlist)
+    p.AddSample("TbarW",                        "tW_%d"%indx,           ROOT.itBkg, ROOT.TColor.GetColor("#ffcc33"), systlist);
     
-    p.AddSample("TTbar_PowhegSemi",             "Fakes_%d"%indx, ROOT.itBkg, 413, systlist)
-    p.AddSample("WJetsToLNu_MLM",               "Fakes_%d"%indx, ROOT.itBkg, 413, systlist)
+    p.AddSample("TTbar_PowhegSemi",             "Non-W|Z_%d"%indx,      ROOT.itBkg, 413, systlist)
+    p.AddSample("WJetsToLNu_MLM",               "Non-W|Z_%d"%indx,      ROOT.itBkg, 413, systlist)
     
-    p.AddSample("WZ",                           "VVttV_%d"%indx, ROOT.itBkg, 390, systlist);
-    p.AddSample("WW",                           "VVttV_%d"%indx, ROOT.itBkg, 390, systlist);
-    p.AddSample("ZZ",                           "VVttV_%d"%indx, ROOT.itBkg, 390, systlist);
-    p.AddSample("TTWToLNu",                     "VVttV_%d"%indx, ROOT.itBkg, 390, systlist);
-    p.AddSample("TTWToQQ" ,                     "VVttV_%d"%indx, ROOT.itBkg, 390, systlist);
-    p.AddSample("TTZToQQ" ,                     "VVttV_%d"%indx, ROOT.itBkg, 390, systlist);
-    p.AddSample("TTZToLLNuNu",                  "VVttV_%d"%indx, ROOT.itBkg, 390, systlist);
+    p.AddSample("WZ",                           "VV+t#bar{{t}}V_{ind}".format(ind = indx), ROOT.itBkg, 390, systlist);
+    p.AddSample("WW",                           "VV+t#bar{{t}}V_{ind}".format(ind = indx), ROOT.itBkg, 390, systlist);
+    p.AddSample("ZZ",                           "VV+t#bar{{t}}V_{ind}".format(ind = indx), ROOT.itBkg, 390, systlist);
+    p.AddSample("TTWToLNu",                     "VV+t#bar{{t}}V_{ind}".format(ind = indx), ROOT.itBkg, 390, systlist);
+    p.AddSample("TTWToQQ" ,                     "VV+t#bar{{t}}V_{ind}".format(ind = indx), ROOT.itBkg, 390, systlist);
+    p.AddSample("TTZToQQ" ,                     "VV+t#bar{{t}}V_{ind}".format(ind = indx), ROOT.itBkg, 390, systlist);
+    p.AddSample("TTZToLLNuNu",                  "VV+t#bar{{t}}V_{ind}".format(ind = indx), ROOT.itBkg, 390, systlist);
 
-    p.AddSample("DYJetsToLL_M10to50_aMCatNLO",  "DY_%d"%indx,    ROOT.itBkg, 852, systlist)
-    p.AddSample("DYJetsToLL_M50_aMCatNLO",      "DY_%d"%indx,    ROOT.itBkg, 852, systlist);
+    p.AddSample("DYJetsToLL_M10to50_aMCatNLO",  "DY_%d"%indx,           ROOT.itBkg, 852, systlist)
+    p.AddSample("DYJetsToLL_M50_aMCatNLO",      "DY_%d"%indx,           ROOT.itBkg, 852, systlist);
     
-    p.AddSample("TTbar_Powheg",                 "ttbar_%d"%indx, ROOT.itBkg, 633, systlist)
+    p.AddSample("TTbar_Powheg",                 "t#bar{{t}}_{ind}".format(ind = indx),     ROOT.itBkg, 633, systlist)
     
-    p.AddSample("TW",                           "tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
-    p.AddSample("TbarW",                        "tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
-    p.AddSample("TTbar_Powheg",                 "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp");
-    p.AddSymmetricHisto("ttbar_%d"%indx,  "JERUp");
+    p.AddSample("TW",                           "tW_%d"%indx,           ROOT.itSys, 1, "JERUp");
+    p.AddSample("TbarW",                        "tW_%d"%indx,           ROOT.itSys, 1, "JERUp");
+    p.AddSample("TTbar_Powheg",                 "t#bar{{t}}_{ind}".format(ind = indx),     ROOT.itSys, 1, "JERUp");
+    p.AddSymmetricHisto("t#bar{{t}}_{ind}".format(ind = indx),  "JERUp");
     p.AddSymmetricHisto("tW_%d"%indx,  "JERUp");
 
     #p.AddSystematic(systlist)
 
     if not asimov:
-        p.AddSample("MuonEG",                       "Data",  ROOT.itData);
-        p.AddSample("SingleMuon",                   "Data",  ROOT.itData);
-        p.AddSample("SingleElec",                   "Data",  ROOT.itData);
+        p.AddSample("MuonEG",                       "Data",             ROOT.itData);
+        p.AddSample("SingleMuon",                   "Data",             ROOT.itData);
+        p.AddSample("SingleElec",                   "Data",             ROOT.itData);
     else:
         hData=ROOT.Histo(p.GetHisto('tW_%d'%indx).Clone("Data"))
-        for proc in ['ttbar_%d'%indx,"VVttV_%d"%indx, "DY_%d"%indx, "Fakes_%d"%indx]:
+        for proc in ['t#bar{{t}}_{ind}'.format(ind = indx),'VV+t#bar{{t}}V_{ind}'.format(ind = indx), "DY_%d"%indx, "Non-W|Z_%d"%indx]:
             hData.Add( p.GetHisto(proc) )
         hData.SetProcess("Data")
         hData.SetTag("Data")
@@ -108,19 +109,21 @@ def getCardsNominal(task):
     p.doSignal      = False;
     p.SetTitleY(ROOT.TString(varList[varName]['yaxis']))
     
-    for i in range(1, nBinsInBDT + 1):
-        if (p.GetHisto("DY_%d"%indx).GetBinContent(i) < 0):
-            p.GetHisto("DY_%d"%indx).SetBinContent(i, 1e-4)
-        for sys in (systlist + ',JER').split(','):
-            if (p.GetHisto("DY_%d"%indx, sys + 'Up').GetBinContent(i) < 0):
-                p.GetHisto("DY_%d"%indx, sys + 'Up').SetBinContent(i, 1e-4)
-            if (p.GetHisto("DY_%d"%indx, sys + 'Down').GetBinContent(i) < 0):
-                p.GetHisto("DY_%d"%indx, sys + 'Down').SetBinContent(i, 1e-4)
     
-    p.GetHisto("DY_%d"%indx).ReCalcValues()
-    for sys in (systlist + ',JER').split(','):
-        p.GetHisto("DY_%d"%indx, sys + 'Up').ReCalcValues()
-        p.GetHisto("DY_%d"%indx, sys + 'Down').ReCalcValues()
+    #for i in range(1, nBinsInBDT + 1):
+        #if (p.GetHisto("DY_%d"%indx).GetBinContent(i) < 0):
+            #p.GetHisto("DY_%d"%indx).SetBinContent(i, 1e-4)
+        #for sys in (systlist + ',JER').split(','):
+            #if (p.GetHisto("DY_%d"%indx, sys + 'Up').GetBinContent(i) < 0):
+                #p.GetHisto("DY_%d"%indx, sys + 'Up').SetBinContent(i, 1e-4)
+            #if (p.GetHisto("DY_%d"%indx, sys + 'Down').GetBinContent(i) < 0):
+                #p.GetHisto("DY_%d"%indx, sys + 'Down').SetBinContent(i, 1e-4)
+    
+    #p.GetHisto("DY_%d"%indx).ReCalcValues()
+    #for sys in (systlist + ',JER').split(','):
+        #p.GetHisto("DY_%d"%indx, sys + 'Up').ReCalcValues()
+        #p.GetHisto("DY_%d"%indx, sys + 'Down').ReCalcValues()
+        #p.GetHisto("DY_%d"%indx).ReCalcValues()
     
     p.NoShowVarName = True;
     p.SetOutputName("forCards_" + varName + '_%d'%indx);
@@ -129,13 +132,13 @@ def getCardsNominal(task):
     p.SaveHistograms();
     del p
     
-    card = ROOT.Datacard('tW_%d'%indx, 'ttbar_{idx},DY_{idx},VVttV_{idx},Fakes_{idx}'.format(idx=indx) , systlist + ', JER', "ElMu_%d"%indx)
+    card = ROOT.Datacard("tW_%d"%indx, "t#bar{{t}}_{idx},DY_{idx},VV+t#bar{{t}}V_{idx},Non-W|Z_{idx}".format(idx=indx), systlist + ', JER', "ElMu_%d"%indx)
     card.SetRootFileName('./temp/{var}_/forCards_'.format(var = varName) + varName + '_%d'%indx)
     card.GetParamsFormFile()
-    card.SetNormUnc("Fakes_%d"%indx, 1.50)
+    card.SetNormUnc("Non-W|Z_%d"%indx, 1.50)
     card.SetNormUnc("DY_%d"%indx   , 1.50)
-    card.SetNormUnc("VVttV_%d"%indx, 1.50);
-    card.SetNormUnc("ttbar_%d"%indx, 1.06);
+    card.SetNormUnc('VV+t#bar{{t}}V_{ind}'.format(ind = indx), 1.50);
+    card.SetNormUnc('t#bar{{t}}_{ind}'.format(ind = indx), 1.06);
     card.SetLumiUnc(1.025)
     card.PrintDatacard("temp/{var}_/datacard_".format(var = varName) + varName + '_%d'%indx);
     del card
@@ -162,76 +165,77 @@ def getCardsSyst(task):
     p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
     p.SetLimitFolder("temp/{var}_{sys}/".format(var = varName, sys = syst));
     p.SetPathSignal(pathToTree);
+    p.SetTitleY("Events")
     
-    p.AddSample(systMap[syst]["TW"],           "tW_%d"%indx,    ROOT.itBkg, ROOT.TColor.GetColor("#ffcc33"), systlist)
-    p.AddSample(systMap[syst]["TbarW"],        "tW_%d"%indx,    ROOT.itBkg, ROOT.TColor.GetColor("#ffcc33"), systlist)
+    p.AddSample(systMap[syst]["TW"],           "tW_%d"%indx,           ROOT.itBkg, ROOT.TColor.GetColor("#ffcc33"), systlist)
+    p.AddSample(systMap[syst]["TbarW"],        "tW_%d"%indx,           ROOT.itBkg, ROOT.TColor.GetColor("#ffcc33"), systlist)
     
-    p.AddSample("TTbar_PowhegSemi",                    "Fakes_%d"%indx, ROOT.itBkg, 413, systlist)
-    p.AddSample("WJetsToLNu_MLM",                      "Fakes_%d"%indx, ROOT.itBkg, 413, systlist)
+    p.AddSample("TTbar_PowhegSemi",            "Non-W|Z_%d"%indx,      ROOT.itBkg, 413, systlist)
+    p.AddSample("WJetsToLNu_MLM",              "Non-W|Z_%d"%indx,      ROOT.itBkg, 413, systlist)
     
-    p.AddSample("WZ",                                  "VVttV_%d"%indx, ROOT.itBkg, 390, systlist);
-    p.AddSample("WW",                                  "VVttV_%d"%indx, ROOT.itBkg, 390, systlist);
-    p.AddSample("ZZ",                                  "VVttV_%d"%indx, ROOT.itBkg, 390, systlist);
-    p.AddSample("TTWToLNu",                            "VVttV_%d"%indx, ROOT.itBkg, 390, systlist);
-    p.AddSample("TTWToQQ" ,                            "VVttV_%d"%indx, ROOT.itBkg, 390, systlist);
-    p.AddSample("TTZToQQ" ,                            "VVttV_%d"%indx, ROOT.itBkg, 390, systlist);
-    p.AddSample("TTZToLLNuNu",                         "VVttV_%d"%indx, ROOT.itBkg, 390, systlist);
+    p.AddSample("WZ",                          'VV+t#bar{{t}}V_{ind}'.format(ind = indx), ROOT.itBkg, 390, systlist);
+    p.AddSample("WW",                          'VV+t#bar{{t}}V_{ind}'.format(ind = indx), ROOT.itBkg, 390, systlist);
+    p.AddSample("ZZ",                          'VV+t#bar{{t}}V_{ind}'.format(ind = indx), ROOT.itBkg, 390, systlist);
+    p.AddSample("TTWToLNu",                    'VV+t#bar{{t}}V_{ind}'.format(ind = indx), ROOT.itBkg, 390, systlist);
+    p.AddSample("TTWToQQ" ,                    'VV+t#bar{{t}}V_{ind}'.format(ind = indx), ROOT.itBkg, 390, systlist);
+    p.AddSample("TTZToQQ" ,                    'VV+t#bar{{t}}V_{ind}'.format(ind = indx), ROOT.itBkg, 390, systlist);
+    p.AddSample("TTZToLLNuNu",                 'VV+t#bar{{t}}V_{ind}'.format(ind = indx), ROOT.itBkg, 390, systlist);
 
-    p.AddSample("DYJetsToLL_M10to50_aMCatNLO",         "DY_%d"%indx,    ROOT.itBkg, 852, systlist)
-    p.AddSample("DYJetsToLL_M50_aMCatNLO",             "DY_%d"%indx,    ROOT.itBkg, 852, systlist);
+    p.AddSample("DYJetsToLL_M10to50_aMCatNLO", "DY_%d"%indx,           ROOT.itBkg, 852, systlist)
+    p.AddSample("DYJetsToLL_M50_aMCatNLO",     "DY_%d"%indx,           ROOT.itBkg, 852, systlist);
     
     if 'UEUp' in syst:
         specialweight = nUEUp_ttbar/sigma_ttbar/(nUEUp_ttbar/sigma_ttbar + nUEUp_dilep/sigma_dilep)
         p.SetWeight('TWeight*' + str(specialweight))
-        p.AddSample(systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itBkg, 633, systlist)
-        p.AddSample(systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp");
+        p.AddSample(systMap[syst]["TTbar_Powheg"], 't#bar{{t}}_{ind}'.format(ind = indx), ROOT.itBkg, 633, systlist)
+        p.AddSample(systMap[syst]["TTbar_Powheg"], 't#bar{{t}}_{ind}'.format(ind = indx), ROOT.itSys, 1, "JERUp");
         
         specialweight = nUEUp_dilep/sigma_dilep/(nUEUp_ttbar/sigma_ttbar + nUEUp_dilep/sigma_dilep)
         p.SetWeight('TWeight*' + str(specialweight))
-        p.AddSample('TTbar2L_Powheg_ueUp',                 "ttbar_%d"%indx, ROOT.itBkg, 633, systlist)
-        p.AddSample('TTbar2L_Powheg_ueUp',                 "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp")
-        p.AddSymmetricHisto("ttbar_%d"%indx,  "JERUp");
+        p.AddSample('TTbar2L_Powheg_ueUp',                 't#bar{{t}}_{ind}'.format(ind = indx), ROOT.itBkg, 633, systlist)
+        p.AddSample('TTbar2L_Powheg_ueUp',                 't#bar{{t}}_{ind}'.format(ind = indx), ROOT.itSys, 1, "JERUp")
+        p.AddSymmetricHisto('t#bar{{t}}_{ind}'.format(ind = indx),  "JERUp");
         p.SetWeight('TWeight')
     elif 'UEDown' in syst:
         specialweight = nUEDown_ttbar/sigma_ttbar/(nUEDown_ttbar/sigma_ttbar + nUEDown_dilep/sigma_dilep)
         p.SetWeight('TWeight*' + str(specialweight))
-        p.AddSample(systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itBkg, 633, systlist)
-        p.AddSample(systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp")
+        p.AddSample(systMap[syst]["TTbar_Powheg"], 't#bar{{t}}_{ind}'.format(ind = indx), ROOT.itBkg, 633, systlist)
+        p.AddSample(systMap[syst]["TTbar_Powheg"], 't#bar{{t}}_{ind}'.format(ind = indx), ROOT.itSys, 1, "JERUp")
         
         specialweight = nUEDown_dilep/sigma_dilep/(nUEDown_ttbar/sigma_ttbar + nUEDown_dilep/sigma_dilep)
         p.SetWeight('TWeight*' + str(specialweight))
-        p.AddSample('TTbar2L_Powheg_ueDown',               "ttbar_%d"%indx, ROOT.itBkg, 633, systlist)
-        p.AddSample('TTbar2L_Powheg_ueDown',               "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp")
-        p.AddSymmetricHisto("ttbar_%d"%indx,  "JERUp");
+        p.AddSample('TTbar2L_Powheg_ueDown',               't#bar{{t}}_{ind}'.format(ind = indx), ROOT.itBkg, 633, systlist)
+        p.AddSample('TTbar2L_Powheg_ueDown',               't#bar{{t}}_{ind}'.format(ind = indx), ROOT.itSys, 1, "JERUp")
+        p.AddSymmetricHisto('t#bar{{t}}_{ind}'.format(ind = indx),  "JERUp");
         p.SetWeight('TWeight')
     elif 'hDampUp' in syst:
         specialweight = nhDampUp_ttbar/sigma_ttbar/(nhDampUp_ttbar/sigma_ttbar + nhDampUp_dilep/sigma_dilep)
         p.SetWeight('TWeight*' + str(specialweight))
-        p.AddSample(systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itBkg, 633, systlist)
-        p.AddSample(systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp")
+        p.AddSample(systMap[syst]["TTbar_Powheg"], 't#bar{{t}}_{ind}'.format(ind = indx), ROOT.itBkg, 633, systlist)
+        p.AddSample(systMap[syst]["TTbar_Powheg"], 't#bar{{t}}_{ind}'.format(ind = indx), ROOT.itSys, 1, "JERUp")
         
         specialweight = nhDampUp_dilep/sigma_dilep/(nhDampUp_ttbar/sigma_ttbar + nhDampUp_dilep/sigma_dilep)
         p.SetWeight('TWeight*' + str(specialweight))
-        p.AddSample('TTbar2L_Powheg_hdampUp',              "ttbar_%d"%indx, ROOT.itBkg, 633, systlist)
-        p.AddSample('TTbar2L_Powheg_hdampUp',              "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp")
-        p.AddSymmetricHisto("ttbar_%d"%indx,  "JERUp");
+        p.AddSample('TTbar2L_Powheg_hdampUp',              't#bar{{t}}_{ind}'.format(ind = indx), ROOT.itBkg, 633, systlist)
+        p.AddSample('TTbar2L_Powheg_hdampUp',              't#bar{{t}}_{ind}'.format(ind = indx), ROOT.itSys, 1, "JERUp")
+        p.AddSymmetricHisto('t#bar{{t}}_{ind}'.format(ind = indx),  "JERUp");
         p.SetWeight('TWeight')
     elif 'hDampDown' in syst:
         specialweight = nhDampDown_ttbar/sigma_ttbar/(nhDampDown_ttbar/sigma_ttbar + nhDampDown_dilep/sigma_dilep)
         p.SetWeight('TWeight*' + str(specialweight))
-        p.AddSample(systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itBkg, 633, systlist)
-        p.AddSample(systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp")
+        p.AddSample(systMap[syst]["TTbar_Powheg"], 't#bar{{t}}_{ind}'.format(ind = indx), ROOT.itBkg, 633, systlist)
+        p.AddSample(systMap[syst]["TTbar_Powheg"], 't#bar{{t}}_{ind}'.format(ind = indx), ROOT.itSys, 1, "JERUp")
         
         specialweight = nhDampDown_dilep/sigma_dilep/(nhDampDown_ttbar/sigma_ttbar + nhDampDown_dilep/sigma_dilep)
         p.SetWeight('TWeight*' + str(specialweight))
-        p.AddSample('TTbar2L_Powheg_hdampDown',            "ttbar_%d"%indx, ROOT.itBkg, 633, systlist)
-        p.AddSample('TTbar2L_Powheg_hdampDown',            "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp")
-        p.AddSymmetricHisto("ttbar_%d"%indx,  "JERUp");
+        p.AddSample('TTbar2L_Powheg_hdampDown',            't#bar{{t}}_{ind}'.format(ind = indx), ROOT.itBkg, 633, systlist)
+        p.AddSample('TTbar2L_Powheg_hdampDown',            't#bar{{t}}_{ind}'.format(ind = indx), ROOT.itSys, 1, "JERUp")
+        p.AddSymmetricHisto('t#bar{{t}}_{ind}'.format(ind = indx),  "JERUp");
         p.SetWeight('TWeight')
     else:
-        p.AddSample(systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itBkg, 633, systlist)
-        p.AddSample(systMap[syst]["TTbar_Powheg"], "ttbar_%d"%indx, ROOT.itSys, 1, "JERUp")
-        p.AddSymmetricHisto("ttbar_%d"%indx,  "JERUp");
+        p.AddSample(systMap[syst]["TTbar_Powheg"], 't#bar{{t}}_{ind}'.format(ind = indx), ROOT.itBkg, 633, systlist)
+        p.AddSample(systMap[syst]["TTbar_Powheg"], 't#bar{{t}}_{ind}'.format(ind = indx), ROOT.itSys, 1, "JERUp")
+        p.AddSymmetricHisto('t#bar{{t}}_{ind}'.format(ind = indx),  "JERUp");
 
 
     p.AddSample(systMap[syst]["TW"],           "tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
@@ -269,19 +273,19 @@ def getCardsSyst(task):
     #p.doData        = False;
     p.doSignal      = False;
     
-    for i in range(1, nBinsInBDT + 1):
-        if (p.GetHisto("DY_%d"%indx).GetBinContent(i) < 0):
-            p.GetHisto("DY_%d"%indx).SetBinContent(i, 1e-4)
-        for sys in (systlist + ',JER').split(','):
-            if (p.GetHisto("DY_%d"%indx, sys + 'Up').GetBinContent(i) < 0):
-                p.GetHisto("DY_%d"%indx, sys + 'Up').SetBinContent(i, 1e-4)
-            if (p.GetHisto("DY_%d"%indx, sys + 'Down').GetBinContent(i) < 0):
-                p.GetHisto("DY_%d"%indx, sys + 'Down').SetBinContent(i, 1e-4)
+    #for i in range(1, nBinsInBDT + 1):
+        #if (p.GetHisto("DY_%d"%indx).GetBinContent(i) < 0):
+            #p.GetHisto("DY_%d"%indx).SetBinContent(i, 1e-4)
+        #for sys in (systlist + ',JER').split(','):
+            #if (p.GetHisto("DY_%d"%indx, sys + 'Up').GetBinContent(i) < 0):
+                #p.GetHisto("DY_%d"%indx, sys + 'Up').SetBinContent(i, 1e-4)
+            #if (p.GetHisto("DY_%d"%indx, sys + 'Down').GetBinContent(i) < 0):
+                #p.GetHisto("DY_%d"%indx, sys + 'Down').SetBinContent(i, 1e-4)
     
-    p.GetHisto("DY_%d"%indx).ReCalcValues()
-    for sys in (systlist + ',JER').split(','):
-        p.GetHisto("DY_%d"%indx, sys + 'Up').ReCalcValues()
-        p.GetHisto("DY_%d"%indx, sys + 'Down').ReCalcValues()
+    #p.GetHisto("DY_%d"%indx).ReCalcValues()
+    #for sys in (systlist + ',JER').split(','):
+        #p.GetHisto("DY_%d"%indx, sys + 'Up').ReCalcValues()
+        #p.GetHisto("DY_%d"%indx, sys + 'Down').ReCalcValues()
     
     p.NoShowVarName = True;
     p.SetOutputName("forCards_" + varName + '_' + syst + '_%d'%indx);
@@ -290,13 +294,13 @@ def getCardsSyst(task):
     p.SaveHistograms();
     del p
     
-    card = ROOT.Datacard('tW_%d'%indx, 'ttbar_{idx},DY_{idx},VVttV_{idx},Fakes_{idx}'.format(idx=indx) , systlist + ', JER', "ElMu_%d"%indx)
+    card = ROOT.Datacard('tW_%d'%indx, 't#bar{{t}}_{idx},DY_{idx},VV+t#bar{{t}}V_{idx},Non-W|Z_{idx}'.format(idx=indx) , systlist + ', JER', "ElMu_%d"%indx)
     card.SetRootFileName("temp/{var}_{sys}/forCards_".format(var = varName, sys = syst) + varName  + '_' + syst  + '_%d'%indx)
     card.GetParamsFormFile()
-    card.SetNormUnc("Fakes_%d"%indx, 1.50)
+    card.SetNormUnc("Non-W|Z_%d"%indx, 1.50)
     card.SetNormUnc("DY_%d"%indx   , 1.50)
-    card.SetNormUnc("VVttV_%d"%indx, 1.50);
-    card.SetNormUnc("ttbar_%d"%indx, 1.06);
+    card.SetNormUnc('VV+t#bar{{t}}V_{ind}'.format(ind = indx), 1.50);
+    card.SetNormUnc('t#bar{{t}}_{ind}'.format(ind = indx), 1.06);
     card.SetLumiUnc(1.025)
     card.PrintDatacard("temp/{var}_{sys}/datacard_".format(var = varName, sys = syst) + varName + '_' + syst + '_%d'%indx);
     del card
@@ -323,26 +327,27 @@ def getCardsPdf(task):
     p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
     p.SetLimitFolder("temp/{var}_{sys}/".format(var = varName, sys = syst));
     p.SetPathSignal(pathToTree);
+    p.SetTitleY("Events")
     
-    p.AddSample("TW",                           "tW_%d"%indx,    ROOT.itBkg, ROOT.TColor.GetColor("#ffcc33"), systlist)
-    p.AddSample("TbarW",                        "tW_%d"%indx,    ROOT.itBkg, ROOT.TColor.GetColor("#ffcc33"), systlist);
+    p.AddSample("TW",                          "tW_%d"%indx,           ROOT.itBkg, ROOT.TColor.GetColor("#ffcc33"), systlist)
+    p.AddSample("TbarW",                       "tW_%d"%indx,           ROOT.itBkg, ROOT.TColor.GetColor("#ffcc33"), systlist);
     
-    p.AddSample("TTbar_PowhegSemi",             "Fakes_%d"%indx, ROOT.itBkg, 413, systlist)
-    p.AddSample("WJetsToLNu_MLM",               "Fakes_%d"%indx, ROOT.itBkg, 413, systlist)
+    p.AddSample("TTbar_PowhegSemi",            "Non-W|Z_%d"%indx,      ROOT.itBkg, 413, systlist)
+    p.AddSample("WJetsToLNu_MLM",              "Non-W|Z_%d"%indx,      ROOT.itBkg, 413, systlist)
     
-    p.AddSample("WZ",                           "VVttV_%d"%indx, ROOT.itBkg, 390, systlist);
-    p.AddSample("WW",                           "VVttV_%d"%indx, ROOT.itBkg, 390, systlist);
-    p.AddSample("ZZ",                           "VVttV_%d"%indx, ROOT.itBkg, 390, systlist);
-    p.AddSample("TTWToLNu",                     "VVttV_%d"%indx, ROOT.itBkg, 390, systlist);
-    p.AddSample("TTWToQQ" ,                     "VVttV_%d"%indx, ROOT.itBkg, 390, systlist);
-    p.AddSample("TTZToQQ" ,                     "VVttV_%d"%indx, ROOT.itBkg, 390, systlist);
-    p.AddSample("TTZToLLNuNu",                  "VVttV_%d"%indx, ROOT.itBkg, 390, systlist);
+    p.AddSample("WZ",                          'VV+t#bar{{t}}V_{ind}'.format(ind = indx), ROOT.itBkg, 390, systlist);
+    p.AddSample("WW",                          'VV+t#bar{{t}}V_{ind}'.format(ind = indx), ROOT.itBkg, 390, systlist);
+    p.AddSample("ZZ",                          'VV+t#bar{{t}}V_{ind}'.format(ind = indx), ROOT.itBkg, 390, systlist);
+    p.AddSample("TTWToLNu",                    'VV+t#bar{{t}}V_{ind}'.format(ind = indx), ROOT.itBkg, 390, systlist);
+    p.AddSample("TTWToQQ" ,                    'VV+t#bar{{t}}V_{ind}'.format(ind = indx), ROOT.itBkg, 390, systlist);
+    p.AddSample("TTZToQQ" ,                    'VV+t#bar{{t}}V_{ind}'.format(ind = indx), ROOT.itBkg, 390, systlist);
+    p.AddSample("TTZToLLNuNu",                 'VV+t#bar{{t}}V_{ind}'.format(ind = indx), ROOT.itBkg, 390, systlist);
 
-    p.AddSample("DYJetsToLL_M10to50_aMCatNLO",  "DY_%d"%indx,    ROOT.itBkg, 852, systlist)
-    p.AddSample("DYJetsToLL_M50_aMCatNLO",      "DY_%d"%indx,    ROOT.itBkg, 852, systlist);
+    p.AddSample("DYJetsToLL_M10to50_aMCatNLO", "DY_%d"%indx,           ROOT.itBkg, 852, systlist)
+    p.AddSample("DYJetsToLL_M50_aMCatNLO",     "DY_%d"%indx,           ROOT.itBkg, 852, systlist);
 
-    p.AddSample("TW",   "tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
-    p.AddSample("TbarW","tW_%d"%indx,    ROOT.itSys, 1, "JERUp");
+    p.AddSample("TW",                          "tW_%d"%indx,           ROOT.itSys, 1, "JERUp");
+    p.AddSample("TbarW",                       "tW_%d"%indx,           ROOT.itSys, 1, "JERUp");
     p.AddSymmetricHisto("tW_%d"%indx,  "JERUp");
 
     #p.AddSystematic(systlist)
@@ -360,16 +365,16 @@ def getCardsPdf(task):
     else:
         raise RuntimeError("Systematic %s is not of 'pdf' type"%syst)
 
-    p.PrepareHisto(histo, 'TTbar_Powheg', 'ttbar_%d'%indx, ROOT.itBkg,633)
+    p.PrepareHisto(histo, 'TTbar_Powheg', 't#bar{{t}}_{ind}'.format(ind = indx), ROOT.itBkg,633)
 
     # now get systematic variations from nominal
     for s in (systlist + ',JER').split(','):
         tfile = ROOT.TFile.Open("temp/{var}_/forCards_".format(var = varName) + varName + '_%d.root'%indx)
         if not tfile: 
             raise RuntimeError('Nominal card rootfile for variable {var} has not been found while considering syst. {sys}'.format(var = varName, sys = syst))
-        nom   = tfile.Get('ttbar_%d'%indx)
-        nomUp = tfile.Get('ttbar_%d_%sUp'%(indx,s))
-        nomDn = tfile.Get('ttbar_%d_%sDown'%(indx,s))
+        nom   = tfile.Get('t#bar{{t}}_{ind}'.format(ind = indx))
+        nomUp = tfile.Get('t#bar{{t}}_{ind}_{sys}Up'.format(ind = indx, sys = s))
+        nomDn = tfile.Get('t#bar{{t}}_{ind}_{sys}Down'.format(ind = indx, sys = s))
 
         # remove stats just in case
         for i in range(nom.GetNbinsX()):
@@ -386,8 +391,8 @@ def getCardsPdf(task):
         histoUp.Multiply(nomUp)
         histoDn.Multiply(nomDn)
 
-        p.PrepareHisto( histoUp, "TTbar_Powheg", 'ttbar_%d'%indx, ROOT.itSys, 0, s+"Up")
-        p.PrepareHisto( histoDn, "TTbar_Powheg", 'ttbar_%d'%indx, ROOT.itSys, 0, s+"Down")
+        p.PrepareHisto( histoUp, "TTbar_Powheg", 't#bar{{t}}_{ind}'.format(ind = indx), ROOT.itSys, 0, s+"Up")
+        p.PrepareHisto( histoDn, "TTbar_Powheg", 't#bar{{t}}_{ind}'.format(ind = indx), ROOT.itSys, 0, s+"Down")
 
         p.AddToSystematicLabels(s)
 
@@ -418,19 +423,19 @@ def getCardsPdf(task):
     #p.doData        = False;
     p.doSignal      = False;
     
-    for i in range(1, nBinsInBDT + 1):
-        if (p.GetHisto("DY_%d"%indx).GetBinContent(i) < 0):
-            p.GetHisto("DY_%d"%indx).SetBinContent(i, 1e-4)
-        for sys in (systlist + ',JER').split(','):
-            if (p.GetHisto("DY_%d"%indx, sys + 'Up').GetBinContent(i) < 0):
-                p.GetHisto("DY_%d"%indx, sys + 'Up').SetBinContent(i, 1e-4)
-            if (p.GetHisto("DY_%d"%indx, sys + 'Down').GetBinContent(i) < 0):
-                p.GetHisto("DY_%d"%indx, sys + 'Down').SetBinContent(i, 1e-4)
+    #for i in range(1, nBinsInBDT + 1):
+        #if (p.GetHisto("DY_%d"%indx).GetBinContent(i) < 0):
+            #p.GetHisto("DY_%d"%indx).SetBinContent(i, 1e-4)
+        #for sys in (systlist + ',JER').split(','):
+            #if (p.GetHisto("DY_%d"%indx, sys + 'Up').GetBinContent(i) < 0):
+                #p.GetHisto("DY_%d"%indx, sys + 'Up').SetBinContent(i, 1e-4)
+            #if (p.GetHisto("DY_%d"%indx, sys + 'Down').GetBinContent(i) < 0):
+                #p.GetHisto("DY_%d"%indx, sys + 'Down').SetBinContent(i, 1e-4)
     
-    p.GetHisto("DY_%d"%indx).ReCalcValues()
-    for sys in (systlist + ',JER').split(','):
-        p.GetHisto("DY_%d"%indx, sys + 'Up').ReCalcValues()
-        p.GetHisto("DY_%d"%indx, sys + 'Down').ReCalcValues()
+    #p.GetHisto("DY_%d"%indx).ReCalcValues()
+    #for sys in (systlist + ',JER').split(','):
+        #p.GetHisto("DY_%d"%indx, sys + 'Up').ReCalcValues()
+        #p.GetHisto("DY_%d"%indx, sys + 'Down').ReCalcValues()
     
     p.NoShowVarName = True;
     p.SetOutputName("forCards_" + varName + '_' + syst + '_%d'%indx);
@@ -439,13 +444,13 @@ def getCardsPdf(task):
     p.SaveHistograms();
     del p
 
-    card = ROOT.Datacard('tW_%d'%indx, 'ttbar_{idx},DY_{idx},VVttV_{idx},Fakes_{idx}'.format(idx=indx) , systlist + ', JER', "ElMu_%d"%indx)
+    card = ROOT.Datacard('tW_%d'%indx, 't#bar{{t}}_{idx},DY_{idx},VV+t#bar{{t}}V_{idx},Non-W|Z_{idx}'.format(idx=indx) , systlist + ', JER', "ElMu_%d"%indx)
     card.SetRootFileName('temp/{var}_{sys}/forCards_'.format(var = varName, sys = syst) + varName  + '_' + syst  + '_%d'%indx)
     card.GetParamsFormFile()
-    card.SetNormUnc("Fakes_%d"%indx   , 1.50)
+    card.SetNormUnc("Non-W|Z_%d"%indx   , 1.50)
     card.SetNormUnc("DY_%d"%indx      , 1.50)
-    card.SetNormUnc("VVttV_%d"%indx   , 1.50);
-    card.SetNormUnc("ttbar_%d"%indx   , 1.06);
+    card.SetNormUnc('VV+t#bar{{t}}V_{ind}'.format(ind = indx), 1.50);
+    card.SetNormUnc('t#bar{{t}}_{ind}'.format(ind = indx)    , 1.06);
     card.SetLumiUnc(1.025)
     card.PrintDatacard("temp/{var}_{sys}/datacard_".format(var = varName, sys = syst) + varName + '_' + syst + '_%d'%indx);
     del card
@@ -467,7 +472,7 @@ if __name__ == '__main__':
     binning = varList[varName]['recobinning']
     print "> Beginning to produce histograms", "\n"
     tasks   = []
-    asimov  = True
+    asimov  = False
     print '> Creating nominal rootfiles with histograms and datacards'
     for binDn,binUp in zip(binning, binning[1:]):
         indx = indx+1
@@ -485,8 +490,6 @@ if __name__ == '__main__':
     for binDn,binUp in zip(binning, binning[1:]):
         indx = indx+1
         for syst in systMap:
-            #if 'pdf' in syst or 'ME' in syst: continue # these boys are handled differently
-            #if 'UE' not in syst: continue
             tasksSyst.append( (binDn, binUp, indx, asimov, syst) )
     
     pool    = Pool(nCores)
