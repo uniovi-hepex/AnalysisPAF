@@ -48,19 +48,19 @@ def makeFit(task):
         cardList = [ 'datacard_{var}_{sys}_{idx}.txt'.format(var = varName, sys=syst, idx=idx) for idx in range(1, len(binning))]
 
 
-    os.system('cd temp; combineCards.py {allCards} > {outCard}; cd -'.format(allCards = ' '.join(cardList),
+    os.system('cd temp/{var}_{sys}; combineCards.py {allCards} > {outCard}; cd -'.format(allCards = ' '.join(cardList), var = varName, sys = syst,
                                                                              outCard  = 'datacard_{var}_{sys}.txt'.format(var=varName,sys=syst)))
 
     physicsModel = 'text2workspace.py -m 125 -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel '
     for idx in range(1,len(binning)):
         physicsModel = physicsModel + "--PO 'map=.*/tW_{idx}:r_tW_{idx}[1,0,10]' ".format(idx=idx)
-    physicsModel = physicsModel + 'temp/datacard_{var}_{sys}.txt -o temp/comb_fit_{var}_{sys}.root'.format(var=varName,sys=syst)
+    physicsModel = physicsModel + 'temp/{var}_{sys}/datacard_{var}_{sys}.txt -o temp/{var}_{sys}/comb_fit_{var}_{sys}.root'.format(var=varName,sys=syst)
 
     if not os.path.isdir('temp/{var}_{sys}/fitdiagnostics'.format(var=varName,sys=syst)):
         os.system('mkdir -p temp/{var}_{sys}/fitdiagnostics'.format(var=varName,sys=syst))
 
     os.system(physicsModel)
-    os.system('combine -M FitDiagnostics --out temp/{var}_{sys}/fitdiagnostics  temp/comb_fit_{var}_{sys}.root --saveWorkspace -n {var}_{sys}'.format(var=varName,sys=syst))
+    os.system('combine -M FitDiagnostics --out temp/{var}_{sys}/fitdiagnostics  temp/{var}_{sys}/comb_fit_{var}_{sys}.root --saveWorkspace -n {var}_{sys}'.format(var=varName,sys=syst))
 
     # Ahora recogemos la virutilla
     tfile     = r.TFile.Open('temp/{var}_{sys}/fitdiagnostics/fitDiagnostics{var}_{sys}.root'.format(var=varName,sys=syst))
@@ -102,9 +102,9 @@ def makeFit(task):
                       array('d', varList.varList[varName]['recobinning']))
     for i in range( 1, len(binning)):
         if syst == '':
-            card = r.TFile.Open('temp/forCards_%s_%d.root'%(varName,i))
+            card = r.TFile.Open('temp/{var}_/forCards_{var}_{ind}.root'.format(var = varName, ind = i))
         else:
-            card = r.TFile.Open('temp/forCards_%s_%s_%d.root'%(varName,syst,i))
+            card = r.TFile.Open('temp/{var}_{sys}/forCards_{var}_{sys}_{ind}.root'.format(var = varName, sys = syst, ind = i))
         results['r_tW_%d'%i][0]  = results['r_tW_%d'%i][0] * card.Get('tW_%d'%i).Integral()
         results['r_tW_%d'%i][1]  = results['r_tW_%d'%i][1] * card.Get('tW_%d'%i).Integral()
         results['r_tW_%d'%i][2]  = results['r_tW_%d'%i][2] * card.Get('tW_%d'%i).Integral()
@@ -115,6 +115,7 @@ def makeFit(task):
     for i in range( 1, len(binning)):
         #upVar = outHisto.GetBinContent(i) + results['r_tW_%d'%i][2]
         #dnVar = outHisto.GetBinContent(i) + results['r_tW_%d'%i][1]
+        #print 'Nominal:', results['r_tW_%d'%i][0]
         #print 'El 1', results['r_tW_%d'%i][1], 'El 2', results['r_tW_%d'%i][2]
         #errors.SetBinContent(i, ( upVar + dnVar ) / 2)
         #errors.SetBinError  (i, abs( upVar - dnVar) / 2)
@@ -130,11 +131,11 @@ def makeFit(task):
     for i in range(1, len(binning)):
         for j in range(1, len(binning)):
             if syst == '':
-                cardx = r.TFile.Open('temp/forCards_%s_%d.root'%(varName,i))
-                cardy = r.TFile.Open('temp/forCards_%s_%d.root'%(varName,j))
+                cardx = r.TFile.Open('temp/{var}_/forCards_{var}_{ind}.root'.format(var = varName, ind = i))
+                cardy = r.TFile.Open('temp/{var}_/forCards_{var}_{ind}.root'.format(var = varName, ind = j))
             else:
-                cardx = r.TFile.Open('temp/forCards_%s_%s_%d.root'%(varName,syst,i))
-                cardy = r.TFile.Open('temp/forCards_%s_%s_%d.root'%(varName,syst,j))
+                cardx = r.TFile.Open('temp/{var}_{sys}/forCards_{var}_{sys}_{ind}.root'.format(var = varName, sys = syst, ind = i))
+                cardy = r.TFile.Open('temp/{var}_{sys}/forCards_{var}_{sys}_{ind}.root'.format(var = varName, sys = syst, ind = j))
 
             normx = cardx.Get('tW_%d'%i).Integral() 
             normy = cardy.Get('tW_%d'%j).Integral() 
@@ -162,7 +163,7 @@ pool.close()
 pool.join()
 
 print '> Saving fit results...'
-outFile = r.TFile.Open('temp/fitOutput_%s.root'%varName,'recreate')
+outFile = r.TFile.Open('temp/{var}_/fitOutput_{var}.root'.format(var = varName),'recreate')
 for el in finalresults:
     for subel in el:
         subel.Write()

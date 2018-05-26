@@ -30,14 +30,14 @@ class beautifulUnfoldingPlots:
 
     def initCanvasAndAll(self):
         if self.inited: return
-        self.inited = True
+        self.inited     = True
         tdrstyle.setTDRStyle()
 
-        topSpamSize = 1.2
-        doOfficialCMS = True
+        topSpamSize     = 1.2
+        doOfficialCMS   = True
 
-        plotformat = (1200,600) if self.doWide else (600,600)
-        height = plotformat[1]+150 if self.doRatio else plotformat[1]
+        plotformat  = (1200,600) if self.doWide else (600,600)
+        height      = plotformat[1]+150 if self.doRatio else plotformat[1]
 
         self.canvas = r.TCanvas(self.name+"_canvas", self.name, plotformat[0], height)
         
@@ -76,7 +76,7 @@ class beautifulUnfoldingPlots:
             asymhisto.GetXaxis().SetLabelOffset(0.007)
             asymhisto.GetYaxis().SetTitleFont(42)
             asymhisto.GetYaxis().SetTitleSize(0.05)
-            asymhisto.GetYaxis().SetTitleOffset(0.4 if self.doWide else 2.0)
+            asymhisto.GetYaxis().SetTitleOffset(0.4 if self.doWide else 1.58)
             asymhisto.GetYaxis().SetLabelFont(42)
             asymhisto.GetYaxis().SetLabelSize(0.05)
             asymhisto.GetYaxis().SetLabelOffset(0.007)
@@ -97,7 +97,7 @@ class beautifulUnfoldingPlots:
             histo.GetXaxis().SetLabelOffset(0.007)
             histo.GetYaxis().SetTitleFont(42)
             histo.GetYaxis().SetTitleSize(0.05)
-            histo.GetYaxis().SetTitleOffset(0.4 if self.doWide else 2.0)
+            histo.GetYaxis().SetTitleOffset(0.4 if self.doWide else 1.4)
             histo.GetYaxis().SetLabelFont(42)
             histo.GetYaxis().SetLabelSize(0.05)
             histo.GetYaxis().SetLabelOffset(0.007)

@@ -12,15 +12,19 @@ else:
     print "> Default choice of variable\n"
     varName     = 'LeadingLepEta'
 
-print '> Plotting the nominal folded distribution with uncertainties for the variable', varName
-fitinfo     = r.TFile.Open('temp/fitOutput_%s.root'%varName, 'read')
+print '\n> Plotting the nominal folded distribution with uncertainties for the variable', varName, '\n'
+fitinfo     = r.TFile.Open('temp/{var}_/fitOutput_{var}.root'.format(var = varName), 'read')
+if not fitinfo:
+    raise RuntimeError('Post-fit info. of variable {var} has not been found. This might have happened because the fit did not converge: check fit procedure logs.'.format(var = varName))
+
 listofkeys  = fitinfo.GetListOfKeys()
-nominal     = r.TH1F()
-errors      = r.TH1F()
 if 'hFitResult_%s_'%varName not in listofkeys:
     raise RuntimeError('Nominal histogram was not found.')
 if 'hFitResult_forPlotting_%s_'%varName not in listofkeys:
     raise RuntimeError('Fit uncertainties from nominal values were not found.')
+
+nominal     = r.TH1F()
+errors      = r.TH1F()
 nominal     = copy.deepcopy(fitinfo.Get('hFitResult_%s_'%varName))
 errors      = copy.deepcopy(fitinfo.Get('hFitResult_forPlotting_%s_'%varName))
 
@@ -46,7 +50,8 @@ nominal_withErrors[0].SetLineColor(r.kBlue)
 nominal_withErrors[0].SetFillStyle(1001)
 plot.addHisto(nominal_withErrors, 'hist', 'Syst. unc.', 'F')
 plot.addHisto(nominal, 'P,same', 'Pseudodata', 'P')
-plot.saveCanvas('TR')
+#plot.addHisto(nominal, 'P,same', 'Data', 'P')
+plot.saveCanvas('TC')
 del plot
 
 
@@ -58,7 +63,7 @@ uncList[0][1].Draw()
 if uncList[0][1].GetMaximum() < 0.5:
     uncList[0][1].GetYaxis().SetRangeUser(0, 0.5)
 else:
-    uncList[0][1].GetYaxis().SetRangeUser(0, 0.75)
+    uncList[0][1].GetYaxis().SetRangeUser(0, 0.9)
 for i in range(5):
     uncList[i][1].SetLineColor(colorMap[i])
     uncList[i][1].SetLineWidth( 2 )

@@ -94,15 +94,15 @@ def propagateHistoAsym(nom, varDict, doEnv = False):
                     elif tmpunc < tmpuncDown:
                         tmpuncDown  = tmpunc
                     del tmpDict[key]
-            outUp.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, +1), err/2, tmpuncUp]))
-            outDown.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, -1), err/2, abs(tmpuncDown)]))
+            outUp.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, +1), err, tmpuncUp]))
+            outDown.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, -1), err, abs(tmpuncDown)]))
     else:
         for bin in range(1, nom.GetNbinsX() + 1):
             err     = outUp.GetBinError(bin)    # <==  Fit unc. taken here
             cont    = outUp.GetBinContent(bin)
             tmpDict = dict([(key, histo.GetBinContent(bin)) for (key, histo) in varDict.iteritems()])
-            outUp.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, +1), err/2]))
-            outDown.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, -1), err/2]))
+            outUp.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, +1), err]))
+            outDown.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, -1), err]))
     return [outUp, outDown]
 
 
