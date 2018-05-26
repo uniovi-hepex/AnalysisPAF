@@ -1,6 +1,6 @@
 import ROOT as r
 import sys, os, shutil
-import varList
+import varList as vl
 from math   import pi
 from array  import array
 
@@ -16,7 +16,7 @@ minipath    = "../../../TW_temp/"
 if (len(sys.argv) > 1):
   print("    - Manual minitrees' folder input!\n")
   if (sys.argv[1] == "last"):
-    minipath  = varList.GetLastFolder(storagepath)
+    minipath  = vl.GetLastFolder(storagepath)
   else:
     minipath  = storagepath + sys.argv[1] + "/"
 
@@ -28,10 +28,10 @@ recoCut     = "TWeight_normal * (Tpassreco == 1)"
 Cut         = "TWeight * (Tpassgen == 1)"
 fiduCut     = "TWeight * ((Tpassreco == 1) && (Tpassgen == 0))"
 
-VarNames    = varList.varList["Names"]["Variables"]
+VarNames    = vl.varList["Names"]["Variables"]
 nvars       = len(VarNames)
 
-SysList     = varList.varList["Names"]["ExpSysts"]
+SysList     = vl.varList["Names"]["ExpSysts"]
 nsys        = len(SysList)
 
 purities    = []
@@ -106,59 +106,8 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = ""):
     hReco1  = None
   
   hGen1 = None
-  
-  #print "PRINTING INFO RELATED TO UNDER/OVERFLOW: GENINFO"
-  #for i in range(nxb+2):
-    #print(str(i) + ", 0 : " + str(hGen.GetBinContent(i, 0)))
-  #for i in range(nxb+2):
-    #print(str(i) + ", nybins+2 : "+ str(hGen.GetBinContent(i, nyb+2)))
-  
-  #for j in range(nyb+2):
-    #print("0, " + str(j) + " : " + str(hGen.GetBinContent(0, j)))
-  #for j in range(nyb+2):
-    #print("nxbins+2, " +  str(j) + " : " + str(hGen.GetBinContent(nxb+2, j)))
-  
-  #print "PRINTING INFO RELATED TO UNDER/OVERFLOW: NUMINFO"
-  #for i in range(nxb+2):
-    #print(str(i) +", 0 : "+ str(h1.GetBinContent(i, 0)))
-  #for i in range(nxb+2):
-    #print(str(i)+ ", nybins+2 : "+ str(h1.GetBinContent(i, nyb+2)))
-  
-  #for j in range(nyb+2):
-    #print("0, " + str(j)+ " : " +str(h1.GetBinContent(0, j)))
-  #for j in range(nyb+2):
-    #print("nxbins+2, "+ str(j)+" : "+ str(h1.GetBinContent(nxb+2, j)))
-  
   h1.Divide(hGen)
   hGen  = None
-  
-  #print "PRINTING INFO RELATED TO UNDER/OVERFLOW: RESPONSEMATRIXINFO"
-  #for i in range(nxb+2):
-    #print(str(i) + ", 0 : " + str(h1.GetBinContent(i, 0)))
-  #for i in range(nxb+2):
-    #print(str(i) + ", nybins+2 : "+  str(h1.GetBinContent(i, nyb+2)))
-  
-  #for j in range(nyb+2):
-    #print("0, " + str(j) + " : "+ str(h1.GetBinContent(0, j)))
-  #for j in range(nyb+2):
-    #print("nxbins+2, " +  str(j) + " : " +str(h1.GetBinContent(nxb+2, j)))
-  
-  #print "PRINTING SUMS OF COLUMNS"
-  #for i in range(nxb+2):
-    #tmpsum  = 0
-    #for j in range(nyb+2):
-      #tmpsum += h1.GetBinContent(i, j)
-    #print(str(i) + " : " + str(tmpsum))
-    
-  
-  #print "PRINTING SUMS OF LINES"
-  #for j in range(nyb+2):
-    #tmpsum  = 0
-    #for i in range(nxb+2):
-      #tmpsum += h1.GetBinContent(i, j)
-    #print(str(j) + " : " + str(tmpsum))
-    
-  
   
   # Lower cutoff for the values of the matrices
   for i in range(1, nxb+1):
@@ -244,39 +193,22 @@ def PrintResponseMatrix(htemp, vname, nxb, xb, xmin, xmax, nyb, yb, ymin, ymax, 
   
   c       = r.TCanvas('c', "X-Profiled response matrix - T" + vnametitle)
   hX.SetStats(False)
-  hX.SetXTitle("Stabilities per bin")
+  hX.SetXTitle("X/Gen. value")
   hX.SetYTitle("Mean Y/Reco. value")
   hX.Draw()
-  for i in range(1, htemp.GetNbinsX()+1):
-    hX.GetXaxis().SetBinLabel(i, "S = " + str(round(stab[i-1], 2)))
-    #.ChangeLabel(i, -1, -1, -1, -1, -1, "S = " + str(round(stab[i], 2)))
-  r.gStyle.SetPaintTextFormat("4.1f")
-  r.gPad.Update()
-  secaxis = r.TGaxis(c.GetUxmin(), c.GetUymax(), c.GetUxmax(), c.GetUymax(), xmin, xmax, 510, "-")
-  secaxis.Draw()
-  r.gPad.Update()
   c.SaveAs(plotsoutputpath + vname + "/P_X_T" + vnametitle + ".png")
   c       = None
   hX      = None
-  secaxis = None
   
   c = r.TCanvas('c', "Y-Profiled response matrix - T" + vnametitle)
   hY.SetStats(False)
-  hY.SetXTitle("Purities per bin")
+  hY.SetXTitle("Y/Reco. value")
   hY.SetYTitle("Mean X/Gen. value")
   hY.Draw()
   r.gStyle.SetPaintTextFormat("4.1f")
-  for i in range(1, htemp.GetNbinsY() + 1):
-    hY.GetXaxis().SetBinLabel(i, "P = " + str(round(pur[i-1], 2)))
-    #secaxis.ChangeLabel(i, -1, -1, -1, -1, -1, "P = " + str(round(pur[i], 2)))
-  r.gPad.Update()
-  secaxis = r.TGaxis(c.GetUxmin(), c.GetUymax(), c.GetUxmax(), c.GetUymax(), ymin, ymax, 510, "-")
-  secaxis.Draw()
-  r.gPad.Update()
   c.SaveAs(plotsoutputpath + vname + "/P_Y_T" + vnametitle + ".png")
   c       = None
   hY      = None
-  secaxis = None
   
   hStab   = r.TH1F('hStab', '', nxb, xb)
   for i in range(1, hStab.GetNbinsX() + 1):
@@ -339,11 +271,11 @@ def PrintFiducialHisto(htemp, vname):
 VarBins_X = []
 VarBins_Y = []
 
-#print varList.varList[VarNames[3]]['genbinning']
+#print vl.varList[VarNames[3]]['genbinning']
 
 for i in range(len(VarNames)):
-  VarBins_X.append(array('f', varList.varList[VarNames[i]]['genbinning']))
-  VarBins_Y.append(array('f', varList.varList[VarNames[i]]['recobinning']))
+  VarBins_X.append(array('f', vl.varList[VarNames[i]]['genbinning']))
+  VarBins_Y.append(array('f', vl.varList[VarNames[i]]['recobinning']))
 
 xmin    = [int(round(i[0]))  for i in VarBins_X]
 xmax    = [int(round(i[-1])) for i in VarBins_Y]
@@ -547,4 +479,3 @@ f.Write()
 f.Close()
   
 print("> Done!")
-  
