@@ -50,6 +50,7 @@ nominal_withErrors[0].SetLineColor(r.kBlue)
 nominal_withErrors[0].SetFillStyle(1001)
 plot.addHisto(nominal_withErrors, 'hist', 'Syst. unc.', 'F')
 plot.addHisto(nominal, 'P,same', 'Pseudodata', 'P')
+#plot.addHisto(nominal, 'P,same', 'Data', 'P')
 plot.saveCanvas('TC')
 del plot
 
