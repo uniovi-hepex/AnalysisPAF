@@ -1,4 +1,4 @@
-from math   import pi
+import ROOT as r
 import os
 # Library of all the variables so everything is centralized and there are not confusions
 # TODO: port the card producer to python so it can also use this
@@ -18,6 +18,9 @@ nhDampUp_dilep  = 9672473
 nhDampDown_ttbar= 58163976
 nhDampDown_dilep= 9634312
 
+margins         = "0.06, 0.1, 0.06, 0.1"  # top, bottom, right, left
+marginsratio    = "0.03, 0.4, 0.06, 0.1" # top, bottom, right, left
+
 def GetLastFolder(stpth):
     savefolders   = next(os.walk(stpth))[1]
     saveyears     = map(int, [i[6:]  for i in savefolders])
@@ -34,7 +37,7 @@ def GetLastFolder(stpth):
 varList = {}
 varList['LCurve'] = {
     'xaxis'       : 'log L_{1}',
-    'yaxis'       : 'log #frac{L_{2}}{#tau^{2}}',
+    'yaxis'       : 'log \\frac{L_{2}}{\\tau^{2}}',
 }
 
 varList['Names'] = {
@@ -58,7 +61,7 @@ varList['E_LLB'] = {
     'xaxis'       : 'E(\\ell_{1}, \\ell_{2}, j) (GeV)',
     'yaxis'       : 'Events',
     'genbinning'  : [0, 190, 330, 550, 700],
-    'recobinning' : [0., 160., 220., 280., 340., 400., 450., 550., 700.],
+    'recobinning' : [0, 160, 220, 280, 340, 400, 450, 550, 700],
     'var'         : 'TE_LLB',
     'var_response': 'ELLB',
 }
@@ -133,7 +136,7 @@ varList['M_SubLeadingBuncertainties'] = {
 }
 
 varList['MET'] = {
-    'xaxis'       : '#slash{E}_{T} (GeV)',
+    'xaxis'       : '\\slash{E}_{T} (GeV)',
     'yaxis'       : 'Events',
     'genbinning'  : [0, 50, 140, 200],
     'recobinning' : [0., 20., 35., 50., 70., 140., 200.],
@@ -146,10 +149,10 @@ varList['METuncertainties'] = {
 }
 
 varList['MET_Phi'] = {
-    'xaxis'       : '#varphi(#slash{E}_{T}) (GeV)',
+    'xaxis'       : '\\varphi(\\slash{E}_{T}) (GeV)',
     'yaxis'       : 'Events',
-    'genbinning'  : [-pi, -1.5, 0, 1.5, pi],
-    'recobinning' : [-pi, -2.25, -1.5, -.75, 0, .75, 1.5, 2.25, pi],
+    'genbinning'  : [-r.TMath.Pi(), -1.5, 0, 1.5, r.TMath.Pi()],
+    'recobinning' : [-r.TMath.Pi(), -2.25, -1.5, -.75, 0, .75, 1.5, 2.25, r.TMath.Pi()],
     'var'         : 'TMET_Phi',
     'var_response': 'METPhi',
 }
@@ -176,7 +179,7 @@ varList['ResponseLeadingJetPt'] = {
 }
 
 varList['LeadingJetEta'] = {
-    'xaxis'       : '|#eta|(j)',
+    'xaxis'       : '|\\eta|(j)',
     'yaxis'       : 'Events',
     'genbinning'  : [0., 0.6, 1.2, 1.8, 2.4],
     'recobinning' : [0., 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4],
@@ -188,15 +191,15 @@ varList['LeadingJetEtauncertainties'] = {
     'yaxis'       : 'Relative uncertainty'
 }
 varList['ResponseLeadingJetEta'] = {
-    'xaxis'       : 'Gen Leading Jet #eta',
-    'yaxis'       : 'Leading Jet #eta'
+    'xaxis'       : 'Gen Leading Jet \\eta',
+    'yaxis'       : 'Leading Jet \\eta'
 }
 
 varList['LeadingJetPhi'] = {
-    'xaxis'       : '#varphi(j) (GeV)',
+    'xaxis'       : '\\varphi(j) (GeV)',
     'yaxis'       : 'Events',
-    'genbinning'  : [-pi, -1.5, 0, 1.5, pi],
-    'recobinning' : [-pi, -2.25, -1.5, -.75, 0, .75, 1.5, 2.25, pi],
+    'genbinning'  : [-r.TMath.Pi(), -1.5, 0, 1.5, r.TMath.Pi()],
+    'recobinning' : [-r.TMath.Pi(), -2.25, -1.5, -.75, 0, .75, 1.5, 2.25, r.TMath.Pi()],
     'var'         : 'TLeadingJetPhi',
     'var_response': 'LeadingJetPhi',
 }
@@ -236,10 +239,10 @@ varList['ResponseLeadingLepPt'] = {
 }
 
 varList['LeadingLepPhi'] = {
-    'xaxis'       : '#varphi(\\ell_{1}) (rad)',
+    'xaxis'       : '\\varphi(\\ell_{1}) (rad)',
     'yaxis'       : 'Events',
-    'genbinning'  : [-pi, -1.5, 0, 1.5, pi],
-    'recobinning' : [-pi, -2.25, -1.5, -.75, 0, .75, 1.5, 2.25, pi],
+    'genbinning'  : [-r.TMath.Pi(), -1.5, 0, 1.5, r.TMath.Pi()],
+    'recobinning' : [-r.TMath.Pi(), -2.25, -1.5, -.75, 0, .75, 1.5, 2.25, r.TMath.Pi()],
     'var'         : 'TLeadingLepPhi',
     'var_response': 'LeadingLepPhi',
 }
@@ -249,7 +252,7 @@ varList['LeadingLepPhiuncertainties'] = {
 }
 
 varList['LeadingLepEta'] = {
-    'xaxis'       : 'Leading lep #eta',
+    'xaxis'       : '|\\eta|(\\ell_{1})',
     'yaxis'       : 'Events',
     'genbinning'  : [0., 0.6, 1.2, 1.8, 2.4],
     'recobinning' : [0., 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4],
@@ -261,8 +264,8 @@ varList['LeadingLepEtauncertainties'] = {
     'yaxis'       : 'Relative uncertainty'
 }
 varList['ResponseLeadingLepEta'] = {
-    'xaxis'       : 'Gen Leading lep #eta',
-    'yaxis'       : 'Leading lep #eta'
+    'xaxis'       : 'Gen Leading lep \\eta',
+    'yaxis'       : 'Leading lep \\eta'
 }
 
 varList['SubLeadingLepE'] = {
@@ -292,10 +295,10 @@ varList['SubLeadingLepPtuncertainties'] = {
 }
 
 varList['SubLeadingLepPhi'] = {
-    'xaxis'       : '#varphi(\\ell_{2}) (rad)',
+    'xaxis'       : '\\varphi(\\ell_{2}) (rad)',
     'yaxis'       : 'Events',
-    'genbinning'  : [-pi, -1.5, 0, 1.5, pi],
-    'recobinning' : [-pi, -2.25, -1.5, -.75, 0, .75, 1.5, 2.25, pi],
+    'genbinning'  : [-r.TMath.Pi(), -1.5, 0, 1.5, r.TMath.Pi()],
+    'recobinning' : [-r.TMath.Pi(), -2.25, -1.5, -.75, 0, .75, 1.5, 2.25, r.TMath.Pi()],
     'var'         : 'TSubLeadingLepPhi',
     'var_response': 'SubLeadingLepPhi',
 }
@@ -305,7 +308,7 @@ varList['SubLeadingLepPhiuncertainties'] = {
 }
 
 varList['SubLeadingLepEta'] = {
-    'xaxis'       : '#eta(\\ell_2)',
+    'xaxis'       : '\\eta(\\ell_2)',
     'yaxis'       : 'Events',
     'genbinning'  : [0., 0.6, 1.2, 1.8, 2.4],
     'recobinning' : [0., 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4],
