@@ -79,7 +79,7 @@ public:
 //    Lumi = DefaultLumi;
 //    nSignalSamples = 0;
 //  }
-  Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Double_t bin0 = 0, Double_t binN = 0, TString tit = "title", TString xtit = "VAR"){
+  Plot(TString variable, TString cuts = "", TString channel = "ElMu", Int_t nbins = 0, Float_t bin0 = 0, Float_t binN = 0, TString tit = "title", TString xtit = "VAR"){
     var    = variable;
     cut    = (cuts);
     chan   = channel;
