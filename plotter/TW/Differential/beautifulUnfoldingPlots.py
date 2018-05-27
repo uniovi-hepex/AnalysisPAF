@@ -141,7 +141,7 @@ class beautifulUnfoldingPlots:
         CMS_lumi.lumi_13TeV = "%.1f fb^{-1}" %(varList.Lumi)
         CMS_lumi.extraText  = 'Preliminary'
         CMS_lumi.lumi_sqrtS = '#sqrt{s} = 13 TeV'
-        CMS_lumi.CMS_lumi(r.gPad, 4, 0, -0.005 if self.doWide and self.doRatio else 0.01 if self.doWide else 0.05)
+        CMS_lumi.CMS_lumi(r.gPad, 4, 10, -0.005 if self.doWide and self.doRatio else 0.01 if self.doWide else 0.05)
 
         self.canvas.SaveAs(self.plotspath + self.name + suffix +'.pdf')
         self.canvas.SaveAs(self.plotspath + self.name + suffix +'.png')
