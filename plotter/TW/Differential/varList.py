@@ -64,6 +64,7 @@ varList['E_LLB'] = {
     'recobinning' : [0, 160, 220, 280, 340, 400, 450, 550, 700],
     'var'         : 'TE_LLB',
     'var_response': 'ELLB',
+    'var_gen'     : 'TGenE_LLB',
 }
 varList['E_LLBuncertainties'] = {
     'xaxis'       : varList['E_LLB']['xaxis'],
@@ -77,6 +78,7 @@ varList['LeadingJetE'] = {
     'recobinning' : [0., 40., 70., 120., 175., 275., 400.],
     'var'         : 'TLeadingJetE',
     'var_response': 'LeadingJetE',
+    'var_gen'     : 'TGenLeadingJetE',
 }
 varList['LeadingJetEuncertainties'] = {
     'xaxis'       : varList['LeadingJetE']['xaxis'],
@@ -90,6 +92,7 @@ varList['MT_LLMETB'] = {
     'recobinning' : [0., 200., 270., 320., 380., 450., 600.],
     'var'         : 'TMT_LLMETB',
     'var_response': 'MTLLMETB',
+    'var_gen'     : 'TGenMT_LLMETB',
 }
 varList['MT_LLMETBuncertainties'] = {
     'xaxis'       : varList['MT_LLMETB']['xaxis'],
@@ -103,6 +106,7 @@ varList['M_LLB'] = {
     'recobinning' : [0., 125., 170., 180., 200., 240., 290., 350., 500.],
     'var'         : 'TM_LLB',
     'var_response': 'MLLB',
+    'var_gen'     : 'TGenM_LLB',
 }
 varList['M_LLBuncertainties'] = {
     'xaxis'       : varList['M_LLB']['xaxis'],
@@ -116,6 +120,7 @@ varList['M_LeadingB'] = {
     'recobinning' : [0., 45., 75., 105., 140., 190., 230., 300., 400.],
     'var'         : 'TM_LeadingB',
     'var_response': 'MLeadingB',
+    'var_gen'     : 'TGenLeadingB',
 }
 varList['M_LeadingBuncertainties'] = {
     'xaxis'       : varList['M_LeadingB']['xaxis'],
@@ -129,6 +134,7 @@ varList['M_SubLeadingB'] = {
     'recobinning' : [0., 50., 60., 80., 100., 125., 150., 200., 300.],
     'var'         : 'TM_SubLeadingB',
     'var_response': 'MSubLeadingB',
+    'var_gen'     : 'TGenM_SubLeadingB',
 }
 varList['M_SubLeadingBuncertainties'] = {
     'xaxis'       : varList['M_SubLeadingB']['xaxis'],
@@ -142,6 +148,7 @@ varList['MET'] = {
     'recobinning' : [0., 20., 35., 50., 70., 140., 200.],
     'var'         : 'TMET',
     'var_response': 'MET',
+    'var_gen'     : 'TGenMET'
 }
 varList['METuncertainties'] = {
     'xaxis'       : varList['MET']['xaxis'],
@@ -155,6 +162,7 @@ varList['MET_Phi'] = {
     'recobinning' : [-r.TMath.Pi(), -2.25, -1.5, -.75, 0, .75, 1.5, 2.25, r.TMath.Pi()],
     'var'         : 'TMET_Phi',
     'var_response': 'METPhi',
+    'var_gen'     : 'TGenMET_Phi',
 }
 varList['MET_Phiuncertainties'] = {
     'xaxis'       : varList['MET_Phi']['xaxis'],
@@ -168,6 +176,7 @@ varList['LeadingJetPt'] = {
     'recobinning' : [0., 50., 75., 110., 150., 200., 300.],
     'var'         : 'TLeadingJetPt',
     'var_response': 'LeadingJetPt',
+    'var_gen'     : 'TGenLeadingJetPt',
 }
 varList['LeadingJetPtuncertainties'] = {
     'xaxis'       : varList['LeadingJetPt']['xaxis'],
@@ -185,6 +194,7 @@ varList['LeadingJetEta'] = {
     'recobinning' : [0., 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4],
     'var'         : 'abs(TLeadingJetEta)',
     'var_response': 'LeadingJetEta',
+    'var_gen'     : 'abs(TGenLeadingJetEta)',
 }
 varList['LeadingJetEtauncertainties'] = {
     'xaxis'       : varList['LeadingJetEta']['xaxis'],
@@ -202,6 +212,7 @@ varList['LeadingJetPhi'] = {
     'recobinning' : [-r.TMath.Pi(), -2.25, -1.5, -.75, 0, .75, 1.5, 2.25, r.TMath.Pi()],
     'var'         : 'TLeadingJetPhi',
     'var_response': 'LeadingJetPhi',
+    'var_gen'     : 'TGenLeadingJetPhi',
 }
 varList['LeadingJetPhiuncertainties'] = {
     'xaxis'       : varList['LeadingJetPhi']['xaxis'],
@@ -215,6 +226,7 @@ varList['LeadingLepE'] = {
     'recobinning' : [0., 40., 60., 80., 100., 120., 150., 250., 350.],
     'var'         : 'TLeadingLepE',
     'var_response': 'LeadingLepE',
+    'var_gen'     : 'TGenLeadingLepE',
 }
 varList['LeadingLepEuncertainties'] = {
     'xaxis'       : varList['LeadingLepE']['xaxis'],
@@ -228,6 +240,7 @@ varList['LeadingLepPt'] = {
     'recobinning' : [0., 50., 65., 75., 90., 110., 130., 160., 250.],
     'var'         : 'TLeadingLepPt',
     'var_response': 'LeadingLepPt',
+    'var_gen'     : 'TGenLeadingLepPt',
 }
 varList['LeadingLepPtuncertainties'] = {
     'xaxis'       : varList['LeadingLepPt']['xaxis'],
@@ -245,6 +258,7 @@ varList['LeadingLepPhi'] = {
     'recobinning' : [-r.TMath.Pi(), -2.25, -1.5, -.75, 0, .75, 1.5, 2.25, r.TMath.Pi()],
     'var'         : 'TLeadingLepPhi',
     'var_response': 'LeadingLepPhi',
+    'var_gen'     : 'TGenLeadingLepPhi',
 }
 varList['LeadingLepPhiuncertainties'] = {
     'xaxis'       : varList['LeadingLepPhi']['xaxis'],
@@ -258,6 +272,7 @@ varList['LeadingLepEta'] = {
     'recobinning' : [0., 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4],
     'var'         : 'abs(TLeadingLepEta)',
     'var_response': 'LeadingLepEta',
+    'var_gen'     : 'abs(TGenLeadingLepEta)',
 }
 varList['LeadingLepEtauncertainties'] = {
     'xaxis'       : varList['LeadingLepEta']['xaxis'],
@@ -275,6 +290,7 @@ varList['SubLeadingLepE'] = {
     'recobinning' : [0., 30., 50., 70., 90., 115., 140., 175., 250.],
     'var'         : 'TSubLeadingLepE',
     'var_response': 'SubLeadingLepE',
+    'var_gen'     : 'TGenSubLeadingLepE',
 }
 varList['SubLeadingLepEuncertainties'] = {
     'xaxis'       : varList['SubLeadingLepE']['xaxis'],
@@ -288,6 +304,7 @@ varList['SubLeadingLepPt'] = {
     'recobinning' : [0., 30., 40., 50., 58., 68., 78., 100., 150.],
     'var'         : 'TSubLeadingLepPt',
     'var_response': 'SubLeadingLepPt',
+    'var_gen'     : 'TGenSubLeadingLepPt',
 }
 varList['SubLeadingLepPtuncertainties'] = {
     'xaxis'       : varList['SubLeadingLepPt']['xaxis'],
@@ -301,6 +318,7 @@ varList['SubLeadingLepPhi'] = {
     'recobinning' : [-r.TMath.Pi(), -2.25, -1.5, -.75, 0, .75, 1.5, 2.25, r.TMath.Pi()],
     'var'         : 'TSubLeadingLepPhi',
     'var_response': 'SubLeadingLepPhi',
+    'var_gen'     : 'TGenSubLeadingLepPhi',
 }
 varList['SubLeadingLepPhiuncertainties'] = {
     'xaxis'       : varList['SubLeadingLepPhi']['xaxis'],
@@ -314,6 +332,7 @@ varList['SubLeadingLepEta'] = {
     'recobinning' : [0., 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4],
     'var'         : 'abs(TSubLeadingLepEta)',
     'var_response': 'SubLeadingLepEta',
+    'var_gen'     : 'abs(TGenSubLeadingLepEta)',
 }
 varList['SubLeadingLepEtauncertainties'] = {
     'xaxis'       : varList['SubLeadingLepEta']['xaxis'],
@@ -327,6 +346,7 @@ varList['DilepPt'] = {
     'recobinning' : [0., 40., 60., 80., 90., 110., 130., 150., 200.],
     'var'         : 'TDilepPt',
     'var_response': 'DilepPt',
+    'var_gen'     : 'TGenDilepPt',
 }
 varList['DilepPtuncertainties'] = {
     'xaxis'       : varList['DilepPt']['xaxis'],
@@ -340,6 +360,7 @@ varList['DilepJetPt'] = {
     'recobinning' : [0., 20., 30., 50., 60., 90., 100., 140., 200.],
     'var'         : 'TDilepJetPt',
     'var_response': 'DilepJetPt',
+    'var_gen'     : 'TGenDilepJetPt',
 }
 varList['DilepJetPtuncertainties'] = {
     'xaxis'       : varList['DilepJetPt']['xaxis'],
@@ -353,6 +374,7 @@ varList['DilepMETJetPt'] = {
     'recobinning' : [0., 20., 30., 40., 50., 60., 70., 80., 150.],
     'var'         : 'TDilepMETJetPt',
     'var_response': 'DilepMETJetPt',
+    'var_gen'     : 'TGenDilepMETJetPt',
 }
 varList['DilepMETJetPtuncertainties'] = {
     'xaxis'       : varList['DilepMETJetPt']['xaxis'],
@@ -366,6 +388,7 @@ varList['HTtot'] = {
     'recobinning' : [0., 150., 200., 250., 300., 350., 400., 450., 600.],
     'var'         : 'THTtot',
     'var_response': 'HTtot',
+    'var_gen'     : 'TGenHTtot',
 }
 varList['HTtotuncertainties'] = {
     'xaxis'       : varList['HTtot']['xaxis'],
