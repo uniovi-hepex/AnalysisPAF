@@ -7,6 +7,9 @@ from warnings import warn, simplefilter
 
 simplefilter("always", UserWarning)
 r.gROOT.SetBatch(True)
+
+verbose = False
+
 print "===== Fitting procedure with syst. profiling\n"
 
 if (len(sys.argv) > 1):
@@ -75,7 +78,7 @@ def makeFit(task):
         warn('Fit of variable {var} with syst. {sys} has a nonzero fit status value: {fitv}'.format(var = varName, sys = syst, fitv = fitstatus), UserWarning)
     
     fitResult = tfile.Get('fit_s')
-    fitResult.Print()
+    if verbose: fitResult.Print()
     covar     = fitResult.correlationHist()
 
     # Tambien necesitamos el workspace

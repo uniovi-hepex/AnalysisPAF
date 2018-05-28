@@ -1,4 +1,4 @@
-import ROOT as rt
+import ROOT as r
 
 # CMS_lumi
 #   Initiated by: Gautier Hamel de Monchenault (Saclay)
@@ -6,31 +6,31 @@ import ROOT as rt
 #   Updated by:   Dinko Ferencek (Rutgers)
 #
 
-cmsText     = "CMS";
-cmsTextFont   = 61  
+cmsText         = "CMS";
+cmsTextFont     = 61
 
-writeExtraText = True
-extraText   = "Preliminary"
-extraTextFont = 52 
+writeExtraText  = True
+extraText       = "Preliminary"
+extraTextFont   = 52
 
-lumiTextSize     = 0.6
-lumiTextOffset   = 0.2
+lumiTextSize    = 0.6
+lumiTextOffset  = 0.2
 
-cmsTextSize      = 0.75
-cmsTextOffset    = 0.1
+cmsTextSize     = 0.75
+cmsTextOffset   = 0.1
 
-relPosX    = 0.045
-relPosY    = 0.035
-relExtraDY = 1.2
+relPosX         = 0.045
+relPosY         = 0.035
+relExtraDY      = 1.2
 
 extraOverCmsTextSize  = 0.76
 
 lumi_13TeV = "20.1 fb^{-1}"
-lumi_8TeV  = "19.7 fb^{-1}" 
+lumi_8TeV  = "19.7 fb^{-1}"
 lumi_7TeV  = "5.1 fb^{-1}"
 lumi_sqrtS = ""
 
-drawLogo      = False
+drawLogo   = False
 
 def CMS_lumi(pad,  iPeriod,  iPosX , aLittleExtra=0.04):
     outOfFrame    = False
@@ -49,7 +49,7 @@ def CMS_lumi(pad,  iPeriod,  iPosX , aLittleExtra=0.04):
     W = pad.GetWw()
     l = pad.GetLeftMargin()
     t = pad.GetTopMargin()
-    r = pad.GetRightMargin()
+    rr = pad.GetRightMargin()
     b = pad.GetBottomMargin()
     e = 0.025
 
@@ -90,10 +90,10 @@ def CMS_lumi(pad,  iPeriod,  iPosX , aLittleExtra=0.04):
             
 #    print lumiText
 
-    latex = rt.TLatex()
+    latex = r.TLatex()
     latex.SetNDC()
     latex.SetTextAngle(0)
-    latex.SetTextColor(rt.kBlack)    
+    latex.SetTextColor(r.kBlack)    
     
     extraTextSize = extraOverCmsTextSize*cmsTextSize
     
@@ -101,7 +101,7 @@ def CMS_lumi(pad,  iPeriod,  iPosX , aLittleExtra=0.04):
     latex.SetTextAlign(31) 
     latex.SetTextSize(lumiTextSize*t)    
 
-    latex.DrawLatex(1-r,1-t+lumiTextOffset*t,lumiText)
+    latex.DrawLatex(1-rr,1-t+lumiTextOffset*t,lumiText)
 
     if( outOfFrame ):
         latex.SetTextFont(cmsTextFont)
@@ -113,24 +113,24 @@ def CMS_lumi(pad,  iPeriod,  iPosX , aLittleExtra=0.04):
 
     posX_ = 0
     if( iPosX%10<=1 ):
-        posX_ =   l + relPosX*(1-l-r)
+        posX_ =   l + relPosX*(1-l-rr)
     elif( iPosX%10==2 ):
-        posX_ =  l + 0.5*(1-l-r)
+        posX_ =  l + 0.5*(1-l-rr)
     elif( iPosX%10==3 ):
-        posX_ =  1-r - relPosX*(1-l-r)
+        posX_ =  1-rr - relPosX*(1-l-rr)
 
     posY_ = 1-t - relPosY*(1-t-b)
 
     if( not outOfFrame ):
         if( drawLogo ):
-            posX_ =   l + 0.045*(1-l-r)*W/H
+            posX_ =   l + 0.045*(1-l-rr)*W/H
             posY_ = 1-t - 0.045*(1-t-b)
             xl_0 = posX_
             yl_0 = posY_ - 0.15
             xl_1 = posX_ + 0.15*H/W
             yl_1 = posY_
-            CMS_logo = rt.TASImage("CMS-BW-label.png")
-            pad_logo =  rt.TPad("logo","logo", xl_0, yl_0, xl_1, yl_1 )
+            CMS_logo = r.TASImage("CMS-BW-label.png")
+            pad_logo =  r.TPad("logo","logo", xl_0, yl_0, xl_1, yl_1 )
             pad_logo.Draw()
             pad_logo.cd()
             CMS_logo.Draw("X")
@@ -148,7 +148,7 @@ def CMS_lumi(pad,  iPeriod,  iPosX , aLittleExtra=0.04):
                 latex.DrawLatex(posX_, posY_- relExtraDY*cmsTextSize*t, extraText)
     elif( writeExtraText ):
         if( iPosX==0):
-            posX_ =   l +  relPosX*(1+l-r) + aLittleExtra
+            posX_ =   l +  relPosX*(1+l-rr) + aLittleExtra
             posY_ =   1-t+lumiTextOffset*t
 
         latex.SetTextFont(extraTextFont)

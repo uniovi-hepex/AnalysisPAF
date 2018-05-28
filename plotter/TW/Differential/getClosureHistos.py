@@ -22,14 +22,17 @@ if (len(sys.argv) > 1):
     varName     = sys.argv[1]
     print "> Chosen variable:", varName, "\n"
     if (len(sys.argv) > 2):
-      pathToTree    = storagepath + sys.argv[2] + "/"
+        if sys.argv[2] == 'last':
+            pathToTree    = GetLastFolder(storagepath)
+        else:
+            pathToTree    = storagepath + sys.argv[2] + "/"
     else:
-      pathToTree    = GetLastFolder(storagepath)
+        pathToTree  = "../../../TW_temp/"
     print "> Minitrees will be read from:", pathToTree, "\n"
 else:
     print "> Default choice of variable and minitrees\n"
     varName     = 'LeadingJetPt'
-    minipath    = "../../../TW_temp/"
+    pathToTree  = "../../../TW_temp/"
 
 NameOfTree = "Mini1j1t";
 
