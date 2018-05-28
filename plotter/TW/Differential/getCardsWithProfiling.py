@@ -250,7 +250,7 @@ def getCardsSyst(task):
         p.SetWeight('TWeight*' + str(specialweight))
         p.AddSample('TTbar2L_Powheg_ueUp',                 't#bar{t}', r.itBkg, 633, systlist)
         p.AddSample('TTbar2L_Powheg_ueUp',                 't#bar{t}', r.itSys, 1, "JERUp")
-        p.AddSymmetricHisto('t#bar{t}'  "JERUp");
+        p.AddSymmetricHisto('t#bar{t}',  "JERUp");
         p.SetWeight('TWeight')
     elif 'UEDown' in syst:
         specialweight = vl.nUEDown_ttbar/vl.sigma_ttbar/(vl.nUEDown_ttbar/vl.sigma_ttbar + vl.nUEDown_dilep/vl.sigma_dilep)
