@@ -5,25 +5,6 @@ from array import array
 from multiprocessing import Pool
 from warnings import warn, simplefilter
 
-simplefilter("always", UserWarning)
-r.gROOT.SetBatch(True)
-
-verbose = False
-
-print "===== Fitting procedure with syst. profiling\n"
-
-if (len(sys.argv) > 1):
-    nCores      = int(sys.argv[1])
-    print ('> Parallelization will be done with ' + str(nCores) + ' cores')
-else:
-    print '> Sequential execution mode chosen'
-    nCores      = 1
-
-if (len(sys.argv) > 2):
-    varName     = sys.argv[2]
-else:
-    print "> Default choice of variable and minitrees\n"
-    varName     = 'LeadingLepEta'
 
 
 def getBinFromLabel(hist, labx, laby):
@@ -63,7 +44,7 @@ def makeFit(task):
         os.system('mkdir -p temp/{var}_{sys}/fitdiagnostics'.format(var=varName,sys=syst))
 
     os.system(physicsModel)
-    os.system('combine -M FitDiagnostics --out temp/{var}_{sys}/fitdiagnostics  temp/{var}_{sys}/comb_fit_{var}_{sys}.root --saveWorkspace -n {var}_{sys}'.format(var=varName,sys=syst))
+    os.system('combine  -M FitDiagnostics --out temp/{var}_{sys}/fitdiagnostics  temp/{var}_{sys}/comb_fit_{var}_{sys}.root --saveWorkspace -n {var}_{sys} --X-rtd MINIMIZER_MaxCalls=5000000'.format(var=varName,sys=syst))
 
     # Ahora recogemos la virutilla
     tfile     = r.TFile.Open('temp/{var}_{sys}/fitdiagnostics/fitDiagnostics{var}_{sys}.root'.format(var=varName,sys=syst))
@@ -154,25 +135,50 @@ def makeFit(task):
     return [outHisto, errors, hCov]
 
 
-tasks = []
-tasks.append((varName,''))
-from varList import systMap
-for sys in systMap:
-    tasks.append( (varName, sys) )
 
-pool = Pool(nCores)
-finalresults = pool.map(makeFit, tasks)
-pool.close()
-pool.join()
+if __name__ == '__main__':
 
-print '> Saving fit results...'
-outFile = r.TFile.Open('temp/{var}_/fitOutput_{var}.root'.format(var = varName),'recreate')
-for el in finalresults:
-    for subel in el:
-        subel.Write()
+    simplefilter("always", UserWarning)
+    r.gROOT.SetBatch(True)
 
-outFile.Close()
-print '> Fitting procedure for variable', varName, 'succesfully completed'
+    verbose = False
+
+    print "===== Fitting procedure with syst. profiling\n"
+
+    if (len(sys.argv) > 1):
+        nCores      = int(sys.argv[1])
+        print ('> Parallelization will be done with ' + str(nCores) + ' cores')
+    else:
+        print '> Sequential execution mode chosen'
+        nCores      = 1
+
+    if (len(sys.argv) > 2):
+        varName     = sys.argv[2]
+    else:
+        print "> Default choice of variable and minitrees\n"
+        varName     = 'LeadingLepEta'
+
+
+
+    tasks = []
+    tasks.append((varName,''))
+    from varList import systMap
+    for sys in systMap:
+        tasks.append( (varName, sys) )
+
+    pool = Pool(nCores)
+    finalresults = pool.map(makeFit, tasks)
+    pool.close()
+    pool.join()
+
+    print '> Saving fit results...'
+    outFile = r.TFile.Open('temp/{var}_/fitOutput_{var}.root'.format(var = varName),'recreate')
+    for el in finalresults:
+        for subel in el:
+            subel.Write()
+
+    outFile.Close()
+    print '> Fitting procedure for variable', varName, 'succesfully completed'
 
 # outHisto.SetMarkerStyle(r.kFullCircle)
 # errors.SetFillColor(r.kBlue)
