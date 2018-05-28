@@ -271,8 +271,6 @@ def PrintFiducialHisto(htemp, vname):
 VarBins_X = []
 VarBins_Y = []
 
-#print vl.varList[VarNames[3]]['genbinning']
-
 for i in range(len(VarNames)):
   VarBins_X.append(array('f', vl.varList[VarNames[i]]['genbinning']))
   VarBins_Y.append(array('f', vl.varList[VarNames[i]]['recobinning']))
