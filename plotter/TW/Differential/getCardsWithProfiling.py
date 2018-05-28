@@ -487,7 +487,6 @@ def getCardsPdf(task):
     p.SetLimitFolder("temp/{var}_{sys}/".format(var = varName, sys = syst));
     p.SetPathSignal(pathToTree);
     p.SetTitleY("Events")
-    
     p.AddSample("TW",                          "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
     p.AddSample("TbarW",                       "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist);
     
@@ -509,7 +508,7 @@ def getCardsPdf(task):
 
     p.AddSample("TW",                          "tW",           r.itSys, 1, "JERUp");
     p.AddSample("TbarW",                       "tW",           r.itSys, 1, "JERUp");
-    p.AddSymmetricHisto("tW"%indx,  "JERUp");
+    p.AddSymmetricHisto("tW",  "JERUp");
     
     pdf = r.PDFToPy(pathToTree, "TTbar_Powheg", NameOfTree, r.TString('(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && %s >= %4.2f  && %s < %4.2f )'%(vl.varList[varName]['var'], binDn, vl.varList[varName]['var'], binUp)), r.TString('ElMu'), r.TString('theBDt_bin%d( TBDT )'%indx), vl.nBinsInBDT,float(0.5), float(vl.nBinsInBDT+0.5))
     pdf.verbose = False
@@ -743,7 +742,7 @@ if __name__ == '__main__':
         tasks.append( (binDn, binUp, indx, asimov) )
 
     pool    = Pool(nCores)
-    pool.map(getCardsNominal, tasks)
+    #pool.map(getCardsNominal, tasks)
     pool.close()
     pool.join()
     del pool
@@ -757,7 +756,7 @@ if __name__ == '__main__':
             tasksSyst.append( (binDn, binUp, indx, asimov, syst) )
     
     pool    = Pool(nCores)
-    pool.map(getCardsSyst, tasksSyst)
+    #pool.map(getCardsSyst, tasksSyst)
     pool.close()
     pool.join()
     
