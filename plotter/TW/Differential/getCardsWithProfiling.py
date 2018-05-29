@@ -593,7 +593,8 @@ def getCardsPdf(task):
     p.DrawStack();
     del p
     del pdf
-
+    del histo
+    
     p = r.PlotToPy(r.TString('theBDt_bin%d( TBDT )'%indx), r.TString('(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && %s >= %4.2f  && %s < %4.2f )'%(vl.varList[varName]['var'], binDn, vl.varList[varName]['var'], binUp)), r.TString('ElMu'), vl.nBinsInBDT, float(0.5), float(vl.nBinsInBDT+0.5), r.TString(varName + '_%d'%indx), r.TString(''))
     p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
     p.SetLimitFolder("temp/{var}_{sys}/".format(var = varName, sys = syst));
@@ -706,6 +707,7 @@ def getCardsPdf(task):
     p.SaveHistograms();
     del p
     del pdf
+    del histo
     
     card = r.Datacard('tW_%d'%indx, 'ttbar_{idx},DY_{idx},VVttbarV_{idx},Non-WorZ_{idx}'.format(idx=indx) , systlist + ', JER', "ElMu_%d"%indx)
     card.SetRootFileName('temp/{var}_{sys}/forCards_'.format(var = varName, sys = syst) + varName  + '_' + syst  + '_%d'%indx)
