@@ -37,7 +37,7 @@ if [ "$variable" == "All" ]; then
   if [ ! -e "temp/UnfoldingInfo.root" ]; then
     echo "%%%%% FATAL ERROR: the ROOT file with the histograms of the response matrix do not exist."
     echo "%%%%% This bash script will now end."
-    exit
+    return
   else
     echo "> ROOT file with the histograms of the response matrix found."
     echo " "
@@ -96,7 +96,7 @@ else
   if [ ! -e "temp/UnfoldingInfo.root" ]; then
     echo "%%%%% FATAL ERROR: the ROOT file with the histograms of the response matrix do not exist."
     echo "%%%%% This bash script will now end."
-    exit
+    return
   else
     echo "> ROOT file with the histograms of the response matrix found."
     echo " "
