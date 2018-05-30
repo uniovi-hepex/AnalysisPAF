@@ -29,7 +29,7 @@ if (len(sys.argv) > 1):
 else:
     print "> Default choice of variable and minitrees\n"
     varName     = 'LeadingJetPt'
-    minipath    = "../../../TW_temp/"
+    minipath    = storagepath
 
 
 tf    = ROOT.TFile(minipath + 'Tree_TW.root')             # Uncomment this for equal-tW BDT distribution shape

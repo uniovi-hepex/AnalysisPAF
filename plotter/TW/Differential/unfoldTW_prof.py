@@ -8,7 +8,7 @@ import ROOT as r
 import beautifulUnfoldingPlots
 import errorPropagator
 import varList
-
+import os
 
 class DataContainer:
     ''' Class to store all the needed inputs: response matrices 
@@ -18,7 +18,12 @@ class DataContainer:
         self.var             = var
         self.fileName        = fileName
         self.fileNameReponse = fileNameReponse
-        self.listOfSysts = [] 
+        self.theoSysts    = []  # theo uncertainties (variations in response, input vector and covariance matrix)
+        self.systListResp = []  # all of them (everything has variations in response but ttbar only uncert.)
+                                #
+                                # + experimental uncertainties -> are propagated in the nominal helper
+                                # + theo uncertainties -> have their own helper (as they affect input vector)
+
         self.responseMatrices = {}
         self.unfoldingInputs  = {}
         self.bkgs             = {}
@@ -29,15 +34,22 @@ class DataContainer:
         # Getting inputs and covariance matrices
         tfile = r.TFile.Open(self.fileName)
         for key in tfile.GetListOfKeys():
-            if 'forPlotting' in key.GetName(): continue
-            if 'hFitResult_' in key.GetName():
-                sysName = key.GetName().replace('hFitResult_'+self.var+'_','')
-                self.unfoldingInputs[sysName] = copy.deepcopy(key.ReadObj())
-                self.listOfSysts.append(sysName)
+            if   'forPlotting' in key.GetName(): continue
+            elif 'hFitResult_' in key.GetName():
+                if 'hFitResult_' + self.var + '_' not in key.GetName(): continue
+                else:
+                    sysName = key.GetName().replace('hFitResult_'+self.var+'_','')
+                    self.unfoldingInputs[sysName] = copy.deepcopy(key.ReadObj())
+                    if sysName is not '':
+                        self.theoSysts.append(sysName)
+
             elif 'hCovar_' in key.GetName():
-                if key.GetName() != 'hCovar_' + self.var + '_':
+                if 'hCovar_' + self.var + '_' not in key.GetName():
                     continue
-                self.covarInput[''] = copy.deepcopy(key.ReadObj())
+                else:
+                    sysName = key.GetName().replace('hCovar_'+self.var+'_','')
+                    self.covarInput[sysName] = copy.deepcopy(key.ReadObj())
+
         if '' not in self.unfoldingInputs: 
             print self.unfoldingInputs
             raise RuntimeError("Unfolding inputs for nominal sample is missing")
@@ -53,7 +65,7 @@ class DataContainer:
             if self.var not in key.GetName(): continue
             if key.GetName() == 'R'+self.var:
                 self.responseMatrices[''] = copy.deepcopy(key.ReadObj())
-            else:
+            elif 'R'+self.var+'_' in key.GetName():
                 sysName = '_'.join(key.GetName().split('_')[1:])
                 self.systListResp.append(sysName)
                 self.responseMatrices[sysName] = copy.deepcopy(key.ReadObj())
@@ -69,37 +81,27 @@ class DataContainer:
                 sysName = '_'.join(key.GetName().split('_')[1:])
                 self.bkgs[sysName] = copy.deepcopy(key.ReadObj())
                 self.bkgs[sysName].Scale(varList.Lumi*1000)
+
         
         tfile.Close()
 
         if '' not in self.responseMatrices:
             raise RuntimeError("Nominal response matrix not there")
 
-        pleaseraise = False
-        if not all(sys in self.systListResp for sys in self.listOfSysts):
-            for sys in self.listOfSysts:
-                if sys not in self.systListResp:
-                    if sys not in varList.varList['Names']['ttbarSysts'] + varList.varList['Names']['specialSysts']:
-                        print '>', sys, 'is not in the response matrix file!'
-                        pleaseraise = True
-            if pleaseraise: 
-                raise RuntimeError("We dont have reponse matrices for all nuisances")
-            else:
-                print '\n> TTbar systematic uncertanties considered.\n'
-        
-        if ((systListResp != self.listOfSysts) and not pleaseraise):
-            print RuntimeWarning("Different nuisances in response and inputs")
-            #raise RuntimeWarning("Different nuisances in response and inputs")
-        pleaseraise = None
-        
+
+                
         
     def getInputs(self,nuis):
-        if nuis not in self.listOfSysts + [''] + varList.varList['Names']['ttbarSysts']:
-            raise RuntimeError("%s is not in the list of response"%nuis)
-        if nuis in varList.varList['Names']['ttbarSysts']:
+
+        # ttbar only systs dont have a varied response matrix 
+        print nuis, varList.varList['Names']['ttbarSysts']+varList.varList['Names']['colorSysts']
+        if nuis in varList.varList['Names']['ttbarSysts']+varList.varList['Names']['colorSysts']:
             return self.unfoldingInputs[nuis], self.responseMatrices[''], self.bkgs[''], self.covarInput[nuis]
         else:
+            if nuis not in self.responseMatrices:
+                raise RuntimeError("%s is not in the list of response"%nuis)
             return self.unfoldingInputs[nuis], self.responseMatrices[nuis], self.bkgs[nuis], self.covarInput[nuis]
+
     def getResponse(self, nuis):
         if nuis not in self.systListResp:
             RuntimeError("%s is not in the list of response"%nuis)
@@ -116,7 +118,8 @@ class UnfolderHelper:
         self.unfInput , self.response, self.bkg, self.Vyy = unfInputNresponse
         self.tunfolder = r.TUnfoldDensity(self.response, r.TUnfold.kHistMapOutputHoriz,
                                              r.TUnfold.kRegModeCurvature, r.TUnfold.kEConstraintArea,
-                                             r.TUnfoldDensity.kDensityModeeNone)
+                                             r.TUnfoldDensity.kDensityModeNone)
+
         self.tunfolder.SetInput( self.unfInput, 0., 0., self.Vyy )
         self.tunfolder.SubtractBackground( self.bkg , 'Non fiducial events')
 
@@ -126,12 +129,11 @@ class UnfolderHelper:
 
         self.logTauX=r.TSpline3() 
         self.logTauY=r.TSpline3() 
-        #self.logTauCurv= r.TSpline3() 
+        self.logTauCurv= r.TSpline3() 
         self.lCurve=r.TGraph(0) 
 
-        self.themax = self.tunfolder.ScanLcurve(1000, 1e-9, 1e-5, self.lCurve, self.logTauX,
-                                                self.logTauY)
-
+        self.themax = self.tunfolder.ScanLcurve(10000, 1e-10,1e-4, self.lCurve, self.logTauX,
+                                                self.logTauY, self.logTauCurv)
         
     def doTauScan(self):
         if self.nuis != '': 
@@ -161,10 +163,13 @@ class UnfolderHelper:
         x=r.Double(0)
         y=r.Double(0)
         
-        plot = beautifulUnfoldingPlots.beautifulUnfoldingPlots('LCurve')
+        #plot = beautifulUnfoldingPlots.beautifulUnfoldingPlots('LCurve')
         if not hasattr(self,'scanRes'):
             self.logTauX.GetKnot( self.themax, t, x)
             self.logTauY.GetKnot( self.themax, t, y)
+
+            #plot.addHisto(self.lCurve,'AL','',0)
+
 
             self.lCurve.SetLineWidth(2)
             self.lCurve.SetLineColor(r.kBlue)
@@ -172,11 +177,24 @@ class UnfolderHelper:
             #self.lCurve.GetYaxis().SetDecimals(True)
             self.lCurve.GetYaxis().SetNdivisions(304,False)
             self.lCurve.GetXaxis().SetNdivisions(303,False)
-            plot.addHisto(self.lCurve,'AL','',0)
 
         else:
             plot.addHisto(self.scanRes,'AL','',0)
 
+        c = r.TCanvas()
+        self.lCurve.Draw('AL')
+        raw_input('check')
+
+        # for i in range( self.lCurve.GetN()) :
+        #     x = r.Double(0); y = r.Double(0.)
+        #     self.lCurve.GetPoint(i, x, y)
+        #     print i, x, y 
+        plot.saveCanvas('TR','_%s'%self.var)
+
+        plot = beautifulUnfoldingPlots.beautifulUnfoldingPlots('LogTauCurv')
+        plot.addHisto(self.lCurve, 'AL','',0)
+        plot.canvas.cd()
+        self.logTauCurv.Draw("AL")
         plot.saveCanvas('TR','_%s'%self.var)
 
 
@@ -202,27 +220,31 @@ class Unfolder():
         self.var  = var
         self.doSanityCheck   = True
         self.Data = DataContainer(var,fileName, fileNameReponse)
-        self.sysList      = self.Data.listOfSysts
         self.systListResp = self.Data.systListResp
-        self.helpers = { nuis : UnfolderHelper(self.var, nuis) for nuis in self.sysList }
+        self.theoSysts    = self.Data.theoSysts
+        self.allSysts     = list( set().union( self.systListResp, self.theoSysts) )
+        self.helpers = { nuis : UnfolderHelper(self.var, nuis) for nuis in self.theoSysts }
         self.helpers[''] = UnfolderHelper(self.var, '')
         self.plotspath  = ""
         
-        print self.sysList
+
 
     def prepareAllHelpers(self):
         # maybe protect these boys so they dont get initialized several times
         self.prepareNominalHelper()
-        for nuis in self.sysList:
+
+        for nuis in self.theoSysts:
             if nuis == '': continue
             self.helpers[nuis].makeUnfolderCore(self.Data.getInputs(nuis))
+            # no uncertainties are propagated here, only difference wrt nominal is needed
 
     def prepareNominalHelper(self):
         # maybe protect these boys so they dont get initialized several times
         self.helpers[''].makeUnfolderCore(self.Data.getInputs(''))
+
         for nuis in self.systListResp:
-            if nuis in self.sysList: continue # those are handled in a different helper
-            self.helpers[''].addSyst( self.Data.getResponse(nuis) )
+            if nuis in self.theoSysts: continue # those are handled in a different helper
+            self.helpers[''].tunfolder.AddSysError( self.Data.getResponse(nuis), nuis, r.TUnfold.kHistMapOutputHoriz, r.TUnfoldSys.kSysErrModeMatrix )
 
     def doLCurveScan(self):
         self.helpers[''].doLCurveScan()
@@ -292,23 +314,28 @@ class Unfolder():
 
     def doUnfoldingForAllNuis(self):
         self.prepareAllHelpers()
+        self.doLCurveScan()
         allHistos = {} 
         nominal=copy.deepcopy(self.helpers[''].tunfolder.GetOutput(self.var))
-        for nuis in self.sysList:
+        for nuis in self.theoSysts:
+            print nuis
             self.helpers[nuis].tunfolder.DoUnfold( self.helpers[''].tunfolder.GetTau() )
             allHistos[nuis] = self.helpers[nuis].tunfolder.GetOutput(self.var + '_' + nuis)
-        nominal_withErrors = errorPropagator.propagateHisto( nominal, allHistos )
+        nominal_withErrors = errorPropagator.propagateHistoAsym( nominal, allHistos, True)
 
         plot = beautifulUnfoldingPlots.beautifulUnfoldingPlots(self.var)
         plot.plotspath  = self.plotspath
         nominal.SetMarkerStyle(r.kFullCircle)
         nominal.GetXaxis().SetNdivisions(505,True)
-        nominal_withErrors.SetFillColorAlpha(r.kBlue,0.35)
-        nominal_withErrors.SetLineColor(r.kBlue)
-        nominal_withErrors.SetFillStyle(1001)
+        nominal_withErrors[0].SetFillColorAlpha(r.kBlue,0.35)
+        nominal_withErrors[0].SetLineColor(r.kBlue)
+        nominal_withErrors[0].SetFillStyle(1001)
 
         if self.doSanityCheck:
-            tmptfile = r.TFile.Open('/nfs/fanae/user/sscruz/TW_differential/AnalysisPAF/plotter/./Datacards/closuretest_TGenLeadingJet_TGen{var}.root'.format(var=self.var))
+            if not os.path.isfile('temp/ClosureTest_{var}.root'.format(var = self.var)):
+                raise RuntimeError('The rootfile with the generated information does not exist')
+            tmptfile = r.TFile.Open('temp/ClosureTest_{var}.root'.format(var = self.var))
+
             tru = copy.deepcopy(tmptfile.Get('tW'))
             tru.SetLineWidth(2)
             tru.SetLineColor(beautifulUnfoldingPlots.colorMap[0])
@@ -349,9 +376,9 @@ class Unfolder():
 
 
 if __name__=="__main__":
-    a = Unfolder('LeadingLepEta','temp/fitOutput_LeadingLepEta.root','temp/UnfoldingInfo.root')
+    a = Unfolder('LeadingLepPt','temp/LeadingLepPt_/fitOutput_LeadingLepPt.root','temp/UnfoldingInfo.root')
     #a.doRegularizationComparison()
-    a.prepareNominalHelper()
-    a.doLCurveScan()
-    a.doScanPlots()
-    a.doNominalPlot()
+    #a.prepareNominalHelper()
+    #a.doLCurveScan()
+    #a.doScanPlots()
+    a.doUnfoldingForAllNuis()

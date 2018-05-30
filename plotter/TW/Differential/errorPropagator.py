@@ -16,8 +16,7 @@ def propagateQuantity(nom, varDict, case = 0):
         for key in varDict: 
             if 'Down' in key: continue
             if not 'Up' in key:
-                print 'Key that raised the error:', key
-                raise RuntimeError('Use case is not supported yet.')
+                raise RuntimeError('Use case is not supported yet. Syst %s is not supported'%key)
 
             if key.replace('Up','Down') in varDict:
                 tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])
@@ -27,8 +26,8 @@ def propagateQuantity(nom, varDict, case = 0):
         for key in varDict: 
             if 'Down' in key: continue
             if not 'Up' in key and key not in varList.varList['Names']['colorSysts']:
-                print 'Key that raised the error:', key
-                raise RuntimeError('Use case is not supported yet.')
+                raise RuntimeError('Use case is not supported yet. Syst %s is not supported'%key)
+
 
             if key.replace('Up','Down') in varDict:
                 if (nom - varDict[key] < 0):
@@ -39,8 +38,8 @@ def propagateQuantity(nom, varDict, case = 0):
         for key in varDict: 
             if 'Down' in key: continue
             if not 'Up' in key and key not in varList.varList['Names']['colorSysts']:
-                print 'Key that raised the error:', key
-                raise RuntimeError('Use case is not supported yet.')
+                raise RuntimeError('Use case is not supported yet. Syst %s is not supported'%key)
+
 
             if key.replace('Up','Down') in varDict:
                 if (nom - varDict[key] > 0):

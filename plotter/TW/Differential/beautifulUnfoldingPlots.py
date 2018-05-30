@@ -19,7 +19,7 @@ colorMap = [
 
 class beautifulUnfoldingPlots:
     def __init__(self, name):
-        r.gROOT.SetBatch(True)
+        #r.gROOT.SetBatch(True)
         self.name           = name
         self.inited         = False
         self.objectsInLeg   = []
@@ -62,8 +62,11 @@ class beautifulUnfoldingPlots:
             for bin in range(asymhisto.GetN()):
                 asymhisto.SetPointEYhigh(bin, histo.GetBinError(bin + 1))
                 asymhisto.SetPointEYlow(bin, histos[1].GetBinError(bin + 1))
-            asymhisto.GetXaxis().SetTitle( varList.varList[self.name.replace('_folded', '')]['xaxis'] )
-            asymhisto.GetYaxis().SetTitle( varList.varList[self.name.replace('_folded', '')]['yaxis'] )
+            
+            if self.name.replace('_folded', '') in varList.varList:
+                
+                asymhisto.GetXaxis().SetTitle( varList.varList[self.name.replace('_folded', '')]['xaxis'] )
+                asymhisto.GetYaxis().SetTitle( varList.varList[self.name.replace('_folded', '')]['yaxis'] )
             
             if '_folded' in self.name:
                 asymhisto.GetXaxis().SetRangeUser(histo.GetXaxis().GetBinLowEdge(1), histo.GetXaxis().GetBinUpEdge(histo.GetNbinsX()))
@@ -86,8 +89,9 @@ class beautifulUnfoldingPlots:
             asymhisto.Draw('a2')
             self.objectsInLeg.append( (asymhisto, name, legOptions) )
         else:
-            histo.GetXaxis().SetTitle( varList.varList[self.name.replace('_folded', '')]['xaxis'] )
-            histo.GetYaxis().SetTitle( varList.varList[self.name.replace('_folded', '')]['yaxis'] )
+            if self.name.replace('_folded', '') in varList.varList:
+                histo.GetXaxis().SetTitle( varList.varList[self.name.replace('_folded', '')]['xaxis'] )
+                histo.GetYaxis().SetTitle( varList.varList[self.name.replace('_folded', '')]['yaxis'] )
 
             histo.GetXaxis().SetTitleFont(42)
             histo.GetXaxis().SetTitleSize(0.05)
