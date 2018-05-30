@@ -23,7 +23,7 @@ if (len(sys.argv) > 1):
     print "> Chosen variable:", varName, "\n"
     if (len(sys.argv) > 2):
         if sys.argv[2] == 'last':
-            pathToTree    = GetLastFolder(storagepath)
+            pathToTree    = vl.GetLastFolder(storagepath)
         else:
             pathToTree    = storagepath + sys.argv[2] + "/"
     else:
