@@ -85,7 +85,8 @@ if uncList[0][1].GetMaximum() < 0.5:
 else:
     uncList[0][1].GetYaxis().SetRangeUser(0, 0.9)
 for i in range(5):
-    uncList[i][1].SetLineColor(bp.colorMap[i])
+    #uncList[i][1].SetLineColor(bp.colorMap[i])
+    uncList[i][1].SetLineColor(vl.colorMap[uncList[i][0]])
     uncList[i][1].SetLineWidth( 2 )
     plot.addHisto(uncList[i][1], 'H,same' if i else 'H', uncList[i][0], 'L')
 
