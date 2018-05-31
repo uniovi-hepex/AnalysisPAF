@@ -64,24 +64,27 @@ if [ "$variable" == "All" ]; then
   cd
   source pre_start_CMS.sh
   cd Documents/TFM/AnalysisPAF/plotter/TW/Differential/
+  # 4) Do a fit in each bin of your histograms and for all the systematics.
+  echo "> Performing fits to each bin of the BDT's distribution with profiling..."
+  echo " "
   for ((i=0; i<=$uplimit; i++)); do
-    # 4) Do a fit in each bin of your histograms and for all the systematics.
-    echo "> Performing fits to each bin of the BDT's distribution with profiling..."
-    echo " "
     python makeFits.py $ncores ${unfoldingvars[i]}
   done
-
   
   source ../pre_start.sh
+  # 5) Plot the folded distributions
+  echo "> Plotting the folding distributions after fits..."
+  echo " "
   for ((i=0; i<=$uplimit; i++)); do
-    # 5) Plot the folded distributions
-    echo "> Plotting the folding distributions after fits..."
-    echo " "
     python plotfolddist.py ${unfoldingvars[i]}
-  # # 6) Do a proper unfolding as you were taught by your mother when you were a child.
-  # echo "> Unfolding chosen variable..."
-  # echo " "
-  # python UnfoldThings.py ${unfoldingvars[i]}
+  done
+  
+    source ../pre_start.sh devel
+    # 6) Do a proper unfolding as you were taught by your mother when you were a child.
+    echo "> Unfolding all variables..."
+    echo " "
+  for ((i=0; i<=$uplimit; i++)); do
+    python unfoldTW_prof.py ${unfoldingvars[i]}
   done
 else
   echo "> Beggining full unfolding procedure of the variable"
@@ -131,10 +134,11 @@ else
   echo " "
   python plotfolddist.py $variable
   
-  # # 6) Do a proper unfolding as you were taught by your mother when you were a child.
-  # echo "> Unfolding chosen variable..."
-  # echo " "
-  # python UnfoldThings.py $variable
+  source ../pre_start.sh devel
+  # 6) Do a proper unfolding as you were taught by your mother when you were a child.
+  echo "> Unfolding chosen variable..."
+  echo " "
+  python unfoldTW_prof.py $variable
 fi
 
 if [ "$3" == "copy" ]; then
