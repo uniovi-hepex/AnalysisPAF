@@ -62,7 +62,7 @@ if doSanityCheck:
     tru.SetLineWidth(2)
     tru.SetLineColor(bp.colorMap[0])
     for bin in range(1, tru.GetNbinsX()): tru.SetBinError(bin, 0.)
-    if nominal_withErrors[0].GetMaximum() <= tru.GetMaximum(): nominal_withErrors[0].SetMaximum(tru.GetMaximum() + 1000)
+    if nominal_withErrors[0].GetMaximum() <= tru.GetMaximum(): nominal_withErrors[0].SetMaximum(tru.GetMaximum())
     plot.addHisto(nominal_withErrors, 'hist', 'Syst. unc.', 'F')
     plot.addHisto(tru, 'L,same', 'tW Powheg', 'L')
     plot.addHisto(nominal, 'P,E,same', labellegend, 'P')
@@ -85,7 +85,8 @@ if uncList[0][1].GetMaximum() < 0.5:
 else:
     uncList[0][1].GetYaxis().SetRangeUser(0, 0.9)
 for i in range(5):
-    uncList[i][1].SetLineColor(bp.colorMap[i])
+    #uncList[i][1].SetLineColor(bp.colorMap[i])
+    uncList[i][1].SetLineColor(vl.colorMap[uncList[i][0]])
     uncList[i][1].SetLineWidth( 2 )
     plot.addHisto(uncList[i][1], 'H,same' if i else 'H', uncList[i][0], 'L')
 
