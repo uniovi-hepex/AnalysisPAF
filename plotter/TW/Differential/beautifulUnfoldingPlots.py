@@ -1,5 +1,6 @@
 import ROOT  as r
-import tdrstyle, varList, CMS_lumi
+import tdrstyle, CMS_lumi
+import varList as vl
 from ROOT import TH1, TEfficiency, TFile, TCanvas, TAxis
 
 CMS_lumi.writeExtraText = 1
@@ -63,10 +64,10 @@ class beautifulUnfoldingPlots:
                 asymhisto.SetPointEYhigh(bin, histo.GetBinError(bin + 1))
                 asymhisto.SetPointEYlow(bin, histos[1].GetBinError(bin + 1))
             
-            if self.name.replace('_folded', '') in varList.varList:
+            if self.name.replace('_folded', '') in vl.varList:
                 
-                asymhisto.GetXaxis().SetTitle( varList.varList[self.name.replace('_folded', '')]['xaxis'] )
-                asymhisto.GetYaxis().SetTitle( varList.varList[self.name.replace('_folded', '')]['yaxis'] )
+                asymhisto.GetXaxis().SetTitle( vl.varList[self.name.replace('_folded', '')]['xaxis'] )
+                asymhisto.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '')]['yaxis'] )
             
             if '_folded' in self.name:
                 asymhisto.GetXaxis().SetRangeUser(histo.GetXaxis().GetBinLowEdge(1), histo.GetXaxis().GetBinUpEdge(histo.GetNbinsX()))
@@ -89,9 +90,9 @@ class beautifulUnfoldingPlots:
             asymhisto.Draw('a2')
             self.objectsInLeg.append( (asymhisto, name, legOptions) )
         else:
-            if self.name.replace('_folded', '') in varList.varList:
-                histo.GetXaxis().SetTitle( varList.varList[self.name.replace('_folded', '')]['xaxis'] )
-                histo.GetYaxis().SetTitle( varList.varList[self.name.replace('_folded', '')]['yaxis'] )
+            if self.name.replace('_folded', '') in vl.varList:
+                histo.GetXaxis().SetTitle( vl.varList[self.name.replace('_folded', '')]['xaxis'] )
+                histo.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '')]['yaxis'] )
 
             histo.GetXaxis().SetTitleFont(42)
             histo.GetXaxis().SetTitleSize(0.05)
@@ -142,7 +143,7 @@ class beautifulUnfoldingPlots:
                     leg.AddEntry( obj, name, opt)
             leg.Draw('same')
 
-        CMS_lumi.lumi_13TeV = "%.1f fb^{-1}" %(varList.Lumi)
+        CMS_lumi.lumi_13TeV = "%.1f fb^{-1}" %(vl.Lumi)
         CMS_lumi.extraText  = 'Preliminary'
         CMS_lumi.lumi_sqrtS = '#sqrt{s} = 13 TeV'
         CMS_lumi.CMS_lumi(r.gPad, 4, 10, -0.005 if self.doWide and self.doRatio else 0.01 if self.doWide else 0.05)

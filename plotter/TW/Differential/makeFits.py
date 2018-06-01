@@ -1,7 +1,8 @@
 import ROOT  as r
 import os, sys
-import varList, tdrstyle
+import tdrstyle
 from array import array
+import varList as vl
 from multiprocessing import Pool
 from warnings import warn, simplefilter
 
@@ -24,7 +25,7 @@ def getBinFromLabel(hist, labx, laby):
 def makeFit(task):
     varName, syst = task
     print '\n> Fitting syst.', syst, 'of the variable', varName, '\n'
-    binning = varList.varList[varName]['recobinning']
+    binning = vl.varList[varName]['recobinning']
 
     if syst == '':
         cardList = [ 'datacard_{var}_{idx}.txt'.format(var = varName, idx=idx) for idx in range(1, len(binning))]
@@ -84,7 +85,7 @@ def makeFit(task):
 
     # Put results into histos
     outHisto = r.TH1F('hFitResult_%s_%s'%(varName,syst), '', len(binning)-1,
-                      array('d', varList.varList[varName]['recobinning']))
+                      array('d', vl.varList[varName]['recobinning']))
     for i in range( 1, len(binning)):
         if syst == '':
             card = r.TFile.Open('temp/{var}_/forCards_{var}_{ind}.root'.format(var = varName, ind = i))
@@ -141,7 +142,6 @@ if __name__ == '__main__':
 
     simplefilter("always", UserWarning)
     r.gROOT.SetBatch(True)
-
     verbose = False
 
     print "===== Fitting procedure with syst. profiling\n"
@@ -158,13 +158,10 @@ if __name__ == '__main__':
     else:
         print "> Default choice of variable and minitrees\n"
         varName     = 'LeadingLepEta'
-
-
-
+    
     tasks = []
     tasks.append((varName,''))
-    from varList import systMap
-    for sys in systMap:
+    for sys in vl.systMap:
         tasks.append( (varName, sys) )
 
     pool = Pool(nCores)
@@ -180,10 +177,3 @@ if __name__ == '__main__':
 
     outFile.Close()
     print '> Fitting procedure for variable', varName, 'succesfully completed'
-
-# outHisto.SetMarkerStyle(r.kFullCircle)
-# errors.SetFillColor(r.kBlue)
-# errors.Draw('e2')
-# outHisto.Draw('P,same')
-# raw_input('asdf')
-

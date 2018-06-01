@@ -1,5 +1,5 @@
 import ROOT
-import varList
+import varList as vl
 import sys, os
 from array import array
 
@@ -7,7 +7,7 @@ ROOT.gROOT.SetBatch(True)
 
 print "===== Setting binning of the BDT procedure\n"
 print "> Preliminaries..."
-nq          = varList.nBinsInBDT  # Number of bins in which to divide the BDT distribution.
+nq          = vl.nBinsInBDT  # Number of bins in which to divide the BDT distribution.
 xq          = array('d', [0]*nq)
 yq          = array('d', [0]*nq)
 storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
@@ -23,13 +23,13 @@ if (len(sys.argv) > 1):
         if (len(sys.argv) > 3):
             minipath    = storagepath + sys.argv[3] + "/"
         else:
-            minipath    = varList.GetLastFolder(storagepath)
+            minipath    = vl.GetLastFolder(storagepath)
     else:
-        minipath    = varList.GetLastFolder(storagepath)
+        minipath    = vl.GetLastFolder(storagepath)
 else:
     print "> Default choice of variable and minitrees\n"
     varName     = 'LeadingJetPt'
-    minipath    = storagepath
+    minipath    = "../../../TW_temp/"
 
 
 tf    = ROOT.TFile(minipath + 'Tree_TW.root')             # Uncomment this for equal-tW BDT distribution shape
@@ -46,8 +46,8 @@ using namespace std;
 for i in range(0,nq):
     xq[i] = float(i+1)/nq
 
-var   = varList.varList[varName]['var']
-bins  = varList.varList[varName]['recobinning']
+var   = vl.varList[varName]['var']
+bins  = vl.varList[varName]['recobinning']
 
 count = 0
 print "\n> Constructing C++ file of the binning"

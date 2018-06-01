@@ -465,3 +465,21 @@ systMap = {
                                'TTbar_Powheg' : 'TTbar_QCDbasedCRTune_erdON'
                                },
 }
+
+colorMap = {
+    'Fit'                   : r.TColor.GetColor("#a6cee3"),
+    'fsr'                   : r.TColor.GetColor("#1f77b4"),
+    'isr'                   : r.TColor.GetColor("#b2df8a"),
+    'tWME'                  : r.TColor.GetColor("#33a02c"),
+    'tWPS'                  : r.TColor.GetColor("#fb9a99"),
+    'DS'                    : r.TColor.GetColor("#e31a1c"),
+    'hDamp'                 : r.TColor.GetColor("#fdbf6f"),
+    'UE'                    : r.TColor.GetColor("#ff7f00"),
+    'ttbarME'               : r.TColor.GetColor("#6a3d9a"),
+    'pdf'                   : r.TColor.GetColor("#ffff99"),
+    'ColorR'                : r.TColor.GetColor("#cab2d6"),
+    'GluonMoveCRTune'       : r.TColor.GetColor("#cab2d6"),
+    'GluonMoveCRTuneerdON'  : r.kMagenta,
+    'PowhegerdON'           : r.kGray+2,
+    'QCDbasedCRTuneerdON'   : r.kBlue,
+}
