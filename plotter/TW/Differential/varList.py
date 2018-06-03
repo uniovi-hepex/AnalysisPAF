@@ -118,7 +118,7 @@ varList['M_LeadingB'] = {
     'recobinning' : [0., 45., 75., 105., 140., 190., 230., 300., 400.],
     'var'         : 'TM_LeadingB',
     'var_response': 'MLeadingB',
-    'var_gen'     : 'TGenLeadingB',
+    'var_gen'     : 'TGenM_LeadingB',
 }
 varList['M_LeadingBuncertainties'] = {
     'xaxis'       : varList['M_LeadingB']['xaxis'],

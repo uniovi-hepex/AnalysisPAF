@@ -421,7 +421,7 @@ def getCardsSyst(task):
         p.AddSample("MuonEG",                       "Data",  r.itData);
         p.AddSample("SingleMuon",                   "Data",  r.itData);
         p.AddSample("SingleElec",                   "Data",  r.itData);
-    else: 
+    else:
         # get asimov from the nominal one"
         tfile = r.TFile.Open("temp/{var}_/forCards_".format(var = varName) + varName + '_%d.root'%indx)
         if not tfile:
@@ -570,8 +570,6 @@ def getCardsPdf(task):
         hData.SetType(r.itData)
         hData.SetColor(r.kBlack)
         p.AddToHistos(hData)
-        del hData
-        tfile.Close()
 
     p.doUncInLegend = True;
     p.SetRatioMin( 0.6 );
@@ -594,6 +592,8 @@ def getCardsPdf(task):
     del p
     del pdf
     del histo
+    del hData
+    tfile.Close()
     
     p = r.PlotToPy(r.TString('theBDt_bin%d( TBDT )'%indx), r.TString('(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && %s >= %4.2f  && %s < %4.2f )'%(vl.varList[varName]['var'], binDn, vl.varList[varName]['var'], binUp)), r.TString('ElMu'), vl.nBinsInBDT, float(0.5), float(vl.nBinsInBDT+0.5), r.TString(varName + '_%d'%indx), r.TString(''))
     p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
@@ -670,23 +670,23 @@ def getCardsPdf(task):
         p.AddToSystematicLabels(s)
         del nom, nomUp, nomDn, histoUp, histoDn
         tfile.Close()
-
+    
     if not asimov:
         p.AddSample("MuonEG",                       "Data",  r.itData);
         p.AddSample("SingleMuon",                   "Data",  r.itData);
         p.AddSample("SingleElec",                   "Data",  r.itData);
-    else: 
-        # get asimov from the nominal one
+    else:
+        # get asimov from the nominal one"
         tfile = r.TFile.Open("temp/{var}_/forCards_".format(var = varName) + varName + '_%d.root'%indx)
-        hData = r.Histo( tfile.Get('data_obs') ) 
+        if not tfile:
+            raise RuntimeError('Nominal card rootfile for variable {var} has not been found while considering syst. {sys}'.format(var = varName, sys = syst))
+        hData = r.Histo( tfile.Get('data_obs') )
         hData.SetProcess("Data")
         hData.SetTag("Data")
         hData.SetType(r.itData)
         hData.SetColor(r.kBlack)
         p.AddToHistos(hData)
-        del hData
-        tfile.Close()
-
+    
     p.doUncInLegend = True;
     p.SetRatioMin( 0.6 );
     p.SetRatioMax( 1.4 );
@@ -708,6 +708,8 @@ def getCardsPdf(task):
     del p
     del pdf
     del histo
+    del hData
+    tfile.Close()
     
     card = r.Datacard('tW_%d'%indx, 'ttbar_{idx},DY_{idx},VVttbarV_{idx},Non-WorZ_{idx}'.format(idx=indx) , systlist + ', JER', "ElMu_%d"%indx)
     card.SetRootFileName('temp/{var}_{sys}/forCards_'.format(var = varName, sys = syst) + varName  + '_' + syst  + '_%d'%indx)
