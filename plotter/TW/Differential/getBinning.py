@@ -31,7 +31,7 @@ if (len(sys.argv) > 1):
         minipath    = "../../../TW_temp/"
 else:
     print "> Default choice of variable and minitrees\n"
-    varName     = 'LeadingJetPt'
+    varName     = 'LeadingLepEta'
     minipath    = "../../../TW_temp/"
 
 print '> Variable chosen:', varName, '\n'
