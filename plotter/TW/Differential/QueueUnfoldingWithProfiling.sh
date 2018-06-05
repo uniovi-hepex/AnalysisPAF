@@ -35,6 +35,6 @@ fi
 
 
 echo "> Creating job ..."
-Job=$(qsub -q proof -l walltime=06:00:00,nodes=1:ppn=$2 -o $logpath -e $logpath -d $workingpath -F "$1 $2 $3" ExecuteUnfoldingWithProfiling.sh)
+Job=$(qsub -q proof -l walltime=06:00:00,nodes=1:ppn=$2 -o $logpath -e $logpath -d $workingpath -F "$1 $2 $3 $4" ExecuteUnfoldingWithProfiling.sh)
 echo $Job
 echo "> Job created!"

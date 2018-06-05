@@ -49,17 +49,17 @@ if [ "$variable" == "All" ]; then
     # 1) Get the binning in order to obtain the BDT histograms.
     echo "> Obtaining BDT's binning..."
     echo " "
-    python getBinning.py ${unfoldingvars[i]} 0
+    python getBinning.py ${unfoldingvars[i]} 0 $4
 
     # 2) Get those histograms.
     echo "> Obtaining histograms per BDT's bin with profiling..."
     echo " "
-    python getCardsWithProfiling.py $ncores ${unfoldingvars[i]}
+    python getCardsWithProfiling.py $ncores ${unfoldingvars[i]} $4
     
     # 3) Get the histograms for the closure test.
     echo "> Obtaining histograms for closure test..."
     echo " "
-    python getClosureHistos.py ${unfoldingvars[i]}
+    python getClosureHistos.py ${unfoldingvars[i]} $4
   done
 
   cd
