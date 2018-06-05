@@ -29,7 +29,7 @@ class beautifulUnfoldingPlots:
         self.doRatio        = False
 
 
-    def initCanvasAndAll(self):
+    def initCanvasAndAll(self, padnum=None):
         if self.inited: return
         self.inited     = True
         tdrstyle.setTDRStyle()
@@ -46,7 +46,9 @@ class beautifulUnfoldingPlots:
         topsize = 0.12*600./height if self.doRatio else 0.06*600./height
         if doOfficialCMS: self.canvas.SetTopMargin(topsize*1.2 if self.doWide else topsize)
         self.canvas.SetWindowSize(plotformat[0] + (plotformat[0] - self.canvas.GetWw()), (plotformat[1]+150 + (plotformat[1]+150 - self.canvas.GetWh())))
-    
+
+        if padnum:
+            self.canvas.Divide(1, padnum)
     
     def addHisto(self, histos, options, name, legOptions):
         if not self.inited: self.initCanvasAndAll()
@@ -112,6 +114,52 @@ class beautifulUnfoldingPlots:
             histo.Draw(options)
             self.objectsInLeg.append( (histo, name, legOptions) )
     
+    def addHistoInPad(self, padnum, histos, options, name, legOptions):
+        if not self.inited: 
+            self.initCanvasAndAll(padnum) # first one should be total number of supbad
+            padnum = 1
+
+        self.canvas.cd(padnum)
+        histo = histos
+
+        if self.name.replace('_folded', '') in varList.varList:
+            histo.GetXaxis().SetTitle( varList.varList[self.name.replace('_folded', '')]['xaxis'] )
+            histo.GetYaxis().SetTitle( varList.varList[self.name.replace('_folded', '')]['yaxis'] )
+
+        histo.GetXaxis().SetTitleFont(42)
+        histo.GetXaxis().SetTitleSize(0.05)
+        histo.GetXaxis().SetTitleOffset(1.1)
+        histo.GetXaxis().SetLabelFont(42)
+        histo.GetXaxis().SetLabelSize(0.05)
+        histo.GetXaxis().SetLabelOffset(0.007)
+        histo.GetYaxis().SetTitleFont(42)
+        histo.GetYaxis().SetTitleSize(0.05)
+        histo.GetYaxis().SetTitleOffset(0.4 if self.doWide else 1.4)
+        histo.GetYaxis().SetLabelFont(42)
+        histo.GetYaxis().SetLabelSize(0.05)
+        histo.GetYaxis().SetLabelOffset(0.007)
+        
+
+
+        histo.Draw(options)
+
+    def addTLatex(self, x1, y1, text, pad=0):
+        if pad:
+            self.canvas.cd(pad)
+        else:
+            self.canvas.cd()
+
+        la = r.TLatex( x1, y1, text)
+        if not hasattr(self, 'tlatex'):
+            setattr(self, 'tlatex', [la])
+        else:
+            self.tlatex.append(la)
+        
+
+        la.Draw('same')
+
+
+
     
     def saveCanvas(self, corner, suffix='', leg=True):
         self.canvas.cd()
@@ -143,10 +191,12 @@ class beautifulUnfoldingPlots:
                     leg.AddEntry( obj, name, opt)
             leg.Draw('same')
 
-        CMS_lumi.lumi_13TeV = "%.1f fb^{-1}" %(vl.Lumi)
-        CMS_lumi.extraText  = 'Preliminary'
-        CMS_lumi.lumi_sqrtS = '#sqrt{s} = 13 TeV'
-        CMS_lumi.CMS_lumi(r.gPad, 4, 10, -0.005 if self.doWide and self.doRatio else 0.01 if self.doWide else 0.05)
+
+        if not hasattr(self, 'noCMS'):
+            CMS_lumi.lumi_13TeV = "%.1f fb^{-1}" %(varList.Lumi)
+            CMS_lumi.extraText  = 'Preliminary'
+            CMS_lumi.lumi_sqrtS = '#sqrt{s} = 13 TeV'
+            CMS_lumi.CMS_lumi(r.gPad, 4, 10, -0.005 if self.doWide and self.doRatio else 0.01 if self.doWide else 0.05)
 
         self.canvas.SaveAs(self.plotspath + self.name + suffix +'.pdf')
         self.canvas.SaveAs(self.plotspath + self.name + suffix +'.png')
