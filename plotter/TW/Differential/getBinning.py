@@ -21,18 +21,25 @@ if (len(sys.argv) > 1):
     if (len(sys.argv) > 2):
         printthings = sys.argv[2]
         if (len(sys.argv) > 3):
-            minipath    = storagepath + sys.argv[3] + "/"
+            if sys.argv[3] == 'last':
+                minipath    = storagepath + sys.argv[3] + "/"
+            else:
+                minipath    = vl.GetLastFolder(storagepath)
         else:
-            minipath    = vl.GetLastFolder(storagepath)
+            minipath    = "../../../TW_temp/"
     else:
-        minipath    = vl.GetLastFolder(storagepath)
+        minipath    = "../../../TW_temp/"
 else:
     print "> Default choice of variable and minitrees\n"
     varName     = 'LeadingJetPt'
     minipath    = "../../../TW_temp/"
 
+print '> Variable chosen:', varName, '\n'
+print '> Minitrees path:', minipath, '\n'
 
+print '> Uniform tW distribution of the BDT discriminant\n'
 tf    = ROOT.TFile(minipath + 'Tree_TW.root')             # Uncomment this for equal-tW BDT distribution shape
+#print '> Uniform ttbar distribution of the BDT discriminant\n'
 #tf    = ROOT.TFile(minipath + 'Tree_TTbar_Powheg.root')  # Uncomment this for equal-ttbar BDT distribution shape
 tree  = tf.Mini1j1t
 

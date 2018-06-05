@@ -330,10 +330,9 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
       //gSystem->Exec("resetpaf -a");
     }
     cout << "\033[1;31m >>> Merging trees... \n\033[0m";
-//     TString haddCommand = "hadd " + (nukeIt ? TString("-f ") : TString("") ) + outputDir + "/Tree_" + sampleName + ".root " + outputDir + "/Tree_" + sampleName + "_[0-9].root " + outputDir + "/Tree_" + sampleName + "_[0-9][0-9].root";
-    TString haddCommand = "hadd " + (nukeIt ? TString("-f ") : TString("") ) + outputDir + "/Tree_" + sampleName + ".root " + outputDir + "/Tree_" + sampleName + "_[0-9].root " + outputDir + "/Tree_" + sampleName + ((nEvents > 10) ? TString("_[0-9][0-9].root") : TString("_[0-9].root") );
+    
+    TString haddCommand = "hadd " + (nukeIt ? TString("-f ") : TString("") ) + outputDir + "/Tree_" + sampleName + ".root " + outputDir + "/Tree_" + sampleName + "_[0-9].root " + ((nChunks > 10) ? outputDir + "/Tree_" + sampleName + TString("_[0-9][0-9].root") : "" );
 
-    //TString haddCommand = "hadd " + outputDir + "/Tree_" + sampleName + ".root " + outputDir + "/Tree_" + sampleName + "_*.root";
     if (options.Contains("makeHadd")) gSystem->Exec(haddCommand);
     
     cout << "\033[1;37m================================================\n\033[0m";
