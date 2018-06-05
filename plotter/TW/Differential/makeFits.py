@@ -35,6 +35,8 @@ def makeFit(task):
 
     os.system('cd temp/{var}_{sys}; combineCards.py {allCards} > {outCard}; cd -'.format(allCards = ' '.join(cardList), var = varName, sys = syst,
                                                                              outCard  = 'datacard_{var}_{sys}.txt'.format(var=varName,sys=syst)))
+    print 'cd temp/{var}_{sys}; combineCards.py {allCards} > {outCard}; cd -'.format(allCards = ' '.join(cardList), var = varName, sys = syst,
+                                                                             outCard  = 'datacard_{var}_{sys}.txt'.format(var=varName,sys=syst))
 
     physicsModel = 'text2workspace.py -m 125 -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel '
     for idx in range(1,len(binning)):
@@ -45,8 +47,10 @@ def makeFit(task):
         os.system('mkdir -p temp/{var}_{sys}/fitdiagnostics'.format(var=varName,sys=syst))
 
     os.system(physicsModel)
+    print physicsModel
     #os.system('combine  -M FitDiagnostics --out temp/{var}_{sys}/fitdiagnostics  temp/{var}_{sys}/comb_fit_{var}_{sys}.root --saveWorkspace -n {var}_{sys} --X-rtd MINIMIZER_MaxCalls=5000000'.format(var=varName,sys=syst))
-    os.system('combine  -M FitDiagnostics --out temp/{var}_{sys}/fitdiagnostics  temp/{var}_{sys}/comb_fit_{var}_{sys}.root --saveWorkspace -n {var}_{sys} --X-rtd MINIMIZER_analytic --X-rtd MINIMIZER_MaxCalls=5000000'.format(var=varName,sys=syst))
+    print 'combine  -M FitDiagnostics --out temp/{var}_{sys}/fitdiagnostics  temp/{var}_{sys}/comb_fit_{var}_{sys}.root --saveWorkspace -n {var}_{sys} --X-rtd MINIMIZER_analytic --X-rtd MINIMIZER_MaxCalls=5000000'.format(var=varName,sys=syst)
+    os.system('combine  -M FitDiagnostics --out temp/{var}_{sys}/fitdiagnostics  temp/{var}_{sys}/comb_fit_{var}_{sys}.root --saveWorkspace -n {var}_{sys} --X-rtd MINIMIZER_analytic --X-rtd MINIMIZER_MaxCalls=5000000 --saveShapes'.format(var=varName,sys=syst))
 
     # Ahora recogemos la virutilla
     tfile     = r.TFile.Open('temp/{var}_{sys}/fitdiagnostics/fitDiagnostics{var}_{sys}.root'.format(var=varName,sys=syst))
@@ -189,6 +193,14 @@ if __name__ == '__main__':
     tasks.append((varName,''))
     for sys in vl.systMap:
         tasks.append( (varName, sys) )
+
+
+    tasks.append( (varName,'pdfUp'       ))
+    tasks.append( (varName,'ttbarMEUp'   ))
+    tasks.append( (varName,'pdfDown'     ))
+    tasks.append( (varName,'ttbarMEDown' ))
+
+
 
     pool = Pool(nCores)
     finalresults = pool.map(makeFit, tasks)
