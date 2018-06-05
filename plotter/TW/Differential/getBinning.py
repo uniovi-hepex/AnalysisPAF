@@ -22,16 +22,16 @@ if (len(sys.argv) > 1):
         printthings = sys.argv[2]
         if (len(sys.argv) > 3):
             if sys.argv[3] == 'last':
-                minipath    = storagepath + sys.argv[3] + "/"
-            else:
                 minipath    = vl.GetLastFolder(storagepath)
+            else:
+                minipath    = storagepath + sys.argv[3] + "/"
         else:
             minipath    = "../../../TW_temp/"
     else:
         minipath    = "../../../TW_temp/"
 else:
     print "> Default choice of variable and minitrees\n"
-    varName     = 'LeadingJetPt'
+    varName     = 'LeadingLepEta'
     minipath    = "../../../TW_temp/"
 
 print '> Variable chosen:', varName, '\n'
