@@ -5,7 +5,7 @@ from array import array
 import varList as vl
 from multiprocessing import Pool
 from warnings import warn, simplefilter
-
+import beautifulUnfoldingPlots as bp
 
 
 def getBinFromLabel(hist, labx, laby):
@@ -75,13 +75,38 @@ def makeFit(task):
     results = {}
     count   = 0
     for var in fitResult.floatParsFinal():
-        if count == fitResult.floatParsFinal().getSize()-1: break
         count = count + 1
-        if not 'r_tW' in var.GetName(): continue
+        #if not 'r_tW' in var.GetName(): continue # se guarda todo
         results[var.GetName()] = [ var.getVal(), var.getErrorLo(), var.getErrorHi() ]
+        if count == fitResult.floatParsFinal().getSize(): break
+
 
     tfile2.Close()
     tfile.Close()
+
+    toKeep = []
+    for p in [('r_tW','tW'), ('DY','DY'), ('VVttbarV','VV+ttV'), ('ttbar','t#bar{t}')]:
+        graph = r.TGraphAsymmErrors(len(binning)-1)
+        graph.SetName(p[0])
+        for i in range(1, len(binning)):
+            graph.SetPoint( i-1, (binning[i-1] + binning[i])/2, results['%s_%d'%(p[0],i)][0])
+            graph.SetPointError( i-1, (binning[i] - binning[i-1])/2, (binning[i] - binning[i-1])/2,
+                                 -results['%s_%d'%(p[0],i)][1], results['%s_%d'%(p[0],i)][2])
+        toKeep.append( (graph, p[1]))
+
+    plot = bp.beautifulUnfoldingPlots('srs_{var}_{sys}'.format(var = varName, sys = syst))
+    plot.addHistoInPad( len(toKeep), toKeep[0][0], 'AP', toKeep[0][1],'')
+    plot.addTLatex(0.7,1-0.2, toKeep[0][1])
+    for p in range( 1, len(toKeep)):
+        plot.addHistoInPad( p+1, toKeep[p][0], 'AP', toKeep[p][1],'')
+        #toKeep[p][0].GetYaxis().SetTitle('Post/pre')
+        #toKeep[p][0].GetYaxis().CenterTitle(True)
+
+        plot.addTLatex(0.7,1-1.23*float(p)/(len(toKeep)+1)-0.2, toKeep[p][1])
+    setattr(plot,'noCMS',True)
+    plot.saveCanvas('TR', '',False)
+
+
 
     # Put results into histos
     outHisto = r.TH1F('hFitResult_%s_%s'%(varName,syst), '', len(binning)-1,
@@ -132,6 +157,7 @@ def makeFit(task):
         
             cardx.Close()
             cardy.Close()
+
 
     print '\n> Syst.', syst, 'of the variable', varName, 'fitted!\n'
     return [outHisto, errors, hCov]
