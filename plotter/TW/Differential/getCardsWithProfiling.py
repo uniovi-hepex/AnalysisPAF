@@ -581,13 +581,12 @@ def getCardsPdf(task):
     else: 
         # get asimov from the nominal one
         tfile = r.TFile.Open("temp/{var}_/forCards_".format(var = varName) + varName + '_%d.root'%indx)
-        hData = r.Histo( tfile.Get('data_obs').Clone() ) 
+        hData = r.Histo( tfile.Get('data_obs'))
         hData.SetProcess("Data")
         hData.SetTag("Data")
         hData.SetType(r.itData)
         hData.SetColor(r.kBlack)
         p.AddToHistos(hData)
-        tfile.Close()
 
     p.doUncInLegend = True;
     p.SetRatioMin( 0.6 );
@@ -766,7 +765,7 @@ if __name__ == '__main__':
         tasks.append( (binDn, binUp, indx, asimov) )
 
     pool    = Pool(nCores)
-    pool.map(getCardsNominal, tasks)
+    #pool.map(getCardsNominal, tasks)
     pool.close()
     pool.join()
     del pool
@@ -781,7 +780,7 @@ if __name__ == '__main__':
     
     print '[SS]: reactivar esto'
     pool    = Pool(nCores)
-    pool.map(getCardsSyst, tasksSyst)
+    #pool.map(getCardsSyst, tasksSyst)
     pool.close()
     pool.join()
     
