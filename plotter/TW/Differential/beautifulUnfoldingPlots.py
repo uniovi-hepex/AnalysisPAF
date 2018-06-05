@@ -122,9 +122,9 @@ class beautifulUnfoldingPlots:
         self.canvas.cd(padnum)
         histo = histos
 
-        if self.name.replace('_folded', '') in varList.varList:
-            histo.GetXaxis().SetTitle( varList.varList[self.name.replace('_folded', '')]['xaxis'] )
-            histo.GetYaxis().SetTitle( varList.varList[self.name.replace('_folded', '')]['yaxis'] )
+        if self.name.replace('_folded', '') in vl.varList:
+            histo.GetXaxis().SetTitle( vl.varList[self.name.replace('_folded', '')]['xaxis'] )
+            histo.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '')]['yaxis'] )
 
         histo.GetXaxis().SetTitleFont(42)
         histo.GetXaxis().SetTitleSize(0.05)
@@ -193,7 +193,7 @@ class beautifulUnfoldingPlots:
 
 
         if not hasattr(self, 'noCMS'):
-            CMS_lumi.lumi_13TeV = "%.1f fb^{-1}" %(varList.Lumi)
+            CMS_lumi.lumi_13TeV = "%.1f fb^{-1}" %(vl.Lumi)
             CMS_lumi.extraText  = 'Preliminary'
             CMS_lumi.lumi_sqrtS = '#sqrt{s} = 13 TeV'
             CMS_lumi.CMS_lumi(r.gPad, 4, 10, -0.005 if self.doWide and self.doRatio else 0.01 if self.doWide else 0.05)
