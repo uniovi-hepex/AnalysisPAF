@@ -765,7 +765,7 @@ if __name__ == '__main__':
         tasks.append( (binDn, binUp, indx, asimov) )
 
     pool    = Pool(nCores)
-    #pool.map(getCardsNominal, tasks)
+    pool.map(getCardsNominal, tasks)
     pool.close()
     pool.join()
     del pool
@@ -780,7 +780,7 @@ if __name__ == '__main__':
     
     print '[SS]: reactivar esto'
     pool    = Pool(nCores)
-    #pool.map(getCardsSyst, tasksSyst)
+    pool.map(getCardsSyst, tasksSyst)
     pool.close()
     pool.join()
     
