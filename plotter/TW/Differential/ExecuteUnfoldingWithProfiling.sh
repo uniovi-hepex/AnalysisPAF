@@ -110,17 +110,17 @@ else
   # 1) Get the binning in order to obtain the BDT histograms.
   echo "> Obtaining BDT's binning..."
   echo " "
-  python getBinning.py $variable 0
+  python getBinning.py $variable 0 $4
 
   # 2) Get those histograms.
   echo "> Obtaining histograms per BDT's bin with profiling..."
   echo " "
-  python getCardsWithProfiling.py $ncores $variable
+  python getCardsWithProfiling.py $ncores $variable $4
 
   # 3) Get the histograms for the closure test.
   echo "> Obtaining histograms for closure test..."
   echo " "
-  python getClosureHistos.py $variable
+  python getClosureHistos.py $variable $4
 
   # 4) Do a fit in each bin of your histograms and for all the systematics.
   echo "> Performing fits to each bin of the BDT's distribution with profiling..."
