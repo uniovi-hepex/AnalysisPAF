@@ -190,9 +190,14 @@ if __name__ == '__main__':
     tasks.append((varName,''))
     for sys in vl.systMap:
         tasks.append( (varName, sys) )
+    tasks.append( (varName, 'pdfUp'      ) )
+    tasks.append( (varName, 'pdfDown'    ) )
+    tasks.append( (varName, 'ttbarMEUp'  ) )
+    tasks.append( (varName, 'ttbarMEDown') )
     
     if not os.path.isdir('results/srs'):
         os.system('mkdir -p results/srs')
+    
     pool = Pool(nCores)
     finalresults = pool.map(makeFit, tasks)
     pool.close()
