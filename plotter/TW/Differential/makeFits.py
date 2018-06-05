@@ -35,7 +35,7 @@ def makeFit(task):
 
     os.system('cd temp/{var}_{sys}; combineCards.py {allCards} > {outCard}; cd -'.format(allCards = ' '.join(cardList), var = varName, sys = syst,
                                                                              outCard  = 'datacard_{var}_{sys}.txt'.format(var=varName,sys=syst)))
-    print 'cd temp/{var}_{sys}; combineCards.py {allCards} > {outCard}; cd -'.format(allCards = ' '.join(cardList), var = varName, sys = syst,
+    if verbose: print 'cd temp/{var}_{sys}; combineCards.py {allCards} > {outCard}; cd -'.format(allCards = ' '.join(cardList), var = varName, sys = syst,
                                                                              outCard  = 'datacard_{var}_{sys}.txt'.format(var=varName,sys=syst))
 
     physicsModel = 'text2workspace.py -m 125 -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel '
@@ -47,9 +47,9 @@ def makeFit(task):
         os.system('mkdir -p temp/{var}_{sys}/fitdiagnostics'.format(var=varName,sys=syst))
 
     os.system(physicsModel)
-    print physicsModel
+    if verbose: print physicsModel
     #os.system('combine  -M FitDiagnostics --out temp/{var}_{sys}/fitdiagnostics  temp/{var}_{sys}/comb_fit_{var}_{sys}.root --saveWorkspace -n {var}_{sys} --X-rtd MINIMIZER_MaxCalls=5000000'.format(var=varName,sys=syst))
-    print 'combine  -M FitDiagnostics --out temp/{var}_{sys}/fitdiagnostics  temp/{var}_{sys}/comb_fit_{var}_{sys}.root --saveWorkspace -n {var}_{sys} --X-rtd MINIMIZER_analytic --X-rtd MINIMIZER_MaxCalls=5000000'.format(var=varName,sys=syst)
+    if verbose: print 'combine  -M FitDiagnostics --out temp/{var}_{sys}/fitdiagnostics  temp/{var}_{sys}/comb_fit_{var}_{sys}.root --saveWorkspace -n {var}_{sys} --X-rtd MINIMIZER_analytic --X-rtd MINIMIZER_MaxCalls=5000000'.format(var=varName,sys=syst)
     os.system('combine  -M FitDiagnostics --out temp/{var}_{sys}/fitdiagnostics  temp/{var}_{sys}/comb_fit_{var}_{sys}.root --saveWorkspace -n {var}_{sys} --X-rtd MINIMIZER_analytic --X-rtd MINIMIZER_MaxCalls=5000000 --saveShapes'.format(var=varName,sys=syst))
 
     # Ahora recogemos la virutilla
