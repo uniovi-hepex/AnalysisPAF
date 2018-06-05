@@ -33,6 +33,7 @@ if [ "$variable" == "All" ]; then
   mkdir -p temp
   mkdir -p results
   mkdir -p results/Cardplots
+  mkdir -p results/srs
 
   if [ ! -e "temp/UnfoldingInfo.root" ]; then
     echo "%%%%% FATAL ERROR: the ROOT file with the histograms of the response matrix do not exist."
@@ -95,6 +96,7 @@ else
   mkdir -p temp
   mkdir -p results
   mkdir -p results/Cardplots
+  mkdir -p results/srs
 
   if [ ! -e "temp/UnfoldingInfo.root" ]; then
     echo "%%%%% FATAL ERROR: the ROOT file with the histograms of the response matrix do not exist."

@@ -101,6 +101,7 @@ def makeFit(task):
     plot = bp.beautifulUnfoldingPlots('srs_{var}_{sys}'.format(var = varName, sys = syst))
     plot.addHistoInPad( len(toKeep), toKeep[0][0], 'AP', toKeep[0][1],'')
     plot.addTLatex(0.7,1-0.2, toKeep[0][1])
+    plot.plotspath  = "results/srs/"
     for p in range( 1, len(toKeep)):
         plot.addHistoInPad( p+1, toKeep[p][0], 'AP', toKeep[p][1],'')
         #toKeep[p][0].GetYaxis().SetTitle('Post/pre')
@@ -194,14 +195,14 @@ if __name__ == '__main__':
     for sys in vl.systMap:
         tasks.append( (varName, sys) )
 
-
-    tasks.append( (varName,'pdfUp'       ))
-    tasks.append( (varName,'ttbarMEUp'   ))
-    tasks.append( (varName,'pdfDown'     ))
-    tasks.append( (varName,'ttbarMEDown' ))
-
-
-
+    tasks.append( (varName, 'pdfUp'      ) )
+    tasks.append( (varName, 'pdfDown'    ) )
+    tasks.append( (varName, 'ttbarMEUp'  ) )
+    tasks.append( (varName, 'ttbarMEDown') )
+    
+    if not os.path.isdir('results/srs'):
+        os.system('mkdir -p results/srs')
+    
     pool = Pool(nCores)
     finalresults = pool.map(makeFit, tasks)
     pool.close()
