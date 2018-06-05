@@ -117,6 +117,7 @@ def getCardsNominal(task):
     p.SetOutputName("forCards_" + varName + '_%d'%indx);
     p.DrawStack();
     del p
+    if asimov: del hData
     
     p = r.PlotToPy(r.TString('theBDt_bin%d( TBDT )'%indx), r.TString('(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && %s >= %4.2f  && %s < %4.2f )'%(vl.varList[varName]['var'], binDn, vl.varList[varName]['var'], binUp)), r.TString('ElMu'), vl.nBinsInBDT, float(0.5), float(vl.nBinsInBDT + 0.5), r.TString(varName + '_%d'%indx), r.TString('BDT disc. (bin %s)'%(str(indx))))
     p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
@@ -185,6 +186,7 @@ def getCardsNominal(task):
     p.SetOutputName("forCards_" + varName + '_%d'%indx);
     p.SaveHistograms();
     del p
+    if asimov: del hData
     
     card = r.Datacard("tW_%d"%indx, "ttbar_{idx},DY_{idx},VVttbarV_{idx},Non-WorZ_{idx}".format(idx=indx), systlist + ', JER', "ElMu_%d"%indx)
     card.SetRootFileName('./temp/{var}_/forCards_'.format(var = varName) + varName + '_%d'%indx)
@@ -240,7 +242,12 @@ def getCardsSyst(task):
     p.AddSample("DYJetsToLL_M5to50_MLM",        "DY",           r.itBkg, 852, systlist);
     p.AddSample("DYJetsToLL_M50_MLM",           "DY",           r.itBkg, 852, systlist);
     
-    if 'UEUp' in syst:
+    
+    # NOTE: comment or uncomment the following three lines AND the whole if statement to consider less or more samples for syst. uncs.
+    #p.AddSample(vl.systMap[syst]["TTbar_Powheg"], 't#bar{t}', r.itBkg, 633, systlist)                                   # For fewer samples
+    #p.AddSample(vl.systMap[syst]["TTbar_Powheg"], 't#bar{t}', r.itSys, 1, "JERUp");                                     # For fewer samples
+    #p.AddSymmetricHisto('t#bar{t}',  "JERUp");                                                                          # For fewer samples
+    if 'UEUp' in syst:                                                                                                 # For all samples: all the if statement
         specialweight = vl.nUEUp_ttbar/vl.sigma_ttbar/(vl.nUEUp_ttbar/vl.sigma_ttbar + vl.nUEUp_dilep/vl.sigma_dilep)
         p.SetWeight('TWeight*' + str(specialweight))
         p.AddSample(vl.systMap[syst]["TTbar_Powheg"], 't#bar{t}', r.itBkg, 633, systlist)
@@ -333,6 +340,9 @@ def getCardsSyst(task):
     p.SetOutputName("forCards_" + varName + '_' + syst + '_%d'%indx);
     p.DrawStack();
     del p
+    if asimov:
+        del hData
+        tfile.Close()
     
     p = r.PlotToPy(r.TString('theBDt_bin%d( TBDT )'%indx), r.TString('(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && %s >= %4.2f  && %s < %4.2f )'%(vl.varList[varName]['var'], binDn, vl.varList[varName]['var'], binUp)), r.TString('ElMu'), vl.nBinsInBDT, float(0.5), float(vl.nBinsInBDT+0.5), r.TString(varName + '_%d'%indx), r.TString(''))
     p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
@@ -359,7 +369,11 @@ def getCardsSyst(task):
     p.AddSample("DYJetsToLL_M5to50_MLM",        "DY_%d"%indx,           r.itBkg, 852, systlist);
     p.AddSample("DYJetsToLL_M50_MLM",           "DY_%d"%indx,           r.itBkg, 852, systlist);
     
-    if 'UEUp' in syst:
+    # NOTE: comment or uncomment the following three lines AND the whole if statement to consider less or more samples for syst. uncs.
+    #p.AddSample(vl.systMap[syst]["TTbar_Powheg"], 'ttbar_{ind}'.format(ind = indx), r.itBkg, 633, systlist)           # For fewer samples
+    #p.AddSample(vl.systMap[syst]["TTbar_Powheg"], 'ttbar_{ind}'.format(ind = indx), r.itSys, 1, "JERUp");             # For fewer samples
+    #p.AddSymmetricHisto('ttbar_{ind}'.format(ind = indx),  "JERUp");                                                  # For fewer samples
+    if 'UEUp' in syst:                                                                                                 # For all samples: all the if statement
         specialweight = vl.nUEUp_ttbar/vl.sigma_ttbar/(vl.nUEUp_ttbar/vl.sigma_ttbar + vl.nUEUp_dilep/vl.sigma_dilep)
         p.SetWeight('TWeight*' + str(specialweight))
         p.AddSample(vl.systMap[syst]["TTbar_Powheg"], 'ttbar_{ind}'.format(ind = indx), r.itBkg, 633, systlist)
@@ -452,6 +466,9 @@ def getCardsSyst(task):
     p.SetOutputName("forCards_" + varName + '_' + syst + '_%d'%indx);
     p.SaveHistograms();
     del p
+    if asimov:
+        del hData
+        tfile.Close()
     
     card = r.Datacard('tW_%d'%indx, 'ttbar_{idx},DY_{idx},VVttbarV_{idx},Non-WorZ_{idx}'.format(idx=indx) , systlist + ', JER', "ElMu_%d"%indx)
     card.SetRootFileName("temp/{var}_{sys}/forCards_".format(var = varName, sys = syst) + varName  + '_' + syst  + '_%d'%indx)
@@ -592,8 +609,9 @@ def getCardsPdf(task):
     del p
     del pdf
     del histo
-    del hData
-    tfile.Close()
+    if asimov:
+        del hData
+        tfile.Close()
     
     p = r.PlotToPy(r.TString('theBDt_bin%d( TBDT )'%indx), r.TString('(TIsSS == 0 && TNJets == 1  && TNBtags == 1 && %s >= %4.2f  && %s < %4.2f )'%(vl.varList[varName]['var'], binDn, vl.varList[varName]['var'], binUp)), r.TString('ElMu'), vl.nBinsInBDT, float(0.5), float(vl.nBinsInBDT+0.5), r.TString(varName + '_%d'%indx), r.TString(''))
     p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
@@ -708,8 +726,9 @@ def getCardsPdf(task):
     del p
     del pdf
     del histo
-    del hData
-    tfile.Close()
+    if asimov:
+        del hData
+        tfile.Close()
     
     card = r.Datacard('tW_%d'%indx, 'ttbar_{idx},DY_{idx},VVttbarV_{idx},Non-WorZ_{idx}'.format(idx=indx) , systlist + ', JER', "ElMu_%d"%indx)
     card.SetRootFileName('temp/{var}_{sys}/forCards_'.format(var = varName, sys = syst) + varName  + '_' + syst  + '_%d'%indx)
@@ -739,7 +758,7 @@ if __name__ == '__main__':
     binning = vl.varList[varName]['recobinning']
     print "> Beginning to produce histograms", "\n"
     tasks   = []
-    asimov  = False
+    asimov  = True
     print '> Creating nominal rootfiles with histograms and datacards'
     for binDn,binUp in zip(binning, binning[1:]):
         indx = indx+1
