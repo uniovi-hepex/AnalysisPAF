@@ -295,6 +295,42 @@ def getCardsSyst(task):
         p.AddSample('TTbar2L_Powheg_hdampDown',            't#bar{t}', r.itSys, 1, "JERUp")
         p.AddSymmetricHisto('t#bar{t}',  "JERUp");
         p.SetWeight('TWeight')
+    elif 'GluonMoveCRTune' in syst:
+        specialweight = vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample(vl.systMap[syst]["TTbar_Powheg"], 't#bar{t}', r.itBkg, 633, systlist)
+        p.AddSample(vl.systMap[syst]["TTbar_Powheg"], 't#bar{t}', r.itSys, 1, "JERUp")
+        
+        specialweight = vl.nGluonMoveCRTune_dilep/vl.sigma_dilep/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample('TTTo2L2Nu_GluonMoveCRTune',           't#bar{t}', r.itBkg, 633, systlist)
+        p.AddSample('TTTo2L2Nu_GluonMoveCRTune',           't#bar{t}', r.itSys, 1, "JERUp")
+        p.AddSymmetricHisto('t#bar{t}',  "JERUp");
+        p.SetWeight('TWeight')
+    elif 'PowhegerdON' in syst:
+        specialweight = vl.nPowhegerdON_ttbar/vl.sigma_ttbar/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample(vl.systMap[syst]["TTbar_Powheg"], 't#bar{t}', r.itBkg, 633, systlist)
+        p.AddSample(vl.systMap[syst]["TTbar_Powheg"], 't#bar{t}', r.itSys, 1, "JERUp")
+        
+        specialweight = vl.nPowhegerdON_dilep/vl.sigma_dilep/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample('TTTo2L2Nu_Powheg_erdON',            't#bar{t}', r.itBkg, 633, systlist)
+        p.AddSample('TTTo2L2Nu_Powheg_erdON',            't#bar{t}', r.itSys, 1, "JERUp")
+        p.AddSymmetricHisto('t#bar{t}',  "JERUp");
+        p.SetWeight('TWeight')
+    elif 'QCDbasedCRTuneerdON' in syst:
+        specialweight = vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample(vl.systMap[syst]["TTbar_Powheg"], 't#bar{t}', r.itBkg, 633, systlist)
+        p.AddSample(vl.systMap[syst]["TTbar_Powheg"], 't#bar{t}', r.itSys, 1, "JERUp")
+        
+        specialweight = vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample('TTTo2L2Nu_QCDbasedCRTune_erdON',            't#bar{t}', r.itBkg, 633, systlist)
+        p.AddSample('TTTo2L2Nu_QCDbasedCRTune_erdON',            't#bar{t}', r.itSys, 1, "JERUp")
+        p.AddSymmetricHisto('t#bar{t}',  "JERUp");
+        p.SetWeight('TWeight')
     else:
         p.AddSample(vl.systMap[syst]["TTbar_Powheg"], 't#bar{t}', r.itBkg, 633, systlist)
         p.AddSample(vl.systMap[syst]["TTbar_Powheg"], 't#bar{t}', r.itSys, 1, "JERUp")
@@ -419,6 +455,42 @@ def getCardsSyst(task):
         p.SetWeight('TWeight*' + str(specialweight))
         p.AddSample('TTbar2L_Powheg_hdampDown',            'ttbar_{ind}'.format(ind = indx), r.itBkg, 633, systlist)
         p.AddSample('TTbar2L_Powheg_hdampDown',            'ttbar_{ind}'.format(ind = indx), r.itSys, 1, "JERUp")
+        p.AddSymmetricHisto('ttbar_{ind}'.format(ind = indx),  "JERUp");
+        p.SetWeight('TWeight')
+    elif 'GluonMoveCRTune' in syst:
+        specialweight = vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample(vl.systMap[syst]["TTbar_Powheg"], 'ttbar_{ind}'.format(ind = indx), r.itBkg, 633, systlist)
+        p.AddSample(vl.systMap[syst]["TTbar_Powheg"], 'ttbar_{ind}'.format(ind = indx), r.itSys, 1, "JERUp")
+        
+        specialweight = vl.nGluonMoveCRTune_dilep/vl.sigma_dilep/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample('TTTo2L2Nu_GluonMoveCRTune',           'ttbar_{ind}'.format(ind = indx), r.itBkg, 633, systlist)
+        p.AddSample('TTTo2L2Nu_GluonMoveCRTune',           'ttbar_{ind}'.format(ind = indx), r.itSys, 1, "JERUp")
+        p.AddSymmetricHisto('ttbar_{ind}'.format(ind = indx),  "JERUp");
+        p.SetWeight('TWeight')
+    elif 'PowhegerdON' in syst:
+        specialweight = vl.nPowhegerdON_ttbar/vl.sigma_ttbar/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample(vl.systMap[syst]["TTbar_Powheg"], 'ttbar_{ind}'.format(ind = indx), r.itBkg, 633, systlist)
+        p.AddSample(vl.systMap[syst]["TTbar_Powheg"], 'ttbar_{ind}'.format(ind = indx), r.itSys, 1, "JERUp")
+        
+        specialweight = vl.nPowhegerdON_dilep/vl.sigma_dilep/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample('TTTo2L2Nu_Powheg_erdON',            'ttbar_{ind}'.format(ind = indx), r.itBkg, 633, systlist)
+        p.AddSample('TTTo2L2Nu_Powheg_erdON',            'ttbar_{ind}'.format(ind = indx), r.itSys, 1, "JERUp")
+        p.AddSymmetricHisto('ttbar_{ind}'.format(ind = indx),  "JERUp");
+        p.SetWeight('TWeight')
+    elif 'QCDbasedCRTuneerdON' in syst:
+        specialweight = vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample(vl.systMap[syst]["TTbar_Powheg"], 'ttbar_{ind}'.format(ind = indx), r.itBkg, 633, systlist)
+        p.AddSample(vl.systMap[syst]["TTbar_Powheg"], 'ttbar_{ind}'.format(ind = indx), r.itSys, 1, "JERUp")
+        
+        specialweight = vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample('TTTo2L2Nu_QCDbasedCRTune_erdON',            'ttbar_{ind}'.format(ind = indx), r.itBkg, 633, systlist)
+        p.AddSample('TTTo2L2Nu_QCDbasedCRTune_erdON',            'ttbar_{ind}'.format(ind = indx), r.itSys, 1, "JERUp")
         p.AddSymmetricHisto('ttbar_{ind}'.format(ind = indx),  "JERUp");
         p.SetWeight('TWeight')
     else:
@@ -758,7 +830,7 @@ if __name__ == '__main__':
     binning = vl.varList[varName]['recobinning']
     print "> Beginning to produce histograms", "\n"
     tasks   = []
-    asimov  = True
+    asimov  = False
     print '> Creating nominal rootfiles with histograms and datacards'
     for binDn,binUp in zip(binning, binning[1:]):
         indx = indx+1

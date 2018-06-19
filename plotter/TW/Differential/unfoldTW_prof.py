@@ -270,18 +270,25 @@ class Unfolder():
         plot.plotspath  = self.plotspath
         
         if self.doSanityCheck:
-            tmptfile = r.TFile.Open('/nfs/fanae/user/sscruz/TW_differential/AnalysisPAF/plotter/./Datacards/closuretest_TGenLeadingJet_TGen{var}.root'.format(var=self.var))
+            if not os.path.isfile('temp/{var}_/ClosureTest_{var}.root'.format(var = self.var)):
+                raise RuntimeError('The rootfile with the generated information does not exist')
+            tmptfile = r.TFile.Open('temp/{var}_/ClosureTest_{var}.root'.format(var = self.var))
             tru = copy.deepcopy(tmptfile.Get('tW'))
             tru.SetLineWidth(2)
             tru.SetLineColor(bp.colorMap[0])
-            #tru.SetFillColor(bp.colorMap[0])
-            plot.addHisto(tru,'L','Truth','L')
-            tru.SetMinimum(0)
-            tru.SetMaximum(1.4*tru.GetMaximum())
-            plot.addHisto(data,'P,E,same','Data','P')
+            if not os.path.isfile('temp/{var}_/ClosureTest_aMCatNLO_{var}.root'.format(var = self.var)):
+                raise RuntimeError('The rootfile with the generated information from an aMCatNLO sample does not exist')
+            tmptfile2 = r.TFile.Open('temp/{var}_/ClosureTest_aMCatNLO_{var}.root'.format(var = self.var))
+            aMCatNLO = copy.deepcopy(tmptfile2.Get('tW'))
+            aMCatNLO.SetLineWidth(2)
+            aMCatNLO.SetLineColor(bp.colorMap[1])
+            plot.addHisto(tru, 'L', 'tW Powheg', 'L')
+            plot.addHisto(aMCatNLO, 'L,same', 'tW aMCatNLO', 'L')
+            plot.addHisto(data, 'P,E,same', 'Data', 'P')
             plot.saveCanvas('TR')
             tmptfile.Close()
-
+            tmptfile2.Close()
+            
         else:
             plot.addHisto(data,'P,E','Data','P')
             plot.saveCanvas('TR')
@@ -334,16 +341,22 @@ class Unfolder():
             if not os.path.isfile('temp/{var}_/ClosureTest_{var}.root'.format(var = self.var)):
                 raise RuntimeError('The rootfile with the generated information does not exist')
             tmptfile = r.TFile.Open('temp/{var}_/ClosureTest_{var}.root'.format(var = self.var))
-
             tru = copy.deepcopy(tmptfile.Get('tW'))
             tru.SetLineWidth(2)
             tru.SetLineColor(bp.colorMap[0])
+            if not os.path.isfile('temp/{var}_/ClosureTest_aMCatNLO_{var}.root'.format(var = self.var)):
+                raise RuntimeError('The rootfile with the generated information from an aMCatNLO sample does not exist')
+            tmptfile2 = r.TFile.Open('temp/{var}_/ClosureTest_aMCatNLO_{var}.root'.format(var = self.var))
+            aMCatNLO = copy.deepcopy(tmptfile2.Get('tW'))
+            aMCatNLO.SetLineWidth(2)
+            aMCatNLO.SetLineColor(r.kAzure)
             plot.addHisto(nominal_withErrors,'E2','Syst. unc.','F')
             plot.addHisto(nominal,'P,same','Data','P')
-            plot.addHisto(tru,'L,same','Truth','L')
+            plot.addHisto(tru,'L,same','tW Powheg','L')
+            plot.addHisto(aMCatNLO,'L,same','tW aMCatNLO','L')
             plot.saveCanvas('TR')
             tmptfile.Close()
-
+            tmptfile2.Close()
         else:
             plot.addHisto(nominal_withErrors,'E2','Syst. unc.','F')
             plot.addHisto(nominal,'P,same','Data','P')
