@@ -3,20 +3,28 @@ import os
 # Library of all the variables so everything is centralized and there are not confusions
 # TODO: port the card producer to python so it can also use this
 
-Lumi            = 35.9
-nBinsInBDT      = 8
+Lumi        = 35.9
+nBinsInBDT  = 10
 
-sigma_ttbar     = 831.76
-sigma_dilep     = 88.28769753
+sigma_ttbar = 831.76
+sigma_dilep = 88.28769753
 
-nUEUp_ttbar     = 58953660
-nUEUp_dilep     = 9907537
-nUEDown_ttbar   = 58338240
-nUEDown_dilep   = 9691700
-nhDampUp_ttbar  = 58858606
-nhDampUp_dilep  = 9672473
-nhDampDown_ttbar= 58163976
-nhDampDown_dilep= 9634312
+nUEUp_ttbar                = 58953660
+nUEUp_dilep                = 9907537
+nUEDown_ttbar              = 58338240
+nUEDown_dilep              = 9691700
+nhDampUp_ttbar             = 58858606
+nhDampUp_dilep             = 9672473
+nhDampDown_ttbar           = 58163976
+nhDampDown_dilep           = 9634312
+
+nGluonMoveCRTune_ttbar     = 59037234
+nGluonMoveCRTune_dilep     = 9862990
+nPowhegerdON_ttbar         = 59882210
+nPowhegerdON_dilep         = 9537400
+nQCDbasedCRTuneerdON_ttbar = 59620206
+nQCDbasedCRTuneerdON_dilep = 9816448
+
 
 margins         = "0.06, 0.1, 0.06, 0.1" # top, bottom, right, left
 marginsratio    = "0.03, 0.4, 0.06, 0.1" # top, bottom, right, left
