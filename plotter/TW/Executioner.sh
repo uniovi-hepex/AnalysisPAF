@@ -290,7 +290,7 @@ elif [ "$1" == "ch" ]; then
       echo "%%%% => The bash script will now end."
       echo " "
       cd plotter/TW
-      exit
+      return
     fi
     sleep 5
   done
@@ -346,7 +346,7 @@ elif [ "$1" == "ch" ]; then
       echo "%%%% => The bash script will now end."
       echo " "
       cd plotter/TW
-      exit
+      return
     fi
     sleep 5
   done
@@ -405,7 +405,7 @@ elif [ "$1" == "ch" ]; then
       echo "%%%% => The bash script will now end."
       echo " "
       cd plotter/TW
-      exit
+      return
     fi
     sleep 5
   done
