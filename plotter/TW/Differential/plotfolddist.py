@@ -54,7 +54,7 @@ nominal_withErrors[0].SetLineColor(r.kBlue)
 nominal_withErrors[0].SetFillStyle(1001)
 
 if doSanityCheck:
-    print '> Adding generated distribution.'
+    print '> Adding generated distribution with used software and others.'
     if not os.path.isfile('temp/{var}_/ClosureTest_recobinning_{var}.root'.format(var = varName)):
         raise RuntimeError('The rootfile with the generated information does not exist')
     tmptfile = r.TFile.Open('temp/{var}_/ClosureTest_recobinning_{var}.root'.format(var = varName))
@@ -63,8 +63,20 @@ if doSanityCheck:
     tru.SetLineColor(bp.colorMap[0])
     for bin in range(1, tru.GetNbinsX()): tru.SetBinError(bin, 0.)
     if nominal_withErrors[0].GetMaximum() <= tru.GetMaximum(): nominal_withErrors[0].SetMaximum(tru.GetMaximum())
+    if not os.path.isfile('temp/{var}_/ClosureTest_aMCatNLO_recobinning_{var}.root'.format(var = varName)):
+        raise RuntimeError('The rootfile with the generated information does not exist')
+    tmptfile2 = r.TFile.Open('temp/{var}_/ClosureTest_aMCatNLO_recobinning_{var}.root'.format(var = varName))
+    aMCatNLO = copy.deepcopy(tmptfile.Get('tW'))
+    aMCatNLO.SetLineWidth(2)
+    aMCatNLO.SetLineColor(r.kAzure)
+    for bin in range(1, tru.GetNbinsX()):
+        tru.SetBinError(bin, 0.)
+        aMCatNLO.SetBinError(bin, 0.)
+    if nominal_withErrors[0].GetMaximum() <= tru.GetMaximum(): nominal_withErrors[0].SetMaximum(tru.GetMaximum())
+    if nominal_withErrors[0].GetMaximum() <= aMCatNLO.GetMaximum(): nominal_withErrors[0].SetMaximum(aMCatNLO.GetMaximum())
     plot.addHisto(nominal_withErrors, 'hist', 'Syst. unc.', 'F')
     plot.addHisto(tru, 'L,same', 'tW Powheg', 'L')
+    plot.addHisto(aMCatNLO, 'L,same', 'tW aMCatNLo', 'L')
     plot.addHisto(nominal, 'P,E,same', labellegend, 'P')
     plot.saveCanvas('TC')
     tmptfile.Close()
