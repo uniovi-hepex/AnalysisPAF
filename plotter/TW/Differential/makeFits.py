@@ -35,7 +35,7 @@ def makeFit(task):
 
     os.system('cd temp/{var}_{sys}; combineCards.py {allCards} > {outCard}; cd -'.format(allCards = ' '.join(cardList), var = varName, sys = syst,
                                                                              outCard  = 'datacard_{var}_{sys}.txt'.format(var=varName,sys=syst)))
-    print 'cd temp/{var}_{sys}; combineCards.py {allCards} > {outCard}; cd -'.format(allCards = ' '.join(cardList), var = varName, sys = syst,
+    if verbose: print 'cd temp/{var}_{sys}; combineCards.py {allCards} > {outCard}; cd -'.format(allCards = ' '.join(cardList), var = varName, sys = syst,
                                                                              outCard  = 'datacard_{var}_{sys}.txt'.format(var=varName,sys=syst))
 
     physicsModel = 'text2workspace.py -m 125 -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel '
@@ -47,9 +47,9 @@ def makeFit(task):
         os.system('mkdir -p temp/{var}_{sys}/fitdiagnostics'.format(var=varName,sys=syst))
 
     os.system(physicsModel)
-    print physicsModel
+    if verbose: print physicsModel
     #os.system('combine  -M FitDiagnostics --out temp/{var}_{sys}/fitdiagnostics  temp/{var}_{sys}/comb_fit_{var}_{sys}.root --saveWorkspace -n {var}_{sys} --X-rtd MINIMIZER_MaxCalls=5000000'.format(var=varName,sys=syst))
-    print 'combine  -M FitDiagnostics --out temp/{var}_{sys}/fitdiagnostics  temp/{var}_{sys}/comb_fit_{var}_{sys}.root --saveWorkspace -n {var}_{sys} --X-rtd MINIMIZER_analytic --X-rtd MINIMIZER_MaxCalls=5000000'.format(var=varName,sys=syst)
+    if verbose: print 'combine  -M FitDiagnostics --out temp/{var}_{sys}/fitdiagnostics  temp/{var}_{sys}/comb_fit_{var}_{sys}.root --saveWorkspace -n {var}_{sys} --X-rtd MINIMIZER_analytic --X-rtd MINIMIZER_MaxCalls=5000000'.format(var=varName,sys=syst)
     os.system('combine  -M FitDiagnostics --out temp/{var}_{sys}/fitdiagnostics  temp/{var}_{sys}/comb_fit_{var}_{sys}.root --saveWorkspace -n {var}_{sys} --X-rtd MINIMIZER_analytic --X-rtd MINIMIZER_MaxCalls=5000000 --saveShapes'.format(var=varName,sys=syst))
 
     # Ahora recogemos la virutilla
@@ -101,6 +101,7 @@ def makeFit(task):
     plot = bp.beautifulUnfoldingPlots('srs_{var}_{sys}'.format(var = varName, sys = syst))
     plot.addHistoInPad( len(toKeep), toKeep[0][0], 'AP', toKeep[0][1],'')
     plot.addTLatex(0.7,1-0.2, toKeep[0][1])
+    plot.plotspath  = "results/srs/"
     for p in range( 1, len(toKeep)):
         plot.addHistoInPad( p+1, toKeep[p][0], 'AP', toKeep[p][1],'')
         #toKeep[p][0].GetYaxis().SetTitle('Post/pre')
@@ -194,14 +195,14 @@ if __name__ == '__main__':
     for sys in vl.systMap:
         tasks.append( (varName, sys) )
 
-
-    tasks.append( (varName,'pdfUp'       ))
-    tasks.append( (varName,'ttbarMEUp'   ))
-    tasks.append( (varName,'pdfDown'     ))
-    tasks.append( (varName,'ttbarMEDown' ))
-
-
-
+    tasks.append( (varName, 'pdfUp'      ) )
+    tasks.append( (varName, 'pdfDown'    ) )
+    tasks.append( (varName, 'ttbarMEUp'  ) )
+    tasks.append( (varName, 'ttbarMEDown') )
+    
+    if not os.path.isdir('results/srs'):
+        os.system('mkdir -p results/srs')
+    
     pool = Pool(nCores)
     finalresults = pool.map(makeFit, tasks)
     pool.close()
