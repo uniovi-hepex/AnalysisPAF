@@ -61,12 +61,10 @@ if doSanityCheck:
     tru = copy.deepcopy(tmptfile.Get('tW'))
     tru.SetLineWidth(2)
     tru.SetLineColor(bp.colorMap[0])
-    for bin in range(1, tru.GetNbinsX()): tru.SetBinError(bin, 0.)
-    if nominal_withErrors[0].GetMaximum() <= tru.GetMaximum(): nominal_withErrors[0].SetMaximum(tru.GetMaximum())
     if not os.path.isfile('temp/{var}_/ClosureTest_aMCatNLO_recobinning_{var}.root'.format(var = varName)):
         raise RuntimeError('The rootfile with the generated information does not exist')
     tmptfile2 = r.TFile.Open('temp/{var}_/ClosureTest_aMCatNLO_recobinning_{var}.root'.format(var = varName))
-    aMCatNLO = copy.deepcopy(tmptfile.Get('tW'))
+    aMCatNLO = copy.deepcopy(tmptfile2.Get('tW'))
     aMCatNLO.SetLineWidth(2)
     aMCatNLO.SetLineColor(r.kAzure)
     for bin in range(1, tru.GetNbinsX()):

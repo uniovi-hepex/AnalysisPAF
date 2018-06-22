@@ -282,6 +282,9 @@ class Unfolder():
             aMCatNLO = copy.deepcopy(tmptfile2.Get('tW'))
             aMCatNLO.SetLineWidth(2)
             aMCatNLO.SetLineColor(bp.colorMap[1])
+            for bin in range(1, tru.GetNbinsX()):
+                tru.SetBinError(bin, 0.)
+                aMCatNLO.SetBinError(bin, 0.)
             plot.addHisto(tru, 'L', 'tW Powheg', 'L')
             plot.addHisto(aMCatNLO, 'L,same', 'tW aMCatNLO', 'L')
             plot.addHisto(data, 'P,E,same', 'Data', 'P')
@@ -350,6 +353,9 @@ class Unfolder():
             aMCatNLO = copy.deepcopy(tmptfile2.Get('tW'))
             aMCatNLO.SetLineWidth(2)
             aMCatNLO.SetLineColor(r.kAzure)
+            for bin in range(1, tru.GetNbinsX()):
+                tru.SetBinError(bin, 0.)
+                aMCatNLO.SetBinError(bin, 0.)
             plot.addHisto(nominal_withErrors,'E2','Syst. unc.','F')
             plot.addHisto(nominal,'P,same','Data','P')
             plot.addHisto(tru,'L,same','tW Powheg','L')

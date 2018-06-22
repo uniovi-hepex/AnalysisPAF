@@ -50,6 +50,7 @@ class beautifulUnfoldingPlots:
         if padnum:
             self.canvas.Divide(1, padnum)
     
+    
     def addHisto(self, histos, options, name, legOptions):
         if not self.inited: self.initCanvasAndAll()
         
@@ -67,12 +68,10 @@ class beautifulUnfoldingPlots:
                 asymhisto.SetPointEYlow(bin, histos[1].GetBinError(bin + 1))
             
             if self.name.replace('_folded', '') in vl.varList:
-                
                 asymhisto.GetXaxis().SetTitle( vl.varList[self.name.replace('_folded', '')]['xaxis'] )
                 asymhisto.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '')]['yaxis'] )
             
-            if '_folded' in self.name:
-                asymhisto.GetXaxis().SetRangeUser(histo.GetXaxis().GetBinLowEdge(1), histo.GetXaxis().GetBinUpEdge(histo.GetNbinsX()))
+            asymhisto.GetXaxis().SetRangeUser(histo.GetXaxis().GetBinLowEdge(1), histo.GetXaxis().GetBinUpEdge(histo.GetNbinsX()))
             
             asymhisto.GetXaxis().SetTitleFont(42)
             asymhisto.GetXaxis().SetTitleSize(0.05)
@@ -114,6 +113,7 @@ class beautifulUnfoldingPlots:
             histo.Draw(options)
             self.objectsInLeg.append( (histo, name, legOptions) )
     
+    
     def addHistoInPad(self, padnum, histos, options, name, legOptions):
         if not self.inited: 
             self.initCanvasAndAll(padnum) # first one should be total number of supbad
@@ -138,10 +138,8 @@ class beautifulUnfoldingPlots:
         histo.GetYaxis().SetLabelFont(42)
         histo.GetYaxis().SetLabelSize(0.05)
         histo.GetYaxis().SetLabelOffset(0.007)
-        
-
-
         histo.Draw(options)
+
 
     def addTLatex(self, x1, y1, text, pad=0):
         if pad:
@@ -155,12 +153,9 @@ class beautifulUnfoldingPlots:
         else:
             self.tlatex.append(la)
         
-
         la.Draw('same')
 
 
-
-    
     def saveCanvas(self, corner, suffix='', leg=True):
         self.canvas.cd()
         
