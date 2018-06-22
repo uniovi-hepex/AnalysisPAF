@@ -47,7 +47,7 @@ samples_unf=("UNF_TW" "UNF_TW_noFullyHadr_isrUp" "UNF_TW_noFullyHadr_isrDown" "U
 # MLM for DY:
 #
 runsamples=("TW_ext" "TW_noFullyHadr & TW_noFullyHadr_ext & TW_noFullyHadr_ext2" 
-  "TbarW_ext" "TbarW_noFullyHadr & TbarW_noFullyHadr_ext & TbarW_noFullyHadr_ext2" "TW_aMCatNLO" 
+  "TbarW_ext" "TbarW_noFullyHadr & TbarW_noFullyHadr_ext & TbarW_noFullyHadr_ext2" "TW_aMCatNLO_[0-9]" 
   "TTbar_Powheg" "TTbar_Powheg" "TTbar2L_powheg" "DYJetsToLL_M50_MLM_ext & DYJetsToLL_M50_MLM_ext2" "DYJetsToLL_M5to50_MLM" 
   "WJetsToLNu_MLM & WJetsToLNu_MLM_ext2" "ZZ & ZZ_ext" "WW & WW_ext" "WZ & WZ_ext" "TTWToLNu_ext1 & TTWToLNu_ext2" "TTZToQQ" "TTZToLLNuNu_ext1 & TTZToLLNuNu_ext2" "TTWToQQ" "TTGJets & TTGJets_ext" 
   "MuonEG" "SingleElec" "SingleMuon")
@@ -93,13 +93,15 @@ uplimit_syst=$((${#runsamples_syst[@]}-1))
 uplimit_unf=$((${#runsamples_unf[@]}-1))
 
 ncores=("30" "30" 
-  "30" "30" 
+  "30" "30" "30" 
   "30" "30" "30" "30" "30"
   "8" "8" "8" "8" "8" "8" "8" "8" "5" 
   "30" "30" "30")
 
 unfpath="LocalFile:/pool/ciencias/userstorage/sscruz/TW/mar27/"
 unftmppath=""
+noskimpath="LocalFile:/pool/ciencias/HeppyTreesSummer16/v2/noSkim/"
+noskimtmppath=""
 init="Tree_"
 final=".root"
 plotspath="/nfs/fanae/user/vrbouza/Documents/TFM/AnalysisPAF/TW_temp"
@@ -144,6 +146,12 @@ if [ "$1" == "an" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", ${ncores[i]}, -4, 0, 1.0, \"makeHadd\")"
       elif [ ${samples[i]} == "TTbar_PowhegSemi" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", ${ncores[i]}, 0, 0, 1.0, \"Semi\")"
+      elif [ ${samples[i]} == "TW_aMCatNLO" ]; then
+        unset noskimtmppath
+        noskimtmppath=$noskimpath$init${runsamples[i]}$final
+        root -l -b -q "RunAnalyserPAF.C(\"$noskimtmppath\", \"$sel\", ${ncores[i]}, 0, 0, 35.85)"
+        cp TW_temp/Tree_TW_aMCatNLO_[0-9].root TW_temp/Tree_TW_aMCatNLO.root
+        rm TW_temp/Tree_TW_aMCatNLO_[0-9].root
       else
         root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", ${ncores[i]})"
       fi
@@ -171,6 +179,12 @@ if [ "$1" == "an" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, -4, 0, 1.0, \"makeHadd\")"
       elif [ ${samples[i]} == "TTbar_PowhegSemi" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, 0, 0, 1.0, \"Semi\")"
+      elif [ ${samples[i]} == "TW_aMCatNLO" ]; then
+        unset noskimtmppath
+        noskimtmppath=$noskimpath$init${runsamples[i]}$final
+        root -l -b -q "RunAnalyserPAF.C(\"$noskimtmppath\", \"$sel\", ${ncores[i]}, 0, 0, 35.85)"
+        cp TW_temp/Tree_TW_aMCatNLO_[0-9].root TW_temp/Tree_TW_aMCatNLO.root
+        rm TW_temp/Tree_TW_aMCatNLO_[0-9].root
       else
         root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2)"
       fi
@@ -193,20 +207,11 @@ if [ "$1" == "an" ]; then
     
   fi
   
-elif [ "$1" == "pl" ]; then
-  echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TW PLOTTER EXECUTION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-  echo ""
-  echo ""
-  echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Remaking libraries..."  
-  source RemakeLibraries.sh
-  echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Starting to plot"
-  source PlotThings.sh
-  
 elif [ "$1" == "ch" ]; then
   echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TW CHECKER EXECUTION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
   echo ""
   echo ""
-  echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Remaking libraries..."  
+  echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Running prolegomena..."  
   source pre_start.sh
   echo "%%%%%> DONE"
   echo " "
@@ -250,6 +255,12 @@ elif [ "$1" == "ch" ]; then
           root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, -4, 0, 1.0, \"makeHadd\")"
         elif [ ${samples[i]} == "TTbar_PowhegSemi" ]; then
           root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, 0, 0, 1.0, \"Semi\")"
+        elif [ ${samples[i]} == "TW_aMCatNLO" ]; then
+          unset noskimtmppath
+          noskimtmppath=$noskimpath$init${runsamples[i]}$final
+          root -l -b -q "RunAnalyserPAF.C(\"$noskimtmppath\", \"$sel\", $2, 0, 0, 35.85)"
+          cp TW_temp/Tree_TW_aMCatNLO_[0-9].root TW_temp/Tree_TW_aMCatNLO.root
+          rm TW_temp/Tree_TW_aMCatNLO_[0-9].root
         else
           root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2)"
         fi
@@ -272,6 +283,12 @@ elif [ "$1" == "ch" ]; then
             root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, -4, 0, 1.0, \"makeHadd\")"
           elif [ ${samples[i]} == "TTbar_PowhegSemi" ]; then
             root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, 0, 0, 1.0, \"Semi\")"
+          elif [ ${samples[i]} == "TW_aMCatNLO" ]; then
+            unset noskimtmppath
+            noskimtmppath=$noskimpath$init${runsamples[i]}$final
+            root -l -b -q "RunAnalyserPAF.C(\"$noskimtmppath\", \"$sel\", $2, 0, 0, 35.85)"
+            cp TW_temp/Tree_TW_aMCatNLO_[0-9].root TW_temp/Tree_TW_aMCatNLO.root
+            rm TW_temp/Tree_TW_aMCatNLO_[0-9].root
           else
             root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2)"
           fi
