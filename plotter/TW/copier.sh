@@ -12,6 +12,7 @@ plotspath="/nfs/fanae/user/vrbouza/www/TFM/Unfolding/Results/"
 indstr="index.php"
 crdplstr="Cardplots/"
 srsstr="srs/"
+compstr="comparison/"
 prefitstr="prefit/"
 fitsstr="fit_s/"
 
@@ -29,6 +30,7 @@ if [ "$1" == "p" ]; then
   cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$srsstr$indstr
   cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$prefitstr$indstr
   cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$fitsstr$indstr
+  cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$compstr$indstr
   echo " "
   echo "Done!"
   return
