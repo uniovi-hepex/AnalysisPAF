@@ -4,7 +4,7 @@ import os
 # TODO: port the card producer to python so it can also use this
 
 Lumi        = 35.9
-nBinsInBDT  = 10
+nBinsInBDT  = 4
 
 sigma_ttbar = 831.76
 sigma_dilep = 88.28769753
@@ -54,6 +54,7 @@ varList['Names'] = {
                      "LeadingLepE", "LeadingLepPt", "LeadingLepPhi", "LeadingLepEta", 
                      "SubLeadingLepE", "SubLeadingLepPt", "SubLeadingLepPhi", "SubLeadingLepEta",
                      "DilepPt", "DilepJetPt", "DilepMETJetPt", "HTtot"],
+    #'Variables'   : ["LeadingJetPt", "LeadingLepPt"],
     'ExpSysts'    : ["JESUp", "JESDown", "JERUp", "ElecEffUp", "ElecEffDown", "MuonEffUp",
                      "MuonEffDown", "TrigUp", "TrigDown", "PUUp", "PUDown", "BtagUp",
                      "BtagDown", "MistagUp", "MistagDown"],
