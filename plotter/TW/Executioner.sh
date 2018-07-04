@@ -182,7 +182,7 @@ if [ "$1" == "an" ]; then
       elif [ ${samples[i]} == "TW_aMCatNLO" ]; then
         unset noskimtmppath
         noskimtmppath=$noskimpath$init${runsamples[i]}$final
-        root -l -b -q "RunAnalyserPAF.C(\"$noskimtmppath\", \"$sel\", ${ncores[i]}, 0, 0, 35.85)"
+        root -l -b -q "RunAnalyserPAF.C(\"$noskimtmppath\", \"$sel\", ${ncores[i]}, 0, 0, 7.61064238831)"
         cp TW_temp/Tree_TW_aMCatNLO_[0-9].root TW_temp/Tree_TW_aMCatNLO.root
         rm TW_temp/Tree_TW_aMCatNLO_[0-9].root
       else
@@ -258,7 +258,7 @@ elif [ "$1" == "ch" ]; then
         elif [ ${samples[i]} == "TW_aMCatNLO" ]; then
           unset noskimtmppath
           noskimtmppath=$noskimpath$init${runsamples[i]}$final
-          root -l -b -q "RunAnalyserPAF.C(\"$noskimtmppath\", \"$sel\", $2, 0, 0, 35.85)"
+          root -l -b -q "RunAnalyserPAF.C(\"$noskimtmppath\", \"$sel\", $2, 0, 0, 7.61064238831)"
           cp TW_temp/Tree_TW_aMCatNLO_[0-9].root TW_temp/Tree_TW_aMCatNLO.root
           rm TW_temp/Tree_TW_aMCatNLO_[0-9].root
         else
@@ -286,7 +286,7 @@ elif [ "$1" == "ch" ]; then
           elif [ ${samples[i]} == "TW_aMCatNLO" ]; then
             unset noskimtmppath
             noskimtmppath=$noskimpath$init${runsamples[i]}$final
-            root -l -b -q "RunAnalyserPAF.C(\"$noskimtmppath\", \"$sel\", $2, 0, 0, 35.85)"
+            root -l -b -q "RunAnalyserPAF.C(\"$noskimtmppath\", \"$sel\", $2, 0, 0, 7.61064238831)"
             cp TW_temp/Tree_TW_aMCatNLO_[0-9].root TW_temp/Tree_TW_aMCatNLO.root
             rm TW_temp/Tree_TW_aMCatNLO_[0-9].root
           else
@@ -391,7 +391,11 @@ elif [ "$1" == "ch" ]; then
         echo ${samples_unf[i]}
         echo "Reanalysing..."
         echo " "
-        root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, 35.85, \"Unfolding\")"
+        if [ ${runsamples_unf[i]} != "TW_aMCatNLO" ]; then
+          root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, 35.85, \"Unfolding\")"
+        else
+          root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, 7.61064238831, \"Unfolding\")"
+        fi
         resetpaf -a
         
         allok=$(($allok-8))
