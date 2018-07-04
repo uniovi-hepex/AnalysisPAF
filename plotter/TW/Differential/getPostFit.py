@@ -58,11 +58,11 @@ def getPostFit(task):
     hother.SetColor( 390 )
     hData .SetColor( r.kBlack )
 
+    p.AddToHistos( httbar )
     p.AddToHistos( htW    )
     p.AddToHistos( hfakes )
     p.AddToHistos( hother )
     p.AddToHistos( hDY    )
-    p.AddToHistos( httbar )
     p.AddToHistos( hData  )
     
     p.doUncInLegend = True;
