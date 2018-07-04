@@ -205,6 +205,11 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
       GetCount(Files, G_IsData);
       xsec = uxsec;
       G_Event_Weight = xsec/Count;
+      if(SumOfWeights != Count){ // is aMCatNLO
+        G_IsMCatNLO = true;
+        if(verbose) cout << " >>> This is an aMCatNLO sample!!" << endl;
+        G_Event_Weight = xsec/SumOfWeights;
+      }
     }
     else if(sampleName.BeginsWith("Scan:")){ // T2tt sample
       stopMass = GetStopMass(options);
