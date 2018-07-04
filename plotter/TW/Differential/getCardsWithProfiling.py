@@ -830,7 +830,7 @@ if __name__ == '__main__':
     binning = vl.varList[varName]['recobinning']
     print "> Beginning to produce histograms", "\n"
     tasks   = []
-    asimov  = False
+    asimov  = True
     print '> Creating nominal rootfiles with histograms and datacards'
     for binDn,binUp in zip(binning, binning[1:]):
         indx = indx+1
