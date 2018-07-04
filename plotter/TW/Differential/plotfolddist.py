@@ -90,15 +90,33 @@ uncList = ep.getUncList(nominal, allHistos, True)[:5]
 plot    = bp.beautifulUnfoldingPlots(varName + 'uncertainties_folded')
 uncList[0][1].Draw()
 
-if uncList[0][1].GetMaximum() < 0.5:
-    uncList[0][1].GetYaxis().SetRangeUser(0, 0.5)
+incmax  = []
+for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
+    incmax.append(max([nominal_withErrors[0].GetBinError(bin), nominal_withErrors[1].GetBinError(bin)]))
+
+maxinctot = 0
+hincmax   = nominal_withErrors[0].Clone('hincmax')
+for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
+    hincmax.SetBinContent(bin, incmax[bin-1] / hincmax.GetBinContent(bin))
+    hincmax.SetBinError(bin, 0)
+    if (hincmax.GetBinContent(bin) > maxinctot): maxinctot = hincmax.GetBinContent(bin)
+
+hincmax.SetLineColor(r.kBlack)
+hincmax.SetLineWidth( 2 )
+hincmax.SetFillColorAlpha(r.kBlue, 0)
+
+if (maxinctot >= 0.9):
+    uncList[0][1].GetYaxis().SetRangeUser(0, maxinctot + 0.1)
 else:
     uncList[0][1].GetYaxis().SetRangeUser(0, 0.9)
+
 for i in range(5):
     #uncList[i][1].SetLineColor(bp.colorMap[i])
     uncList[i][1].SetLineColor(vl.colorMap[uncList[i][0]])
     uncList[i][1].SetLineWidth( 2 )
     plot.addHisto(uncList[i][1], 'H,same' if i else 'H', uncList[i][0], 'L')
+
+plot.addHisto(hincmax, 'H,same', 'Total', 'L')
 
 plot.plotspath = "results/"
 plot.saveCanvas('TC')
