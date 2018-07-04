@@ -38,9 +38,9 @@ print '> Variable chosen:', varName, '\n'
 print '> Minitrees path:', minipath, '\n'
 
 print '> Uniform tW distribution of the BDT discriminant\n'
-tf    = ROOT.TFile(minipath + 'Tree_TW.root')             # Uncomment this for equal-tW BDT distribution shape
+#tf    = ROOT.TFile(minipath + 'Tree_TW.root')             # Uncomment this for equal-tW BDT distribution shape
 #print '> Uniform ttbar distribution of the BDT discriminant\n'
-#tf    = ROOT.TFile(minipath + 'Tree_TTbar_Powheg.root')  # Uncomment this for equal-ttbar BDT distribution shape
+tf    = ROOT.TFile(minipath + 'Tree_TTbar_Powheg.root')  # Uncomment this for equal-ttbar BDT distribution shape
 tree  = tf.Mini1j1t
 
 Base  ='''
