@@ -1,10 +1,10 @@
-import ROOT
+import ROOT as r
 import varList as vl
 import sys, os
 from array import array
 
-ROOT.gROOT.SetBatch(True)
-
+r.gROOT.SetBatch(True)
+vl.SetUpWarnings()
 print "===== Setting binning of the BDT procedure\n"
 print "> Preliminaries..."
 nq          = vl.nBinsInBDT  # Number of bins in which to divide the BDT distribution.
@@ -37,10 +37,14 @@ else:
 print '> Variable chosen:', varName, '\n'
 print '> Minitrees path:', minipath, '\n'
 
-print '> Uniform tW distribution of the BDT discriminant\n'
-#tf    = ROOT.TFile(minipath + 'Tree_TW.root')             # Uncomment this for equal-tW BDT distribution shape
-#print '> Uniform ttbar distribution of the BDT discriminant\n'
-tf    = ROOT.TFile(minipath + 'Tree_TTbar_Powheg.root')  # Uncomment this for equal-ttbar BDT distribution shape
+if vl.unifttbar:
+    print '> Uniform ttbar distribution of the BDT discriminant\n'
+    tf    = r.TFile(minipath + 'Tree_TTbar_Powheg.root')
+else:
+    print '> Uniform tW distribution of the BDT discriminant\n'
+    tf    = r.TFile(minipath + 'Tree_TW.root')
+
+
 tree  = tf.Mini1j1t
 
 Base  ='''
@@ -59,7 +63,7 @@ bins  = vl.varList[varName]['recobinning']
 count = 0
 print "\n> Constructing C++ file of the binning"
 for binDn,binUp in zip(bins, bins[1:]):
-    c       = ROOT.TCanvas()
+    c       = r.TCanvas()
     count   = count + 1
     varBin  = "{var} >= {binDn} && {var} < {binUp}".format(var=var, binUp=binUp, binDn=binDn)
     tree.Draw("TBDT","TWeight * (Tpassreco == 1 && %s)"%varBin)
@@ -91,10 +95,10 @@ output.write(Base)
 output.close()
 
 print "> Doing sanity checks..."
-ROOT.gROOT.LoadMacro('./temp/{var}_/'.format(var = varName) + varName + '.C+')
+r.gROOT.LoadMacro('./temp/{var}_/'.format(var = varName) + varName + '.C+')
 
 for k in range(1, len(bins)):
-    if not hasattr(ROOT, 'theBDt_bin%d'%k): print 'Something went wrong'
+    if not hasattr(r, 'theBDt_bin%d'%k): print 'Something went wrong'
     else: print '    - Bin', k, 'OK'
 
 
