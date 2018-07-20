@@ -1,4 +1,4 @@
-import ROOT as rt
+import ROOT as r
 
 def tdrGrid( gridOn):
   tdrStyle.SetPadGridX(gridOn)
@@ -8,11 +8,11 @@ def tdrGrid( gridOn):
 def fixOverlay(): gPad.RedrawAxis()
 
 def setTDRStyle():
-  tdrStyle =  rt.TStyle("tdrStyle","Style for P-TDR")
+  tdrStyle =  r.TStyle("tdrStyle","Style for P-TDR")
 
    #for the canvas:
   tdrStyle.SetCanvasBorderMode(0)
-  tdrStyle.SetCanvasColor(rt.kWhite)
+  tdrStyle.SetCanvasColor(r.kWhite)
   tdrStyle.SetCanvasDefH(600) #Height of canvas
   tdrStyle.SetCanvasDefW(600) #Width of canvas
   tdrStyle.SetCanvasDefX(0)   #POsition on screen
@@ -21,7 +21,7 @@ def setTDRStyle():
 
   tdrStyle.SetPadBorderMode(0)
   #tdrStyle.SetPadBorderSize(Width_t size = 1)
-  tdrStyle.SetPadColor(rt.kWhite)
+  tdrStyle.SetPadColor(r.kWhite)
   tdrStyle.SetPadGridX(False)
   tdrStyle.SetPadGridY(False)
   tdrStyle.SetGridColor(0)
@@ -67,7 +67,7 @@ def setTDRStyle():
 # For the statistics box:
   tdrStyle.SetOptFile(0)
   tdrStyle.SetOptStat(0) # To display the mean and RMS:   SetOptStat("mr")
-  tdrStyle.SetStatColor(rt.kWhite)
+  tdrStyle.SetStatColor(r.kWhite)
   tdrStyle.SetStatFont(42)
   tdrStyle.SetStatFontSize(0.025)
   tdrStyle.SetStatTextColor(1)
