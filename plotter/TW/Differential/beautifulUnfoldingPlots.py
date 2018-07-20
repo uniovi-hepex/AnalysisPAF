@@ -1,7 +1,7 @@
 import ROOT  as r
 import tdrstyle, CMS_lumi
+import copy
 import varList as vl
-from ROOT import TH1, TEfficiency, TFile, TCanvas, TAxis
 
 CMS_lumi.writeExtraText = 1
 
@@ -29,7 +29,7 @@ class beautifulUnfoldingPlots:
         self.doRatio        = False
 
 
-    def initCanvasAndAll(self, padnum=None):
+    def initCanvasAndAll(self):
         if self.inited: return
         self.inited     = True
         tdrstyle.setTDRStyle()
@@ -47,21 +47,21 @@ class beautifulUnfoldingPlots:
         if doOfficialCMS: self.canvas.SetTopMargin(topsize*1.2 if self.doWide else topsize)
         self.canvas.SetWindowSize(plotformat[0] + (plotformat[0] - self.canvas.GetWw()), (plotformat[1]+150 + (plotformat[1]+150 - self.canvas.GetWh())))
 
-        if padnum:
-            self.canvas.Divide(1, padnum)
+        if self.doRatio:
+            self.canvas.Divide(1, 2)
+            self.canvas.GetPad(1).SetPad(*vl.plotlimits)
+            self.canvas.GetPad(2).SetPad(*vl.ratiolimits)
+            self.canvas.GetPad(2).SetBottomMargin(0.3)
+        return
     
     
-    def addHisto(self, histos, options, name, legOptions):
+    def addHisto(self, histos, options, name, legOptions, idname = '', padnum = 1):
         if not self.inited: self.initCanvasAndAll()
+        if self.doRatio: self.canvas.cd(1)
+        else:            self.canvas.cd()
         
         if isinstance(histos, list):
             histo = histos[0]
-        else:
-            histo = histos
-        
-        self.canvas.cd()
-        if isinstance(histos, list):
-            print '> Drawing an asym.-unc. histogram with the following options:', options
             asymhisto   =   r.TGraphAsymmErrors(histo)
             for bin in range(asymhisto.GetN()):
                 asymhisto.SetPointEYhigh(bin, histo.GetBinError(bin + 1))
@@ -69,81 +69,112 @@ class beautifulUnfoldingPlots:
             
             if self.name.replace('_folded', '') in vl.varList:
                 asymhisto.GetXaxis().SetTitle( vl.varList[self.name.replace('_folded', '')]['xaxis'] )
-                asymhisto.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '')]['yaxis'] )
+                if not vl.doxsec: asymhisto.GetYaxis().SetTitle( 'Events' )
+                else:             asymhisto.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '')]['yaxis'] )
             
             asymhisto.GetXaxis().SetRangeUser(histo.GetXaxis().GetBinLowEdge(1), histo.GetXaxis().GetBinUpEdge(histo.GetNbinsX()))
             
-            asymhisto.GetXaxis().SetTitleFont(42)
-            asymhisto.GetXaxis().SetTitleSize(0.05)
-            asymhisto.GetXaxis().SetTitleOffset(1.1)
-            asymhisto.GetXaxis().SetLabelFont(42)
-            asymhisto.GetXaxis().SetLabelSize(0.05)
+            asymhisto.GetXaxis().SetTitleFont(43)
+            asymhisto.GetXaxis().SetTitleSize(22)
+            asymhisto.GetXaxis().SetTitleOffset(1.4)
+            asymhisto.GetXaxis().SetLabelFont(43)
+            asymhisto.GetXaxis().SetLabelSize(22)
             asymhisto.GetXaxis().SetLabelOffset(0.007)
-            asymhisto.GetYaxis().SetTitleFont(42)
-            asymhisto.GetYaxis().SetTitleSize(0.05)
-            asymhisto.GetYaxis().SetTitleOffset(0.4 if self.doWide else 1.58)
-            asymhisto.GetYaxis().SetLabelFont(42)
-            asymhisto.GetYaxis().SetLabelSize(0.05)
-            asymhisto.GetYaxis().SetLabelOffset(0.007)
-            asymhisto.SetMinimum(0.)
             asymhisto.GetXaxis().SetNdivisions(510, True)
+            
+            asymhisto.GetYaxis().SetTitleFont(43)
+            asymhisto.GetYaxis().SetTitleSize(22)
+            asymhisto.GetYaxis().SetTitleOffset(0.5 if self.doWide else 1.8)
+            asymhisto.GetYaxis().SetLabelFont(43)
+            asymhisto.GetYaxis().SetLabelSize(22)
+            asymhisto.GetYaxis().SetLabelOffset(0.007)
             asymhisto.GetYaxis().SetNdivisions(510, True)
+            
+            if 'nomin' not in options:
+                asymhisto.SetMinimum(0.)
+            else:
+                options = options.replace('nomin', '')
+            
+            if self.doRatio:
+                asymhisto.GetXaxis().SetLabelOffset(999)
+                asymhisto.GetXaxis().SetLabelSize(0)
+                asymhisto.GetXaxis().SetTitle(' ')
+                
+            print '> Drawing an asym.-unc. histogram with the following options:', options
             asymhisto.Draw('a2')
-            self.objectsInLeg.append( (asymhisto, name, legOptions) )
+            self.objectsInLeg.append( (asymhisto, name, legOptions, idname) )
         else:
+            histo = histos
             if self.name.replace('_folded', '') in vl.varList:
                 histo.GetXaxis().SetTitle( vl.varList[self.name.replace('_folded', '')]['xaxis'] )
-                histo.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '')]['yaxis'] )
+                if not vl.doxsec: histo.GetYaxis().SetTitle( 'Events' )
+                else:             histo.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '')]['yaxis'] )
 
-            histo.GetXaxis().SetTitleFont(42)
-            histo.GetXaxis().SetTitleSize(0.05)
-            histo.GetXaxis().SetTitleOffset(1.1)
-            histo.GetXaxis().SetLabelFont(42)
-            histo.GetXaxis().SetLabelSize(0.05)
+            histo.GetXaxis().SetTitleFont(43)
+            histo.GetXaxis().SetTitleSize(22)
+            histo.GetXaxis().SetTitleOffset(1.4)
+            histo.GetXaxis().SetLabelFont(43)
+            histo.GetXaxis().SetLabelSize(22)
             histo.GetXaxis().SetLabelOffset(0.007)
-            histo.GetYaxis().SetTitleFont(42)
-            histo.GetYaxis().SetTitleSize(0.05)
-            histo.GetYaxis().SetTitleOffset(0.4 if self.doWide else 1.4)
-            histo.GetYaxis().SetLabelFont(42)
-            histo.GetYaxis().SetLabelSize(0.05)
-            histo.GetYaxis().SetLabelOffset(0.007)
+            histo.GetXaxis().SetNdivisions(510, True)
             
-            histo.SetMinimum(0.)
+            histo.GetYaxis().SetTitleFont(43)
+            histo.GetYaxis().SetTitleSize(22)
+            histo.GetYaxis().SetTitleOffset(0.5 if self.doWide else 1.8)
+            histo.GetYaxis().SetLabelFont(43)
+            histo.GetYaxis().SetLabelSize(22)
+            histo.GetYaxis().SetLabelOffset(0.007)
+            histo.GetYaxis().SetNdivisions(510, True)
+            
+            if 'nomin' not in options:
+                histo.SetMinimum(0.)
+            else:
+                options = options.replace('nomin', '')
+            
+            if self.doRatio:
+                histo.GetXaxis().SetLabelOffset(999)
+                histo.GetXaxis().SetLabelSize(0)
+                histo.GetXaxis().SetTitle(' ')
+            
             print '> Drawing a sym.-unc. histogram with the following options:', options
+            
             histo.Draw(options)
-            self.objectsInLeg.append( (histo, name, legOptions) )
+            self.objectsInLeg.append( (histo, name, legOptions, idname) )
+        return
     
     
     def addHistoInPad(self, padnum, histos, options, name, legOptions):
-        if not self.inited: 
-            self.initCanvasAndAll(padnum) # first one should be total number of supbad
-            padnum = 1
+        if not self.inited:
+            self.initCanvasAndAll() # first one should be total number of supbad
 
         self.canvas.cd(padnum)
         histo = histos
 
         if self.name.replace('_folded', '') in vl.varList:
             histo.GetXaxis().SetTitle( vl.varList[self.name.replace('_folded', '')]['xaxis'] )
-            histo.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '')]['yaxis'] )
+            if not vl.doxsec: histo.GetYaxis().SetTitle( 'Events' )
+            else:             histo.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '')]['yaxis'] )
 
-        histo.GetXaxis().SetTitleFont(42)
-        histo.GetXaxis().SetTitleSize(0.05)
-        histo.GetXaxis().SetTitleOffset(1.1)
-        histo.GetXaxis().SetLabelFont(42)
-        histo.GetXaxis().SetLabelSize(0.05)
+        histo.GetXaxis().SetTitleFont(43)
+        histo.GetXaxis().SetTitleSize(22)
+        histo.GetXaxis().SetTitleOffset(1.4)
+        histo.GetXaxis().SetLabelFont(43)
+        histo.GetXaxis().SetLabelSize(22)
         histo.GetXaxis().SetLabelOffset(0.007)
-        histo.GetYaxis().SetTitleFont(42)
-        histo.GetYaxis().SetTitleSize(0.05)
-        histo.GetYaxis().SetTitleOffset(0.4 if self.doWide else 1.4)
-        histo.GetYaxis().SetLabelFont(42)
-        histo.GetYaxis().SetLabelSize(0.05)
+        
+        histo.GetYaxis().SetTitleFont(43)
+        histo.GetYaxis().SetTitleSize(22)
+        histo.GetYaxis().SetTitleOffset(0.5 if self.doWide else 1.8)
+        histo.GetYaxis().SetLabelFont(43)
+        histo.GetYaxis().SetLabelSize(22)
         histo.GetYaxis().SetLabelOffset(0.007)
         histo.Draw(options)
-
-
-    def addTLatex(self, x1, y1, text, pad=0):
-        if pad:
-            self.canvas.cd(pad)
+        return
+    
+    
+    def addTLatex(self, x1, y1, text, padnum = 1):
+        if padnum:
+            self.canvas.cd(padnum)
         else:
             self.canvas.cd()
 
@@ -157,19 +188,21 @@ class beautifulUnfoldingPlots:
 
 
     def saveCanvas(self, corner, suffix='', leg=True):
-        self.canvas.cd()
+        if self.doRatio: self.canvas.cd(1)
+        else:            self.canvas.cd()
         
-        textSize = 0.055 if self.doRatio else 0.022
+        # Draw legend
+        textSize = 0.022
         legWidth = 0.12
         height = (.19 + textSize*max(len(self.objectsInLeg)-3,0))
         if corner == "TR":
             (x1,y1,x2,y2) = (0.97-legWidth if self.doWide else .85-legWidth, .9 - height, .90, .93)
         elif corner == "TC":
-            (x1,y1,x2,y2) = (.5, .9 - height, .55+legWidth, .93)
+            (x1,y1,x2,y2) = (.5, .9 - height,  .55+legWidth, .93)
         elif corner == "TL":
-            (x1,y1,x2,y2) = (.2, .9 - height, .25+legWidth, .91)
+            (x1,y1,x2,y2) = (.2, .9 - height,  .25+legWidth, .91)
         elif corner == "BR":
-            (x1,y1,x2,y2) = (.85-legWidth, .16 + height, .90, .15)
+            (x1,y1,x2,y2) = (.85 - legWidth, .16 + height, .90, .15)
         elif corner == "BC":
             (x1,y1,x2,y2) = (.5, .16 + height, .5+legWidth, .15)
         elif corner == "BL":
@@ -181,19 +214,92 @@ class beautifulUnfoldingPlots:
             leg.SetTextSize(textSize)
             leg.SetBorderSize(0)
             leg.SetFillColor(10)
-            for obj,name,opt in self.objectsInLeg:
+            for obj,name,opt,idnam in self.objectsInLeg:
                 if opt:
-                    leg.AddEntry( obj, name, opt)
+                    leg.AddEntry(obj, name, opt)
             leg.Draw('same')
-
 
         if not hasattr(self, 'noCMS'):
             CMS_lumi.lumi_13TeV = "%.1f fb^{-1}" %(vl.Lumi)
             CMS_lumi.extraText  = 'Preliminary'
             CMS_lumi.lumi_sqrtS = '#sqrt{s} = 13 TeV'
             CMS_lumi.CMS_lumi(r.gPad, 4, 10, -0.005 if self.doWide and self.doRatio else 0.01 if self.doWide else 0.05)
-
-        self.canvas.SaveAs(self.plotspath + self.name + suffix +'.pdf')
-        self.canvas.SaveAs(self.plotspath + self.name + suffix +'.png')
+        
+        # Draw ratio if needed
+        if self.doRatio:
+            print '> Plotting ratio between prediction(s) and results'
+            if 'data' not in [it[3] for it in self.objectsInLeg]: raise RuntimeError('There is not data to make a ratio plot as demanded.')
+            if [it[3] for it in self.objectsInLeg].count('data') > 1: raise RuntimeError('There are more than one data histograms attached: multiple ratios are not implemented.')
+            if 'mc' not in [it[3] for it in self.objectsInLeg]: raise RuntimeError('There is not (at least) one prediction to make a ratio plot as demanded.')
+            if 'unc' not in [it[3] for it in self.objectsInLeg]: raise RuntimeError('There is not histogram with the total uncertainties to make a ratio plot as demanded.')
+            if [it[3] for it in self.objectsInLeg].count('unc') > 1: raise RuntimeError('There are more than one total uncertainty histograms attached. Please add only one.')
+            # Obtaining resources
+            ratiohistos= []
+            totalunc   = None
+            
+            datavalues = copy.deepcopy([it[0] for it in self.objectsInLeg if it[3] == 'data'][0])
+            fitunc     = copy.deepcopy(datavalues.Clone('fitunc'))
+            
+            for bin in range(1, datavalues.GetNbinsX() + 1):
+                datavalues.SetBinError(bin, 0.)
+            for it in self.objectsInLeg:
+                if it[3] == 'mc':
+                    ratiohistos.append(copy.deepcopy(it[0].Clone(it[1])))
+                    ratiohistos[-1].Divide(datavalues)
+                if it[3] == 'unc':
+                    totalunc = copy.deepcopy(it[0].Clone(it[1]))
+            xtemp = r.Double(0.)
+            ytemp = r.Double(0.)
+            for bin in range(1, datavalues.GetNbinsX() + 1):
+                fitunc.SetBinError(bin, fitunc.GetBinError(bin)/fitunc.GetBinContent(bin))
+                fitunc.SetBinContent(bin, 1.)
+                totalunc.GetPoint(bin - 1, xtemp, ytemp)
+                totalunc.SetPointEYhigh(bin - 1, totalunc.GetErrorYhigh(bin - 1)/ytemp)
+                totalunc.SetPointEYlow(bin - 1,  totalunc.GetErrorYlow(bin - 1)/ytemp)
+                totalunc.SetPoint(bin - 1, xtemp, 1.)
+            
+            # Setting options
+            fitunc.SetFillColorAlpha(r.kAzure, 0.35)
+            fitunc.SetLineColor(r.kBlack)
+            fitunc.SetFillStyle(1001)
+            fitunc.SetLineWidth(1)
+            fitunc.SetMarkerSize(0.)
+            
+            totalunc.SetLineColor(r.kBlack)
+            totalunc.SetFillStyle(1001)
+            totalunc.SetLineWidth(1)
+            totalunc.GetXaxis().SetRangeUser(fitunc.GetXaxis().GetBinLowEdge(1), fitunc.GetXaxis().GetBinUpEdge(fitunc.GetNbinsX()))
+            totalunc.GetXaxis().SetTitle(vl.varList[self.name.replace('_folded', '')]['xaxis'])
+            totalunc.GetXaxis().SetTitleFont(43)
+            totalunc.GetXaxis().SetTitleSize(22)
+            totalunc.GetXaxis().SetTitleOffset(4)
+            totalunc.GetXaxis().SetLabelFont(43)
+            totalunc.GetXaxis().SetLabelSize(22)
+            totalunc.GetXaxis().SetLabelOffset(0.007)
+            totalunc.GetXaxis().SetNdivisions(510, True)
+            
+            totalunc.GetYaxis().SetRangeUser(0, 2.5)
+            totalunc.GetYaxis().SetTitle('Pred./Data')
+            totalunc.GetYaxis().SetTitleFont(43)
+            totalunc.GetYaxis().SetTitleSize(22)
+            totalunc.GetYaxis().SetTitleOffset(0.5 if self.doWide else 1.8)
+            totalunc.GetYaxis().CenterTitle(True)
+            totalunc.GetYaxis().SetLabelFont(43)
+            totalunc.GetYaxis().SetLabelSize(22)
+            totalunc.GetYaxis().SetLabelOffset(0.007)
+            totalunc.GetYaxis().SetNdivisions(510, True)
+            
+            # Drawing
+            self.canvas.cd(2)
+            totalunc.Draw('a2')
+            fitunc.Draw('E2,L,same')
+            for el in ratiohistos:
+                el.Draw('L,same')
+        
+        
+        # Save results
+        self.canvas.SaveAs(self.plotspath + self.name + suffix + '.pdf')
+        self.canvas.SaveAs(self.plotspath + self.name + suffix + '.png')
+        self.canvas.SaveAs(self.plotspath + self.name + suffix + '.root')
 
         self.canvas.IsA().Destructor(self.canvas)
