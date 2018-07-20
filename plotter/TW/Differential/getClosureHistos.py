@@ -3,6 +3,7 @@ import varList as vl
 import sys, os
 from array import array
 print "===== Plots for closure test comparisons procedure\n"
+vl.SetUpWarnings()
 
 storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
 pathToTree    = ""
@@ -33,6 +34,8 @@ r.gROOT.LoadMacro('../../Plot.C+')
 r.gROOT.LoadMacro('../../PlotToPyC.C+')
 
 
+if vl.doxsec: opts = 'noScaleLumi'
+else:         opts = ''
 binning     = array('f', vl.varList[varName]['genbinning'])
 binningreco = array('f', vl.varList[varName]['recobinning'])
 if not os.path.isdir('temp/{var}_'.format(var = varName)):
@@ -45,9 +48,10 @@ p.SetLimitFolder('temp/{var}_/'.format(var = varName));
 p.SetPathSignal(pathToTree);
 p.verbose = True
 p.verbose = False
+p.SetLumi(vl.Lumi)
 
-p.AddSample("UNF_TW",    "tW", r.itBkg, 2)
-p.AddSample("UNF_TbarW", "tW", r.itBkg);
+p.AddSample("UNF_TW",    "tW", r.itBkg, 2, '', opts)
+p.AddSample("UNF_TbarW", "tW", r.itBkg, 2, '', opts)
 
 p.NoShowVarName = True;
 p.SetOutputName("ClosureTest_" + varName);
@@ -60,13 +64,15 @@ p.SetLimitFolder('temp/{var}_/'.format(var = varName));
 p.SetPathSignal(pathToTree);
 p.verbose = True
 p.verbose = False
+p.SetLumi(vl.Lumi)
 
-p.AddSample("UNF_TW_aMCatNLO",    "tW", r.itBkg, 2)
+p.AddSample("UNF_TW_aMCatNLO",    "tW", r.itBkg, 2, '', opts)
 
 p.NoShowVarName = True;
 p.SetOutputName("ClosureTest_aMCatNLO_" + varName);
 p.SaveHistograms();
 del p
+
 
 p = r.PlotToPyC(r.TString(vl.varList[varName]['var']), r.TString('Tpassreco == 1'), r.TString('All'), len(binningreco)-1, binningreco, r.TString('T' + varName), r.TString(''))
 p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
@@ -74,9 +80,10 @@ p.SetLimitFolder('temp/{var}_/'.format(var = varName));
 p.SetPathSignal(pathToTree);
 p.verbose = True
 p.verbose = False
+p.SetLumi(vl.Lumi)
 
-p.AddSample("TW",    "tW", r.itBkg, 2)
-p.AddSample("TbarW", "tW", r.itBkg);
+p.AddSample("TW",    "tW", r.itBkg, 2, '', opts)
+p.AddSample("TbarW", "tW", r.itBkg, 2, '', opts)
 
 p.NoShowVarName = True;
 p.SetOutputName("ClosureTest_recobinning_" + varName);
@@ -89,8 +96,9 @@ p.SetLimitFolder('temp/{var}_/'.format(var = varName));
 p.SetPathSignal(pathToTree);
 p.verbose = True
 p.verbose = False
+p.SetLumi(vl.Lumi)
 
-p.AddSample("TW_aMCatNLO",    "tW", r.itBkg, 2)
+p.AddSample("TW_aMCatNLO",    "tW", r.itBkg, 2, '', opts)
 
 p.NoShowVarName = True;
 p.SetOutputName("ClosureTest_aMCatNLO_recobinning_" + varName);
