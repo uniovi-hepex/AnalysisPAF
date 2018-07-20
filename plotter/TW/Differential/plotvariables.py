@@ -4,6 +4,7 @@ import sys, os
 from multiprocessing import Pool
 from array import array
 print "===== Minitrees variables plotting (now in Python!)\n"
+vl.SetUpWarnings()
 
 storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
 pathToTree  = "../../../TW_temp/";
@@ -42,8 +43,9 @@ def plotvariable(var):
     p.SetTreeName(NameOfTree);
     p.SetPathSignal(pathToTree);
     p.SetTitleY("Events")
-    #p.verbose  = False;
-    p.verbose  = True;
+    p.SetLumi(vl.Lumi)
+    p.verbose  = False;
+    #p.verbose  = True;
     
     p.AddSample("TTbar_PowhegSemi",             "Non-W|Z",      r.itBkg, 413, systlist)
     p.AddSample("WJetsToLNu_MLM",               "Non-W|Z",      r.itBkg, 413, systlist)
@@ -154,6 +156,7 @@ def plotvariable(var):
     
     pdf     = r.PDFToPy(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString(StandardCut), r.TString("ElMu"), r.TString(vl.varList[var]['var']), int(20), float(vl.varList[var]['recobinning'][0]), float(vl.varList[var]['recobinning'][-1]));
     pdf.verbose = False
+    pdf.SetLumi(vl.Lumi * 1000)
     hPDFUp  = pdf.GetSystHisto("up","pdf").CloneHisto();
     hPDFDown= pdf.GetSystHisto("Down","pdf").CloneHisto();
     hMEUp   = pdf.GetSystHisto("up","ME").CloneHisto();
@@ -180,7 +183,7 @@ def plotvariable(var):
     p.doSetLogy     = False;
     #p.doData        = False;
     p.doSignal      = False;
-    p.SetTitleY(r.TString(vl.varList[var]['yaxis']))
+    #p.SetTitleY(r.TString(vl.varList[var]['yaxis']))
     
     if "abs" in vl.varList[var]['var']:
         p.NoShowVarName = True;
@@ -198,8 +201,9 @@ def plotcustomvariable(var):
     p.SetTreeName(NameOfTree);
     p.SetPathSignal(pathToTree);
     p.SetTitleY("Events")
+    p.SetLumi(vl.Lumi)
     p.verbose  = False;
-    p.verbose  = True;
+    #p.verbose  = True;
     
     p.AddSample("TTbar_PowhegSemi",             "Non-W|Z",      r.itBkg, 413, systlist)
     p.AddSample("WJetsToLNu_MLM",               "Non-W|Z",      r.itBkg, 413, systlist)
@@ -308,21 +312,22 @@ def plotcustomvariable(var):
     p.UseEnvelope("t#bar{t}", "GluonMoveCRTune,GluonMoveCRTune_erdON,Powheg_erdON,QCDbasedCRTune_erdON", "ColorReconnection");
     p.AddSymmetricHisto("t#bar{t}",  "JERUp");
     
-    if 'Phi' not in var:
-        pdf     = r.PDFToPyC(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString(StandardCut), r.TString("ElMu"), r.TString(vl.varList[var]['var']), len(vl.varList[var]['recobinning']) - 1, binning, r.TString(''));
-        pdf.verbose = False
-        pdf.verbose = True
-        hPDFUp  = pdf.GetSystHisto("up","pdf").CloneHisto();
-        hPDFDown= pdf.GetSystHisto("Down","pdf").CloneHisto();
-        hMEUp   = pdf.GetSystHisto("up","ME").CloneHisto();
-        hMEDown = pdf.GetSystHisto("Down","ME").CloneHisto();
-        p.PrepareHisto(hPDFUp,   "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarPDFUp");
-        p.PrepareHisto(hPDFDown, "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarPDFDown");
-        p.PrepareHisto(hMEUp,    "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarMEUp");
-        p.PrepareHisto(hMEDown,  "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarMEDown");
-        p.AddToSystematicLabels("ttbarPDF");
-        p.AddToSystematicLabels("ttbarME");
-        del pdf
+    pdf     = r.PDFToPyC(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString(StandardCut), r.TString("ElMu"), r.TString(vl.varList[var]['var']), len(vl.varList[var]['recobinning']) - 1, binning, r.TString(''));
+    pdf.verbose = False
+    #pdf.verbose = True
+    pdf.SetLumi(vl.Lumi * 1000)
+    
+    hPDFUp  = pdf.GetSystHisto("up","pdf").CloneHisto();
+    hPDFDown= pdf.GetSystHisto("Down","pdf").CloneHisto();
+    hMEUp   = pdf.GetSystHisto("up","ME").CloneHisto();
+    hMEDown = pdf.GetSystHisto("Down","ME").CloneHisto();
+    p.PrepareHisto(hPDFUp,   "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarPDFUp");
+    p.PrepareHisto(hPDFDown, "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarPDFDown");
+    p.PrepareHisto(hMEUp,    "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarMEUp");
+    p.PrepareHisto(hMEDown,  "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarMEDown");
+    p.AddToSystematicLabels("ttbarPDF");
+    p.AddToSystematicLabels("ttbarME");
+    del pdf
     
     # Other settings
     p.doUncInLegend = True;
@@ -339,7 +344,7 @@ def plotcustomvariable(var):
     p.doSetLogy     = False;
     #p.doData        = False;
     p.doSignal      = False;
-    p.SetTitleY(r.TString(vl.varList[var]['yaxis']))
+    #p.SetTitleY(r.TString(vl.varList[var]['yaxis']))
     p.SetOutputName("Custom");
     if "abs" in vl.varList[var]['var']:
         p.NoShowVarName = True;
@@ -355,6 +360,7 @@ if __name__ == '__main__':
     tasks = []
     for v in vl.varList["Names"]["Variables"]:
         tasks.append( (v) )
+    #tasks.append( ('LeadingLepPhi') )
     
     pool = Pool(nCores)
     pool.map(plotvariable, tasks)
