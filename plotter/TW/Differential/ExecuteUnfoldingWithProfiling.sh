@@ -34,7 +34,6 @@ if [ "$variable" == "All" ]; then
     echo " "
     mkdir -p temp
     mkdir -p results
-    mkdir -p results/Cardplots
     mkdir -p results/srs
     mkdir -p results/comparison
 
@@ -109,7 +108,6 @@ else
     echo " "
     mkdir -p temp
     mkdir -p results
-    mkdir -p results/Cardplots
     mkdir -p results/srs
     mkdir -p results/comparison
 
