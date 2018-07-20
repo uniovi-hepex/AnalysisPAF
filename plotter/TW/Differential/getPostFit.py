@@ -11,19 +11,27 @@ systlist    = "JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"
 
 def getPostFit(task):
     indx, syst, dire = task
-    
+    print '\n > Obtaining post and prefit plots of bin number {ind} of the syst. {sys}'.format(ind = indx, sys = syst)
     tfile = r.TFile.Open('temp/{var}_{syst}/fitdiagnostics/fitDiagnostics{var}_{syst}.root'.format(syst=syst,var=varName))
     print 'temp/{var}_{syst}/fitdiagnostics/fitDiagnostics{var}_{syst}.root'.format(syst=syst,var=varName)
-    if not tfile: 
+    if not tfile:
         raise RuntimeError("No fitdiagnostics file %s"%'temp/{var}_{syst}/fitdiagnostics/fitDiagnostics{var}_{syst}.root'.format(syst=syst,var=varName))
     tdir   = tfile.Get('shapes_{dire}/ch{indx}'.format(dire=dire,indx=indx))
     tdirda = tfile.Get('shapes_prefit/ch{indx}'.format(dire=dire,indx=indx))
+    
+    doDY    = False
+    dofakes = False
+    doother = False
     ttbar  = tdir  .Get('ttbar_%d'%indx    )
     tW     = tdir  .Get('tW_%d'%indx       )
     DY     = tdir  .Get('DY_%d'%indx       )
     fakes  = tdir  .Get('Non-WorZ_%d'%indx )
     other  = tdir  .Get('VVttbarV_%d'%indx )
     gdata  = tdirda.Get('data'             )
+    
+    if DY:    doDY    = True
+    if fakes: dofakes = True
+    if other: doother = True
     
     data = r.TH1F('hdata','', tW.GetNbinsX(), tW.GetBinLowEdge(1), tW.GetBinLowEdge( tW.GetNbinsX())+tW.GetBinWidth(tW.GetNbinsX()))
     for i in range(1,vl.nBinsInBDT+1):
@@ -44,25 +52,18 @@ def getPostFit(task):
     p.SetLimitFolder('./temp/{var}_/{dire}/'.format(var = varName,dire=dire));
     p.SetTitleY("Events")
     
-    httbar = r.Histo(ttbar); httbar.SetProcess('t#bar{t}'    );  httbar.SetTag('t#bar{t}'    );  httbar.SetType( r.itBkg  )
-    htW    = r.Histo(tW   ); htW   .SetProcess('tW'          );  htW   .SetTag('tW'          );  htW   .SetType( r.itBkg  )
-    hDY    = r.Histo(DY   ); hDY   .SetProcess('DY'          );  hDY   .SetTag('DY'          );  hDY   .SetType( r.itBkg  )
-    hfakes = r.Histo(fakes); hfakes.SetProcess('Non-W|Z'     );  hfakes.SetTag('Non-W|Z'     );  hfakes.SetType( r.itBkg  )
-    hother = r.Histo(other); hother.SetProcess('VV+t#bar{t}V');  hother.SetTag('VV+t#bar{t}V');  hother.SetType( r.itBkg  )
-    hData  = r.Histo(data ); hData .SetProcess('Data'        );  hData .SetTag('Data'        );  hData .SetType( r.itData )
-
-    httbar.SetColor( 633 )
-    htW   .SetColor( r.TColor.GetColor("#ffcc33") )
-    hDY   .SetColor( 852 )
-    hfakes.SetColor( 413 )
-    hother.SetColor( 390 )
-    hData .SetColor( r.kBlack )
-
+    httbar = r.Histo(ttbar); httbar.SetProcess('t#bar{t}'    );  httbar.SetTag('t#bar{t}'    );  httbar.SetType( r.itBkg  ); httbar.SetColor( 633 )
+    htW    = r.Histo(tW   ); htW   .SetProcess('tW'          );  htW   .SetTag('tW'          );  htW   .SetType( r.itBkg  ); htW   .SetColor( r.TColor.GetColor("#ffcc33") )
+    if doDY:    hDY    = r.Histo(DY   ); hDY   .SetProcess('DY'          );  hDY   .SetTag('DY'          );  hDY   .SetType( r.itBkg  ); hDY   .SetColor( 852 )
+    if dofakes: hfakes = r.Histo(fakes); hfakes.SetProcess('Non-W|Z'     );  hfakes.SetTag('Non-W|Z'     );  hfakes.SetType( r.itBkg  ); hfakes.SetColor( 413 )
+    if doother: hother = r.Histo(other); hother.SetProcess('VV+t#bar{t}V');  hother.SetTag('VV+t#bar{t}V');  hother.SetType( r.itBkg  ); hother.SetColor( 390 )
+    hData  = r.Histo(data ); hData .SetProcess('Data'        );  hData .SetTag('Data'        );  hData .SetType( r.itData ); hData .SetColor( r.kBlack )
+    
     p.AddToHistos( httbar )
     p.AddToHistos( htW    )
-    p.AddToHistos( hfakes )
-    p.AddToHistos( hother )
-    p.AddToHistos( hDY    )
+    if dofakes: p.AddToHistos( hfakes )
+    if doother: p.AddToHistos( hother )
+    if doDY:    p.AddToHistos( hDY    )
     p.AddToHistos( hData  )
     
     p.doUncInLegend = True;
@@ -79,7 +80,7 @@ def getPostFit(task):
     p.doSetLogy     = False;
     #p.doData        = False;
     p.doSignal      = False;
-    p.SetTitleY(r.TString(vl.varList[varName]['yaxis']))
+    p.SetTitleY('Events')
     
     p.NoShowVarName = True;
     p.SetOutputName("forCards_" + varName + '_' + syst+'_%d'%indx);
@@ -87,12 +88,14 @@ def getPostFit(task):
     del p
     
     tfile.Close()
+    return
 
 
 
 if __name__ == '__main__':
+    vl.SetUpWarnings()
     r.gROOT.SetBatch(True)
-    
+    verbose = False
     print "===== BDT's histograms procedure with systs. profiling to be obtained after fitting\n"
     if (len(sys.argv) > 1):
         nCores      = int(sys.argv[1])
@@ -129,7 +132,6 @@ if __name__ == '__main__':
     indx    = 0
     binning = vl.varList[varName]['recobinning']
     tasks   = []
-    asimov  = True
     for binDn,binUp in zip(binning, binning[1:]):
         indx = indx+1
         for ty in ['prefit', 'fit_s']:
