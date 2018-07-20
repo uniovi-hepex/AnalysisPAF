@@ -1,8 +1,9 @@
 import ROOT as r
 import varList as vl
-import sys,os
+import sys, os
 from multiprocessing import Pool
 r.gROOT.SetBatch(True)
+vl.SetUpWarnings()
 
 sysList = ['', 'tW'] + [syst for syst in vl.systMap]
 
