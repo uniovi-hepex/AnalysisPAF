@@ -67,7 +67,7 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, TString sys
   Histo* h = GetH(p, sys, type);
   if(type != itData && !LoopOptions.Contains("noScaleLumi"))  h->Scale(Lumi*1000);
   PrepareHisto(h, p, pr, type, color, sys);
-} 
+}
 
 void Plot::GetStack(){ // Sets the histogram hStack
   if(hStack) delete hStack;
