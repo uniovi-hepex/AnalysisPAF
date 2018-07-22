@@ -176,8 +176,7 @@ def makeFit(task):
             scale = 1
             if vl.doxsec: scale = 1/vl.Lumi/1000
             
-            normx = cardx.Get('tW_%d'%i).
-    print 'Cosa del bin', bin, hincmax.GetBinContent(bin)Integral() * scale
+            normx = cardx.Get('tW_%d'%i).Integral() * scale
             normy = cardy.Get('tW_%d'%j).Integral() * scale
         
             cov[i-1][j-1] = cov[i-1][j-1] * normx * normy
