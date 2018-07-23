@@ -22,6 +22,8 @@ unfoldingvars=("E_LLB" "LeadingJetE" "MT_LLMETB" "M_LLB" "M_LeadingB" "M_SubLead
                "SubLeadingLepE" "SubLeadingLepPt" "SubLeadingLepPhi" "SubLeadingLepEta" 
                "DilepPt" "DilepJetPt" "DilepMETJetPt" "HTtot")
 
+# unfoldingvars=("LeadingJetPt" "LeadingLepPt")
+
 uplimit=$((${#unfoldingvars[@]}-1))
 
 
@@ -32,8 +34,8 @@ if [ "$variable" == "All" ]; then
     echo " "
     mkdir -p temp
     mkdir -p results
-    mkdir -p results/Cardplots
     mkdir -p results/srs
+    mkdir -p results/comparison
 
     if [ ! -e "temp/UnfoldingInfo.root" ]; then
         echo "%%%%% FATAL ERROR: the ROOT file with the histograms of the response matrix do not exist."
@@ -91,6 +93,13 @@ if [ "$variable" == "All" ]; then
     for ((i=0; i<=$uplimit; i++)); do
         python unfoldTW_prof.py ${unfoldingvars[i]}
     done
+    
+    source ../pre_start.sh
+    # 8) Perform KS & Chi2 tests
+    echo "> Testing things"
+    echo " "
+    python mergeCardsForChi2.py All $ncores
+    
 else
     echo "> Beggining full unfolding procedure of the variable"
     echo $variable
@@ -99,8 +108,8 @@ else
     echo " "
     mkdir -p temp
     mkdir -p results
-    mkdir -p results/Cardplots
     mkdir -p results/srs
+    mkdir -p results/comparison
 
     if [ ! -e "temp/UnfoldingInfo.root" ]; then
         echo "%%%%% FATAL ERROR: the ROOT file with the histograms of the response matrix do not exist."
@@ -150,6 +159,12 @@ else
     echo "> Unfolding chosen variable..."
     echo " "
     python unfoldTW_prof.py $variable
+    
+    source ../pre_start.sh
+    # 8) Perform KS & Chi2 tests
+    echo "> Testing things"
+    echo " "
+    python mergeCardsForChi2.py $variable
 fi
 
 if [ "$3" == "copy" ]; then

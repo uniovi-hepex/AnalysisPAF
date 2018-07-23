@@ -1,6 +1,6 @@
 import ROOT as r
 import math, copy
-import varList
+import varList as vl
 
 def quadSum( elements):
     return math.sqrt( sum( map( lambda x : x*x, elements)))
@@ -19,33 +19,65 @@ def propagateQuantity(nom, varDict, case = 0):
                 raise RuntimeError('Use case is not supported yet. Syst %s is not supported'%key)
 
             if key.replace('Up','Down') in varDict:
-                tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])
+                if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
+                    tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])/2
+                else:
+                    tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])
             else:
-                tot = tot + max( map(lambda x : x*x, [nom - varDict[key]]))
+                if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
+                    tot = tot + max( map(lambda x : x*x, [nom - varDict[key]]))/2
+                else:
+                    tot = tot + max( map(lambda x : x*x, [nom - varDict[key]]))
     elif case > 0:
         for key in varDict: 
             if 'Down' in key: continue
-            if not 'Up' in key and key not in varList.varList['Names']['colorSysts']:
+            if not 'Up' in key and key not in vl.varList['Names']['colorSysts']:
                 raise RuntimeError('Use case is not supported yet. Syst %s is not supported'%key)
 
-
             if key.replace('Up','Down') in varDict:
-                if (nom - varDict[key] < 0):
-                    tot = tot + map(lambda x : x*x, [nom - varDict[key]])[0]
+                if (nom - varDict[key] > 0 and nom - varDict[key.replace('Up', 'Down')] > 0):
+                    continue
+                elif (nom - varDict[key] < 0 and nom - varDict[key.replace('Up', 'Down')] < 0):
+                    if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
+                        tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])/2
+                    else:
+                        tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])
                 else:
-                    tot = tot + map(lambda x : x*x, [nom - varDict[key.replace('Up', 'Down')]])[0]
+                    if (nom - varDict[key] < 0):
+                        if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
+                            tot = tot + map(lambda x : x*x, [nom - varDict[key]])[0]/2
+                        else:
+                            tot = tot + map(lambda x : x*x, [nom - varDict[key]])[0]
+                    else:
+                        if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
+                            tot = tot + map(lambda x : x*x, [nom - varDict[key.replace('Up', 'Down')]])[0]/2
+                        else:
+                            tot = tot + map(lambda x : x*x, [nom - varDict[key.replace('Up', 'Down')]])[0]
     else:
         for key in varDict: 
             if 'Down' in key: continue
-            if not 'Up' in key and key not in varList.varList['Names']['colorSysts']:
+            if not 'Up' in key and key not in vl.varList['Names']['colorSysts']:
                 raise RuntimeError('Use case is not supported yet. Syst %s is not supported'%key)
 
-
             if key.replace('Up','Down') in varDict:
-                if (nom - varDict[key] > 0):
-                    tot = tot + map(lambda x : x*x, [nom - varDict[key]])[0]
+                if (nom - varDict[key] < 0 and nom - varDict[key.replace('Up', 'Down')] < 0): 
+                    continue
+                elif (nom - varDict[key] > 0 and nom - varDict[key.replace('Up', 'Down')] > 0):
+                    if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
+                        tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])/2
+                    else:
+                        tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])
                 else:
-                    tot = tot + map(lambda x : x*x, [nom - varDict[key.replace('Up', 'Down')]])[0]
+                    if (nom - varDict[key] > 0):
+                        if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
+                            tot = tot + map(lambda x : x*x, [nom - varDict[key]])[0]/2
+                        else:
+                            tot = tot + map(lambda x : x*x, [nom - varDict[key]])[0]
+                    else:
+                        if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
+                            tot = tot + map(lambda x : x*x, [nom - varDict[key.replace('Up', 'Down')]])[0]/2
+                        else:
+                            tot = tot + map(lambda x : x*x, [nom - varDict[key.replace('Up', 'Down')]])[0]
     return math.sqrt(tot)
 
 
@@ -59,7 +91,7 @@ def propagateHisto( nom, varDict, doEnv = False ):
             tmpDict = dict([ (key, histo.GetBinContent(bin)) for (key, histo) in varDict.iteritems()])
             tmpunc  = 0.
             for (key, histo) in varDict.iteritems():
-                if key in varList.varList['Names']['colorSysts']:
+                if key in vl.varList['Names']['colorSysts']:
                     if tmpunc < GetMaxUnc(cont, tmpDict[key], tmpDict[key]):
                         tmpunc = GetMaxUnc(cont, tmpDict[key], tmpDict[key])
                     del tmpDict[key]
@@ -86,7 +118,7 @@ def propagateHistoAsym(nom, varDict, doEnv = False):
             tmpuncDown  = 0.
             tmpunc      = 0.
             for (key, histo) in varDict.iteritems():
-                if key in varList.varList['Names']['colorSysts']:
+                if key in vl.varList['Names']['colorSysts']:
                     tmpunc  = tmpDict[key] - cont
                     if tmpunc > tmpuncUp:
                         tmpuncUp    = tmpunc
@@ -137,12 +169,13 @@ def getUncList(nom, varDict, doEnv = False):
         variat  = 0.
         for bin in range(1, nom.GetNbinsX() + 1):
             variat = nom.GetBinContent(bin) - varDict[var].GetBinContent(bin)
-            if doEnv and var in varList.varList['Names']['colorSysts']:
-                if (variat >= 0): histUp[bin - 1].append(abs(variat))
-                else: histDown[bin - 1].append(abs(variat))
+            if 'fsr' in var or 'FSR' in var or 'isr' in var or 'ISR' in var: variat/(2**(1/2))
+            if doEnv and var in vl.varList['Names']['colorSysts']:
+                if (variat >= 0): histDown[bin - 1].append(abs(variat))
+                else: histUp[bin - 1].append(abs(variat))
             else:
                 hist.SetBinError(bin, abs(variat))
-        if not doEnv or var not in varList.varList['Names']['colorSysts']:
+        if not doEnv or var not in vl.varList['Names']['colorSysts']:
             medDict.append( (var,hist) )
     
     if doEnv:
@@ -154,22 +187,8 @@ def getUncList(nom, varDict, doEnv = False):
         medDict.append(('ColorRUp', finalhistUp))
         medDict.append(('ColorRDown', finalhistDown))
     
-    #kk = lambda x : maxRelativeError(x[1])
     medDict.sort(key = lambda x : maxRelativeError(x[1]), reverse = True)
-    #for key in medDict:
-        #print key
-        #if 'Down' in key[0]: continue
-        #down = None
-        #for key2 in medDict:
-            #if key2[0] == key[0].replace('Up','Down'):
-                #down = key2
-        #if down:
-            #hist = maximumHisto(key[1], key2[1])
-            #outDict.append( (key[0].replace('Up',''), hist) )
-        #else:
-            #outDict.append( (key[0].replace('Up',''), key[1]) )
     for key in medDict:
-        #print key
         done = False
         for i in range(len(outDict)):
             if key[0].replace('Up', '').replace('Down', '') == outDict[i][0]: done = True

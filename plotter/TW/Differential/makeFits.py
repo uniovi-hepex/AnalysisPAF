@@ -1,11 +1,11 @@
 import ROOT  as r
-import os, sys
-import tdrstyle
-from array import array
 import varList as vl
-from multiprocessing import Pool
-from warnings import warn, simplefilter
 import beautifulUnfoldingPlots as bp
+import tdrstyle
+import os, sys
+import warnings as wr
+from array import array
+from multiprocessing import Pool
 
 
 def getBinFromLabel(hist, labx, laby):
@@ -26,19 +26,18 @@ def makeFit(task):
     varName, syst = task
     print '\n> Fitting syst.', syst, 'of the variable', varName, '\n'
     binning = vl.varList[varName]['recobinning']
-
     if syst == '':
         cardList = [ 'datacard_{var}_{idx}.txt'.format(var = varName, idx=idx) for idx in range(1, len(binning))]
     else:
         cardList = [ 'datacard_{var}_{sys}_{idx}.txt'.format(var = varName, sys=syst, idx=idx) for idx in range(1, len(binning))]
 
-
+    if verbose: print 'Cardlist:', cardList
     os.system('cd temp/{var}_{sys}; combineCards.py {allCards} > {outCard}; cd -'.format(allCards = ' '.join(cardList), var = varName, sys = syst,
                                                                              outCard  = 'datacard_{var}_{sys}.txt'.format(var=varName,sys=syst)))
     if verbose: print 'cd temp/{var}_{sys}; combineCards.py {allCards} > {outCard}; cd -'.format(allCards = ' '.join(cardList), var = varName, sys = syst,
                                                                              outCard  = 'datacard_{var}_{sys}.txt'.format(var=varName,sys=syst))
-
     physicsModel = 'text2workspace.py -m 125 -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel '
+    
     for idx in range(1,len(binning)):
         physicsModel = physicsModel + "--PO 'map=.*/tW_{idx}:r_tW_{idx}[1,0,10]' ".format(idx=idx)
     physicsModel = physicsModel + 'temp/{var}_{sys}/datacard_{var}_{sys}.txt -o temp/{var}_{sys}/comb_fit_{var}_{sys}.root'.format(var=varName,sys=syst)
@@ -49,7 +48,7 @@ def makeFit(task):
     os.system(physicsModel)
     if verbose: print physicsModel
     #os.system('combine  -M FitDiagnostics --out temp/{var}_{sys}/fitdiagnostics  temp/{var}_{sys}/comb_fit_{var}_{sys}.root --saveWorkspace -n {var}_{sys} --X-rtd MINIMIZER_MaxCalls=5000000'.format(var=varName,sys=syst))
-    if verbose: print 'combine  -M FitDiagnostics --out temp/{var}_{sys}/fitdiagnostics  temp/{var}_{sys}/comb_fit_{var}_{sys}.root --saveWorkspace -n {var}_{sys} --X-rtd MINIMIZER_analytic --X-rtd MINIMIZER_MaxCalls=5000000'.format(var=varName,sys=syst)
+    if verbose: print 'combine  -M FitDiagnostics --out temp/{var}_{sys}/fitdiagnostics  temp/{var}_{sys}/comb_fit_{var}_{sys}.root --saveWorkspace -n {var}_{sys} --X-rtd MINIMIZER_analytic --X-rtd MINIMIZER_MaxCalls=5000000 --saveShapes'.format(var=varName,sys=syst)
     os.system('combine  -M FitDiagnostics --out temp/{var}_{sys}/fitdiagnostics  temp/{var}_{sys}/comb_fit_{var}_{sys}.root --saveWorkspace -n {var}_{sys} --X-rtd MINIMIZER_analytic --X-rtd MINIMIZER_MaxCalls=5000000 --saveShapes'.format(var=varName,sys=syst))
 
     # Ahora recogemos la virutilla
@@ -58,15 +57,14 @@ def makeFit(task):
     fitsb     = tfile.Get('tree_fit_sb')
     fitsb.GetEntry(0)
     fitstatus = fitsb.fit_status
-    
     if fitstatus == -1:
         raise RuntimeError('Fit of variable {var} with syst. {sys} has not converged (fit status value: {fitv})'.format(var = varName, sys = syst, fitv = fitstatus))
     elif fitstatus != 0:
-        warn('Fit of variable {var} with syst. {sys} has a nonzero fit status value: {fitv}'.format(var = varName, sys = syst, fitv = fitstatus), UserWarning)
+        wr.warn('Fit of variable {var} with syst. {sys} has a nonzero fit status value: {fitv}'.format(var = varName, sys = syst, fitv = fitstatus), UserWarning, stacklevel=2)
     
     fitResult = tfile.Get('fit_s')
     if verbose: fitResult.Print()
-    covar     = fitResult.correlationHist()
+    covar     = fitResult.correlationHist('covar')
 
     # Tambien necesitamos el workspace
     w       = tfile2.Get('w')
@@ -84,7 +82,28 @@ def makeFit(task):
         results[var.GetName()] = [ var.getVal(), var.getErrorLo(), var.getErrorHi() ]
         if count == fitResult.floatParsFinal().getSize(): break
 
-
+    print '> Plotting covariance matrix'
+    c = r.TCanvas('c', '{var}_{sys} covariance matrix'.format(var = varName, sys = syst), 1200, 1200)
+    c.SetTopMargin(0.06)
+    c.SetRightMargin(0.06)
+    covar.GetXaxis().SetTitle('Free parameters of the fit')
+    covar.GetXaxis().SetLabelSize(0.01)
+    covar.GetXaxis().SetTitleSize(0.01)
+    covar.GetXaxis().SetTitleOffset(3)
+    covar.GetYaxis().SetTitle('Free parameters of the fit')
+    covar.GetYaxis().SetLabelSize(0.01)
+    covar.GetYaxis().SetTitleSize(0.01)
+    covar.GetYaxis().SetTitleOffset(3)
+    covar.SetTitle('{var}_{sys} covariance matrix'.format(var = varName, sys = syst))
+    covar.SetStats(False)
+    covar.Draw('colz')
+    if not os.path.isdir('results/covmatrices'):
+        os.system('mkdir -p results/covmatrices')
+    
+    c.SaveAs('results/covmatrices/{var}_{sys}.pdf'.format(var = varName, sys = syst))
+    c.SaveAs('results/covmatrices/{var}_{sys}.png'.format(var = varName, sys = syst))
+    c.SaveAs('results/covmatrices/{var}_{sys}.root'.format(var = varName, sys = syst))
+    del c
     tfile2.Close()
     tfile.Close()
 
@@ -93,9 +112,13 @@ def makeFit(task):
         graph = r.TGraphAsymmErrors(len(binning)-1)
         graph.SetName(p[0])
         for i in range(1, len(binning)):
-            graph.SetPoint( i-1, (binning[i-1] + binning[i])/2, results['%s_%d'%(p[0],i)][0])
-            graph.SetPointError( i-1, (binning[i] - binning[i-1])/2, (binning[i] - binning[i-1])/2,
-                                 -results['%s_%d'%(p[0],i)][1], results['%s_%d'%(p[0],i)][2])
+            if '%s_%d'%(p[0],i) not in results:
+                graph.SetPoint( i-1, (binning[i-1] + binning[i])/2, 0)
+                graph.SetPointError( i-1, (binning[i] - binning[i-1])/2, (binning[i] - binning[i-1])/2, 0, 0)
+            else:
+                graph.SetPoint( i-1, (binning[i-1] + binning[i])/2, results['%s_%d'%(p[0],i)][0])
+                graph.SetPointError( i-1, (binning[i] - binning[i-1])/2, (binning[i] - binning[i-1])/2,
+                                    -results['%s_%d'%(p[0],i)][1], results['%s_%d'%(p[0],i)][2])
         toKeep.append( (graph, p[1]))
 
     plot = bp.beautifulUnfoldingPlots('srs_{var}_{sys}'.format(var = varName, sys = syst))
@@ -112,7 +135,6 @@ def makeFit(task):
     plot.saveCanvas('TR', '',False)
 
 
-
     # Put results into histos
     outHisto = r.TH1F('hFitResult_%s_%s'%(varName,syst), '', len(binning)-1,
                       array('d', vl.varList[varName]['recobinning']))
@@ -121,21 +143,19 @@ def makeFit(task):
             card = r.TFile.Open('temp/{var}_/forCards_{var}_{ind}.root'.format(var = varName, ind = i))
         else:
             card = r.TFile.Open('temp/{var}_{sys}/forCards_{var}_{sys}_{ind}.root'.format(var = varName, sys = syst, ind = i))
-        results['r_tW_%d'%i][0]  = results['r_tW_%d'%i][0] * card.Get('tW_%d'%i).Integral()
-        results['r_tW_%d'%i][1]  = results['r_tW_%d'%i][1] * card.Get('tW_%d'%i).Integral()
-        results['r_tW_%d'%i][2]  = results['r_tW_%d'%i][2] * card.Get('tW_%d'%i).Integral()
+        
+        divquantity = 1
+        if vl.doxsec: divquantity = vl.Lumi * 1000
+        
+        results['r_tW_%d'%i][0]  = results['r_tW_%d'%i][0] * card.Get('tW_%d'%i).Integral() / divquantity
+        results['r_tW_%d'%i][1]  = results['r_tW_%d'%i][1] * card.Get('tW_%d'%i).Integral() / divquantity
+        results['r_tW_%d'%i][2]  = results['r_tW_%d'%i][2] * card.Get('tW_%d'%i).Integral() / divquantity
         outHisto.SetBinContent(i, results['r_tW_%d'%i][0])
-        card.Close() 
+        card.Close()
 
     errors = outHisto.Clone('hFitResult_forPlotting_%s_%s'%(varName,syst))
     for i in range( 1, len(binning)):
-        #upVar = outHisto.GetBinContent(i) + results['r_tW_%d'%i][2]
-        #dnVar = outHisto.GetBinContent(i) + results['r_tW_%d'%i][1]
-        #print 'Nominal:', results['r_tW_%d'%i][0]
-        #print 'El 1', results['r_tW_%d'%i][1], 'El 2', results['r_tW_%d'%i][2]
-        #errors.SetBinContent(i, ( upVar + dnVar ) / 2)
-        #errors.SetBinError  (i, abs( upVar - dnVar) / 2)
-        errors.SetBinContent(i, results['r_tW_%d'%i][2])
+        errors.SetBinContent(i, results['r_tW_%d'%i][2]) # Reminder: they are symmetric. Always.
         errors.SetBinError  (i, results['r_tW_%d'%i][2])
 
     # Put covariance matrix into yield parametrization instead of
@@ -152,9 +172,12 @@ def makeFit(task):
             else:
                 cardx = r.TFile.Open('temp/{var}_{sys}/forCards_{var}_{sys}_{ind}.root'.format(var = varName, sys = syst, ind = i))
                 cardy = r.TFile.Open('temp/{var}_{sys}/forCards_{var}_{sys}_{ind}.root'.format(var = varName, sys = syst, ind = j))
-
-            normx = cardx.Get('tW_%d'%i).Integral() 
-            normy = cardy.Get('tW_%d'%j).Integral() 
+            
+            scale = 1
+            if vl.doxsec: scale = 1/vl.Lumi/1000
+            
+            normx = cardx.Get('tW_%d'%i).Integral() * scale
+            normy = cardy.Get('tW_%d'%j).Integral() * scale
         
             cov[i-1][j-1] = cov[i-1][j-1] * normx * normy
             
@@ -162,16 +185,14 @@ def makeFit(task):
         
             cardx.Close()
             cardy.Close()
-
-
+    
     print '\n> Syst.', syst, 'of the variable', varName, 'fitted!\n'
     return [outHisto, errors, hCov]
 
 
 
 if __name__ == '__main__':
-
-    simplefilter("always", UserWarning)
+    vl.SetUpWarnings()
     r.gROOT.SetBatch(True)
     verbose = False
 
@@ -203,6 +224,7 @@ if __name__ == '__main__':
     if not os.path.isdir('results/srs'):
         os.system('mkdir -p results/srs')
     
+    if verbose: print 'Jobs:', tasks
     pool = Pool(nCores)
     finalresults = pool.map(makeFit, tasks)
     pool.close()

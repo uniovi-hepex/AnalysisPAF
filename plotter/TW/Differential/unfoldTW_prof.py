@@ -1,7 +1,7 @@
-''' 
+'''
 Piece of art for doing the unfolding analysis - with a bit of tW flavor.
 
-''' 
+'''
 
 import copy
 import ROOT as r
@@ -32,6 +32,8 @@ class DataContainer:
 
     def readAndStore(self):
         # Getting inputs and covariance matrices
+        if not os.path.isfile(self.fileName):
+            raise RuntimeError('The rootfile with the post fit information of variable {var} does not exist.'.format(var = varName))
         tfile = r.TFile.Open(self.fileName)
         for key in tfile.GetListOfKeys():
             if   'forPlotting' in key.GetName(): continue
@@ -50,10 +52,10 @@ class DataContainer:
                     sysName = key.GetName().replace('hCovar_'+self.var+'_','')
                     self.covarInput[sysName] = copy.deepcopy(key.ReadObj())
 
-        if '' not in self.unfoldingInputs: 
+        if '' not in self.unfoldingInputs:
             print self.unfoldingInputs
             raise RuntimeError("Unfolding inputs for nominal sample is missing")
-        if '' not in self.covarInput: 
+        if '' not in self.covarInput:
             raise RuntimeError("Covariance input for nominal sample is missing")
         tfile.Close()
 
@@ -71,30 +73,29 @@ class DataContainer:
                 self.responseMatrices[sysName] = copy.deepcopy(key.ReadObj())
 
         # Getting background (events not passing the fiducial selection, but passing reco)
+        scale = vl.Lumi * 1000
+        if vl.doxsec: scale = 1
+        
         for key in tfile.GetListOfKeys():
             if key.GetName()[0] != 'F': continue
             if vl.varList[self.var]['var_response'] not in key.GetName(): continue
             if key.GetName() == 'F' + vl.varList[self.var]['var_response']:
                 self.bkgs[''] = copy.deepcopy(key.ReadObj())
-                self.bkgs[''].Scale(vl.Lumi*1000)
+                self.bkgs[''].Scale(scale)
             else:
                 sysName = '_'.join(key.GetName().split('_')[1:])
                 self.bkgs[sysName] = copy.deepcopy(key.ReadObj())
-                self.bkgs[sysName].Scale(vl.Lumi*1000)
+                self.bkgs[sysName].Scale(scale)
 
-        
         tfile.Close()
 
         if '' not in self.responseMatrices:
             raise RuntimeError("Nominal response matrix not there")
 
 
-                
-        
     def getInputs(self,nuis):
-
-        # ttbar only systs dont have a varied response matrix 
-        print nuis, vl.varList['Names']['ttbarSysts']+vl.varList['Names']['colorSysts']
+        # ttbar only systs dont have a varied response matrix
+        if verbose: print '> Getting inputs for nuisance', nuis, vl.varList['Names']['ttbarSysts']+vl.varList['Names']['colorSysts']
         if nuis in vl.varList['Names']['ttbarSysts']+vl.varList['Names']['colorSysts']:
             return self.unfoldingInputs[nuis], self.responseMatrices[''], self.bkgs[''], self.covarInput[nuis]
         else:
@@ -106,14 +107,18 @@ class DataContainer:
         if nuis not in self.systListResp:
             RuntimeError("%s is not in the list of response"%nuis)
         return self.responseMatrices[nuis]
-        
+
+
 
 class UnfolderHelper:
     ''' Performs unfolding for one specific nuisance'''
     def __init__(self, var, nuis):
-        self.var  = var
-        self.nuis = nuis
-
+        self.var        = var
+        self.nuis       = nuis
+        self.plotspath  = ''
+        self.Data       = None
+    
+    
     def makeUnfolderCore(self,unfInputNresponse):
         self.unfInput , self.response, self.bkg, self.Vyy = unfInputNresponse
         self.tunfolder = r.TUnfoldDensity(self.response, r.TUnfold.kHistMapOutputHoriz,
@@ -122,7 +127,8 @@ class UnfolderHelper:
 
         self.tunfolder.SetInput( self.unfInput, 0., 0., self.Vyy )
         self.tunfolder.SubtractBackground( self.bkg , 'Non fiducial events')
-
+    
+    
     def doLCurveScan(self):
         if self.nuis != '':
             raise RuntimeError("Attempted to do naughty things like doing the scan with varied nuisances")
@@ -132,18 +138,18 @@ class UnfolderHelper:
         self.logTauCurv = r.TSpline3()
         self.lCurve     = r.TGraph(0)
 
-        self.themax = self.tunfolder.ScanLcurve(10000, 1e-10, 1e-4, self.lCurve, self.logTauX,
-                                                self.logTauY, self.logTauCurv)
-        
+        #self.themax = self.tunfolder.ScanLcurve(10000, 1e-10, 1e-4, self.lCurve, self.logTauX, self.logTauY, self.logTauCurv)
+
+        self.themax = self.tunfolder.ScanLcurve(10000, 1e-15, 1e-2, self.lCurve, self.logTauX,  self.logTauY, self.logTauCurv)
+
     def doTauScan(self):
         if self.nuis != '':
             raise RuntimeError("Attempted to do naughty things like doing the scan with varied nuisances")
 
-        self.logTauX=r.TSpline3() 
-        self.logTauY=r.TSpline3() 
-        self.scanRes=r.TSpline3() 
-        self.lCurve=r.TGraph(0) 
-
+        self.logTauX=r.TSpline3()
+        self.logTauY=r.TSpline3()
+        self.scanRes=r.TSpline3()
+        self.lCurve =r.TGraph(0)
         
         # kEScanTauRhoAvg          average global correlation coefficient (from TUnfold::GetRhoI())
         # kEScanTauRhoMax          maximum global correlation coefficient (from TUnfold::GetRhoI())
@@ -157,76 +163,79 @@ class UnfolderHelper:
 
 
     def doScanPlots(self):
-
         # Plot the scan variable and the maximum
         t=r.Double(0)
         x=r.Double(0)
         y=r.Double(0)
+        if not hasattr(self, 'logTauX'): self.doLCurveScan()
         
-        #plot = bp.beautifulUnfoldingPlots('LCurve')
+        # First: L-curve plot
+        plot = bp.beautifulUnfoldingPlots('{var}_LCurve'.format(var = self.var))
+        plot.plotspath  = self.plotspath
         if not hasattr(self,'scanRes'):
             self.logTauX.GetKnot( self.themax, t, x)
             self.logTauY.GetKnot( self.themax, t, y)
 
-            #plot.addHisto(self.lCurve,'AL','',0)
-
+            plot.addHisto(self.lCurve,'ALnomin','',0)
 
             self.lCurve.SetLineWidth(2)
             self.lCurve.SetLineColor(r.kBlue)
-            
-            #self.lCurve.GetYaxis().SetDecimals(True)
             self.lCurve.GetYaxis().SetNdivisions(304,False)
             self.lCurve.GetXaxis().SetNdivisions(303,False)
-
         else:
-            plot.addHisto(self.scanRes,'AL','',0)
+            plot.addHisto(self.scanRes,'ALnomin','L curve',0)
 
-        c = r.TCanvas()
-        self.lCurve.Draw('AL')
-        raw_input('check')
-
-        # for i in range( self.lCurve.GetN()) :
-        #     x = r.Double(0); y = r.Double(0.)
-        #     self.lCurve.GetPoint(i, x, y)
-        #     print i, x, y 
-        plot.saveCanvas('TR','_%s'%self.var)
-
-        plot = bp.beautifulUnfoldingPlots('LogTauCurv')
-        plot.addHisto(self.lCurve, 'AL','',0)
+        plot.saveCanvas('TR')
+        del plot
+        
+        # Second: L-curve curvature plot
+        plot = bp.beautifulUnfoldingPlots('{var}_LogTauCurv'.format(var = self.var))
+        plot.plotspath  = self.plotspath
+        plot.initCanvasAndAll()
+        #plot.addHisto(self.lCurve, 'AL','',0)
         plot.canvas.cd()
         self.logTauCurv.Draw("AL")
-        plot.saveCanvas('TR','_%s'%self.var)
+        plot.saveCanvas('TR')
+        del plot
 
 
-    def getConditionNumber(self):
+    def getConditionNumber(self, nuis = ''):
         # prob = self.response.Clone( self.response.GetName() + '_probMatrix' )
-        prob = copy.deepcopy( self.response )
+        
+        if nuis == '':  prob = copy.deepcopy( self.response )
+        else:           prob = copy.deepcopy( self.Data.responseMatrices[nuis] )
+        
         prob.SetName(self.response.GetName() + '_probMatrix' )
-        self.tunfolder.GetProbabilityMatrix(self.response.GetName() + '_probMatrix', '',r.TUnfold.kHistMapOutputHoriz)
+        self.tunfolder.GetProbabilityMatrix(self.response.GetName() + '_probMatrix', '', r.TUnfold.kHistMapOutputHoriz)
         matrx = r.TMatrixD( prob.GetYaxis().GetNbins(), prob.GetXaxis().GetNbins()) # rows are y, x are columns
         for i in range(prob.GetXaxis().GetNbins()):
             for j in range(prob.GetYaxis().GetNbins()):
                 matrx[j][i] = prob.GetBinContent( prob.GetBin(i+1,j+1) )
                 
-        matrx.Print()
-        
+        if verbose: matrx.Print()
         decomp = r.TDecompSVD(matrx)
-
-        print 'Matrix condition is', decomp.Condition()
+        condn  = decomp.Condition()
+        del matrx
+        del decomp
+        del prob
+        if verbose: print '> Matrix condition is', condn
+        return condn
 
 
 class Unfolder():
     def __init__(self, var, fileName, fileNameReponse):
-        self.var  = var
-        self.doSanityCheck   = True
-        self.Data = DataContainer(var,fileName, fileNameReponse)
-        self.systListResp = self.Data.systListResp
-        self.theoSysts    = self.Data.theoSysts
-        self.allSysts     = list( set().union( self.systListResp, self.theoSysts) )
-        self.helpers = { nuis : UnfolderHelper(self.var, nuis) for nuis in self.theoSysts }
-        self.helpers[''] = UnfolderHelper(self.var, '')
-        self.plotspath  = ""
-        self.doColorEnvelope = False
+        self.var            = var
+        self.doSanityCheck  = True
+        self.Data           = DataContainer(var,fileName, fileNameReponse)
+        self.systListResp   = self.Data.systListResp
+        self.theoSysts      = self.Data.theoSysts
+        self.allSysts       = list( set().union( self.systListResp, self.theoSysts) )
+        self.helpers        = { nuis : UnfolderHelper(self.var, nuis) for nuis in self.theoSysts }
+        self.helpers['']    = UnfolderHelper(self.var, '')
+        self.helpers[''].Data = self.Data
+        self.plotspath      = ""
+        self.doColorEnvelope= False
+        self.doRegularisation= False
     
     def prepareAllHelpers(self):
         # maybe protect these boys so they dont get initialized several times
@@ -252,6 +261,7 @@ class Unfolder():
         self.helpers[''].doTauScan()
 
     def doScanPlots(self):
+        self.helpers[''].plotspath = self.plotspath
         self.helpers[''].doScanPlots()
 
     def doClosure(self,tau=None):
@@ -270,20 +280,30 @@ class Unfolder():
         plot.plotspath  = self.plotspath
         
         if self.doSanityCheck:
-            tmptfile = r.TFile.Open('/nfs/fanae/user/sscruz/TW_differential/AnalysisPAF/plotter/./Datacards/closuretest_TGenLeadingJet_TGen{var}.root'.format(var=self.var))
+            if not os.path.isfile('temp/{var}_/ClosureTest_{var}.root'.format(var = self.var)):
+                raise RuntimeError('The rootfile with the generated information does not exist')
+            tmptfile = r.TFile.Open('temp/{var}_/ClosureTest_{var}.root'.format(var = self.var))
             tru = copy.deepcopy(tmptfile.Get('tW'))
             tru.SetLineWidth(2)
             tru.SetLineColor(bp.colorMap[0])
-            #tru.SetFillColor(bp.colorMap[0])
-            plot.addHisto(tru,'L','Truth','L')
-            tru.SetMinimum(0)
-            tru.SetMaximum(1.4*tru.GetMaximum())
-            plot.addHisto(data,'P,E,same','Data','P')
+            if not os.path.isfile('temp/{var}_/ClosureTest_aMCatNLO_{var}.root'.format(var = self.var)):
+                raise RuntimeError('The rootfile with the generated information from an aMCatNLO sample does not exist')
+            tmptfile2 = r.TFile.Open('temp/{var}_/ClosureTest_aMCatNLO_{var}.root'.format(var = self.var))
+            aMCatNLO = copy.deepcopy(tmptfile2.Get('tW'))
+            aMCatNLO.SetLineWidth(2)
+            aMCatNLO.SetLineColor(bp.colorMap[1])
+            for bin in range(1, tru.GetNbinsX()):
+                tru.SetBinError(bin, 0.)
+                aMCatNLO.SetBinError(bin, 0.)
+            plot.addHisto(tru, 'L', 'tW Powheg', 'L')
+            plot.addHisto(aMCatNLO, 'L,same', 'tW aMCatNLO', 'L')
+            plot.addHisto(data, 'P,E,same', vl.labellegend, 'P')
             plot.saveCanvas('TR')
             tmptfile.Close()
-
+            tmptfile2.Close()
+            
         else:
-            plot.addHisto(data,'P,E','Data','P')
+            plot.addHisto(data,'P,E', vl.labellegend,'P')
             plot.saveCanvas('TR')
 
 
@@ -298,35 +318,46 @@ class Unfolder():
         unregularized.SetLineWidth(2)
         regularized  .SetLineColor( bp.colorMap[0])
         unregularized.SetLineColor( bp.colorMap[1])
-
         
-        print regularized  .GetBinContent(1), unregularized.GetBinContent(1)
-
-        plot = bp.beautifulUnfoldingPlots(self.var)
-        regularized.Draw()
-        regularized.GetYaxis().SetRangeUser(0, 1.1*regularized.GetMaximum())
+        for bin in range(1, regularized.GetNbinsX()+1):
+            regularized.SetBinContent(bin, regularized.GetBinContent(bin)/unregularized.GetBinContent(bin))
+        
+        plot = bp.beautifulUnfoldingPlots(self.var + '_regcomp')
+#        regularized.Draw()
+        regularized.GetXaxis().SetTitle(vl.varList[self.var]['xaxis'])
+        regularized.GetYaxis().SetTitle('Reg./Unreg.')
+        #regularized.GetYaxis().SetRangeUser(0, 1.1*regularized.GetMaximum())
         plot.addHisto(regularized  ,'hist'     ,'Regularized'  ,'L')
-        plot.addHisto(unregularized,'hist,same','UnRegularized','L')
-        plot.saveCanvas('TR','comparison')
-        
-
+#        plot.addHisto(unregularized,'hist,same','UnRegularized','L')
+        plot.plotspath = 'results/'
+        plot.saveCanvas('BR', '', False)
+    
 
     def doUnfoldingForAllNuis(self):
-        self.prepareAllHelpers()
-        self.doLCurveScan()
         allHistos   = {}
-        nominal     =copy.deepcopy(self.helpers[''].tunfolder.GetOutput(self.var))
-        for nuis in self.theoSysts:
-            print nuis
-            self.helpers[nuis].tunfolder.DoUnfold( self.helpers[''].tunfolder.GetTau() )
-            allHistos[nuis] = self.helpers[nuis].tunfolder.GetOutput(self.var + '_' + nuis)
-        nominal_withErrors = ep.propagateHistoAsym( nominal, allHistos, self.doColorEnvelope)
+        tauval      = 0.
+        self.prepareAllHelpers()
+        if self.doRegularisation:
+            print '> Performing regularisation...'
+            self.doLCurveScan()
+            tauval  = self.helpers[''].tunfolder.GetTau()
 
+        if verbose: print '> Unfolding nominal distribution'
+        self.helpers[''].tunfolder.DoUnfold(tauval)
+        nominal     = copy.deepcopy(self.helpers[''].tunfolder.GetOutput(self.var))
+        
+        for nuis in self.theoSysts:
+            if verbose: print '> Unfolding distribution of {sys} systematic'.format(sys = nuis)
+            self.helpers[nuis].tunfolder.DoUnfold( tauval )
+            allHistos[nuis] = self.helpers[nuis].tunfolder.GetOutput(self.var + '_' + nuis)
+        
+        nominal_withErrors = ep.propagateHistoAsym(nominal, allHistos, self.doColorEnvelope)
         plot = bp.beautifulUnfoldingPlots(self.var)
+        plot.doRatio    = True
         plot.plotspath  = self.plotspath
+        
         nominal.SetMarkerStyle(r.kFullCircle)
-        nominal.GetXaxis().SetNdivisions(505,True)
-        nominal_withErrors[0].SetFillColorAlpha(r.kBlue,0.35)
+        nominal_withErrors[0].SetFillColorAlpha(r.kBlue, 0.35)
         nominal_withErrors[0].SetLineColor(r.kBlue)
         nominal_withErrors[0].SetFillStyle(1001)
 
@@ -334,47 +365,80 @@ class Unfolder():
             if not os.path.isfile('temp/{var}_/ClosureTest_{var}.root'.format(var = self.var)):
                 raise RuntimeError('The rootfile with the generated information does not exist')
             tmptfile = r.TFile.Open('temp/{var}_/ClosureTest_{var}.root'.format(var = self.var))
-
             tru = copy.deepcopy(tmptfile.Get('tW'))
             tru.SetLineWidth(2)
             tru.SetLineColor(bp.colorMap[0])
-            plot.addHisto(nominal_withErrors,'E2','Syst. unc.','F')
-            plot.addHisto(nominal,'P,same','Data','P')
-            plot.addHisto(tru,'L,same','Truth','L')
+            if not os.path.isfile('temp/{var}_/ClosureTest_aMCatNLO_{var}.root'.format(var = self.var)):
+                raise RuntimeError('The rootfile with the generated information from an aMCatNLO sample does not exist')
+            tmptfile2 = r.TFile.Open('temp/{var}_/ClosureTest_aMCatNLO_{var}.root'.format(var = self.var))
+            aMCatNLO = copy.deepcopy(tmptfile2.Get('tW'))
+            aMCatNLO.SetLineWidth(2)
+            aMCatNLO.SetLineColor(r.kAzure)
+            
+            plot.addHisto(nominal_withErrors, 'hist',   'Total unc.',   'F', 'unc')
+            plot.addHisto(tru,                'L,same', 'tW Powheg',    'L', 'mc')
+            plot.addHisto(aMCatNLO,           'L,same', 'tW aMCatNLO',  'L', 'mc')
+            plot.addHisto(nominal,            'P,E,same', vl.labellegend, 'P', 'data')
             plot.saveCanvas('TR')
             tmptfile.Close()
-
+            tmptfile2.Close()
         else:
-            plot.addHisto(nominal_withErrors,'E2','Syst. unc.','F')
-            plot.addHisto(nominal,'P,same','Data','P')
+            plot.addHisto(nominal_withErrors,'E2','Total unc.','F')
+            plot.addHisto(nominal,'P,same', vl.labellegend,'P', 'data')
             plot.saveCanvas('TR')
 
-
+        del plot
         plot2 = bp.beautifulUnfoldingPlots(self.var + 'uncertainties')
         uncList = ep.getUncList(nominal, allHistos, self.doColorEnvelope)[:5]
         uncList[0][1].Draw()
 
-        if uncList[0][1].GetMaximum() < 0.5:
+        incmax  = []
+        for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
+            if nominal_withErrors[1].GetBinError(bin) > nominal_withErrors[0].GetBinContent(bin):
+                incmax.append(max([nominal_withErrors[0].GetBinError(bin), nominal_withErrors[0].GetBinContent(bin)]))
+            else:
+                incmax.append(max([nominal_withErrors[0].GetBinError(bin), nominal_withErrors[1].GetBinError(bin)]))
 
-            uncList[0][1].GetYaxis().SetRangeUser(0,0.5)
+        maxinctot = 0
+        hincmax   = nominal_withErrors[0].Clone('hincmax')
+        for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
+            hincmax.SetBinContent(bin, incmax[bin-1] / hincmax.GetBinContent(bin))
+            hincmax.SetBinError(bin, 0)
+            if (hincmax.GetBinContent(bin) > maxinctot): maxinctot = hincmax.GetBinContent(bin)
+
+        hincmax.SetLineColor(r.kBlack)
+        hincmax.SetLineWidth( 2 )
+        hincmax.SetFillColorAlpha(r.kBlue, 0)
+
+        if (maxinctot >= 0.9):
+            if maxinctot >= 5:
+                uncList[0][1].GetYaxis().SetRangeUser(0, 5)
+            else:
+                uncList[0][1].GetYaxis().SetRangeUser(0, maxinctot + 0.1)
+            
         else:
-            uncList[0][1].GetYaxis().SetRangeUser(0,0.9)
+            uncList[0][1].GetYaxis().SetRangeUser(0, 0.9)
+
         for i in range(5):
             uncList[i][1].SetLineColor( vl.colorMap[uncList[i][0]] )
             uncList[i][1].SetLineWidth( 2 )
             plot2.addHisto(uncList[i][1], 'H,same' if i else 'H',uncList[i][0],'L')
         
+        plot2.addHisto(hincmax, 'H,same', 'Total', 'L')
         plot2.plotspath = self.plotspath
         plot2.saveCanvas('TR')
     
 
     def getConditionNumber(self, nuis):
-        return self.helpers[nuis].getConditionNumber()
+        if nuis in vl.varList['Names']['ExpSysts']: return self.helpers[''].getConditionNumber(nuis)
+        else: return self.helpers[nuis].getConditionNumber()
 
 
 
 if __name__=="__main__":
+    vl.SetUpWarnings()
     r.gROOT.SetBatch(True)
+    verbose = False
     print "===== Unfolding procedure\n"
     if (len(sys.argv) > 1):
         varName = sys.argv[1]
@@ -395,12 +459,20 @@ if __name__=="__main__":
     a.plotspath       = "results/"
     a.doSanityCheck   = True
     a.doColorEnvelope = True
-    #a.prepareNominalHelper()
-    #a.doLCurveScan()
-    #a.doTauScan()
-    #a.doScanPlots()
-    #a.doNominalPlot()
-    a.doUnfoldingForAllNuis()    # Symmetric uncertainties
-    #a.doUnfoldingForAllNuis(True) # Asymmetric uncertainties
-
+    a.doRegularisation= vl.doReg
+    
+    a.doUnfoldingForAllNuis()       # Unfolding
+    a.doScanPlots()                 # L-Curve and curvature plots
+    a.doRegularizationComparison()  # Comparison plot between regularisation and not
+    
+                                    # Condition numbers text file
+    if not os.path.isdir('results/CondN'):
+        os.system('mkdir -p results/CondN')
+    fcn = open('results/CondN/{var}'.format(var = varName) + '.txt', 'w')
+    out = 'Condition number   Systematic     \n'
+    for syst in a.allSysts + ['']:
+        if syst in vl.varList['Names']['ttbarSysts'] or syst in vl.varList['Names']['colorSysts']: continue
+        out += str(round(a.getConditionNumber(syst), 4)) +  '          ' + syst + '\n'
+    fcn.write(out)
+    fcn.close
     print "> Unfolding done!"

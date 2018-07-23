@@ -93,6 +93,7 @@ void Datacard::GetParamsFormFile(TString options){
       if(!f->GetListOfKeys()->Contains(hname)) doNuis[j][i] = 0;
     }
   }
+  f->Close();
 }
 
 void Datacard::SetStatDatacard(Bool_t activate){
@@ -235,6 +236,7 @@ void Datacard::PrintDatacard(TString f){
     outputfile << t;
     outputfile.close();
   }
+  cout << "Datacard saved in " << f + ".root\n";
 }
 
 

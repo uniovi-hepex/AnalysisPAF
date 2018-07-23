@@ -1,25 +1,50 @@
+'''
+Library of all the variables so everything is centralized and there are not confusions
+'''
+
 import ROOT as r
+import warnings as wr
 import os
-# Library of all the variables so everything is centralized and there are not confusions
-# TODO: port the card producer to python so it can also use this
 
-Lumi            = 35.9
-nBinsInBDT      = 10
+# === ESSENTIAL PARAMETERS OF THE ANALYSIS. CHANGING THIS APPLIES TO EVERYTHING. ===
+nBinsInBDT  = 4         # Number of bins in the BDT disc. distribution
+asimov      = False     # Use of Asimov dataset or data
+unifttbar   = True      # Equally distributed ttbar or tW in the BDT disc. distr.
+doxsec      = True      # Show events or diff. cross section in final results
+doReg       = True      # Do or not do regularisation
 
-sigma_ttbar     = 831.76
-sigma_dilep     = 88.28769753
+# === OTHER IMPORTANT DEFINITIONS ===
+Lumi        = 35.864    # In femtobarns
 
-nUEUp_ttbar     = 58953660
-nUEUp_dilep     = 9907537
-nUEDown_ttbar   = 58338240
-nUEDown_dilep   = 9691700
-nhDampUp_ttbar  = 58858606
-nhDampUp_dilep  = 9672473
-nhDampDown_ttbar= 58163976
-nhDampDown_dilep= 9634312
+sigma_ttbar = 831.76
+sigma_dilep = 88.28769753
 
-margins         = "0.06, 0.1, 0.06, 0.1"  # top, bottom, right, left
-marginsratio    = "0.03, 0.4, 0.06, 0.1" # top, bottom, right, left
+nUEUp_ttbar                = 58953660
+nUEUp_dilep                = 9907537
+nUEDown_ttbar              = 58338240
+nUEDown_dilep              = 9691700
+nhDampUp_ttbar             = 58858606
+nhDampUp_dilep             = 9672473
+nhDampDown_ttbar           = 58163976
+nhDampDown_dilep           = 9634312
+
+nGluonMoveCRTune_ttbar     = 59037234
+nGluonMoveCRTune_dilep     = 9862990
+nPowhegerdON_ttbar         = 59882210
+nPowhegerdON_dilep         = 9537400
+nQCDbasedCRTuneerdON_ttbar = 59620206
+nQCDbasedCRTuneerdON_dilep = 9816448
+
+
+plotlimits   = tuple([float(i) for i in "0.00, 0.23, 1.00, 1.00".split(',')]) # xlow, ylow, xup, yup
+ratiolimits  = tuple([float(i) for i in "0.00, 0.05, 1.00, 0.29".split(',')]) # xlow, ylow, xup, yup
+margins      = "0.06, 0.1, 0.06, 0.1" # top, bottom, right, left
+marginsratio = "0.03, 0.4, 0.06, 0.1" # top, bottom, right, left
+
+
+if asimov: labellegend = 'Pseudodata'
+else:      labellegend = 'Data'
+
 
 def GetLastFolder(stpth):
     savefolders   = next(os.walk(stpth))[1]
@@ -31,7 +56,13 @@ def GetLastFolder(stpth):
     savefolders   = [i for i in savefolders if int(i[:2]) == max(savedays)]
     return (stpth + savefolders[0] + "/")
 
+def SetUpWarnings():
+    wr.simplefilter("always", UserWarning)
+    wr.filterwarnings(action = 'ignore', category = RuntimeWarning, message = 'TClass::Init:0: RuntimeWarning: no dictionary for class')
+    return
 
+
+# === DICTIONARIES ===
 # var           := name of the variable in the tree to make cards
 # var_response  := name of the variable in the response matrix without the M
 varList = {}
@@ -44,8 +75,12 @@ varList['Names'] = {
     'Variables'   : ["E_LLB", "LeadingJetE", "MT_LLMETB", "M_LLB", "M_LeadingB", "M_SubLeadingB", 
                      "MET", "MET_Phi", "LeadingJetPt", "LeadingJetEta", "LeadingJetPhi", 
                      "LeadingLepE", "LeadingLepPt", "LeadingLepPhi", "LeadingLepEta", 
-                     "SubLeadingLepE", "SubLeadingLepPt", "SubLeadingLepPhi", "SubLeadingLepEta",
+                     "SubLeadingLepE", "SubLeadingLepPt", "SubLeadingLepPhi", "SubLeadingLepEta", 
                      "DilepPt", "DilepJetPt", "DilepMETJetPt", "HTtot"],
+    #'Variables'   : ["LeadingJetPt", "LeadingLepPt"],
+    #'ExpSysts'    : ["JESUp", "JESDown", "JERUp", "ElecEffUp", "ElecEffDown", "MuonEffUp",
+    #                 "MuonEffDown", "TrigUp", "TrigDown", "PUUp", "PUDown", "BtagUp",
+    #                 "BtagDown", "MistagUp", "MistagDown"],
     'ExpSysts'    : ["JESUp", "JESDown", "JERUp", "ElecEffUp", "ElecEffDown", "MuonEffUp",
                      "MuonEffDown", "TrigUp", "TrigDown", "PUUp", "PUDown", "BtagUp",
                      "BtagDown", "MistagUp", "MistagDown"],
@@ -170,8 +205,14 @@ varList['MET_Phiuncertainties'] = {
 varList['LeadingJetPt'] = {
     'xaxis'       : 'p_{T}(j) (GeV)',
     'yaxis'       : 'd#sigma [pb]',
-    'genbinning'  : [0, 75, 200, 300],
-    'recobinning' : [0., 50., 75., 110., 150., 200., 300.],
+    #'genbinning'  : [0, 75, 200, 300],
+    #'recobinning' : [0., 50., 75., 110., 150., 200., 300.],
+#    'genbinning'  : [0., 75., 140., 200., 300.],                            # binning presentado en singletop
+#    'recobinning' : [0., 60., 80., 105., 120., 140., 170., 210., 300.],
+#    'genbinning'  : [0., 60., 110., 150., 300.],
+#    'recobinning' : [0., 60., 75., 90., 110., 125., 150., 175., 300.],
+    'genbinning'  : [0., 60., 110., 150., 300.],
+    'recobinning' : [0., 60., 70., 82.5, 95., 110., 130., 150., 300.],
     'var'         : 'TLeadingJetPt',
     'var_response': 'LeadingJetPt',
     'var_gen'     : 'TGenLeadingJetPt',
@@ -234,8 +275,14 @@ varList['LeadingLepEuncertainties'] = {
 varList['LeadingLepPt'] = {
     'xaxis'       : 'p_{T}(\\ell_{1}) (GeV)',
     'yaxis'       : 'd#sigma [pb]',
-    'genbinning'  : [0, 50, 90, 160, 250],
-    'recobinning' : [0., 50., 65., 75., 90., 110., 130., 160., 250.],
+    #'genbinning'  : [0, 50, 120, 190, 250],
+    #'recobinning' : [0, 50, 65, 85, 97, 110, 145, 180, 250],
+#    'genbinning'  : [0, 50, 120, 160, 250],                            # binning presentado en singletop
+#    'recobinning' : [0, 50, 65, 85, 97, 110, 145, 180, 250],
+#    'genbinning'  : [0., 50., 90., 135., 250.],
+#    'recobinning' : [0., 50., 65., 80., 95., 110., 130., 150., 250.],
+    'genbinning'  : [0., 50., 90., 135., 250.],
+    'recobinning' : [0., 50., 60., 75., 90., 105., 115., 135., 250.],
     'var'         : 'TLeadingLepPt',
     'var_response': 'LeadingLepPt',
     'var_gen'     : 'TGenLeadingLepPt',

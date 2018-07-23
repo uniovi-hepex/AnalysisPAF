@@ -11,6 +11,7 @@ r.gROOT.SetBatch(True)
 print("\n===== Unfolding procedures: Response matrices & ROOT files production =====")
 print("> Setting binning, paths, and other details...")
 # ---------------------------------------------------------------- PRELIMINARIES
+vl.SetUpWarnings()
 storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
 minipath    = "../../../TW_temp/"
 if (len(sys.argv) > 1):

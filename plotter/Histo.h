@@ -24,6 +24,7 @@ class Histo : public TH1F{
  public:
   Bool_t doStackOverflow = true;
 
+  Histo();
   Histo(const char *name, const char *title, Int_t nbins, Double_t xlow, Double_t xup);
   Histo(const char *name, const char *title, Int_t nbins, Float_t* bins);
   //Histo(const char *name, const char *title, Int_t nbins, const Float_t* xbins);
@@ -93,6 +94,12 @@ class Histo : public TH1F{
   Bool_t IsStackOverflow = true;
   TString SysTag = "0";
 
+};
+
+Histo::Histo(){
+  SetType(0);
+  SetStyle();
+  SetColor(1);
 };
 
 Histo::Histo(const char *name, const char *title, Int_t nbins, Double_t xlow, Double_t xup)	: TH1F(name, title, nbins, xlow, xup){
