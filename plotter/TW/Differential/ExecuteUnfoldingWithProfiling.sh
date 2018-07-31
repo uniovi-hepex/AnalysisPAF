@@ -20,7 +20,8 @@ unfoldingvars=("E_LLB" "LeadingJetE" "MT_LLMETB" "M_LLB" "M_LeadingB" "M_SubLead
                "MET" "MET_Phi" "LeadingJetPt" "LeadingJetEta" "LeadingJetPhi" 
                "LeadingLepE" "LeadingLepPt" "LeadingLepPhi" "LeadingLepEta" 
                "SubLeadingLepE" "SubLeadingLepPt" "SubLeadingLepPhi" "SubLeadingLepEta" 
-               "DilepPt" "DilepJetPt" "DilepMETJetPt" "HTtot")
+               "DilepPt" "DilepJetPt" "DilepMETJetPt" "HTtot" 
+               "DilepMETJet1Pz" "LLMETBEta" "MSys" "Mll" "DPhiLL" "DPhiLeadJet" "DPhiSubLeadJet")
 
 # unfoldingvars=("LeadingJetPt" "LeadingLepPt")
 
