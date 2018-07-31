@@ -76,14 +76,12 @@ varList['Names'] = {
                      "MET", "MET_Phi", "LeadingJetPt", "LeadingJetEta", "LeadingJetPhi", 
                      "LeadingLepE", "LeadingLepPt", "LeadingLepPhi", "LeadingLepEta", 
                      "SubLeadingLepE", "SubLeadingLepPt", "SubLeadingLepPhi", "SubLeadingLepEta", 
-                     "DilepPt", "DilepJetPt", "DilepMETJetPt", "HTtot"],
+                     "DilepPt", "DilepJetPt", "DilepMETJetPt", "HTtot", 
+                     "DilepMETJet1Pz", "LLMETBEta", "MSys", "Mll", "DPhiLL", "DPhiLeadJet", "DPhiSubLeadJet"], # Nuevinas
     #'Variables'   : ["LeadingJetPt", "LeadingLepPt"],
-    #'ExpSysts'    : ["JESUp", "JESDown", "JERUp", "ElecEffUp", "ElecEffDown", "MuonEffUp",
-    #                 "MuonEffDown", "TrigUp", "TrigDown", "PUUp", "PUDown", "BtagUp",
-    #                 "BtagDown", "MistagUp", "MistagDown"],
-    'ExpSysts'    : ["JESUp", "JESDown", "JERUp", "ElecEffUp", "ElecEffDown", "MuonEffUp",
-                     "MuonEffDown", "TrigUp", "TrigDown", "PUUp", "PUDown", "BtagUp",
-                     "BtagDown", "MistagUp", "MistagDown"],
+    'ExpSysts'    : ["JESUp", "JESDown", "JERUp", "ElecEffUp", "ElecEffDown", "MuonEffUp", #   DO NOT MOVE THE FIRST THREE TO OTHER
+                     "MuonEffDown", "TrigUp", "TrigDown", "PUUp", "PUDown", "BtagUp",      # POSITION: it will affect the calculus
+                     "BtagDown", "MistagUp", "MistagDown"],                                # of the response matrices.
     'ttbarSysts'  : ["ttbarMEUp", "ttbarMEDown", "pdfUp", "pdfDown", "hDampUp", "hDampDown",
                      "UEUp", "UEDown"],
     'specialSysts': ["JERDown", "DSDown"],
@@ -439,6 +437,106 @@ varList['HTtotuncertainties'] = {
     'xaxis'       : varList['HTtot']['xaxis'],
     'yaxis'       : 'Relative uncertainty'
 }
+
+
+varList['DilepMETJet1Pz'] = {
+    'xaxis'       : 'p_{Z}(\\ell_{1}, \\ell_{2}, j,\\slash{E}_{T}) (GeV)',
+    'yaxis'       : 'd#sigma [pb]',
+    'genbinning'  : [0., 150., 300., 450., 600.],
+    'recobinning' : [0., 150., 200., 250., 300., 350., 400., 450., 600.],
+    'var'         : 'abs(TDilepMETJet1Pz)',
+    'var_response': 'DilepMETJet1Pz',
+    'var_gen'     : 'abs(TGenDilepMETJet1Pz)',
+}
+varList['DilepMETJet1Pzuncertainties'] = {
+    'xaxis'       : varList['DilepMETJet1Pz']['xaxis'],
+    'yaxis'       : 'Relative uncertainty'
+}
+
+varList['LLMETBEta'] = {
+    'xaxis'       : '\\eta(\\ell_{1}, \\ell_{2}, j,\\slash{E}_{T})',
+    'yaxis'       : 'd#sigma [pb]',
+    'genbinning'  : [0., 1.5, 3., 3.5, 5.],
+    'recobinning' : [0., 1.5, 2., 2.5, 3., 3.5, 4., 4.5, 5.],
+    'var'         : 'abs(TLLMETBEta)',
+    'var_response': 'LLMETBEta',
+    'var_gen'     : 'abs(TGenLLMETBEta)',
+}
+varList['LLMETBEtauncertainties'] = {
+    'xaxis'       : varList['LLMETBEta']['xaxis'],
+    'yaxis'       : 'Relative uncertainty'
+}
+
+varList['MSys'] = {
+    'xaxis'       : 'm(\\ell_{1}, \\ell_{2}, j,\\slash{E}_{T})',
+    'yaxis'       : 'd#sigma [pb]',
+    'genbinning'  : [0., 200., 350., 500., 700.],
+    'recobinning' : [0., 200., 250., 275., 300., 325., 350., 500., 700.],
+    'var'         : 'abs(TMSys)',
+    'var_response': 'MSys',
+    'var_gen'     : 'abs(TGenMSys)',
+}
+varList['MSysuncertainties'] = {
+    'xaxis'       : varList['MSys']['xaxis'],
+    'yaxis'       : 'Relative uncertainty'
+}
+
+varList['Mll'] = {
+    'xaxis'       : 'm(\\ell_{1}, \\ell_{2})',
+    'yaxis'       : 'd#sigma [pb]',
+    'genbinning'  : [0., 50., 100., 150., 300.],
+    'recobinning' : [0., 25., 45., 60., 75., 100., 125., 150., 300.],
+    'var'         : 'abs(TMll)',
+    'var_response': 'Mll',
+    'var_gen'     : 'abs(TGenMll)',
+}
+varList['Mlluncertainties'] = {
+    'xaxis'       : varList['Mll']['xaxis'],
+    'yaxis'       : 'Relative uncertainty'
+}
+
+varList['DPhiLL'] = {
+    'xaxis'       : '\\Delta \\varphi(\\ell_{1}, \\ell_{2}) (rad)',
+    'yaxis'       : 'd#sigma [pb]',
+    'genbinning'  : [-r.TMath.Pi(), -1.5, 0, 1.5, r.TMath.Pi()],
+    'recobinning' : [-r.TMath.Pi(), -2.25, -1.5, -.75, 0, .75, 1.5, 2.25, r.TMath.Pi()],
+    'var'         : 'TDPhiLL',
+    'var_response': 'DPhiLL',
+    'var_gen'     : 'TGenDPhiLL',
+}
+varList['DPhiLLuncertainties'] = {
+    'xaxis'       : varList['DPhiLL']['xaxis'],
+    'yaxis'       : 'Relative uncertainty'
+}
+
+varList['DPhiLeadJet'] = {
+    'xaxis'       : '\\Delta \\varphi(\\ell_{1}, j) (rad)',
+    'yaxis'       : 'd#sigma [pb]',
+    'genbinning'  : [-r.TMath.Pi(), -1.5, 0, 1.5, r.TMath.Pi()],
+    'recobinning' : [-r.TMath.Pi(), -2.25, -1.5, -.75, 0, .75, 1.5, 2.25, r.TMath.Pi()],
+    'var'         : 'TDPhiLeadJet',
+    'var_response': 'DPhiLeadJet',
+    'var_gen'     : 'TGenDPhiLeadJet',
+}
+varList['DPhiLeadJetuncertainties'] = {
+    'xaxis'       : varList['DPhiLeadJet']['xaxis'],
+    'yaxis'       : 'Relative uncertainty'
+}
+
+varList['DPhiSubLeadJet'] = {
+    'xaxis'       : '\\Delta \\varphi(\\ell_{2}, j) (rad)',
+    'yaxis'       : 'd#sigma [pb]',
+    'genbinning'  : [-r.TMath.Pi(), -1.5, 0, 1.5, r.TMath.Pi()],
+    'recobinning' : [-r.TMath.Pi(), -2.25, -1.5, -.75, 0, .75, 1.5, 2.25, r.TMath.Pi()],
+    'var'         : 'TDPhiSubLeadJet',
+    'var_response': 'DPhiSubLeadJet',
+    'var_gen'     : 'TGenDPhiSubLeadJet',
+}
+varList['DPhiSubLeadJetuncertainties'] = {
+    'xaxis'       : varList['DPhiSubLeadJet']['xaxis'],
+    'yaxis'       : 'Relative uncertainty'
+}
+
 
 
 # Profiling things
