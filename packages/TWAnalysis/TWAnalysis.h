@@ -38,6 +38,8 @@ class TWAnalysis : public PAFChainItemSelector{
     std::vector<Jet> vetoJets;
 
     std::vector<Jet> SergioJets;
+    std::vector<Jet> SergioLooseCentralJets;
+    std::vector<Jet> SergioLooseFwdJets;
     std::vector<Lepton> SergioLeps;
     
     TTree* fTree;
@@ -108,8 +110,12 @@ class TWAnalysis : public PAFChainItemSelector{
     Double_t getDPtDilep_JetMET(const TString& sys = "Norm");
     Double_t getDPtDilep_MET(const TString& sys = "Norm");
     Double_t getDPtLep1_MET(const TString& sys = "Norm");
+    Double_t getDPhiLep1_Lep2();
+    Double_t getDPhiLep1_Jet1(const TString& sys = "Norm");
+    Double_t getDPhiLep2_Jet1(const TString& sys = "Norm");
     Double_t getDPtL1_L2(const TString& sys = "Norm");
     Double_t getDeltaPt(vector<TLorentzVector>, vector<TLorentzVector>);
+    Double_t getDeltaPhi(vector<TLorentzVector>, vector<TLorentzVector>);
     Double_t getSysM(const TString& sys = "Norm");
     Double_t getM(vector<TLorentzVector>);
     Double_t getHTtot(const TString& sys = "Norm");
@@ -130,8 +136,11 @@ class TWAnalysis : public PAFChainItemSelector{
     //Variables
     Float_t TWeight;   // Total nominal weight
     Float_t TMll;      // Invariant mass
+    Float_t TMllJESUp;   // Invariant mass
+    Float_t TMllJESDown; // Invariant mass
+    Float_t TMllJERUp;   // Invariant mass
     Float_t TMET;      // MET
-    Float_t TGenMET;     
+    Float_t TGenMET;
     Float_t TMET_Phi;  // MET phi
     Float_t TMET_PhiJESUp;  // MET phi
     Float_t TMET_PhiJESDown;  // MET phi
@@ -195,6 +204,10 @@ class TWAnalysis : public PAFChainItemSelector{
     Float_t TLeadingLepE       ;
     Float_t TSubLeadingLepE    ;
     Float_t TSubLeadingLepPhi  ;
+    Float_t TLLMETBEta      ;
+    Float_t TDPhiLL      ;
+    Float_t TDPhiLeadJet ;
+    Float_t TDPhiSubLeadJet ;
     
     Float_t TM_LeadingBJESUp       ;
     Float_t TM_SubLeadingBJESUp    ;
@@ -213,6 +226,10 @@ class TWAnalysis : public PAFChainItemSelector{
     Float_t TSubLeadingLepEJESUp;
     Float_t TSubLeadingLepPhiJESUp;
     Float_t TSubLeadingLepEtaJESUp;
+    Float_t TLLMETBEtaJESUp      ;
+    Float_t TDPhiLLJESUp      ;
+    Float_t TDPhiLeadJetJESUp ;
+    Float_t TDPhiSubLeadJetJESUp ;
     
     Float_t TM_LeadingBJESDown       ;
     Float_t TM_SubLeadingBJESDown    ;
@@ -231,6 +248,10 @@ class TWAnalysis : public PAFChainItemSelector{
     Float_t TSubLeadingLepEJESDown;
     Float_t TSubLeadingLepPhiJESDown;
     Float_t TSubLeadingLepEtaJESDown;
+    Float_t TLLMETBEtaJESDown      ;
+    Float_t TDPhiLLJESDown      ;
+    Float_t TDPhiLeadJetJESDown ;
+    Float_t TDPhiSubLeadJetJESDown ;
     
     Float_t TM_LeadingBJERUp       ;
     Float_t TM_SubLeadingBJERUp    ;
@@ -249,11 +270,23 @@ class TWAnalysis : public PAFChainItemSelector{
     Float_t TSubLeadingLepEJERUp;
     Float_t TSubLeadingLepPhiJERUp;
     Float_t TSubLeadingLepEtaJERUp;
+    Float_t TLLMETBEtaJERUp      ;
+    Float_t TDPhiLLJERUp      ;
+    Float_t TDPhiLeadJetJERUp ;
+    Float_t TDPhiSubLeadJetJERUp ;
     
     Float_t TGenLeadingJetPt   ;
     Float_t TGenLeadingJetE    ;
     Float_t TGenLeadingJetPhi  ;
     Float_t TGenLeadingJetEta  ;
+    Float_t TGenLeadingLooseFwdJetPt   ;
+    Float_t TGenLeadingLooseFwdJetE    ;
+    Float_t TGenLeadingLooseFwdJetPhi  ;
+    Float_t TGenLeadingLooseFwdJetEta  ;
+    Float_t TGenSubLeadingLooseCentralJetPt   ;
+    Float_t TGenSubLeadingLooseCentralJetE    ;
+    Float_t TGenSubLeadingLooseCentralJetPhi  ;
+    Float_t TGenSubLeadingLooseCentralJetEta  ;
     Float_t TGenLeadingLepPt   ;
     Float_t TGenLeadingLepE    ;
     Float_t TGenLeadingLepPhi  ;
@@ -272,16 +305,27 @@ class TWAnalysis : public PAFChainItemSelector{
     Float_t TGenDilepMETJetPt  ;
     Float_t TGenHTtot          ;
     Float_t TGenMET_Phi        ;
+    Float_t TGenDilepMETJet1Pz ;
+    Float_t TGenLLMETBEta      ;
+    Float_t TGenMSys           ;
+    Float_t TGenMll           ;
+    Float_t TGenDPhiLL      ;
+    Float_t TGenDPhiLeadJet ;
+    Float_t TGenDPhiSubLeadJet ;
     Int_t GenChannel           ;
     Bool_t TGenIsSS;
     Bool_t Tpassgen            ;
     Bool_t Tpassreco           ;
-    Bool_t TpassrecoJESUp           ;
-    Bool_t TpassrecoJESDown           ;
-    Bool_t TpassrecoJERUp           ;
+    Bool_t TpassrecoJESUp      ;
+    Bool_t TpassrecoJESDown    ;
+    Bool_t TpassrecoJERUp      ;
     Float_t TWeight_normal     ;
     Int_t nSergioJets;
     Int_t nSergiobJets;
+    Int_t nSergioLooseCentralJets;
+    Int_t nSergioLooseCentralbJets;
+    Int_t nSergioLooseFwdJets;
+    Int_t nSergioLooseFwdbJets;
     Int_t nSergioLeps;
     Int_t nSergioGenJets;
     Int_t nSergioGenLeps;
