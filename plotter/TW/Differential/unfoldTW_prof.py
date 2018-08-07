@@ -140,7 +140,7 @@ class UnfolderHelper:
 
         #self.themax = self.tunfolder.ScanLcurve(10000, 1e-10, 1e-4, self.lCurve, self.logTauX, self.logTauY, self.logTauCurv)
 
-        self.themax = self.tunfolder.ScanLcurve(10000, 1e-15, 1e-2, self.lCurve, self.logTauX,  self.logTauY, self.logTauCurv)
+        self.themax = self.tunfolder.ScanLcurve(5000, 1e-20, 1e-1, self.lCurve, self.logTauX,  self.logTauY, self.logTauCurv)
 
     def doTauScan(self):
         if self.nuis != '':
@@ -171,21 +171,26 @@ class UnfolderHelper:
         
         # First: L-curve plot
         plot = bp.beautifulUnfoldingPlots('{var}_LCurve'.format(var = self.var))
+        plot.isLCurve = True
         plot.plotspath  = self.plotspath
         if not hasattr(self,'scanRes'):
             self.logTauX.GetKnot( self.themax, t, x)
             self.logTauY.GetKnot( self.themax, t, y)
 
-            plot.addHisto(self.lCurve,'ALnomin','',0)
-
             self.lCurve.SetLineWidth(2)
             self.lCurve.SetLineColor(r.kBlue)
-            self.lCurve.GetYaxis().SetNdivisions(304,False)
-            self.lCurve.GetXaxis().SetNdivisions(303,False)
+            r.TGaxis.SetMaxDigits(3)
+            self.lCurve.GetXaxis().SetNoExponent(True)
+            self.lCurve.GetYaxis().SetNoExponent(True)
+            self.lCurve.GetXaxis().SetTitle('log(#chi^{2}_{R})')
+            self.lCurve.GetYaxis().SetTitle('log(#chi^{2}_{reg.})')
+            plot.addHisto(self.lCurve,'ALnomin', '', 0)
+
         else:
             plot.addHisto(self.scanRes,'ALnomin','L curve',0)
-
-        plot.saveCanvas('TR')
+        
+        plot.addTLatex(0.75, 0.9, "log(#tau) = {taupar}".format(taupar = round(self.tunfolder.GetTau() ,5)))
+        plot.saveCanvas('TR', leg = False)
         del plot
         
         # Second: L-curve curvature plot
@@ -205,8 +210,8 @@ class UnfolderHelper:
         if nuis == '':  prob = copy.deepcopy( self.response )
         else:           prob = copy.deepcopy( self.Data.responseMatrices[nuis] )
         
-        prob.SetName(self.response.GetName() + '_probMatrix' )
-        self.tunfolder.GetProbabilityMatrix(self.response.GetName() + '_probMatrix', '', r.TUnfold.kHistMapOutputHoriz)
+        prob.SetName(self.response.GetName() + '_' + nuis + '_probMatrix' )
+        self.tunfolder.GetProbabilityMatrix(self.response.GetName() + '_' + nuis + '_probMatrix', '', r.TUnfold.kHistMapOutputHoriz)
         matrx = r.TMatrixD( prob.GetYaxis().GetNbins(), prob.GetXaxis().GetNbins()) # rows are y, x are columns
         for i in range(prob.GetXaxis().GetNbins()):
             for j in range(prob.GetYaxis().GetNbins()):
@@ -331,7 +336,7 @@ class Unfolder():
 #        plot.addHisto(unregularized,'hist,same','UnRegularized','L')
         plot.plotspath = 'results/'
         plot.saveCanvas('BR', '', False)
-    
+
 
     def doUnfoldingForAllNuis(self):
         allHistos   = {}
@@ -390,8 +395,7 @@ class Unfolder():
         del plot
         plot2 = bp.beautifulUnfoldingPlots(self.var + 'uncertainties')
         uncList = ep.getUncList(nominal, allHistos, self.doColorEnvelope)[:5]
-        uncList[0][1].Draw()
-
+        
         incmax  = []
         for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
             if nominal_withErrors[1].GetBinError(bin) > nominal_withErrors[0].GetBinContent(bin):
@@ -476,3 +480,14 @@ if __name__=="__main__":
     fcn.write(out)
     fcn.close
     print "> Unfolding done!"
+    print "> Printing yields:"
+    ndata = 0
+    nmc   = 0
+    for i in range(1, len(vl.varList[varName]['recobinning'])):
+        tmpdatac = open('temp/{var}_/datacard_{var}_{bin}.txt'.format(var = varName, bin = i), 'r')
+        for lin in tmpdatac:
+            if 'observation' in lin: ndata += int(lin.split(' ')[1])
+            if 'rate'        in lin: nmc   += sum([float(j) for j in lin.split(' ')[1:-1]])
+        tmpdatac.close()
+    print "\n    - Number of observed data events in the fiducial region:", ndata
+    print "\n    - Number of simulated events in the fiducial region:", nmc
