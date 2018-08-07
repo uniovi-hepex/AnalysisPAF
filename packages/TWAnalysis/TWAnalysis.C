@@ -261,6 +261,9 @@ void TWAnalysis::InsideLoop(){
     TGenLLMETBEta       = (SergioLeps.at(0).p + SergioLeps.at(1).p + SergioJets.at(0).p + SergioMET).Eta();
     TGenMSys            = (SergioLeps.at(0).p + SergioLeps.at(1).p + SergioJets.at(0).p + SergioMET).M();
     TGenMll             = (SergioLeps.at(0).p + SergioLeps.at(1).p).M();
+    TGenDPhiLL          = SergioLeps.at(0).p.DeltaPhi(SergioLeps.at(1).p);
+    TGenDPhiLeadJet     = SergioLeps.at(0).p.DeltaPhi(SergioJets.at(0).p);
+    TGenDPhiSubLeadJet  = SergioLeps.at(1).p.DeltaPhi(SergioJets.at(0).p);
     
     if (((SergioLeps.at(0).p + SergioLeps.at(1).p).M() > 20) && (SergioLeps.at(0).p.Pt() > 25) && 
         (GenChannel == iElMu) && !TGenIsSS) {
