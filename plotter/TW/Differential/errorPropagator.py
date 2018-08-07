@@ -148,7 +148,7 @@ def relativeErrorHist(histo):
     relErr = histo.Clone( histo.GetName() + 'relErr')
     for bin in range(1, histo.GetNbinsX()+1):
         relErr.SetBinContent(bin, histo.GetBinError(bin) / histo.GetBinContent(bin) )
-        relErr.SetBinError(bin,0)
+        relErr.SetBinError(bin, 0)
     return relErr
 
 
@@ -171,10 +171,13 @@ def getUncList(nom, varDict, doEnv = False):
             variat = nom.GetBinContent(bin) - varDict[var].GetBinContent(bin)
             if 'fsr' in var or 'FSR' in var or 'isr' in var or 'ISR' in var: variat/(2**(1/2))
             if doEnv and var in vl.varList['Names']['colorSysts']:
-                if (variat >= 0): histDown[bin - 1].append(abs(variat))
+                if (variat >= 0):
+                    if abs(variat) >= nom.GetBinContent(bin): histDown[bin - 1].append(nom.GetBinContent(bin))
+                    else:                                     histDown[bin - 1].append(abs(variat))
                 else: histUp[bin - 1].append(abs(variat))
             else:
-                hist.SetBinError(bin, abs(variat))
+                if abs(variat) >= nom.GetBinContent(bin): hist.SetBinError(bin, nom.GetBinContent(bin))
+                else:                                     hist.SetBinError(bin, abs(variat))
         if not doEnv or var not in vl.varList['Names']['colorSysts']:
             medDict.append( (var,hist) )
     
