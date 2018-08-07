@@ -11,7 +11,7 @@ nBinsInBDT  = 4         # Number of bins in the BDT disc. distribution
 asimov      = False     # Use of Asimov dataset or data
 unifttbar   = True      # Equally distributed ttbar or tW in the BDT disc. distr.
 doxsec      = True      # Show events or diff. cross section in final results
-doReg       = True      # Do or not do regularisation
+doReg       = False     # Do or not do regularisation
 
 # === OTHER IMPORTANT DEFINITIONS ===
 Lumi        = 35.864    # In femtobarns
@@ -72,12 +72,13 @@ varList['LCurve'] = {
 }
 
 varList['Names'] = {
-    'Variables'   : ["E_LLB", "LeadingJetE", "MT_LLMETB", "M_LLB", "M_LeadingB", "M_SubLeadingB", 
-                     "MET", "MET_Phi", "LeadingJetPt", "LeadingJetEta", "LeadingJetPhi", 
-                     "LeadingLepE", "LeadingLepPt", "LeadingLepPhi", "LeadingLepEta", 
-                     "SubLeadingLepE", "SubLeadingLepPt", "SubLeadingLepPhi", "SubLeadingLepEta", 
-                     "DilepPt", "DilepJetPt", "DilepMETJetPt", "HTtot", 
-                     "DilepMETJet1Pz", "LLMETBEta", "MSys", "Mll", "DPhiLL", "DPhiLeadJet", "DPhiSubLeadJet"], # Nuevinas
+    #'Variables'   : ["E_LLB", "LeadingJetE", "MT_LLMETB", "M_LLB", "M_LeadingB", "M_SubLeadingB", 
+                     #"MET", "MET_Phi", "LeadingJetPt", "LeadingJetEta", "LeadingJetPhi", 
+                     #"LeadingLepE", "LeadingLepPt", "LeadingLepPhi", "LeadingLepEta", 
+                     #"SubLeadingLepE", "SubLeadingLepPt", "SubLeadingLepPhi", "SubLeadingLepEta", 
+                     #"DilepPt", "DilepJetPt", "DilepMETJetPt", "HTtot", 
+                     #"DilepMETJet1Pz", "LLMETBEta", "MSys", "Mll", "DPhiLL", "DPhiLeadJet", "DPhiSubLeadJet"], # Nuevinas
+    'Variables'   : ["M_LeadingB", "M_SubLeadingB", "LeadingLepPt", "LLMETBEta", "DPhiLL", "DPhiLeadJet", "DPhiSubLeadJet"], # Nuevinas
     #'Variables'   : ["LeadingJetPt", "LeadingLepPt"],
     'ExpSysts'    : ["JESUp", "JESDown", "JERUp", "ElecEffUp", "ElecEffDown", "MuonEffUp", #   DO NOT MOVE THE FIRST THREE TO OTHER
                      "MuonEffDown", "TrigUp", "TrigDown", "PUUp", "PUDown", "BtagUp",      # POSITION: it will affect the calculus
@@ -147,8 +148,8 @@ varList['M_LLBuncertainties'] = {
 varList['M_LeadingB'] = {
     'xaxis'       : 'm(\\ell_{1}, j) (GeV)',
     'yaxis'       : 'd#sigma [pb]',
-    'genbinning'  : [0, 80, 170, 300, 400],
-    'recobinning' : [0., 45., 75., 105., 140., 190., 230., 300., 400.],
+    'genbinning'  : [0., 75., 175., 275., 400.],
+    'recobinning' : [0., 75., 95., 115., 135., 175., 225., 275., 400.],
     'var'         : 'TM_LeadingB',
     'var_response': 'MLeadingB',
     'var_gen'     : 'TGenM_LeadingB',
@@ -161,8 +162,8 @@ varList['M_LeadingBuncertainties'] = {
 varList['M_SubLeadingB'] = {
     'xaxis'       : 'm(\\ell_{2}, j) (GeV)',
     'yaxis'       : 'd#sigma [pb]',
-    'genbinning'  : [0, 70, 110, 200, 300],
-    'recobinning' : [0., 50., 60., 80., 100., 125., 150., 200., 300.],
+    'genbinning'  : [0., 60., 100., 150., 300.],
+    'recobinning' : [0., 60., 70., 80., 90., 100., 125., 150., 300.],
     'var'         : 'TM_SubLeadingB',
     'var_response': 'MSubLeadingB',
     'var_gen'     : 'TGenM_SubLeadingB',
@@ -279,8 +280,10 @@ varList['LeadingLepPt'] = {
 #    'recobinning' : [0, 50, 65, 85, 97, 110, 145, 180, 250],
 #    'genbinning'  : [0., 50., 90., 135., 250.],
 #    'recobinning' : [0., 50., 65., 80., 95., 110., 130., 150., 250.],
-    'genbinning'  : [0., 50., 90., 135., 250.],
-    'recobinning' : [0., 50., 60., 75., 90., 105., 115., 135., 250.],
+    #'genbinning'  : [0., 50., 90., 135., 250.],
+    #'recobinning' : [0., 50., 60., 75., 90., 105., 115., 135., 250.],
+    'genbinning'  : [0., 50., 90., 125., 250.],
+    'recobinning' : [0., 50., 60., 70., 80., 90., 105., 125., 250.],
     'var'         : 'TLeadingLepPt',
     'var_response': 'LeadingLepPt',
     'var_gen'     : 'TGenLeadingLepPt',
@@ -399,8 +402,8 @@ varList['DilepPtuncertainties'] = {
 varList['DilepJetPt'] = {
     'xaxis'       : 'p_{T}(\\ell_{1}, \\ell_{2}, j) (GeV)',
     'yaxis'       : 'd#sigma [pb]',
-    'genbinning'  : [0, 50, 90, 140, 500],
-    'recobinning' : [0., 20., 30., 50., 60., 90., 100., 140., 200.],
+    'genbinning'  : [0., 40., 80., 120., 200.],
+    'recobinning' : [0., 20., 30., 40., 50., 60., 80., 120., 200.],
     'var'         : 'TDilepJetPt',
     'var_response': 'DilepJetPt',
     'var_gen'     : 'TGenDilepJetPt',
@@ -413,8 +416,8 @@ varList['DilepJetPtuncertainties'] = {
 varList['DilepMETJetPt'] = {
     'xaxis'       : 'p_{T}(\\ell_{1} ,\\ell_{2}, j,\\slash{E}_{T}) (GeV)',
     'yaxis'       : 'd#sigma [pb]',
-    'genbinning'  : [0, 20, 40, 80, 150],
-    'recobinning' : [0., 20., 30., 40., 50., 60., 70., 80., 150.],
+    'genbinning'  : [0., 20., 40., 70., 150.],
+    'recobinning' : [0., 10., 20., 30., 40., 50., 60., 70., 150.],
     'var'         : 'TDilepMETJetPt',
     'var_response': 'DilepMETJetPt',
     'var_gen'     : 'TGenDilepMETJetPt',
@@ -440,10 +443,10 @@ varList['HTtotuncertainties'] = {
 
 
 varList['DilepMETJet1Pz'] = {
-    'xaxis'       : 'p_{Z}(\\ell_{1}, \\ell_{2}, j,\\slash{E}_{T}) (GeV)',
+    'xaxis'       : 'p_{Z}(\\ell_{1}, \\ell_{2}, j (GeV)',
     'yaxis'       : 'd#sigma [pb]',
-    'genbinning'  : [0., 150., 300., 450., 600.],
-    'recobinning' : [0., 150., 200., 250., 300., 350., 400., 450., 600.],
+    'genbinning'  : [0., 100., 200., 400., 600.],
+    'recobinning' : [0., 50., 100., 150., 200., 250., 300., 400., 600.],
     'var'         : 'abs(TDilepMETJet1Pz)',
     'var_response': 'DilepMETJet1Pz',
     'var_gen'     : 'abs(TGenDilepMETJet1Pz)',
@@ -454,10 +457,10 @@ varList['DilepMETJet1Pzuncertainties'] = {
 }
 
 varList['LLMETBEta'] = {
-    'xaxis'       : '\\eta(\\ell_{1}, \\ell_{2}, j,\\slash{E}_{T})',
+    'xaxis'       : '\\eta(\\ell_{1}, \\ell_{2}, j)',
     'yaxis'       : 'd#sigma [pb]',
-    'genbinning'  : [0., 1.5, 3., 3.5, 5.],
-    'recobinning' : [0., 1.5, 2., 2.5, 3., 3.5, 4., 4.5, 5.],
+    'genbinning'  : [0., 1.25, 2.5, 3.75, 5.],
+    'recobinning' : [0., 0.75, 1.25, 1.75, 2.25, 2.75, 3.25, 3.75, 5.],
     'var'         : 'abs(TLLMETBEta)',
     'var_response': 'LLMETBEta',
     'var_gen'     : 'abs(TGenLLMETBEta)',
@@ -472,9 +475,9 @@ varList['MSys'] = {
     'yaxis'       : 'd#sigma [pb]',
     'genbinning'  : [0., 200., 350., 500., 700.],
     'recobinning' : [0., 200., 250., 275., 300., 325., 350., 500., 700.],
-    'var'         : 'abs(TMSys)',
+    'var'         : 'TMSys',
     'var_response': 'MSys',
-    'var_gen'     : 'abs(TGenMSys)',
+    'var_gen'     : 'TGenMSys',
 }
 varList['MSysuncertainties'] = {
     'xaxis'       : varList['MSys']['xaxis'],
@@ -486,9 +489,9 @@ varList['Mll'] = {
     'yaxis'       : 'd#sigma [pb]',
     'genbinning'  : [0., 50., 100., 150., 300.],
     'recobinning' : [0., 25., 45., 60., 75., 100., 125., 150., 300.],
-    'var'         : 'abs(TMll)',
+    'var'         : 'TMll',
     'var_response': 'Mll',
-    'var_gen'     : 'abs(TGenMll)',
+    'var_gen'     : 'TGenMll',
 }
 varList['Mlluncertainties'] = {
     'xaxis'       : varList['Mll']['xaxis'],
@@ -498,11 +501,11 @@ varList['Mlluncertainties'] = {
 varList['DPhiLL'] = {
     'xaxis'       : '\\Delta \\varphi(\\ell_{1}, \\ell_{2}) (rad)',
     'yaxis'       : 'd#sigma [pb]',
-    'genbinning'  : [-r.TMath.Pi(), -1.5, 0, 1.5, r.TMath.Pi()],
-    'recobinning' : [-r.TMath.Pi(), -2.25, -1.5, -.75, 0, .75, 1.5, 2.25, r.TMath.Pi()],
-    'var'         : 'TDPhiLL',
+    'genbinning'  : [0., .75, 1.5, 2.25, r.TMath.Pi()],
+    'recobinning' : [0., .35, .85, 1.25, 1.65, 2.05, 2.45, 2.85, r.TMath.Pi()],
+    'var'         : 'abs(TDPhiLL)',
     'var_response': 'DPhiLL',
-    'var_gen'     : 'TGenDPhiLL',
+    'var_gen'     : 'abs(TGenDPhiLL)',
 }
 varList['DPhiLLuncertainties'] = {
     'xaxis'       : varList['DPhiLL']['xaxis'],
@@ -512,11 +515,11 @@ varList['DPhiLLuncertainties'] = {
 varList['DPhiLeadJet'] = {
     'xaxis'       : '\\Delta \\varphi(\\ell_{1}, j) (rad)',
     'yaxis'       : 'd#sigma [pb]',
-    'genbinning'  : [-r.TMath.Pi(), -1.5, 0, 1.5, r.TMath.Pi()],
-    'recobinning' : [-r.TMath.Pi(), -2.25, -1.5, -.75, 0, .75, 1.5, 2.25, r.TMath.Pi()],
-    'var'         : 'TDPhiLeadJet',
+    'genbinning'  : [0, 1., 1.75, 2.5, r.TMath.Pi()],
+    'recobinning' : [0, .5, 1., 1.5, 1.75, 2., 2.5, 2.85, r.TMath.Pi()],
+    'var'         : 'abs(TDPhiLeadJet)',
     'var_response': 'DPhiLeadJet',
-    'var_gen'     : 'TGenDPhiLeadJet',
+    'var_gen'     : 'abs(TGenDPhiLeadJet)',
 }
 varList['DPhiLeadJetuncertainties'] = {
     'xaxis'       : varList['DPhiLeadJet']['xaxis'],
@@ -526,11 +529,11 @@ varList['DPhiLeadJetuncertainties'] = {
 varList['DPhiSubLeadJet'] = {
     'xaxis'       : '\\Delta \\varphi(\\ell_{2}, j) (rad)',
     'yaxis'       : 'd#sigma [pb]',
-    'genbinning'  : [-r.TMath.Pi(), -1.5, 0, 1.5, r.TMath.Pi()],
-    'recobinning' : [-r.TMath.Pi(), -2.25, -1.5, -.75, 0, .75, 1.5, 2.25, r.TMath.Pi()],
-    'var'         : 'TDPhiSubLeadJet',
+    'genbinning'  : [0, 1., 1.75, 2.5, r.TMath.Pi()],
+    'recobinning' : [0, .5, 1., 1.5, 1.75, 2., 2.5, 2.85, r.TMath.Pi()],
+    'var'         : 'abs(TDPhiSubLeadJet)',
     'var_response': 'DPhiSubLeadJet',
-    'var_gen'     : 'TGenDPhiSubLeadJet',
+    'var_gen'     : 'abs(TGenDPhiSubLeadJet)',
 }
 varList['DPhiSubLeadJetuncertainties'] = {
     'xaxis'       : varList['DPhiSubLeadJet']['xaxis'],
