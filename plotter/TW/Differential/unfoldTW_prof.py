@@ -189,7 +189,7 @@ class UnfolderHelper:
         else:
             plot.addHisto(self.scanRes,'ALnomin','L curve',0)
         
-        plot.addTLatex(0.75, 0.9, "log(#tau) = {taupar}".format(taupar = round(self.tunfolder.GetTau() ,5)))
+        plot.addTLatex(0.75, 0.9, "#tau = {taupar}".format(taupar = round(self.tunfolder.GetTau() ,5)))
         plot.saveCanvas('TR', leg = False)
         del plot
         
