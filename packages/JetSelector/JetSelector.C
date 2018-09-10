@@ -380,7 +380,7 @@ void JetSelector::InsideLoop(){
       }
     }
   }
-/*
+
   if(jet_MaxEta > 2.4 || vetoJet_maxEta > 2.4){ // Add jets from JetFwd collection
     nJet = Get<Int_t>("nJetFwd");
     for(Int_t i = 0; i < nJet; i++){
@@ -397,7 +397,7 @@ void JetSelector::InsideLoop(){
         if (tJ.p.Pt() > vetoJet_minPt && TMath::Abs(tJ.p.Eta()) < vetoJet_maxEta) vetoJets.push_back(tJ);
       }
     }
-  }*/
+  }
 
   // Loop over the jets
   if (!gIsData && gSelection == iTWSelec){
