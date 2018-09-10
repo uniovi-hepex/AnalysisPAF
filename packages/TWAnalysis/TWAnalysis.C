@@ -1697,6 +1697,7 @@ void TWAnalysis::SetTWVariables()
   fMini1j1t->Branch("TDilepMETJetPt"        , &DilepMETJetPt      , "TDilepMETJetPt/F"       );
   fMini1j1t->Branch("TTJet1_pt"             , &TJet1_pt           , "TTJet1_pt/F"            );
   fMini1j1t->Branch("TTJetLooseCentralpt"   , &TJetLooseCentralpt , "TTJetLooseCentralpt/F"  );
+  fMini1j1t->Branch("TTJetLooseFwdpt"       , &TJetLooseFwdpt     , "TTJetLooseFwdpt/F"  );
   fMini1j1t->Branch("TDilepMETJetPt_THTtot" , &DilepmetjetOverHT  , "TDilepMETJetPt_THTtot/F");
   fMini1j1t->Branch("TMSys"                 , &MSys               , "TMSys/F"                );
   fMini1j1t->Branch("TC_jll"                , &C_jll              , "TC_jll/F"               );
@@ -1710,6 +1711,7 @@ void TWAnalysis::SetTWVariables()
   fMini1j1t->Branch("TTHTtotJESUp"               , &THTtotJESUp             , "TTHTtotJESUp/F"              );
   fMini1j1t->Branch("TTJet1_ptJESUp"             , &TJet1_ptJESUp           , "TTJet1_ptJESUp/F"            );
   fMini1j1t->Branch("TTJetLooseCentralptJESUp"   , &TJetLooseCentralptJESUp , "TTJetLooseCentralptJESUp/F"  );
+  fMini1j1t->Branch("TTJetLooseFwdptJESUp"       , &TJetLooseFwdptJESUp     , "TTJetLooseFwdptJESUp/F"  );
   fMini1j1t->Branch("TDilepMETJetPt_THTtotJESUp" , &DilepmetjetOverHTJESUp  , "TDilepMETJetPt_THTtotJESUp/F");
   fMini1j1t->Branch("TMSysJESUp"                 , &MSysJESUp               , "TMSysJESUp/F"                );
   fMini1j1t->Branch("TC_jllJESUp"                , &C_jllJESUp              , "TC_jllJESUp/F"               );
@@ -1724,6 +1726,7 @@ void TWAnalysis::SetTWVariables()
   fMini1j1t->Branch("TTHTtotJESDown"               , &THTtotJESDown             , "TTHTtotJESDown/F"              );
   fMini1j1t->Branch("TTJet1_ptJESDown"             , &TJet1_ptJESDown           , "TTJet1_ptJESDown/F"            );
   fMini1j1t->Branch("TTJetLooseCentralptJESDown"   , &TJetLooseCentralptJESDown , "TTJetLooseCentralptJESDown/F"  );
+  fMini1j1t->Branch("TTJetLooseFwdptJESDown"       , &TJetLooseFwdptJESDown     , "TTJetLooseFwdptJESDown/F"  );
   fMini1j1t->Branch("TDilepMETJetPt_THTtotJESDown" , &DilepmetjetOverHTJESDown  , "TDilepMETJetPt_THTtotJESDown/F");
   fMini1j1t->Branch("TMSysJESDown"                 , &MSysJESDown               , "TMSysJESDown/F"                );
   fMini1j1t->Branch("TC_jllJESDown"                , &C_jllJESDown              , "TC_jllJESDown/F"               );
@@ -1738,6 +1741,7 @@ void TWAnalysis::SetTWVariables()
   fMini1j1t->Branch("TTHTtotJERUp"               , &THTtotJERUp             , "TTHTtotJERUp/F"              );
   fMini1j1t->Branch("TTJet1_ptJERUp"             , &TJet1_ptJERUp           , "TTJet1_ptJERUp/F"            );
   fMini1j1t->Branch("TTJetLooseCentralptJERUp"   , &TJetLooseCentralptJERUp , "TTJetLooseCentralptJERUp/F"  );
+  fMini1j1t->Branch("TTJetLooseFwdptJERUp"       , &TJetLooseFwdptJERUp     , "TTJetLooseFwdptJERUp/F"  );
   fMini1j1t->Branch("TDilepMETJetPt_THTtotJERUp" , &DilepmetjetOverHTJERUp  , "TDilepMETJetPt_THTtotJERUp/F");
   fMini1j1t->Branch("TMSysJERUp"                 , &MSysJERUp               , "TMSysJERUp/F"                );
   fMini1j1t->Branch("TC_jllJERUp"                , &C_jllJERUp              , "TC_jllJERUp/F"               );
@@ -2791,6 +2795,11 @@ void TWAnalysis::get20Jets()
   vector<float> looseJetCentralPtJESDown;
   vector<float> looseJetCentralPtJER;
   
+  vector<float> looseJetFwdPt;
+  vector<float> looseJetFwdPtJESUp;
+  vector<float> looseJetFwdPtJESDown;
+  vector<float> looseJetFwdPtJER;
+  
   nLooseCentral  = 0.; nLooseCentralJESUp  = 0.; nLooseCentralJESDown  = 0.; nLooseCentralJERUp  = 0.;
   nLooseFwd      = 0.; nLooseFwdJESUp      = 0.; nLooseFwdJESDown      = 0.; nLooseFwdJERUp      = 0.;
   nBLooseCentral = 0.; nBLooseCentralJESUp = 0.; nBLooseCentralJESDown = 0.; nBLooseCentralJERUp = 0.;
@@ -2799,68 +2808,73 @@ void TWAnalysis::get20Jets()
   TJetLoosept    = 0.; TJetLooseptJESUp    = 0.; TJetLooseptJESDown    = 0.; TJetLooseptJERUp    = 0.;
   TJetLooseCentralpt        = 0.; TJetLooseCentralptJESUp = 0.;
   TJetLooseCentralptJESDown = 0.; TJetLooseCentralptJERUp = 0.;
+  TJetLooseFwdpt        = 0.; TJetLooseFwdptJESUp = 0.;
+  TJetLooseFwdptJESDown = 0.; TJetLooseFwdptJERUp = 0.;
 
   for (unsigned int j = 0; j < vetoJets.size(); ++j){
     if (vetoJets.at(j).p.Pt() > 20.){
       looseJetPt.push_back( vetoJets.at(j).p.Pt() );
       if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4){
-	nLooseCentral++;
-	looseJetCentralPt.push_back(vetoJets.at(j).p.Pt());
+        nLooseCentral++;
+        looseJetCentralPt.push_back(vetoJets.at(j).p.Pt());
       }
-      else nLooseFwd++;
+      else {
+        nLooseFwd++;
+        looseJetFwdPt.push_back(vetoJets.at(j).p.Pt());
+      }
       if (vetoJets.at(j).isBtag){
-	if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentral++;
-	else nBLooseFwd++;
+    if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentral++;
+    else nBLooseFwd++;
       }
     }
 
     if (vetoJets.at(j).pTJESUp > 20.){
       looseJetPtJESUp.push_back( vetoJets.at(j).pTJESUp );
       if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4){
-	nLooseCentralJESUp++;
-	looseJetCentralPtJESUp.push_back(vetoJets.at(j).pTJESUp);
+        nLooseCentralJESUp++;
+        looseJetCentralPtJESUp.push_back(vetoJets.at(j).pTJESUp);
       }
-      else nLooseFwdJESUp++;
+      else {
+        nLooseFwdJESUp++;
+        looseJetFwdPtJESUp.push_back(vetoJets.at(j).pTJESUp());
+      }
       if (vetoJets.at(j).isBtag){
-	if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentralJESUp++;
-	else nBLooseFwdJESUp++;
+        if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentralJESUp++;
+        else nBLooseFwdJESUp++;
       }
     }
 
     if (vetoJets.at(j).pTJESDown > 20.){
       looseJetPtJESDown.push_back( vetoJets.at(j).pTJESDown );
       if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4){
-	nLooseCentralJESDown++;
-	looseJetCentralPtJESDown.push_back(vetoJets.at(j).pTJESDown);
+        nLooseCentralJESDown++;
+        looseJetCentralPtJESDown.push_back(vetoJets.at(j).pTJESDown);
       }
-      else nLooseFwdJESDown++;
+      else {
+        nLooseFwdJESDown++;
+        looseJetFwdPtJESDown.push_back(vetoJets.at(j).pTJESDown());
+      }
       if (vetoJets.at(j).isBtag){
-	if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentralJESDown++;
-	else nBLooseFwdJESDown++;
+        if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentralJESDown++;
+        else nBLooseFwdJESDown++;
       }
     }
 
     if (vetoJets.at(j).pTJERUp > 20.){
       looseJetPtJER.push_back( vetoJets.at(j).pTJERUp );
       if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4){
-	nLooseCentralJERUp++;
-	looseJetCentralPtJER.push_back(vetoJets.at(j).pTJERUp);
+        nLooseCentralJERUp++;
+        looseJetCentralPtJER.push_back(vetoJets.at(j).pTJERUp);
       }
-      else nLooseFwdJERUp++;
+      else {
+        nLooseFwdJERUp++;
+        looseJetFwdPtJERUp.push_back(vetoJets.at(j).pTJERUp());
+      }
       if (vetoJets.at(j).isBtag){
-	if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentralJERUp++;
-	else nBLooseFwdJERUp++;
+        if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentralJERUp++;
+        else nBLooseFwdJERUp++;
       }
     }
-    // if (vetoJets.at(j).pTJER > 20.){
-    //   looseJetPtJER.push_back( vetoJets.at(j).pTJER );
-    //   if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nLooseCentralJER++;
-    //   else nLooseFwdJER++;
-    //   if (vetoJets.at(j).isBtag){
-    // 	if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentralJER++;
-    // 	else nBLooseFwdJER++;
-    //   }
-    //}
   }
 
   std::sort( looseJetPt.begin()       , looseJetPt.end()       , GreaterThan);
@@ -2873,7 +2887,7 @@ void TWAnalysis::get20Jets()
   std::sort( looseJetCentralPtJESDown.begin(), looseJetCentralPtJESDown.end(), GreaterThan);
   std::sort( looseJetCentralPtJER.begin()    , looseJetCentralPtJER.end()    , GreaterThan);
 
-  
+
   if (nLooseFwd + nLooseCentral > 1){
     TJet2csv = TMath::Max( vetoJets.at(1).csv   , (Float_t) 0.);
     TJetLoosept = looseJetPt.at(1);
@@ -2904,6 +2918,17 @@ void TWAnalysis::get20Jets()
   if (nLooseCentralJERUp > 1)
     TJetLooseCentralptJERUp = looseJetCentralPtJER.at(1);
 
+  if (nLooseFwd > 1)
+    TJetLooseFwdpt = looseJetFwdPt.at(1);
+
+  if (nLooseFwdJESUp > 1)
+    TJetLooseFwdptJESUp = looseJetFwdPtJESUp.at(1);
+
+  if (nLooseFwdJESDown > 1)
+    TJetLooseFwdptJESDown = looseJetFwdPtJESDown.at(1);
+
+  if (nLooseFwdJERUp > 1)
+    TJetLooseFwdptJERUp = looseJetFwdPtJER.at(1);
 
   return;
 }
