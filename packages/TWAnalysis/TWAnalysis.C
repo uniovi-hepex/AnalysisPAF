@@ -1685,14 +1685,6 @@ void TWAnalysis::SetTWVariables()
   fMini1j1t->Branch("TnLooseFwdJESUp"       ,&nLooseFwdJESUp        ,"TnLooseFwdJESUp/F"             );
   fMini1j1t->Branch("TnLooseFwdJESDown"     ,&nLooseFwdJESDown      ,"TnLooseFwdJESDown/F"             );
   fMini1j1t->Branch("TnLooseFwdJERUp"       ,&nLooseFwdJERUp        ,"TnLooseFwdJERUp/F"             );
-  fMini1j1t->Branch("TnBLooseFwd"           ,&nBLooseFwd           , "TnBLooseFwd/F"             );
-  fMini1j1t->Branch("TnBLooseFwdJESUp"      ,&nBLooseFwdJESUp       ,"TnBLooseFwdJESUp/F"             );
-  fMini1j1t->Branch("TnBLooseFwdJESDown"    ,&nBLooseFwdJESDown     ,"TnBLooseFwdJESDown/F"             );
-  fMini1j1t->Branch("TnBLooseFwdJERUp"      ,&nBLooseFwdJERUp       ,"TnBLooseFwdJERUp/F"             );
-  fMini1j1t->Branch("TnBTotal"              ,&nBTotal            ,   "TnBTotal/F"             );
-  fMini1j1t->Branch("TnBTotalJESUp"         ,&nBTotalJESUp        ,  "TnBTotalJESUp/F"             );
-  fMini1j1t->Branch("TnBTotalJESDown"       ,&nBTotalJESDown      ,  "TnBTotalJESDown/F"             );
-  fMini1j1t->Branch("TnBTotalJERUp"         ,&nBTotalJERUp        ,  "TnBTotalJERUp/F"             );
 
   fMini1j1t->Branch("TDilepMETJetPt"        , &DilepMETJetPt      , "TDilepMETJetPt/F"       );
   fMini1j1t->Branch("TTJet1_pt"             , &TJet1_pt           , "TTJet1_pt/F"            );
@@ -2250,7 +2242,6 @@ void TWAnalysis::CalculateTWVariables()
 
     C_jll = (selJets.at(0).p.Et() + selLeptons.at(0).p.Et() + selLeptons.at(1).p.Et()) / (selJets.at(0).p.E() + selLeptons.at(0).p.E() + selLeptons.at(1).p.E());
     TJet1_pt          = selJets.at(0).Pt();
-    nBTotal           = nBLooseCentral + nBLooseFwd;
     MSys              = getSysM();
     THTtot            = getHTtot();
     DilepmetjetOverHT = DilepMETJetPt/THTtot;
@@ -2279,7 +2270,6 @@ void TWAnalysis::CalculateTWVariables()
     DilepMETJet1Pz   = -99.;
     C_jll            = -99.;
     TJet1_pt         = -99.;
-    nBTotal          = -99.;
     DilepmetjetOverHT= -99.;
     HTLepOverHT      = -99.;
     MSys             = -99.;
@@ -2312,7 +2302,6 @@ void TWAnalysis::CalculateTWVariables()
       
       C_jllJESUp = (selJetsJecUp.at(0).p.Et() + selLeptons.at(0).p.Et() + selLeptons.at(1).p.Et()) / (selJetsJecUp.at(0).p.E() + selLeptons.at(0).p.E() + selLeptons.at(1).p.E());
       TJet1_ptJESUp           = selJetsJecUp.at(0).Pt();
-      nBTotalJESUp            = nBLooseCentralJESUp + nBLooseFwdJESUp;
       MSysJESUp               = getSysM("JESUp");
       THTtotJESUp             = getHTtot("JESUp");
       DilepmetjetOverHTJESUp  = DilepMETJetPtJESUp/THTtotJESUp          ;
@@ -2340,7 +2329,6 @@ void TWAnalysis::CalculateTWVariables()
       DilepMETJet1PzJESUp   = -99.;
       C_jllJESUp            = -99.;
       TJet1_ptJESUp         = -99.;
-      nBTotalJESUp          = -99.;
       DilepmetjetOverHTJESUp= -99.;
       HTLepOverHTJESUp      = -99.;
       MSysJESUp             = -99.;
@@ -2372,7 +2360,6 @@ void TWAnalysis::CalculateTWVariables()
       
       C_jllJESDown = (selJetsJecDown.at(0).p.Et() + selLeptons.at(0).p.Et() + selLeptons.at(1).p.Et()) / (selJetsJecDown.at(0).p.E() + selLeptons.at(0).p.E() + selLeptons.at(1).p.E());
       TJet1_ptJESDown           = selJetsJecDown.at(0).p.Pt();
-      nBTotalJESDown            = nBLooseCentralJESDown + nBLooseFwdJESDown;  
       THTtotJESDown             = getHTtot("JESDown");
       DilepmetjetOverHTJESDown  = DilepMETJetPtJESDown/THTtotJESDown          ;
       TDilepPtJESDown           = (selLeptons.at(0).p + selLeptons.at(1).p).Pt();
@@ -2400,7 +2387,6 @@ void TWAnalysis::CalculateTWVariables()
       DilepMETJet1PzJESDown   = -99.;
       C_jllJESDown            = -99.;
       TJet1_ptJESDown         = -99.;
-      nBTotalJESDown          = -99.;
       DilepmetjetOverHTJESDown= -99.;
       HTLepOverHTJESDown      = -99.;
       MSysJESDown             = -99.;
@@ -2431,7 +2417,6 @@ void TWAnalysis::CalculateTWVariables()
       
       C_jllJERUp = (selJetsJER.at(0).p.Et() + selLeptons.at(0).p.Et() + selLeptons.at(1).p.Et()) / (selJetsJER.at(0).p.E() + selLeptons.at(0).p.E() + selLeptons.at(1).p.E());
       TJet1_ptJERUp           = selJetsJER.at(0).p.Pt();
-      nBTotalJERUp            = nBLooseCentralJERUp + nBLooseFwdJERUp;  
       THTtotJERUp             = getHTtot("JER");
       HTLepOverHTJERUp        = (selLeptons.at(0).p.Pt() + selLeptons.at(1).p.Pt())/ THTtotJERUp    ;
       TDilepPtJERUp           = (selLeptons.at(0).p + selLeptons.at(1).p).Pt();
@@ -2460,7 +2445,6 @@ void TWAnalysis::CalculateTWVariables()
       DilepMETJet1PzJERUp   = -99.;
       C_jllJERUp            = -99.;
       TJet1_ptJERUp         = -99.;
-      nBTotalJERUp          = -99.;
       DilepmetjetOverHTJERUp= -99.;
       HTLepOverHTJERUp      = -99.;
       MSysJERUp             = -99.;
@@ -2803,7 +2787,6 @@ void TWAnalysis::get20Jets()
   nLooseCentral  = 0.; nLooseCentralJESUp  = 0.; nLooseCentralJESDown  = 0.; nLooseCentralJERUp  = 0.;
   nLooseFwd      = 0.; nLooseFwdJESUp      = 0.; nLooseFwdJESDown      = 0.; nLooseFwdJERUp      = 0.;
   nBLooseCentral = 0.; nBLooseCentralJESUp = 0.; nBLooseCentralJESDown = 0.; nBLooseCentralJERUp = 0.;
-  nBLooseFwd     = 0.; nBLooseFwdJESUp     = 0.; nBLooseFwdJESDown     = 0.; nBLooseFwdJERUp     = 0.;
   TJet2csv       = 0.; TJet2csvJESUp       = 0.; TJet2csvJESDown       = 0.; TJet2csvJERUp       = 0.;
   TJetLoosept    = 0.; TJetLooseptJESUp    = 0.; TJetLooseptJESDown    = 0.; TJetLooseptJERUp    = 0.;
   TJetLooseCentralpt        = 0.; TJetLooseCentralptJESUp = 0.;
@@ -2824,7 +2807,6 @@ void TWAnalysis::get20Jets()
       }
       if (vetoJets.at(j).isBtag){
     if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentral++;
-    else nBLooseFwd++;
       }
     }
 
@@ -2836,11 +2818,10 @@ void TWAnalysis::get20Jets()
       }
       else {
         nLooseFwdJESUp++;
-        looseJetFwdPtJESUp.push_back(vetoJets.at(j).pTJESUp());
+        looseJetFwdPtJESUp.push_back(vetoJets.at(j).pTJESUp);
       }
       if (vetoJets.at(j).isBtag){
         if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentralJESUp++;
-        else nBLooseFwdJESUp++;
       }
     }
 
@@ -2852,11 +2833,10 @@ void TWAnalysis::get20Jets()
       }
       else {
         nLooseFwdJESDown++;
-        looseJetFwdPtJESDown.push_back(vetoJets.at(j).pTJESDown());
+        looseJetFwdPtJESDown.push_back(vetoJets.at(j).pTJESDown);
       }
       if (vetoJets.at(j).isBtag){
         if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentralJESDown++;
-        else nBLooseFwdJESDown++;
       }
     }
 
@@ -2868,11 +2848,10 @@ void TWAnalysis::get20Jets()
       }
       else {
         nLooseFwdJERUp++;
-        looseJetFwdPtJERUp.push_back(vetoJets.at(j).pTJERUp());
+        looseJetFwdPtJER.push_back(vetoJets.at(j).pTJERUp);
       }
       if (vetoJets.at(j).isBtag){
         if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentralJERUp++;
-        else nBLooseFwdJERUp++;
       }
     }
   }
