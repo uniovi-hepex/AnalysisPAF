@@ -24,6 +24,7 @@ if (len(sys.argv) > 1):
 print "    - The minitrees' path is:\n", minipath
 plotsoutputpath  = "/nfs/fanae/user/vrbouza/www/TFM/Unfolding/"
 matrixoutputpath = "./temp/"
+
 genCut      = "TWeight_normal * (Tpassgen == 1)"
 recoCut     = "TWeight_normal * (Tpassreco == 1)"
 Cut         = "TWeight * (Tpassgen == 1)"
@@ -109,10 +110,10 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = ""):
   del hGen, hGen1
   
   # Lower cutoff for the values of the matrices
-  for i in range(1, nxb+1):
-    for j in range(1, nyb+1):
-      if (h1.GetBinContent(i, j) < 1e-4):
-        h1.SetBinContent(i, j, 0)
+  #for i in range(1, nxb+1):
+    #for j in range(1, nyb+1):
+      #if (h1.GetBinContent(i, j) < 1e-4):
+        #h1.SetBinContent(i, j, 0)
   
   # Fixing the over and underflow bins to one.
   for i in range(1, nxb+1):
