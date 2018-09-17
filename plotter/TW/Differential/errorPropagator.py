@@ -2,7 +2,7 @@ import ROOT as r
 import math, copy
 import varList as vl
 
-def quadSum( elements):
+def quadSum(elements):
     return math.sqrt( sum( map( lambda x : x*x, elements)))
 
 
@@ -111,7 +111,7 @@ def propagateHistoAsym(nom, varDict, doEnv = False):
     
     if doEnv:
         for bin in range(1, nom.GetNbinsX() + 1):
-            err         = outUp.GetBinError(bin)    # <==  Fit unc. taken here
+            err         = outUp.GetBinError(bin)    # <==  Fit unc. (or stat. and unf. uncs.) taken here
             cont        = outUp.GetBinContent(bin)
             tmpDict     = dict([(key, histo.GetBinContent(bin)) for (key, histo) in varDict.iteritems()])
             tmpuncUp    = 0.
@@ -159,8 +159,9 @@ def maximumHisto(histo1, histo2):
     return maxHist
 
 
-def getUncList(nom, varDict, doEnv = False):
-    medDict = [('Fit', nom)]
+def getUncList(nom, varDict, doEnv = False, doFit = True):
+    if doFit: medDict = [('Fit', nom)]
+    else:     medDict = [('Stat.', nom)]
     outDict = []
     histUp  = [[] for i in range(nom.GetNbinsX())]
     histDown= [[] for i in range(nom.GetNbinsX())]
@@ -191,6 +192,8 @@ def getUncList(nom, varDict, doEnv = False):
         medDict.append(('ColorRDown', finalhistDown))
     
     medDict.sort(key = lambda x : maxRelativeError(x[1]), reverse = True)
+    #medDict.sort(key = lambda x : relativeErrorHist(x[1]).GetBinContent(1), reverse = True)
+    
     for key in medDict:
         done = False
         for i in range(len(outDict)):
@@ -201,17 +204,42 @@ def getUncList(nom, varDict, doEnv = False):
                 if key2[0] == key[0].replace('Down','Up'):
                     down = key2
             hist = maximumHisto(key[1], key2[1])
-            outDict.append( (key[0].replace('Down',''), hist) )
+            outDict.append( (key[0].replace('Down','').replace('_',''), hist) )
         elif 'Up' in key[0]:
             for key2 in medDict:
                 if key2[0] == key[0].replace('Up','Down'):
                     down = key2
             if key[0].replace('Up', 'Down') in medDict:
                 hist = maximumHisto(key[1], key2[1])
-                outDict.append( (key[0].replace('Up',''), hist) )
+                outDict.append( (key[0].replace('Up','').replace('_',''), hist) )
             else:
-                outDict.append( (key[0].replace('Up',''), key[1]) )
+                outDict.append( (key[0].replace('Up','').replace('_',''), key[1]) )
         else: # We expect only the fit unc. to arrive here
-            outDict.append( (key[0], key[1]) )
+            outDict.append( (key[0].replace('_',''), key[1]) )
     
     return map( lambda x : (x[0], relativeErrorHist(x[1])), outDict)
+
+
+def SetTheStatsUncs(histo):
+    ''' Function that sets the uncs. of the given histogram as the expecteds
+    from its contents.'''
+    for bin in range(1, histo.GetNbinsX() + 1):
+        histo.SetBinError(bin, math.sqrt(histo.GetBinContent(bin)))
+    
+    return
+
+
+def SetTheUncsFromHere(histo, hlist, SetStatUncs = False):
+    ''' Function that returns to you a histogram with the quadratic sum
+    of the uncertainties corresponding to the bin uncertainties of the 
+    histograms that are given in a list, in addition to the ones from the
+    given histogram.'''
+    
+    tmperr = 0
+    for i in range(1, histo.GetNbinsX() + 1):
+        if SetStatUncs: tmperr = quadSum([math.sqrt(hel.GetBinContent(bin)) for hel in hlist] + math.sqrt(histo.GetBinContent(bin)))
+        else:           tmperr = quadSum([hel.GetBinError(bin) for hel in hlist] + histo.GetBinError(bin))
+        
+        histo.SetBinError(bin, tmperr)
+    
+    return

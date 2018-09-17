@@ -28,6 +28,7 @@ class beautifulUnfoldingPlots:
         self.doWide         = False
         self.doRatio        = False
         self.isLCurve       = False
+        self.doFit          = True
 
 
     def initCanvasAndAll(self):
@@ -280,7 +281,11 @@ class beautifulUnfoldingPlots:
             totalunc.SetLineColor(r.kBlack)
             totalunc.SetFillStyle(1001)
             totalunc.SetLineWidth(1)
+            
+            #if self.doFit: totalunc.GetXaxis().SetRangeUser(fitunc.GetXaxis().GetBinLowEdge(1), fitunc.GetXaxis().GetBinUpEdge(fitunc.GetNbinsX()))
             totalunc.GetXaxis().SetRangeUser(fitunc.GetXaxis().GetBinLowEdge(1), fitunc.GetXaxis().GetBinUpEdge(fitunc.GetNbinsX()))
+            #else:          totalunc.GetXaxis().SetRangeUser(datavalues.GetXaxis().GetBinLowEdge(1), datavalues.GetXaxis().GetBinUpEdge(datavalues.GetNbinsX()))
+            
             totalunc.GetXaxis().SetTitle(vl.varList[self.name.replace('_folded', '')]['xaxis'])
             totalunc.GetXaxis().SetTitleFont(43)
             totalunc.GetXaxis().SetTitleSize(22)
