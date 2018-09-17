@@ -8,6 +8,7 @@ import os
 
 # === ESSENTIAL PARAMETERS OF THE ANALYSIS. CHANGING THIS APPLIES TO EVERYTHING. ===
 nBinsInBDT  = 4         # Number of bins in the BDT disc. distribution
+nuncs       = 7         # Number of uncs. shown in the relative uncertainty plots
 asimov      = False     # Use of Asimov dataset or data
 unifttbar   = True      # Equally distributed ttbar or tW in the BDT disc. distr.
 doxsec      = True      # Show events or diff. cross section in final results
@@ -15,9 +16,15 @@ doReg       = False     # Do or not do regularisation
 
 # === OTHER IMPORTANT DEFINITIONS ===
 Lumi        = 35.864    # In femtobarns
+uncLumi     = 0.025     # In %
 
-sigma_ttbar = 831.76
-sigma_dilep = 88.28769753
+sigma_ttbar   = 831.76
+sigma_dilep   = 88.28769753
+sigma_tw      = 35.85
+sigma_twnohad = 19.4674104
+
+n_ttbar                    = 77229341
+n_dilep                    = 79092400
 
 nUEUp_ttbar                = 58953660
 nUEUp_dilep                = 9907537
@@ -35,6 +42,10 @@ nPowhegerdON_dilep         = 9537400
 nQCDbasedCRTuneerdON_ttbar = 59620206
 nQCDbasedCRTuneerdON_dilep = 9816448
 
+n_tw                       = 6952830
+n_twnohad                  = 11345619
+n_tbarw                    = 6933094
+n_tbarwnohad               = 11408144
 
 plotlimits   = tuple([float(i) for i in "0.00, 0.23, 1.00, 1.00".split(',')]) # xlow, ylow, xup, yup
 ratiolimits  = tuple([float(i) for i in "0.00, 0.05, 1.00, 0.29".split(',')]) # xlow, ylow, xup, yup
@@ -72,13 +83,13 @@ varList['LCurve'] = {
 }
 
 varList['Names'] = {
-    #'Variables'   : ["E_LLB", "LeadingJetE", "MT_LLMETB", "M_LLB", "M_LeadingB", "M_SubLeadingB", 
-                     #"MET", "MET_Phi", "LeadingJetPt", "LeadingJetEta", "LeadingJetPhi", 
-                     #"LeadingLepE", "LeadingLepPt", "LeadingLepPhi", "LeadingLepEta", 
-                     #"SubLeadingLepE", "SubLeadingLepPt", "SubLeadingLepPhi", "SubLeadingLepEta", 
-                     #"DilepPt", "DilepJetPt", "DilepMETJetPt", "HTtot", 
-                     #"DilepMETJet1Pz", "LLMETBEta", "MSys", "Mll", "DPhiLL", "DPhiLeadJet", "DPhiSubLeadJet"], # Nuevinas
-    'Variables'   : ["M_LeadingB", "M_SubLeadingB", "LeadingLepPt", "LLMETBEta", "DilepMETJet1Pz", "DPhiLL", "DPhiLeadJet", "DPhiSubLeadJet"], # Nuevinas
+    'Variables'   : ["E_LLB", "LeadingJetE", "MT_LLMETB", "M_LLB", "M_LeadingB", "M_SubLeadingB", 
+                     "MET", "MET_Phi", "LeadingJetPt", "LeadingJetEta", "LeadingJetPhi", 
+                     "LeadingLepE", "LeadingLepPt", "LeadingLepPhi", "LeadingLepEta", 
+                     "SubLeadingLepE", "SubLeadingLepPt", "SubLeadingLepPhi", "SubLeadingLepEta", 
+                     "DilepPt", "DilepJetPt", "DilepMETJetPt", "HTtot", 
+                     "DilepMETJet1Pz", "LLMETBEta", "MSys", "Mll", "DPhiLL", "DPhiLeadJet", "DPhiSubLeadJet"], # Nuevinas
+    #'Variables'   : ["M_LeadingB", "M_SubLeadingB", "LeadingLepPt", "LLMETBEta", "DilepMETJet1Pz", "DPhiLL", "DPhiLeadJet", "DPhiSubLeadJet"], # Nuevinas
     #'Variables'   : ["LeadingJetPt", "LeadingLepPt"],
     'ExpSysts'    : ["JESUp", "JESDown", "JERUp", "ElecEffUp", "ElecEffDown", "MuonEffUp", #   DO NOT MOVE THE FIRST THREE TO OTHER
                      "MuonEffDown", "TrigUp", "TrigDown", "PUUp", "PUDown", "BtagUp",      # POSITION: it will affect the calculus
@@ -87,6 +98,7 @@ varList['Names'] = {
                      "UEUp", "UEDown"],
     'specialSysts': ["JERDown", "DSDown"],
     'colorSysts'  : ["GluonMoveCRTuneerdON", "PowhegerdON", "QCDbasedCRTuneerdON", "GluonMoveCRTune"],
+    'NormSysts'  :  ["ttbarUp", "ttbarDown", "Non-WorZUp", "Non-WorZDown", "DYUp", "DYDown", "VVttbarVUp", "VVttbarVDown"],
 }
 
 varList['E_LLB'] = {
@@ -314,8 +326,10 @@ varList['LeadingLepPhiuncertainties'] = {
 varList['LeadingLepEta'] = {
     'xaxis'       : '|\\eta|(\\ell_{1})',
     'yaxis'       : 'd#sigma [pb]',
-    'genbinning'  : [0., 0.6, 1.2, 1.8, 2.4],
-    'recobinning' : [0., 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4],
+    #'genbinning'  : [0., 0.6, 1.2, 1.8, 2.4],
+    #'recobinning' : [0., 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4],
+    'genbinning'  : [0., 0.5, 1., 1.6, 2.4],
+    'recobinning' : [0., 0.25, 0.5, 0.75, 1., 1.3, 1.6, 2., 2.4],
     'var'         : 'abs(TLeadingLepEta)',
     'var_response': 'LeadingLepEta',
     'var_gen'     : 'abs(TGenLeadingLepEta)',
@@ -630,4 +644,31 @@ colorMap = {
     'GluonMoveCRTuneerdON'  : r.kMagenta,
     'PowhegerdON'           : r.kGray+2,
     'QCDbasedCRTuneerdON'   : r.kBlue,
+}
+
+NewColorMap = {
+    'JES'                   : r.TColor.GetColor("#a6cee3"),
+    'fsr'                   : r.TColor.GetColor("#1f77b4"),
+    'isr'                   : r.TColor.GetColor("#b2df8a"),
+    'tWME'                  : r.TColor.GetColor("#33a02c"),
+    'tWPS'                  : r.TColor.GetColor("#fb9a99"),
+    'DS'                    : r.TColor.GetColor("#e31a1c"),
+    'hDamp'                 : r.TColor.GetColor("#fdbf6f"),
+    'UE'                    : r.TColor.GetColor("#ff7f00"),
+    'ttbarME'               : r.TColor.GetColor("#6a3d9a"),
+    'pdf'                   : r.kOrange-6,
+    'ColorR'                : r.TColor.GetColor("#cab2d6"),
+    'JER'                   : r.kAzure-6,
+    'ElecEff'               : r.kMagenta,
+    'MuonEff'               : r.kGray+2,
+    'Trig'                  : r.kBlue,
+    'PU'                    : r.kRed,
+    'Btag'                  : r.kGreen+4,
+    'Mistag'                : r.kYellow-6,
+    'ttbar'                 : r.kTeal-7,
+    'Non-WorZ'              : r.kViolet-2,
+    'DY'                    : r.kPink+1,
+    'VVttbarV'              : r.kSpring-9,
+    'Stat.'                 : r.kGreen+1,
+    'Lumi'                  : r.kPink-5,
 }
