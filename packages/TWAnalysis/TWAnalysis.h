@@ -325,7 +325,6 @@ class TWAnalysis : public PAFChainItemSelector{
     Int_t nSergioLooseCentralJets;
     Int_t nSergioLooseCentralbJets;
     Int_t nSergioLooseFwdJets;
-    Int_t nSergioLooseFwdbJets;
     Int_t nSergioLeps;
     Int_t nSergioGenJets;
     Int_t nSergioGenLeps;
@@ -403,10 +402,10 @@ class TWAnalysis : public PAFChainItemSelector{
     Float_t  DPtDilep_MET   , DPtDilep_METJESUp   , DPtDilep_METJESDown   , DPtDilep_METJERUp   ;
     Float_t  DPtLep1_MET    , DPtLep1_METJESUp    , DPtLep1_METJESDown    , DPtLep1_METJERUp    ;
     Float_t  DilepMETJet1Pz , DilepMETJet1PzJESUp , DilepMETJet1PzJESDown , DilepMETJet1PzJERUp ;
-    Float_t  nLooseCentral  , nLooseCentralJESUp  , nLooseCentralJESDown  , nLooseCentralJERUp  ;
-    Float_t  nLooseFwd      , nLooseFwdJESUp      , nLooseFwdJESDown      , nLooseFwdJERUp      ;
-    Float_t  nBLooseCentral , nBLooseCentralJESUp , nBLooseCentralJESDown , nBLooseCentralJERUp ;
-    Float_t  nBLooseFwd     , nBLooseFwdJESUp     , nBLooseFwdJESDown     , nBLooseFwdJERUp     ;
+    Int_t    nLooseCentral  , nLooseCentralJESUp  , nLooseCentralJESDown  , nLooseCentralJERUp  ;
+    Int_t    nLooseFwd      , nLooseFwdJESUp      , nLooseFwdJESDown      , nLooseFwdJERUp      ;
+    Int_t    nBLooseCentral , nBLooseCentralJESUp , nBLooseCentralJESDown , nBLooseCentralJERUp ;
+    Int_t    nBLooseFwd     , nBLooseFwdJESUp     , nBLooseFwdJESDown     , nBLooseFwdJERUp     ;
     Float_t  TJet2csv       , TJet2csvJESUp       , TJet2csvJESDown       , TJet2csvJERUp       ;
     Float_t  MSys           , MSysJESUp           , MSysJESDown           , MSysJERUp           ;
     Float_t  TJetLoosept    , TJetLooseptJESUp    , TJetLooseptJESDown    , TJetLooseptJERUp    ;
@@ -423,7 +422,7 @@ class TWAnalysis : public PAFChainItemSelector{
     /* Float_t  TBDTBTagUp     , TBDTBTagDown; */
     /* Float_t  TBDTMistagUp   , TBDTBMistagDown; */
 
-    Float_t  nBTotal          , nBTotalJESUp          , nBTotalJESDown          , nBTotalJERUp          ; 
+    Int_t    nBTotal          , nBTotalJESUp          , nBTotalJESDown          , nBTotalJERUp          ; 
     Float_t  DilepmetjetOverHT, DilepmetjetOverHTJESUp, DilepmetjetOverHTJESDown, DilepmetjetOverHTJERUp; 
     Float_t  HTLepOverHT      , HTLepOverHTJESUp      , HTLepOverHTJESDown      , HTLepOverHTJERUp      ; 
     Float_t  TJet1_pt         , TJet1_ptJESUp         , TJet1_ptJESDown         , TJet1_ptJERUp         ;
