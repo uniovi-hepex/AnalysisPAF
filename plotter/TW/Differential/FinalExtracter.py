@@ -1,119 +1,196 @@
-import ROOT as r 
-import copy
+import ROOT as r
 import errorPropagator as ep
 import beautifulUnfoldingPlots as bp
 import varList as vl
+import warnings as wr
+import sys, os, copy, math
+#===================================
+
+if (len(sys.argv) > 1):
+    varName     = sys.argv[1]
+    print "> Chosen variable:", varName, "\n"
+else:
+    print "> Default choice of variable\n"
+    varName     = 'LeadingLepEta'
+
+r.gROOT.SetBatch(True)
+procs = ['ttbar', 'DY', 'Non-WorZ', 'VVttbarV']
+doSanityCheck = True
 
 def getXsecForSys(syst, tfile):
     data = copy.deepcopy(tfile.Get('data_obs').Clone('data_%s'%syst))
 
-
     sysString = ('_' + syst) if syst != '' else ''
-    ttbar  = tfile.Get('ttbar' + sysString );
-    if not ttbar: 
+    ttbar     = tfile.Get('ttbar' + sysString )
+    dy        = tfile.Get('DY'    + sysString )
+    fakes     = tfile.Get('Non-WorZ' + sysString )
+    vvttbarv  = tfile.Get('VVttbarV' + sysString )
+    
+    if not ttbar:
         ttbar = tfile.Get('ttbar')
-    dy     = tfile.Get('DY'    + sysString ); 
-    if not dy   : 
+    if not dy   :
         dy    = tfile.Get('DY'   )
-    fakes  = tfile.Get('Fakes' + sysString ); 
-    if not fakes: 
-        fakes = tfile.Get('Fakes')
-    vvttv  = tfile.Get('VVttV' + sysString ); 
-    if not vvttv: 
-        vvttv = tfile.Get('VVttV')
+    if not fakes:
+        fakes = tfile.Get('Non-WorZ')
+    if not vvttbarv:
+        vvttbarv = tfile.Get('VVttbarV')
 
     data.Add( ttbar , -1 )
     data.Add( dy    , -1 )
     data.Add( fakes , -1 )
-    data.Add( vvttv , -1 ) 
-
+    data.Add( vvttbarv , -1 )
+    
     return data
 
+
 def getXSecForNomSys(process, tfile, size):
+    dataUp = copy.deepcopy(tfile.Get('data_obs').Clone('data_%sUp'%procs[procs2.index(proc)]))
+    dataDn = copy.deepcopy(tfile.Get('data_obs').Clone('data_%sDown'%procs[procs2.index(proc)]))
+
+    ttbar     = copy.deepcopy(tfile.Get('ttbar').Clone('ttbar'))
+    dy        = copy.deepcopy(tfile.Get('DY').Clone('dy'))
+    fakes     = copy.deepcopy(tfile.Get('Non-WorZ').Clone('fakes'))
+    vvttbarv  = copy.deepcopy(tfile.Get('VVttbarV').Clone('vvttbarv'))
     
-    dataUp = copy.deepcopy(tfile.Get('data_obs').Clone('data_%s_Up'%process))
-    dataDn = copy.deepcopy(tfile.Get('data_obs').Clone('data_%s_Dn'%process))
-
-
-
-    ttbar  = tfile.Get('ttbar'  );
-    dy     = tfile.Get('DY'     ); 
-    fakes  = tfile.Get('Fakes'  ); 
-    vvttv  = tfile.Get('VVttV'  ); 
-
-
     eval(process).Scale( 1 + size)
 
     dataUp.Add( ttbar , -1 )
     dataUp.Add( dy    , -1 )
     dataUp.Add( fakes , -1 )
-    dataUp.Add( vvttv , -1 ) 
-
+    dataUp.Add( vvttbarv , -1 )
+    
     eval(process).Scale( 1 / (1+size)**2)
 
     dataDn.Add( ttbar , -1 )
     dataDn.Add( dy    , -1 )
     dataDn.Add( fakes , -1 )
-    dataDn.Add( vvttv , -1 ) 
-
-
-
+    dataDn.Add( vvttbarv , -1 )
+    
+    del ttbar, dy, fakes, vvttbarv
+    
     return dataUp, dataDn
 
 
-tfile = r.TFile.Open('temp/forCards_LeadingLepPt.root')
+def getLumiUnc(tfile):
+    dataUp = copy.deepcopy(tfile.Get('data_obs').Clone('data_%sUp'%procs[procs2.index(proc)]))
+    dataDn = copy.deepcopy(tfile.Get('data_obs').Clone('data_%sDown'%procs[procs2.index(proc)]))
 
-sysList = ['ttbar_ElMu_statbin1Up','ttbar_ElMu_statbin1Down','ttbar_ElMu_statbin2Up','ttbar_ElMu_statbin2Down','ttbar_ElMu_statbin3Up','ttbar_ElMu_statbin3Down','ttbar_ElMu_statbin4Up','ttbar_ElMu_statbin4Down','ttbar_ElMu_statbin5Up','ttbar_ElMu_statbin5Down','ttbar_ElMu_statbin6Up','ttbar_ElMu_statbin6Down','JERUp','hdampUp','hdampDown','UEUp','UEDown','isrUp','isrDown','fsrUp','fsrDown','PowhegerdON','JERDown','JESUp','JESDown','BtagUp','BtagDown','MistagUp','MistagDown','PUUp','PUDown','ElecEffUp','ElecEffDown','MuonEffUp','MuonEffDown','TrigUp','TrigDown'] # ,'GluonMoveCRTune','GluonMoveCRTune_GluonMoveCRTune_TLeadingJetPt','GluonMoveCRTuneerdON','GluonMoveCRTune_erdON_GluonMoveCRTuneerdON_TLeadingJetPt ''QCDbasedCRTuneerdON','QCDbasedCRTune_erdON_QCDbasedCRTuneerdON_TLeadingJetPt',
+    ttbar     = copy.deepcopy(tfile.Get('ttbar').Clone('ttbar'))
+    dy        = copy.deepcopy(tfile.Get('DY').Clone('dy'))
+    fakes     = copy.deepcopy(tfile.Get('Non-WorZ').Clone('fakes'))
+    vvttbarv  = copy.deepcopy(tfile.Get('VVttbarV').Clone('vvttbarv'))
+    
+    ttbar.Scale( 1 + vl.uncLumi)
+    dy.Scale( 1 + vl.uncLumi)
+    fakes.Scale( 1 + vl.uncLumi)
+    vvttbarv.Scale( 1 + vl.uncLumi)
+
+    dataUp.Add( ttbar , -1 )
+    dataUp.Add( dy    , -1 )
+    dataUp.Add( fakes , -1 )
+    dataUp.Add( vvttbarv , -1 )
+    
+    ttbar.Scale( 1 / (1 + vl.uncLumi)**2)
+    dy.Scale( 1 / (1 + vl.uncLumi)**2)
+    fakes.Scale( 1 / (1 + vl.uncLumi)**2)
+    vvttbarv.Scale( 1 / (1 + vl.uncLumi)**2)
+
+    dataDn.Add( ttbar , -1 )
+    dataDn.Add( dy    , -1 )
+    dataDn.Add( fakes , -1 )
+    dataDn.Add( vvttbarv , -1 )
+    
+    del ttbar, dy, fakes, vvttbarv
+    
+    return dataUp, dataDn
 
 
-nom = getXsecForSys('',tfile)
-variations = {} 
-for syst in sysList: 
-    variations[syst] = getXsecForSys(syst,tfile)
+tfile   = r.TFile.Open('temp/{var}_/forCards_{var}.root'.format(var = varName))
+sysList = []
+for i in range(len(vl.varList[varName]['recobinning'])):
+    for variat in ['Up', 'Down']:
+        for el in procs:
+            sysList.append("{pr}_ElMu_statbin{ind}{var}".format(pr = el, ind = i + 1, var = variat))
+sysList += vl.varList['Names']['ExpSysts'] + vl.varList['Names']['ttbarSysts'] + vl.varList['Names']['colorSysts'] + vl.varList['Names']['specialSysts'] + ['DSUp', 'LumiUp', 'LumiDown'] + vl.varList['Names']['NormSysts']
 
-for proc, size in zip( ['ttbar','dy','fakes','vvttv'], [0.03,0.5,0.5,0.5]):
-    up, dn = getXSecForNomSys(proc, tfile, size)
-    variations[proc + '_Up'] = up
-    variations[proc + '_Down'] = dn
 
+nominal = getXsecForSys('', tfile)
+variations = {}
+for syst in sysList:
+    variations[syst] = getXsecForSys(syst, tfile)
+
+procs2 = ['ttbar','dy','fakes','vvttbarv']
+for proc, size in zip(procs2, [0.04, 0.5, 0.5, 0.5]):
+    dataUp, dataDn = getXSecForNomSys(proc, tfile, size)
+    variations[procs[procs2.index(proc)] + 'Up']   = dataUp
+    variations[procs[procs2.index(proc)] + 'Down'] = dataDn
+
+dataUp, dataDn         = getLumiUnc(tfile)
+variations['LumiUp']   = dataUp
+variations['LumiDown'] = dataDn
 
 tfile.Close()
 
+out = r.TFile.Open('temp/{var}_/cutOutput_{var}.root'.format(var = varName), 'recreate')
+nominal.Write()
 
-nominal_withErrors = ep.propagateHistoAsym( nom, variations, False)
-plot                = bp.beautifulUnfoldingPlots('LeadingLepPt_' + '_folded')
+for syst in sysList:
+    if 'statbin' in syst: continue
+    variations[syst].Write()
+out.Close()
+
+scaleval = 1/vl.Lumi/1000 if vl.doxsec else 1
+nominal.Scale(scaleval)
+for key in variations:
+    variations[key].Scale(scaleval)
+
+nominal_withErrors  = ep.propagateHistoAsym(nominal, variations, True)
+plot                = bp.beautifulUnfoldingPlots('{var}_folded'.format(var = varName))
+plot.doRatio        = True
+plot.doFit          = False
 plot.plotspath      = "results/"
-nom.SetMarkerStyle(r.kFullCircle)
-nom.GetXaxis().SetNdivisions(505, True)
+nominal.SetMarkerStyle(r.kFullCircle)
+nominal.GetXaxis().SetNdivisions(505, True)
 
-nominal_withErrors[0].SetFillColorAlpha(r.kBlue,0.35)
+nominal_withErrors[0].SetFillColorAlpha(r.kBlue, 0.35)
 nominal_withErrors[0].SetLineColor(r.kBlue)
 nominal_withErrors[0].SetFillStyle(1001)
-plot.addHisto(nominal_withErrors, 'hist', 'Syst. unc.', 'F')
-plot.addHisto(nom, 'P,E,same', 'Data', 'P')
-plot.saveCanvas('TC')
 
-c = r.TCanvas()
-nom.Draw()
-variations['ttbar_Up'].Draw('same')
-raw_input('kk')
-del c 
-
-uncList = ep.getUncList(nom, variations, False)[:5]
-
-plot    = bp.beautifulUnfoldingPlots('LeadingLepPt_' + 'uncertainties_folded')
-uncList[0][1].Draw()
-
-if uncList[0][1].GetMaximum() < 0.5:
-    uncList[0][1].GetYaxis().SetRangeUser(0, 0.5)
+if doSanityCheck:
+    print '> Adding generated distribution with used software and others.'
+    if not os.path.isfile('temp/{var}_/ClosureTest_recobinning_{var}.root'.format(var = varName)):
+        raise RuntimeError('The rootfile with the generated information does not exist')
+    tmptfile = r.TFile.Open('temp/{var}_/ClosureTest_recobinning_{var}.root'.format(var = varName))
+    tru = copy.deepcopy(tmptfile.Get('tW'))
+    tru.SetLineWidth(2)
+    tru.SetLineColor(bp.colorMap[0])
+    if not os.path.isfile('temp/{var}_/ClosureTest_aMCatNLO_recobinning_{var}.root'.format(var = varName)):
+        raise RuntimeError('The rootfile with the generated information does not exist')
+    tmptfile2 = r.TFile.Open('temp/{var}_/ClosureTest_aMCatNLO_recobinning_{var}.root'.format(var = varName))
+    aMCatNLO = copy.deepcopy(tmptfile2.Get('tW'))
+    aMCatNLO.SetLineWidth(2)
+    aMCatNLO.SetLineColor(r.kAzure)
+    
+    if nominal_withErrors[0].GetMaximum() <= tru.GetMaximum(): nominal_withErrors[0].SetMaximum(tru.GetMaximum())
+    if nominal_withErrors[0].GetMaximum() <= aMCatNLO.GetMaximum(): nominal_withErrors[0].SetMaximum(aMCatNLO.GetMaximum())
+    
+    plot.addHisto(nominal_withErrors, 'hist',     'Total unc.',   'F', 'unc')
+    plot.addHisto(tru,                'L,same',   'tW Powheg',    'L', 'mc')
+    plot.addHisto(aMCatNLO,           'L,same',   'tW aMCatNLo',  'L', 'mc')
+    plot.addHisto(nominal,            'P,E,same', vl.labellegend, 'P', 'data')
+    plot.saveCanvas('TR')
+    tmptfile2.Close()
+    tmptfile.Close()
 else:
-    uncList[0][1].GetYaxis().SetRangeUser(0, 0.9)
-for i in range(5):
-    #uncList[i][1].SetLineColor(bp.colorMap[i])
-    uncList[i][1].SetLineColor(vl.colorMap[uncList[i][0]])
-    uncList[i][1].SetLineWidth( 2 )
-    plot.addHisto(uncList[i][1], 'H,same' if i else 'H', uncList[i][0], 'L')
+    plot.addHisto(nominal_withErrors, 'hist', 'Total unc.', 'F')
+    plot.addHisto(nominal, 'P,same', vl.labellegend, 'P', 'data')
+    plot.saveCanvas('TR')
+del plot
 
+
+uncList = ep.getUncList(nominal, variations, True, False)[:vl.nuncs]
+plot    = bp.beautifulUnfoldingPlots('{var}uncertainties_folded'.format(var = varName))
+uncList[0][1].Draw()
 
 incmax  = []
 for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
@@ -123,7 +200,7 @@ for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
         incmax.append(max([nominal_withErrors[0].GetBinError(bin), nominal_withErrors[1].GetBinError(bin)]))
 
 maxinctot = 0
-hincmax   = copy.deepcopy(nom.Clone('hincmax'))
+hincmax   = copy.deepcopy(nominal.Clone('hincmax'))
 for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
     hincmax.SetBinContent(bin, incmax[bin-1] / hincmax.GetBinContent(bin))
     hincmax.SetBinError(bin, 0.)
@@ -132,18 +209,22 @@ for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
 hincmax.SetLineColor(r.kBlack)
 hincmax.SetLineWidth( 2 )
 hincmax.SetFillColorAlpha(r.kBlue, 0.)
+
+if (maxinctot >= 0.9):
+    if maxinctot >= 5:
+        uncList[0][1].GetYaxis().SetRangeUser(0., 5.)
+    else:
+        uncList[0][1].GetYaxis().SetRangeUser(0., maxinctot + 0.1)
+else:
+    uncList[0][1].GetYaxis().SetRangeUser(0., 0.9)
+
+for i in range(vl.nuncs):
+    if 'statbin' not in uncList[i][0]: uncList[i][1].SetLineColor(vl.NewColorMap[uncList[i][0]])
+    else:                              uncList[i][1].SetLineColor(r.kAzure)
+    uncList[i][1].SetLineWidth( 2 )
+    plot.addHisto(uncList[i][1], 'hist,same' if i else 'hist', uncList[i][0], 'L')
+
 plot.addHisto(hincmax, 'hist,same', 'Total', 'L')
-
-
 plot.plotspath = "results/"
-plot.saveCanvas('TC')
-
-
-
-raw_input('')
-
-out = r.TFile.Open('mierdas.root','recreate')
-nom.Write()
-for syst in sysList:
-    variations[syst].Write()
-out.Close()
+plot.saveCanvas('TR')
+del plot
