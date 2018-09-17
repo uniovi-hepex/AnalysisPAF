@@ -32,6 +32,7 @@ if (len(sys.argv) > 1):
     else:
         print '> Sequential execution mode chosen'
         nCores      = 1
+        pathToTree  = "../../../TW_temp/"
 else:
     print "> Default choice of variable and minitrees\n"
     varName     = 'LeadingLepEta'
@@ -53,7 +54,8 @@ def GiveMeMyHistos(var):
     binning = array('f', vl.varList[var]['recobinning']) # For some reason, PyROOT requires that you create FIRST this object, then put it inside the PlotToPyC.
     p = r.PlotToPyC(r.TString(vl.varList[var]['var']), r.TString(StandardCut), r.TString('ElMu'), int(len(vl.varList[var]['recobinning']) - 1), binning, r.TString(var), r.TString(vl.varList[var]['xaxis']))
     p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
-    p.SetLimitFolder('./temp/{var}_/'.format(var = var));
+    p.SetLimitFolder('./temp/{var}_/'.format(var = var))
+    p.SetPlotFolder('./temp/{var}_/'.format(var = var))
     p.SetPathSignal(pathToTree);
     p.SetTitleY("Events")
     p.SetLumi(vl.Lumi)
@@ -117,7 +119,15 @@ def GiveMeMyHistos(var):
         hData.SetType(r.itData)
         hData.SetColor(r.kBlack)
         p.AddToHistos(hData)
-
+    
+    # Comprobation of the inexistance of no DY-related problems
+    elhistodedy = copy.deepcopy(p.GetHisto('DY'))
+    print "Entries:", elhistodedy.GetEntries()
+    print "Effective entries:", elhistodedy.GetEffectiveEntries()
+    for bin in range(1, elhistodedy.GetNbinsX()):
+        print "Bin", bin, elhistodedy.GetBinContent(bin)
+    del elhistodedy
+    
     # Modelling systematics
     p.AddSample("TW"                         ,  "tW",           r.itSys, 1, "JERUp");
     p.AddSample("TW_noFullyHadr_isrUp"       ,  "tW",           r.itSys, 1, "isrUp");
@@ -235,6 +245,8 @@ def GiveMeMyHistos(var):
     p.doSignal      = False;
     p.SetTitleY(r.TString(vl.varList[var]['yaxis']))
 
+    p.PrintYields("", "", "", "txt,tex")
+    p.PrintSystYields()
     p.NoShowVarName = True;
     p.SetOutputName("forCards_{var}".format(var = var));
     p.SaveHistograms();
@@ -244,8 +256,9 @@ def GiveMeMyHistos(var):
 
 
 print "> Beginning to produce histograms", "\n"
-tasks       = []
+
 if varName == 'All': tasks = [(el) for el in vl.varList['Names']['Variables']]
+else:                tasks = [(varName)]
 
 pool    = Pool(nCores)
 pool.map(GiveMeMyHistos, tasks)
