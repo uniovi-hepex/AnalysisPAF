@@ -18,7 +18,7 @@ class DataContainer:
         self.varresp            = varList.varList[var]['var_response']
         self.fileName           = fileName
         self.fileNameReponse    = fileNameReponse
-        self.listOfSysts        = [] 
+        self.listOfSysts        = []
         self.responseMatrices   = {}
         self.unfoldingInputs    = {}
         self.bkgs               = {}
@@ -35,7 +35,7 @@ class DataContainer:
                 if (sysName in varList.varList['Names']['specialSysts'] ): continue
                 self.listOfSysts.append(sysName)
                 self.unfoldingInputs[sysName] = copy.deepcopy(key.ReadObj())
-        if '' not in self.unfoldingInputs: 
+        if '' not in self.unfoldingInputs:
             raise RuntimeError("Unfolding inputs for nominal sample is missing")
         tfile.Close()
 
