@@ -13,6 +13,7 @@ asimov      = False     # Use of Asimov dataset or data
 unifttbar   = True      # Equally distributed ttbar or tW in the BDT disc. distr.
 doxsec      = True      # Show events or diff. cross section in final results
 doReg       = False     # Do or not do regularisation
+doArea      = False     # Do or not do area constraint
 
 # === OTHER IMPORTANT DEFINITIONS ===
 Lumi        = 35.864    # In femtobarns
