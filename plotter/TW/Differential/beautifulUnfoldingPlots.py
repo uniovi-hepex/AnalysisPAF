@@ -133,6 +133,9 @@ class beautifulUnfoldingPlots:
             else:
                 options = options.replace('nomin', '')
             
+            if 'comp' in name: 
+                histo.GetYaxis().SetRangeUser(0.9, 1.1)
+            
             if self.isLCurve:
                 for i in range(1, 25):
                     histo.GetXaxis().ChangeLabel(i, 45)
