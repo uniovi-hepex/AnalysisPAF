@@ -8,7 +8,7 @@ import os
 
 # === ESSENTIAL PARAMETERS OF THE ANALYSIS. CHANGING THIS APPLIES TO EVERYTHING. ===
 nBinsInBDT  = 4         # Number of bins in the BDT disc. distribution
-nuncs       = 7         # Number of uncs. shown in the relative uncertainty plots
+nuncs       = 10        # Number of uncs. shown in the relative uncertainty plots
 asimov      = False     # Use of Asimov dataset or data
 unifttbar   = True      # Equally distributed ttbar or tW in the BDT disc. distr.
 doxsec      = True      # Show events or diff. cross section in final results
@@ -671,4 +671,5 @@ NewColorMap = {
     'VVttbarV'              : r.kSpring-9,
     'Stat.'                 : r.kGreen+1,
     'Lumi'                  : r.kPink-5,
+    'asimov'                : r.kTeal,
 }
