@@ -105,9 +105,13 @@ def propagateHisto( nom, varDict, doEnv = False ):
     return out
 
 
-def propagateHistoAsym(nom, varDict, doEnv = False):
+def propagateHistoAsym(nom, varDict, doEnv = False, doAsimov = False):
     outUp   = nom.Clone(nom.GetName() + '_uncUp')
     outDown = nom.Clone(nom.GetName() + '_uncDown')
+    
+    if doAsimov:
+        if 'asimov' not in varDict: raise RuntimeError("Asimov variation has not been found in the dictionary provided to the error propagation procedure.")
+        hasimov = copy.deepcopy(varDict['asimov'])
     
     if doEnv:
         for bin in range(1, nom.GetNbinsX() + 1):
@@ -117,6 +121,7 @@ def propagateHistoAsym(nom, varDict, doEnv = False):
             tmpuncUp    = 0.
             tmpuncDown  = 0.
             tmpunc      = 0.
+            valasimov   = 0.
             for (key, histo) in varDict.iteritems():
                 if key in vl.varList['Names']['colorSysts']:
                     tmpunc  = tmpDict[key] - cont
@@ -125,15 +130,19 @@ def propagateHistoAsym(nom, varDict, doEnv = False):
                     elif tmpunc < tmpuncDown:
                         tmpuncDown  = tmpunc
                     del tmpDict[key]
-            outUp.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, +1), err, tmpuncUp]))
-            outDown.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, -1), err, abs(tmpuncDown)]))
+            if doAsimov: valasimov = hasimov.GetBinContent(bin)
+            if 'asimov' in varDict: del tmpDict['asimov']
+            outUp.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, +1), err, tmpuncUp, valasimov]))
+            outDown.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, -1), err, abs(tmpuncDown), valasimov]))
     else:
         for bin in range(1, nom.GetNbinsX() + 1):
             err     = outUp.GetBinError(bin)    # <==  Fit unc. taken here
             cont    = outUp.GetBinContent(bin)
             tmpDict = dict([(key, histo.GetBinContent(bin)) for (key, histo) in varDict.iteritems()])
-            outUp.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, +1), err]))
-            outDown.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, -1), err]))
+            if doAsimov: valasimov = hasimov.GetBinContent(bin)
+            if 'asimov' in varDict: del tmpDict['asimov']
+            outUp.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, +1), err, valasimov]))
+            outDown.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, -1), err, valasimov]))
     return [outUp, outDown]
 
 
@@ -159,13 +168,16 @@ def maximumHisto(histo1, histo2):
     return maxHist
 
 
-def getUncList(nom, varDict, doEnv = False, doFit = True):
-    if doFit: medDict = [('Fit', nom)]
-    else:     medDict = [('Stat.', nom)]
+def getUncList(nom, varDict, doEnv = False, doFit = True, doAsimov = False):
+    if doFit:    medDict = [('Fit', nom)]
+    else:        medDict = [('Stat.', nom)]
+    if doAsimov: medDict.append(( 'asimov', varDict['asimov'])) # Note: the asimov histogram must arrive here with the
+                                                                # proper uncs. in the bin errors and the nominal contents.
     outDict = []
     histUp  = [[] for i in range(nom.GetNbinsX())]
     histDown= [[] for i in range(nom.GetNbinsX())]
     for var in varDict:
+        if var == 'asimov': continue
         hist    = nom.Clone(nom.GetName() + var)
         variat  = 0.
         for bin in range(1, nom.GetNbinsX() + 1):
