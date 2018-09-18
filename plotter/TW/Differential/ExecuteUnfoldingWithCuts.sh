@@ -46,16 +46,16 @@ if [ "$variable" == "All" ]; then
         echo " "
     fi
   
-#     # 1) Get those histograms.
-#     echo "> Obtaining histograms per BDT's bin with profiling..."
-#     echo " "
-#     python getFinalCards.py "All" $ncores
+    # 1) Get those histograms.
+    echo "> Obtaining histograms per BDT's bin with profiling..."
+    echo " "
+    python getFinalCards.py "All" $ncores
         
     for ((i=0; i<=$uplimit; i++)); do
-#         # 2) Get the histograms for the closure test.
-#         echo "> Obtaining histograms for closure test..."
-#         echo " "
-#         python getClosureHistos.py ${unfoldingvars[i]} $4
+        # 2) Get the histograms for the closure test.
+        echo "> Obtaining histograms for closure test..."
+        echo " "
+        python getClosureHistos.py ${unfoldingvars[i]} $4
         # 3) Get the folded results.
         echo "> Obtaining folded results and signal information..."
         echo " "
