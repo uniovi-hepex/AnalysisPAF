@@ -20,18 +20,18 @@ doSanityCheck = True
 def getXsecForSys(syst, tfile):
     data = copy.deepcopy(tfile.Get('data_obs').Clone('data_%s'%syst))
 
-    sysString = ('_' + syst) if syst != '' else ''
+    sysString = ('_' + syst) if (syst != '' and 'asimov' not in syst) else ''
     ttbar     = tfile.Get('ttbar' + sysString )
     dy        = tfile.Get('DY'    + sysString )
     fakes     = tfile.Get('Non-WorZ' + sysString )
     vvttbarv  = tfile.Get('VVttbarV' + sysString )
     
     if not ttbar:
-        ttbar = tfile.Get('ttbar')
-    if not dy   :
-        dy    = tfile.Get('DY'   )
+        ttbar    = tfile.Get('ttbar')
+    if not dy:
+        dy       = tfile.Get('DY')
     if not fakes:
-        fakes = tfile.Get('Non-WorZ')
+        fakes    = tfile.Get('Non-WorZ')
     if not vvttbarv:
         vvttbarv = tfile.Get('VVttbarV')
 
@@ -80,7 +80,7 @@ def getLumiUnc(tfile):
     fakes     = copy.deepcopy(tfile.Get('Non-WorZ').Clone('fakes'))
     vvttbarv  = copy.deepcopy(tfile.Get('VVttbarV').Clone('vvttbarv'))
     
-    ttbar.Scale( 1 + vl.uncLumi)
+    ttbar.Scale(1 + vl.uncLumi)
     dy.Scale( 1 + vl.uncLumi)
     fakes.Scale( 1 + vl.uncLumi)
     vvttbarv.Scale( 1 + vl.uncLumi)
@@ -107,12 +107,8 @@ def getLumiUnc(tfile):
 
 tfile   = r.TFile.Open('temp/{var}_/forCards_{var}.root'.format(var = varName))
 sysList = []
-for i in range(len(vl.varList[varName]['recobinning'])):
-    for variat in ['Up', 'Down']:
-        for el in procs:
-            sysList.append("{pr}_ElMu_statbin{ind}{var}".format(pr = el, ind = i + 1, var = variat))
-sysList += vl.varList['Names']['ExpSysts'] + vl.varList['Names']['ttbarSysts'] + vl.varList['Names']['colorSysts'] + vl.varList['Names']['specialSysts'] + ['DSUp', 'LumiUp', 'LumiDown'] + vl.varList['Names']['NormSysts']
 
+sysList += vl.varList['Names']['ExpSysts'] + vl.varList['Names']['ttbarSysts'] + vl.varList['Names']['colorSysts'] + vl.varList['Names']['specialSysts'] + ['DSUp', 'LumiUp', 'LumiDown'] + vl.varList['Names']['NormSysts']
 
 nominal = getXsecForSys('', tfile)
 variations = {}
@@ -128,14 +124,23 @@ for proc, size in zip(procs2, [0.04, 0.5, 0.5, 0.5]):
 dataUp, dataDn         = getLumiUnc(tfile)
 variations['LumiUp']   = dataUp
 variations['LumiDown'] = dataDn
-
 tfile.Close()
+
+if vl.doxsec:
+    tfile      = r.TFile.Open('temp/{var}_/forCards_{var}_asimov.root'.format(var = varName))
+    asimov     = getXsecForSys('asimov', tfile)
+    tfile.Close()
+    #asimovDown = copy.deepcopy(asimovUp.Clone('data_asimovDown'))
+    #for bin in range(1, asimovDown.GetNbinsX() + 1):
+        #asimovDown.SetBinContent(bin, 2 * nominal.GetBinContent(bin) - asimovUp.GetBinContent(bin))
+    
 
 out = r.TFile.Open('temp/{var}_/cutOutput_{var}.root'.format(var = varName), 'recreate')
 nominal.Write()
-
+if vl.doxsec: 
+    asimov.Write()
+    #asimovDown.Write()
 for syst in sysList:
-    if 'statbin' in syst: continue
     variations[syst].Write()
 out.Close()
 
@@ -149,6 +154,7 @@ plot                = bp.beautifulUnfoldingPlots('{var}_folded'.format(var = var
 plot.doRatio        = True
 plot.doFit          = False
 plot.plotspath      = "results/"
+
 nominal.SetMarkerStyle(r.kFullCircle)
 nominal.GetXaxis().SetNdivisions(505, True)
 
