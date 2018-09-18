@@ -14,6 +14,7 @@ void Looper::SetFormulas(TString systematic){
   stringcut = CraftFormula(cut, chan, systematic, weight, tree, options);
   if(verbose) cout << "[Looper::SetFormulas] Formula: " << stringcut << endl;
   FormulasCuts = new TTreeFormula("Form_" + sampleName + "_" + systematic + "_cut", stringcut, tree);
+//   cout << FormulasCuts->GetTitle() << endl;
 
   //>>> var
   TString v = "";
@@ -32,6 +33,7 @@ void Looper::SetFormulas(TString systematic){
     }
     else vinst.push_back(0);
     FormulasVars = new TTreeFormula("Form_" + sampleName + "_" + systematic + "_var", stringvar, tree);
+//     cout << FormulasVars->GetTitle() << endl;
     vvars.push_back(FormulasVars);
   }
 }
