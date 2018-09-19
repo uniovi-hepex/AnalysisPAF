@@ -9,7 +9,8 @@ vl.SetUpWarnings()
 storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
 pathToTree  = "../../../TW_temp/";
 NameOfTree  = "Mini1j1t";
-StandardCut = "(TNJets == 1) && (TNBtags == 1) && (TIsSS == 0)";
+StandardCut = "Tpassreco == 1";
+ControlCut  = "TIsSS == 0 && TNJets == 1  && TNBtags == 1 && TnLooseCentral != 1";
 systlist    = "JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"
 if (len(sys.argv) > 1):
     nCores      = int(sys.argv[1])
@@ -37,8 +38,9 @@ r.gROOT.LoadMacro('../../Datacard.C+')
 r.gROOT.LoadMacro('../../PDFunc.C+')
 
 
-def plotvariable(var):
-    p = r.PlotToPy(r.TString(vl.varList[var]['var']), r.TString(StandardCut), r.TString('ElMu'), int(20), float(vl.varList[var]['recobinning'][0]), float(vl.varList[var]['recobinning'][-1]), r.TString(var), r.TString(vl.varList[var]['xaxis']))
+def plotvariable(tsk):
+    var, cut = tsk
+    p = r.PlotToPy(r.TString(vl.varList[var]['var']), r.TString(StandardCut) if cut == "signal" else r.TString(ControlCut), r.TString('ElMu'), int(20), float(vl.varList[var]['recobinning'][0]), float(vl.varList[var]['recobinning'][-1]), r.TString(var), r.TString(vl.varList[var]['xaxis']))
     p.SetPath(pathToTree); 
     p.SetTreeName(NameOfTree);
     p.SetPathSignal(pathToTree);
@@ -46,6 +48,8 @@ def plotvariable(var):
     p.SetLumi(vl.Lumi)
     p.verbose  = False;
     #p.verbose  = True;
+    p.SetChLabel("1j1t+e#mu" if cut == "signal" else "1j1t+e#mu+0j_{loose}")
+    p.SetChLabelPos(0.3, 0.85, -1)
     
     p.AddSample("TTbar_PowhegSemi",             "Non-W|Z",      r.itBkg, 413, systlist)
     p.AddSample("WJetsToLNu_MLM",               "Non-W|Z",      r.itBkg, 413, systlist)
@@ -63,10 +67,33 @@ def plotvariable(var):
     p.AddSample("DYJetsToLL_M5to50_MLM",        "DY",           r.itBkg, 852, systlist);
     p.AddSample("DYJetsToLL_M50_MLM",           "DY",           r.itBkg, 852, systlist);
     
-    p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itBkg, 633, systlist)
-
-    p.AddSample("TW",                           "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
-    p.AddSample("TbarW",                        "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist);
+    #p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itBkg, 633, systlist)
+    
+    specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TTbar_Powheg',          't#bar{t}',    r.itBkg, 633, systlist)
+    specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TTbar2L_powheg',        't#bar{t}',    r.itBkg, 633, systlist)
+    p.SetWeight('TWeight')
+    
+    #p.AddSample("TW",                           "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
+    #p.AddSample("TbarW",                        "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist);
+    
+    specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TW',                     'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
+    specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TW_noFullyHadr',         'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
+    specialweight = vl.n_tbarw/vl.sigma_tw/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TbarW',                  'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
+    specialweight = vl.n_tbarwnohad/vl.sigma_twnohad/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TbarW_noFullyHadr',      'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
+    p.SetWeight('TWeight')
+    
     
     p.AddSample("MuonEG",                       "Data",         r.itData);
     p.AddSample("SingleMuon",                   "Data",         r.itData);
@@ -154,7 +181,7 @@ def plotvariable(var):
     p.UseEnvelope("t#bar{t}", "GluonMoveCRTune,GluonMoveCRTune_erdON,Powheg_erdON,QCDbasedCRTune_erdON", "ColorReconnection");
     p.AddSymmetricHisto("t#bar{t}",  "JERUp");
     
-    pdf     = r.PDFToPy(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString(StandardCut), r.TString("ElMu"), r.TString(vl.varList[var]['var']), int(20), float(vl.varList[var]['recobinning'][0]), float(vl.varList[var]['recobinning'][-1]));
+    pdf     = r.PDFToPy(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString(StandardCut) if cut == "signal" else r.TString(ControlCut), r.TString("ElMu"), r.TString(vl.varList[var]['var']), int(20), float(vl.varList[var]['recobinning'][0]), float(vl.varList[var]['recobinning'][-1]));
     pdf.verbose = False
     pdf.SetLumi(vl.Lumi * 1000)
     hPDFUp  = pdf.GetSystHisto("up","pdf").CloneHisto();
@@ -180,12 +207,11 @@ def plotvariable(var):
     #p.SetLegendPosition(0.7, 0.45, 0.93, 0.92);
     p.SetLegendPosition('UR')
     p.SetLegendTextSize(0.0275)
-    p.SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/");
+    p.SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/" if cut == 'signal' else "/nfs/fanae/user/vrbouza/www/TFM/1j1t/control/");
     p.doYieldsInLeg = False;
     p.doSetLogy     = False;
     #p.doData        = False;
     p.doSignal      = False;
-    #p.SetTitleY(r.TString(vl.varList[var]['yaxis']))
     
     if "abs" in vl.varList[var]['var']:
         p.NoShowVarName = True;
@@ -196,9 +222,10 @@ def plotvariable(var):
     del p
     del pdf
 
-def plotcustomvariable(var):
+def plotcustomvariable(tsk):
+    var, cut = tsk
     binning = array('f', vl.varList[var]['recobinning']) # For some reason, ROOT requires that you create FIRST this object, then put it inside the PlotToPyC.
-    p = r.PlotToPyC(r.TString(vl.varList[var]['var']), r.TString(StandardCut), r.TString('ElMu'), int(len(vl.varList[var]['recobinning']) - 1), binning, r.TString(var), r.TString(vl.varList[var]['xaxis']))
+    p = r.PlotToPyC(r.TString(vl.varList[var]['var']), r.TString(StandardCut) if cut == "signal" else r.TString(ControlCut), r.TString('ElMu'), int(len(vl.varList[var]['recobinning']) - 1), binning, r.TString(var), r.TString(vl.varList[var]['xaxis']))
     p.SetPath(pathToTree);
     p.SetTreeName(NameOfTree);
     p.SetPathSignal(pathToTree);
@@ -206,6 +233,8 @@ def plotcustomvariable(var):
     p.SetLumi(vl.Lumi)
     p.verbose  = False;
     #p.verbose  = True;
+    p.SetChLabel("1j1t+e#mu" if cut == "signal" else "1j1t+e#mu+0j_{loose}")
+    p.SetChLabelPos(0.3, 0.85, -1)
     
     p.AddSample("TTbar_PowhegSemi",             "Non-W|Z",      r.itBkg, 413, systlist)
     p.AddSample("WJetsToLNu_MLM",               "Non-W|Z",      r.itBkg, 413, systlist)
@@ -314,7 +343,7 @@ def plotcustomvariable(var):
     p.UseEnvelope("t#bar{t}", "GluonMoveCRTune,GluonMoveCRTune_erdON,Powheg_erdON,QCDbasedCRTune_erdON", "ColorReconnection");
     p.AddSymmetricHisto("t#bar{t}",  "JERUp");
     
-    pdf     = r.PDFToPyC(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString(StandardCut), r.TString("ElMu"), r.TString(vl.varList[var]['var']), len(vl.varList[var]['recobinning']) - 1, binning, r.TString(''));
+    pdf     = r.PDFToPyC(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString(StandardCut) if cut == "signal" else r.TString(ControlCut), r.TString("ElMu"), r.TString(vl.varList[var]['var']), len(vl.varList[var]['recobinning']) - 1, binning, r.TString(''));
     pdf.verbose = False
     #pdf.verbose = True
     pdf.SetLumi(vl.Lumi * 1000)
@@ -343,7 +372,7 @@ def plotcustomvariable(var):
     #p.SetLegendPosition(0.7, 0.45, 0.93, 0.92);
     p.SetLegendPosition('UR')
     p.SetLegendTextSize(0.0275)
-    p.SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/");
+    p.SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/" if cut == 'signal' else "/nfs/fanae/user/vrbouza/www/TFM/1j1t/control/");
     p.doYieldsInLeg = False;
     p.doSetLogy     = False;
     #p.doData        = False;
@@ -362,9 +391,11 @@ def plotcustomvariable(var):
 if __name__ == '__main__':
     print "> Beginning to plot descriptive histograms", "\n"
     tasks = []
-    for v in vl.varList["Names"]["Variables"]:
-        tasks.append( (v) )
-    #tasks.append( ('LeadingLepPhi') )
+    #for v in vl.varList["Names"]["Variables"]:
+        #for ct in ['signal', 'control']:
+            #tasks.append( (v, ct) )
+    
+    tasks.append( ("nLooseCentral", "control") )
     
     pool = Pool(nCores)
     pool.map(plotvariable, tasks)
