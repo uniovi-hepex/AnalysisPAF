@@ -101,7 +101,7 @@ else
     # 3) Get the folded results.
     echo "> Obtaining folded results and signal information..."
     echo " "
-    python FinalExtracter.py ${unfoldingvars[i]} $4
+    python FinalExtracter.py $variable $4
     
     source ../pre_start.sh devel
     # 4) Do a proper unfolding as you were taught by your mother when you were a child.
