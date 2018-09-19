@@ -555,6 +555,19 @@ varList['DPhiSubLeadJetuncertainties'] = {
     'yaxis'       : 'Relative uncertainty'
 }
 
+varList['nLooseCentral'] = {
+    'xaxis'       : '#(j_{loose})',
+    'yaxis'       : 'd#sigma [pb]',
+    'genbinning'  : [0, 2, 4],
+    'recobinning' : [0, 1, 2, 3, 4],
+    'var'         : 'TnLooseCentral',
+    'var_response': 'nLooseCentral',
+    'var_gen'     : 'TnSergioLooseCentralJets',
+}
+varList['nLooseCentraluncertainties'] = {
+    'xaxis'       : varList['nLooseCentral']['xaxis'],
+    'yaxis'       : 'Relative uncertainty'
+}
 
 
 # Profiling things
