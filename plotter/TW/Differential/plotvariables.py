@@ -177,7 +177,9 @@ def plotvariable(var):
     
     p.SetCMSlabel("CMS");
     p.SetCMSmodeLabel("Preliminary");
-    p.SetLegendPosition(0.7, 0.45, 0.93, 0.92);
+    #p.SetLegendPosition(0.7, 0.45, 0.93, 0.92);
+    p.SetLegendPosition('UR')
+    p.SetLegendTextSize(0.0275)
     p.SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/");
     p.doYieldsInLeg = False;
     p.doSetLogy     = False;
@@ -338,7 +340,9 @@ def plotcustomvariable(var):
     
     p.SetCMSlabel("CMS");
     p.SetCMSmodeLabel("Preliminary");
-    p.SetLegendPosition(0.7, 0.45, 0.93, 0.92);
+    #p.SetLegendPosition(0.7, 0.45, 0.93, 0.92);
+    p.SetLegendPosition('UR')
+    p.SetLegendTextSize(0.0275)
     p.SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/");
     p.doYieldsInLeg = False;
     p.doSetLogy     = False;

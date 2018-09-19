@@ -11,7 +11,7 @@ systlist    = "JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"
 
 def getPostFit(task):
     indx, syst, dire = task
-    print '\n > Obtaining post and prefit plots of bin number {ind} of the syst. {sys}'.format(ind = indx, sys = syst)
+    print '\n > Obtaining post and prefit plots of bin number {ind} of the syst. {sys}'.format(ind = indx + 1, sys = syst)
     tfile = r.TFile.Open('temp/{var}_{syst}/fitdiagnostics/fitDiagnostics{var}_{syst}.root'.format(syst=syst,var=varName))
     print 'temp/{var}_{syst}/fitdiagnostics/fitDiagnostics{var}_{syst}.root'.format(syst=syst,var=varName)
     if not tfile:
@@ -71,10 +71,12 @@ def getPostFit(task):
     p.SetRatioMax( 1.4 );
     p.SetPadPlotMargins(vl.margins)
     p.SetPadRatioMargins(vl.marginsratio)
+    p.SetLegendPosition('DL')
+    p.SetLegendTextSize(0.0275)
     
     p.SetCMSlabel("CMS");
     p.SetCMSmodeLabel("Preliminary");
-    p.SetLegendPosition(0.7, 0.45, 0.93, 0.92);
+    #p.SetLegendPosition(0.7, 0.45, 0.93, 0.92);
     p.SetPlotFolder("results/{dire}/".format(dire=dire));
     p.doYieldsInLeg = False;
     p.doSetLogy     = False;

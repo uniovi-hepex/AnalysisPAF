@@ -24,6 +24,7 @@ if (len(sys.argv) > 1):
 print "    - The minitrees' path is:\n", minipath
 plotsoutputpath  = "/nfs/fanae/user/vrbouza/www/TFM/Unfolding/"
 matrixoutputpath = "./temp/"
+
 genCut      = "TWeight_normal * (Tpassgen == 1)"
 recoCut     = "TWeight_normal * (Tpassreco == 1)"
 Cut         = "TWeight * (Tpassgen == 1)"
@@ -39,18 +40,18 @@ purities    = []
 stabilities = []
 
 def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = ""):
-  '''This function obtains the response matrix combining info. of two trees.'''
+  '''This function obtains the response matrix combining information of two trees.'''
   hGen1 = r.TH1F('hGen1', '', nxb, xb)
   hGen2 = r.TH1F('hGen2', '', nxb, xb)
   
-  vnamegen    = vname # Generation name (without any kind of systematic thing)
-  vnamereco   = vname # Reconstruction name (can have a systematic-name tail)
+  vnamegen    = vl.varList[vname]['var_gen'] # Generation name (without any kind of systematic thing)
+  vnamereco   = vl.varList[vname]['var'] # Reconstruction name (can have a systematic-name tail)
   vnametitle  = vname # Name to be shown as the title (and name) of the histogram
   tmpcut      = Cut   # cuts
   
   if (sys in SysList[:3]):
     tmpcut      = tmpcut.replace("Tpassreco", "Tpassreco" + sys)
-    vnamereco   += sys
+    vnamereco   = vnamereco.replace(vname, vname + sys)
     vnametitle  = vnametitle.replace("_", "") + "_" + sys
   elif (sys in SysList[3:]):
     tmpcut      = tmpcut.replace("TWeight", "TWeight_" + sys)
@@ -60,11 +61,11 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = ""):
   else:
     vnametitle  = vnametitle.replace("_", "")
   
-  t1.Draw('TGen'+vnamegen+'>>hGen1', genCut)
-  t2.Draw('TGen'+vnamegen+'>>hGen2', genCut)
+  t1.Draw(vnamegen + '>>hGen1', genCut)
+  t2.Draw(vnamegen + '>>hGen2', genCut)
 
   hGen1.Add(hGen2)
-  hGen2 = None
+  del hGen2
   hGen  = r.TH2F('Gen', '', nxb, xb, nyb, yb)
   
   for i in range(0, nxb+2):
@@ -74,17 +75,17 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = ""):
   h1    = r.TH2F('h1', "Response matrix - " + vnametitle, nxb, xb, nyb, yb)
   h2    = r.TH2F('h2', '',                                nxb, xb, nyb, yb)
   
-  t1.Project('h1', "T" + vnamereco + ":TGen" + vnamegen, tmpcut)
-  t2.Project('h2', "T" + vnamereco + ":TGen" + vnamegen, tmpcut)
+  t1.Project('h1', vnamereco + ":" + vnamegen, tmpcut)
+  t2.Project('h2', vnamereco + ":" + vnamegen, tmpcut)
   h1.Add(h2)
-  h2      = None
+  del h2
   if (sys == ""):
     hReco1 = r.TH1F('hReco1', '', nyb, yb)
     hReco2 = r.TH1F('hReco2', '', nyb, yb)
-    t1.Draw('T' + vnamereco + '>>hReco1', recoCut)
-    t2.Draw('T' + vnamereco + '>>hReco2', recoCut)
+    t1.Draw(vnamereco + '>>hReco1', recoCut)
+    t2.Draw(vnamereco + '>>hReco2', recoCut)
     hReco1.Add(hReco2)
-    hReco2  = None
+    del hReco2
     
     tmppur  = []
     tmpstab = []
@@ -95,7 +96,7 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = ""):
       try: tmpstab.append(sumstab/hGen1.GetBinContent(i))
       except ZeroDivisionError: tmpstab.append(0)
     stabilities.append(tmpstab)
-    tmpstab = None
+    del tmpstab
     for j in range(1, nyb+1):
       sumpur  = 0
       for i in range(1, nxb+1):
@@ -103,18 +104,16 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = ""):
       try: tmppur.append(sumpur/hReco1.GetBinContent(j))
       except ZeroDivisionError: tmppur.append(0)
     purities.append(tmppur)
-    tmppur  = None
-    hReco1  = None
+    del tmppur, hReco1
   
-  hGen1 = None
   h1.Divide(hGen)
-  hGen  = None
+  del hGen, hGen1
   
   # Lower cutoff for the values of the matrices
-  for i in range(1, nxb+1):
-    for j in range(1, nyb+1):
-      if (h1.GetBinContent(i, j) < 1e-4):
-        h1.SetBinContent(i, j, 0)
+  #for i in range(1, nxb+1):
+    #for j in range(1, nyb+1):
+      #if (h1.GetBinContent(i, j) < 1e-4):
+        #h1.SetBinContent(i, j, 0)
   
   # Fixing the over and underflow bins to one.
   for i in range(1, nxb+1):
@@ -137,7 +136,7 @@ def GetFiducialHisto(t1, t2, vname, nyb, yb, sys = ""):
   '''This function obtains the fiducial histograms combining info. of two trees.'''
   
   vnametitle  = vname   # Name to be shown as the title (and name) of the histogram
-  vnamereco   = vname   # Reconstruction name (can have a systematic-name tail)
+  vnamereco   = vl.varList[vname]['var'] # Reconstruction name (can have a systematic-name tail)
   tmpcut      = fiduCut # cuts
   
   h1 = r.TH1F('h1', "Fiducial histogram - T" + vnametitle, nyb, yb)
@@ -145,7 +144,7 @@ def GetFiducialHisto(t1, t2, vname, nyb, yb, sys = ""):
   
   if (sys in SysList[:3]):
     tmpcut      = tmpcut.replace("Tpassreco", "Tpassreco" + sys)
-    vnamereco   += sys
+    vnamereco   = vnamereco.replace(vname, vname + sys)
     vnametitle  = vnametitle.replace("_", "") + "_" + sys
   elif (sys in SysList[3:]):
     tmpcut      = tmpcut.replace("TWeight", "TWeight_" + sys)
@@ -155,11 +154,11 @@ def GetFiducialHisto(t1, t2, vname, nyb, yb, sys = ""):
   else:
     vnametitle  = vnametitle.replace("_", "")
   
-  t1.Draw('T' + vnamereco + '>>h1', tmpcut)
-  t2.Draw('T' + vnamereco + '>>h2', tmpcut)
+  t1.Draw(vnamereco + '>>h1', tmpcut)
+  t2.Draw(vnamereco + '>>h2', tmpcut)
 
   h1.Add(h2)
-  h2 = None
+  del h2
   
   h1.SetXTitle("Fiducial events")
   h1.SetYTitle("Events")
@@ -182,7 +181,7 @@ def PrintResponseMatrix(htemp, vname, nxb, xb, xmin, xmax, nyb, yb, ymin, ymax, 
   r.gStyle.SetPaintTextFormat("4.1f")
   r.gPad.Update()
   c.SaveAs(plotsoutputpath + vname + "/R_T" + vnametitle + ".png")
-  c     = None
+  del c
   
   if (prof == 0):
     return
@@ -198,8 +197,7 @@ def PrintResponseMatrix(htemp, vname, nxb, xb, xmin, xmax, nyb, yb, ymin, ymax, 
   hX.SetYTitle("Mean Y/Reco. value")
   hX.Draw()
   c.SaveAs(plotsoutputpath + vname + "/P_X_T" + vnametitle + ".png")
-  c       = None
-  hX      = None
+  del c, hX
   
   c = r.TCanvas('c', "Y-Profiled response matrix - T" + vnametitle)
   hY.SetStats(False)
@@ -208,8 +206,7 @@ def PrintResponseMatrix(htemp, vname, nxb, xb, xmin, xmax, nyb, yb, ymin, ymax, 
   hY.Draw()
   r.gStyle.SetPaintTextFormat("4.1f")
   c.SaveAs(plotsoutputpath + vname + "/P_Y_T" + vnametitle + ".png")
-  c       = None
-  hY      = None
+  del c, hY
   
   hStab   = r.TH1F('hStab', '', nxb, xb)
   for i in range(1, hStab.GetNbinsX() + 1):
@@ -245,9 +242,7 @@ def PrintResponseMatrix(htemp, vname, nxb, xb, xmin, xmax, nyb, yb, ymin, ymax, 
   r.gPad.Update()
   
   c.SaveAs(plotsoutputpath + vname + "/PurStab_" + vnametitle + ".png")
-  c     = None
-  hStab = None
-  hPur  = None
+  del c, hStab, hPur
   return
 
 
@@ -264,7 +259,7 @@ def PrintFiducialHisto(htemp, vname):
   r.gStyle.SetPaintTextFormat("4.1f")
   r.gPad.Update()
   c.SaveAs(plotsoutputpath + vname + "/F_T" + vnametitle + ".png")
-  c     = None
+  del c
   return
 
 

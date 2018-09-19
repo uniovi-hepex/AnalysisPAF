@@ -16,12 +16,14 @@ else
     ncores=1
 fi
 
-unfoldingvars=("E_LLB" "LeadingJetE" "MT_LLMETB" "M_LLB" "M_LeadingB" "M_SubLeadingB" 
-               "MET" "MET_Phi" "LeadingJetPt" "LeadingJetEta" "LeadingJetPhi" 
-               "LeadingLepE" "LeadingLepPt" "LeadingLepPhi" "LeadingLepEta" 
-               "SubLeadingLepE" "SubLeadingLepPt" "SubLeadingLepPhi" "SubLeadingLepEta" 
-               "DilepPt" "DilepJetPt" "DilepMETJetPt" "HTtot")
+# unfoldingvars=("E_LLB" "LeadingJetE" "MT_LLMETB" "M_LLB" "M_LeadingB" "M_SubLeadingB" 
+#                "MET" "MET_Phi" "LeadingJetPt" "LeadingJetEta" "LeadingJetPhi" 
+#                "LeadingLepE" "LeadingLepPt" "LeadingLepPhi" "LeadingLepEta" 
+#                "SubLeadingLepE" "SubLeadingLepPt" "SubLeadingLepPhi" "SubLeadingLepEta" 
+#                "DilepPt" "DilepJetPt" "DilepMETJetPt" "HTtot" 
+#                "DilepMETJet1Pz" "LLMETBEta" "MSys" "Mll" "DPhiLL" "DPhiLeadJet" "DPhiSubLeadJet")
 
+unfoldingvars=("M_LeadingB" "M_SubLeadingB" "LeadingLepPt" "DilepMETJet1Pz" "LLMETBEta" "DPhiLL" "DPhiLeadJet" "DPhiSubLeadJet")
 # unfoldingvars=("LeadingJetPt" "LeadingLepPt")
 
 uplimit=$((${#unfoldingvars[@]}-1))

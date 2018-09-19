@@ -116,8 +116,10 @@ void TWAnalysis::Initialise(){
   mcJets          = std::vector<Jet>();
   vetoJets        = std::vector<Jet>();
   
-  SergioJets     = std::vector<Jet>();
-  SergioLeps     = std::vector<Lepton>();
+  SergioJets      = std::vector<Jet>();
+  SergioLooseCentralJets = std::vector<Jet>();
+  SergioLooseFwdJets     = std::vector<Jet>();
+  SergioLeps      = std::vector<Lepton>();
 }
 
 void TWAnalysis::InsideLoop(){
@@ -192,10 +194,10 @@ void TWAnalysis::InsideLoop(){
   
   if (genLeptons.size() >= 2){ // MIND THE POSSIBLE SKIM (on reco leptons) IN THE SAMPLE!!
 //     cout << (genLeptons.at(0).p.Pt()-genLeptons.at(1).p.Pt()) << endl;
-    if(genLeptons.at(0).isElec && genLeptons.at(1).isMuon) GenChannel = iElMu; 
-    if(genLeptons.at(0).isMuon && genLeptons.at(1).isElec) GenChannel = iElMu; 
-    if(genLeptons.at(0).isMuon && genLeptons.at(1).isMuon) GenChannel = iMuon; 
-    if(genLeptons.at(0).isElec && genLeptons.at(1).isElec) GenChannel = iElec; 
+    if(genLeptons.at(0).isElec && genLeptons.at(1).isMuon) GenChannel = iElMu;
+    if(genLeptons.at(0).isMuon && genLeptons.at(1).isElec) GenChannel = iElMu;
+    if(genLeptons.at(0).isMuon && genLeptons.at(1).isMuon) GenChannel = iMuon;
+    if(genLeptons.at(0).isElec && genLeptons.at(1).isElec) GenChannel = iElec;
     // cout << nFiduJets << " " <<  nFidubJets << endl;
     if ( ( (genLeptons.at(0).p.Pt() > 25 && genLeptons.at(1).p.Pt() > 20) || (genLeptons.at(0).p.Pt() > 20 && genLeptons.at(1).p.Pt() > 25) )
         && (TMath::Abs(genLeptons.at(0).p.Eta()) < 2.4 && TMath::Abs(genLeptons.at(1).p.Eta()) < 2.4) 
@@ -255,9 +257,16 @@ void TWAnalysis::InsideLoop(){
     TGenDilepJetPt      = (SergioLeps.at(0).p + SergioLeps.at(1).p + SergioJets.at(0).p).Pt();
     TGenDilepMETJetPt   = (SergioLeps.at(0).p + SergioLeps.at(1).p + SergioJets.at(0).p + SergioMET).Pt();
     TGenHTtot           = (SergioLeps.at(0).Pt() + SergioLeps.at(1).Pt() + SergioJets.at(0).Pt() + SergioMET.Pt());
+    TGenDilepMETJet1Pz  = (SergioLeps.at(0).p + SergioLeps.at(1).p + SergioJets.at(0).p + SergioMET).Pz();
+    TGenLLMETBEta       = (SergioLeps.at(0).p + SergioLeps.at(1).p + SergioJets.at(0).p + SergioMET).Eta();
+    TGenMSys            = (SergioLeps.at(0).p + SergioLeps.at(1).p + SergioJets.at(0).p + SergioMET).M();
+    TGenMll             = (SergioLeps.at(0).p + SergioLeps.at(1).p).M();
+    TGenDPhiLL          = SergioLeps.at(0).p.DeltaPhi(SergioLeps.at(1).p);
+    TGenDPhiLeadJet     = SergioLeps.at(0).p.DeltaPhi(SergioJets.at(0).p);
+    TGenDPhiSubLeadJet  = SergioLeps.at(1).p.DeltaPhi(SergioJets.at(0).p);
     
     if (((SergioLeps.at(0).p + SergioLeps.at(1).p).M() > 20) && (SergioLeps.at(0).p.Pt() > 25) && 
-        (GenChannel == iElMu) && !TGenIsSS) {
+        (GenChannel == iElMu) && !TGenIsSS && (nSergioLooseCentralJets == 1)) {
       Tpassgen        = 1;
     }
   }
@@ -325,16 +334,16 @@ void TWAnalysis::InsideLoop(){
     
     CalculateTWVariables();
     
-    if ((TNJets == 1) && (TNBtags == 1)) {
+    if ((TNJets == 1) && (TNBtags == 1) && (nLooseCentral == 1)) {
       Tpassreco = 1;
     }
-    if ((TNJetsJESUp == 1) && (TNBtagsJESUp == 1)) {
+    if ((TNJetsJESUp == 1) && (TNBtagsJESUp == 1) && (nLooseCentralJESUp == 1)) {
       TpassrecoJESUp = 1;
     }
-    if ((TNJetsJESDown == 1) && (TNBtagsJESDown == 1)) {
+    if ((TNJetsJESDown == 1) && (TNBtagsJESDown == 1) && (nLooseCentralJESDown == 1)) {
       TpassrecoJESDown = 1;
     }
-    if ((TNJetsJERUp == 1) && (TNBtagsJERUp == 1)) {
+    if ((TNJetsJERUp == 1) && (TNBtagsJERUp == 1) && (nLooseCentralJERUp == 1)) {
       TpassrecoJERUp = 1;
     }
   }
@@ -362,7 +371,14 @@ void TWAnalysis::InsideLoop(){
   if (TSubLeadingLepE      >= 250)         TSubLeadingLepE      = 249.999;
   if (TSubLeadingLepPhi    >= TMath::Pi()) TSubLeadingLepPhi    = 3.14;
   if (TSubLeadingLepEta    >= 2.4)         TSubLeadingLepEta    = 2.39999;
-    
+  if (DilepMETJet1Pz       >= 600)         DilepMETJet1Pz       = 599.999;
+  if (TLLMETBEta           >= 5)           TLLMETBEta           = 4.999;
+  if (MSys                 >= 700)         MSys                 = 699.999;
+  if (TMll                 >= 300)         TMll                 = 299.999;
+  if (TDPhiLL              >= TMath::Pi()) TDPhiLL              = 3.14;
+  if (TDPhiLeadJet         >= TMath::Pi()) TDPhiLeadJet         = 3.14;
+  if (TDPhiSubLeadJet      >= TMath::Pi()) TDPhiSubLeadJet      = 3.14;
+  
   if (TMET                 < 0)            TMET                 = 0;
   if (TM_LeadingB          < 0)            TM_LeadingB          = 0;
   if (TM_SubLeadingB       < 0)            TM_SubLeadingB       = 0;
@@ -385,6 +401,197 @@ void TWAnalysis::InsideLoop(){
   if (TSubLeadingLepE      < 0)            TSubLeadingLepE      = 0;
   if (TSubLeadingLepPhi    < -TMath::Pi()) TSubLeadingLepPhi    = -3.14;
   if (TSubLeadingLepEta    < -2.4)         TSubLeadingLepEta    = -2.39999;
+  if (DilepMETJet1Pz       < -600)         DilepMETJet1Pz       = -599.999;
+  if (TLLMETBEta           < -5)           TLLMETBEta           = -4.999;
+  if (MSys                 < 0)            MSys                 = 0;
+  if (TMll                 < 0)            TMll                 = 0;
+  if (TDPhiLL              < -TMath::Pi()) TDPhiLL              = -3.14;
+  if (TDPhiLeadJet         < -TMath::Pi()) TDPhiLeadJet         = -3.14;
+  if (TDPhiSubLeadJet      < -TMath::Pi()) TDPhiSubLeadJet      = -3.14;
+  
+  
+  if (TMETJESUp                 >= 200)         TMETJESUp                 = 199.999;
+  if (TM_LeadingBJESUp          >= 400)         TM_LeadingBJESUp          = 399.999;
+  if (TM_SubLeadingBJESUp       >= 300)         TM_SubLeadingBJESUp       = 299.999;
+  if (TM_LLBJESUp               >= 500)         TM_LLBJESUp               = 499.999;
+  if (TMT_LLMETBJESUp           >= 600)         TMT_LLMETBJESUp           = 599.999;
+  if (TE_LLBJESUp               >= 700)         TE_LLBJESUp               = 699.999;
+  if (TDilepPtJESUp             >= 200)         TDilepPtJESUp             = 199.999;
+  if (DilepJetPtJESUp           >= 200)         DilepJetPtJESUp           = 199.999;
+  if (DilepMETJetPtJESUp        >= 150)         DilepMETJetPtJESUp        = 149.999;
+  if (THTtotJESUp               >= 600)         THTtotJESUp               = 599.999;
+  if (TLeadingJetPtJESUp        >= 300)         TLeadingJetPtJESUp        = 299.999;
+  if (TLeadingJetEJESUp         >= 400)         TLeadingJetEJESUp         = 399.999;
+  if (TLeadingJetPhiJESUp       >= TMath::Pi()) TLeadingJetPhiJESUp       = 3.14;
+  if (TLeadingJetEtaJESUp       >= 2.4)         TLeadingJetEtaJESUp       = 2.39999;
+  if (TLeadingLepPtJESUp        >= 250)         TLeadingLepPtJESUp        = 249.999;
+  if (TLeadingLepEJESUp         >= 350)         TLeadingLepEJESUp         = 349.999;
+  if (TLeadingLepPhiJESUp       >= TMath::Pi()) TLeadingLepPhiJESUp       = 3.14;
+  if (TLeadingLepEtaJESUp       >= 2.4)         TLeadingLepEtaJESUp       = 2.39999;
+  if (TSubLeadingLepPtJESUp     >= 150)         TSubLeadingLepPtJESUp     = 149.999;
+  if (TSubLeadingLepEJESUp      >= 250)         TSubLeadingLepEJESUp      = 249.999;
+  if (TSubLeadingLepPhiJESUp    >= TMath::Pi()) TSubLeadingLepPhiJESUp    = 3.14;
+  if (TSubLeadingLepEtaJESUp    >= 2.4)         TSubLeadingLepEtaJESUp    = 2.39999;
+  if (DilepMETJet1PzJESUp       >= 600)         DilepMETJet1PzJESUp       = 599.999;
+  if (TLLMETBEtaJESUp           >= 5)           TLLMETBEtaJESUp           = 4.999;
+  if (MSysJESUp                 >= 700)         MSysJESUp                 = 699.999;
+  if (TMllJESUp                 >= 300)         TMllJESUp                 = 299.999;
+  if (TDPhiLLJESUp              >= TMath::Pi()) TDPhiLLJESUp              = 3.14;
+  if (TDPhiLeadJetJESUp         >= TMath::Pi()) TDPhiLeadJetJESUp         = 3.14;
+  if (TDPhiSubLeadJetJESUp      >= TMath::Pi()) TDPhiSubLeadJetJESUp      = 3.14;
+    
+  if (TMETJESUp                 < 0)            TMETJESUp                 = 0;
+  if (TM_LeadingBJESUp          < 0)            TM_LeadingBJESUp          = 0;
+  if (TM_SubLeadingBJESUp       < 0)            TM_SubLeadingBJESUp       = 0;
+  if (TM_LLBJESUp               < 0)            TM_LLBJESUp               = 0;
+  if (TMT_LLMETBJESUp           < 0)            TMT_LLMETBJESUp           = 0;
+  if (TE_LLBJESUp               < 0)            TE_LLBJESUp               = 0;
+  if (TDilepPtJESUp             < 0)            TDilepPtJESUp             = 0;
+  if (DilepJetPtJESUp           < 0)            DilepJetPtJESUp           = 0;
+  if (DilepMETJetPtJESUp        < 0)            DilepMETJetPtJESUp        = 0;
+  if (THTtotJESUp               < 0)            THTtotJESUp               = 0;
+  if (TLeadingJetPtJESUp        < 0)            TLeadingJetPtJESUp        = 0;
+  if (TLeadingJetEJESUp         < 0)            TLeadingJetEJESUp         = 0;
+  if (TLeadingJetPhiJESUp       < -TMath::Pi()) TLeadingJetPhiJESUp       = -3.14;
+  if (TLeadingJetEtaJESUp       < -2.4)         TLeadingJetEtaJESUp       = -2.39999;
+  if (TLeadingLepPtJESUp        < 0)            TLeadingLepPtJESUp        = 0;
+  if (TLeadingLepEJESUp         < 0)            TLeadingLepEJESUp         = 0;
+  if (TLeadingLepPhiJESUp       < -TMath::Pi()) TLeadingLepPhiJESUp       = -3.14;
+  if (TLeadingLepEtaJESUp       < -2.4)         TLeadingLepEtaJESUp       = -2.39999;
+  if (TSubLeadingLepPtJESUp     < 0)            TSubLeadingLepPtJESUp     = 0;
+  if (TSubLeadingLepEJESUp      < 0)            TSubLeadingLepEJESUp      = 0;
+  if (TSubLeadingLepPhiJESUp    < -TMath::Pi()) TSubLeadingLepPhiJESUp    = -3.14;
+  if (TSubLeadingLepEtaJESUp    < -2.4)         TSubLeadingLepEtaJESUp    = -2.39999;
+  if (DilepMETJet1PzJESUp       < -600)         DilepMETJet1PzJESUp       = -599.999;
+  if (TLLMETBEtaJESUp           < -5)           TLLMETBEtaJESUp           = -4.999;
+  if (MSysJESUp                 < 0)            MSysJESUp                 = 0;
+  if (TMllJESUp                 < 0)            TMllJESUp                 = 0;
+  if (TDPhiLLJESUp              < -TMath::Pi()) TDPhiLLJESUp              = -3.14;
+  if (TDPhiLeadJetJESUp         < -TMath::Pi()) TDPhiLeadJetJESUp         = -3.14;
+  if (TDPhiSubLeadJetJESUp      < -TMath::Pi()) TDPhiSubLeadJetJESUp      = -3.14;
+  
+  
+  if (TMETJESDown                 >= 200)         TMETJESDown                 = 199.999;
+  if (TM_LeadingBJESDown          >= 400)         TM_LeadingBJESDown          = 399.999;
+  if (TM_SubLeadingBJESDown       >= 300)         TM_SubLeadingBJESDown       = 299.999;
+  if (TM_LLBJESDown               >= 500)         TM_LLBJESDown               = 499.999;
+  if (TMT_LLMETBJESDown           >= 600)         TMT_LLMETBJESDown           = 599.999;
+  if (TE_LLBJESDown               >= 700)         TE_LLBJESDown               = 699.999;
+  if (TDilepPtJESDown             >= 200)         TDilepPtJESDown             = 199.999;
+  if (DilepJetPtJESDown           >= 200)         DilepJetPtJESDown           = 199.999;
+  if (DilepMETJetPtJESDown        >= 150)         DilepMETJetPtJESDown        = 149.999;
+  if (THTtotJESDown               >= 600)         THTtotJESDown               = 599.999;
+  if (TLeadingJetPtJESDown        >= 300)         TLeadingJetPtJESDown        = 299.999;
+  if (TLeadingJetEJESDown         >= 400)         TLeadingJetEJESDown         = 399.999;
+  if (TLeadingJetPhiJESDown       >= TMath::Pi()) TLeadingJetPhiJESDown       = 3.14;
+  if (TLeadingJetEtaJESDown       >= 2.4)         TLeadingJetEtaJESDown       = 2.39999;
+  if (TLeadingLepPtJESDown        >= 250)         TLeadingLepPtJESDown        = 249.999;
+  if (TLeadingLepEJESDown         >= 350)         TLeadingLepEJESDown         = 349.999;
+  if (TLeadingLepPhiJESDown       >= TMath::Pi()) TLeadingLepPhiJESDown       = 3.14;
+  if (TLeadingLepEtaJESDown       >= 2.4)         TLeadingLepEtaJESDown       = 2.39999;
+  if (TSubLeadingLepPtJESDown     >= 150)         TSubLeadingLepPtJESDown     = 149.999;
+  if (TSubLeadingLepEJESDown      >= 250)         TSubLeadingLepEJESDown      = 249.999;
+  if (TSubLeadingLepPhiJESDown    >= TMath::Pi()) TSubLeadingLepPhiJESDown    = 3.14;
+  if (TSubLeadingLepEtaJESDown    >= 2.4)         TSubLeadingLepEtaJESDown    = 2.39999;
+  if (DilepMETJet1PzJESDown       >= 600)         DilepMETJet1PzJESDown       = 599.999;
+  if (TLLMETBEtaJESDown           >= 5)           TLLMETBEtaJESDown           = 4.999;
+  if (MSysJESDown                 >= 700)         MSysJESDown                 = 699.999;
+  if (TMllJESDown                 >= 300)         TMllJESDown                 = 299.999;
+  if (TDPhiLLJESDown              >= TMath::Pi()) TDPhiLLJESDown              = 3.14;
+  if (TDPhiLeadJetJESDown         >= TMath::Pi()) TDPhiLeadJetJESDown         = 3.14;
+  if (TDPhiSubLeadJetJESDown      >= TMath::Pi()) TDPhiSubLeadJetJESDown      = 3.14;
+    
+  if (TMETJESDown                 < 0)            TMETJESDown                 = 0;
+  if (TM_LeadingBJESDown          < 0)            TM_LeadingBJESDown          = 0;
+  if (TM_SubLeadingBJESDown       < 0)            TM_SubLeadingBJESDown       = 0;
+  if (TM_LLBJESDown               < 0)            TM_LLBJESDown               = 0;
+  if (TMT_LLMETBJESDown           < 0)            TMT_LLMETBJESDown           = 0;
+  if (TE_LLBJESDown               < 0)            TE_LLBJESDown               = 0;
+  if (TDilepPtJESDown             < 0)            TDilepPtJESDown             = 0;
+  if (DilepJetPtJESDown           < 0)            DilepJetPtJESDown           = 0;
+  if (DilepMETJetPtJESDown        < 0)            DilepMETJetPtJESDown        = 0;
+  if (THTtotJESDown               < 0)            THTtotJESDown               = 0;
+  if (TLeadingJetPtJESDown        < 0)            TLeadingJetPtJESDown        = 0;
+  if (TLeadingJetEJESDown         < 0)            TLeadingJetEJESDown         = 0;
+  if (TLeadingJetPhiJESDown       < -TMath::Pi()) TLeadingJetPhiJESDown       = -3.14;
+  if (TLeadingJetEtaJESDown       < -2.4)         TLeadingJetEtaJESDown       = -2.39999;
+  if (TLeadingLepPtJESDown        < 0)            TLeadingLepPtJESDown        = 0;
+  if (TLeadingLepEJESDown         < 0)            TLeadingLepEJESDown         = 0;
+  if (TLeadingLepPhiJESDown       < -TMath::Pi()) TLeadingLepPhiJESDown       = -3.14;
+  if (TLeadingLepEtaJESDown       < -2.4)         TLeadingLepEtaJESDown       = -2.39999;
+  if (TSubLeadingLepPtJESDown     < 0)            TSubLeadingLepPtJESDown     = 0;
+  if (TSubLeadingLepEJESDown      < 0)            TSubLeadingLepEJESDown      = 0;
+  if (TSubLeadingLepPhiJESDown    < -TMath::Pi()) TSubLeadingLepPhiJESDown    = -3.14;
+  if (TSubLeadingLepEtaJESDown    < -2.4)         TSubLeadingLepEtaJESDown    = -2.39999;
+  if (DilepMETJet1PzJESDown       < -600)         DilepMETJet1PzJESDown       = -599.999;
+  if (TLLMETBEtaJESDown           < -5)           TLLMETBEtaJESDown           = -4.999;
+  if (MSysJESDown                 < 0)            MSysJESDown                 = 0;
+  if (TMllJESDown                 < 0)            TMllJESDown                 = 0;
+  if (TDPhiLLJESDown              < -TMath::Pi()) TDPhiLLJESDown              = -3.14;
+  if (TDPhiLeadJetJESDown         < -TMath::Pi()) TDPhiLeadJetJESDown         = -3.14;
+  if (TDPhiSubLeadJetJESDown      < -TMath::Pi()) TDPhiSubLeadJetJESDown      = -3.14;
+  
+  
+  if (TMETJERUp                 >= 200)         TMETJERUp                 = 199.999;
+  if (TM_LeadingBJERUp          >= 400)         TM_LeadingBJERUp          = 399.999;
+  if (TM_SubLeadingBJERUp       >= 300)         TM_SubLeadingBJERUp       = 299.999;
+  if (TM_LLBJERUp               >= 500)         TM_LLBJERUp               = 499.999;
+  if (TMT_LLMETBJERUp           >= 600)         TMT_LLMETBJERUp           = 599.999;
+  if (TE_LLBJERUp               >= 700)         TE_LLBJERUp               = 699.999;
+  if (TDilepPtJERUp             >= 200)         TDilepPtJERUp             = 199.999;
+  if (DilepJetPtJERUp           >= 200)         DilepJetPtJERUp           = 199.999;
+  if (DilepMETJetPtJERUp        >= 150)         DilepMETJetPtJERUp        = 149.999;
+  if (THTtotJERUp               >= 600)         THTtotJERUp               = 599.999;
+  if (TLeadingJetPtJERUp        >= 300)         TLeadingJetPtJERUp        = 299.999;
+  if (TLeadingJetEJERUp         >= 400)         TLeadingJetEJERUp         = 399.999;
+  if (TLeadingJetPhiJERUp       >= TMath::Pi()) TLeadingJetPhiJERUp       = 3.14;
+  if (TLeadingJetEtaJERUp       >= 2.4)         TLeadingJetEtaJERUp       = 2.39999;
+  if (TLeadingLepPtJERUp        >= 250)         TLeadingLepPtJERUp        = 249.999;
+  if (TLeadingLepEJERUp         >= 350)         TLeadingLepEJERUp         = 349.999;
+  if (TLeadingLepPhiJERUp       >= TMath::Pi()) TLeadingLepPhiJERUp       = 3.14;
+  if (TLeadingLepEtaJERUp       >= 2.4)         TLeadingLepEtaJERUp       = 2.39999;
+  if (TSubLeadingLepPtJERUp     >= 150)         TSubLeadingLepPtJERUp     = 149.999;
+  if (TSubLeadingLepEJERUp      >= 250)         TSubLeadingLepEJERUp      = 249.999;
+  if (TSubLeadingLepPhiJERUp    >= TMath::Pi()) TSubLeadingLepPhiJERUp    = 3.14;
+  if (TSubLeadingLepEtaJERUp    >= 2.4)         TSubLeadingLepEtaJERUp    = 2.39999;
+  if (DilepMETJet1PzJERUp       >= 600)         DilepMETJet1PzJERUp       = 599.999;
+  if (TLLMETBEtaJERUp           >= 5)           TLLMETBEtaJERUp           = 4.999;
+  if (MSysJERUp                 >= 700)         MSysJERUp                 = 699.999;
+  if (TMllJERUp                 >= 300)         TMllJERUp                 = 299.999;
+  if (TDPhiLLJERUp              >= TMath::Pi()) TDPhiLLJERUp              = 3.14;
+  if (TDPhiLeadJetJERUp         >= TMath::Pi()) TDPhiLeadJetJERUp         = 3.14;
+  if (TDPhiSubLeadJetJERUp      >= TMath::Pi()) TDPhiSubLeadJetJERUp      = 3.14;
+    
+  if (TMETJERUp                 < 0)            TMETJERUp                 = 0;
+  if (TM_LeadingBJERUp          < 0)            TM_LeadingBJERUp          = 0;
+  if (TM_SubLeadingBJERUp       < 0)            TM_SubLeadingBJERUp       = 0;
+  if (TM_LLBJERUp               < 0)            TM_LLBJERUp               = 0;
+  if (TMT_LLMETBJERUp           < 0)            TMT_LLMETBJERUp           = 0;
+  if (TE_LLBJERUp               < 0)            TE_LLBJERUp               = 0;
+  if (TDilepPtJERUp             < 0)            TDilepPtJERUp             = 0;
+  if (DilepJetPtJERUp           < 0)            DilepJetPtJERUp           = 0;
+  if (DilepMETJetPtJERUp        < 0)            DilepMETJetPtJERUp        = 0;
+  if (THTtotJERUp               < 0)            THTtotJERUp               = 0;
+  if (TLeadingJetPtJERUp        < 0)            TLeadingJetPtJERUp        = 0;
+  if (TLeadingJetEJERUp         < 0)            TLeadingJetEJERUp         = 0;
+  if (TLeadingJetPhiJERUp       < -TMath::Pi()) TLeadingJetPhiJERUp       = -3.14;
+  if (TLeadingJetEtaJERUp       < -2.4)         TLeadingJetEtaJERUp       = -2.39999;
+  if (TLeadingLepPtJERUp        < 0)            TLeadingLepPtJERUp        = 0;
+  if (TLeadingLepEJERUp         < 0)            TLeadingLepEJERUp         = 0;
+  if (TLeadingLepPhiJERUp       < -TMath::Pi()) TLeadingLepPhiJERUp       = -3.14;
+  if (TLeadingLepEtaJERUp       < -2.4)         TLeadingLepEtaJERUp       = -2.39999;
+  if (TSubLeadingLepPtJERUp     < 0)            TSubLeadingLepPtJERUp     = 0;
+  if (TSubLeadingLepEJERUp      < 0)            TSubLeadingLepEJERUp      = 0;
+  if (TSubLeadingLepPhiJERUp    < -TMath::Pi()) TSubLeadingLepPhiJERUp    = -3.14;
+  if (TSubLeadingLepEtaJERUp    < -2.4)         TSubLeadingLepEtaJERUp    = -2.39999;
+  if (DilepMETJet1PzJERUp       < -600)         DilepMETJet1PzJERUp       = -599.999;
+  if (TLLMETBEtaJERUp           < -5)           TLLMETBEtaJERUp           = -4.999;
+  if (MSysJERUp                 < 0)            MSysJERUp                 = 0;
+  if (TMllJERUp                 < 0)            TMllJERUp                 = 0;
+  if (TDPhiLLJERUp              < -TMath::Pi()) TDPhiLLJERUp              = -3.14;
+  if (TDPhiLeadJetJERUp         < -TMath::Pi()) TDPhiLeadJetJERUp         = -3.14;
+  if (TDPhiSubLeadJetJERUp      < -TMath::Pi()) TDPhiSubLeadJetJERUp      = -3.14;
+  
   
   if (TGenMET              >= 200)         TGenMET              = 199.999;
   if (TGenM_LeadingB       >= 400)         TGenM_LeadingB       = 399.999;
@@ -408,6 +615,13 @@ void TWAnalysis::InsideLoop(){
   if (TGenSubLeadingLepE   >= 250)         TGenSubLeadingLepE   = 249.999;
   if (TGenSubLeadingLepPhi >= TMath::Pi()) TGenSubLeadingLepPhi = 3.14;
   if (TGenSubLeadingLepEta >= 2.4)         TGenSubLeadingLepEta = 2.39999;
+  if (TGenDilepMETJet1Pz   >= 600)         TGenDilepMETJet1Pz   = 599.999;
+  if (TGenLLMETBEta        >= 5)           TGenLLMETBEta        = 4.999;
+  if (TGenMSys             >= 700)         TGenMSys             = 699.999;
+  if (TGenMll              >= 300)         TGenMll              = 299.999;
+  if (TGenDPhiLL           >= TMath::Pi()) TGenDPhiLL           = 3.14;
+  if (TGenDPhiLeadJet      >= TMath::Pi()) TGenDPhiLeadJet      = 3.14;
+  if (TGenDPhiSubLeadJet   >= TMath::Pi()) TGenDPhiSubLeadJet   = 3.14;
   
   if (TGenMET              < 0)            TGenMET              = 0;
   if (TGenM_LeadingB       < 0)            TGenM_LeadingB       = 0;
@@ -431,6 +645,13 @@ void TWAnalysis::InsideLoop(){
   if (TGenSubLeadingLepE   < 0)            TGenSubLeadingLepE   = 0;
   if (TGenSubLeadingLepPhi < -TMath::Pi()) TGenSubLeadingLepPhi = -3.14;
   if (TGenSubLeadingLepEta < -2.4)         TGenSubLeadingLepEta = -2.39999;
+  if (TGenDilepMETJet1Pz   < -600)         TGenDilepMETJet1Pz   = -599.999;
+  if (TGenLLMETBEta        < -5)           TGenLLMETBEta        = -4.999;
+  if (TGenMSys             < 0)            TGenMSys             = 0;
+  if (TGenMll              < 0)            TGenMll              = 0;
+  if (TGenDPhiLL           < -TMath::Pi()) TGenDPhiLL           = -3.14;
+  if (TGenDPhiLeadJet      < -TMath::Pi()) TGenDPhiLeadJet      = -3.14;
+  if (TGenDPhiSubLeadJet   < -TMath::Pi()) TGenDPhiSubLeadJet   = -3.14;
   
   //   Setting dummy value for gen events that don't pass the reco selection for
   // unfolding procedures.
@@ -458,6 +679,13 @@ void TWAnalysis::InsideLoop(){
     TSubLeadingLepE   = 99999;
     TSubLeadingLepPhi = 99999;
     TSubLeadingLepEta = 99999;
+    DilepMETJet1Pz    = 99999;
+    TLLMETBEta        = 99999;
+    MSys              = 99999;
+    TMll              = 99999;
+    TDPhiLL           = 99999;
+    TDPhiLeadJet      = 99999;
+    TDPhiSubLeadJet   = 99999;
   }
   if (Tpassgen && !TpassrecoJESUp) {
     TMETJESUp              = 99999;
@@ -483,6 +711,13 @@ void TWAnalysis::InsideLoop(){
     TSubLeadingLepEJESUp   = 99999;
     TSubLeadingLepPhiJESUp = 99999;
     TSubLeadingLepEtaJESUp = 99999;
+    DilepMETJet1PzJESUp    = 99999;
+    TLLMETBEtaJESUp        = 99999;
+    MSysJESUp              = 99999;
+    TMllJESUp              = 99999;
+    TDPhiLLJESUp           = 99999;
+    TDPhiLeadJetJESUp      = 99999;
+    TDPhiSubLeadJetJESUp   = 99999;
   }
   if (Tpassgen && !TpassrecoJESDown) {
     TMETJESDown              = 99999;
@@ -508,6 +743,13 @@ void TWAnalysis::InsideLoop(){
     TSubLeadingLepEJESDown   = 99999;
     TSubLeadingLepPhiJESDown = 99999;
     TSubLeadingLepEtaJESDown = 99999;
+    DilepMETJet1PzJESDown    = 99999;
+    TLLMETBEtaJESDown        = 99999;
+    MSysJESDown              = 99999;
+    TMllJESDown              = 99999;
+    TDPhiLLJESDown           = 99999;
+    TDPhiLeadJetJESDown      = 99999;
+    TDPhiSubLeadJetJESDown   = 99999;
   }
   if (Tpassgen && !TpassrecoJERUp) {
     TMETJERUp              = 99999;
@@ -533,6 +775,13 @@ void TWAnalysis::InsideLoop(){
     TSubLeadingLepEJERUp   = 99999;
     TSubLeadingLepPhiJERUp = 99999;
     TSubLeadingLepEtaJERUp = 99999;
+    DilepMETJet1PzJERUp    = 99999;
+    TLLMETBEtaJERUp        = 99999;
+    MSysJERUp              = 99999;
+    TMllJERUp              = 99999;
+    TDPhiLLJERUp           = 99999;
+    TDPhiLeadJetJERUp      = 99999;
+    TDPhiSubLeadJetJERUp   = 99999;
   }
   
   if (Tpassgen || Tpassreco || TpassrecoJESUp || TpassrecoJESDown || TpassrecoJERUp) { // If needed, filling.
@@ -927,26 +1176,51 @@ void TWAnalysis::GetGenJetVariables(std::vector<Jet> genJets, std::vector<Jet> m
   if (! gPar.Contains("Unfolding")) return;
   
   nSergioGenJets = Get<Int_t>("nGenJetSergio");
+  nSergiobJets = 0; nSergioJets = 0; nSergioLooseCentralbJets = 0; nSergioLooseFwdJets = 0;
   
   for (Int_t i = 0; i < nSergioGenJets; i++) {
     tpJ.SetPtEtaPhiM(Get<Float_t>("GenJetSergio_pt",i), Get<Float_t>("GenJetSergio_eta",i), Get<Float_t>("GenJetSergio_phi",i), Get<Float_t>("GenJetSergio_mass",i));
     tJ = Jet(tpJ, 0, 1, 0);
     tJ.isBtag = (TMath::Abs(Get<Int_t>("GenJetSergio_pdgId", i)) == 5);
-    if (tJ.p.Pt() > 30 && TMath::Abs(tJ.p.Eta()) < 2.4 && Cleaning(tJ, SergioLeps, 0.4)) {
-      SergioJets.push_back(tJ);
-      if (tJ.isBtag) nSergiobJets++;
+    if (tJ.p.Pt() > 20) {
+      if (TMath::Abs(tJ.p.Eta()) < 2.4 && Cleaning(tJ, SergioLeps, 0.4)) {
+        SergioLooseCentralJets.push_back(tJ);
+        if (tJ.isBtag) nSergioLooseCentralbJets++;
+        if (tJ.p.Pt() > 30) {
+          SergioJets.push_back(tJ);
+          if (tJ.isBtag) nSergiobJets++;
+        }
+      }
+      else if (TMath::Abs(tJ.p.Eta()) < 4.7) {
+        SergioLooseFwdJets.push_back(tJ);
+      }
     }
   }
   
-  nSergioJets = SergioJets.size();
+  nSergioJets             = SergioJets.size();
+  nSergioLooseCentralJets = SergioLooseCentralJets.size();
+  nSergioLooseFwdJets     = SergioLooseFwdJets.size();
   
+  if (nSergioLooseCentralJets >= 2) {
+    TGenSubLeadingLooseCentralJetPt   = SergioLooseCentralJets.at(1).Pt();
+    TGenSubLeadingLooseCentralJetE    = SergioLooseCentralJets.at(1).E();
+    TGenSubLeadingLooseCentralJetPhi  = SergioLooseCentralJets.at(1).Phi();
+    TGenSubLeadingLooseCentralJetEta  = SergioLooseCentralJets.at(1).Eta();
+  }
   if (nSergioJets >= 1) {
     TGenLeadingJetPt   = SergioJets.at(0).Pt();
     TGenLeadingJetE    = SergioJets.at(0).E();
     TGenLeadingJetPhi  = SergioJets.at(0).Phi();
     TGenLeadingJetEta  = SergioJets.at(0).Eta();
   }
+  if (nSergioLooseFwdJets >= 1) {
+    TGenLeadingLooseFwdJetPt  = SergioLooseFwdJets.at(0).Pt();
+    TGenLeadingLooseFwdJetE   = SergioLooseFwdJets.at(0).E();
+    TGenLeadingLooseFwdJetPhi = SergioLooseFwdJets.at(0).Phi();
+    TGenLeadingLooseFwdJetEta = SergioLooseFwdJets.at(0).Eta();
+  }
 }
+
 
 void TWAnalysis::GetGenLepVariables() {
   if(gIsData) return;
@@ -1399,55 +1673,75 @@ void TWAnalysis::SetTWVariables()
   fMini1j1t->Branch("TNBtagsJESUp"  ,        &TNBtagsJESUp,          "TNBtagsJESUp/I"   );
   fMini1j1t->Branch("TNBtagsJESDown",        &TNBtagsJESDown,        "TNBtagsJESDown/I" );
   fMini1j1t->Branch("TNBtagsJERUp",          &TNBtagsJERUp,          "TNBtagsJERUp/I" );
+  fMini1j1t->Branch("TnLooseCentral"        ,&nLooseCentral      ,   "TnLooseCentral/I"       );
+  fMini1j1t->Branch("TnLooseCentralJESUp"   ,&nLooseCentralJESUp  ,  "TnLooseCentralJESUp/I"       );
+  fMini1j1t->Branch("TnLooseCentralJESDown" ,&nLooseCentralJESDown,  "TnLooseCentralJESDown/I"       );
+  fMini1j1t->Branch("TnLooseCentralJERUp"   ,&nLooseCentralJERUp  ,  "TnLooseCentralJERUp/I"       );
+  fMini1j1t->Branch("TnBLooseCentral"       ,&nBLooseCentral      ,  "TnBLooseCentral/I"       );
+  fMini1j1t->Branch("TnBLooseCentralJESUp"  ,&nBLooseCentralJESUp  , "TnBLooseCentralJESUp/I"       );
+  fMini1j1t->Branch("TnBLooseCentralJESDown",&nBLooseCentralJESDown, "TnBLooseCentralJESDown/I");
+  fMini1j1t->Branch("TnBLooseCentralJERUp"  ,&nBLooseCentralJERUp  , "TnBLooseCentralJERUp/I");
+  fMini1j1t->Branch("TnLooseFwd"            ,&nLooseFwd            , "TnLooseFwd/I"          );
+  fMini1j1t->Branch("TnLooseFwdJESUp"       ,&nLooseFwdJESUp        ,"TnLooseFwdJESUp/I"     );
+  fMini1j1t->Branch("TnLooseFwdJESDown"     ,&nLooseFwdJESDown      ,"TnLooseFwdJESDown/I"   );
+  fMini1j1t->Branch("TnLooseFwdJERUp"       ,&nLooseFwdJERUp        ,"TnLooseFwdJERUp/I"     );
 
-  fMini1j1t->Branch("TnLooseCentral"        , &nLooseCentral      , "TnLooseCentral/F"       );
-  fMini1j1t->Branch("TnBTotal"              , &nBTotal            , "TnBTotal/F"             );
   fMini1j1t->Branch("TDilepMETJetPt"        , &DilepMETJetPt      , "TDilepMETJetPt/F"       );
   fMini1j1t->Branch("TTJet1_pt"             , &TJet1_pt           , "TTJet1_pt/F"            );
   fMini1j1t->Branch("TTJetLooseCentralpt"   , &TJetLooseCentralpt , "TTJetLooseCentralpt/F"  );
+  fMini1j1t->Branch("TTJetLooseFwdpt"       , &TJetLooseFwdpt     , "TTJetLooseFwdpt/F"  );
   fMini1j1t->Branch("TDilepMETJetPt_THTtot" , &DilepmetjetOverHT  , "TDilepMETJetPt_THTtot/F");
   fMini1j1t->Branch("TMSys"                 , &MSys               , "TMSys/F"                );
   fMini1j1t->Branch("TC_jll"                , &C_jll              , "TC_jll/F"               );
   fMini1j1t->Branch("THTLepOverHT"          , &HTLepOverHT        , "THTLepOverHT/F"         );
   fMini1j1t->Branch("TDilepJetPt"           , &DilepJetPt         , "TDilepJetPt/F"          );
+  fMini1j1t->Branch("TDilepMETJet1Pz",        &DilepMETJet1Pz,      "DilepMETJet1Pz/F"       );
+  fMini1j1t->Branch("TLLMETBEta",             &TLLMETBEta,          "TLLMETBEta/F"           );
+  fMini1j1t->Branch("TMll",                   &TMll,                "TMll/F"           );
 
-  fMini1j1t->Branch("TnLooseCentralJESUp"        , &nLooseCentralJESUp      , "TnLooseCentralJESUp/F"       );
-  fMini1j1t->Branch("TnBTotalJESUp"              , &nBTotalJESUp            , "TnBTotalJESUp/F"             );
   fMini1j1t->Branch("TDilepMETJetPtJESUp"        , &DilepMETJetPtJESUp      , "TDilepMETJetPtJESUp/F"       );
   fMini1j1t->Branch("TTHTtotJESUp"               , &THTtotJESUp             , "TTHTtotJESUp/F"              );
   fMini1j1t->Branch("TTJet1_ptJESUp"             , &TJet1_ptJESUp           , "TTJet1_ptJESUp/F"            );
   fMini1j1t->Branch("TTJetLooseCentralptJESUp"   , &TJetLooseCentralptJESUp , "TTJetLooseCentralptJESUp/F"  );
+  fMini1j1t->Branch("TTJetLooseFwdptJESUp"       , &TJetLooseFwdptJESUp     , "TTJetLooseFwdptJESUp/F"  );
   fMini1j1t->Branch("TDilepMETJetPt_THTtotJESUp" , &DilepmetjetOverHTJESUp  , "TDilepMETJetPt_THTtotJESUp/F");
-  fMini1j1t->Branch("TMSys"                      , &MSysJESUp               , "TMSysJESUp/F"                );
+  fMini1j1t->Branch("TMSysJESUp"                 , &MSysJESUp               , "TMSysJESUp/F"                );
   fMini1j1t->Branch("TC_jllJESUp"                , &C_jllJESUp              , "TC_jllJESUp/F"               );
   fMini1j1t->Branch("THTLepOverHTJESUp"          , &HTLepOverHTJESUp        , "THTLepOverHTJESUp/F"         );
   fMini1j1t->Branch("TDilepJetPtJESUp"           , &DilepJetPtJESUp         , "TDilepJetPtJESUp/F"          );
+  fMini1j1t->Branch("TDilepMETJet1PzJESUp",        &DilepMETJet1PzJESUp,      "DilepMETJet1PzJESUp/F"       );
+  fMini1j1t->Branch("TLLMETBEtaJESUp",             &TLLMETBEtaJESUp,          "TLLMETBEtaJESUp/F"           );
+  fMini1j1t->Branch("TMllJESUp",                   &TMllJESUp,                "TMllJESUp/F"                 );
 
 
-  fMini1j1t->Branch("TnLooseCentralJESDown"        , &nLooseCentralJESDown      , "TnLooseCentralJESDown/F"       );
-  fMini1j1t->Branch("TnBTotalJESDown"              , &nBTotalJESDown            , "TnBTotalJESDown/F"             );
   fMini1j1t->Branch("TDilepMETJetPtJESDown"        , &DilepMETJetPtJESDown      , "TDilepMETJetPtJESDown/F"       );
   fMini1j1t->Branch("TTHTtotJESDown"               , &THTtotJESDown             , "TTHTtotJESDown/F"              );
   fMini1j1t->Branch("TTJet1_ptJESDown"             , &TJet1_ptJESDown           , "TTJet1_ptJESDown/F"            );
   fMini1j1t->Branch("TTJetLooseCentralptJESDown"   , &TJetLooseCentralptJESDown , "TTJetLooseCentralptJESDown/F"  );
+  fMini1j1t->Branch("TTJetLooseFwdptJESDown"       , &TJetLooseFwdptJESDown     , "TTJetLooseFwdptJESDown/F"  );
   fMini1j1t->Branch("TDilepMETJetPt_THTtotJESDown" , &DilepmetjetOverHTJESDown  , "TDilepMETJetPt_THTtotJESDown/F");
-  fMini1j1t->Branch("TMSys"                        , &MSysJESDown               , "TMSysJESDown/F"                );
+  fMini1j1t->Branch("TMSysJESDown"                 , &MSysJESDown               , "TMSysJESDown/F"                );
   fMini1j1t->Branch("TC_jllJESDown"                , &C_jllJESDown              , "TC_jllJESDown/F"               );
   fMini1j1t->Branch("THTLepOverHTJESDown"          , &HTLepOverHTJESDown        , "THTLepOverHTJESDown/F"         );
   fMini1j1t->Branch("TDilepJetPtJESDown"           , &DilepJetPtJESDown         , "TDilepJetPtJESDown/F"          );
+  fMini1j1t->Branch("TDilepMETJet1PzJESDown",        &DilepMETJet1PzJESDown,      "DilepMETJet1PzJESDown/F"       );
+  fMini1j1t->Branch("TLLMETBEtaJESDown",             &TLLMETBEtaJESDown,          "TLLMETBEtaJESDown/F"           );
+  fMini1j1t->Branch("TMllJESDown",                   &TMllJESDown,                "TMllJESDown/F"                 );
 
 
-  fMini1j1t->Branch("TnLooseCentralJERUp"        , &nLooseCentralJERUp      , "TnLooseCentralJERUp/F"       );
-  fMini1j1t->Branch("TnBTotalJERUp"              , &nBTotalJERUp            , "TnBTotalJERUp/F"             );
   fMini1j1t->Branch("TDilepMETJetPtJERUp"        , &DilepMETJetPtJERUp      , "TDilepMETJetPtJERUp/F"       );
   fMini1j1t->Branch("TTHTtotJERUp"               , &THTtotJERUp             , "TTHTtotJERUp/F"              );
   fMini1j1t->Branch("TTJet1_ptJERUp"             , &TJet1_ptJERUp           , "TTJet1_ptJERUp/F"            );
   fMini1j1t->Branch("TTJetLooseCentralptJERUp"   , &TJetLooseCentralptJERUp , "TTJetLooseCentralptJERUp/F"  );
+  fMini1j1t->Branch("TTJetLooseFwdptJERUp"       , &TJetLooseFwdptJERUp     , "TTJetLooseFwdptJERUp/F"  );
   fMini1j1t->Branch("TDilepMETJetPt_THTtotJERUp" , &DilepmetjetOverHTJERUp  , "TDilepMETJetPt_THTtotJERUp/F");
-  fMini1j1t->Branch("TMSys"                      , &MSysJERUp               , "TMSysJERUp/F"                );
+  fMini1j1t->Branch("TMSysJERUp"                 , &MSysJERUp               , "TMSysJERUp/F"                );
   fMini1j1t->Branch("TC_jllJERUp"                , &C_jllJERUp              , "TC_jllJERUp/F"               );
   fMini1j1t->Branch("THTLepOverHTJERUp"          , &HTLepOverHTJERUp        , "THTLepOverHTJERUp/F"         );
   fMini1j1t->Branch("TDilepJetPtJERUp"           , &DilepJetPtJERUp         , "TDilepJetPtJERUp/F"          );
+  fMini1j1t->Branch("TDilepMETJet1PzJERUp",        &DilepMETJet1PzJERUp,      "DilepMETJet1PzJERUp/F"       );
+  fMini1j1t->Branch("TLLMETBEtaJERUp",             &TLLMETBEtaJERUp,          "TLLMETBEtaJERUp/F"           );
+  fMini1j1t->Branch("TMllJERUp",                   &TMllJERUp,                "TMllJERUp/F"                 );
   
   // Things added by me (WOLOLO):
   fMini1j1t->Branch("TMET",                    &TMET,                       "TMET/F");
@@ -1474,6 +1768,9 @@ void TWAnalysis::SetTWVariables()
   fMini1j1t->Branch("TWeight_normal",          &TWeight_normal,             "TWeight_normal/F");
   fMini1j1t->Branch("Tpassreco",               &Tpassreco,                  "Tpassreco/B");
   fMini1j1t->Branch("TBDT",                    &TBDT,                       "TBDT/F");
+  fMini1j1t->Branch("TDPhiLL",                 &TDPhiLL,                    "TDPhiLL/F");
+  fMini1j1t->Branch("TDPhiLeadJet",            &TDPhiLeadJet,               "TDPhiLeadJet/F");
+  fMini1j1t->Branch("TDPhiSubLeadJet",         &TDPhiSubLeadJet,            "TDPhiSubLeadJet/F");
   
   fMini1j1t->Branch("TMETJESUp",               &TMETJESUp,                  "TMETJESUp/F");
   fMini1j1t->Branch("TMET_PhiJESUp",           &TMET_PhiJESUp,              "TMET_PhiJESUp/F");
@@ -1498,6 +1795,9 @@ void TWAnalysis::SetTWVariables()
   fMini1j1t->Branch("TSubLeadingLepEtaJESUp",  &TSubLeadingLepEtaJESUp,     "TSubLeadingLepEtaJESUp/F");
   fMini1j1t->Branch("TpassrecoJESUp",          &TpassrecoJESUp,             "TpassrecoJESUp/B");
   fMini1j1t->Branch("TBDTJESUp",               &TBDTJESUp,                  "TBDTJESUp/F");
+  fMini1j1t->Branch("TDPhiLLJESUp",            &TDPhiLLJESUp,               "TDPhiLLJESUp/F");
+  fMini1j1t->Branch("TDPhiLeadJetJESUp",       &TDPhiLeadJetJESUp,          "TDPhiLeadJetJESUp/F");
+  fMini1j1t->Branch("TDPhiSubLeadJetJESUp",    &TDPhiSubLeadJetJESUp,       "TDPhiSubLeadJetJESUp/F");
   
   fMini1j1t->Branch("TMETJESDown",             &TMETJESDown,                "TMETJESDown/F");
   fMini1j1t->Branch("TMET_PhiJESDown",         &TMET_PhiJESDown,            "TMET_PhiJESDown/F");
@@ -1522,6 +1822,9 @@ void TWAnalysis::SetTWVariables()
   fMini1j1t->Branch("TSubLeadingLepEtaJESDown",&TSubLeadingLepEtaJESDown,   "TSubLeadingLepEtaJESDown/F");
   fMini1j1t->Branch("TpassrecoJESDown",        &TpassrecoJESDown,           "TpassrecoJESDown/B");
   fMini1j1t->Branch("TBDTJESDown",             &TBDTJESDown,                "TBDTJESDown/F");
+  fMini1j1t->Branch("TDPhiLLJESDown",          &TDPhiLLJESDown,             "TDPhiLLJESDown/F");
+  fMini1j1t->Branch("TDPhiLeadJetJESDown",     &TDPhiLeadJetJESDown,        "TDPhiLeadJetJESDown/F");
+  fMini1j1t->Branch("TDPhiSubLeadJetJESDown",  &TDPhiSubLeadJetJESDown,     "TDPhiSubLeadJetJESDown/F");
   
   fMini1j1t->Branch("TMETJERUp",               &TMETJERUp,                  "TMETJERUp/F");
   fMini1j1t->Branch("TMET_PhiJERUp",           &TMET_PhiJERUp,              "TMET_PhiJERUp/F");
@@ -1546,9 +1849,17 @@ void TWAnalysis::SetTWVariables()
   fMini1j1t->Branch("TSubLeadingLepEtaJERUp",  &TSubLeadingLepEtaJERUp,     "TSubLeadingLepEtaJERUp/F");
   fMini1j1t->Branch("TpassrecoJERUp",          &TpassrecoJERUp,             "TpassrecoJERUp/B");
   fMini1j1t->Branch("TBDTJERUp",               &TBDTJERUp,                  "TBDTJERUp/F");
+  fMini1j1t->Branch("TDPhiLLJERUp",            &TDPhiLLJERUp,               "TDPhiLLJERUp/F");
+  fMini1j1t->Branch("TDPhiLeadJetJERUp",       &TDPhiLeadJetJERUp,          "TDPhiLeadJetJERUp/F");
+  fMini1j1t->Branch("TDPhiSubLeadJetJERUp",    &TDPhiSubLeadJetJERUp,       "TDPhiSubLeadJetJERUp/F");
   
   if (gPar.Contains("Unfolding")) {
     fMini1j1t->Branch("Tpassgen",                &Tpassgen,                   "Tpassgen/B");
+    fMini1j1t->Branch("TnSergioJets",            &nSergioJets,                "TnSergioJets/I");
+    fMini1j1t->Branch("TnSergiobJets",           &nSergiobJets,               "TnSergiobJets/I");
+    fMini1j1t->Branch("TnSergioLooseCentralJets",&nSergioLooseCentralJets,    "TnSergioLooseCentralJets/I");
+    fMini1j1t->Branch("TnSergioLooseCentralbJets",&nSergioLooseCentralbJets,  "TnSergioLooseCentralbJets/I");
+    fMini1j1t->Branch("TnSergioLooseFwdJets",    &nSergioLooseFwdJets,        "TnSergioLooseFwdJets/I");
     fMini1j1t->Branch("TGenChannel",             &GenChannel,                 "GenChannel/I");
     fMini1j1t->Branch("TGenIsSS",                &TGenIsSS,                   "TGenIsSS/B");
     fMini1j1t->Branch("TGenMET",                 &TGenMET,                    "TGenMET/F");
@@ -1566,6 +1877,14 @@ void TWAnalysis::SetTWVariables()
     fMini1j1t->Branch("TGenLeadingJetE",         &TGenLeadingJetE,            "TGenLeadingJetE/F");
     fMini1j1t->Branch("TGenLeadingJetPhi",       &TGenLeadingJetPhi,          "TGenLeadingJetPhi/F");
     fMini1j1t->Branch("TGenLeadingJetEta",       &TGenLeadingJetEta,          "TGenLeadingJetEta/F");
+    fMini1j1t->Branch("TGenSubLeadingLooseCentralJetPt", &TGenSubLeadingLooseCentralJetPt, "TGenSubLeadingLooseCentralJetPt/F");
+    fMini1j1t->Branch("TGenSubLeadingLooseCentralJetE",  &TGenSubLeadingLooseCentralJetE,  "TGenSubLeadingLooseCentralJetE/F");
+    fMini1j1t->Branch("TGenSubLeadingLooseCentralJetPhi",&TGenSubLeadingLooseCentralJetPhi,"TGenSubLeadingLooseCentralJetPhi/F");
+    fMini1j1t->Branch("TGenSubLeadingLooseCentralJetEta",&TGenSubLeadingLooseCentralJetEta,"TGenSubLeadingLooseCentralJetEta/F");
+    fMini1j1t->Branch("TGenLeadingLooseFwdJetPt", &TGenLeadingLooseFwdJetPt,  "TGenLeadingLooseFwdJetPt/F");
+    fMini1j1t->Branch("TGenLeadingLooseFwdJetE",  &TGenLeadingLooseFwdJetE,   "TGenLeadingLooseFwdJetE/F");
+    fMini1j1t->Branch("TGenLeadingLooseFwdJetPhi",&TGenLeadingLooseFwdJetPhi, "TGenLeadingLooseFwdJetPhi/F");
+    fMini1j1t->Branch("TGenLeadingLooseFwdJetEta",&TGenLeadingLooseFwdJetEta, "TGenLeadingLooseFwdJetEta/F");
     fMini1j1t->Branch("TGenLeadingLepPt",        &TGenLeadingLepPt,           "TGenLeadingLepPt/F");
     fMini1j1t->Branch("TGenLeadingLepE",         &TGenLeadingLepE,            "TGenLeadingLepE/F");
     fMini1j1t->Branch("TGenLeadingLepPhi",       &TGenLeadingLepPhi,          "TGenLeadingLepPhi/F");
@@ -1574,6 +1893,13 @@ void TWAnalysis::SetTWVariables()
     fMini1j1t->Branch("TGenSubLeadingLepE",      &TGenSubLeadingLepE,         "TGenSubLeadingLepE/F");
     fMini1j1t->Branch("TGenSubLeadingLepPhi",    &TGenSubLeadingLepPhi,       "TGenSubLeadingLepPhi/F");
     fMini1j1t->Branch("TGenSubLeadingLepEta",    &TGenSubLeadingLepEta,       "TGenSubLeadingLepEta/F");
+    fMini1j1t->Branch("TGenDilepMETJet1Pz",      &TGenDilepMETJet1Pz,         "TGenDilepMETJet1Pz/F");
+    fMini1j1t->Branch("TGenLLMETBEta",           &TGenLLMETBEta,              "TGenLLMETBEta/F");
+    fMini1j1t->Branch("TGenMSys",                &TGenMSys,                   "TGenMSys/F");
+    fMini1j1t->Branch("TGenMll",                 &TGenMll,                    "TGenMll/F");
+    fMini1j1t->Branch("TGenDPhiLL",              &TGenDPhiLL,                 "TGenDPhiLL/F");
+    fMini1j1t->Branch("TGenDPhiLeadJet",         &TGenDPhiLeadJet,            "TGenDPhiLeadJet/F");
+    fMini1j1t->Branch("TGenDPhiSubLeadJet",      &TGenDPhiSubLeadJet,         "TGenDPhiSubLeadJet/F");
   }
   
   // End of things added by me
@@ -1699,12 +2025,30 @@ void TWAnalysis::ReSetTWVariables()
   DPtDilep_MET   = -99;
   DPtLep1_MET    = -99;
   DilepMETJet1Pz = -99;
+  DilepMETJet1PzJESUp = -99;
+  DilepMETJet1PzJESDown = -99;
+  DilepMETJet1PzJERUp = -99;
   nLooseCentral  = -99;
-  nLooseFwd      = -99;
+  nLooseCentralJESUp  = -99;
+  nLooseCentralJESDown  = -99;
+  nLooseCentralJERUp  = -99;
+  nLooseFwd        = -99;
+  nLooseFwdJESUp   = -99;
+  nLooseFwdJESDown = -99;
+  nLooseFwdJERUp   = -99;
   nBLooseCentral = -99;
-  nBLooseFwd     = -99;
+  nBLooseCentralJESUp = -99;
+  nBLooseFwdJESDown   = -99;
+  nBLooseCentralJERUp = -99;
   TJet2csv       = -99;
   MSys           = -99;
+  MSysJESUp      = -99;
+  MSysJESDown    = -99;
+  MSysJERUp      = -99;
+  TMll           = -99;
+  TMllJESUp      = -99;
+  TMllJESDown    = -99;
+  TMllJERUp      = -99;
   TJetLoosept    = -99;
   TJetLooseCentralpt = -99;
   C_jll          = -99;
@@ -1775,28 +2119,54 @@ void TWAnalysis::ReSetTWVariables()
   TE_LLB          = -99;
   TMT_LLMETB      = -99;
   TM_LLB          = -99;
+  TLLMETBEta      = -99;
   TM_LeadingBJESUp     = -99;
   TM_SubLeadingBJESUp  = -99;
   TE_LLBJESUp          = -99;
   TMT_LLMETBJESUp      = -99;
   TM_LLBJESUp          = -99;
   TDilepPtJESUp        = -99;
+  TLLMETBEtaJESUp      = -99;
   TM_LeadingBJESDown     = -99;
   TM_SubLeadingBJESDown  = -99;
   TE_LLBJESDown          = -99;
   TMT_LLMETBJESDown      = -99;
   TM_LLBJESDown          = -99;
   TDilepPtJESDown        = -99;
+  TLLMETBEtaJESDown      = -99;
   TM_LeadingBJERUp     = -99;
   TM_SubLeadingBJERUp  = -99;
   TE_LLBJERUp          = -99;
   TMT_LLMETBJERUp      = -99;
   TM_LLBJERUp          = -99;
   TDilepPtJERUp        = -99;
+  TLLMETBEtaJERUp      = -99;
+  
+  TDPhiLL              = -99.;
+  TDPhiLLJESUp         = -99.;
+  TDPhiLLJESDown       = -99.;
+  TDPhiLLJERUp         = -99.;
+  TDPhiLeadJet         = -99.;
+  TDPhiLeadJetJESUp    = -99.;
+  TDPhiLeadJetJESDown  = -99.;
+  TDPhiLeadJetJERUp    = -99.;
+  TDPhiSubLeadJet      = -99.;
+  TDPhiSubLeadJetJESUp = -99.;
+  TDPhiSubLeadJetJESDown= -99.;
+  TDPhiSubLeadJetJERUp = -99.;
+  
   TGenLeadingJetE    = -99;
   TGenLeadingJetPt   = -99;
   TGenLeadingJetPhi  = -99;
   TGenLeadingJetEta  = -99;
+  TGenLeadingLooseFwdJetPt   = -99.;
+  TGenLeadingLooseFwdJetE    = -99.;
+  TGenLeadingLooseFwdJetPhi  = -99.;
+  TGenLeadingLooseFwdJetEta  = -99.;
+  TGenSubLeadingLooseCentralJetPt  = -99.;
+  TGenSubLeadingLooseCentralJetE   = -99.;
+  TGenSubLeadingLooseCentralJetPhi = -99.;
+  TGenSubLeadingLooseCentralJetEta = -99.;
   TGenLeadingLepE    = -99;
   TGenLeadingLepPt   = -99;
   TGenLeadingLepPhi  = -99;
@@ -1813,6 +2183,12 @@ void TWAnalysis::ReSetTWVariables()
   TGenDilepJetPt     = -99;
   TGenDilepMETJetPt  = -99;
   TGenHTtot          = -99;
+  TGenDilepMETJet1Pz = -99;
+  TGenLLMETBEta      = -99;
+  TGenMSys           = -99;
+  TGenDPhiLL         = -99.;
+  TGenDPhiLeadJet    = -99.;
+  TGenDPhiSubLeadJet = -99.;
   Tpassreco          = 0;
   TpassrecoJESUp     = 0;
   TpassrecoJESDown   = 0;
@@ -1820,6 +2196,8 @@ void TWAnalysis::ReSetTWVariables()
   Tpassgen           = 0;
   TGenIsSS           = 0;
   SergioJets.clear();
+  SergioLooseCentralJets.clear();
+  SergioLooseFwdJets.clear();
   SergioLeps.clear();
   SergioMET.SetXYZT(0, 0, 0, 0);
   tpL.SetXYZT(0, 0, 0, 0);
@@ -1829,12 +2207,15 @@ void TWAnalysis::ReSetTWVariables()
   GenChannel      = -1;
   TGenMET         = -99;
   TGenMET_Phi     = -99;
-  nSergioJets     = 0;
-  nSergiobJets    = 0;
-  nSergioLeps     = 0;
-  nSergioGenJets  = 0;
-  nSergioGenLeps  = 0;
-  nSergioGenMET   = 0;
+  nSergioJets     = -99;
+  nSergiobJets    = -99;
+  nSergioLooseCentralJets= -99;
+  nSergioLooseCentralbJets= -99;
+  nSergioLooseFwdJets= -99;
+  nSergioLeps     = -99;
+  nSergioGenJets  = -99;
+  nSergioGenLeps  = -99;
+  nSergioGenMET   = -99;
   TMET            = -99;
   TMET_Phi        = -99;
   TMETJESUp       = -99;
@@ -1848,7 +2229,6 @@ void TWAnalysis::ReSetTWVariables()
 
 void TWAnalysis::CalculateTWVariables()
 {
-  
   if (hasTW) return;
   hasTW = true;
 
@@ -1868,7 +2248,6 @@ void TWAnalysis::CalculateTWVariables()
 
     C_jll = (selJets.at(0).p.Et() + selLeptons.at(0).p.Et() + selLeptons.at(1).p.Et()) / (selJets.at(0).p.E() + selLeptons.at(0).p.E() + selLeptons.at(1).p.E());
     TJet1_pt          = selJets.at(0).Pt();
-    nBTotal           = nBLooseCentral + nBLooseFwd;
     MSys              = getSysM();
     THTtot            = getHTtot();
     DilepmetjetOverHT = DilepMETJetPt/THTtot;
@@ -1881,30 +2260,37 @@ void TWAnalysis::CalculateTWVariables()
     TE_LLB            = (selJets.at(0).p + selLeptons.at(0).p + selLeptons.at(1).p).E();
     TMT_LLMETB        = (selJets.at(0).p + selLeptons.at(0).p + selLeptons.at(1).p + met).Mt();
     TM_LLB            = (selJets.at(0).p + selLeptons.at(0).p + selLeptons.at(1).p).M();
+    TLLMETBEta        = (selJets.at(0).p + selLeptons.at(0).p + selLeptons.at(1).p + met).Eta();
+    TDPhiLL           = getDPhiLep1_Lep2();
+    TDPhiLeadJet      = getDPhiLep1_Jet1();
+    TDPhiSubLeadJet   = getDPhiLep2_Jet1();
     
   }
   else {
-    DilepMETJetPt    =  -99.;
-    DilepJetPt       =  -99.;
-    Lep1METJetPt     =  -99.;
-    DPtDilep_JetMET  =  -99.;
-    DPtDilep_MET     =  -99.;
-    DPtLep1_MET      =  -99.;
-    DilepMETJet1Pz   =  -99.;
-    C_jll            =  -99.;
-    TJet1_pt         =  -99.;
-    nBTotal          =  -99.;
-    DilepmetjetOverHT=  -99.;
-    HTLepOverHT      =  -99.;
-    MSys             =  -99.;
-    THTtot           =  -99.;
-    TDilepPt         =  -99.;
-    TMll             =  -99.;
-    TM_LeadingB      =  -99.;
-    TM_SubLeadingB   =  -99.;
-    TE_LLB           =  -99.;
-    TMT_LLMETB       =  -99.;
-    TM_LLB           =  -99.;
+    DilepMETJetPt    = -99.;
+    DilepJetPt       = -99.;
+    Lep1METJetPt     = -99.;
+    DPtDilep_JetMET  = -99.;
+    DPtDilep_MET     = -99.;
+    DPtLep1_MET      = -99.;
+    DilepMETJet1Pz   = -99.;
+    C_jll            = -99.;
+    TJet1_pt         = -99.;
+    DilepmetjetOverHT= -99.;
+    HTLepOverHT      = -99.;
+    MSys             = -99.;
+    THTtot           = -99.;
+    TDilepPt         = -99.;
+    TMll             = -99.;
+    TM_LeadingB      = -99.;
+    TM_SubLeadingB   = -99.;
+    TE_LLB           = -99.;
+    TMT_LLMETB       = -99.;
+    TM_LLB           = -99.;
+    TLLMETBEta       = -99.;
+    TDPhiLL          = -99.;
+    TDPhiLeadJet     = -99.;
+    TDPhiSubLeadJet  = -99.;
   }
 
   if (!gIsData) {
@@ -1922,7 +2308,6 @@ void TWAnalysis::CalculateTWVariables()
       
       C_jllJESUp = (selJetsJecUp.at(0).p.Et() + selLeptons.at(0).p.Et() + selLeptons.at(1).p.Et()) / (selJetsJecUp.at(0).p.E() + selLeptons.at(0).p.E() + selLeptons.at(1).p.E());
       TJet1_ptJESUp           = selJetsJecUp.at(0).Pt();
-      nBTotalJESUp            = nBLooseCentralJESUp + nBLooseFwdJESUp;
       MSysJESUp               = getSysM("JESUp");
       THTtotJESUp             = getHTtot("JESUp");
       DilepmetjetOverHTJESUp  = DilepMETJetPtJESUp/THTtotJESUp          ;
@@ -1934,6 +2319,11 @@ void TWAnalysis::CalculateTWVariables()
       TE_LLBJESUp             = (selJetsJecUp.at(0).p + selLeptons.at(0).p + selLeptons.at(1).p).E();
       TMT_LLMETBJESUp         = (selJetsJecUp.at(0).p + selLeptons.at(0).p + selLeptons.at(1).p + met).Mt();
       TM_LLBJESUp             = (selJetsJecUp.at(0).p + selLeptons.at(0).p + selLeptons.at(1).p).M();
+      TLLMETBEtaJESUp         = (selJetsJecUp.at(0).p + selLeptons.at(0).p + selLeptons.at(1).p + met).Eta();
+      TMllJESUp               = (selLeptons.at(0).p + selLeptons.at(1).p).M();
+      TDPhiLLJESUp            = getDPhiLep1_Lep2();
+      TDPhiLeadJetJESUp       = getDPhiLep1_Jet1("JESUp");
+      TDPhiSubLeadJetJESUp    = getDPhiLep2_Jet1("JESUp");
     }
     else {
       DilepMETJetPtJESUp    = -99.;
@@ -1945,7 +2335,6 @@ void TWAnalysis::CalculateTWVariables()
       DilepMETJet1PzJESUp   = -99.;
       C_jllJESUp            = -99.;
       TJet1_ptJESUp         = -99.;
-      nBTotalJESUp          = -99.;
       DilepmetjetOverHTJESUp= -99.;
       HTLepOverHTJESUp      = -99.;
       MSysJESUp             = -99.;
@@ -1956,6 +2345,11 @@ void TWAnalysis::CalculateTWVariables()
       TE_LLBJESUp           = -99.;
       TMT_LLMETBJESUp       = -99.;
       TM_LLBJESUp           = -99.;
+      TLLMETBEtaJESUp       = -99.;
+      TMllJESUp             = -99.;
+      TDPhiLLJESUp          = -99.;
+      TDPhiLeadJetJESUp     = -99.;
+      TDPhiSubLeadJetJESUp  = -99.;
     }
     
     if (TNJetsJESDown == 1 && TNBtagsJESDown == 1) {
@@ -1972,7 +2366,6 @@ void TWAnalysis::CalculateTWVariables()
       
       C_jllJESDown = (selJetsJecDown.at(0).p.Et() + selLeptons.at(0).p.Et() + selLeptons.at(1).p.Et()) / (selJetsJecDown.at(0).p.E() + selLeptons.at(0).p.E() + selLeptons.at(1).p.E());
       TJet1_ptJESDown           = selJetsJecDown.at(0).p.Pt();
-      nBTotalJESDown            = nBLooseCentralJESDown + nBLooseFwdJESDown;  
       THTtotJESDown             = getHTtot("JESDown");
       DilepmetjetOverHTJESDown  = DilepMETJetPtJESDown/THTtotJESDown          ;
       TDilepPtJESDown           = (selLeptons.at(0).p + selLeptons.at(1).p).Pt();
@@ -1984,6 +2377,11 @@ void TWAnalysis::CalculateTWVariables()
       TE_LLBJESDown             = (selJetsJecDown.at(0).p + selLeptons.at(0).p + selLeptons.at(1).p).E();
       TMT_LLMETBJESDown         = (selJetsJecDown.at(0).p + selLeptons.at(0).p + selLeptons.at(1).p + met).Mt();
       TM_LLBJESDown             = (selJetsJecDown.at(0).p + selLeptons.at(0).p + selLeptons.at(1).p).M();
+      TLLMETBEtaJESDown         = (selJetsJecDown.at(0).p + selLeptons.at(0).p + selLeptons.at(1).p + met).Eta();
+      TMllJESDown               = (selLeptons.at(0).p + selLeptons.at(1).p).M();
+      TDPhiLLJESDown            = getDPhiLep1_Lep2();
+      TDPhiLeadJetJESDown       = getDPhiLep1_Jet1("JESDown");
+      TDPhiSubLeadJetJESDown    = getDPhiLep2_Jet1("JESDown");
     }
     else {
       DilepMETJetPtJESDown    = -99.;
@@ -1995,7 +2393,6 @@ void TWAnalysis::CalculateTWVariables()
       DilepMETJet1PzJESDown   = -99.;
       C_jllJESDown            = -99.;
       TJet1_ptJESDown         = -99.;
-      nBTotalJESDown          = -99.;
       DilepmetjetOverHTJESDown= -99.;
       HTLepOverHTJESDown      = -99.;
       MSysJESDown             = -99.;
@@ -2006,6 +2403,11 @@ void TWAnalysis::CalculateTWVariables()
       TE_LLBJESDown           = -99.;
       TMT_LLMETBJESDown       = -99.;
       TM_LLBJESDown           = -99.;
+      TLLMETBEtaJESDown       = -99.;
+      TMllJESDown             = -99.;
+      TDPhiLLJESDown          = -99.;
+      TDPhiLeadJetJESDown     = -99.;
+      TDPhiSubLeadJetJESDown  = -99.;
     }
     
     if (TNJetsJERUp == 1 && TNBtagsJERUp == 1) {
@@ -2021,7 +2423,6 @@ void TWAnalysis::CalculateTWVariables()
       
       C_jllJERUp = (selJetsJER.at(0).p.Et() + selLeptons.at(0).p.Et() + selLeptons.at(1).p.Et()) / (selJetsJER.at(0).p.E() + selLeptons.at(0).p.E() + selLeptons.at(1).p.E());
       TJet1_ptJERUp           = selJetsJER.at(0).p.Pt();
-      nBTotalJERUp            = nBLooseCentralJERUp + nBLooseFwdJERUp;  
       THTtotJERUp             = getHTtot("JER");
       HTLepOverHTJERUp        = (selLeptons.at(0).p.Pt() + selLeptons.at(1).p.Pt())/ THTtotJERUp    ;
       TDilepPtJERUp           = (selLeptons.at(0).p + selLeptons.at(1).p).Pt();
@@ -2033,6 +2434,12 @@ void TWAnalysis::CalculateTWVariables()
       TE_LLBJERUp             = (selJetsJER.at(0).p + selLeptons.at(0).p + selLeptons.at(1).p).E();
       TMT_LLMETBJERUp         = (selJetsJER.at(0).p + selLeptons.at(0).p + selLeptons.at(1).p + met).Mt();
       TM_LLBJERUp             = (selJetsJER.at(0).p + selLeptons.at(0).p + selLeptons.at(1).p).M();
+      TLLMETBEtaJERUp         = (selJetsJER.at(0).p + selLeptons.at(0).p + selLeptons.at(1).p + met).Eta();
+      TMllJERUp               = (selLeptons.at(0).p + selLeptons.at(1).p).M();
+      TDPhiLLJERUp            = getDPhiLep1_Lep2();
+      TDPhiLeadJetJERUp       = getDPhiLep1_Jet1("JER");
+      TDPhiSubLeadJetJERUp    = getDPhiLep2_Jet1("JER");
+      
     }
     else {
       DilepMETJetPtJERUp    = -99.;
@@ -2044,7 +2451,6 @@ void TWAnalysis::CalculateTWVariables()
       DilepMETJet1PzJERUp   = -99.;
       C_jllJERUp            = -99.;
       TJet1_ptJERUp         = -99.;
-      nBTotalJERUp          = -99.;
       DilepmetjetOverHTJERUp= -99.;
       HTLepOverHTJERUp      = -99.;
       MSysJERUp             = -99.;
@@ -2055,6 +2461,11 @@ void TWAnalysis::CalculateTWVariables()
       TE_LLBJERUp           = -99.;
       TMT_LLMETBJERUp       = -99.;
       TM_LLBJERUp           = -99.;
+      TLLMETBEtaJERUp       = -99.;
+      TMllJERUp             = -99.;
+      TDPhiLLJERUp          = -99.;
+      TDPhiLeadJetJERUp     = -99.;
+      TDPhiSubLeadJetJERUp  = -99.;
     }
   }
   // if (TNJets == 2 && TNBtags == 1){
@@ -2116,7 +2527,7 @@ void TWAnalysis::CalculateTWVariables()
   if (TNJets == 1 && TNBtags == 1 ){
     // TBDTada = BDTada->EvaluateMVA("BDTada");
     // TBDTgrad = BDTgrad->EvaluateMVA("BDTgrad");
-    TBDT = BDT->EvaluateMVA("BDT");
+//     TBDT = BDT->EvaluateMVA("BDT");
   }
   else{
     // TBDTada = -99.;    
@@ -2127,7 +2538,7 @@ void TWAnalysis::CalculateTWVariables()
     if (TNJetsJESUp == 1 && TNBtagsJESUp == 1){
       // TBDTadaJESUp = BDTada_JESUp->EvaluateMVA("BDTada_JESUp");
       // TBDTgradJESUp = BDTgrad_JESUp->EvaluateMVA("BDTgrad_JESUp");
-      TBDTJESUp = BDT_JESUp->EvaluateMVA("BDT_JESUp");
+//       TBDTJESUp = BDT_JESUp->EvaluateMVA("BDT_JESUp");
     }
     else{
       // TBDTadaJESUp = -99.;
@@ -2138,7 +2549,7 @@ void TWAnalysis::CalculateTWVariables()
     if (TNJetsJESDown == 1 && TNBtagsJESDown == 1){
       // TBDTadaJESDown = BDTada_JESDown->EvaluateMVA("BDTada_JESDown");
       // TBDTgradJESDown = BDTgrad_JESDown->EvaluateMVA("BDTgrad_JESDown");
-      TBDTJESDown = BDT_JESDown->EvaluateMVA("BDT_JESDown");
+//       TBDTJESDown = BDT_JESDown->EvaluateMVA("BDT_JESDown");
     }
     else{
       // TBDTadaJESDown = -99.;
@@ -2148,7 +2559,7 @@ void TWAnalysis::CalculateTWVariables()
    if (TNJetsJERUp == 1 && TNBtagsJERUp == 1){
       // TBDTadaJERUp = BDTada_JER->EvaluateMVA("BDTada_JER");
       // TBDTgradJERUp = BDTgrad_JER->EvaluateMVA("BDTgrad_JER");
-      TBDTJERUp = BDT_JER->EvaluateMVA("BDT_JER");
+//       TBDTJERUp = BDT_JER->EvaluateMVA("BDT_JER");
     }
     else{
       // TBDTadaJERUp = -99.;
@@ -2175,7 +2586,7 @@ void TWAnalysis::CalculateTWVariables()
     jetEtaSubLeading_ = selJets.at(1).Eta();
     THTtot2j          = getHTtot2j();
     // cout << "evaluating 2j1b" << endl;
-    TBDT2j1t   = BDT2j1t->EvaluateMVA("2j1b");
+//     TBDT2j1t   = BDT2j1t->EvaluateMVA("2j1b");
     // TBDT2j1tv1 = BDT2j1tv1->EvaluateMVA("2j1bv1");
     // TBDT2j1tv2 = BDT2j1tv2->EvaluateMVA("2j1bv2");
     // TBDT2j1tv3 = BDT2j1tv3->EvaluateMVA("2j1bv3");
@@ -2221,7 +2632,7 @@ void TWAnalysis::CalculateTWVariables()
       jetPtSubLeading_JESUp  = selJetsJecUp.at(1).Pt();
       jetEtaSubLeading_JESUp = selJetsJecUp.at(1).Eta();
       THTtot2jJESUp          = getHTtot2j("JESUp");
-      TBDT2j1tJESUp          = BDT2j1tJESUp->EvaluateMVA("2j1b");
+//       TBDT2j1tJESUp          = BDT2j1tJESUp->EvaluateMVA("2j1b");
     }
     else{
       TDilepMETPtJESUp       = -99.;
@@ -2256,7 +2667,7 @@ void TWAnalysis::CalculateTWVariables()
       jetPtSubLeading_JESDown  = selJetsJecDown.at(1).Pt();
       jetEtaSubLeading_JESDown = selJetsJecDown.at(1).Eta();
       THTtot2jJESDown          = getHTtot2j("JESDown");
-      TBDT2j1tJESDown = BDT2j1tJESDown->EvaluateMVA("2j1b");
+//       TBDT2j1tJESDown = BDT2j1tJESDown->EvaluateMVA("2j1b");
     }
     else{
       TDilepMETPtJESDown       = -99.;
@@ -2304,7 +2715,7 @@ void TWAnalysis::CalculateTWVariables()
       jetEtaSubLeading_JERUp = selJetsJER.at(1).Eta();
       THTtot2jJERUp          = getHTtot2j("JER");
       // cout << "evaluating 2j1b" << endl;
-      TBDT2j1tJERUp = BDT2j1tJER->EvaluateMVA("2j1b");
+//       TBDT2j1tJERUp = BDT2j1tJER->EvaluateMVA("2j1b");
 
 
     }
@@ -2358,10 +2769,7 @@ void TWAnalysis::CalculateTWVariables()
     else                   TJet2_PtJERUp   = -99.;
   }
 
-
   return;
-
-
 }
 
 
@@ -2377,76 +2785,81 @@ void TWAnalysis::get20Jets()
   vector<float> looseJetCentralPtJESDown;
   vector<float> looseJetCentralPtJER;
   
-  nLooseCentral  = 0.;   nLooseCentralJESUp  = 0.; nLooseCentralJESDown  = 0.;  nLooseCentralJERUp  = 0.; 
-  nLooseFwd      = 0.;   nLooseFwdJESUp      = 0.; nLooseFwdJESDown      = 0.;  nLooseFwdJERUp      = 0.; 
-  nBLooseCentral = 0.;   nBLooseCentralJESUp = 0.; nBLooseCentralJESDown = 0.;  nBLooseCentralJERUp = 0.; 
-  nBLooseFwd     = 0.;   nBLooseFwdJESUp     = 0.; nBLooseFwdJESDown     = 0.;  nBLooseFwdJERUp     = 0.; 
-  TJet2csv       = 0.;   TJet2csvJESUp       = 0.; TJet2csvJESDown       = 0.;  TJet2csvJERUp       = 0.; 
-  TJetLoosept    = 0.;   TJetLooseptJESUp    = 0.; TJetLooseptJESDown    = 0.;  TJetLooseptJERUp    = 0.; 
-  TJetLooseCentralpt           = 0.;  TJetLooseCentralptJESUp    = 0.;
-  TJetLooseCentralptJESDown    = 0.;  TJetLooseCentralptJERUp      = 0.; 
+  vector<float> looseJetFwdPt;
+  vector<float> looseJetFwdPtJESUp;
+  vector<float> looseJetFwdPtJESDown;
+  vector<float> looseJetFwdPtJER;
+  
+  nLooseCentral  = 0.; nLooseCentralJESUp  = 0.; nLooseCentralJESDown  = 0.; nLooseCentralJERUp  = 0.;
+  nLooseFwd      = 0.; nLooseFwdJESUp      = 0.; nLooseFwdJESDown      = 0.; nLooseFwdJERUp      = 0.;
+  nBLooseCentral = 0.; nBLooseCentralJESUp = 0.; nBLooseCentralJESDown = 0.; nBLooseCentralJERUp = 0.;
+  TJet2csv       = 0.; TJet2csvJESUp       = 0.; TJet2csvJESDown       = 0.; TJet2csvJERUp       = 0.;
+  TJetLoosept    = 0.; TJetLooseptJESUp    = 0.; TJetLooseptJESDown    = 0.; TJetLooseptJERUp    = 0.;
+  TJetLooseCentralpt        = 0.; TJetLooseCentralptJESUp = 0.;
+  TJetLooseCentralptJESDown = 0.; TJetLooseCentralptJERUp = 0.;
+  TJetLooseFwdpt        = 0.; TJetLooseFwdptJESUp = 0.;
+  TJetLooseFwdptJESDown = 0.; TJetLooseFwdptJERUp = 0.;
 
   for (unsigned int j = 0; j < vetoJets.size(); ++j){
     if (vetoJets.at(j).p.Pt() > 20.){
       looseJetPt.push_back( vetoJets.at(j).p.Pt() );
       if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4){
-	nLooseCentral++;
-	looseJetCentralPt.push_back(vetoJets.at(j).p.Pt());
+        nLooseCentral++;
+        looseJetCentralPt.push_back(vetoJets.at(j).p.Pt());
       }
-      else nLooseFwd++;
+      else {
+        nLooseFwd++;
+        looseJetFwdPt.push_back(vetoJets.at(j).p.Pt());
+      }
       if (vetoJets.at(j).isBtag){
-	if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentral++;
-	else nBLooseFwd++;
+    if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentral++;
       }
     }
 
     if (vetoJets.at(j).pTJESUp > 20.){
       looseJetPtJESUp.push_back( vetoJets.at(j).pTJESUp );
       if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4){
-	nLooseCentralJESUp++;
-	looseJetCentralPtJESUp.push_back(vetoJets.at(j).pTJESUp);
+        nLooseCentralJESUp++;
+        looseJetCentralPtJESUp.push_back(vetoJets.at(j).pTJESUp);
       }
-      else nLooseFwdJESUp++;
+      else {
+        nLooseFwdJESUp++;
+        looseJetFwdPtJESUp.push_back(vetoJets.at(j).pTJESUp);
+      }
       if (vetoJets.at(j).isBtag){
-	if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentralJESUp++;
-	else nBLooseFwdJESUp++;
+        if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentralJESUp++;
       }
     }
 
     if (vetoJets.at(j).pTJESDown > 20.){
       looseJetPtJESDown.push_back( vetoJets.at(j).pTJESDown );
       if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4){
-	nLooseCentralJESDown++;
-	looseJetCentralPtJESDown.push_back(vetoJets.at(j).pTJESDown);
+        nLooseCentralJESDown++;
+        looseJetCentralPtJESDown.push_back(vetoJets.at(j).pTJESDown);
       }
-      else nLooseFwdJESDown++;
+      else {
+        nLooseFwdJESDown++;
+        looseJetFwdPtJESDown.push_back(vetoJets.at(j).pTJESDown);
+      }
       if (vetoJets.at(j).isBtag){
-	if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentralJESDown++;
-	else nBLooseFwdJESDown++;
+        if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentralJESDown++;
       }
     }
 
     if (vetoJets.at(j).pTJERUp > 20.){
       looseJetPtJER.push_back( vetoJets.at(j).pTJERUp );
       if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4){
-	nLooseCentralJERUp++;
-	looseJetCentralPtJER.push_back(vetoJets.at(j).pTJERUp);
+        nLooseCentralJERUp++;
+        looseJetCentralPtJER.push_back(vetoJets.at(j).pTJERUp);
       }
-      else nLooseFwdJERUp++;
+      else {
+        nLooseFwdJERUp++;
+        looseJetFwdPtJER.push_back(vetoJets.at(j).pTJERUp);
+      }
       if (vetoJets.at(j).isBtag){
-	if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentralJERUp++;
-	else nBLooseFwdJERUp++;
+        if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentralJERUp++;
       }
     }
-    // if (vetoJets.at(j).pTJER > 20.){
-    //   looseJetPtJER.push_back( vetoJets.at(j).pTJER );
-    //   if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nLooseCentralJER++;
-    //   else nLooseFwdJER++;
-    //   if (vetoJets.at(j).isBtag){
-    // 	if (TMath::Abs(vetoJets.at(j).p.Eta()) < 2.4) nBLooseCentralJER++;
-    // 	else nBLooseFwdJER++;
-    //   }
-    //}
   }
 
   std::sort( looseJetPt.begin()       , looseJetPt.end()       , GreaterThan);
@@ -2459,7 +2872,7 @@ void TWAnalysis::get20Jets()
   std::sort( looseJetCentralPtJESDown.begin(), looseJetCentralPtJESDown.end(), GreaterThan);
   std::sort( looseJetCentralPtJER.begin()    , looseJetCentralPtJER.end()    , GreaterThan);
 
-  
+
   if (nLooseFwd + nLooseCentral > 1){
     TJet2csv = TMath::Max( vetoJets.at(1).csv   , (Float_t) 0.);
     TJetLoosept = looseJetPt.at(1);
@@ -2490,6 +2903,17 @@ void TWAnalysis::get20Jets()
   if (nLooseCentralJERUp > 1)
     TJetLooseCentralptJERUp = looseJetCentralPtJER.at(1);
 
+  if (nLooseFwd > 1)
+    TJetLooseFwdpt = looseJetFwdPt.at(1);
+
+  if (nLooseFwdJESUp > 1)
+    TJetLooseFwdptJESUp = looseJetFwdPtJESUp.at(1);
+
+  if (nLooseFwdJESDown > 1)
+    TJetLooseFwdptJESDown = looseJetFwdPtJESDown.at(1);
+
+  if (nLooseFwdJERUp > 1)
+    TJetLooseFwdptJERUp = looseJetFwdPtJER.at(1);
 
   return;
 }
@@ -2790,7 +3214,6 @@ Double_t TWAnalysis::getDPtLep1_MET(const TString& sys)
   }
   col2.push_back(met);
   return getDeltaPt(col1,col2);
-
 }
 
 Double_t TWAnalysis::getDeltaPt(vector<TLorentzVector> col1, vector<TLorentzVector> col2){
@@ -2810,6 +3233,72 @@ Double_t TWAnalysis::getDeltaPt(vector<TLorentzVector> col1, vector<TLorentzVect
   return (v1-v2).Pt();
 }
 
+Double_t TWAnalysis::getDPhiLep1_Lep2()
+{
+  vector<TLorentzVector>  col1;
+  vector<TLorentzVector>  col2;
+  col1.push_back(selLeptons.at(0).p);
+  col2.push_back(selLeptons.at(1).p);
+  return getDeltaPhi(col1,col2);
+}
+
+Double_t TWAnalysis::getDPhiLep1_Jet1(const TString& sys)
+{
+  vector<TLorentzVector>  col1;
+  vector<TLorentzVector>  col2;
+  col1.push_back(selLeptons.at(0).p);
+  if (sys == "Norm")
+    col2.push_back(selJets.at(0).p);
+  else if (sys == "JESUp")
+    col2.push_back(selJetsJecUp.at(0).p);
+  else if (sys == "JESDown")
+    col2.push_back(selJetsJecDown.at(0).p);
+  else if (sys == "JER")
+    col2.push_back(selJetsJER.at(0).p);
+  else{
+    cout << "Wrong systematic in TWAnalysis::getDPhiLep1_Jet1" << endl;
+    return -9999.;
+  }
+  return getDeltaPhi(col1,col2);
+}
+
+
+Double_t TWAnalysis::getDPhiLep2_Jet1(const TString& sys)
+{
+  vector<TLorentzVector>  col1;
+  vector<TLorentzVector>  col2;
+  col1.push_back(selLeptons.at(1).p);
+  if (sys == "Norm")
+    col2.push_back(selJets.at(0).p);
+  else if (sys == "JESUp")
+    col2.push_back(selJetsJecUp.at(0).p);
+  else if (sys == "JESDown")
+    col2.push_back(selJetsJecDown.at(0).p);
+  else if (sys == "JER")
+    col2.push_back(selJetsJER.at(0).p);
+  else{
+    cout << "Wrong systematic in TWAnalysis::getDPhiLep1_Jet1" << endl;
+    return -9999.;
+  }
+  return getDeltaPhi(col1,col2);
+}
+
+Double_t TWAnalysis::getDeltaPhi(vector<TLorentzVector> col1, vector<TLorentzVector> col2){
+  TLorentzVector v1, v2;
+  if (col1.size()*col2.size() == 0){
+    cout << "[TAT::getDeltaPt] One of the collections is empty" << endl;
+    return -99.;
+  }
+  v1 = col1[0];
+  v2 = col2[0];
+  for (unsigned int i = 1; i < col1.size(); ++i){
+    v1 += col1[i];
+  }
+  for (unsigned int i = 1; i < col2.size(); ++i){
+    v2 += col2[i];
+  }
+  return v1.DeltaPhi(v2);
+}
 
 
 // Double_t TWAnalysis::getM_L1J1()
@@ -2892,7 +3381,7 @@ Double_t TWAnalysis::getM(vector<TLorentzVector> col)
   for (unsigned int i = 1; i < col.size(); ++i){
     v += col[i];
   }
-  return v.M();  
+  return v.M();
 }
 
 Double_t TWAnalysis::getDilepPt()
@@ -3151,106 +3640,107 @@ void TWAnalysis::setTWBDT()
   // BDTgrad_JER->BookMVA("BDTgrad_JER","/nfs/fanae/user/sscruz/TW/AnalysisPAF/plotter/TW/StableWeights/jun5/bdtForTWv2/weights/TMVAClassification_GradBoost_2000_0.01.weights.xml");
 
 
-  ////////////////////////////////////////////////
-  // new BDT
-  ////////////////////////////////////////////////
-  // nominal
-  BDT = new TMVA::Reader();
-  BDT->AddVariable( "TnLooseCentral"            , &nLooseCentral      );
-  BDT->AddVariable( "TnBTotal"                  , &nBTotal            );  
-  BDT->AddVariable( "TDilepMETJetPt"            , &DilepMETJetPt      );
-  BDT->AddVariable( "TTHTtot"                   , &THTtot             );    
-  BDT->AddVariable( "TTJet1_pt"                 , &TJet1_pt           );
-  BDT->AddVariable( "TTJetLooseCentralpt"       , &TJetLooseCentralpt );
-  BDT->AddVariable( "TDilepMETJetPt_THTtot"     , &DilepmetjetOverHT  );
-  BDT->AddVariable( "TMSys"                     , &MSys               );
-  BDT->AddVariable( "TC_jll_v2"                 , &C_jll              ); 
-  BDT->AddVariable( "THTLepOverHT"              , &HTLepOverHT        );
-  BDT->AddVariable( "TDilepJetPt"               , &DilepJetPt         );       
-
-  BDT->BookMVA("BDT","/nfs/fanae/user/sscruz/TW_train/AnalysisPAF/plotter/TW/StableWeights/bdtForTWv4/weights/TMVAClassification_GradBoost_2000_0.01.weights.xml");
-  
-  BDT_JESUp = new TMVA::Reader();
-  BDT_JESUp->AddVariable( "TnLooseCentral"            , &nLooseCentralJESUp      );
-  BDT_JESUp->AddVariable( "TnBTotal"                  , &nBTotalJESUp            );  
-  BDT_JESUp->AddVariable( "TDilepMETJetPt"            , &DilepMETJetPtJESUp      );
-  BDT_JESUp->AddVariable( "TTHTtot"                   , &THTtotJESUp             );    
-  BDT_JESUp->AddVariable( "TTJet1_pt"                 , &TJet1_ptJESUp           );
-  BDT_JESUp->AddVariable( "TTJetLooseCentralpt"       , &TJetLooseCentralptJESUp );
-  BDT_JESUp->AddVariable( "TDilepMETJetPt_THTtot"     , &DilepmetjetOverHTJESUp  );
-  BDT_JESUp->AddVariable( "TMSys"                     , &MSysJESUp               );
-  BDT_JESUp->AddVariable( "TC_jll_v2"                    , &C_jllJESUp              ); 
-  BDT_JESUp->AddVariable( "THTLepOverHT"              , &HTLepOverHTJESUp        );
-  BDT_JESUp->AddVariable( "TDilepJetPt"               , &DilepJetPtJESUp         );       
-  BDT_JESUp->BookMVA("BDT_JESUp","/nfs/fanae/user/sscruz/TW_train/AnalysisPAF/plotter/TW/StableWeights/bdtForTWv4/weights/TMVAClassification_GradBoost_2000_0.01.weights.xml");
-
-  BDT_JESDown = new TMVA::Reader();
-  BDT_JESDown->AddVariable( "TnLooseCentral"            , &nLooseCentralJESDown      );
-  BDT_JESDown->AddVariable( "TnBTotal"                  , &nBTotalJESDown            );  
-  BDT_JESDown->AddVariable( "TDilepMETJetPt"            , &DilepMETJetPtJESDown      );
-  BDT_JESDown->AddVariable( "TTHTtot"                   , &THTtotJESDown             );    
-  BDT_JESDown->AddVariable( "TTJet1_pt"                 , &TJet1_ptJESDown           );
-  BDT_JESDown->AddVariable( "TTJetLooseCentralpt"       , &TJetLooseCentralptJESDown );
-  BDT_JESDown->AddVariable( "TDilepMETJetPt_THTtot"     , &DilepmetjetOverHTJESDown  );
-  BDT_JESDown->AddVariable( "TMSys"                     , &MSysJESDown               );
-  BDT_JESDown->AddVariable( "TC_jll_v2"                 , &C_jllJESDown              ); 
-  BDT_JESDown->AddVariable( "THTLepOverHT"              , &HTLepOverHTJESDown        );
-  BDT_JESDown->AddVariable( "TDilepJetPt"               , &DilepJetPtJESDown         );       
-  BDT_JESDown->BookMVA("BDT_JESDown","/nfs/fanae/user/sscruz/TW_train/AnalysisPAF/plotter/TW/StableWeights/bdtForTWv4/weights/TMVAClassification_GradBoost_2000_0.01.weights.xml");
-
-  BDT_JER = new TMVA::Reader();
-  BDT_JER->AddVariable( "TnLooseCentral"            , &nLooseCentralJERUp      );
-  BDT_JER->AddVariable( "TnBTotal"                  , &nBTotalJERUp            );  
-  BDT_JER->AddVariable( "TDilepMETJetPt"            , &DilepMETJetPtJERUp      );
-  BDT_JER->AddVariable( "TTHTtot"                   , &THTtotJERUp             );    
-  BDT_JER->AddVariable( "TTJet1_pt"                 , &TJet1_ptJERUp           );
-  BDT_JER->AddVariable( "TTJetLooseCentralpt"       , &TJetLooseCentralptJERUp );
-  BDT_JER->AddVariable( "TDilepMETJetPt_THTtot"     , &DilepmetjetOverHTJERUp  );
-  BDT_JER->AddVariable( "TMSys"                     , &MSysJERUp               );
-  BDT_JER->AddVariable( "TC_jll_v2"                 , &C_jllJERUp              ); 
-  BDT_JER->AddVariable( "THTLepOverHT"              , &HTLepOverHTJERUp        );
-  BDT_JER->AddVariable( "TDilepJetPt"               , &DilepJetPtJERUp         );       
-  BDT_JER->BookMVA("BDT_JER","/nfs/fanae/user/sscruz/TW_train/AnalysisPAF/plotter/TW/StableWeights/bdtForTWv4/weights/TMVAClassification_GradBoost_2000_0.01.weights.xml");
-
-
-  BDT2j1t = new TMVA::Reader();
-  BDT2j1t->AddVariable("jetPtSubLeading_"    , &jetPtSubLeading_  );
-  BDT2j1t->AddVariable("deltaRL1_J1_"	     , &TDR_L1_J1         );
-  BDT2j1t->AddVariable("deltaRL1L2_J1J2_"    , &TDR_L1L2_J1J2     );
-  BDT2j1t->AddVariable("deltaRL1L2_metJ1J2_" , &TDR_L1L2_J1J2MET  );
-  BDT2j1t->BookMVA("2j1b","/nfs/fanae/user/sscruz/TW_jun4/AnalysisPAF/plotter/TW/StableWeights/jul8/bdtForTWv5/weights/TMVAClassification_GradBoost_200_005_4.weights.xml");
-
-
-
-  BDT2j1tJESUp = new TMVA::Reader();
-  BDT2j1tJESUp->AddVariable("jetPtSubLeading_"       , &jetPtSubLeading_JESUp  );
-  BDT2j1tJESUp->AddVariable("deltaRL1_J1_"	     , &TDR_L1_J1JESUp         );
-  BDT2j1tJESUp->AddVariable("deltaRL1L2_J1J2_"       , &TDR_L1L2_J1J2JESUp     );
-  BDT2j1tJESUp->AddVariable("deltaRL1L2_metJ1J2_"    , &TDR_L1L2_J1J2METJESUp  );
-  BDT2j1tJESUp->BookMVA("2j1b","/nfs/fanae/user/sscruz/TW_jun4/AnalysisPAF/plotter/TW/StableWeights/jul8/bdtForTWv5/weights/TMVAClassification_GradBoost_200_005_4.weights.xml");
-
-  
-  BDT2j1tJESDown = new TMVA::Reader();
-  BDT2j1tJESDown->AddVariable("jetPtSubLeading_"       , &jetPtSubLeading_JESDown  );
-  BDT2j1tJESDown->AddVariable("deltaRL1_J1_"	       , &TDR_L1_J1JESDown         );
-  BDT2j1tJESDown->AddVariable("deltaRL1L2_J1J2_"       , &TDR_L1L2_J1J2JESDown     );
-  BDT2j1tJESDown->AddVariable("deltaRL1L2_metJ1J2_"    , &TDR_L1L2_J1J2METJESDown  );
-  BDT2j1tJESDown->BookMVA("2j1b","/nfs/fanae/user/sscruz/TW_jun4/AnalysisPAF/plotter/TW/StableWeights/jul8/bdtForTWv5/weights/TMVAClassification_GradBoost_200_005_4.weights.xml");
-
-  BDT2j1tJER = new TMVA::Reader();
-  BDT2j1tJER->AddVariable("jetPtSubLeading_"       , &jetPtSubLeading_JERUp  );
-  // BDT2j1tJER->AddVariable("jetEtaSubLeading_"      , &jetEtaSubLeading_JERUp ); 
-  // BDT2j1tJER->AddVariable("ptL1L2_"	             , &TDilepPt );
-  // BDT2j1tJER->AddVariable("ptsysL1L2met_"	     , &TDilepMETPtJERUp );
-  // BDT2j1tJER->AddVariable("deltaPtl1_l2_"	     , &TDPtL1_L2JERUp );
-  // BDT2j1tJER->AddVariable("deltaPtl2_J2_"	     , &TDPtJ2_L2JERUp );
-  BDT2j1tJER->AddVariable("deltaRL1_J1_"	     , &TDR_L1_J1JERUp );
-  BDT2j1tJER->AddVariable("deltaRL1L2_J1J2_"       , &TDR_L1L2_J1J2JERUp );
-  BDT2j1tJER->AddVariable("deltaRL1L2_metJ1J2_"    , &TDR_L1L2_J1J2METJERUp );
-  BDT2j1tJER->BookMVA("2j1b","/nfs/fanae/user/sscruz/TW_jun4/AnalysisPAF/plotter/TW/StableWeights/jul8/bdtForTWv5/weights/TMVAClassification_GradBoost_200_005_4.weights.xml");
-  // BDT2j1tJER->AddVariable("LeadingLeptPt_"         , &LeadingLeptPt_JERUp    );
-  // BDT2j1tJER->AddVariable("LeadingLeptEta_"        , &LeadingLeptEta_JERUp   );
-
+// comienzo de coment largo
+//   ////////////////////////////////////////////////
+//   // new BDT
+//   ////////////////////////////////////////////////
+//   // nominal
+//   BDT = new TMVA::Reader();
+//   BDT->AddVariable( "TnLooseCentral"            , &nLooseCentral      );
+//   BDT->AddVariable( "TnBTotal"                  , &nBTotal            );  
+//   BDT->AddVariable( "TDilepMETJetPt"            , &DilepMETJetPt      );
+//   BDT->AddVariable( "TTHTtot"                   , &THTtot             );    
+//   BDT->AddVariable( "TTJet1_pt"                 , &TJet1_pt           );
+//   BDT->AddVariable( "TTJetLooseCentralpt"       , &TJetLooseCentralpt );
+//   BDT->AddVariable( "TDilepMETJetPt_THTtot"     , &DilepmetjetOverHT  );
+//   BDT->AddVariable( "TMSys"                     , &MSys               );
+//   BDT->AddVariable( "TC_jll_v2"                 , &C_jll              ); 
+//   BDT->AddVariable( "THTLepOverHT"              , &HTLepOverHT        );
+//   BDT->AddVariable( "TDilepJetPt"               , &DilepJetPt         );       
+// 
+//   BDT->BookMVA("BDT","/nfs/fanae/user/sscruz/TW_train/AnalysisPAF/plotter/TW/StableWeights/bdtForTWv4/weights/TMVAClassification_GradBoost_2000_0.01.weights.xml");
+//   
+//   BDT_JESUp = new TMVA::Reader();
+//   BDT_JESUp->AddVariable( "TnLooseCentral"            , &nLooseCentralJESUp      );
+//   BDT_JESUp->AddVariable( "TnBTotal"                  , &nBTotalJESUp            );  
+//   BDT_JESUp->AddVariable( "TDilepMETJetPt"            , &DilepMETJetPtJESUp      );
+//   BDT_JESUp->AddVariable( "TTHTtot"                   , &THTtotJESUp             );    
+//   BDT_JESUp->AddVariable( "TTJet1_pt"                 , &TJet1_ptJESUp           );
+//   BDT_JESUp->AddVariable( "TTJetLooseCentralpt"       , &TJetLooseCentralptJESUp );
+//   BDT_JESUp->AddVariable( "TDilepMETJetPt_THTtot"     , &DilepmetjetOverHTJESUp  );
+//   BDT_JESUp->AddVariable( "TMSys"                     , &MSysJESUp               );
+//   BDT_JESUp->AddVariable( "TC_jll_v2"                    , &C_jllJESUp              ); 
+//   BDT_JESUp->AddVariable( "THTLepOverHT"              , &HTLepOverHTJESUp        );
+//   BDT_JESUp->AddVariable( "TDilepJetPt"               , &DilepJetPtJESUp         );       
+//   BDT_JESUp->BookMVA("BDT_JESUp","/nfs/fanae/user/sscruz/TW_train/AnalysisPAF/plotter/TW/StableWeights/bdtForTWv4/weights/TMVAClassification_GradBoost_2000_0.01.weights.xml");
+// 
+//   BDT_JESDown = new TMVA::Reader();
+//   BDT_JESDown->AddVariable( "TnLooseCentral"            , &nLooseCentralJESDown      );
+//   BDT_JESDown->AddVariable( "TnBTotal"                  , &nBTotalJESDown            );  
+//   BDT_JESDown->AddVariable( "TDilepMETJetPt"            , &DilepMETJetPtJESDown      );
+//   BDT_JESDown->AddVariable( "TTHTtot"                   , &THTtotJESDown             );    
+//   BDT_JESDown->AddVariable( "TTJet1_pt"                 , &TJet1_ptJESDown           );
+//   BDT_JESDown->AddVariable( "TTJetLooseCentralpt"       , &TJetLooseCentralptJESDown );
+//   BDT_JESDown->AddVariable( "TDilepMETJetPt_THTtot"     , &DilepmetjetOverHTJESDown  );
+//   BDT_JESDown->AddVariable( "TMSys"                     , &MSysJESDown               );
+//   BDT_JESDown->AddVariable( "TC_jll_v2"                 , &C_jllJESDown              ); 
+//   BDT_JESDown->AddVariable( "THTLepOverHT"              , &HTLepOverHTJESDown        );
+//   BDT_JESDown->AddVariable( "TDilepJetPt"               , &DilepJetPtJESDown         );       
+//   BDT_JESDown->BookMVA("BDT_JESDown","/nfs/fanae/user/sscruz/TW_train/AnalysisPAF/plotter/TW/StableWeights/bdtForTWv4/weights/TMVAClassification_GradBoost_2000_0.01.weights.xml");
+// 
+//   BDT_JER = new TMVA::Reader();
+//   BDT_JER->AddVariable( "TnLooseCentral"            , &nLooseCentralJERUp      );
+//   BDT_JER->AddVariable( "TnBTotal"                  , &nBTotalJERUp            );  
+//   BDT_JER->AddVariable( "TDilepMETJetPt"            , &DilepMETJetPtJERUp      );
+//   BDT_JER->AddVariable( "TTHTtot"                   , &THTtotJERUp             );    
+//   BDT_JER->AddVariable( "TTJet1_pt"                 , &TJet1_ptJERUp           );
+//   BDT_JER->AddVariable( "TTJetLooseCentralpt"       , &TJetLooseCentralptJERUp );
+//   BDT_JER->AddVariable( "TDilepMETJetPt_THTtot"     , &DilepmetjetOverHTJERUp  );
+//   BDT_JER->AddVariable( "TMSys"                     , &MSysJERUp               );
+//   BDT_JER->AddVariable( "TC_jll_v2"                 , &C_jllJERUp              ); 
+//   BDT_JER->AddVariable( "THTLepOverHT"              , &HTLepOverHTJERUp        );
+//   BDT_JER->AddVariable( "TDilepJetPt"               , &DilepJetPtJERUp         );       
+//   BDT_JER->BookMVA("BDT_JER","/nfs/fanae/user/sscruz/TW_train/AnalysisPAF/plotter/TW/StableWeights/bdtForTWv4/weights/TMVAClassification_GradBoost_2000_0.01.weights.xml");
+// 
+// 
+//   BDT2j1t = new TMVA::Reader();
+//   BDT2j1t->AddVariable("jetPtSubLeading_"    , &jetPtSubLeading_  );
+//   BDT2j1t->AddVariable("deltaRL1_J1_"	     , &TDR_L1_J1         );
+//   BDT2j1t->AddVariable("deltaRL1L2_J1J2_"    , &TDR_L1L2_J1J2     );
+//   BDT2j1t->AddVariable("deltaRL1L2_metJ1J2_" , &TDR_L1L2_J1J2MET  );
+//   BDT2j1t->BookMVA("2j1b","/nfs/fanae/user/sscruz/TW_jun4/AnalysisPAF/plotter/TW/StableWeights/jul8/bdtForTWv5/weights/TMVAClassification_GradBoost_200_005_4.weights.xml");
+// 
+// 
+// 
+//   BDT2j1tJESUp = new TMVA::Reader();
+//   BDT2j1tJESUp->AddVariable("jetPtSubLeading_"       , &jetPtSubLeading_JESUp  );
+//   BDT2j1tJESUp->AddVariable("deltaRL1_J1_"	     , &TDR_L1_J1JESUp         );
+//   BDT2j1tJESUp->AddVariable("deltaRL1L2_J1J2_"       , &TDR_L1L2_J1J2JESUp     );
+//   BDT2j1tJESUp->AddVariable("deltaRL1L2_metJ1J2_"    , &TDR_L1L2_J1J2METJESUp  );
+//   BDT2j1tJESUp->BookMVA("2j1b","/nfs/fanae/user/sscruz/TW_jun4/AnalysisPAF/plotter/TW/StableWeights/jul8/bdtForTWv5/weights/TMVAClassification_GradBoost_200_005_4.weights.xml");
+// 
+//   
+//   BDT2j1tJESDown = new TMVA::Reader();
+//   BDT2j1tJESDown->AddVariable("jetPtSubLeading_"       , &jetPtSubLeading_JESDown  );
+//   BDT2j1tJESDown->AddVariable("deltaRL1_J1_"	       , &TDR_L1_J1JESDown         );
+//   BDT2j1tJESDown->AddVariable("deltaRL1L2_J1J2_"       , &TDR_L1L2_J1J2JESDown     );
+//   BDT2j1tJESDown->AddVariable("deltaRL1L2_metJ1J2_"    , &TDR_L1L2_J1J2METJESDown  );
+//   BDT2j1tJESDown->BookMVA("2j1b","/nfs/fanae/user/sscruz/TW_jun4/AnalysisPAF/plotter/TW/StableWeights/jul8/bdtForTWv5/weights/TMVAClassification_GradBoost_200_005_4.weights.xml");
+// 
+//   BDT2j1tJER = new TMVA::Reader();
+//   BDT2j1tJER->AddVariable("jetPtSubLeading_"       , &jetPtSubLeading_JERUp  );
+//   // BDT2j1tJER->AddVariable("jetEtaSubLeading_"      , &jetEtaSubLeading_JERUp ); 
+//   // BDT2j1tJER->AddVariable("ptL1L2_"	             , &TDilepPt );
+//   // BDT2j1tJER->AddVariable("ptsysL1L2met_"	     , &TDilepMETPtJERUp );
+//   // BDT2j1tJER->AddVariable("deltaPtl1_l2_"	     , &TDPtL1_L2JERUp );
+//   // BDT2j1tJER->AddVariable("deltaPtl2_J2_"	     , &TDPtJ2_L2JERUp );
+//   BDT2j1tJER->AddVariable("deltaRL1_J1_"	     , &TDR_L1_J1JERUp );
+//   BDT2j1tJER->AddVariable("deltaRL1L2_J1J2_"       , &TDR_L1L2_J1J2JERUp );
+//   BDT2j1tJER->AddVariable("deltaRL1L2_metJ1J2_"    , &TDR_L1L2_J1J2METJERUp );
+//   BDT2j1tJER->BookMVA("2j1b","/nfs/fanae/user/sscruz/TW_jun4/AnalysisPAF/plotter/TW/StableWeights/jul8/bdtForTWv5/weights/TMVAClassification_GradBoost_200_005_4.weights.xml");
+//   // BDT2j1tJER->AddVariable("LeadingLeptPt_"         , &LeadingLeptPt_JERUp    );
+//   // BDT2j1tJER->AddVariable("LeadingLeptEta_"        , &LeadingLeptEta_JERUp   );
+// fin de coment largo
 
 
 

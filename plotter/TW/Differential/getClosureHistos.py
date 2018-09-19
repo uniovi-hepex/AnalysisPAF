@@ -6,7 +6,9 @@ print "===== Plots for closure test comparisons procedure\n"
 vl.SetUpWarnings()
 
 storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
-pathToTree    = ""
+pathToTree  = ""
+recocut     = "Tpassreco == 1"
+gencut      = '1/TWeight*TWeight_normal*(Tpassgen == 1)'
 
 if (len(sys.argv) > 1):
     varName     = sys.argv[1]
@@ -42,7 +44,7 @@ if not os.path.isdir('temp/{var}_'.format(var = varName)):
     os.system('mkdir -p temp/{var}_'.format(var = varName))
 print "> Beginning to produce the histograms", "\n"
 
-p = r.PlotToPyC(r.TString(vl.varList[varName]['var_gen']), r.TString('1/TWeight*TWeight_normal*(Tpassgen == 1)'), r.TString('All'), len(binning)-1, binning, r.TString('TGen' + varName), r.TString(''))
+p = r.PlotToPyC(r.TString(vl.varList[varName]['var_gen']), r.TString(gencut), r.TString('All'), len(binning)-1, binning, r.TString('TGen' + varName), r.TString(''))
 p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
 p.SetLimitFolder('temp/{var}_/'.format(var = varName));
 p.SetPathSignal(pathToTree);
@@ -58,7 +60,7 @@ p.SetOutputName("ClosureTest_" + varName);
 p.SaveHistograms();
 del p
 
-p = r.PlotToPyC(r.TString(vl.varList[varName]['var_gen']), r.TString('1/TWeight*TWeight_normal*(Tpassgen == 1)'), r.TString('All'), len(binning)-1, binning, r.TString('TGen' + varName), r.TString(''))
+p = r.PlotToPyC(r.TString(vl.varList[varName]['var_gen']), r.TString(gencut), r.TString('All'), len(binning)-1, binning, r.TString('TGen' + varName), r.TString(''))
 p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
 p.SetLimitFolder('temp/{var}_/'.format(var = varName));
 p.SetPathSignal(pathToTree);
@@ -74,7 +76,7 @@ p.SaveHistograms();
 del p
 
 
-p = r.PlotToPyC(r.TString(vl.varList[varName]['var']), r.TString('Tpassreco == 1'), r.TString('All'), len(binningreco)-1, binningreco, r.TString('T' + varName), r.TString(''))
+p = r.PlotToPyC(r.TString(vl.varList[varName]['var']), r.TString(recocut), r.TString('All'), len(binningreco)-1, binningreco, r.TString('T' + varName), r.TString(''))
 p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
 p.SetLimitFolder('temp/{var}_/'.format(var = varName));
 p.SetPathSignal(pathToTree);
@@ -90,7 +92,7 @@ p.SetOutputName("ClosureTest_recobinning_" + varName);
 p.SaveHistograms();
 del p
 
-p = r.PlotToPyC(r.TString(vl.varList[varName]['var']), r.TString('Tpassreco == 1'), r.TString('All'), len(binningreco)-1, binningreco, r.TString('T' + varName), r.TString(''))
+p = r.PlotToPyC(r.TString(vl.varList[varName]['var']), r.TString(recocut), r.TString('All'), len(binningreco)-1, binningreco, r.TString('T' + varName), r.TString(''))
 p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
 p.SetLimitFolder('temp/{var}_/'.format(var = varName));
 p.SetPathSignal(pathToTree);

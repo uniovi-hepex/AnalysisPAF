@@ -29,12 +29,12 @@ if [ "$1" == "p" ]; then
   cp -R Differential/results/. $plotspath
   cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$indstr
 #  cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$crdplstr$indstr
-  cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$srsstr$indstr
-  cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$prefitstr$indstr
-  cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$fitsstr$indstr
-  cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$compstr$indstr
-  cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$cnstr$indstr
-  cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$covstr$indstr
+#   cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$srsstr$indstr
+#   cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$prefitstr$indstr
+#   cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$fitsstr$indstr
+#   cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$compstr$indstr
+#   cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$cnstr$indstr
+#   cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$covstr$indstr
   echo " "
   echo "Done!"
   return

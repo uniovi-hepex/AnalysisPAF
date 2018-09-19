@@ -1,20 +1,10 @@
 # Preliminary definitions of samples and so on
 
-# MLM for DY:
-#
 samples=("TW" "TW_noFullyHadr" 
   "TbarW" "TbarW_noFullyHadr" "TW_aMCatNLO" 
-  "TTbar_Powheg" "TTbar_PowhegSemi" "TTbar2L_powheg" "DYJetsToLL_M50_MLM" "DYJetsToLL_M5to50_MLM" 
+  "TTbar_Powheg" "TTbar_PowhegSemi" "TTbar2L_powheg" "DYJetsToLL_M50_MLM" "DYJetsToLL_M5to50_MLM" "DYJetsToLL_M50_aMCatNLO" "DYJetsToLL_M10to50_aMCatNLO" 
   "WJetsToLNu_MLM" "ZZ" "WW" "WZ" "TTWToLNu" "TTZToQQ" "TTZToLLNuNu" "TTWToQQ" "TTGJets" 
   "MuonEG" "SingleElec" "SingleMuon")
-
-# aMC@NLO for DY:
-#
-# samples=("TW" "TW_noFullyHadr" 
-#   "TbarW" "TbarW_noFullyHadr" 
-#   "TTbar_Powheg" "TTbar_PowhegSemi" "TTbar2L_powheg" "DYJetsToLL_M50_aMCatNLO" "DYJetsToLL_M10to50_aMCatNLO" 
-#   "WJetsToLNu_MLM" "ZZ" "WW" "WZ" "TTWToLNu" "TTZToQQ" "TTZToLLNuNu" "TTWToQQ" "TTGJets" 
-#   "MuonEG" "SingleElec" "SingleMuon")
 
 # All the samples for syst. uncs.:
 #
@@ -44,21 +34,12 @@ samples_unf=("UNF_TW" "UNF_TW_noFullyHadr_isrUp" "UNF_TW_noFullyHadr_isrDown" "U
   "UNF_TbarW_noFullyHadr_PSscaleUp" "UNF_TbarW_noFullyHadr_PSscaleDown" "UNF_TbarW_noFullyHadr_DS" "UNF_TW_aMCatNLO")
 
 
-# MLM for DY:
-#
+
 runsamples=("TW_ext" "TW_noFullyHadr & TW_noFullyHadr_ext & TW_noFullyHadr_ext2" 
   "TbarW_ext" "TbarW_noFullyHadr & TbarW_noFullyHadr_ext & TbarW_noFullyHadr_ext2" "TW_aMCatNLO_[0-9]" 
-  "TTbar_Powheg" "TTbar_Powheg" "TTbar2L_powheg" "DYJetsToLL_M50_MLM_ext & DYJetsToLL_M50_MLM_ext2" "DYJetsToLL_M5to50_MLM" 
+  "TTbar_Powheg" "TTbar_Powheg" "TTbar2L_powheg" "DYJetsToLL_M50_MLM_ext & DYJetsToLL_M50_MLM_ext2" "DYJetsToLL_M5to50_MLM" "DYJetsToLL_M50_aMCatNLO" "DYJetsToLL_M10to50_aMCatNLO & DYJetsToLL_M10to50_aMCatNLO_ext" 
   "WJetsToLNu_MLM & WJetsToLNu_MLM_ext2" "ZZ & ZZ_ext" "WW & WW_ext" "WZ & WZ_ext" "TTWToLNu_ext1 & TTWToLNu_ext2" "TTZToQQ" "TTZToLLNuNu_ext1 & TTZToLLNuNu_ext2" "TTWToQQ" "TTGJets & TTGJets_ext" 
   "MuonEG" "SingleElec" "SingleMuon")
-
-# aMC@NLO for DY:
-#
-# runsamples=("TW_ext" "TW_noFullyHadr & TW_noFullyHadr_ext & TW_noFullyHadr_ext2" 
-#   "TbarW_ext" "TbarW_noFullyHadr & TbarW_noFullyHadr_ext & TbarW_noFullyHadr_ext2" 
-#   "TTbar_Powheg" "TTbar_Powheg" "TTbar2L_powheg" "DYJetsToLL_M50_aMCatNLO" "DYJetsToLL_M10to50_aMCatNLO & DYJetsToLL_M10to50_aMCatNLO_ext" 
-#   "WJetsToLNu_MLM & WJetsToLNu_MLM_ext2" "ZZ & ZZ_ext" "WW & WW_ext" "WZ & WZ_ext" "TTWToLNu_ext1 & TTWToLNu_ext2" "TTZToQQ" "TTZToLLNuNu_ext1 & TTZToLLNuNu_ext2" "TTWToQQ" "TTGJets" 
-#   "MuonEG" "SingleElec" "SingleMuon")
 
 # All the samples for syst. uncs.:
 #
@@ -94,7 +75,7 @@ uplimit_unf=$((${#runsamples_unf[@]}-1))
 
 ncores=("30" "30" 
   "30" "30" "30" 
-  "30" "30" "30" "30" "30"
+  "30" "30" "30" "30" "30" "30" "30" 
   "8" "8" "8" "8" "8" "8" "8" "8" "5" 
   "30" "30" "30")
 

@@ -27,6 +27,8 @@ class beautifulUnfoldingPlots:
         self.plotspath      = ""
         self.doWide         = False
         self.doRatio        = False
+        self.isLCurve       = False
+        self.doFit          = True
 
 
     def initCanvasAndAll(self):
@@ -112,24 +114,31 @@ class beautifulUnfoldingPlots:
 
             histo.GetXaxis().SetTitleFont(43)
             histo.GetXaxis().SetTitleSize(22)
-            histo.GetXaxis().SetTitleOffset(1.4)
+            histo.GetXaxis().SetTitleOffset(1.7 if self.isLCurve else 1.4)
             histo.GetXaxis().SetLabelFont(43)
-            histo.GetXaxis().SetLabelSize(22)
-            histo.GetXaxis().SetLabelOffset(0.007)
-            histo.GetXaxis().SetNdivisions(510, True)
+            histo.GetXaxis().SetLabelSize(13 if self.isLCurve else 22)
+            histo.GetXaxis().SetLabelOffset(0.033 if self.isLCurve else 0.007)
+            histo.GetXaxis().SetNdivisions(010 if self.isLCurve else 510, True)
             
             histo.GetYaxis().SetTitleFont(43)
             histo.GetYaxis().SetTitleSize(22)
             histo.GetYaxis().SetTitleOffset(0.5 if self.doWide else 1.8)
             histo.GetYaxis().SetLabelFont(43)
-            histo.GetYaxis().SetLabelSize(22)
+            histo.GetYaxis().SetLabelSize(13 if self.isLCurve else 22)
             histo.GetYaxis().SetLabelOffset(0.007)
-            histo.GetYaxis().SetNdivisions(510, True)
+            histo.GetYaxis().SetNdivisions(310 if self.isLCurve else 510, True)
             
             if 'nomin' not in options:
                 histo.SetMinimum(0.)
             else:
                 options = options.replace('nomin', '')
+            
+            if 'comp' in name: 
+                histo.GetYaxis().SetRangeUser(0.9, 1.1)
+            
+            if self.isLCurve:
+                for i in range(1, 25):
+                    histo.GetXaxis().ChangeLabel(i, 45)
             
             if self.doRatio:
                 histo.GetXaxis().SetLabelOffset(999)
@@ -184,7 +193,14 @@ class beautifulUnfoldingPlots:
         else:
             self.tlatex.append(la)
         
-        la.Draw('same')
+        la.SetNDC()
+        la.SetTextAlign(22)
+        la.SetTextFont(43)
+        la.SetTextSizePixels(22)
+        la.SetTextAngle(0)
+        
+        la.Draw()
+        return
 
 
     def saveCanvas(self, corner, suffix='', leg=True):
@@ -268,7 +284,11 @@ class beautifulUnfoldingPlots:
             totalunc.SetLineColor(r.kBlack)
             totalunc.SetFillStyle(1001)
             totalunc.SetLineWidth(1)
+            
+            #if self.doFit: totalunc.GetXaxis().SetRangeUser(fitunc.GetXaxis().GetBinLowEdge(1), fitunc.GetXaxis().GetBinUpEdge(fitunc.GetNbinsX()))
             totalunc.GetXaxis().SetRangeUser(fitunc.GetXaxis().GetBinLowEdge(1), fitunc.GetXaxis().GetBinUpEdge(fitunc.GetNbinsX()))
+            #else:          totalunc.GetXaxis().SetRangeUser(datavalues.GetXaxis().GetBinLowEdge(1), datavalues.GetXaxis().GetBinUpEdge(datavalues.GetNbinsX()))
+            
             totalunc.GetXaxis().SetTitle(vl.varList[self.name.replace('_folded', '')]['xaxis'])
             totalunc.GetXaxis().SetTitleFont(43)
             totalunc.GetXaxis().SetTitleSize(22)
