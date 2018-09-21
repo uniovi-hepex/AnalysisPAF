@@ -84,8 +84,22 @@ p.verbose = True
 p.verbose = False
 p.SetLumi(vl.Lumi)
 
-p.AddSample("TW",    "tW", r.itBkg, 2, '', opts)
-p.AddSample("TbarW", "tW", r.itBkg, 2, '', opts)
+#p.AddSample("TW",    "tW", r.itBkg, 2, '', opts)
+#p.AddSample("TbarW", "tW", r.itBkg, 2, '', opts)
+
+specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
+p.SetWeight('TWeight*' + str(specialweight))
+p.AddSample('TW',                     'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), '', opts)
+specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
+p.SetWeight('TWeight*' + str(specialweight))
+p.AddSample('TW_noFullyHadr',         'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), '', opts)
+specialweight = vl.n_tbarw/vl.sigma_tw/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
+p.SetWeight('TWeight*' + str(specialweight))
+p.AddSample('TbarW',                  'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), '', opts)
+specialweight = vl.n_tbarwnohad/vl.sigma_twnohad/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
+p.SetWeight('TWeight*' + str(specialweight))
+p.AddSample('TbarW_noFullyHadr',      'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), '', opts)
+p.SetWeight('TWeight')
 
 p.NoShowVarName = True;
 p.SetOutputName("ClosureTest_recobinning_" + varName);
