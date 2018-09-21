@@ -123,7 +123,7 @@ if [ "$1" == "an" ]; then
   if [ "$2" == "opt" ]; then
     echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Running general-purpose samples..."
     for ((i=0; i<=$uplimit; i++)); do
-      if [ ${samples[i]} == "TTbar2L_powheg" ]; then
+      if [ ${samples[i]} == "TTbar2L_powheg" ] || [ ${samples[i]} == "MuonEG" ] || [ ${samples[i]} == "SingleElec" ] || [ ${samples[i]} == "SingleMuon" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", ${ncores[i]}, -6, 0, 1.0, \"makeHadd\")"
       elif [ ${samples[i]} == "TTbar_PowhegSemi" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", ${ncores[i]}, 0, 0, 1.0, \"Semi\")"
@@ -156,7 +156,7 @@ if [ "$1" == "an" ]; then
   else
     echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Running general-purpose samples..."
     for ((i=0; i<=$uplimit; i++)); do
-      if [ ${samples[i]} == "TTbar2L_powheg" ]; then
+      if [ ${samples[i]} == "TTbar2L_powheg" ] || [ ${samples[i]} == "MuonEG" ] || [ ${samples[i]} == "SingleElec" ] || [ ${samples[i]} == "SingleMuon" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, -6, 0, 1.0, \"makeHadd\")"
       elif [ ${samples[i]} == "TTbar_PowhegSemi" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, 0, 0, 1.0, \"Semi\")"
