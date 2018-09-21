@@ -212,7 +212,7 @@ class beautifulUnfoldingPlots:
         legWidth = 0.12
         height = (.19 + textSize*max(len(self.objectsInLeg)-3,0))
         if corner == "TR":
-            (x1,y1,x2,y2) = (0.97-legWidth if self.doWide else .85-legWidth, .9 - height, .90, .93)
+            (x1,y1,x2,y2) = (0.97-legWidth if self.doWide else .85-legWidth, .9 - height, .865, .93)
         elif corner == "TC":
             (x1,y1,x2,y2) = (.5, .9 - height,  .55+legWidth, .93)
         elif corner == "TL":
