@@ -130,7 +130,7 @@ def propagateHistoAsym(nom, varDict, doEnv = False, doAsimov = False):
                     elif tmpunc < tmpuncDown:
                         tmpuncDown  = tmpunc
                     del tmpDict[key]
-            if doAsimov: valasimov = hasimov.GetBinContent(bin)
+            if doAsimov: valasimov = hasimov.GetBinError(bin)
             if 'asimov' in varDict: del tmpDict['asimov']
             outUp.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, +1), err, tmpuncUp, valasimov]))
             outDown.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, -1), err, abs(tmpuncDown), valasimov]))
@@ -139,7 +139,7 @@ def propagateHistoAsym(nom, varDict, doEnv = False, doAsimov = False):
             err     = outUp.GetBinError(bin)    # <==  Fit unc. taken here
             cont    = outUp.GetBinContent(bin)
             tmpDict = dict([(key, histo.GetBinContent(bin)) for (key, histo) in varDict.iteritems()])
-            if doAsimov: valasimov = hasimov.GetBinContent(bin)
+            if doAsimov: valasimov = hasimov.GetBinError(bin)
             if 'asimov' in varDict: del tmpDict['asimov']
             outUp.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, +1), err, valasimov]))
             outDown.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, -1), err, valasimov]))
