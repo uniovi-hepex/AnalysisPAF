@@ -26,7 +26,7 @@ if (len(sys.argv) > 2):
         pathToTree    = storagepath + sys.argv[2] + "/"
 else:
     pathToTree  = "../../../TW_temp/"
-    print "> Minitrees will be read from:", pathToTree, "\n"
+print "> Minitrees will be read from:", pathToTree, "\n"
 
 r.gROOT.SetBatch(True)
 r.gROOT.LoadMacro('../../Histo.C+')
@@ -48,8 +48,9 @@ def plotvariable(tsk):
     p.SetLumi(vl.Lumi)
     p.verbose  = False;
     #p.verbose  = True;
-    p.SetChLabel("1j1t+e#mu" if cut == "signal" else "1j1t+e#mu+0j_{loose}")
+    p.SetChLabel("1j1t+e^{#pm}#mu^{#mp}" if cut == "signal" else "1j1t+e^{#pm}#mu^{#mp}+0j_{loose}")
     p.SetChLabelPos(0.3, 0.85, -1)
+    
     
     p.AddSample("TTbar_PowhegSemi",             "Non-W|Z",      r.itBkg, 413, systlist)
     p.AddSample("WJetsToLNu_MLM",               "Non-W|Z",      r.itBkg, 413, systlist)
@@ -204,8 +205,9 @@ def plotvariable(tsk):
     
     p.SetCMSlabel("CMS");
     p.SetCMSmodeLabel("Preliminary");
-    #p.SetLegendPosition(0.7, 0.45, 0.93, 0.92);
-    p.SetLegendPosition('UR')
+    #p.SetLegendPosition('UR')
+    #p.SetLegendPosition(0.70, 0.65, 0.85, 0.93)
+    p.SetLegendPosition(0.82, 0.65, 0.93, 0.93)
     p.SetLegendTextSize(0.0275)
     p.SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/" if cut == 'signal' else "/nfs/fanae/user/vrbouza/www/TFM/1j1t/control/");
     p.doYieldsInLeg = False;
@@ -233,7 +235,7 @@ def plotcustomvariable(tsk):
     p.SetLumi(vl.Lumi)
     p.verbose  = False;
     #p.verbose  = True;
-    p.SetChLabel("1j1t+e#mu" if cut == "signal" else "1j1t+e#mu+0j_{loose}")
+    p.SetChLabel("1j1t+e^{#pm}#mu^{#mp}" if cut == "signal" else "1j1t+e^{#pm}#mu^{#mp}+0j_{loose}")
     p.SetChLabelPos(0.3, 0.85, -1)
     
     p.AddSample("TTbar_PowhegSemi",             "Non-W|Z",      r.itBkg, 413, systlist)
@@ -370,7 +372,9 @@ def plotcustomvariable(tsk):
     p.SetCMSlabel("CMS");
     p.SetCMSmodeLabel("Preliminary");
     #p.SetLegendPosition(0.7, 0.45, 0.93, 0.92);
-    p.SetLegendPosition('UR')
+    #p.SetLegendPosition('UR')
+    #p.SetLegendPosition(0.70, 0.65, 0.85, 0.93)
+    p.SetLegendPosition(0.82, 0.65, 0.93, 0.93)
     p.SetLegendTextSize(0.0275)
     p.SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/" if cut == 'signal' else "/nfs/fanae/user/vrbouza/www/TFM/1j1t/control/");
     p.doYieldsInLeg = False;
@@ -391,9 +395,9 @@ def plotcustomvariable(tsk):
 if __name__ == '__main__':
     print "> Beginning to plot descriptive histograms", "\n"
     tasks = []
-    #for v in vl.varList["Names"]["Variables"]:
-        #for ct in ['signal', 'control']:
-            #tasks.append( (v, ct) )
+    for v in vl.varList["Names"]["Variables"]:
+        for ct in ['signal', 'control']:
+            tasks.append( (v, ct) )
     
     tasks.append( ("nLooseCentral", "control") )
     
