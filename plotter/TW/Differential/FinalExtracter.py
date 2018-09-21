@@ -126,20 +126,17 @@ variations['LumiUp']   = dataUp
 variations['LumiDown'] = dataDn
 tfile.Close()
 
-if vl.doxsec:
+if not vl.asimov:
     tfile      = r.TFile.Open('temp/{var}_/forCards_{var}_asimov.root'.format(var = varName))
     asimov     = getXsecForSys('asimov', tfile)
     tfile.Close()
-    #asimovDown = copy.deepcopy(asimovUp.Clone('data_asimovDown'))
-    #for bin in range(1, asimovDown.GetNbinsX() + 1):
-        #asimovDown.SetBinContent(bin, 2 * nominal.GetBinContent(bin) - asimovUp.GetBinContent(bin))
     
 
 out = r.TFile.Open('temp/{var}_/cutOutput_{var}.root'.format(var = varName), 'recreate')
 nominal.Write()
-if vl.doxsec: 
+
+if not vl.asimov:
     asimov.Write()
-    #asimovDown.Write()
 for syst in sysList:
     variations[syst].Write()
 out.Close()
