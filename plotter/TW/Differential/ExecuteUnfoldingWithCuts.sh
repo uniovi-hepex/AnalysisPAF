@@ -49,7 +49,7 @@ if [ "$variable" == "All" ]; then
     # 1) Get those histograms.
     echo "> Obtaining histograms per BDT's bin with profiling..."
     echo " "
-    python getFinalCards.py "All" $ncores
+    python getFinalCards.py "All" $ncores $4
         
     for ((i=0; i<=$uplimit; i++)); do
         # 2) Get the histograms for the closure test.
