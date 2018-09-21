@@ -458,7 +458,7 @@ varList['HTtotuncertainties'] = {
 
 
 varList['DilepMETJet1Pz'] = {
-    'xaxis'       : 'p_{Z}(\\ell_{1}, \\ell_{2}, j (GeV)',
+    'xaxis'       : 'p_{Z}(\\ell_{1}, \\ell_{2}, j) (GeV)',
     'yaxis'       : 'd#sigma [pb]',
     'genbinning'  : [0., 100., 200., 400., 600.],
     'recobinning' : [0., 50., 100., 150., 200., 250., 300., 400., 600.],
