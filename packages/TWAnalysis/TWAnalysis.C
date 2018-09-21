@@ -786,7 +786,7 @@ void TWAnalysis::InsideLoop(){
   
   if (Tpassgen || Tpassreco || TpassrecoJESUp || TpassrecoJESDown || TpassrecoJERUp 
       || (TNJets == 1 && TNBtags == 1) || (TNJetsJESUp == 1 && TNBtagsJESUp == 1) 
-      || (TNJetsJERUp == 1 && TNBtagsJERUp == 1))  { // If needed, filling.
+      || (TNJetsJESDown == 1 && TNBtagsJESDown == 1) || (TNJetsJERUp == 1 && TNBtagsJERUp == 1))  { // If needed, filling.
     fMini1j1t->Fill();
   }
 }
