@@ -219,8 +219,8 @@ varList['LeadingJetPt'] = {
     'yaxis'       : 'd#sigma [pb]',
     #'genbinning'  : [0, 75, 200, 300],
     #'recobinning' : [0., 50., 75., 110., 150., 200., 300.],
-#    'genbinning'  : [0., 75., 140., 200., 300.],                            # binning presentado en singletop
-#    'recobinning' : [0., 60., 80., 105., 120., 140., 170., 210., 300.],
+   #'genbinning'  : [0., 75., 140., 200., 300.],                            # binning presentado en singletop
+   #'recobinning' : [0., 60., 80., 105., 120., 140., 170., 210., 300.],
 #    'genbinning'  : [0., 60., 110., 150., 300.],
 #    'recobinning' : [0., 60., 75., 90., 110., 125., 150., 175., 300.],
     'genbinning'  : [0., 60., 110., 150., 300.],
@@ -289,8 +289,8 @@ varList['LeadingLepPt'] = {
     'yaxis'       : 'd#sigma [pb]',
     #'genbinning'  : [0, 50, 120, 190, 250],
     #'recobinning' : [0, 50, 65, 85, 97, 110, 145, 180, 250],
-#    'genbinning'  : [0, 50, 120, 160, 250],                            # binning presentado en singletop
-#    'recobinning' : [0, 50, 65, 85, 97, 110, 145, 180, 250],
+   #'genbinning'  : [0, 50, 120, 160, 250],                            # binning presentado en singletop
+   #'recobinning' : [0, 50, 65, 85, 97, 110, 145, 180, 250],
 #    'genbinning'  : [0., 50., 90., 135., 250.],
 #    'recobinning' : [0., 50., 65., 80., 95., 110., 130., 150., 250.],
     #'genbinning'  : [0., 50., 90., 135., 250.],
@@ -558,8 +558,8 @@ varList['DPhiSubLeadJetuncertainties'] = {
 varList['nLooseCentral'] = {
     'xaxis'       : '#(j_{loose})',
     'yaxis'       : 'd#sigma [pb]',
-    'genbinning'  : [0, 2, 4],
-    'recobinning' : [0, 1, 2, 3, 4],
+    'genbinning'  : [0, 2, 4, 6],
+    'recobinning' : [0, 1, 2, 3, 4, 5, 6],
     'var'         : 'TnLooseCentral',
     'var_response': 'nLooseCentral',
     'var_gen'     : 'TnSergioLooseCentralJets',
