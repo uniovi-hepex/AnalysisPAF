@@ -230,4 +230,122 @@ for i in range(vl.nuncs):
 plot.addHisto(hincmax, 'hist,same', 'Total', 'L')
 plot.plotspath = "results/"
 plot.saveCanvas('TR')
-del plot
+del plot, variations, nominal, dataUp, dataDn
+
+if not vl.asimov:
+    tfile   = r.TFile.Open('temp/{var}_/forCards_{var}_goodasimov.root'.format(var = varName))
+    nominal = getXsecForSys('', tfile)
+    variations = {}
+    for syst in sysList:
+        variations[syst] = getXsecForSys(syst, tfile)
+
+    procs2 = ['ttbar','dy','fakes','vvttbarv']
+    for proc, size in zip(procs2, [0.04, 0.5, 0.5, 0.5]):
+        dataUp, dataDn = getXSecForNomSys(proc, tfile, size)
+        variations[procs[procs2.index(proc)] + 'Up']   = dataUp
+        variations[procs[procs2.index(proc)] + 'Down'] = dataDn
+
+    dataUp, dataDn         = getLumiUnc(tfile)
+    variations['LumiUp']   = dataUp
+    variations['LumiDown'] = dataDn
+    tfile.Close()
+
+    out = r.TFile.Open('temp/{var}_/cutOutput_{var}_goodasimov.root'.format(var = varName), 'recreate')
+    nominal.Write()
+
+    for syst in sysList:
+        variations[syst].Write()
+    out.Close()
+
+    scaleval = 1/vl.Lumi/1000 if vl.doxsec else 1
+    nominal.Scale(scaleval)
+    for key in variations:
+        variations[key].Scale(scaleval)
+
+    nominal_withErrors  = ep.propagateHistoAsym(nominal, variations, True)
+    plot                = bp.beautifulUnfoldingPlots('{var}_asimov_folded'.format(var = varName))
+    plot.doRatio        = True
+    plot.doFit          = False
+    plot.plotspath      = "results/"
+
+    nominal.SetMarkerStyle(r.kFullCircle)
+    nominal.GetXaxis().SetNdivisions(505, True)
+
+    nominal_withErrors[0].SetFillColorAlpha(r.kBlue, 0.35)
+    nominal_withErrors[0].SetLineColor(r.kBlue)
+    nominal_withErrors[0].SetFillStyle(1001)
+
+    if doSanityCheck:
+        print '> Adding generated distribution with used software and others.'
+        if not os.path.isfile('temp/{var}_/ClosureTest_recobinning_{var}.root'.format(var = varName)):
+            raise RuntimeError('The rootfile with the generated information does not exist')
+        tmptfile = r.TFile.Open('temp/{var}_/ClosureTest_recobinning_{var}.root'.format(var = varName))
+        tru = copy.deepcopy(tmptfile.Get('tW'))
+        tru.SetLineWidth(2)
+        tru.SetLineColor(bp.colorMap[0])
+        if not os.path.isfile('temp/{var}_/ClosureTest_aMCatNLO_recobinning_{var}.root'.format(var = varName)):
+            raise RuntimeError('The rootfile with the generated information does not exist')
+        tmptfile2 = r.TFile.Open('temp/{var}_/ClosureTest_aMCatNLO_recobinning_{var}.root'.format(var = varName))
+        aMCatNLO = copy.deepcopy(tmptfile2.Get('tW'))
+        aMCatNLO.SetLineWidth(2)
+        aMCatNLO.SetLineColor(r.kAzure)
+        
+        if nominal_withErrors[0].GetMaximum() <= tru.GetMaximum(): nominal_withErrors[0].SetMaximum(tru.GetMaximum())
+        if nominal_withErrors[0].GetMaximum() <= aMCatNLO.GetMaximum(): nominal_withErrors[0].SetMaximum(aMCatNLO.GetMaximum())
+        
+        plot.addHisto(nominal_withErrors, 'hist',     'Total unc.',   'F', 'unc')
+        plot.addHisto(tru,                'L,same',   'tW Powheg',    'L', 'mc')
+        plot.addHisto(aMCatNLO,           'L,same',   'tW aMCatNLo',  'L', 'mc')
+        plot.addHisto(nominal,            'P,E,same', "Pseudodata",   'P', 'data')
+        plot.saveCanvas('TR')
+        tmptfile2.Close()
+        tmptfile.Close()
+    else:
+        plot.addHisto(nominal_withErrors, 'hist', 'Total unc.', 'F')
+        plot.addHisto(nominal, 'P,same', "Pseudodata", 'P', 'data')
+        plot.saveCanvas('TR')
+    del plot
+
+
+    uncList = ep.getUncList(nominal, variations, True, False)[:vl.nuncs]
+    plot    = bp.beautifulUnfoldingPlots('{var}uncertainties_asimov_folded'.format(var = varName))
+    uncList[0][1].Draw()
+
+    incmax  = []
+    for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
+        if nominal_withErrors[1].GetBinError(bin) > nominal_withErrors[0].GetBinContent(bin):
+            incmax.append(max([nominal_withErrors[0].GetBinError(bin), nominal_withErrors[0].GetBinContent(bin)]))
+        else:
+            incmax.append(max([nominal_withErrors[0].GetBinError(bin), nominal_withErrors[1].GetBinError(bin)]))
+
+    maxinctot = 0
+    hincmax   = copy.deepcopy(nominal.Clone('hincmax'))
+    for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
+        hincmax.SetBinContent(bin, incmax[bin-1] / hincmax.GetBinContent(bin))
+        hincmax.SetBinError(bin, 0.)
+        if (hincmax.GetBinContent(bin) > maxinctot): maxinctot = hincmax.GetBinContent(bin)
+
+    hincmax.SetLineColor(r.kBlack)
+    hincmax.SetLineWidth( 2 )
+    hincmax.SetFillColorAlpha(r.kBlue, 0.)
+
+    if (maxinctot >= 0.9):
+        if maxinctot >= 5:
+            uncList[0][1].GetYaxis().SetRangeUser(0., 5.)
+        else:
+            uncList[0][1].GetYaxis().SetRangeUser(0., maxinctot + 0.1)
+    else:
+        uncList[0][1].GetYaxis().SetRangeUser(0., 0.9)
+
+    for i in range(vl.nuncs):
+        if 'statbin' not in uncList[i][0]: uncList[i][1].SetLineColor(vl.NewColorMap[uncList[i][0]])
+        else:                              uncList[i][1].SetLineColor(r.kAzure)
+        uncList[i][1].SetLineWidth( 2 )
+        plot.addHisto(uncList[i][1], 'hist,same' if i else 'hist', uncList[i][0], 'L')
+
+    plot.addHisto(hincmax, 'hist,same', 'Total', 'L')
+    plot.plotspath = "results/"
+    plot.saveCanvas('TR')
+    del plot
+
+
