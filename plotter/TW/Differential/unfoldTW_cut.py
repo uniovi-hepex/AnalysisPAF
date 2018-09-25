@@ -98,6 +98,7 @@ class UnfolderHelper:
         self.doArea     = False
         self.Init       = False
         self.tau        = 0
+        self.wearedoingasimov = False
     
     
     def makeUnfolderCore(self, unfInputNresponse):
@@ -120,7 +121,7 @@ class UnfolderHelper:
         self.lCurve     = r.TGraph(0)
 
         #self.themax = self.tunfolder.ScanLcurve(10000, 1e-10, 1e-4, self.lCurve, self.logTauX, self.logTauY, self.logTauCurv)
-        self.themax = self.tunfolder.ScanLcurve(5000, 1e-20, 1e-1, self.lCurve, self.logTauX,  self.logTauY, self.logTauCurv)
+        self.themax = self.tunfolder.ScanLcurve(5000, 1e-30, 1e-4, self.lCurve, self.logTauX,  self.logTauY, self.logTauCurv)
         
         self.tau = self.tunfolder.GetTau()
         return
@@ -142,7 +143,7 @@ class UnfolderHelper:
         # kEScanTauRhoSquareAvg    average global correlation coefficient squared (from TUnfold::GetRhoI())
         # kEScanTauRhoSquareAvgSys average global correlation coefficient squared (from TUnfoldSys::GetRhoItotal())
         r.gInterpreter.LoadMacro('myScanner.C+')
-        self.themax = r.myScanner(self.tunfolder, 1000, 1e-9, 1e-5, self.scanRes, r.TUnfoldDensity.kEScanTauRhoAvg,
+        self.themax = r.myScanner(self.tunfolder, 1000, 1e-9, 1e-3, self.scanRes, r.TUnfoldDensity.kEScanTauRhoAvg,
                                   self.logTauX, self.logTauY)
         
         self.tau = self.tunfolder.GetTau()
@@ -158,7 +159,7 @@ class UnfolderHelper:
             self.doLCurveScan()
         
         # First: L-curve plot
-        plot = bp.beautifulUnfoldingPlots('{var}_LCurve'.format(var = self.var))
+        plot = bp.beautifulUnfoldingPlots('{var}_asimov_LCurve'.format(var = self.var) if (self.wearedoingasimov) else '{var}_LCurve'.format(var = self.var))
         plot.isLCurve = True
         plot.plotspath  = self.plotspath
         if not hasattr(self,'scanRes'):
@@ -176,12 +177,13 @@ class UnfolderHelper:
         else:
             plot.addHisto(self.scanRes,'ALnomin','L curve',0)
         
-        plot.addTLatex(0.75, 0.9, "#tau = {taupar}".format(taupar = round(self.tau ,5)))
+        plot.addTLatex(0.75, 0.9, "#tau = {taupar}".format(taupar = round(self.tau, 15)))
+        #plot.addTLatex(0.75, 0.9, "#tau = {taupar}".format(taupar = self.tau))
         plot.saveCanvas('TR', leg = False)
         del plot
         
         # Second: L-curve curvature plot
-        plot = bp.beautifulUnfoldingPlots('{var}_LogTauCurv'.format(var = self.var))
+        plot = bp.beautifulUnfoldingPlots('{var}_asimov_LogTauCurv'.format(var = self.var) if (self.wearedoingasimov) else '{var}_LogTauCurv'.format(var = self.var))
         plot.plotspath  = self.plotspath
         plot.initCanvasAndAll()
         #plot.addHisto(self.lCurve, 'AL','',0)
@@ -217,6 +219,8 @@ class Unfolder():
         self.sysList          = self.Data.listOfSysts
         self.helpers          = { nuis : UnfolderHelper(self.var, nuis) for nuis in self.sysList }
         self.helpers['']      = UnfolderHelper(self.var, '')
+        self.wearedoingasimov = (not vl.asimov and not 'asimov' in self.sysList)
+        self.helpers[''].wearedoingasimov = self.wearedoingasimov    # ONLY IMPLEMENTED FOR NOMINAL ONES!!!!!
         self.plotspath        = ""
         self.doColorEnvelope  = False
         self.doRegularisation = False
@@ -322,7 +326,7 @@ class Unfolder():
         for bin in range(1, regularized.GetNbinsX()+1):
             regularized.SetBinContent(bin, regularized.GetBinContent(bin)/unregularized.GetBinContent(bin))
         
-        plot = bp.beautifulUnfoldingPlots(self.var + '_regcomp')
+        plot = bp.beautifulUnfoldingPlots(self.var + '_asimov_regcomp' if (self.wearedoingasimov) else self.var + '_regcomp')
 #        regularized.Draw()
         regularized.GetXaxis().SetTitle(vl.varList[self.var]['xaxis'])
         regularized.GetYaxis().SetTitle('Reg./Unreg.')
@@ -355,7 +359,7 @@ class Unfolder():
             if withoutareaconst.GetBinContent(bin) != 0: withareaconst.SetBinContent(bin, withareaconst.GetBinContent(bin)/withoutareaconst.GetBinContent(bin))
             else:                                        withoutareaconst.SetBinContent(bin, 0)
         
-        plot = bp.beautifulUnfoldingPlots(self.var + '_areacomp')
+        plot = bp.beautifulUnfoldingPlots(self.var + '_asimov_areacomp' if (self.wearedoingasimov) else self.var + '_areacomp')
         withareaconst.GetXaxis().SetTitle(vl.varList[self.var]['xaxis'])
         withareaconst.GetYaxis().SetTitle('Area/No area')
         plot.addHisto(withareaconst  ,'hist'     ,'areacomp'  ,'L')
@@ -386,7 +390,7 @@ class Unfolder():
         for key in allHistos:
             allHistos[key].Scale(scaleval)
         
-        if not vl.asimov:
+        if not self.wearedoingasimov:
             if not os.path.isfile('temp/{var}_/ClosureTest_{var}.root'.format(var = self.var)):
                 raise RuntimeError('The rootfile with the generated information does not exist')
             tmptfile = r.TFile.Open('temp/{var}_/ClosureTest_{var}.root'.format(var = self.var))
@@ -409,9 +413,9 @@ class Unfolder():
             del tru
         
         
-        if not vl.asimov: nominal_withErrors = ep.propagateHistoAsym(nominal, allHistos, self.doColorEnvelope, True)
-        else:             nominal_withErrors = ep.propagateHistoAsym(nominal, allHistos, self.doColorEnvelope)
-        plot               = bp.beautifulUnfoldingPlots(self.var)
+        if not self.wearedoingasimov: nominal_withErrors = ep.propagateHistoAsym(nominal, allHistos, self.doColorEnvelope, True)
+        else:                         nominal_withErrors = ep.propagateHistoAsym(nominal, allHistos, self.doColorEnvelope)
+        plot               = bp.beautifulUnfoldingPlots(self.var + "_asimov"  if self.wearedoingasimov else self.var)
         plot.doRatio       = True
         plot.doFit         = False
         plot.plotspath     = self.plotspath
@@ -425,33 +429,35 @@ class Unfolder():
             if not os.path.isfile('temp/{var}_/ClosureTest_{var}.root'.format(var = self.var)):
                 raise RuntimeError('The rootfile with the generated information does not exist')
             tmptfile = r.TFile.Open('temp/{var}_/ClosureTest_{var}.root'.format(var = self.var))
-            tru = copy.deepcopy(tmptfile.Get('tW'))
+            tru = copy.deepcopy(tmptfile.Get('tW').Clone('tru'))
             tru.SetLineWidth(2)
             tru.SetLineColor(bp.colorMap[0])
             if not os.path.isfile('temp/{var}_/ClosureTest_aMCatNLO_{var}.root'.format(var = self.var)):
                 raise RuntimeError('The rootfile with the generated information from an aMCatNLO sample does not exist')
             tmptfile2 = r.TFile.Open('temp/{var}_/ClosureTest_aMCatNLO_{var}.root'.format(var = self.var))
-            aMCatNLO = copy.deepcopy(tmptfile2.Get('tW'))
+            aMCatNLO = copy.deepcopy(tmptfile2.Get('tW').Clone('aMCatNLO'))
             aMCatNLO.SetLineWidth(2)
             aMCatNLO.SetLineColor(r.kAzure)
             
             plot.addHisto(nominal_withErrors, 'hist',   'Total unc.',   'F', 'unc')
             plot.addHisto(tru,                'L,same', 'tW Powheg',    'L', 'mc')
             plot.addHisto(aMCatNLO,           'L,same', 'tW aMCatNLO',  'L', 'mc')
-            plot.addHisto(nominal,            'P,E,same',vl.labellegend,'P', 'data')
+            if self.wearedoingasimov: plot.addHisto(nominal, 'P,E,same',"Pseudodata",'P', 'data')
+            else:                     plot.addHisto(nominal, 'P,E,same',vl.labellegend,'P', 'data')
             plot.saveCanvas('TR')
             tmptfile.Close()
             tmptfile2.Close()
         else:
             plot.addHisto(nominal_withErrors, 'E2',     'Total unc.',   'F')
-            plot.addHisto(nominal,            'P,same', vl.labellegend, 'P', 'data')
+            if self.wearedoingasimov: plot.addHisto(nominal, 'P,same',"Pseudodata",'P', 'data')
+            else:                     plot.addHisto(nominal, 'P,same',vl.labellegend,'P', 'data')
             plot.saveCanvas('TR')
 
         del plot
-        plot2       = bp.beautifulUnfoldingPlots(self.var + 'uncertainties')
+        plot2       = bp.beautifulUnfoldingPlots(self.var + 'uncertainties_asimov' if self.wearedoingasimov else self.var + 'uncertainties')
         plot2.doFit = False
-        if not vl.asimov: uncList = ep.getUncList(nominal, allHistos, self.doColorEnvelope, False, True)
-        else:             uncList = ep.getUncList(nominal, allHistos, self.doColorEnvelope, False)
+        if not self.wearedoingasimov: uncList = ep.getUncList(nominal, allHistos, self.doColorEnvelope, False, True)
+        else:                         uncList = ep.getUncList(nominal, allHistos, self.doColorEnvelope, False)
         print 'Full uncertainties list (ordered by impact):', uncList
         uncList     = uncList[:vl.nuncs]
         
@@ -490,6 +496,8 @@ class Unfolder():
         plot2.addHisto(hincmax, 'H,same', 'Total', 'L')
         plot2.plotspath = self.plotspath
         plot2.saveCanvas('TR')
+        del plot2
+        return
 
 
     def getConditionNumber(self, nuis):
@@ -540,16 +548,30 @@ if __name__=="__main__":
         out += str(round(a.getConditionNumber(syst), 4)) +  '          ' + syst + '\n'
     fcn.write(out)
     fcn.close
+    del a
+    
+    if not vl.asimov:
+        b = Unfolder(varName, pathtothings + 'cutOutput_' + varName + '_goodasimov.root', 'temp/UnfoldingInfo.root')
+        b.plotspath       = "results/"
+        b.doSanityCheck   = True
+        b.doColorEnvelope = True
+        b.doRegularisation= vl.doReg
+        b.doAreaConstraint= vl.doArea
+        
+        b.doUnfoldingForAllNuis()       # Unfolding
+        b.doScanPlots()                 # L-Curve and curvature plots
+        b.doRegularizationComparison()  # Comparison plot between regularisation and not
+        b.doAreaConstraintComparison()  # Comparison plot between area constraint and not
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     print "> Unfolding done!"
     
-    #print "> Printing yields:"
-    #ndata = 0
-    #nmc   = 0
-    #for i in range(1, len(vl.varList[varName]['recobinning'])):
-        #tmpdatac = open('temp/{var}_/datacard_{var}_{bin}.txt'.format(var = varName, bin = i), 'r')
-        #for lin in tmpdatac:
-            #if 'observation' in lin: ndata += int(lin.split(' ')[1])
-            #if 'rate'        in lin: nmc   += sum([float(j) for j in lin.split(' ')[1:-1]])
-        #tmpdatac.close()
-    #print "\n    - Number of observed data events in the fiducial region:", ndata
-    #print "\n    - Number of simulated events in the fiducial region:", nmc
+    
