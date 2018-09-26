@@ -255,3 +255,16 @@ def SetTheUncsFromHere(histo, hlist, SetStatUncs = False):
         histo.SetBinError(bin, tmperr)
     
     return
+
+
+
+def getCovarianceFromVar( nom, var, name ):
+    nbins = nom.GetXaxis().GetNbins()
+    cov = r.TH2F(name, '', nbins, -0.5,nbins-0.5)
+
+    for x in range(nbins): 
+        for y in range(nbins):
+            bin = cov.GetBin(x+1,y+1)
+            cov.SetBinContent(bin, (nom.GetBinContent(x+1)-var.GetBinContent(x+1))*(nom.GetBinContent(y+1)-var.GetBinContent(y+1)))
+
+    return cov
