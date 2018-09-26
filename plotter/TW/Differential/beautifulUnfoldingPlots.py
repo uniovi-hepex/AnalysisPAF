@@ -69,10 +69,10 @@ class beautifulUnfoldingPlots:
                 asymhisto.SetPointEYhigh(bin, histo.GetBinError(bin + 1))
                 asymhisto.SetPointEYlow(bin, histos[1].GetBinError(bin + 1))
             
-            if self.name.replace('_folded', '') in vl.varList:
-                asymhisto.GetXaxis().SetTitle( vl.varList[self.name.replace('_folded', '')]['xaxis'] )
+            if self.name.replace('_folded', '').replace('_asimov', '') in vl.varList:
+                asymhisto.GetXaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '')]['xaxis'] )
                 if not vl.doxsec: asymhisto.GetYaxis().SetTitle( 'Events' )
-                else:             asymhisto.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '')]['yaxis'] )
+                else:             asymhisto.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '')]['yaxis'] )
             
             asymhisto.GetXaxis().SetRangeUser(histo.GetXaxis().GetBinLowEdge(1), histo.GetXaxis().GetBinUpEdge(histo.GetNbinsX()))
             
@@ -107,10 +107,10 @@ class beautifulUnfoldingPlots:
             self.objectsInLeg.append( (asymhisto, name, legOptions, idname) )
         else:
             histo = histos
-            if self.name.replace('_folded', '') in vl.varList:
-                histo.GetXaxis().SetTitle( vl.varList[self.name.replace('_folded', '')]['xaxis'] )
+            if self.name.replace('_folded', '').replace('_asimov', '') in vl.varList:
+                histo.GetXaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '')]['xaxis'] )
                 if not vl.doxsec: histo.GetYaxis().SetTitle( 'Events' )
-                else:             histo.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '')]['yaxis'] )
+                else:             histo.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '')]['yaxis'] )
 
             histo.GetXaxis().SetTitleFont(43)
             histo.GetXaxis().SetTitleSize(22)
@@ -159,10 +159,10 @@ class beautifulUnfoldingPlots:
         self.canvas.cd(padnum)
         histo = histos
 
-        if self.name.replace('_folded', '') in vl.varList:
-            histo.GetXaxis().SetTitle( vl.varList[self.name.replace('_folded', '')]['xaxis'] )
+        if self.name.replace('_folded', '').replace('_asimov', '') in vl.varList:
+            histo.GetXaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '')]['xaxis'] )
             if not vl.doxsec: histo.GetYaxis().SetTitle( 'Events' )
-            else:             histo.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '')]['yaxis'] )
+            else:             histo.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '')]['yaxis'] )
 
         histo.GetXaxis().SetTitleFont(43)
         histo.GetXaxis().SetTitleSize(22)
@@ -212,7 +212,7 @@ class beautifulUnfoldingPlots:
         legWidth = 0.12
         height = (.19 + textSize*max(len(self.objectsInLeg)-3,0))
         if corner == "TR":
-            (x1,y1,x2,y2) = (0.97-legWidth if self.doWide else .85-legWidth, .9 - height, .90, .93)
+            (x1,y1,x2,y2) = (0.97-legWidth if self.doWide else .85-legWidth, .9 - height, .865, .93)
         elif corner == "TC":
             (x1,y1,x2,y2) = (.5, .9 - height,  .55+legWidth, .93)
         elif corner == "TL":
@@ -289,7 +289,7 @@ class beautifulUnfoldingPlots:
             totalunc.GetXaxis().SetRangeUser(fitunc.GetXaxis().GetBinLowEdge(1), fitunc.GetXaxis().GetBinUpEdge(fitunc.GetNbinsX()))
             #else:          totalunc.GetXaxis().SetRangeUser(datavalues.GetXaxis().GetBinLowEdge(1), datavalues.GetXaxis().GetBinUpEdge(datavalues.GetNbinsX()))
             
-            totalunc.GetXaxis().SetTitle(vl.varList[self.name.replace('_folded', '')]['xaxis'])
+            totalunc.GetXaxis().SetTitle(vl.varList[self.name.replace('_folded', '').replace('_asimov', '')]['xaxis'])
             totalunc.GetXaxis().SetTitleFont(43)
             totalunc.GetXaxis().SetTitleSize(22)
             totalunc.GetXaxis().SetTitleOffset(4)

@@ -655,136 +655,139 @@ void TWAnalysis::InsideLoop(){
   
   //   Setting dummy value for gen events that don't pass the reco selection for
   // unfolding procedures.
-  if (Tpassgen && !Tpassreco) {
-    TMET              = 99999;
-    TMET_Phi          = 99999;
-    TM_LeadingB       = 99999;
-    TM_SubLeadingB    = 99999;
-    TM_LLB            = 99999;
-    TMT_LLMETB        = 99999;
-    TE_LLB            = 99999;
-    TDilepPt          = 99999;
-    DilepJetPt        = 99999;
-    DilepMETJetPt     = 99999;
-    THTtot            = 99999;
-    TLeadingJetPt     = 99999;
-    TLeadingJetE      = 99999;
-    TLeadingJetPhi    = 99999;
-    TLeadingJetEta    = 99999;
-    TLeadingLepPt     = 99999;
-    TLeadingLepE      = 99999;
-    TLeadingLepPhi    = 99999;
-    TLeadingLepEta    = 99999;
-    TSubLeadingLepPt  = 99999;
-    TSubLeadingLepE   = 99999;
-    TSubLeadingLepPhi = 99999;
-    TSubLeadingLepEta = 99999;
-    DilepMETJet1Pz    = 99999;
-    TLLMETBEta        = 99999;
-    MSys              = 99999;
-    TMll              = 99999;
-    TDPhiLL           = 99999;
-    TDPhiLeadJet      = 99999;
-    TDPhiSubLeadJet   = 99999;
+  if (gPar.Contains("Unfolding")) {
+    if (Tpassgen && !Tpassreco) {
+        TMET              = 99999;
+        TMET_Phi          = 99999;
+        TM_LeadingB       = 99999;
+        TM_SubLeadingB    = 99999;
+        TM_LLB            = 99999;
+        TMT_LLMETB        = 99999;
+        TE_LLB            = 99999;
+        TDilepPt          = 99999;
+        DilepJetPt        = 99999;
+        DilepMETJetPt     = 99999;
+        THTtot            = 99999;
+        TLeadingJetPt     = 99999;
+        TLeadingJetE      = 99999;
+        TLeadingJetPhi    = 99999;
+        TLeadingJetEta    = 99999;
+        TLeadingLepPt     = 99999;
+        TLeadingLepE      = 99999;
+        TLeadingLepPhi    = 99999;
+        TLeadingLepEta    = 99999;
+        TSubLeadingLepPt  = 99999;
+        TSubLeadingLepE   = 99999;
+        TSubLeadingLepPhi = 99999;
+        TSubLeadingLepEta = 99999;
+        DilepMETJet1Pz    = 99999;
+        TLLMETBEta        = 99999;
+        MSys              = 99999;
+        TMll              = 99999;
+        TDPhiLL           = 99999;
+        TDPhiLeadJet      = 99999;
+        TDPhiSubLeadJet   = 99999;
+    }
+    if (Tpassgen && !TpassrecoJESUp) {
+        TMETJESUp              = 99999;
+        TMET_PhiJESUp          = 99999;
+        TM_LeadingBJESUp       = 99999;
+        TM_SubLeadingBJESUp    = 99999;
+        TM_LLBJESUp            = 99999;
+        TMT_LLMETBJESUp        = 99999;
+        TE_LLBJESUp            = 99999;
+        TDilepPtJESUp          = 99999;
+        DilepJetPtJESUp        = 99999;
+        DilepMETJetPtJESUp     = 99999;
+        THTtotJESUp            = 99999;
+        TLeadingJetPtJESUp     = 99999;
+        TLeadingJetEJESUp      = 99999;
+        TLeadingJetPhiJESUp    = 99999;
+        TLeadingJetEtaJESUp    = 99999;
+        TLeadingLepPtJESUp     = 99999;
+        TLeadingLepEJESUp      = 99999;
+        TLeadingLepPhiJESUp    = 99999;
+        TLeadingLepEtaJESUp    = 99999;
+        TSubLeadingLepPtJESUp  = 99999;
+        TSubLeadingLepEJESUp   = 99999;
+        TSubLeadingLepPhiJESUp = 99999;
+        TSubLeadingLepEtaJESUp = 99999;
+        DilepMETJet1PzJESUp    = 99999;
+        TLLMETBEtaJESUp        = 99999;
+        MSysJESUp              = 99999;
+        TMllJESUp              = 99999;
+        TDPhiLLJESUp           = 99999;
+        TDPhiLeadJetJESUp      = 99999;
+        TDPhiSubLeadJetJESUp   = 99999;
+    }
+    if (Tpassgen && !TpassrecoJESDown) {
+        TMETJESDown              = 99999;
+        TMET_PhiJESDown          = 99999;
+        TM_LeadingBJESDown       = 99999;
+        TM_SubLeadingBJESDown    = 99999;
+        TM_LLBJESDown            = 99999;
+        TMT_LLMETBJESDown        = 99999;
+        TE_LLBJESDown            = 99999;
+        TDilepPtJESDown          = 99999;
+        DilepJetPtJESDown        = 99999;
+        DilepMETJetPtJESDown     = 99999;
+        THTtotJESDown            = 99999;
+        TLeadingJetPtJESDown     = 99999;
+        TLeadingJetEJESDown      = 99999;
+        TLeadingJetPhiJESDown    = 99999;
+        TLeadingJetEtaJESDown    = 99999;
+        TLeadingLepPtJESDown     = 99999;
+        TLeadingLepEJESDown      = 99999;
+        TLeadingLepPhiJESDown    = 99999;
+        TLeadingLepEtaJESDown    = 99999;
+        TSubLeadingLepPtJESDown  = 99999;
+        TSubLeadingLepEJESDown   = 99999;
+        TSubLeadingLepPhiJESDown = 99999;
+        TSubLeadingLepEtaJESDown = 99999;
+        DilepMETJet1PzJESDown    = 99999;
+        TLLMETBEtaJESDown        = 99999;
+        MSysJESDown              = 99999;
+        TMllJESDown              = 99999;
+        TDPhiLLJESDown           = 99999;
+        TDPhiLeadJetJESDown      = 99999;
+        TDPhiSubLeadJetJESDown   = 99999;
+    }
+    if (Tpassgen && !TpassrecoJERUp) {
+        TMETJERUp              = 99999;
+        TMET_PhiJERUp          = 99999;
+        TM_LeadingBJERUp       = 99999;
+        TM_SubLeadingBJERUp    = 99999;
+        TM_LLBJERUp            = 99999;
+        TMT_LLMETBJERUp        = 99999;
+        TE_LLBJERUp            = 99999;
+        TDilepPtJERUp          = 99999;
+        DilepJetPtJERUp        = 99999;
+        DilepMETJetPtJERUp     = 99999;
+        THTtotJERUp            = 99999;
+        TLeadingJetPtJERUp     = 99999;
+        TLeadingJetEJERUp      = 99999;
+        TLeadingJetPhiJERUp    = 99999;
+        TLeadingJetEtaJERUp    = 99999;
+        TLeadingLepPtJERUp     = 99999;
+        TLeadingLepEJERUp      = 99999;
+        TLeadingLepPhiJERUp    = 99999;
+        TLeadingLepEtaJERUp    = 99999;
+        TSubLeadingLepPtJERUp  = 99999;
+        TSubLeadingLepEJERUp   = 99999;
+        TSubLeadingLepPhiJERUp = 99999;
+        TSubLeadingLepEtaJERUp = 99999;
+        DilepMETJet1PzJERUp    = 99999;
+        TLLMETBEtaJERUp        = 99999;
+        MSysJERUp              = 99999;
+        TMllJERUp              = 99999;
+        TDPhiLLJERUp           = 99999;
+        TDPhiLeadJetJERUp      = 99999;
+        TDPhiSubLeadJetJERUp   = 99999;
+    }
   }
-  if (Tpassgen && !TpassrecoJESUp) {
-    TMETJESUp              = 99999;
-    TMET_PhiJESUp          = 99999;
-    TM_LeadingBJESUp       = 99999;
-    TM_SubLeadingBJESUp    = 99999;
-    TM_LLBJESUp            = 99999;
-    TMT_LLMETBJESUp        = 99999;
-    TE_LLBJESUp            = 99999;
-    TDilepPtJESUp          = 99999;
-    DilepJetPtJESUp        = 99999;
-    DilepMETJetPtJESUp     = 99999;
-    THTtotJESUp            = 99999;
-    TLeadingJetPtJESUp     = 99999;
-    TLeadingJetEJESUp      = 99999;
-    TLeadingJetPhiJESUp    = 99999;
-    TLeadingJetEtaJESUp    = 99999;
-    TLeadingLepPtJESUp     = 99999;
-    TLeadingLepEJESUp      = 99999;
-    TLeadingLepPhiJESUp    = 99999;
-    TLeadingLepEtaJESUp    = 99999;
-    TSubLeadingLepPtJESUp  = 99999;
-    TSubLeadingLepEJESUp   = 99999;
-    TSubLeadingLepPhiJESUp = 99999;
-    TSubLeadingLepEtaJESUp = 99999;
-    DilepMETJet1PzJESUp    = 99999;
-    TLLMETBEtaJESUp        = 99999;
-    MSysJESUp              = 99999;
-    TMllJESUp              = 99999;
-    TDPhiLLJESUp           = 99999;
-    TDPhiLeadJetJESUp      = 99999;
-    TDPhiSubLeadJetJESUp   = 99999;
-  }
-  if (Tpassgen && !TpassrecoJESDown) {
-    TMETJESDown              = 99999;
-    TMET_PhiJESDown          = 99999;
-    TM_LeadingBJESDown       = 99999;
-    TM_SubLeadingBJESDown    = 99999;
-    TM_LLBJESDown            = 99999;
-    TMT_LLMETBJESDown        = 99999;
-    TE_LLBJESDown            = 99999;
-    TDilepPtJESDown          = 99999;
-    DilepJetPtJESDown        = 99999;
-    DilepMETJetPtJESDown     = 99999;
-    THTtotJESDown            = 99999;
-    TLeadingJetPtJESDown     = 99999;
-    TLeadingJetEJESDown      = 99999;
-    TLeadingJetPhiJESDown    = 99999;
-    TLeadingJetEtaJESDown    = 99999;
-    TLeadingLepPtJESDown     = 99999;
-    TLeadingLepEJESDown      = 99999;
-    TLeadingLepPhiJESDown    = 99999;
-    TLeadingLepEtaJESDown    = 99999;
-    TSubLeadingLepPtJESDown  = 99999;
-    TSubLeadingLepEJESDown   = 99999;
-    TSubLeadingLepPhiJESDown = 99999;
-    TSubLeadingLepEtaJESDown = 99999;
-    DilepMETJet1PzJESDown    = 99999;
-    TLLMETBEtaJESDown        = 99999;
-    MSysJESDown              = 99999;
-    TMllJESDown              = 99999;
-    TDPhiLLJESDown           = 99999;
-    TDPhiLeadJetJESDown      = 99999;
-    TDPhiSubLeadJetJESDown   = 99999;
-  }
-  if (Tpassgen && !TpassrecoJERUp) {
-    TMETJERUp              = 99999;
-    TMET_PhiJERUp          = 99999;
-    TM_LeadingBJERUp       = 99999;
-    TM_SubLeadingBJERUp    = 99999;
-    TM_LLBJERUp            = 99999;
-    TMT_LLMETBJERUp        = 99999;
-    TE_LLBJERUp            = 99999;
-    TDilepPtJERUp          = 99999;
-    DilepJetPtJERUp        = 99999;
-    DilepMETJetPtJERUp     = 99999;
-    THTtotJERUp            = 99999;
-    TLeadingJetPtJERUp     = 99999;
-    TLeadingJetEJERUp      = 99999;
-    TLeadingJetPhiJERUp    = 99999;
-    TLeadingJetEtaJERUp    = 99999;
-    TLeadingLepPtJERUp     = 99999;
-    TLeadingLepEJERUp      = 99999;
-    TLeadingLepPhiJERUp    = 99999;
-    TLeadingLepEtaJERUp    = 99999;
-    TSubLeadingLepPtJERUp  = 99999;
-    TSubLeadingLepEJERUp   = 99999;
-    TSubLeadingLepPhiJERUp = 99999;
-    TSubLeadingLepEtaJERUp = 99999;
-    DilepMETJet1PzJERUp    = 99999;
-    TLLMETBEtaJERUp        = 99999;
-    MSysJERUp              = 99999;
-    TMllJERUp              = 99999;
-    TDPhiLLJERUp           = 99999;
-    TDPhiLeadJetJERUp      = 99999;
-    TDPhiSubLeadJetJERUp   = 99999;
-  }
-  
-  if (Tpassgen || Tpassreco || TpassrecoJESUp || TpassrecoJESDown || TpassrecoJERUp) { // If needed, filling.
+  if (Tpassgen || Tpassreco || TpassrecoJESUp || TpassrecoJESDown || TpassrecoJERUp 
+      || (TNJets == 1 && TNBtags == 1) || (TNJetsJESUp == 1 && TNBtagsJESUp == 1) 
+      || (TNJetsJESDown == 1 && TNBtagsJESDown == 1) || (TNJetsJERUp == 1 && TNBtagsJERUp == 1))  { // If needed, filling.
     fMini1j1t->Fill();
   }
 }

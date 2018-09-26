@@ -254,54 +254,144 @@ def GiveMeMyAsimovHistos(var):
     p.SetPathSignal(pathToTree);
     p.SetTitleY("Events")
     p.SetLumi(vl.Lumi)
+    p.verbose = True
 
-    #p.AddSample("TTbar_Powheg",          "ttbar",    r.itBkg, 633, systlist, opts)
+    #p.AddSample("TTbar_Powheg",          "ttbar",    r.itBkg, 633, "", opts)
 
     specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
     p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar_Powheg',          'ttbar',    r.itBkg, 633, systlist, opts)
+    p.AddSample('TTbar_Powheg',          'ttbar',    r.itBkg, 633, "", opts)
     specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
     p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar2L_powheg',        'ttbar',    r.itBkg, 633, systlist, opts)
+    p.AddSample('TTbar2L_powheg',        'ttbar',    r.itBkg, 633, "", opts)
     p.SetWeight('TWeight')
 
-    p.AddSample("TTbar_PowhegSemi",      "Non-WorZ", r.itBkg, 413, systlist, opts)
-    p.AddSample("WJetsToLNu_MLM",        "Non-WorZ", r.itBkg, 413, systlist, opts)
+    p.AddSample("TTbar_PowhegSemi",      "Non-WorZ", r.itBkg, 413, "", opts)
+    p.AddSample("WJetsToLNu_MLM",        "Non-WorZ", r.itBkg, 413, "", opts)
 
-    p.AddSample("WZ",                    "VVttbarV", r.itBkg, 390, systlist, opts)
-    p.AddSample("WW",                    "VVttbarV", r.itBkg, 390, systlist, opts)
-    p.AddSample("ZZ",                    "VVttbarV", r.itBkg, 390, systlist, opts)
-    p.AddSample("TTWToLNu",              "VVttbarV", r.itBkg, 390, systlist, opts)
-    p.AddSample("TTWToQQ" ,              "VVttbarV", r.itBkg, 390, systlist, opts)
-    p.AddSample("TTZToQQ" ,              "VVttbarV", r.itBkg, 390, systlist, opts)
-    p.AddSample("TTZToLLNuNu",           "VVttbarV", r.itBkg, 390, systlist, opts)
-    p.AddSample("TTGJets",               "VVttbarV", r.itBkg, 390, systlist, opts)
+    p.AddSample("WZ",                    "VVttbarV", r.itBkg, 390, "", opts)
+    p.AddSample("WW",                    "VVttbarV", r.itBkg, 390, "", opts)
+    p.AddSample("ZZ",                    "VVttbarV", r.itBkg, 390, "", opts)
+    p.AddSample("TTWToLNu",              "VVttbarV", r.itBkg, 390, "", opts)
+    p.AddSample("TTWToQQ" ,              "VVttbarV", r.itBkg, 390, "", opts)
+    p.AddSample("TTZToQQ" ,              "VVttbarV", r.itBkg, 390, "", opts)
+    p.AddSample("TTZToLLNuNu",           "VVttbarV", r.itBkg, 390, "", opts)
+    p.AddSample("TTGJets",               "VVttbarV", r.itBkg, 390, "", opts)
 
-    p.AddSample("DYJetsToLL_M5to50_MLM", "DY",       r.itBkg, 852, systlist, opts)
-    p.AddSample("DYJetsToLL_M50_MLM",    "DY",       r.itBkg, 852, systlist, opts)
-    #p.AddSample("DYJetsToLL_M10to50_aMCatNLO","DY",  r.itBkg, 852, systlist, opts)
-    #p.AddSample("DYJetsToLL_M50_aMCatNLO","DY",      r.itBkg, 852, systlist, opts)
+    p.AddSample("DYJetsToLL_M5to50_MLM", "DY",       r.itBkg, 852, "", opts)
+    p.AddSample("DYJetsToLL_M50_MLM",    "DY",       r.itBkg, 852, "", opts)
+    #p.AddSample("DYJetsToLL_M10to50_aMCatNLO","DY",  r.itBkg, 852, "", opts)
+    #p.AddSample("DYJetsToLL_M50_aMCatNLO","DY",      r.itBkg, 852, "", opts)
     
-    #p.AddSample("TW",                    "tW",       r.itBkg, r.TColor.GetColor("#ffcc33"), systlist, opts)
-    #p.AddSample("TbarW",                 "tW",       r.itBkg, r.TColor.GetColor("#ffcc33"), systlist, opts)
+    p.AddSample('TbarW',                  'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts) # HI HA UNA MAGIA AQUI QUE FLIPES, NUN CAMUDES EL ORDEN NI AUNQUE TE PAGUEN
+    p.AddSample('TW',                     'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts)
+    
+    #specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TW',                     'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts)
+    #specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TW_noFullyHadr',         'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts)
+    #specialweight = vl.n_tbarw/vl.sigma_tw/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TbarW',                  'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts)
+    #specialweight = vl.n_tbarwnohad/vl.sigma_twnohad/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TbarW_noFullyHadr',      'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts)
+    #p.SetWeight('TWeight')
+    
+    hData = r.Histo(copy.deepcopy(p.GetHisto('tW').Clone("hData")))
+    for proc in ['ttbar', 'VVttbarV', "DY", "Non-WorZ"]:
+        tmph = copy.deepcopy(p.GetHisto(proc).Clone(proc + "_tmp"))
+        hData.Add( tmph )
+        del tmph
+    hData.SetProcess("Data")
+    hData.SetTag("Data")
+    hData.SetType(r.itData)
+    hData.SetColor(r.kBlack)
+    p.AddToHistos(hData)
+    
+    p.doUncInLegend = True;
+    p.SetRatioMin( 0.6 );
+    p.SetRatioMax( 1.4 );
+    p.SetPadPlotMargins(vl.margins)
+    p.SetPadRatioMargins(vl.marginsratio)
 
+    p.SetCMSlabel("CMS");
+    p.SetCMSmodeLabel("Preliminary");
+    p.SetLegendPosition(0.7, 0.45, 0.93, 0.92)
+    p.doYieldsInLeg = False;
+    p.doSetLogy     = False;
+    #p.doData        = False;
+    p.doSignal      = False;
+    p.SetTitleY(r.TString(vl.varList[var]['yaxis']))
+    p.NoShowVarName = True;
+    p.SetOutputName("forCards_{var}_asimov".format(var = var));
+    p.SaveHistograms();
+    del p, hData
+    return
+
+
+def GiveMeMyGoodAsimovHistos(var):
+    binning = array('f', vl.varList[var]['recobinning']) # For some reason, PyROOT requires that you create FIRST this object, then put it inside the PlotToPyC.
+    p = r.PlotToPyC(r.TString(vl.varList[var]['var']), r.TString(StandardCut), r.TString('ElMu'), int(len(vl.varList[var]['recobinning']) - 1), binning, r.TString(var), r.TString(vl.varList[var]['xaxis']))
+    p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
+    p.SetLimitFolder('./temp/{var}_/'.format(var = var))
+    p.SetPlotFolder('./temp/{var}_/'.format(var = var))
+    p.SetPathSignal(pathToTree);
+    p.SetTitleY("Events")
+    p.SetLumi(vl.Lumi)
+    p.verbose = True
+
+    #p.AddSample("TTbar_Powheg",          "ttbar",    r.itBkg, 633, "", opts)
+
+    specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TTbar_Powheg',          'ttbar',    r.itBkg, 633, "", opts)
+    specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TTbar2L_powheg',        'ttbar',    r.itBkg, 633, "", opts)
+    p.SetWeight('TWeight')
+
+    p.AddSample("TTbar_PowhegSemi",      "Non-WorZ", r.itBkg, 413, "", opts)
+    p.AddSample("WJetsToLNu_MLM",        "Non-WorZ", r.itBkg, 413, "", opts)
+
+    p.AddSample("WZ",                    "VVttbarV", r.itBkg, 390, "", opts)
+    p.AddSample("WW",                    "VVttbarV", r.itBkg, 390, "", opts)
+    p.AddSample("ZZ",                    "VVttbarV", r.itBkg, 390, "", opts)
+    p.AddSample("TTWToLNu",              "VVttbarV", r.itBkg, 390, "", opts)
+    p.AddSample("TTWToQQ" ,              "VVttbarV", r.itBkg, 390, "", opts)
+    p.AddSample("TTZToQQ" ,              "VVttbarV", r.itBkg, 390, "", opts)
+    p.AddSample("TTZToLLNuNu",           "VVttbarV", r.itBkg, 390, "", opts)
+    p.AddSample("TTGJets",               "VVttbarV", r.itBkg, 390, "", opts)
+
+    p.AddSample("DYJetsToLL_M5to50_MLM", "DY",       r.itBkg, 852, "", opts)
+    p.AddSample("DYJetsToLL_M50_MLM",    "DY",       r.itBkg, 852, "", opts)
+    #p.AddSample("DYJetsToLL_M10to50_aMCatNLO","DY",  r.itBkg, 852, "", opts)
+    #p.AddSample("DYJetsToLL_M50_aMCatNLO","DY",      r.itBkg, 852, "", opts)
+    
+    #p.AddSample('TbarW',                  'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts) # HI HA UNA MAGIA AQUI QUE FLIPES, NUN CAMUDES EL ORDEN NI AUNQUE TE PAGUEN
+    #p.AddSample('TW',                     'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts)
+    
     specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
     p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TW',                     'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist, opts)
+    p.AddSample('TW',                     'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts)
     specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
     p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TW_noFullyHadr',         'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist, opts)
+    p.AddSample('TW_noFullyHadr',         'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts)
     specialweight = vl.n_tbarw/vl.sigma_tw/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
     p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TbarW',                  'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist, opts)
+    p.AddSample('TbarW',                  'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts)
     specialweight = vl.n_tbarwnohad/vl.sigma_twnohad/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
     p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TbarW_noFullyHadr',      'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist, opts)
+    p.AddSample('TbarW_noFullyHadr',      'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts)
     p.SetWeight('TWeight')
-
-    hData = r.Histo(copy.deepcopy(p.GetHisto('tW').Clone("Data")))
+    
+    hData = r.Histo(copy.deepcopy(p.GetHisto('tW').Clone("hData")))
     for proc in ['ttbar', 'VVttbarV', "DY", "Non-WorZ"]:
-        hData.Add( p.GetHisto(proc) )
+        tmph = copy.deepcopy(p.GetHisto(proc).Clone(proc + "_tmp"))
+        hData.Add( tmph )
+        del tmph
     hData.SetProcess("Data")
     hData.SetTag("Data")
     hData.SetType(r.itData)
@@ -391,6 +481,7 @@ def GiveMeMyAsimovHistos(var):
     p.UseEnvelope("ttbar", "GluonMoveCRTune,GluonMoveCRTuneerdON,PowhegerdON,QCDbasedCRTuneerdON", "ColorReconnection");
     p.AddSymmetricHisto("ttbar",  "JERUp");
 
+
     pdf     = r.PDFToPyC(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString(StandardCut), r.TString("ElMu"), r.TString(vl.varList[var]['var']), len(vl.varList[var]['recobinning']) - 1, binning, r.TString(''));
     pdf.verbose = False
     #pdf.verbose = True
@@ -422,12 +513,12 @@ def GiveMeMyAsimovHistos(var):
     #p.doData        = False;
     p.doSignal      = False;
     p.SetTitleY(r.TString(vl.varList[var]['yaxis']))
-
     p.NoShowVarName = True;
-    p.SetOutputName("forCards_{var}_asimov".format(var = var));
+    p.SetOutputName("forCards_{var}_goodasimov".format(var = var));
     p.SaveHistograms();
     del p, hData
     return
+
 
 
 print "> Beginning to produce histograms", "\n"
@@ -435,22 +526,30 @@ print "> Beginning to produce histograms", "\n"
 if varName == 'All': tasks = [(el) for el in vl.varList['Names']['Variables']]
 else:                tasks = [(varName)]
 
-if nCores == 1:
-    GiveMeMyHistos(tasks[0])
-else:
+#if nCores == 1: # NOTE: pure sequential execution might lead to problems due to
+                 #       memory issues when treating ROOT histograms.
+    #GiveMeMyHistos(tasks[0])
+#else:
+pool    = Pool(nCores)
+pool.map(GiveMeMyHistos, tasks)
+pool.close()
+pool.join()
+del pool
+
+if not vl.asimov:
+    #if nCores == 1: # NOTE: pure sequential execution might lead to problems due to
+                     #       memory issues when treating ROOT histograms.
+        #GiveMeMyAsimovHistos(tasks[0])
+    #else:
     pool    = Pool(nCores)
-    pool.map(GiveMeMyHistos, tasks)
+    pool.map(GiveMeMyAsimovHistos, tasks)
     pool.close()
     pool.join()
     del pool
-
-if vl.doxsec:
-    if nCores == 1:
-        GiveMeMyAsimovHistos(tasks[0])
-    else:
-        pool    = Pool(nCores)
-        pool.map(GiveMeMyAsimovHistos, tasks)
-        pool.close()
-        pool.join()
-        del pool
+    
+    pool    = Pool(nCores)
+    pool.map(GiveMeMyGoodAsimovHistos, tasks)
+    pool.close()
+    pool.join()
+    del pool
 print "> Done!", "\n"

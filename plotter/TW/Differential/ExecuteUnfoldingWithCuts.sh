@@ -49,7 +49,7 @@ if [ "$variable" == "All" ]; then
     # 1) Get those histograms.
     echo "> Obtaining histograms per BDT's bin with profiling..."
     echo " "
-    python getFinalCards.py "All" $ncores
+    python getFinalCards.py "All" $ncores $4
         
     for ((i=0; i<=$uplimit; i++)); do
         # 2) Get the histograms for the closure test.
@@ -101,7 +101,7 @@ else
     # 3) Get the folded results.
     echo "> Obtaining folded results and signal information..."
     echo " "
-    python FinalExtracter.py ${unfoldingvars[i]} $4
+    python FinalExtracter.py $variable $4
     
     source ../pre_start.sh devel
     # 4) Do a proper unfolding as you were taught by your mother when you were a child.
