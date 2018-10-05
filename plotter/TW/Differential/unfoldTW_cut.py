@@ -8,7 +8,7 @@ import ROOT as r
 import beautifulUnfoldingPlots as bp
 import errorPropagator as ep
 import varList as vl
-import os,sys
+import os,sys,math
 
 class DataContainer:
     ''' Class to store all the needed inputs: response matrices 
@@ -379,6 +379,9 @@ class Unfolder():
         if verbose: print '> Unfolding nominal distribution'
         self.helpers[''].tunfolder.DoUnfold(tauval)
         nominal     = copy.deepcopy(self.helpers[''].tunfolder.GetOutput(self.var))
+        covnom = copy.deepcopy(self.helpers[''].tunfolder.GetEmatrixTotal("CovMat"))
+        for bin in range(1, nominal.GetNbinsX() + 1):
+            nominal.SetBinError(bin, math.sqrt(covnom.GetBinContent(bin, bin)))
         
         for nuis in self.sysList:
             if verbose: print '> Unfolding distribution of {sys} systematic'.format(sys = nuis)
@@ -412,6 +415,19 @@ class Unfolder():
             tmptfile.Close()
             del tru
         
+        if not self.wearedoingasimov:
+            savetfile = r.TFile("temp/{var}_/unfOutput_{var}.root".format(var = self.var), "recreate")
+            nominal.Write()
+            for key in allHistos: allHistos[key].Write()
+            covnom.Scale(scaleval**2)
+            covnom.Write()
+            #covitwo = copy.deepcopy(self.helpers[''].tunfolder.GetEmatrixInput("CovMatInput"))
+            #covitwo.Scale(scaleval**2)
+            #covitwo.Write()
+            #covithree = copy.deepcopy(self.helpers[''].tunfolder.GetEmatrixSysUncorr("CovMatResponse"))
+            #covithree.Scale(scaleval**2)
+            #covithree.Write()
+            savetfile.Close()
         
         if not self.wearedoingasimov: nominal_withErrors = ep.propagateHistoAsym(nominal, allHistos, self.doColorEnvelope, True)
         else:                         nominal_withErrors = ep.propagateHistoAsym(nominal, allHistos, self.doColorEnvelope)
@@ -562,16 +578,5 @@ if __name__=="__main__":
         b.doScanPlots()                 # L-Curve and curvature plots
         b.doRegularizationComparison()  # Comparison plot between regularisation and not
         b.doAreaConstraintComparison()  # Comparison plot between area constraint and not
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
     print "> Unfolding done!"
-    
     
