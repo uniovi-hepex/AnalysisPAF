@@ -1,5 +1,6 @@
 import ROOT as r
 import math, copy
+from array import array
 import varList as vl
 
 def quadSum(elements):
@@ -19,15 +20,20 @@ def propagateQuantity(nom, varDict, case = 0):
                 raise RuntimeError('Use case is not supported yet. Syst %s is not supported'%key)
 
             if key.replace('Up','Down') in varDict:
-                if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
-                    tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])/2
-                else:
-                    tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])
+                tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])
             else:
-                if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
-                    tot = tot + max( map(lambda x : x*x, [nom - varDict[key]]))/2
-                else:
-                    tot = tot + max( map(lambda x : x*x, [nom - varDict[key]]))
+                tot = tot + max( map(lambda x : x*x, [nom - varDict[key]]))
+            
+            #if key.replace('Up','Down') in varDict:
+                #if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
+                    #tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])/2
+                #else:
+                    #tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])
+            #else:
+                #if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
+                    #tot = tot + max( map(lambda x : x*x, [nom - varDict[key]]))/2
+                #else:
+                    #tot = tot + max( map(lambda x : x*x, [nom - varDict[key]]))
     elif case > 0:
         for key in varDict: 
             if 'Down' in key: continue
@@ -38,21 +44,24 @@ def propagateQuantity(nom, varDict, case = 0):
                 if (nom - varDict[key] > 0 and nom - varDict[key.replace('Up', 'Down')] > 0):
                     continue
                 elif (nom - varDict[key] < 0 and nom - varDict[key.replace('Up', 'Down')] < 0):
-                    if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
-                        tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])/2
-                    else:
-                        tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])
+                    tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])
+                    #if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
+                        #tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])/2
+                    #else:
+                        #tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])
                 else:
                     if (nom - varDict[key] < 0):
-                        if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
-                            tot = tot + map(lambda x : x*x, [nom - varDict[key]])[0]/2
-                        else:
-                            tot = tot + map(lambda x : x*x, [nom - varDict[key]])[0]
+                        #if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
+                            #tot = tot + map(lambda x : x*x, [nom - varDict[key]])[0]/2
+                        #else:
+                            #tot = tot + map(lambda x : x*x, [nom - varDict[key]])[0]
+                        tot = tot + map(lambda x : x*x, [nom - varDict[key]])[0]
                     else:
-                        if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
-                            tot = tot + map(lambda x : x*x, [nom - varDict[key.replace('Up', 'Down')]])[0]/2
-                        else:
-                            tot = tot + map(lambda x : x*x, [nom - varDict[key.replace('Up', 'Down')]])[0]
+                        #if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
+                            #tot = tot + map(lambda x : x*x, [nom - varDict[key.replace('Up', 'Down')]])[0]/2
+                        #else:
+                            #tot = tot + map(lambda x : x*x, [nom - varDict[key.replace('Up', 'Down')]])[0]
+                        tot = tot + map(lambda x : x*x, [nom - varDict[key.replace('Up', 'Down')]])[0]
     else:
         for key in varDict: 
             if 'Down' in key: continue
@@ -63,21 +72,24 @@ def propagateQuantity(nom, varDict, case = 0):
                 if (nom - varDict[key] < 0 and nom - varDict[key.replace('Up', 'Down')] < 0): 
                     continue
                 elif (nom - varDict[key] > 0 and nom - varDict[key.replace('Up', 'Down')] > 0):
-                    if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
-                        tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])/2
-                    else:
-                        tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])
+                    #if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
+                        #tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])/2
+                    #else:
+                        #tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])
+                    tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])
                 else:
                     if (nom - varDict[key] > 0):
-                        if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
-                            tot = tot + map(lambda x : x*x, [nom - varDict[key]])[0]/2
-                        else:
-                            tot = tot + map(lambda x : x*x, [nom - varDict[key]])[0]
+                        #if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
+                            #tot = tot + map(lambda x : x*x, [nom - varDict[key]])[0]/2
+                        #else:
+                            #tot = tot + map(lambda x : x*x, [nom - varDict[key]])[0]
+                        tot = tot + map(lambda x : x*x, [nom - varDict[key]])[0]
                     else:
-                        if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
-                            tot = tot + map(lambda x : x*x, [nom - varDict[key.replace('Up', 'Down')]])[0]/2
-                        else:
-                            tot = tot + map(lambda x : x*x, [nom - varDict[key.replace('Up', 'Down')]])[0]
+                        #if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
+                            #tot = tot + map(lambda x : x*x, [nom - varDict[key.replace('Up', 'Down')]])[0]/2
+                        #else:
+                            #tot = tot + map(lambda x : x*x, [nom - varDict[key.replace('Up', 'Down')]])[0]
+                        tot = tot + map(lambda x : x*x, [nom - varDict[key.replace('Up', 'Down')]])[0]
     return math.sqrt(tot)
 
 
@@ -182,7 +194,7 @@ def getUncList(nom, varDict, doEnv = False, doFit = True, doAsimov = False):
         variat  = 0.
         for bin in range(1, nom.GetNbinsX() + 1):
             variat = nom.GetBinContent(bin) - varDict[var].GetBinContent(bin)
-            if 'fsr' in var or 'FSR' in var or 'isr' in var or 'ISR' in var: variat/(2**(1/2))
+            #if 'fsr' in var or 'FSR' in var or 'isr' in var or 'ISR' in var: variat/(2**(1/2))
             if doEnv and var in vl.varList['Names']['colorSysts']:
                 if (variat >= 0):
                     if abs(variat) >= nom.GetBinContent(bin): histDown[bin - 1].append(nom.GetBinContent(bin))
@@ -257,14 +269,14 @@ def SetTheUncsFromHere(histo, hlist, SetStatUncs = False):
     return
 
 
-
-def getCovarianceFromVar( nom, var, name ):
-    nbins = nom.GetXaxis().GetNbins()
-    cov = r.TH2F(name, '', nbins, -0.5,nbins-0.5)
-
-    for x in range(nbins): 
+def getCovarianceFromVar(nom, var, name, ty = "folded", doCorr = False):
+    nbins   = nom.GetXaxis().GetNbins()
+    binning = array('f', vl.varList[name]['recobinning'] if ty == "folded" else vl.varList[name]['genbinning'])
+    if ty == "folded" and vl.doxsec: var.Scale(1/vl.Lumi/1000)
+    cov     = r.TH2F(var.GetName().replace("data_", "").replace(name+"_", ''), '', nbins, binning, nbins, binning)
+    for x in range(nbins):
         for y in range(nbins):
-            bin = cov.GetBin(x+1,y+1)
-            cov.SetBinContent(bin, (nom.GetBinContent(x+1)-var.GetBinContent(x+1))*(nom.GetBinContent(y+1)-var.GetBinContent(y+1)))
+            bin = cov.GetBin(x + 1, y + 1)
+            cov.SetBinContent(bin, (nom.GetBinContent(x + 1) - var.GetBinContent(x + 1)) * (nom.GetBinContent(y + 1) - var.GetBinContent(y + 1)))
 
     return cov
