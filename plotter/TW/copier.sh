@@ -2,12 +2,6 @@
 #
 #
 
-lowerbar="_"
-slash="/"
-savefolder=$d$lowerbar$m$lowerbar$y
-storagepath="/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
-savepath=$storagepath$savefolder
-
 plotspath="/nfs/fanae/user/vrbouza/www/TFM/Unfolding/Results/"
 indstr="index.php"
 crdplstr="Cardplots/"
@@ -53,6 +47,12 @@ if [ "$3" != "" ]; then
 else
   y=$(date +%Y)
 fi
+
+lowerbar="_"
+slash="/"
+savefolder=$d$lowerbar$m$lowerbar$y
+storagepath="/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
+savepath=$storagepath$savefolder
 
 echo "===> Copying minitrees!"
 echo " "
