@@ -28,9 +28,9 @@ samples_syst=("TTbar_Powheg_ueUp" "TTbar2L_Powheg_ueUp" "TTbar_Powheg_ueDown" "T
 #    "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" 
 #    "TbarW_noFullyHadr_PSscaleUp" "TbarW_noFullyHadr_PSscaleDown" "TbarW_noFullyHadr_DS")
 
-samples_unf=("UNF_TW" "UNF_TW_noFullyHadr_isrUp" "UNF_TW_noFullyHadr_isrDown" "UNF_TW_noFullyHadr_fsrUp" "UNF_TW_noFullyHadr_fsrDown" "UNF_TW_noFullyHadr_MEscaleUp" "UNF_TW_noFullyHadr_MEscaleDown" 
+samples_unf=("UNF_TW" "UNF_TW_noFullyHadr" "UNF_TW_noFullyHadr_isrUp" "UNF_TW_noFullyHadr_isrDown" "UNF_TW_noFullyHadr_fsrUp" "UNF_TW_noFullyHadr_fsrDown" "UNF_TW_noFullyHadr_MEscaleUp" "UNF_TW_noFullyHadr_MEscaleDown" 
   "UNF_TW_noFullyHadr_PSscaleUp" "UNF_TW_noFullyHadr_PSscaleDown" "UNF_TW_noFullyHadr_DS" 
-  "UNF_TbarW" "UNF_TbarW_noFullyHadr_isrUp" "UNF_TbarW_noFullyHadr_isrDown" "UNF_TbarW_noFullyHadr_fsrUp" "UNF_TbarW_noFullyHadr_fsrDown" "UNF_TbarW_noFullyHadr_MEscaleUp" "UNF_TbarW_noFullyHadr_MEscaleDown" 
+  "UNF_TbarW" "UNF_TbarW_noFullyHadr" "UNF_TbarW_noFullyHadr_isrUp" "UNF_TbarW_noFullyHadr_isrDown" "UNF_TbarW_noFullyHadr_fsrUp" "UNF_TbarW_noFullyHadr_fsrDown" "UNF_TbarW_noFullyHadr_MEscaleUp" "UNF_TbarW_noFullyHadr_MEscaleDown" 
   "UNF_TbarW_noFullyHadr_PSscaleUp" "UNF_TbarW_noFullyHadr_PSscaleDown" "UNF_TbarW_noFullyHadr_DS" "UNF_TW_aMCatNLO")
 
 
@@ -63,9 +63,9 @@ runsamples_syst=("TTbar_Powheg_ueUp & TTbar_Powheg_ueUp_ext" "TTbar2L_Powheg_ueU
 #    "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" 
 # "TbarW_noFullyHadr_PSscaleUp" "TbarW_noFullyHadr_PSscaleDown" "TbarW_noFullyHadr_DS")
 
-runsamples_unf=("TW_ext" "TW_noFullyHadr_isrUp" "TW_noFullyHadr_isrDown" "TW_noFullyHadr_fsrUp" "TW_noFullyHadr_fsrDown" "TW_noFullyHadr_MEscaleUp" "TW_noFullyHadr_MEscaleDown" 
+runsamples_unf=("TW_ext" "TW_noFullyHadr" "TW_noFullyHadr_isrUp" "TW_noFullyHadr_isrDown" "TW_noFullyHadr_fsrUp" "TW_noFullyHadr_fsrDown" "TW_noFullyHadr_MEscaleUp" "TW_noFullyHadr_MEscaleDown" 
   "TW_noFullyHadr_PSscaleUp" "TW_noFullyHadr_PSscaleDown" "TW_noFullyHadr_DS" 
-  "TbarW_ext" "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" 
+  "TbarW_ext" "TbarW_noFullyHadr" "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" 
   "TbarW_noFullyHadr_PSscaleUp" "TbarW_noFullyHadr_PSscaleDown" "TbarW_noFullyHadr_DS" "TW_aMCatNLO")
 
 
@@ -79,7 +79,8 @@ ncores=("30" "30"
   "8" "8" "8" "8" "8" "8" "8" "8" "5" 
   "30" "30" "30")
 
-unfpath="LocalFile:/pool/ciencias/userstorage/sscruz/TW/mar27/"
+# unfpath="LocalFile:/pool/ciencias/userstorage/sscruz/TW/mar27/" # les vieyes
+unfpath="LocalFile:/pool/cienciasrw/userstorage/sscruz/TW/ntuples_sep28/productionSep28/"
 unftmppath=""
 noskimpath="LocalFile:/pool/ciencias/HeppyTreesSummer16/v2/noSkim/"
 noskimtmppath=""
