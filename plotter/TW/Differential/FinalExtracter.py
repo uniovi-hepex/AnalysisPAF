@@ -34,11 +34,18 @@ def getXsecForSys(syst, tfile):
         fakes    = tfile.Get('Non-WorZ')
     if not vvttbarv:
         vvttbarv = tfile.Get('VVttbarV')
-
-    data.Add( ttbar , -1 )
-    data.Add( dy    , -1 )
-    data.Add( fakes , -1 )
-    data.Add( vvttbarv , -1 )
+    
+    if 'fsr' in syst or 'FSR' in syst or 'isr' in syst or 'ISR' in syst:
+        ttbarclone = copy.deepcopy(ttbar.Clone("ttbarclone"))
+        oldandgoodttbar = tfile.Get('ttbar')
+        for bin in range(1, data.GetNbinsX() + 1):
+            ttbarclone.SetBinContent(bin, oldandgoodttbar.GetBinContent(bin) + (ttbar.GetBinContent(bin) - oldandgoodttbar.GetBinContent(bin))/math.sqrt(2))
+        data.Add(ttbarclone, -1)
+        del ttbarclone, oldandgoodttbar
+    else: data.Add( ttbar , -1 )
+    data.Add(dy       , -1 )
+    data.Add(fakes    , -1 )
+    data.Add(vvttbarv , -1 )
     
     return data
 
@@ -72,8 +79,8 @@ def getXSecForNomSys(process, tfile, size):
 
 
 def getLumiUnc(tfile):
-    dataUp = copy.deepcopy(tfile.Get('data_obs').Clone('data_%sUp'%procs[procs2.index(proc)]))
-    dataDn = copy.deepcopy(tfile.Get('data_obs').Clone('data_%sDown'%procs[procs2.index(proc)]))
+    dataUp = copy.deepcopy(tfile.Get('data_obs').Clone('data_LumiUp'))
+    dataDn = copy.deepcopy(tfile.Get('data_obs').Clone('data_LumiDown'))
 
     ttbar     = copy.deepcopy(tfile.Get('ttbar').Clone('ttbar'))
     dy        = copy.deepcopy(tfile.Get('DY').Clone('dy'))
@@ -105,10 +112,10 @@ def getLumiUnc(tfile):
     return dataUp, dataDn
 
 
-tfile   = r.TFile.Open('temp/{var}_/forCards_{var}.root'.format(var = varName))
+tfile   = r.TFile.Open('temp/{var}_/forCards_{var}.root'.format(var = varName), "read")
 sysList = []
 
-sysList += vl.varList['Names']['ExpSysts'] + vl.varList['Names']['ttbarSysts'] + vl.varList['Names']['colorSysts'] + vl.varList['Names']['specialSysts'] + ['DSUp', 'LumiUp', 'LumiDown'] + vl.varList['Names']['NormSysts']
+sysList += vl.varList['Names']['ExpSysts'] + vl.varList['Names']['ttbarSysts'] + vl.varList['Names']['colorSysts'] + vl.varList['Names']['specialSysts'] + ['DSUp', 'LumiUp', 'LumiDown', 'fsrUp', 'fsrDown', 'isrUp', 'isrDown', 'tWMEUp', 'tWMEDown'] + vl.varList['Names']['NormSysts']
 
 nominal = getXsecForSys('', tfile)
 variations = {}
@@ -120,6 +127,7 @@ for proc, size in zip(procs2, [0.04, 0.5, 0.5, 0.5]):
     dataUp, dataDn = getXSecForNomSys(proc, tfile, size)
     variations[procs[procs2.index(proc)] + 'Up']   = dataUp
     variations[procs[procs2.index(proc)] + 'Down'] = dataDn
+    del dataUp, dataDn
 
 dataUp, dataDn         = getLumiUnc(tfile)
 variations['LumiUp']   = dataUp
@@ -127,7 +135,7 @@ variations['LumiDown'] = dataDn
 tfile.Close()
 
 if not vl.asimov:
-    tfile      = r.TFile.Open('temp/{var}_/forCards_{var}_asimov.root'.format(var = varName))
+    tfile      = r.TFile.Open('temp/{var}_/forCards_{var}_asimov.root'.format(var = varName), "read")
     asimov     = getXsecForSys('asimov', tfile)
     tfile.Close()
     
@@ -191,7 +199,9 @@ else:
 del plot
 
 
-uncList = ep.getUncList(nominal, variations, True, False)[:vl.nuncs]
+uncList = ep.getUncList(nominal, variations, True, False)
+print "Full list of uncs.", uncList
+uncList = uncList[:vl.nuncs]
 plot    = bp.beautifulUnfoldingPlots('{var}uncertainties_folded'.format(var = varName))
 uncList[0][1].Draw()
 
