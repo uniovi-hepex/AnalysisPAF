@@ -63,9 +63,9 @@ runsamples_syst=("TTbar_Powheg_ueUp & TTbar_Powheg_ueUp_ext" "TTbar2L_Powheg_ueU
 #    "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" 
 # "TbarW_noFullyHadr_PSscaleUp" "TbarW_noFullyHadr_PSscaleDown" "TbarW_noFullyHadr_DS")
 
-runsamples_unf=("TW_ext" "TW_noFullyHadr" "TW_noFullyHadr_isrUp" "TW_noFullyHadr_isrDown" "TW_noFullyHadr_fsrUp" "TW_noFullyHadr_fsrDown" "TW_noFullyHadr_MEscaleUp" "TW_noFullyHadr_MEscaleDown" 
+runsamples_unf=("TW_ext" "TW_noFullyHadr & TW_noFullyHadr_ext & TW_noFullyHadr_ext2" "TW_noFullyHadr_isrUp" "TW_noFullyHadr_isrDown" "TW_noFullyHadr_fsrUp" "TW_noFullyHadr_fsrDown" "TW_noFullyHadr_MEscaleUp" "TW_noFullyHadr_MEscaleDown" 
   "TW_noFullyHadr_PSscaleUp" "TW_noFullyHadr_PSscaleDown" "TW_noFullyHadr_DS" 
-  "TbarW_ext" "TbarW_noFullyHadr" "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" 
+  "TbarW_ext" "TbarW_noFullyHadr & TbarW_noFullyHadr_ext & TbarW_noFullyHadr_ext2" "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" 
   "TbarW_noFullyHadr_PSscaleUp" "TbarW_noFullyHadr_PSscaleDown" "TbarW_noFullyHadr_DS" "TW_aMCatNLO")
 
 
@@ -80,7 +80,7 @@ ncores=("30" "30"
   "30" "30" "30")
 
 # unfpath="LocalFile:/pool/ciencias/userstorage/sscruz/TW/mar27/" # les vieyes
-unfpath="LocalFile:/pool/cienciasrw/userstorage/sscruz/TW/ntuples_sep28/productionSep28/"
+unfpath="LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/" # ¡Hay que cambiar a mano la de las nominales que son nofullyhadr!
 unftmppath=""
 noskimpath="LocalFile:/pool/ciencias/HeppyTreesSummer16/v2/noSkim/"
 noskimtmppath=""
@@ -131,7 +131,7 @@ if [ "$1" == "an" ]; then
       elif [ ${samples[i]} == "TW_aMCatNLO" ]; then
         unset noskimtmppath
         noskimtmppath=$noskimpath$init${runsamples[i]}$final
-        root -l -b -q "RunAnalyserPAF.C(\"$noskimtmppath\", \"$sel\", ${ncores[i]}, 0, 0, 35.85)"
+        root -l -b -q "RunAnalyserPAF.C(\"$noskimtmppath\", \"$sel\", ${ncores[i]}, 0, 0, 7.61064238831)"
         cp TW_temp/Tree_TW_aMCatNLO_[0-9].root TW_temp/Tree_TW_aMCatNLO.root
         rm TW_temp/Tree_TW_aMCatNLO_[0-9].root
       else
@@ -150,7 +150,15 @@ if [ "$1" == "an" ]; then
     for ((i=0; i<=$uplimit_unf; i++)); do
       unset unftmppath
       unftmppath=$unfpath${runsamples_unf[i]}$final
-      root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", 30, 0, 0, 35.85, \"Unfolding\")"
+      if [ ${runsamples_unf[i]} == "TW_aMCatNLO" ]; then
+        root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", 30, 0, 0, 7.61064238831, \"Unfolding\")"
+      elif [ ${samples_unf[i]} == "UNF_TW_noFullyHadr" ]; then
+        root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext2\", \"$sel\", 30, 0, 0, 35.85, \"Unfolding\")"
+      elif [ ${samples_unf[i]} == "UNF_TbarW_noFullyHadr" ]; then
+        root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext2\", \"$sel\", 30, 0, 0, 35.85, \"Unfolding\")"
+      else
+        root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", 30, 0, 0, 35.85, \"Unfolding\")"
+      fi
       resetpaf -a
     done
     
@@ -183,7 +191,15 @@ if [ "$1" == "an" ]; then
     for ((i=0; i<=$uplimit_unf; i++)); do
       unset unftmppath
       unftmppath=$unfpath${runsamples_unf[i]}$final
-      root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, 35.85, \"Unfolding\")"
+      if [ ${runsamples_unf[i]} == "TW_aMCatNLO" ]; then
+        root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, 7.61064238831, \"Unfolding\")"
+      elif [ ${samples_unf[i]} == "UNF_TW_noFullyHadr" ]; then
+        root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, 35.85, \"Unfolding\")"
+      elif [ ${samples_unf[i]} == "UNF_TbarW_noFullyHadr" ]; then
+        root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, 35.85, \"Unfolding\")"
+      else
+        root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, 35.85, \"Unfolding\")"
+      fi
       resetpaf -a
     done
     
@@ -373,10 +389,14 @@ elif [ "$1" == "ch" ]; then
         echo ${samples_unf[i]}
         echo "Reanalysing..."
         echo " "
-        if [ ${runsamples_unf[i]} != "TW_aMCatNLO" ]; then
-          root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, 35.85, \"Unfolding\")"
-        else
+        if [ ${runsamples_unf[i]} == "TW_aMCatNLO" ]; then
           root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, 7.61064238831, \"Unfolding\")"
+        elif [ ${samples_unf[i]} == "UNF_TW_noFullyHadr" ]; then
+          root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, 35.85, \"Unfolding\")"
+        elif [ ${samples_unf[i]} == "UNF_TbarW_noFullyHadr" ]; then
+          root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, 35.85, \"Unfolding\")"
+        else
+          root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, 35.85, \"Unfolding\")"
         fi
         resetpaf -a
         
@@ -393,7 +413,15 @@ elif [ "$1" == "ch" ]; then
           echo ${samples_unf[i]}
           echo "Reanalysing..."
           echo " "
-          root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, 35.85, \"Unfolding\")"
+          if [ ${runsamples_unf[i]} == "TW_aMCatNLO" ]; then
+            root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, 7.61064238831, \"Unfolding\")"
+          elif [ ${samples_unf[i]} == "UNF_TW_noFullyHadr" ]; then
+            root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, 35.85, \"Unfolding\")"
+          elif [ ${samples_unf[i]} == "UNF_TbarW_noFullyHadr" ]; then
+            root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, 35.85, \"Unfolding\")"
+          else
+            root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, 35.85, \"Unfolding\")"
+          fi
           resetpaf -a
           
           allok=$(($allok-8))

@@ -198,10 +198,27 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
     if(sampleName.BeginsWith("LocalFile:")|| sampleName.BeginsWith("/")){ // LocalFile
       theSample = sampleName.ReplaceAll("LocalFile:", ""); 
       if(verbose) cout << " >>> Analysing a local sample: " << theSample << endl;
-      sampleName = TString( theSample(theSample.Last('/')+1, theSample.Sizeof())).ReplaceAll(".root", "").ReplaceAll("Tree_", "").ReplaceAll("_*", "").ReplaceAll("*", "");
-      TString searchsample = TString( theSample(theSample.Last('/') + 1, theSample.Sizeof()));
-      theSample = theSample(0, theSample.Last('/'));
-      Files = GetAllFiles(theSample, searchsample);
+      TString sampleChain = TString(sampleName);
+      Int_t nFiles = sampleChain.CountChar('&') + 1;
+      if(verbose) cout << " [Info] Number of samples: " << nFiles << endl;
+      if(sampleName.Contains("&")) {
+        sampleName = TString(theSample(0, theSample.First('&'))); // For output file
+        sampleName = TString(sampleName( sampleName.Last('/')+1, sampleName.Sizeof() )).ReplaceAll(".root", "").ReplaceAll("Tree_", "").ReplaceAll("_*", "").ReplaceAll("*", "").ReplaceAll(" ", "");
+      }
+      else sampleName = TString( theSample(theSample.Last('/')+1, theSample.Sizeof())).ReplaceAll(".root", "").ReplaceAll("Tree_", "").ReplaceAll("_*", "").ReplaceAll("*", "");
+      for(Int_t k = 0; k < nFiles; k++){
+        if(sampleChain.Contains("&")){
+          theSample  = TString(sampleChain(0,sampleChain.First('&')));
+          sampleChain= TString(sampleChain(sampleChain.First('&')+1, sampleChain.Sizeof()));
+        }
+        else theSample  = sampleChain;
+        theSample.ReplaceAll(" ", "");
+        TString searchsample = TString( theSample(theSample.Last('/') + 1, theSample.Sizeof()));
+        theSample = theSample(0, theSample.Last('/'));
+        vector<TString> tempFiles = GetAllFiles(theSample, searchsample);
+        Files.insert(Files.end(), tempFiles.begin(), tempFiles.end());
+      }
+      
       GetCount(Files, G_IsData);
       xsec = uxsec;
       G_Event_Weight = xsec/Count;
@@ -239,7 +256,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
     } 
     else{ // Use dataset manager
       Float_t sumNorm = 1; long double totalXSec = 0; long double totalNorm = 0;
-      TString sampleChain = TString(sampleName);  
+      TString sampleChain = TString(sampleName);
       if(sampleName.Contains("&")) sampleName = TString(sampleName(0, sampleName.First('&'))); // For output file
       sampleName.ReplaceAll(" ", "");
       Int_t nFiles = sampleChain.CountChar('&') + 1;
