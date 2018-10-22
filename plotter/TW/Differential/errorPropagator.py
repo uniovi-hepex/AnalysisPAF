@@ -172,6 +172,11 @@ def relativeErrorHist(histo):
         relErr.SetBinError(bin, 0)
     return relErr
 
+def MeanUncertaintyHisto(histo):
+    try:
+        return vl.mean( [histo.GetBinError(bin) / histo.GetBinContent(bin) for bin in range(1, histo.GetNbinsX()+1)])
+    except ZeroDivisionError:
+        raise RuntimeError('There is (at least) one bin with zero contents')
 
 def maximumHisto(histo1, histo2):
     maxHist = histo1.Clone( histo1.GetName() + 'max' ) 
@@ -215,7 +220,8 @@ def getUncList(nom, varDict, doEnv = False, doFit = True, doAsimov = False):
         medDict.append(('ColorRUp', finalhistUp))
         medDict.append(('ColorRDown', finalhistDown))
     
-    medDict.sort(key = lambda x : maxRelativeError(x[1]), reverse = True)
+    medDict.sort(key = lambda x : MeanUncertaintyHisto(x[1]), reverse = True)
+    #medDict.sort(key = lambda x : maxRelativeError(x[1]), reverse = True)
     #medDict.sort(key = lambda x : relativeErrorHist(x[1]).GetBinContent(1), reverse = True)
     
     for key in medDict:
