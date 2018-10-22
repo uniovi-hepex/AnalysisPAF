@@ -1155,46 +1155,51 @@ void LeptonSelector::GetLeptonVariables(Int_t i){ // Once per muon, get all the 
 
 void LeptonSelector::GetDiscLeptonVariables(Int_t i){ // Once per muon, get all the info
   tP.SetPxPyPzE(Get<Float_t>("DiscLep_px", i), Get<Float_t>("DiscLep_py", i), Get<Float_t>("DiscLep_pz", i), Get<Float_t>("DiscLep_energy", i));
-  pt             = tP.Pt();
+  pt            = tP.Pt();
   eta           = tP.Eta();
-  energy         = tP.Energy();
-  charge         = Get<Int_t>("DiscLep_charge", i);
-  type           = TMath::Abs(Get<Int_t>("DiscLep_pdgId",i)) == 11 ? 1 : 0;
-  pdgid          = Get<Int_t>("DiscLep_pdgId",i);
-  tightVar       = Get<Int_t>("DiscLep_tightId", i);
-  mediumMuonId   = Get<Int_t>("DiscLep_mediumMuonId",i);
+  energy        = tP.Energy();
+  charge        = Get<Int_t>("DiscLep_charge", i);
+  type          = TMath::Abs(Get<Int_t>("DiscLep_pdgId",i)) == 11 ? 1 : 0;
+  pdgid         = Get<Int_t>("DiscLep_pdgId",i);
+  tightVar      = Get<Int_t>("DiscLep_tightId", i);
+  mediumMuonId  = Get<Int_t>("DiscLep_mediumMuonId",i);
   etaSC         = TMath::Abs(Get<Float_t>("DiscLep_etaSc",i));
-  RelIso03       = Get<Float_t>("DiscLep_relIso03",i);
-  RelIso04       = Get<Float_t>("DiscLep_relIso04",i);
+  RelIso03      = Get<Float_t>("DiscLep_relIso03",i);
+  RelIso04      = Get<Float_t>("DiscLep_relIso04",i);
   ptRel         = Get<Float_t>("DiscLep_jetPtRelv2",i);
   ptRatio       = Get<Float_t>("DiscLep_jetPtRatiov2",i);
   miniIso       = Get<Float_t>("DiscLep_miniRelIso",i);
   dxy           = TMath::Abs(Get<Float_t>("DiscLep_dxy", i));
   dz            = TMath::Abs(Get<Float_t>("DiscLep_dz", i));
   sigmaIEtaIEta = Get<Float_t>("DiscLep_sigmaIEtaIEta", i);
-  dEtaSC         = Get<Float_t>("DiscLep_dEtaScTrkIn", i);
-  dPhiSC         = Get<Float_t>("DiscLep_dPhiScTrkIn", i);
-  HoE            = Get<Float_t>("DiscLep_hadronicOverEm", i);
-  eImpI          = Get<Float_t>("DiscLep_eInvMinusPInv", i);
-  lostHits       = Get<Int_t>("DiscLep_lostHits", i);
-  convVeto       = Get<Int_t>("DiscLep_convVeto", i);
+  dEtaSC        = Get<Float_t>("DiscLep_dEtaScTrkIn", i);
+  dPhiSC        = Get<Float_t>("DiscLep_dPhiScTrkIn", i);
+  HoE           = Get<Float_t>("DiscLep_hadronicOverEm", i);
+  eImpI         = Get<Float_t>("DiscLep_eInvMinusPInv", i);
+  lostHits      = Get<Int_t>("DiscLep_lostHits", i);
+  convVeto      = Get<Int_t>("DiscLep_convVeto", i);
   sip           = Get<Float_t>("DiscLep_sip3d",i);
   MVATTH        = Get<Float_t>("DiscLep_mvaTTH",i);       //*
-  MVASUSY        = Get<Float_t>("DiscLep_mvaSUSY",i);       //*
-  TightCharge    = Get<Int_t>("DiscLep_tightCharge",i);      //*
-//   MVAID          = Get<Float_t>("DiscLep_mvaIdSpring16GP",i);   //* REMOVED DUE TO LACK OF IT IN LOCAL SAMPLES
-  MVAID          = 0.;   //*
+  MVASUSY       = Get<Float_t>("DiscLep_mvaSUSY",i);       //*
+  TightCharge   = Get<Int_t>("DiscLep_tightCharge",i);      //*
   jetBTagCSV    = Get<Float_t>("DiscLep_jetBTagCSV",i);   //*
-  SegComp        = Get<Float_t>("DiscLep_segmentCompatibility",i);   //*
-//   isGlobalMuon = Get<Int_t>("DiscLep_isGlobalMuon",i); REMOVED DUE TO LACK OF IT IN LOCAL SAMPLES
-  isGlobalMuon = 0.;
-//   isTrackerMuon = Get<Int_t>("DiscLep_isTrackerMuon",i); REMOVED DUE TO LACK OF IT IN LOCAL SAMPLES
-  isTrackerMuon = 0.;
-//   mcPrompt       = Get<Int_t>("DiscLep_mcPrompt", i); REMOVED DUE TO UNKONWN OF EXISTENCE OF IT IN LOCAL SAMPLES
-//   mcMatchID       = Get<Int_t>("DiscLep_mcMatchId", i); REMOVED DUE TO UNKONWN OF EXISTENCE OF IT IN LOCAL SAMPLES
-//   mcPromptGamma   = Get<Int_t>("DiscLep_mcPromptGamma", i); REMOVED DUE TO UNKONWN OF EXISTENCE OF IT IN LOCAL SAMPLES
-//   mcMatchPDGID    = Get<Int_t>("DiscLep_mcMatchPdgId", i); REMOVED DUE TO UNKONWN OF EXISTENCE OF IT IN LOCAL SAMPLES
-  SF = 1;
+  SegComp       = Get<Float_t>("DiscLep_segmentCompatibility",i);   //*
+  
+  if (gSelection == iTWSelec) {
+    MVAID         = 0.;
+    isGlobalMuon  = 0.;
+    isTrackerMuon = 0.;
+    SF = 1;
+  }
+  else {
+    MVAID         = Get<Float_t>("DiscLep_mvaIdSpring16GP",i);   //* REMOVED DUE TO LACK OF IT IN LOCAL SAMPLES
+    isGlobalMuon  = Get<Int_t>("DiscLep_isGlobalMuon",i); REMOVED DUE TO LACK OF IT IN LOCAL SAMPLES
+    isTrackerMuon = Get<Int_t>("DiscLep_isTrackerMuon",i); REMOVED DUE TO LACK OF IT IN LOCAL SAMPLES
+    mcPrompt      = Get<Int_t>("DiscLep_mcPrompt", i); REMOVED DUE TO UNKONWN OF EXISTENCE OF IT IN LOCAL SAMPLES
+    mcMatchID     = Get<Int_t>("DiscLep_mcMatchId", i); REMOVED DUE TO UNKONWN OF EXISTENCE OF IT IN LOCAL SAMPLES
+    mcPromptGamma = Get<Int_t>("DiscLep_mcPromptGamma", i); REMOVED DUE TO UNKONWN OF EXISTENCE OF IT IN LOCAL SAMPLES
+    mcMatchPDGID  = Get<Int_t>("DiscLep_mcMatchPdgId", i); REMOVED DUE TO UNKONWN OF EXISTENCE OF IT IN LOCAL SAMPLES
+  }
 }
 void LeptonSelector::GetGenLeptonVariables(Int_t i){
   tP.SetPtEtaPhiM(Get<Float_t>("genLep_pt", i), Get<Float_t>("genLep_eta", i), Get<Float_t>("genLep_phi", i), Get<Float_t>("genLep_mass", i));
