@@ -58,6 +58,7 @@ def GiveMeMyHistos(var):
     p.SetPathSignal(pathToTree);
     p.SetTitleY("Events")
     p.SetLumi(vl.Lumi)
+    p.verbose = True
 
     #p.AddSample("TTbar_Powheg",          "ttbar",    r.itBkg, 633, systlist, opts)
 
@@ -204,7 +205,7 @@ def GiveMeMyHistos(var):
 
     pdf     = r.PDFToPyC(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString(StandardCut), r.TString("ElMu"), r.TString(vl.varList[var]['var']), len(vl.varList[var]['recobinning']) - 1, binning, r.TString(''));
     pdf.verbose = False
-    #pdf.verbose = True
+    pdf.verbose = True
     pdf.SetLumi(vl.Lumi * 1000)
 
     hPDFUp  = pdf.GetSystHisto("up","pdf").CloneHisto();
@@ -283,22 +284,22 @@ def GiveMeMyAsimovHistos(var):
     #p.AddSample("DYJetsToLL_M10to50_aMCatNLO","DY",  r.itBkg, 852, "", opts)
     #p.AddSample("DYJetsToLL_M50_aMCatNLO","DY",      r.itBkg, 852, "", opts)
     
-    p.AddSample('TbarW',                  'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts) # HI HA UNA MAGIA AQUI QUE FLIPES, NUN CAMUDES EL ORDEN NI AUNQUE TE PAGUEN
-    p.AddSample('TW',                     'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts)
-    
-    #specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TbarW',                  'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts) # HI HA UNA MAGIA AQUI QUE FLIPES, NUN CAMUDES EL ORDEN NI AUNQUE TE PAGUEN
     #p.AddSample('TW',                     'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts)
-    #specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-    #p.SetWeight('TWeight*' + str(specialweight))
-    #p.AddSample('TW_noFullyHadr',         'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts)
-    #specialweight = vl.n_tbarw/vl.sigma_tw/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
-    #p.SetWeight('TWeight*' + str(specialweight))
-    #p.AddSample('TbarW',                  'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts)
-    #specialweight = vl.n_tbarwnohad/vl.sigma_twnohad/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
-    #p.SetWeight('TWeight*' + str(specialweight))
-    #p.AddSample('TbarW_noFullyHadr',      'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts)
-    #p.SetWeight('TWeight')
+    
+    specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TW',                     'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts)
+    specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TW_noFullyHadr',         'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts)
+    specialweight = vl.n_tbarw/vl.sigma_tw/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TbarW',                  'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts)
+    specialweight = vl.n_tbarwnohad/vl.sigma_twnohad/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TbarW_noFullyHadr',      'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts)
+    p.SetWeight('TWeight')
     
     hData = r.Histo(copy.deepcopy(p.GetHisto('tW').Clone("hData")))
     for proc in ['ttbar', 'VVttbarV', "DY", "Non-WorZ"]:
@@ -484,7 +485,7 @@ def GiveMeMyGoodAsimovHistos(var):
 
     pdf     = r.PDFToPyC(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString(StandardCut), r.TString("ElMu"), r.TString(vl.varList[var]['var']), len(vl.varList[var]['recobinning']) - 1, binning, r.TString(''));
     pdf.verbose = False
-    #pdf.verbose = True
+    pdf.verbose = True
     pdf.SetLumi(vl.Lumi * 1000)
 
     hPDFUp  = pdf.GetSystHisto("up","pdf").CloneHisto();
