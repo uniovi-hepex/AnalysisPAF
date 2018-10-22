@@ -16,15 +16,16 @@ else
     ncores=1
 fi
 
-unfoldingvars=("E_LLB" "LeadingJetE" "MT_LLMETB" "M_LLB" "M_LeadingB" "M_SubLeadingB" 
-               "MET" "MET_Phi" "LeadingJetPt" "LeadingJetEta" "LeadingJetPhi" 
-               "LeadingLepE" "LeadingLepPt" "LeadingLepPhi" "LeadingLepEta" 
-               "SubLeadingLepE" "SubLeadingLepPt" "SubLeadingLepPhi" "SubLeadingLepEta" 
-               "DilepPt" "DilepJetPt" "DilepMETJetPt" "HTtot" 
-               "DilepMETJet1Pz" "LLMETBEta" "MSys" "Mll" "DPhiLL" "DPhiLeadJet" "DPhiSubLeadJet")
+# unfoldingvars=("E_LLB" "LeadingJetE" "MT_LLMETB" "M_LLB" "M_LeadingB" "M_SubLeadingB" 
+#                "MET" "MET_Phi" "LeadingJetPt" "LeadingJetEta" "LeadingJetPhi" 
+#                "LeadingLepE" "LeadingLepPt" "LeadingLepPhi" "LeadingLepEta" 
+#                "SubLeadingLepE" "SubLeadingLepPt" "SubLeadingLepPhi" "SubLeadingLepEta" 
+#                "DilepPt" "DilepJetPt" "DilepMETJetPt" "HTtot" 
+#                "DilepMETJet1Pz" "LLMETBEta" "MSys" "Mll" "DPhiLL" "DPhiLeadJet" "DPhiSubLeadJet")
 
 # unfoldingvars=("M_LeadingB" "M_SubLeadingB" "LeadingLepPt" "DilepMETJet1Pz" "LLMETBEta" "DPhiLL" "DPhiLeadJet" "DPhiSubLeadJet")
 # unfoldingvars=("LeadingJetPt" "LeadingLepPt")
+unfoldingvars=("LeadingJetPt" "LeadingLepPt" "DPhiLL" "DilepMETJet1Pz" "MT_LLMETB" "M_LLB") # Variables single top 15-10-2018
 
 uplimit=$((${#unfoldingvars[@]}-1))
 
@@ -56,7 +57,7 @@ if [ "$variable" == "All" ]; then
         echo "> Obtaining histograms for closure test..."
         echo " "
         python getClosureHistos.py ${unfoldingvars[i]} $4
-        # 3) Get the folded results.
+        3) Get the folded results.
         echo "> Obtaining folded results and signal information..."
         echo " "
         python FinalExtracter.py ${unfoldingvars[i]} $4
@@ -70,6 +71,17 @@ if [ "$variable" == "All" ]; then
         python unfoldTW_cut.py ${unfoldingvars[i]}
     done
     
+    source ../pre_start.sh
+    # 5) Obtain all covariance matrices.
+    echo "> Obtaining all covariance matrices..."
+    echo " "
+    python getCovarianceMatrices.py All $ncores
+
+#     # 6) Get a txt with all the results
+#     echo "> Obtaining the covariance matrix..."
+#     echo " "
+#     python getYields.py All $ncores
+
 else
     echo "> Beggining full unfolding procedure of the variable"
     echo $variable
@@ -89,7 +101,7 @@ else
     fi
 
     # 1) Get those histograms.
-    echo "> Obtaining histograms per BDT's bin with profiling..."
+    echo "> Obtaining histograms..."
     echo " "
     python getFinalCards.py $variable 1 $4
         
@@ -105,11 +117,22 @@ else
     
     source ../pre_start.sh devel
     # 4) Do a proper unfolding as you were taught by your mother when you were a child.
-    echo "> Unfolding all variables..."
+    echo "> Unfolding variable..."
     echo " "
     python unfoldTW_cut.py $variable
     
+    source ../pre_start
+    # 5) Obtain the covariance matrix
+    echo "> Obtaining the covariance matrix..."
+    echo " "
+    python getCovarianceMatrices.py $variable
+    
+#     # 6) Get a txt with all the results
+#     echo "> Obtaining the covariance matrix..."
+#     echo " "
+#     python getYields.py $variable
 fi
+
 
 if [ "$3" == "copy" ]; then
     cd ..
