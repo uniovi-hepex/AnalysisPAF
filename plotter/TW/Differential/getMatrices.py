@@ -29,6 +29,8 @@ recoCut     = "TWeight_normal * (Tpassreco == 1)"
 Cut         = "TWeight * (Tpassgen == 1)"
 fiduCut     = "TWeight * ((Tpassreco == 1) && (Tpassgen == 0))"
 
+markersize  = 0.8
+
 VarNames    = vl.varList["Names"]["Variables"]
 nvars       = len(VarNames)
 
@@ -61,8 +63,8 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None)
   if not isinstance(t1, list):
     hGen1 = r.TH1F('hGen1', '', nxb, xb)
     hGen2 = r.TH1F('hGen2', '', nxb, xb)
-    t1.Draw(vnamegen + '>>hGen1', genCut)
-    t2.Draw(vnamegen + '>>hGen2', genCut)
+    t1.Draw(vnamegen + '>>hGen1', genCut + "*(abs(TGen{vr}) < 1000)".format(vr = vname))
+    t2.Draw(vnamegen + '>>hGen2', genCut + "*(abs(TGen{vr}) < 1000)".format(vr = vname))
     hGen1.Add(hGen2)
     del hGen2
   else:
@@ -72,11 +74,11 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None)
     hGen2noF = r.TH1F('hGen2noF', '', nxb, xb)
     
     specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-    t1[0].Draw(vnamegen + '>>hGen1', genCut + '*' + specialweight)
-    t2[0].Draw(vnamegen + '>>hGen2', genCut + '*' + specialweight)
+    t1[0].Draw(vnamegen + '>>hGen1', genCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname))
+    t2[0].Draw(vnamegen + '>>hGen2', genCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname))
     specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-    t1[1].Draw(vnamegen + '>>hGen1noF', genCut + '*' + specialweight)
-    t2[1].Draw(vnamegen + '>>hGen2noF', genCut + '*' + specialweight)
+    t1[1].Draw(vnamegen + '>>hGen1noF', genCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname))
+    t2[1].Draw(vnamegen + '>>hGen2noF', genCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname))
     hGen1.Add(hGen2)
     hGen1noF.Add(hGen2noF)
     hGen1.Add(hGen1noF)
@@ -91,25 +93,25 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None)
       hGen.SetBinError(i, j, hGen1.GetBinError(i))
   
   if not isinstance(t1, list):
-    h1    = r.TH2F('h1', "Response matrix - " + vnametitle, nxb, xb, nyb, yb)
-    h2    = r.TH2F('h2', '',                                nxb, xb, nyb, yb)
+    h1    = r.TH2F('h1', "", nxb, xb, nyb, yb)
+    h2    = r.TH2F('h2', '', nxb, xb, nyb, yb)
     
-    t1.Project('h1', vnamereco + ":" + vnamegen, tmpcut)
-    t2.Project('h2', vnamereco + ":" + vnamegen, tmpcut)
+    t1.Project('h1', vnamereco + ":" + vnamegen, tmpcut + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname))
+    t2.Project('h2', vnamereco + ":" + vnamegen, tmpcut + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname))
     h1.Add(h2)
     del h2
   else:
-    h1    = r.TH2F('h1', "Response matrix - " + vnametitle, nxb, xb, nyb, yb)
-    h2    = r.TH2F('h2', '',                                nxb, xb, nyb, yb)
-    h1noF = r.TH2F('h1noF', "Response matrix - " + vnametitle, nxb, xb, nyb, yb)
-    h2noF = r.TH2F('h2noF', '',                                nxb, xb, nyb, yb)
+    h1    = r.TH2F('h1', "", nxb, xb, nyb, yb)
+    h2    = r.TH2F('h2', "", nxb, xb, nyb, yb)
+    h1noF = r.TH2F('h1noF', "", nxb, xb, nyb, yb)
+    h2noF = r.TH2F('h2noF', '', nxb, xb, nyb, yb)
     
     specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-    t1[0].Project('h1', vnamereco + ":" + vnamegen, tmpcut + '*' + specialweight)
-    t2[0].Project('h2', vnamereco + ":" + vnamegen, tmpcut + '*' + specialweight)
+    t1[0].Project('h1', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname))
+    t2[0].Project('h2', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname))
     specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-    t1[1].Project('h1noF', vnamereco + ":" + vnamegen, tmpcut + '*' + specialweight)
-    t2[1].Project('h2noF', vnamereco + ":" + vnamegen, tmpcut + '*' + specialweight)
+    t1[1].Project('h1noF', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname))
+    t2[1].Project('h2noF', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname))
     h1.Add(h2)
     h1noF.Add(h2noF)
     h1.Add(h1noF)
@@ -119,8 +121,8 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None)
     if not isinstance(t1, list):
       hReco1 = r.TH1F('hReco1', '', nyb, yb)
       hReco2 = r.TH1F('hReco2', '', nyb, yb)
-      t1.Draw(vnamereco + '>>hReco1', recoCut)
-      t2.Draw(vnamereco + '>>hReco2', recoCut)
+      t1.Draw(vnamereco + '>>hReco1', recoCut + "*(abs(T{vr}) < 1000)".format(vr = vname))
+      t2.Draw(vnamereco + '>>hReco2', recoCut + "*(abs(T{vr}) < 1000)".format(vr = vname))
       hReco1.Add(hReco2)
       del hReco2
     else:
@@ -130,11 +132,11 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None)
       hReco2noF = r.TH1F('hReco2noF', '', nyb, yb)
       
       specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-      t1[0].Draw(vnamereco + '>>hReco1', recoCut + '*' + specialweight)
-      t2[0].Draw(vnamereco + '>>hReco2', recoCut + '*' + specialweight)
+      t1[0].Draw(vnamereco + '>>hReco1', recoCut + '*' + str(specialweight) + "*(abs(T{vr}) < 1000)".format(vr = vname))
+      t2[0].Draw(vnamereco + '>>hReco2', recoCut + '*' + str(specialweight) + "*(abs(T{vr}) < 1000)".format(vr = vname))
       specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-      t1[1].Draw(vnamereco + '>>hReco1noF', recoCut + '*' + specialweight)
-      t2[1].Draw(vnamereco + '>>hReco2noF', recoCut + '*' + specialweight)
+      t1[1].Draw(vnamereco + '>>hReco1noF', recoCut + '*' + str(specialweight) + "*(abs(T{vr}) < 1000)".format(vr = vname))
+      t2[1].Draw(vnamereco + '>>hReco2noF', recoCut + '*' + str(specialweight) + "*(abs(T{vr}) < 1000)".format(vr = vname))
       
       hReco1.Add(hReco2)
       hReco1noF.Add(hReco2noF)
@@ -160,37 +162,38 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None)
     purities.append(tmppur)
     del tmppur, hReco1
   
-  if ('fsr' in t1.GetName() or 'FSR' in t1.GetName() or 'isr' in t1.GetName() or 'ISR' in t1.GetName()):
-    h1nom = r.TH2F('h1nom', "", nxb, xb, nyb, yb)
-    h2nom = r.TH2F('h2nom', '', nxb, xb, nyb, yb)
-    nomtree[0].Project('h1nom', vnamereco + ":" + vnamegen, tmpcut)
-    nomtree[1].Project('h2nom', vnamereco + ":" + vnamegen, tmpcut)
-    h1nom.Add(h2nom)
-    del h2nom
-    hGen1nom = r.TH1F('hGen1nom', '', nxb, xb)
-    hGen2nom = r.TH1F('hGen2nom', '', nxb, xb)
-    
-    nomtree[0].Draw(vnamegen + '>>hGen1nom', genCut)
-    nomtree[1].Draw(vnamegen + '>>hGen2nom', genCut)
+  if not isinstance(t1, list):
+    if ('fsr' in t1.GetName() or 'FSR' in t1.GetName() or 'isr' in t1.GetName() or 'ISR' in t1.GetName()):
+      h1nom = r.TH2F('h1nom', "", nxb, xb, nyb, yb)
+      h2nom = r.TH2F('h2nom', '', nxb, xb, nyb, yb)
+      nomtree[0].Project('h1nom', vnamereco + ":" + vnamegen, tmpcut + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname))
+      nomtree[1].Project('h2nom', vnamereco + ":" + vnamegen, tmpcut + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname))
+      h1nom.Add(h2nom)
+      del h2nom
+      hGen1nom = r.TH1F('hGen1nom', '', nxb, xb)
+      hGen2nom = r.TH1F('hGen2nom', '', nxb, xb)
 
-    hGen1nom.Add(hGen2nom)
-    del hGen2nom
-    hGennom = r.TH2F('Gennom', '', nxb, xb, nyb, yb)
-    
-    for i in range(0, nxb+2):
-      for j in range(0, nyb+2):
-        hGennom.SetBinContent(i, j, hGen1nom.GetBinContent(i))
-        hGennom.SetBinError(i, j, hGen1nom.GetBinError(i))
-    
-    h1.Add(h1nom, -1)
-    hGen.Add(hGennom, -1)
-    h1nom.Add(h1, r.Double(1/r.TMath.Sqrt(2)))
-    hGennom.Add(hGen, r.Double(1/r.TMath.Sqrt(2)))
-    del h1, hGen
-    h1 = h1nom.Clone("h1")
-    h1.SetTitle("Response matrix - " + vnametitle)
-    hGen = hGennom.Clone("hGen")
-    del hGennom, h1nom
+      nomtree[0].Draw(vnamegen + '>>hGen1nom', genCut + "*(abs(TGen{vr}) < 1000)".format(vr = vname))
+      nomtree[1].Draw(vnamegen + '>>hGen2nom', genCut + "*(abs(TGen{vr}) < 1000)".format(vr = vname))
+
+      hGen1nom.Add(hGen2nom)
+      del hGen2nom
+      hGennom = r.TH2F('Gennom', '', nxb, xb, nyb, yb)
+
+      for i in range(0, nxb+2):
+        for j in range(0, nyb+2):
+          hGennom.SetBinContent(i, j, hGen1nom.GetBinContent(i))
+          hGennom.SetBinError(i, j, hGen1nom.GetBinError(i))
+
+      h1.Add(h1nom, -1)
+      hGen.Add(hGennom, -1)
+      h1nom.Add(h1, r.Double(1/r.TMath.Sqrt(2)))
+      hGennom.Add(hGen, r.Double(1/r.TMath.Sqrt(2)))
+      del h1, hGen
+      h1 = h1nom.Clone("h1")
+      #h1.SetTitle("Response matrix - " + vnametitle)
+      hGen = hGennom.Clone("hGen")
+      del hGennom, h1nom
   
   h1.Divide(hGen)
   del hGen, hGen1
@@ -202,9 +205,10 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None)
       tmpsum += h1.GetBinContent(i, j)
     h1.SetBinContent(i, 0, 0.)
     h1.SetBinContent(i, nyb + 1, 1 - tmpsum)
+    #h1.SetBinContent(i, nyb + 1, 0)
   for j in range(0, nyb+2):
     h1.SetBinContent(0, j, 0.)
-    h1.SetBinContent(nxb+1, j, 0.)
+    h1.SetBinContent(nxb + 1, j, 0.)
   
   h1.SetXTitle(vl.varList[vname]['xaxis'] + " [gen]")
   h1.SetYTitle(vl.varList[vname]['xaxis'] + " [reco]")
@@ -235,8 +239,8 @@ def GetFiducialHisto(t1, t2, vname, nyb, yb, sys = "", nomtree = None):
     h1 = r.TH1F('h1', "Fiducial histogram - T" + vnametitle, nyb, yb)
     h2 = r.TH1F('h2', '',                                    nyb, yb)
     
-    t1.Draw(vnamereco + '>>h1', tmpcut)
-    t2.Draw(vnamereco + '>>h2', tmpcut)
+    t1.Draw(vnamereco + '>>h1', tmpcut + "*(abs(T{vr}) < 1000)".format(vr = vname))
+    t2.Draw(vnamereco + '>>h2', tmpcut + "*(abs(T{vr}) < 1000)".format(vr = vname))
 
     h1.Add(h2)
     del h2
@@ -247,31 +251,32 @@ def GetFiducialHisto(t1, t2, vname, nyb, yb, sys = "", nomtree = None):
     h2noF = r.TH1F('h2noF', '',                                    nyb, yb)
     
     specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-    t1[0].Draw(vnamereco + '>>h1', tmpcut + '*' + specialweight)
-    t2[0].Draw(vnamereco + '>>h2', tmpcut + '*' + specialweight)
+    t1[0].Draw(vnamereco + '>>h1', tmpcut + '*' + str(specialweight))
+    t2[0].Draw(vnamereco + '>>h2', tmpcut + '*' + str(specialweight))
     specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-    t1[1].Draw(vnamereco + '>>h1noF', tmpcut + '*' + specialweight)
-    t2[1].Draw(vnamereco + '>>h2noF', tmpcut + '*' + specialweight)
+    t1[1].Draw(vnamereco + '>>h1noF', tmpcut + '*' + str(specialweight))
+    t2[1].Draw(vnamereco + '>>h2noF', tmpcut + '*' + str(specialweight))
 
     h1.Add(h2)
     h1noF.Add(h2noF)
     h1.Add(h1noF)
     del h2, h1noF, h2noF
   
-  if ('fsr' in t1.GetName() or 'FSR' in t1.GetName() or 'isr' in t1.GetName() or 'ISR' in t1.GetName()):
-    h1nom = r.TH1F('h1nom', "", nyb, yb)
-    h2nom = r.TH1F('h2nom', '', nyb, yb)
-    nomtree[0].Draw(vnamereco + '>>h1nom', tmpcut)
-    nomtree[1].Draw(vnamereco + '>>h2nom', tmpcut)
-    h1nom.Add(h2nom)
-    del h2nom
-    
-    h1.Add(h1nom, -1)
-    h1nom.Add(h1, r.Double(1/r.TMath.Sqrt(2)))
-    del h1
-    h1 = h1nom.Clone("h1")
-    h1.SetTitle("Fiducial histogram - T" + vnametitle)
-    del h1nom
+  if not isinstance(t1, list):
+    if ('fsr' in t1.GetName() or 'FSR' in t1.GetName() or 'isr' in t1.GetName() or 'ISR' in t1.GetName()):
+      h1nom = r.TH1F('h1nom', "", nyb, yb)
+      h2nom = r.TH1F('h2nom', '', nyb, yb)
+      nomtree[0].Draw(vnamereco + '>>h1nom', tmpcut + "*(abs(T{vr}) < 1000)".format(vr = vname))
+      nomtree[1].Draw(vnamereco + '>>h2nom', tmpcut + "*(abs(T{vr}) < 1000)".format(vr = vname))
+      h1nom.Add(h2nom)
+      del h2nom
+      
+      h1.Add(h1nom, -1)
+      h1nom.Add(h1, r.Double(1/r.TMath.Sqrt(2)))
+      del h1
+      h1 = h1nom.Clone("h1")
+      h1.SetTitle("Fiducial histogram - T" + vnametitle)
+      del h1nom
   
   h1.SetXTitle("Fiducial events")
   h1.SetYTitle("Events")
@@ -289,17 +294,31 @@ def PrintResponseMatrix(htemp, vname, nxb, xb, xmin, xmax, nyb, yb, ymin, ymax, 
   vnametitle = htemp.GetName()[1:]
   htemp.Scale(100)
   htemp.SetStats(False)
-  c = r.TCanvas('c', "Response matrix - T" + vnametitle, 200, 10, 700, 500)
+  c = r.TCanvas('c', "", 700, 500)
+  plot = c.GetPad(0);
+  plot.SetPad(0.0, 0.23, 1.0, 1.0);
+  plot.SetTopMargin(0.06); plot.SetRightMargin(0.08); plot.SetLeftMargin(0.075)
+  htemp.SetMarkerSize(markersize)
+  htemp.SetMarkerColor(r.kRed)
   htemp.Draw("colz text e")
   r.gStyle.SetPaintTextFormat("4.3f")
   r.gPad.Update()
   c.SaveAs(plotsoutputpath + vname + "/R_T" + vnametitle + ".png")
-  del c
+  c.SaveAs(plotsoutputpath + vname + "/R_T" + vnametitle + ".eps")
+  c.SaveAs(plotsoutputpath + vname + "/R_T" + vnametitle + ".pdf")
+  c.SaveAs(plotsoutputpath + vname + "/R_T" + vnametitle + ".root")
+  del c, plot
   
-  c = r.TCanvas('c', "Response matrix - T" + vnametitle, 200, 10, 700, 500)
+  c = r.TCanvas('c', "", 700, 500)
+  plot = c.GetPad(0);
+  plot.SetPad(0.0, 0.23, 1.0, 1.0);
+  plot.SetTopMargin(0.06); plot.SetRightMargin(0.08); plot.SetLeftMargin(0.075)
   htemp.Draw("colz")
   c.SaveAs(plotsoutputpath + vname + "/R_T" + vnametitle + "_ensinnumerines.png")
-  del c
+  c.SaveAs(plotsoutputpath + vname + "/R_T" + vnametitle + "_ensinnumerines.eps")
+  c.SaveAs(plotsoutputpath + vname + "/R_T" + vnametitle + "_ensinnumerines.pdf")
+  c.SaveAs(plotsoutputpath + vname + "/R_T" + vnametitle + "_ensinnumerines.root")
+  del c, plot
   
   if (prof == 0):
     return
@@ -334,7 +353,11 @@ def PrintResponseMatrix(htemp, vname, nxb, xb, xmin, xmax, nyb, yb, ymin, ymax, 
     hPur.SetBinContent(j, pur[j - 1])
   
   c = r.TCanvas('c', "Purities and stabilities of " + vnametitle)
-  hPur.SetXTitle(vnametitle)
+  plot = c.GetPad(0);
+  #plot.SetPad(0.0, 0.23, 1.0, 1.0);
+  plot.SetTopMargin(0.06); plot.SetRightMargin(0.05); plot.SetLeftMargin(0.075)
+  
+  hPur.SetXTitle(vl.varList[vname]['xaxis'])
   hPur.SetStats(False)
   hPur.SetYTitle("Purities and stabilities")
   hStab.SetLineColor(r.kBlue)
@@ -347,8 +370,8 @@ def PrintResponseMatrix(htemp, vname, nxb, xb, xmin, xmax, nyb, yb, ymin, ymax, 
   
   textSize      = 0.022
   legWidth      = 0.05
-  height        = .15
-  (x1,y1,x2,y2) = (.85-legWidth, .9 - height, .90, .89)
+  height        = .11
+  (x1,y1,x2,y2) = (.85-legWidth, .95 - height, .90, .92)
   l             = r.TLegend(x1, y1, x2, y2);
   l.AddEntry(hStab, 'Stability')
   l.AddEntry(hPur, 'Purity')
@@ -360,7 +383,9 @@ def PrintResponseMatrix(htemp, vname, nxb, xb, xmin, xmax, nyb, yb, ymin, ymax, 
   r.gPad.Update()
   
   c.SaveAs(plotsoutputpath + vname + "/PurStab_" + vnametitle + ".png")
-  del c, hStab, hPur
+  c.SaveAs(plotsoutputpath + vname + "/PurStab_" + vnametitle + ".pdf")
+  c.SaveAs(plotsoutputpath + vname + "/PurStab_" + vnametitle + ".root")
+  del c, hStab, hPur, plot
   return
 
 
@@ -377,6 +402,8 @@ def PrintFiducialHisto(htemp, vname):
   r.gStyle.SetPaintTextFormat("4.1f")
   r.gPad.Update()
   c.SaveAs(plotsoutputpath + vname + "/F_T" + vnametitle + ".png")
+  c.SaveAs(plotsoutputpath + vname + "/F_T" + vnametitle + ".pdf")
+  c.SaveAs(plotsoutputpath + vname + "/F_T" + vnametitle + ".root")
   del c
   return
 
@@ -474,18 +501,22 @@ for i in range(nvars):
   print("\n    - Drawing and saving the response matrices of the variable "+ VarNames[i] + " ...")
   # Normal response matrices
   htemp = GetResponseMatrix([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i])
+  #htemp = GetResponseMatrix(treeTW, treeTbarW, VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i])
   htemp.Write()
   PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i], 1, purities[i], stabilities[i])
   htemp = GetFiducialHisto([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nybins[i], VarBins_Y[i])
+  #htemp = GetFiducialHisto(treeTW, treeTbarW, VarNames[i], nybins[i], VarBins_Y[i])
   htemp.Write()
   PrintFiducialHisto(htemp, VarNames[i])
   
   # JES, JER and weight-related systematics response matrices
   for j in range(nsys):
     htemp = GetResponseMatrix([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], SysList[j])
+    #htemp = GetResponseMatrix(treeTW, treeTbarW, VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], SysList[j])
     htemp.Write()
     PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
     htemp = GetFiducialHisto([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nybins[i], VarBins_Y[i], SysList[j])
+    #htemp = GetFiducialHisto(treeTW, treeTbarW, VarNames[i], nybins[i], VarBins_Y[i], SysList[j])
     htemp.Write()
     PrintFiducialHisto(htemp, VarNames[i])
   
