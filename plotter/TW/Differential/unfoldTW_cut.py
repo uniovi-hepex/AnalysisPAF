@@ -53,14 +53,18 @@ class DataContainer:
                 self.responseMatrices[sysName] = copy.deepcopy(key.ReadObj())
 
         # Getting background (events not passing the fiducial selection, but passing reco)
+        scalevalone = vl.Lumi*1000
         for key in tfile.GetListOfKeys():
             if key.GetName()[0] != 'F': continue
             if vl.varList[self.var]['var_response'] not in key.GetName(): continue
             if key.GetName() == 'F' + vl.varList[self.var]['var_response']:
                 self.bkgs[''] = copy.deepcopy(key.ReadObj())
+                self.bkgs[''].Scale(scalevalone)
             else:
                 sysName = '_'.join(key.GetName().split('_')[1:])
                 self.bkgs[sysName] = copy.deepcopy(key.ReadObj())
+                self.bkgs[sysName].Scale(scalevalone)
+                
         tfile.Close()
 
         if '' not in self.responseMatrices:
@@ -102,11 +106,13 @@ class UnfolderHelper:
     
     
     def makeUnfolderCore(self, unfInputNresponse):
-        self.unfInput , self.response, self.bkg = unfInputNresponse
+        self.unfInput, self.response, self.bkg = unfInputNresponse
         self.tunfolder = r.TUnfoldDensity(self.response, r.TUnfold.kHistMapOutputHoriz,
                                              r.TUnfold.kRegModeCurvature, r.TUnfold.kEConstraintArea if self.doArea else r.TUnfold.kEConstraintNone,
                                              r.TUnfoldDensity.kDensityModeNone)
 
+        #for bin in range(1, self.unfInput.GetNbinsX() + 1):
+            #self.unfInput.SetBinContent(bin, self.unfInput.GetBinContent(bin) - self.bkg.GetBinContent(bin))
         self.tunfolder.SetInput(self.unfInput)
         self.tunfolder.SubtractBackground(self.bkg, 'Non fiducial events')
     
@@ -405,10 +411,11 @@ class Unfolder():
                 #print "\nasimov:", allHistos['asimov'].GetBinContent(bin)
                 #print "verdad:", tru.GetBinContent(bin)
                 allHistos['asimov'].SetBinError(bin,   abs(allHistos['asimov'].GetBinContent(bin) - tru.GetBinContent(bin)))
-                allHistos['asimov'].SetBinContent(bin, nominal.GetBinContent(bin))
+                #allHistos['asimov'].SetBinContent(bin, nominal.GetBinContent(bin))
                 #print "errorin:", allHistos['asimov'].GetBinError(bin)
-                #print "nominal:", allHistos['asimov'].GetBinContent(bin)
+                #print "nominal:", nominal.GetBinContent(bin)
                 #print "relativo", round(allHistos['asimov'].GetBinError(bin)/allHistos['asimov'].GetBinContent(bin)*100, 1)
+                #print "ratio:", allHistos['asimov'].GetBinContent(bin)/tru.GetBinContent(bin)
             #for bin in range(1, tru2.GetNbinsX() + 1):
                 #print "verdad2:", tru2.GetBinContent(bin)
             #tmptfile2.Close()
@@ -440,34 +447,57 @@ class Unfolder():
         nominal_withErrors[0].SetFillColorAlpha(r.kBlue, 0.35)
         nominal_withErrors[0].SetLineColor(r.kBlue)
         nominal_withErrors[0].SetFillStyle(1001)
-
+        
+        #############################
+        print "\nLOS RESULTAOS - {uno} - {dos}".format(uno = "ASIMOV" if self.wearedoingasimov else "DATOS", dos = self.var)
+        for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
+            print "Bin", bin, "(abs.): (", round(nominal.GetBinContent(bin), 4), "+", round(nominal_withErrors[0].GetBinError(bin), 4), "-", round(nominal_withErrors[1].GetBinError(bin), 4), ") pb"
+            print "Bin", bin, "(rel.): (", round(nominal.GetBinContent(bin), 4), "+", round(nominal_withErrors[0].GetBinError(bin)/nominal.GetBinContent(bin)*100, 4), "-", round(nominal_withErrors[1].GetBinError(bin)/nominal.GetBinContent(bin)*100, 4), ") pb\n"
+        print "\n"
+        #############################
+        
+        if   "legpos_unf"   in vl.varList[self.var] and not self.wearedoingasimov: legloc = vl.varList[self.var]["legpos_unf"]
+        elif "legpos_unfas" in vl.varList[self.var] and     self.wearedoingasimov: legloc = vl.varList[self.var]["legpos_unfas"]
+        else:                                                                      legloc = "TR"
+        
         if self.doSanityCheck:
             if not os.path.isfile('temp/{var}_/ClosureTest_{var}.root'.format(var = self.var)):
-                raise RuntimeError('The rootfile with the generated information does not exist')
+                raise RuntimeError('The rootfile with the generated information does not exist.')
             tmptfile = r.TFile.Open('temp/{var}_/ClosureTest_{var}.root'.format(var = self.var))
             tru = copy.deepcopy(tmptfile.Get('tW').Clone('tru'))
             tru.SetLineWidth(2)
             tru.SetLineColor(bp.colorMap[0])
+            
             if not os.path.isfile('temp/{var}_/ClosureTest_aMCatNLO_{var}.root'.format(var = self.var)):
-                raise RuntimeError('The rootfile with the generated information from an aMCatNLO sample does not exist')
+                raise RuntimeError('The rootfile with the generated information from an aMCatNLO sample does not exist.')
             tmptfile2 = r.TFile.Open('temp/{var}_/ClosureTest_aMCatNLO_{var}.root'.format(var = self.var))
             aMCatNLO = copy.deepcopy(tmptfile2.Get('tW').Clone('aMCatNLO'))
             aMCatNLO.SetLineWidth(2)
             aMCatNLO.SetLineColor(r.kAzure)
             
+            if not os.path.isfile('temp/{var}_/ClosureTest_DS_{var}.root'.format(var = self.var)):
+                raise RuntimeError('The rootfile with the generated information with the DS variation does not exist.')
+            tmptfile3 = r.TFile.Open('temp/{var}_/ClosureTest_DS_{var}.root'.format(var = self.var))
+            hDS = copy.deepcopy(tmptfile3.Get('tW').Clone('hDS'))
+            hDS.SetLineWidth(2)
+            hDS.SetLineColor(r.kGreen)
+            
             plot.addHisto(nominal_withErrors, 'hist',   'Total unc.',   'F', 'unc')
             plot.addHisto(tru,                'L,same', 'tW Powheg',    'L', 'mc')
             plot.addHisto(aMCatNLO,           'L,same', 'tW aMCatNLO',  'L', 'mc')
+            plot.addHisto(hDS,                'L,same', 'tW DS',        'L', 'mc')
+            
             if self.wearedoingasimov: plot.addHisto(nominal, 'P,E,same',"Pseudodata",'P', 'data')
             else:                     plot.addHisto(nominal, 'P,E,same',vl.labellegend,'P', 'data')
-            plot.saveCanvas('TR')
+            plot.saveCanvas(legloc)
             tmptfile.Close()
             tmptfile2.Close()
+            tmptfile3.Close()
         else:
             plot.addHisto(nominal_withErrors, 'E2',     'Total unc.',   'F')
             if self.wearedoingasimov: plot.addHisto(nominal, 'P,same',"Pseudodata",'P', 'data')
             else:                     plot.addHisto(nominal, 'P,same',vl.labellegend,'P', 'data')
-            plot.saveCanvas('TR')
+            plot.saveCanvas(legloc)
 
         del plot
         plot2       = bp.beautifulUnfoldingPlots(self.var + 'uncertainties_asimov' if self.wearedoingasimov else self.var + 'uncertainties')
@@ -495,15 +525,17 @@ class Unfolder():
         hincmax.SetLineWidth( 2 )
         hincmax.SetFillColorAlpha(r.kBlue, 0)
 
-        if (maxinctot >= 0.9):
-            if maxinctot >= 5:
-                uncList[0][1].GetYaxis().SetRangeUser(0, 5)
-            else:
-                uncList[0][1].GetYaxis().SetRangeUser(0, maxinctot + 0.1)
+        #if (maxinctot >= 0.9):
+            #if maxinctot >= 5:
+                #uncList[0][1].GetYaxis().SetRangeUser(0, 5)
+            #else:
+                #uncList[0][1].GetYaxis().SetRangeUser(0, maxinctot + 0.1)
             
-        else:
-            uncList[0][1].GetYaxis().SetRangeUser(0, 0.9)
-
+        #else:
+            #uncList[0][1].GetYaxis().SetRangeUser(0, 0.9)
+        
+        uncList[0][1].GetYaxis().SetRangeUser(0, 2)
+        
         for i in range(vl.nuncs):
             uncList[i][1].SetLineColor( vl.NewColorMap[uncList[i][0]] )
             uncList[i][1].SetLineWidth( 2 )
@@ -511,7 +543,12 @@ class Unfolder():
         
         plot2.addHisto(hincmax, 'H,same', 'Total', 'L')
         plot2.plotspath = self.plotspath
-        plot2.saveCanvas('TR')
+        
+        if   "uncleg_unf"   in vl.varList[self.var] and not self.wearedoingasimov: unclegpos = vl.varList[self.var]["uncleg_unf"]
+        elif "uncleg_unfas" in vl.varList[self.var]:                               unclegpos = vl.varList[self.var]["uncleg_unfas"]
+        else:                                                                      unclegpos = "TR"
+        
+        plot2.saveCanvas(unclegpos)
         del plot2
         return
 
@@ -524,7 +561,7 @@ class Unfolder():
 if __name__=="__main__":
     vl.SetUpWarnings()
     r.gROOT.SetBatch(True)
-    verbose = False
+    verbose = True
     print "===== Unfolding procedure\n"
     if (len(sys.argv) > 1):
         varName = sys.argv[1]
