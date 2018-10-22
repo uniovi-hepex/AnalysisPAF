@@ -89,6 +89,21 @@ p.SetOutputName("ClosureTest_aMCatNLO_" + varName);
 p.SaveHistograms();
 del p
 
+p = r.PlotToPyC(r.TString(vl.varList[varName]['var_gen']), r.TString(gencut), r.TString('All'), len(binning)-1, binning, r.TString('TGen' + varName), r.TString(''))
+p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
+p.SetLimitFolder('temp/{var}_/'.format(var = varName));
+p.SetPathSignal(pathToTree);
+p.verbose = True
+p.verbose = False
+p.SetLumi(vl.Lumi)
+
+p.AddSample("UNF_TW_noFullyHadr_DS",    "tW", r.itBkg, 2, '', opts)
+p.AddSample("UNF_TbarW_noFullyHadr_DS", "tW", r.itBkg, 2, '', opts)
+
+p.NoShowVarName = True;
+p.SetOutputName("ClosureTest_DS_" + varName);
+p.SaveHistograms();
+del p
 
 p = r.PlotToPyC(r.TString(vl.varList[varName]['var']), r.TString(recocut), r.TString('All'), len(binningreco)-1, binningreco, r.TString('T' + varName), r.TString(''))
 p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
@@ -132,6 +147,22 @@ p.AddSample("TW_aMCatNLO",    "tW", r.itBkg, 2, '', opts)
 
 p.NoShowVarName = True;
 p.SetOutputName("ClosureTest_aMCatNLO_recobinning_" + varName);
+p.SaveHistograms();
+del p
+
+p = r.PlotToPyC(r.TString(vl.varList[varName]['var']), r.TString(recocut), r.TString('All'), len(binningreco)-1, binningreco, r.TString('T' + varName), r.TString(''))
+p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
+p.SetLimitFolder('temp/{var}_/'.format(var = varName));
+p.SetPathSignal(pathToTree);
+p.verbose = True
+p.verbose = False
+p.SetLumi(vl.Lumi)
+
+p.AddSample("TW_noFullyHadr_DS",    "tW", r.itBkg, 2, '', opts)
+p.AddSample("TbarW_noFullyHadr_DS", "tW", r.itBkg, 2, '', opts)
+
+p.NoShowVarName = True;
+p.SetOutputName("ClosureTest_DS_recobinning_" + varName);
 p.SaveHistograms();
 del p
 
