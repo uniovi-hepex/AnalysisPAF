@@ -74,7 +74,7 @@ def printTheDamnResults(tsk):
         firstline += "        | Bin {bn}"
     firstline += "\n"
     
-    output = open(yieldsoutputpath + "/{vr}_results.txt", 'w')
+    output = open(yieldsoutputpath + "/{vr}_results.txt".format(vr = var, t = ty), 'w')
     output.write(out)
     output.close()
     
