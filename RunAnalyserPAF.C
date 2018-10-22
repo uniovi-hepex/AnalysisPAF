@@ -192,7 +192,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
     GetCount(Files, G_IsData);
   }
   else{ // Deal with MC samples 
-    G_IsData = false; 
+    G_IsData = false;
     if(options.Contains("Data") || options.Contains("data")) G_IsData = true;
     TString theSample = "";
     if(sampleName.BeginsWith("LocalFile:")|| sampleName.BeginsWith("/")){ // LocalFile
@@ -205,7 +205,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
         sampleName = TString(theSample(0, theSample.First('&'))); // For output file
         sampleName = TString(sampleName( sampleName.Last('/')+1, sampleName.Sizeof() )).ReplaceAll(".root", "").ReplaceAll("Tree_", "").ReplaceAll("_*", "").ReplaceAll("*", "").ReplaceAll(" ", "");
       }
-      else sampleName = TString( theSample(theSample.Last('/')+1, theSample.Sizeof())).ReplaceAll(".root", "").ReplaceAll("Tree_", "").ReplaceAll("_*", "").ReplaceAll("*", "");
+      else sampleName = TString( theSample(theSample.Last('/')+1, theSample.Sizeof())).ReplaceAll(".root", "").ReplaceAll("Tree_", "").ReplaceAll("_*", "").ReplaceAll("*", "").ReplaceAll(" ", "");
       for(Int_t k = 0; k < nFiles; k++){
         if(sampleChain.Contains("&")){
           theSample  = TString(sampleChain(0,sampleChain.First('&')));
@@ -213,8 +213,8 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
         }
         else theSample  = sampleChain;
         theSample.ReplaceAll(" ", "");
-        TString searchsample = TString( theSample(theSample.Last('/') + 1, theSample.Sizeof()));
-        theSample = theSample(0, theSample.Last('/'));
+        TString searchsample = TString( theSample(theSample.Last('/') + 1, theSample.Sizeof())).ReplaceAll(".root", "");
+        theSample = TString(theSample(0, theSample.Last('/')));
         vector<TString> tempFiles = GetAllFiles(theSample, searchsample);
         Files.insert(Files.end(), tempFiles.begin(), tempFiles.end());
       }
@@ -227,6 +227,9 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
         if(verbose) cout << " >>> This is an aMCatNLO sample!!" << endl;
         G_Event_Weight = xsec/SumOfWeights;
       }
+      cout << "Eventweight: " << G_Event_Weight << endl;
+      cout << "Count: " << Count << endl;
+      cout << "xsec: " << xsec << endl;
     }
     else if(sampleName.BeginsWith("Scan:")){ // T2tt sample
       stopMass = GetStopMass(options);
