@@ -2,6 +2,7 @@ import ROOT as r
 import math, copy
 from array import array
 import varList as vl
+###############################################################################
 
 def quadSum(elements):
     return math.sqrt( sum( map( lambda x : x*x, elements)))

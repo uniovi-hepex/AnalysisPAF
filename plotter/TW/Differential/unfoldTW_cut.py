@@ -11,8 +11,7 @@ import varList as vl
 import os,sys,math
 
 class DataContainer:
-    ''' Class to store all the needed inputs: response matrices 
-    and varied input distributions'''
+    ''' Class to store all the needed inputs: response matrices and varied input distributions'''
 
     def __init__(self, var, fileName, fileNameReponse):
         self.var              = var
@@ -37,7 +36,7 @@ class DataContainer:
                 if sysName != '': self.listOfSysts.append(sysName)
 
         if '' not in self.unfoldingInputs:
-            raise RuntimeError("Unfolding inputs for nominal sample is missing")
+            raise RuntimeError("Unfolding input for nominal sample is missing.")
         tfile.Close()
         
         # Getting uncertainties in the response matrix
@@ -70,7 +69,9 @@ class DataContainer:
         if '' not in self.responseMatrices:
             raise RuntimeError("The nominal response matrix is not present in the provided rootfile.")
         
-        #print "Printeo de cosas. listOfSysts:\n", self.listOfSysts, "\nsystListResp:\n", self.systListResp
+        if verbose: print "Printy thingy. listOfSysts:\n", self.listOfSysts, "\nsystListResp:\n", self.systListResp
+        return
+    
 
     def getInputs(self,nuis):
         # ttbar-related systs. are the only that don't have a varied response matrix

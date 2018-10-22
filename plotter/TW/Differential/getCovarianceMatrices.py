@@ -8,21 +8,6 @@ from   array import array
 import sys, os, copy, math, shutil
 #===================================
 
-if (len(sys.argv) > 1):
-    varName     = sys.argv[1]
-    print "> Chosen variable:", varName, "\n"
-    if (len(sys.argv) > 2):
-        nCores      = int(sys.argv[2])
-        print ('> Parallelization will be done with ' + str(nCores) + ' cores')
-    else:
-        print '> Sequential execution mode chosen'
-        nCores      = 1
-else:
-    print "> Default choice of variable and minitrees\n"
-    varName     = 'LeadingLepEta'
-    nCores      = 1
-
-
 r.gROOT.SetBatch(True)
 plotsoutputpath = "results/CovMat"
 if not os.path.isdir(plotsoutputpath):
@@ -88,26 +73,41 @@ def printCovarianceMatrix(tsk):
     return
 
 
-vl.SetUpWarnings()
-if nCores == 1:
-    if varName != "All":
-        printCovarianceMatrix((varName, 'folded'))
-        printCovarianceMatrix((varName, 'unfolded'))
+if __name__=="__main__":
+    if (len(sys.argv) > 1):
+        varName     = sys.argv[1]
+        print "> Chosen variable:", varName, "\n"
+        if (len(sys.argv) > 2):
+            nCores      = int(sys.argv[2])
+            print ('> Parallelization will be done with ' + str(nCores) + ' cores')
+        else:
+            print '> Sequential execution mode chosen'
+            nCores      = 1
     else:
-        for var in vl.varList['Names']['Variables']:
-            printCovarianceMatrix((var, 'folded'))
-            printCovarianceMatrix((var, 'unfolded'))
-else:
-    tasks = []
-    if varName == "All":
-        for var in vl.varList['Names']['Variables']:
-            for el in ['folded', 'unfolded']:
-                tasks.append( (var, el) )
+        print "> Default choice of variable and minitrees\n"
+        varName     = 'LeadingLepEta'
+        nCores      = 1
+
+    vl.SetUpWarnings()
+    if nCores == 1:
+        if varName != "All":
+            printCovarianceMatrix((varName, 'folded'))
+            printCovarianceMatrix((varName, 'unfolded'))
+        else:
+            for var in vl.varList['Names']['Variables']:
+                printCovarianceMatrix((var, 'folded'))
+                printCovarianceMatrix((var, 'unfolded'))
     else:
-        tasks.append((varName, 'folded'))
-        tasks.append((varName, 'unfolded'))
-    pool = Pool(nCores)
-    pool.map(printCovarianceMatrix, tasks)
-    pool.close()
-    pool.join()
-    del pool
+        tasks = []
+        if varName == "All":
+            for var in vl.varList['Names']['Variables']:
+                for el in ['folded', 'unfolded']:
+                    tasks.append( (var, el) )
+        else:
+            tasks.append((varName, 'folded'))
+            tasks.append((varName, 'unfolded'))
+        pool = Pool(nCores)
+        pool.map(printCovarianceMatrix, tasks)
+        pool.close()
+        pool.join()
+        del pool

@@ -396,5 +396,3 @@ if not vl.asimov:
     
     plot.saveCanvas(unclegpos_as)
     del plot
-
-

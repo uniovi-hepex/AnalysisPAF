@@ -4,9 +4,8 @@ import warnings as wr
 import sys, os, copy
 from array import array
 from multiprocessing import Pool
-print "===== Variable's histograms procedure\n"
+###################################################
 
-vl.SetUpWarnings()
 storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
 pathToTree  = ""
 NameOfTree  = "Mini1j1t";
@@ -14,38 +13,12 @@ systlist    = "JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"
 StandardCut = "(Tpassreco == 1)"
 opts        = ''
 
-if (len(sys.argv) > 1):
-    varName     = sys.argv[1]
-    print "> Chosen variable:", varName, "\n"
-    if (len(sys.argv) > 2):
-        nCores      = int(sys.argv[2])
-        print ('> Parallelization will be done with ' + str(nCores) + ' cores')
-        if (len(sys.argv) > 3):
-            if sys.argv[3] == 'last':
-                pathToTree    = vl.GetLastFolder(storagepath)
-            else:
-                pathToTree    = storagepath + sys.argv[3] + "/"
-        else:
-            pathToTree  = "../../../TW_temp/"
-        print "> Minitrees will be read from:", pathToTree, "\n"
-    else:
-        print '> Sequential execution mode chosen'
-        nCores      = 1
-        pathToTree  = "../../../TW_temp/"
-else:
-    print "> Default choice of variable and minitrees\n"
-    varName     = 'LeadingLepEta'
-    pathToTree  = "../../../TW_temp/"
-    nCores      = 1
-
-
 r.gROOT.SetBatch(True)
 r.gROOT.LoadMacro('../../Histo.C+')
 r.gROOT.LoadMacro('../../Looper.C+')
 r.gROOT.LoadMacro('../../Plot.C+')
 r.gROOT.LoadMacro('../../PlotToPy.C+')
 r.gROOT.LoadMacro('../../PlotToPyC.C+')
-#r.gROOT.LoadMacro('../../Datacard.C+')
 r.gROOT.LoadMacro('../../PDFunc.C+')
 
 
@@ -522,35 +495,63 @@ def GiveMeMyGoodAsimovHistos(var):
 
 
 
-print "> Beginning to produce histograms", "\n"
+if __name__=="__main__":
+    print "===== Variable's histograms procedure.\n"
+    vl.SetUpWarnings()
+    
+    if (len(sys.argv) > 1):
+        varName     = sys.argv[1]
+        print "> Chosen variable:", varName, "\n"
+        if (len(sys.argv) > 2):
+            nCores      = int(sys.argv[2])
+            print ('> Parallelization will be done with ' + str(nCores) + ' cores')
+            if (len(sys.argv) > 3):
+                if sys.argv[3] == 'last':
+                    pathToTree    = vl.GetLastFolder(storagepath)
+                else:
+                    pathToTree    = storagepath + sys.argv[3] + "/"
+            else:
+                pathToTree  = "../../../TW_temp/"
+            print "> Minitrees will be read from:", pathToTree, "\n"
+        else:
+            print '> Sequential execution mode chosen'
+            nCores      = 1
+            pathToTree  = "../../../TW_temp/"
+    else:
+        print "> Default choice of variable and minitrees\n"
+        varName     = 'LeadingLepEta'
+        pathToTree  = "../../../TW_temp/"
+        nCores      = 1
 
-if varName == 'All': tasks = [(el) for el in vl.varList['Names']['Variables']]
-else:                tasks = [(varName)]
+    print "> Beginning to produce histograms", "\n"
 
-#if nCores == 1: # NOTE: pure sequential execution might lead to problems due to
-                 #       memory issues when treating ROOT histograms.
-    #GiveMeMyHistos(tasks[0])
-#else:
-pool    = Pool(nCores)
-pool.map(GiveMeMyHistos, tasks)
-pool.close()
-pool.join()
-del pool
+    if varName == 'All': tasks = [(el) for el in vl.varList['Names']['Variables']]
+    else:                tasks = [(varName)]
 
-if not vl.asimov:
     #if nCores == 1: # NOTE: pure sequential execution might lead to problems due to
                      #       memory issues when treating ROOT histograms.
-        #GiveMeMyAsimovHistos(tasks[0])
+        #GiveMeMyHistos(tasks[0])
     #else:
     pool    = Pool(nCores)
-    pool.map(GiveMeMyAsimovHistos, tasks)
+    pool.map(GiveMeMyHistos, tasks)
     pool.close()
     pool.join()
     del pool
-    
-    pool    = Pool(nCores)
-    pool.map(GiveMeMyGoodAsimovHistos, tasks)
-    pool.close()
-    pool.join()
-    del pool
-print "> Done!", "\n"
+
+    if not vl.asimov:
+        #if nCores == 1: # NOTE: pure sequential execution might lead to problems due to
+                         #       memory issues when treating ROOT histograms.
+            #GiveMeMyAsimovHistos(tasks[0])
+        #else:
+        pool    = Pool(nCores)
+        pool.map(GiveMeMyAsimovHistos, tasks)
+        pool.close()
+        pool.join()
+        del pool
+        
+        pool    = Pool(nCores)
+        pool.map(GiveMeMyGoodAsimovHistos, tasks)
+        pool.close()
+        pool.join()
+        del pool
+    print "> Done!", "\n"
