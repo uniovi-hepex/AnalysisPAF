@@ -1070,7 +1070,7 @@ void Plot::DrawStack(TString tag){
   if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
     for(Int_t  i = 0; i < nSignals; i++) VSignals.at(i)->Draw(SignalDrawStyle + "same");
 
-  //---------  Draw systematic errors 
+  //---------  Draw systematic errors
   //if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
   hAllBkg->SetFillStyle(3444); // 3444 o 3004 (3145 default here)
   hAllBkg->SetFillColor(StackErrorColor); // kGray+2 as default
@@ -1099,8 +1099,9 @@ void Plot::DrawStack(TString tag){
 
   //--------- Set legend and other texts
   TLegend* leg = SetLegend();
-  if(doLegend) leg->Draw("same");      
-  texcms->Draw("same");     // CMS 
+  leg->AddEntry(hAllBkg, "Uncertainty", "f");
+  if(doLegend) leg->Draw("same");
+  texcms->Draw("same");     // CMS
   texlumi->Draw("same");    // The luminosity
   texPrelim->Draw("same");  // Preliminary
   if (chlabel != ""){
