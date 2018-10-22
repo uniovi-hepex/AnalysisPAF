@@ -86,7 +86,7 @@ class beautifulUnfoldingPlots:
             
             asymhisto.GetYaxis().SetTitleFont(43)
             asymhisto.GetYaxis().SetTitleSize(22)
-            asymhisto.GetYaxis().SetTitleOffset(0.5 if self.doWide else 1.8)
+            asymhisto.GetYaxis().SetTitleOffset(0.5 if self.doWide else 1.8 if not self.doRatio else 2.2)
             asymhisto.GetYaxis().SetLabelFont(43)
             asymhisto.GetYaxis().SetLabelSize(22)
             asymhisto.GetYaxis().SetLabelOffset(0.007)
@@ -114,7 +114,7 @@ class beautifulUnfoldingPlots:
 
             histo.GetXaxis().SetTitleFont(43)
             histo.GetXaxis().SetTitleSize(22)
-            histo.GetXaxis().SetTitleOffset(1.7 if self.isLCurve else 1.4)
+            histo.GetXaxis().SetTitleOffset(1.7 if self.isLCurve else 1.5)
             histo.GetXaxis().SetLabelFont(43)
             histo.GetXaxis().SetLabelSize(13 if self.isLCurve else 22)
             histo.GetXaxis().SetLabelOffset(0.033 if self.isLCurve else 0.007)
@@ -122,7 +122,7 @@ class beautifulUnfoldingPlots:
             
             histo.GetYaxis().SetTitleFont(43)
             histo.GetYaxis().SetTitleSize(22)
-            histo.GetYaxis().SetTitleOffset(0.5 if self.doWide else 1.8)
+            histo.GetYaxis().SetTitleOffset(0.5 if self.doWide else 1.8 if not self.doRatio else 2.2)
             histo.GetYaxis().SetLabelFont(43)
             histo.GetYaxis().SetLabelSize(13 if self.isLCurve else 22)
             histo.GetYaxis().SetLabelOffset(0.007)
@@ -209,20 +209,20 @@ class beautifulUnfoldingPlots:
         
         # Draw legend
         textSize = 0.022
-        legWidth = 0.12
-        height = (.19 + textSize*max(len(self.objectsInLeg)-3,0))
+        legWidth = 0.13
+        height = (.18 + textSize*max(len(self.objectsInLeg)-3,0))
         if corner == "TR":
-            (x1,y1,x2,y2) = (0.97-legWidth if self.doWide else .85-legWidth, .9 - height, .865, .93)
+            (x1,y1,x2,y2) = (0.93-legWidth if self.doWide else .85-legWidth, .93 - height, .865,         .93)
         elif corner == "TC":
-            (x1,y1,x2,y2) = (.5, .9 - height,  .55+legWidth, .93)
+            (x1,y1,x2,y2) = (.5,                                             .93 - height, .55+legWidth, .93)
         elif corner == "TL":
-            (x1,y1,x2,y2) = (.2, .9 - height,  .25+legWidth, .91)
+            (x1,y1,x2,y2) = (.18,                                            .835 - height, .18+legWidth, .835)
         elif corner == "BR":
-            (x1,y1,x2,y2) = (.85 - legWidth, .16 + height, .90, .15)
+            (x1,y1,x2,y2) = (.85 - legWidth,                                 .16 + height, .90,          .16)
         elif corner == "BC":
-            (x1,y1,x2,y2) = (.5, .16 + height, .5+legWidth, .15)
+            (x1,y1,x2,y2) = (.5,                                             .16 + height, .5+legWidth,  .16)
         elif corner == "BL":
-            (x1,y1,x2,y2) = (.2, .16 + height, .2+legWidth, .15)
+            (x1,y1,x2,y2) = (.2,                                             .16 + height, .2+legWidth,  .16)
         
         if leg:
             leg = r.TLegend(x1,y1,x2,y2)
