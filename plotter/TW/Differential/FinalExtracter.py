@@ -167,6 +167,9 @@ nominal_withErrors[0].SetFillColorAlpha(r.kBlue, 0.35)
 nominal_withErrors[0].SetLineColor(r.kBlue)
 nominal_withErrors[0].SetFillStyle(1001)
 
+if "legpos_fold" in vl.varList[varName]: legloc = vl.varList[varName]["legpos_fold"]
+else:                                    legloc = "TR"
+
 if doSanityCheck:
     print '> Adding generated distribution with used software and others.'
     if not os.path.isfile('temp/{var}_/ClosureTest_recobinning_{var}.root'.format(var = varName)):
@@ -175,27 +178,38 @@ if doSanityCheck:
     tru = copy.deepcopy(tmptfile.Get('tW'))
     tru.SetLineWidth(2)
     tru.SetLineColor(bp.colorMap[0])
+    
     if not os.path.isfile('temp/{var}_/ClosureTest_aMCatNLO_recobinning_{var}.root'.format(var = varName)):
-        raise RuntimeError('The rootfile with the generated information does not exist')
+        raise RuntimeError('The rootfile with the generated aMCatNLO information does not exist')
     tmptfile2 = r.TFile.Open('temp/{var}_/ClosureTest_aMCatNLO_recobinning_{var}.root'.format(var = varName))
     aMCatNLO = copy.deepcopy(tmptfile2.Get('tW'))
     aMCatNLO.SetLineWidth(2)
     aMCatNLO.SetLineColor(r.kAzure)
     
-    if nominal_withErrors[0].GetMaximum() <= tru.GetMaximum(): nominal_withErrors[0].SetMaximum(tru.GetMaximum())
+    if not os.path.isfile('temp/{var}_/ClosureTest_DS_recobinning_{var}.root'.format(var = varName)):
+        raise RuntimeError('The rootfile with the generated DS variation information does not exist')
+    tmptfile3 = r.TFile.Open('temp/{var}_/ClosureTest_DS_recobinning_{var}.root'.format(var = varName))
+    hDS = copy.deepcopy(tmptfile3.Get('tW'))
+    hDS.SetLineWidth(2)
+    hDS.SetLineColor(r.kGreen)
+    
+    if nominal_withErrors[0].GetMaximum() <= tru.GetMaximum():      nominal_withErrors[0].SetMaximum(tru.GetMaximum())
     if nominal_withErrors[0].GetMaximum() <= aMCatNLO.GetMaximum(): nominal_withErrors[0].SetMaximum(aMCatNLO.GetMaximum())
+    if nominal_withErrors[0].GetMaximum() <= hDS.GetMaximum():      nominal_withErrors[0].SetMaximum(hDS.GetMaximum())
     
     plot.addHisto(nominal_withErrors, 'hist',     'Total unc.',   'F', 'unc')
     plot.addHisto(tru,                'L,same',   'tW Powheg',    'L', 'mc')
-    plot.addHisto(aMCatNLO,           'L,same',   'tW aMCatNLo',  'L', 'mc')
+    plot.addHisto(aMCatNLO,           'L,same',   'tW aMCatNLO',  'L', 'mc')
+    plot.addHisto(hDS,                'L,same',   'tW DS',        'L', 'mc')
     plot.addHisto(nominal,            'P,E,same', vl.labellegend, 'P', 'data')
-    plot.saveCanvas('TR')
+    plot.saveCanvas(legloc)
+    tmptfile3.Close()
     tmptfile2.Close()
     tmptfile.Close()
 else:
     plot.addHisto(nominal_withErrors, 'hist', 'Total unc.', 'F')
     plot.addHisto(nominal, 'P,same', vl.labellegend, 'P', 'data')
-    plot.saveCanvas('TR')
+    plot.saveCanvas(legloc)
 del plot
 
 
@@ -223,13 +237,15 @@ hincmax.SetLineColor(r.kBlack)
 hincmax.SetLineWidth( 2 )
 hincmax.SetFillColorAlpha(r.kBlue, 0.)
 
-if (maxinctot >= 0.9):
-    if maxinctot >= 5:
-        uncList[0][1].GetYaxis().SetRangeUser(0., 5.)
-    else:
-        uncList[0][1].GetYaxis().SetRangeUser(0., maxinctot + 0.1)
-else:
-    uncList[0][1].GetYaxis().SetRangeUser(0., 0.9)
+#if (maxinctot >= 0.9):
+    #if maxinctot >= 5:
+        #uncList[0][1].GetYaxis().SetRangeUser(0., 5.)
+    #else:
+        #uncList[0][1].GetYaxis().SetRangeUser(0., maxinctot + 0.1)
+#else:
+    #uncList[0][1].GetYaxis().SetRangeUser(0., 0.9)
+
+uncList[0][1].GetYaxis().SetRangeUser(0., 1.1)
 
 for i in range(vl.nuncs):
     if 'statbin' not in uncList[i][0]: uncList[i][1].SetLineColor(vl.NewColorMap[uncList[i][0]])
@@ -239,7 +255,11 @@ for i in range(vl.nuncs):
 
 plot.addHisto(hincmax, 'hist,same', 'Total', 'L')
 plot.plotspath = "results/"
-plot.saveCanvas('TR')
+
+if "uncleg_fold" in vl.varList[varName]: unclegpos = vl.varList[varName]["uncleg_fold"]
+else:                                    unclegpos = "TR"
+
+plot.saveCanvas(unclegpos)
 del plot, variations, nominal, dataUp, dataDn
 
 if not vl.asimov:
@@ -285,6 +305,9 @@ if not vl.asimov:
     nominal_withErrors[0].SetLineColor(r.kBlue)
     nominal_withErrors[0].SetFillStyle(1001)
 
+    if "legpos_foldas" in vl.varList[varName]: legloc_as = vl.varList[varName]["legpos_foldas"]
+    else:                                      legloc_as = "TR"
+
     if doSanityCheck:
         print '> Adding generated distribution with used software and others.'
         if not os.path.isfile('temp/{var}_/ClosureTest_recobinning_{var}.root'.format(var = varName)):
@@ -293,27 +316,37 @@ if not vl.asimov:
         tru = copy.deepcopy(tmptfile.Get('tW'))
         tru.SetLineWidth(2)
         tru.SetLineColor(bp.colorMap[0])
+        
         if not os.path.isfile('temp/{var}_/ClosureTest_aMCatNLO_recobinning_{var}.root'.format(var = varName)):
-            raise RuntimeError('The rootfile with the generated information does not exist')
+            raise RuntimeError('The rootfile with the generated aMCatNLO information does not exist')
         tmptfile2 = r.TFile.Open('temp/{var}_/ClosureTest_aMCatNLO_recobinning_{var}.root'.format(var = varName))
         aMCatNLO = copy.deepcopy(tmptfile2.Get('tW'))
         aMCatNLO.SetLineWidth(2)
         aMCatNLO.SetLineColor(r.kAzure)
         
-        if nominal_withErrors[0].GetMaximum() <= tru.GetMaximum(): nominal_withErrors[0].SetMaximum(tru.GetMaximum())
+        if not os.path.isfile('temp/{var}_/ClosureTest_DS_recobinning_{var}.root'.format(var = varName)):
+            raise RuntimeError('The rootfile with the generated DS variation information does not exist')
+        tmptfile3 = r.TFile.Open('temp/{var}_/ClosureTest_DS_recobinning_{var}.root'.format(var = varName))
+        hDS = copy.deepcopy(tmptfile3.Get('tW'))
+        hDS.SetLineWidth(2)
+        hDS.SetLineColor(r.kGreen)
+        
+        if nominal_withErrors[0].GetMaximum() <= tru.GetMaximum():      nominal_withErrors[0].SetMaximum(tru.GetMaximum())
         if nominal_withErrors[0].GetMaximum() <= aMCatNLO.GetMaximum(): nominal_withErrors[0].SetMaximum(aMCatNLO.GetMaximum())
+        if nominal_withErrors[0].GetMaximum() <= hDS.GetMaximum():      nominal_withErrors[0].SetMaximum(hDS.GetMaximum())
         
         plot.addHisto(nominal_withErrors, 'hist',     'Total unc.',   'F', 'unc')
         plot.addHisto(tru,                'L,same',   'tW Powheg',    'L', 'mc')
-        plot.addHisto(aMCatNLO,           'L,same',   'tW aMCatNLo',  'L', 'mc')
+        plot.addHisto(aMCatNLO,           'L,same',   'tW aMCatNLO',  'L', 'mc')
+        plot.addHisto(hDS,                'L,same',   'tW DS',        'L', 'mc')
         plot.addHisto(nominal,            'P,E,same', "Pseudodata",   'P', 'data')
-        plot.saveCanvas('TR')
+        plot.saveCanvas(legloc_as)
         tmptfile2.Close()
         tmptfile.Close()
     else:
         plot.addHisto(nominal_withErrors, 'hist', 'Total unc.', 'F')
         plot.addHisto(nominal, 'P,same', "Pseudodata", 'P', 'data')
-        plot.saveCanvas('TR')
+        plot.saveCanvas(legloc_as)
     del plot
 
 
@@ -339,14 +372,16 @@ if not vl.asimov:
     hincmax.SetLineWidth( 2 )
     hincmax.SetFillColorAlpha(r.kBlue, 0.)
 
-    if (maxinctot >= 0.9):
-        if maxinctot >= 5:
-            uncList[0][1].GetYaxis().SetRangeUser(0., 5.)
-        else:
-            uncList[0][1].GetYaxis().SetRangeUser(0., maxinctot + 0.1)
-    else:
-        uncList[0][1].GetYaxis().SetRangeUser(0., 0.9)
+    #if (maxinctot >= 0.9):
+        #if maxinctot >= 5:
+            #uncList[0][1].GetYaxis().SetRangeUser(0., 5.)
+        #else:
+            #uncList[0][1].GetYaxis().SetRangeUser(0., maxinctot + 0.1)
+    #else:
+        #uncList[0][1].GetYaxis().SetRangeUser(0., 0.9)
 
+    uncList[0][1].GetYaxis().SetRangeUser(0., 1.1)
+    
     for i in range(vl.nuncs):
         if 'statbin' not in uncList[i][0]: uncList[i][1].SetLineColor(vl.NewColorMap[uncList[i][0]])
         else:                              uncList[i][1].SetLineColor(r.kAzure)
@@ -355,7 +390,11 @@ if not vl.asimov:
 
     plot.addHisto(hincmax, 'hist,same', 'Total', 'L')
     plot.plotspath = "results/"
-    plot.saveCanvas('TR')
+    
+    if "uncleg_foldas" in vl.varList[varName]: unclegpos_as = vl.varList[varName]["uncleg_foldas"]
+    else:                                      unclegpos_as = "TR"
+    
+    plot.saveCanvas(unclegpos_as)
     del plot
 
 
