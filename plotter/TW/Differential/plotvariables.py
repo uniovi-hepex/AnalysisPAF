@@ -1,6 +1,6 @@
 import ROOT     as r
 import varList  as vl
-import sys, os
+import sys, os, copy
 from multiprocessing import Pool
 from array import array
 print "===== Minitrees variables plotting (now in Python!)\n"
@@ -12,6 +12,11 @@ NameOfTree  = "Mini1j1t";
 StandardCut = "Tpassreco == 1";
 ControlCut  = "TIsSS == 0 && TNJets == 1  && TNBtags == 1 && TnLooseCentral > 1";
 systlist    = "JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"
+#systlist    = ""
+labelsignal = "e^{#pm}#mu^{#mp}+1j1t+0j_{loose}"
+labelcontrol= "e^{#pm}#mu^{#mp}+1j1t+>0j_{loose}"
+
+
 if (len(sys.argv) > 1):
     nCores      = int(sys.argv[1])
     print ('> Parallelization will be done with ' + str(nCores) + ' cores')
@@ -48,7 +53,7 @@ def plotvariable(tsk):
     p.SetLumi(vl.Lumi)
     p.verbose  = False;
     p.verbose  = True;
-    p.SetChLabel("1j1t+e^{#pm}#mu^{#mp}" if cut == "signal" else "1j1t+e^{#pm}#mu^{#mp}+0j_{loose}")
+    p.SetChLabel(labelsignal if cut == "signal" else labelcontrol)
     p.SetChLabelPos(0.3, 0.85, -1)
     
     
@@ -95,6 +100,27 @@ def plotvariable(tsk):
     p.AddSample('TbarW_noFullyHadr',      'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
     p.SetWeight('TWeight')
     
+    #p.AddSample("TW_noFullyHadr_DS",            "tW (DS)",      r.itSignal, r.kBlue)
+    #p.AddSample("TbarW_noFullyHadr_DS",         "tW (DS)",      r.itSignal, r.kBlue)
+    
+    #hTW     = copy.deepcopy(r.Histo(p.GetHisto('tW').Clone("htW")))
+    #hTWDS   = copy.deepcopy(r.Histo(p.GetHisto('tW (DS)').Clone("htWDS")))
+    #hTWcm = copy.deepcopy(hTW)
+    
+    #print "jiji"
+    ##p.RemoveProcess("tW (DS)")
+    #print "jiji"
+    #hTWDS.Add(hTW, -1)
+    #hTWDS.Scale(-1)
+    #hTWDS.Add(hTWcm, -1)
+    #p.PrepareHisto(hTWDS,    "TW_DS",    "tW (DS)", r.itSignal);
+    #hTWDS.SetProcess("tW (DS)")
+    #hTWDS.SetTag("tW (DS)")
+    #hTWDS.SetType(r.itSignal)
+    #hTWDS.SetColor(r.kBlue)
+    #print "jiji"
+    #p.AddToHistos(hTWDS)
+    #print "jiji"
     
     p.AddSample("MuonEG",                       "Data",         r.itData);
     p.AddSample("SingleMuon",                   "Data",         r.itData);
@@ -197,7 +223,9 @@ def plotvariable(tsk):
     p.AddToSystematicLabels("ttbarME");
     
     # Other settings
-    p.doUncInLegend = True;
+    p.SetDataStyle("psameE1")
+    p.SetSignalStyle("SM")
+    p.doUncInLegend = False;
     p.SetRatioMin( 0.6 );
     p.SetRatioMax( 1.4 );
     p.SetPadPlotMargins(vl.margins)
@@ -205,19 +233,19 @@ def plotvariable(tsk):
     
     p.SetCMSlabel("CMS");
     p.SetCMSmodeLabel("Preliminary");
-    #p.SetLegendPosition('UR')
-    #p.SetLegendPosition(0.70, 0.65, 0.85, 0.93)
-    p.SetLegendPosition(0.82, 0.65, 0.93, 0.93)
-    p.SetLegendTextSize(0.0275)
+    
+    thepos = vl.legpos
+    p.SetLegendPosition(thepos[0], thepos[1], thepos[2], thepos[3])
+    p.SetLegendTextSize(0.028)
     p.SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/" if cut == 'signal' else "/nfs/fanae/user/vrbouza/www/TFM/1j1t/control/");
     p.doYieldsInLeg = False;
     p.doSetLogy     = False;
     #p.doData        = False;
     p.doSignal      = False;
     
-    if "abs" in vl.varList[var]['var']:
+    if "abs" in vl.varList[var]['var'] or "min" in vl.varList[var]['var']:
         p.NoShowVarName = True;
-        p.SetOutputName(vl.varList[var]['var'].replace("abs(","").replace(")",""));
+        p.SetOutputName(vl.varList[var]['var_response']);
     p.DrawStack();
     p.PrintSystematics()
     p.PrintSystYields()
@@ -235,7 +263,7 @@ def plotcustomvariable(tsk):
     p.SetLumi(vl.Lumi)
     p.verbose  = False;
     p.verbose  = True;
-    p.SetChLabel("1j1t+e^{#pm}#mu^{#mp}" if cut == "signal" else "1j1t+e^{#pm}#mu^{#mp}+0j_{loose}")
+    p.SetChLabel(labelsignal if cut == "signal" else labelcontrol)
     p.SetChLabelPos(0.3, 0.85, -1)
     
     p.AddSample("TTbar_PowhegSemi",             "Non-W|Z",      r.itBkg, 413, systlist)
@@ -254,10 +282,32 @@ def plotcustomvariable(tsk):
     p.AddSample("DYJetsToLL_M5to50_MLM",        "DY",           r.itBkg, 852, systlist);
     p.AddSample("DYJetsToLL_M50_MLM",           "DY",           r.itBkg, 852, systlist);
     
-    p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itBkg, 633, systlist)
+    #p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itBkg, 633, systlist)
     
-    p.AddSample("TW",                           "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
-    p.AddSample("TbarW",                        "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist);
+    specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TTbar_Powheg',          't#bar{t}',    r.itBkg, 633, systlist)
+    specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TTbar2L_powheg',        't#bar{t}',    r.itBkg, 633, systlist)
+    p.SetWeight('TWeight')
+    
+    #p.AddSample("TW",                           "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
+    #p.AddSample("TbarW",                        "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist);
+    
+    specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TW',                     'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
+    specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TW_noFullyHadr',         'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
+    specialweight = vl.n_tbarw/vl.sigma_tw/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TbarW',                  'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
+    specialweight = vl.n_tbarwnohad/vl.sigma_twnohad/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TbarW_noFullyHadr',      'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
+    p.SetWeight('TWeight')
     
     p.AddSample("MuonEG",                       "Data",         r.itData);
     p.AddSample("SingleMuon",                   "Data",         r.itData);
@@ -363,7 +413,9 @@ def plotcustomvariable(tsk):
     del pdf
     
     # Other settings
-    p.doUncInLegend = True;
+    p.SetDataStyle("psameE1")
+    #p.SetStackErrorStyle(3144)
+    p.doUncInLegend = False;
     p.SetRatioMin( 0.6 );
     p.SetRatioMax( 1.4 );
     p.SetPadPlotMargins(vl.margins)
@@ -371,11 +423,10 @@ def plotcustomvariable(tsk):
     
     p.SetCMSlabel("CMS");
     p.SetCMSmodeLabel("Preliminary");
-    #p.SetLegendPosition(0.7, 0.45, 0.93, 0.92);
-    #p.SetLegendPosition('UR')
-    #p.SetLegendPosition(0.70, 0.65, 0.85, 0.93)
-    p.SetLegendPosition(0.82, 0.65, 0.93, 0.93)
-    p.SetLegendTextSize(0.0275)
+    if 'legpos' in vl.varList[var]: thepos = vl.varList[var]['legpos']
+    else:                           thepos = vl.legpos
+    p.SetLegendPosition(thepos[0], thepos[1], thepos[2], thepos[3])
+    p.SetLegendTextSize(0.028)
     p.SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/" if cut == 'signal' else "/nfs/fanae/user/vrbouza/www/TFM/1j1t/control/");
     p.doYieldsInLeg = False;
     p.doSetLogy     = False;
@@ -383,9 +434,9 @@ def plotcustomvariable(tsk):
     p.doSignal      = False;
     #p.SetTitleY(r.TString(vl.varList[var]['yaxis']))
     p.SetOutputName("Custom");
-    if "abs" in vl.varList[var]['var']:
+    if "abs" in vl.varList[var]['var'] or "min" in vl.varList[var]['var']:
         p.NoShowVarName = True;
-        p.SetOutputName('Custom_' + vl.varList[var]['var'].replace("abs(","").replace(")",""));
+        p.SetOutputName('Custom_' + vl.varList[var]['var_response']);
     p.DrawStack();
     p.PrintSystematics()
     p.PrintSystYields()
@@ -403,7 +454,7 @@ def plotthenumberofjets(tsk):
     p.SetLumi(vl.Lumi)
     p.verbose  = False;
     p.verbose  = True;
-    p.SetChLabel("1j1t+e^{#pm}#mu^{#mp}" if cut == "signal" else "1j1t+e^{#pm}#mu^{#mp}+0j_{loose}")
+    p.SetChLabel(labelsignal if cut == "signal" else labelcontrol)
     p.SetChLabelPos(0.3, 0.85, -1)
     
     p.AddSample("TTbar_PowhegSemi",             "Non-W|Z",      r.itBkg, 413, systlist)
@@ -422,10 +473,32 @@ def plotthenumberofjets(tsk):
     p.AddSample("DYJetsToLL_M5to50_MLM",        "DY",           r.itBkg, 852, systlist);
     p.AddSample("DYJetsToLL_M50_MLM",           "DY",           r.itBkg, 852, systlist);
     
-    p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itBkg, 633, systlist)
+    #p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itBkg, 633, systlist)
     
-    p.AddSample("TW",                           "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
-    p.AddSample("TbarW",                        "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist);
+    specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TTbar_Powheg',          't#bar{t}',    r.itBkg, 633, systlist)
+    specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TTbar2L_powheg',        't#bar{t}',    r.itBkg, 633, systlist)
+    p.SetWeight('TWeight')
+    
+    #p.AddSample("TW",                           "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
+    #p.AddSample("TbarW",                        "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist);
+    
+    specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TW',                     'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
+    specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TW_noFullyHadr',         'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
+    specialweight = vl.n_tbarw/vl.sigma_tw/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TbarW',                  'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
+    specialweight = vl.n_tbarwnohad/vl.sigma_twnohad/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TbarW_noFullyHadr',      'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
+    p.SetWeight('TWeight')
     
     p.AddSample("MuonEG",                       "Data",         r.itData);
     p.AddSample("SingleMuon",                   "Data",         r.itData);
@@ -531,7 +604,8 @@ def plotthenumberofjets(tsk):
     del pdf
     
     # Other settings
-    p.doUncInLegend = True;
+    p.SetDataStyle("psameE1")
+    p.doUncInLegend = False;
     p.SetRatioMin( 0.6 );
     p.SetRatioMax( 1.4 );
     p.SetPadPlotMargins(vl.margins)
@@ -539,21 +613,19 @@ def plotthenumberofjets(tsk):
     
     p.SetCMSlabel("CMS");
     p.SetCMSmodeLabel("Preliminary");
-    #p.SetLegendPosition(0.7, 0.45, 0.93, 0.92);
-    #p.SetLegendPosition('UR')
-    #p.SetLegendPosition(0.70, 0.65, 0.85, 0.93)
-    p.SetLegendPosition(0.82, 0.65, 0.93, 0.93)
-    p.SetLegendTextSize(0.0275)
+    if 'legpos' in vl.varList[var] and cut != "signal": thepos = vl.varList[var]['legpos']
+    else:                                               thepos = vl.legpos
+    p.SetLegendPosition(thepos[0], thepos[1], thepos[2], thepos[3])
+    p.SetLegendTextSize(0.028)
     p.SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/" if cut == 'signal' else "/nfs/fanae/user/vrbouza/www/TFM/1j1t/control/");
     p.doYieldsInLeg = False;
     p.doSetLogy     = False;
-    #p.doData        = False;
     p.doSignal      = False;
     #p.SetTitleY(r.TString(vl.varList[var]['yaxis']))
     p.SetOutputName("Custom");
-    if "abs" in vl.varList[var]['var']:
+    if "abs" in vl.varList[var]['var'] or "min" in vl.varList[var]['var']:
         p.NoShowVarName = True;
-        p.SetOutputName('Custom_' + vl.varList[var]['var'].replace("abs(","").replace(")",""));
+        p.SetOutputName('Custom_' + vl.varList[var]['var_response']);
     p.DrawStack();
     p.PrintSystematics()
     p.PrintSystYields()
@@ -563,12 +635,13 @@ def plotthenumberofjets(tsk):
 if __name__ == '__main__':
     print "> Beginning to plot descriptive histograms", "\n"
     tasks = []
-    #for v in vl.varList["Names"]["Variables"]:
-        ##for ct in ['signal', 'control']:
+    for v in vl.varList["Names"]["Variables"]:
+        for ct in ['signal', 'control']:
         #for ct in ['control']:
-            #tasks.append( (v, ct) )
+            tasks.append( (v, ct) )
     
-    tasks.append( ("LeadingLepPt", "control") )
+    #tasks.append( ("DilepMETJet1Pz", "signal") )
+    #tasks.append( ("DPhiLL", "signal") )
     
     pool = Pool(nCores)
     pool.map(plotvariable, tasks)
@@ -576,13 +649,13 @@ if __name__ == '__main__':
     pool.join()
     del pool
     
-    #print "> Beginning to plot histograms with actual reconstruction binning", "\n"
-    #pool = Pool(nCores)
-    #pool.map(plotcustomvariable, tasks)
-    #pool.close()
-    #pool.join()
-    #del pool
+    print "> Beginning to plot histograms with actual reconstruction binning", "\n"
+    pool = Pool(nCores)
+    pool.map(plotcustomvariable, tasks)
+    pool.close()
+    pool.join()
+    del pool
     
-    #plotthenumberofjets(("nLooseCentral", "signal"))
+    plotthenumberofjets(("nLooseCentral", "signal"))
     
     print "> Done!", "\n"
