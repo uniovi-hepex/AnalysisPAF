@@ -230,6 +230,8 @@ def plotvariable(tsk):
     p.SetRatioMax( 1.4 );
     p.SetPadPlotMargins(vl.margins)
     p.SetPadRatioMargins(vl.marginsratio)
+    p.SetTexChanSize(0.06)
+    p.SetCenterYAxis(False)
     
     p.SetCMSlabel("CMS");
     p.SetCMSmodeLabel("Preliminary");
@@ -420,6 +422,8 @@ def plotcustomvariable(tsk):
     p.SetRatioMax( 1.4 );
     p.SetPadPlotMargins(vl.margins)
     p.SetPadRatioMargins(vl.marginsratio)
+    p.SetTexChanSize(0.06)
+    p.SetCenterYAxis(False)
     
     p.SetCMSlabel("CMS");
     p.SetCMSmodeLabel("Preliminary");
@@ -610,6 +614,8 @@ def plotthenumberofjets(tsk):
     p.SetRatioMax( 1.4 );
     p.SetPadPlotMargins(vl.margins)
     p.SetPadRatioMargins(vl.marginsratio)
+    p.SetTexChanSize(0.06)
+    p.SetCenterYAxis(False)
     
     p.SetCMSlabel("CMS");
     p.SetCMSmodeLabel("Preliminary");

@@ -167,6 +167,7 @@ public:
     texcms = NULL;
     texPrelim = NULL;
     texchan = NULL;
+    texchansize = 0.05;
     hratio = NULL;
     TotalSysUp = NULL;
     TotalSysDown = NULL;
@@ -223,6 +224,8 @@ public:
     kTextLumiX = 0.73; kTextLumiY = 0.97; kTextLumiSize = 0.05;
     kTextCMSX = 0.15; kTextCMSY = 0.89; kTextCMSsize = 0.06;
     kTextPrelimX = 0.15; kTextPrelimY = 0.83; kTextPrelimSize = 0.052;
+    
+    centerYaxis = true;
   }
 
 
@@ -242,7 +245,8 @@ public:
   TLegend* SetLegend();
   virtual void SetLegendPosition(TString);
   virtual void SetLegendPosition(float x1 = 0.70, float y1 = 0.65, float x2 = 0.93, float y2 = 0.93){ fLegX1 = x1; fLegY1 = y1; fLegX2 = x2; fLegY2 = y2;}
-  virtual void SetTexChan(); 
+  virtual void SetTexChan();
+  virtual void SetTexChanSize(Float_t siz = 0.05) {texchansize = siz;};
   void SetPad(TPad* pad, TString limits, TString margins, bool doGrid);
   virtual void SetHRatio(TH1F* h = nullptr); // To be updated
   virtual void SetYaxis(TAxis *a = nullptr);
@@ -387,6 +391,7 @@ public:
   void SetPadRatioLimits( TString t){ kPadRatioLimits = t;}
   void SetPadPlotMargins( TString t){ kPadPlotMargins = t;}
   void SetPadRatioMargins(TString t){ kPadRatioMargins = t;}
+  virtual void SetCenterYAxis(Bool_t doitornot){ centerYaxis = doitornot;};
 
   virtual void SetSignalProcess(TString p){ SignalProcess = p;}
   virtual void SetSignalStyle(TString p){ SignalStyle = p;} 
@@ -473,6 +478,7 @@ protected:
   float texCMSX; // 0.15
   float texCMSY; // 0.89
   float texCMSsize; // 22
+  float texchansize; // 22
   Int_t  RatioErrorColor;
   Int_t  RatioErrorStyle;
   Int_t  StackErrorColor;
@@ -485,6 +491,7 @@ protected:
   TString limitFolder;
   Bool_t ShowSystematics = false;
   TString chlabel;
+  Bool_t centerYaxis; // 22
 
   float fLegX1; float fLegY1; float fLegX2; float fLegY2; Float_t LegendTextSize;
   TString kPadPlotLimits; TString kPadRatioLimits; TString kPadPlotMargins; TString kPadRatioMargins;
