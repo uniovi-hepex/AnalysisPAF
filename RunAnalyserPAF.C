@@ -43,10 +43,11 @@ Float_t stopMass; Float_t lspMass;
 
 //=============================================================================
 // Global Enums
-enum  ESelector               {iStopSelec, iTopSelec, iTWSelec, iWWSelec, 
-			 iHWWSelec,  ittDMSelec, ittHSelec, iWZSelec, i4tSelec, iStopTopSelec, nSel};
-const TString kTagSel[nSel] = {"Stop",     "Top",     "TW",     "WW", "HWW",    
-"ttDM", "ttH", "WZ", "tttt", "StopTop" };
+enum  ESelector {iStopSelec, iTopSelec, iTWSelec, iWWSelec, iHWWSelec,
+                 ittDMSelec, ittHSelec, iWZSelec, i4tSelec, iStopTopSelec,
+                 iTWTTbarSelec, nSel};
+const TString kTagSel[nSel] = {"Stop", "Top", "TW", "WW", "HWW", "ttDM", "ttH",
+                               "WZ", "tttt", "StopTop", "TWTTbar"};
 
 //=============================================================================
 // Datasets:
@@ -148,6 +149,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   else if(Selection == "WW"                                  ) sel = iWWSelec;
   else if(Selection == "HWW"                                 ) sel = iHWWSelec;
   else if(Selection == "WZ"                                  ) sel = iWZSelec;
+  else if(Selection == "TWTTbar"   || Selection == "tWttbar" ) sel = iTWTTbarSelec;
   else { 
     PAF_ERROR("RunAnalyserPAF", Form("Wrong selection \"%s\".",
 				     Selection.Data()));
@@ -456,9 +458,10 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
     //myProject->AddSelectorPackage("TopAnalysis");
     myProject->AddSelectorPackage("TWAnalysis");
   }
-  else if (sel == iWWSelec  )  myProject->AddSelectorPackage("WWAnalysis");
-  else if (sel == iHWWSelec )  myProject->AddSelectorPackage("HWWAnalysis");
-  else if (sel == iWZSelec  )  myProject->AddSelectorPackage("WZAnalysis");
+  else if (sel == iWWSelec  )    myProject->AddSelectorPackage("WWAnalysis");
+  else if (sel == iHWWSelec )    myProject->AddSelectorPackage("HWWAnalysis");
+  else if (sel == iWZSelec  )    myProject->AddSelectorPackage("WZAnalysis");
+  else if (sel == iTWTTbarSelec) myProject->AddSelectorPackage("TWTTbarAnalysis");
   else                         PAF_FATAL("RunAnalyserPAF", "No selector defined for this analysis!!!!");
   
   // Additional packages

@@ -41,8 +41,8 @@ const TString SFTString[nfiles] = {
 
 enum wps{iVeto, iVeryLoose, iLoose, iMedium, iTight, iVeryTight, iExtreamlyTight, iWPforStop, iLooseWPforStop};
 
-enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, iHWWSelec, ittDMSelec, ittHSelec, iWZSelec, i4tSelec, iStopTopSelec, iNSelecs};
-const TString LabSelection[] = {"stop", "top", "tW", "WW", "tt+DM", "ttH", "WZ", "tttt"};
+enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, iHWWSelec, ittDMSelec, ittHSelec, iWZSelec, i4tSelec, iStopTopSelec, iTWTTbarSelec, iNSelecs};
+const TString LabSelection[] = {"stop", "top", "tW", "WW", "tt+DM", "ttH", "WZ", "tttt", "tWttbar"};
 
 enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau, iOS1tau, i2lss_fake, iTriLep_fake, iElEl, iMuMu, i1Tau_emufakeOS ,i1Tau_emufakeSS, i2LOS, TotalDefinedChannels};
 

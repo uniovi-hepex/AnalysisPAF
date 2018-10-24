@@ -62,7 +62,7 @@ void LeptonSelector::Initialise(){
     // Los tenemos en funciones, no en histogramas, entonces nos la pela de cargar histogramas
   }
 
-  else if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iWWSelec){
+  else if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iTWTTbarSelec || gSelection == iWWSelec){
     LepSF->loadHisto(iTrigDoubleMuon);
     LepSF->loadHisto(iTrigDoubleElec);
     LepSF->loadHisto(iTrigElMu);
@@ -502,7 +502,7 @@ Bool_t LeptonSelector::isGoodLepton(Lepton lep){
     if(passId && passIso && ( (lep.isElec && getGoodVertex(iTight)) || (lep.isMuon && getGoodVertex(iMedium) ))) return true;
     else return false;
   }
-  else if(gSelection == iTWSelec){
+  else if(gSelection == iTWSelec || gSelection == iTWTTbarSelec){
     // Tight cut-based electrons, pT > 20, |eta| < 2.4, RelIso POG, tightIP2D, SIP3D > 4
     // Tight Muon ID, RelIso POG, tightIP2D, SIP3D > 4
     if(lep.isMuon){
@@ -688,7 +688,7 @@ Bool_t LeptonSelector::isVetoLepton(Lepton lep){
     } 
     return passId && passIso && getGoodVertex(iTight) && getSIPcut(4);
   }
-  else if(gSelection == iTopSelec || gSelection == iTWSelec){
+  else if(gSelection == iTopSelec || gSelection == iTWSelec || gSelection == iTWTTbarSelec){
     return true;
   }
   else if((gSelection == iWWSelec) || (gSelection == iHWWSelec)){
@@ -839,7 +839,7 @@ Bool_t LeptonSelector::isLooseLepton(Lepton lep){
     }
     return true;
   }
-  else if(gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec){
+  else if(gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec || gSelection == iTWTTbarSelec){
     // Same as good lepton but no looser cut on pT
     if(lep.isMuon){
       passId  = getMuonId(iTight);
@@ -1046,7 +1046,7 @@ void LeptonSelector::InsideLoop(){
 
   //=== Trigger SF
   TriggerSF = 1; TriggerSFerr = 0;
-  if(gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec || gSelection == iStopSelec){
+  if(gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec || gSelection == iTWTTbarSelec || gSelection == iStopSelec){
     if(nSelLeptons >= 2){
       if     (selLeptons.at(0).isMuon && selLeptons.at(1).isMuon){
         TriggerSF = LepSF->GetTrigDoubleMuSF(    selLeptons.at(0).p.Eta(), selLeptons.at(1).p.Eta());
@@ -1128,7 +1128,7 @@ void LeptonSelector::GetLeptonVariables(Int_t i){ // Once per muon, get all the 
   MVATTH        = Get<Float_t>("LepGood_mvaTTH",i);       //*
   MVASUSY        = Get<Float_t>("LepGood_mvaSUSY",i);       //*
   TightCharge    = Get<Int_t>("LepGood_tightCharge",i);      //*
-  if (gSelection != iTWSelec){
+  if (gSelection != iTWSelec && gSelection != iTWTTbarSelec){
     MVAID          = Get<Float_t>("LepGood_mvaIdSpring16GP",i);
     isGlobalMuon = Get<Int_t>("LepGood_isGlobalMuon",i); 
     isTrackerMuon = Get<Int_t>("LepGood_isTrackerMuon",i); 
@@ -1185,7 +1185,7 @@ void LeptonSelector::GetDiscLeptonVariables(Int_t i){ // Once per muon, get all 
   jetBTagCSV    = Get<Float_t>("DiscLep_jetBTagCSV",i);   //*
   SegComp       = Get<Float_t>("DiscLep_segmentCompatibility",i);   //*
   
-  if (gSelection == iTWSelec) {
+  if (gSelection == iTWSelec || gSelection == iTWTTbarSelec) {
     MVAID         = 0.;
     isGlobalMuon  = 0.;
     isTrackerMuon = 0.;

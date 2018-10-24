@@ -85,7 +85,7 @@ void JetSelector::Initialise(){
     vetoJet_maxEta = 2.4;
     minDR = 0.4;
   }
-  else if (gSelection == iTWSelec){
+  else if (gSelection == iTWSelec || gSelection == iTWTTbarSelec){
     taggerName="CSVv2";
     stringWP = "Medium";
     jet_MaxEta = 2.4;
@@ -132,7 +132,7 @@ void JetSelector::Initialise(){
   }
   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-  if (gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec) MeasType = "mujets";
+  if (gSelection == iTopSelec || gSelection == iStopTopSelec || gSelection == iTWSelec || gSelection == iTWTTbarSelec) MeasType = "mujets";
   TString pwd  = GetParam<TString>("WorkingDir");
   TString BTagSFPath = Form("%s/packages/BTagSFUtil", pwd.Data());
   
@@ -299,7 +299,7 @@ void JetSelector::InsideLoop(){
         else if (gSelection == i4tSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
         else if (gSelection == iWZSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
         else if (gSelection == iTopSelec){if (tJ.isBtag) vetoJets.push_back(tJ);}
-        else if (gSelection == iTWSelec){
+        else if (gSelection == iTWSelec || gSelection == iTWTTbarSelec){
           vetoJets.push_back(tJ);
           if (!gIsData){
             if ( tJ.p.Pt() < 20.) continue;
@@ -400,7 +400,7 @@ void JetSelector::InsideLoop(){
   }
 
   // Loop over the jets
-  if (!gIsData && gSelection == iTWSelec){
+  if (!gIsData && gSelection == iTWSelec || gSelection == iTWTTbarSelec){
     nJet = Get<Int_t>("nJet_jecUp");
     for(Int_t i = 0; i < nJet; i++){
       GetJetVariables(i,"_jecUp");
@@ -420,7 +420,7 @@ void JetSelector::InsideLoop(){
     }
     std::sort( selJetsJecUp.begin(), selJetsJecUp.end(), ByPt);
   }
-  if (!gIsData  && gSelection == iTWSelec){
+  if (!gIsData  && gSelection == iTWSelec || gSelection == iTWTTbarSelec){
     nJet = Get<Int_t>("nJet_jecDown");
     for(Int_t i = 0; i < nJet; i++){
       GetJetVariables(i,"_jecDown");
@@ -441,7 +441,7 @@ void JetSelector::InsideLoop(){
     std::sort( selJetsJecDown.begin(), selJetsJecDown.end(), ByPt);
   }
 
-  if (!gIsData  && gSelection == iTWSelec){
+  if (!gIsData  && gSelection == iTWSelec || gSelection == iTWTTbarSelec){
     nJet = Get<Int_t>("nJet");
     TLorentzVector diffMET(0,0,0,0);
     for(Int_t i = 0; i < nJet; i++){
@@ -540,7 +540,7 @@ Bool_t JetSelector::IsBtag(Jet j){
   Bool_t isbtag;
   if(gIsData || gSelection == i4tSelec || gSelection == iWZSelec) isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
   // using "weights" as scale factors in the tW analysis :)
-  else if(gSelection == iTWSelec) isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
+  else if(gSelection == iTWSelec || gSelection == iTWTTbarSelec) isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
   //else if(stringWP == "Loose") isbtag = fBTagSFnom->IsTagged(j.csv, -999999, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
   else                         isbtag = fBTagSFnom->IsTagged(j.csv,j.flavmc, j.p.Pt(), j.p.Eta(), evt+(UInt_t)j.p.Pt());
   if(gIsFastSim && BtagSFFS == 1. && isbtag){  
