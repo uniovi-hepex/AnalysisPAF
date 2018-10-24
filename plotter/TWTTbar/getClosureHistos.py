@@ -5,7 +5,6 @@ from array import array
 print "===== Plots for closure test comparisons procedure\n"
 vl.SetUpWarnings()
 
-storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
 pathToTree  = ""
 recocut     = "Tpassreco == 1"
 gencut      = '1/TWeight*TWeight_normal*(Tpassgen == 1)'
@@ -15,38 +14,38 @@ if (len(sys.argv) > 1):
     print "> Chosen variable:", varName, "\n"
     if (len(sys.argv) > 2):
         if sys.argv[2] == 'last':
-            pathToTree    = vl.GetLastFolder(storagepath)
+            pathToTree    = vl.GetLastFolder(vl.storagepath)
         else:
-            pathToTree    = storagepath + sys.argv[2] + "/"
+            pathToTree    = vl.storagepath + sys.argv[2] + "/"
     else:
-        pathToTree  = "../../../TW_temp/"
+        pathToTree  = "../../TWTTbar_temp/"
     print "> Minitrees will be read from:", pathToTree, "\n"
 else:
     print "> Default choice of variable and minitrees\n"
     varName     = 'LeadingLepEta'
-    pathToTree  = "../../../TW_temp/"
+    pathToTree  = "../../TWTTbar_temp/"
 
 
 NameOfTree = "Mini1j1t";
 
 r.gROOT.SetBatch(True)
-r.gROOT.LoadMacro('../../Histo.C+')
-r.gROOT.LoadMacro('../../Looper.C+')
-r.gROOT.LoadMacro('../../Plot.C+')
-r.gROOT.LoadMacro('../../PlotToPyC.C+')
+r.gROOT.LoadMacro('../Histo.C+')
+r.gROOT.LoadMacro('../Looper.C+')
+r.gROOT.LoadMacro('../Plot.C+')
+r.gROOT.LoadMacro('../PlotToPyC.C+')
 
 
 if vl.doxsec: opts = 'noScaleLumi'
 else:         opts = ''
 binning     = array('f', vl.varList[varName]['genbinning'])
 binningreco = array('f', vl.varList[varName]['recobinning'])
-if not os.path.isdir('temp/{var}_'.format(var = varName)):
-    os.system('mkdir -p temp/{var}_'.format(var = varName))
+if not os.path.isdir('temp/{var}'.format(var = varName)):
+    os.system('mkdir -p temp/{var}'.format(var = varName))
 print "> Beginning to produce the histograms", "\n"
 
 p = r.PlotToPyC(r.TString(vl.varList[varName]['var_gen']), r.TString(gencut), r.TString('All'), len(binning)-1, binning, r.TString('TGen' + varName), r.TString(''))
 p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
-p.SetLimitFolder('temp/{var}_/'.format(var = varName));
+p.SetLimitFolder('temp/{var}/'.format(var = varName));
 p.SetPathSignal(pathToTree);
 p.verbose = True
 p.verbose = False
@@ -76,7 +75,7 @@ del p
 
 p = r.PlotToPyC(r.TString(vl.varList[varName]['var_gen']), r.TString(gencut), r.TString('All'), len(binning)-1, binning, r.TString('TGen' + varName), r.TString(''))
 p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
-p.SetLimitFolder('temp/{var}_/'.format(var = varName));
+p.SetLimitFolder('temp/{var}/'.format(var = varName));
 p.SetPathSignal(pathToTree);
 p.verbose = True
 p.verbose = False
@@ -91,7 +90,7 @@ del p
 
 p = r.PlotToPyC(r.TString(vl.varList[varName]['var_gen']), r.TString(gencut), r.TString('All'), len(binning)-1, binning, r.TString('TGen' + varName), r.TString(''))
 p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
-p.SetLimitFolder('temp/{var}_/'.format(var = varName));
+p.SetLimitFolder('temp/{var}/'.format(var = varName));
 p.SetPathSignal(pathToTree);
 p.verbose = True
 p.verbose = False
@@ -107,7 +106,7 @@ del p
 
 p = r.PlotToPyC(r.TString(vl.varList[varName]['var']), r.TString(recocut), r.TString('All'), len(binningreco)-1, binningreco, r.TString('T' + varName), r.TString(''))
 p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
-p.SetLimitFolder('temp/{var}_/'.format(var = varName));
+p.SetLimitFolder('temp/{var}/'.format(var = varName));
 p.SetPathSignal(pathToTree);
 p.verbose = True
 p.verbose = False
@@ -137,7 +136,7 @@ del p
 
 p = r.PlotToPyC(r.TString(vl.varList[varName]['var']), r.TString(recocut), r.TString('All'), len(binningreco)-1, binningreco, r.TString('T' + varName), r.TString(''))
 p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
-p.SetLimitFolder('temp/{var}_/'.format(var = varName));
+p.SetLimitFolder('temp/{var}/'.format(var = varName));
 p.SetPathSignal(pathToTree);
 p.verbose = True
 p.verbose = False
@@ -152,7 +151,7 @@ del p
 
 p = r.PlotToPyC(r.TString(vl.varList[varName]['var']), r.TString(recocut), r.TString('All'), len(binningreco)-1, binningreco, r.TString('T' + varName), r.TString(''))
 p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
-p.SetLimitFolder('temp/{var}_/'.format(var = varName));
+p.SetLimitFolder('temp/{var}/'.format(var = varName));
 p.SetPathSignal(pathToTree);
 p.verbose = True
 p.verbose = False

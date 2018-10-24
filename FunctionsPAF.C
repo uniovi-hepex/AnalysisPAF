@@ -262,7 +262,7 @@ vector<TString> GetAllFiles(TString path, TString  filename, Bool_t verbose) {
   TString command("ls ");
   if(filename != "")
     command += 
-      path + "/" + filename + " " +
+      //path + "/" + filename + " " +
       path + "/" + filename + ".root " +
       path + "/" + filename + "_[0-9].root " +
       path + "/" + filename + "_[0-9][0-9].root " +

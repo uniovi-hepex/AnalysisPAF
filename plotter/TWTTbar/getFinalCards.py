@@ -6,7 +6,6 @@ from array import array
 from multiprocessing import Pool
 ###################################################
 
-storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
 pathToTree  = ""
 NameOfTree  = "Mini1j1t";
 systlist    = "JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"
@@ -14,20 +13,20 @@ StandardCut = "(Tpassreco == 1)"
 opts        = ''
 
 r.gROOT.SetBatch(True)
-r.gROOT.LoadMacro('../../Histo.C+')
-r.gROOT.LoadMacro('../../Looper.C+')
-r.gROOT.LoadMacro('../../Plot.C+')
-r.gROOT.LoadMacro('../../PlotToPy.C+')
-r.gROOT.LoadMacro('../../PlotToPyC.C+')
-r.gROOT.LoadMacro('../../PDFunc.C+')
+r.gROOT.LoadMacro('../Histo.C+')
+r.gROOT.LoadMacro('../Looper.C+')
+r.gROOT.LoadMacro('../Plot.C+')
+r.gROOT.LoadMacro('../PlotToPy.C+')
+r.gROOT.LoadMacro('../PlotToPyC.C+')
+r.gROOT.LoadMacro('../PDFunc.C+')
 
 
 def GiveMeMyHistos(var):
     binning = array('f', vl.varList[var]['recobinning']) # For some reason, PyROOT requires that you create FIRST this object, then put it inside the PlotToPyC.
     p = r.PlotToPyC(r.TString(vl.varList[var]['var']), r.TString(StandardCut), r.TString('ElMu'), int(len(vl.varList[var]['recobinning']) - 1), binning, r.TString(var), r.TString(vl.varList[var]['xaxis']))
     p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
-    p.SetLimitFolder('./temp/{var}_/'.format(var = var))
-    p.SetPlotFolder('./temp/{var}_/'.format(var = var))
+    p.SetLimitFolder('./temp/{var}/'.format(var = var))
+    p.SetPlotFolder('./temp/{var}/'.format(var = var))
     p.SetPathSignal(pathToTree);
     p.SetTitleY("Events")
     p.SetLumi(vl.Lumi)
@@ -223,8 +222,8 @@ def GiveMeMyAsimovHistos(var):
     binning = array('f', vl.varList[var]['recobinning']) # For some reason, PyROOT requires that you create FIRST this object, then put it inside the PlotToPyC.
     p = r.PlotToPyC(r.TString(vl.varList[var]['var']), r.TString(StandardCut), r.TString('ElMu'), int(len(vl.varList[var]['recobinning']) - 1), binning, r.TString(var), r.TString(vl.varList[var]['xaxis']))
     p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
-    p.SetLimitFolder('./temp/{var}_/'.format(var = var))
-    p.SetPlotFolder('./temp/{var}_/'.format(var = var))
+    p.SetLimitFolder('./temp/{var}/'.format(var = var))
+    p.SetPlotFolder('./temp/{var}/'.format(var = var))
     p.SetPathSignal(pathToTree);
     p.SetTitleY("Events")
     p.SetLumi(vl.Lumi)
@@ -310,8 +309,8 @@ def GiveMeMyGoodAsimovHistos(var):
     binning = array('f', vl.varList[var]['recobinning']) # For some reason, PyROOT requires that you create FIRST this object, then put it inside the PlotToPyC.
     p = r.PlotToPyC(r.TString(vl.varList[var]['var']), r.TString(StandardCut), r.TString('ElMu'), int(len(vl.varList[var]['recobinning']) - 1), binning, r.TString(var), r.TString(vl.varList[var]['xaxis']))
     p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
-    p.SetLimitFolder('./temp/{var}_/'.format(var = var))
-    p.SetPlotFolder('./temp/{var}_/'.format(var = var))
+    p.SetLimitFolder('./temp/{var}/'.format(var = var))
+    p.SetPlotFolder('./temp/{var}/'.format(var = var))
     p.SetPathSignal(pathToTree);
     p.SetTitleY("Events")
     p.SetLumi(vl.Lumi)
@@ -507,20 +506,20 @@ if __name__=="__main__":
             print ('> Parallelization will be done with ' + str(nCores) + ' cores')
             if (len(sys.argv) > 3):
                 if sys.argv[3] == 'last':
-                    pathToTree    = vl.GetLastFolder(storagepath)
+                    pathToTree    = vl.GetLastFolder(vl.storagepath)
                 else:
-                    pathToTree    = storagepath + sys.argv[3] + "/"
+                    pathToTree    = vl.storagepath + sys.argv[3] + "/"
             else:
-                pathToTree  = "../../../TW_temp/"
+                pathToTree  = "../../TWTTbar_temp/"
             print "> Minitrees will be read from:", pathToTree, "\n"
         else:
             print '> Sequential execution mode chosen'
             nCores      = 1
-            pathToTree  = "../../../TW_temp/"
+            pathToTree  = "../../TWTTbar_temp/"
     else:
         print "> Default choice of variable and minitrees\n"
         varName     = 'LeadingLepEta'
-        pathToTree  = "../../../TW_temp/"
+        pathToTree  = "../../TWTTbar_temp/"
         nCores      = 1
 
     print "> Beginning to produce histograms", "\n"

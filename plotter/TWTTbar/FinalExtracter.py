@@ -112,7 +112,7 @@ def getLumiUnc(tfile):
     return dataUp, dataDn
 
 
-tfile   = r.TFile.Open('temp/{var}_/forCards_{var}.root'.format(var = varName), "read")
+tfile   = r.TFile.Open('temp/{var}/forCards_{var}.root'.format(var = varName), "read")
 sysList = []
 
 sysList += vl.varList['Names']['ExpSysts'] + vl.varList['Names']['ttbarSysts'] + vl.varList['Names']['colorSysts'] + vl.varList['Names']['specialSysts'] + ['DSUp', 'LumiUp', 'LumiDown', 'fsrUp', 'fsrDown', 'isrUp', 'isrDown', 'tWMEUp', 'tWMEDown'] + vl.varList['Names']['NormSysts']
@@ -135,12 +135,12 @@ variations['LumiDown'] = dataDn
 tfile.Close()
 
 if not vl.asimov:
-    tfile      = r.TFile.Open('temp/{var}_/forCards_{var}_asimov.root'.format(var = varName), "read")
+    tfile      = r.TFile.Open('temp/{var}/forCards_{var}_asimov.root'.format(var = varName), "read")
     asimov     = getXsecForSys('asimov', tfile)
     tfile.Close()
     
 
-out = r.TFile.Open('temp/{var}_/cutOutput_{var}.root'.format(var = varName), 'recreate')
+out = r.TFile.Open('temp/{var}/cutOutput_{var}.root'.format(var = varName), 'recreate')
 nominal.Write()
 
 if not vl.asimov:
@@ -172,23 +172,23 @@ else:                                    legloc = "TR"
 
 if doSanityCheck:
     print '> Adding generated distribution with used software and others.'
-    if not os.path.isfile('temp/{var}_/ClosureTest_recobinning_{var}.root'.format(var = varName)):
+    if not os.path.isfile('temp/{var}/ClosureTest_recobinning_{var}.root'.format(var = varName)):
         raise RuntimeError('The rootfile with the generated information does not exist')
-    tmptfile = r.TFile.Open('temp/{var}_/ClosureTest_recobinning_{var}.root'.format(var = varName))
+    tmptfile = r.TFile.Open('temp/{var}/ClosureTest_recobinning_{var}.root'.format(var = varName))
     tru = copy.deepcopy(tmptfile.Get('tW'))
     tru.SetLineWidth(2)
     tru.SetLineColor(bp.colorMap[0])
     
-    if not os.path.isfile('temp/{var}_/ClosureTest_aMCatNLO_recobinning_{var}.root'.format(var = varName)):
+    if not os.path.isfile('temp/{var}/ClosureTest_aMCatNLO_recobinning_{var}.root'.format(var = varName)):
         raise RuntimeError('The rootfile with the generated aMCatNLO information does not exist')
-    tmptfile2 = r.TFile.Open('temp/{var}_/ClosureTest_aMCatNLO_recobinning_{var}.root'.format(var = varName))
+    tmptfile2 = r.TFile.Open('temp/{var}/ClosureTest_aMCatNLO_recobinning_{var}.root'.format(var = varName))
     aMCatNLO = copy.deepcopy(tmptfile2.Get('tW'))
     aMCatNLO.SetLineWidth(2)
     aMCatNLO.SetLineColor(r.kAzure)
     
-    if not os.path.isfile('temp/{var}_/ClosureTest_DS_recobinning_{var}.root'.format(var = varName)):
+    if not os.path.isfile('temp/{var}/ClosureTest_DS_recobinning_{var}.root'.format(var = varName)):
         raise RuntimeError('The rootfile with the generated DS variation information does not exist')
-    tmptfile3 = r.TFile.Open('temp/{var}_/ClosureTest_DS_recobinning_{var}.root'.format(var = varName))
+    tmptfile3 = r.TFile.Open('temp/{var}/ClosureTest_DS_recobinning_{var}.root'.format(var = varName))
     hDS = copy.deepcopy(tmptfile3.Get('tW'))
     hDS.SetLineWidth(2)
     hDS.SetLineColor(r.kGreen)
@@ -263,7 +263,7 @@ plot.saveCanvas(unclegpos)
 del plot, variations, nominal, dataUp, dataDn
 
 if not vl.asimov:
-    tfile   = r.TFile.Open('temp/{var}_/forCards_{var}_goodasimov.root'.format(var = varName))
+    tfile   = r.TFile.Open('temp/{var}/forCards_{var}_goodasimov.root'.format(var = varName))
     nominal = getXsecForSys('', tfile)
     variations = {}
     for syst in sysList:
@@ -280,7 +280,7 @@ if not vl.asimov:
     variations['LumiDown'] = dataDn
     tfile.Close()
 
-    out = r.TFile.Open('temp/{var}_/cutOutput_{var}_goodasimov.root'.format(var = varName), 'recreate')
+    out = r.TFile.Open('temp/{var}/cutOutput_{var}_goodasimov.root'.format(var = varName), 'recreate')
     nominal.Write()
 
     for syst in sysList:
@@ -310,23 +310,23 @@ if not vl.asimov:
 
     if doSanityCheck:
         print '> Adding generated distribution with used software and others.'
-        if not os.path.isfile('temp/{var}_/ClosureTest_recobinning_{var}.root'.format(var = varName)):
+        if not os.path.isfile('temp/{var}/ClosureTest_recobinning_{var}.root'.format(var = varName)):
             raise RuntimeError('The rootfile with the generated information does not exist')
-        tmptfile = r.TFile.Open('temp/{var}_/ClosureTest_recobinning_{var}.root'.format(var = varName))
+        tmptfile = r.TFile.Open('temp/{var}/ClosureTest_recobinning_{var}.root'.format(var = varName))
         tru = copy.deepcopy(tmptfile.Get('tW'))
         tru.SetLineWidth(2)
         tru.SetLineColor(bp.colorMap[0])
         
-        if not os.path.isfile('temp/{var}_/ClosureTest_aMCatNLO_recobinning_{var}.root'.format(var = varName)):
+        if not os.path.isfile('temp/{var}/ClosureTest_aMCatNLO_recobinning_{var}.root'.format(var = varName)):
             raise RuntimeError('The rootfile with the generated aMCatNLO information does not exist')
-        tmptfile2 = r.TFile.Open('temp/{var}_/ClosureTest_aMCatNLO_recobinning_{var}.root'.format(var = varName))
+        tmptfile2 = r.TFile.Open('temp/{var}/ClosureTest_aMCatNLO_recobinning_{var}.root'.format(var = varName))
         aMCatNLO = copy.deepcopy(tmptfile2.Get('tW'))
         aMCatNLO.SetLineWidth(2)
         aMCatNLO.SetLineColor(r.kAzure)
         
-        if not os.path.isfile('temp/{var}_/ClosureTest_DS_recobinning_{var}.root'.format(var = varName)):
+        if not os.path.isfile('temp/{var}/ClosureTest_DS_recobinning_{var}.root'.format(var = varName)):
             raise RuntimeError('The rootfile with the generated DS variation information does not exist')
-        tmptfile3 = r.TFile.Open('temp/{var}_/ClosureTest_DS_recobinning_{var}.root'.format(var = varName))
+        tmptfile3 = r.TFile.Open('temp/{var}/ClosureTest_DS_recobinning_{var}.root'.format(var = varName))
         hDS = copy.deepcopy(tmptfile3.Get('tW'))
         hDS.SetLineWidth(2)
         hDS.SetLineColor(r.kGreen)

@@ -291,15 +291,15 @@ class Unfolder():
         plot.plotspath  = self.plotspath
         
         if self.doSanityCheck:
-            if not os.path.isfile('temp/{var}_/ClosureTest_{var}.root'.format(var = self.var)):
+            if not os.path.isfile('temp/{var}/ClosureTest_{var}.root'.format(var = self.var)):
                 raise RuntimeError('The rootfile with the generated information does not exist')
-            tmptfile = r.TFile.Open('temp/{var}_/ClosureTest_{var}.root'.format(var = self.var))
+            tmptfile = r.TFile.Open('temp/{var}/ClosureTest_{var}.root'.format(var = self.var))
             tru = copy.deepcopy(tmptfile.Get('tW'))
             tru.SetLineWidth(2)
             tru.SetLineColor(bp.colorMap[0])
-            if not os.path.isfile('temp/{var}_/ClosureTest_aMCatNLO_{var}.root'.format(var = self.var)):
+            if not os.path.isfile('temp/{var}/ClosureTest_aMCatNLO_{var}.root'.format(var = self.var)):
                 raise RuntimeError('The rootfile with the generated information from an aMCatNLO sample does not exist')
-            tmptfile2 = r.TFile.Open('temp/{var}_/ClosureTest_aMCatNLO_{var}.root'.format(var = self.var))
+            tmptfile2 = r.TFile.Open('temp/{var}/ClosureTest_aMCatNLO_{var}.root'.format(var = self.var))
             aMCatNLO = copy.deepcopy(tmptfile2.Get('tW'))
             aMCatNLO.SetLineWidth(2)
             aMCatNLO.SetLineColor(bp.colorMap[1])
@@ -401,10 +401,10 @@ class Unfolder():
             allHistos[key].Scale(scaleval)
         
         if not self.wearedoingasimov:
-            if not os.path.isfile('temp/{var}_/ClosureTest_{var}.root'.format(var = self.var)):
+            if not os.path.isfile('temp/{var}/ClosureTest_{var}.root'.format(var = self.var)):
                 raise RuntimeError('The rootfile with the generated information does not exist')
-            tmptfile = r.TFile.Open('temp/{var}_/ClosureTest_{var}.root'.format(var = self.var))
-            #tmptfile2 = r.TFile.Open('temp/{var}_/ClosureTest_recobinning_{var}.root'.format(var = self.var))
+            tmptfile = r.TFile.Open('temp/{var}/ClosureTest_{var}.root'.format(var = self.var))
+            #tmptfile2 = r.TFile.Open('temp/{var}/ClosureTest_recobinning_{var}.root'.format(var = self.var))
             tru = copy.deepcopy(tmptfile.Get('tW'))
             #tru2 = copy.deepcopy(tmptfile2.Get('tW'))
             #tru2.Scale(vl.Lumi*1000)
@@ -424,7 +424,7 @@ class Unfolder():
             del tru
         
         if not self.wearedoingasimov:
-            savetfile = r.TFile("temp/{var}_/unfOutput_{var}.root".format(var = self.var), "recreate")
+            savetfile = r.TFile("temp/{var}/unfOutput_{var}.root".format(var = self.var), "recreate")
             nominal.Write()
             for key in allHistos: allHistos[key].Write()
             covnom.Scale(scaleval**2)
@@ -462,23 +462,23 @@ class Unfolder():
         else:                                                                      legloc = "TR"
         
         if self.doSanityCheck:
-            if not os.path.isfile('temp/{var}_/ClosureTest_{var}.root'.format(var = self.var)):
+            if not os.path.isfile('temp/{var}/ClosureTest_{var}.root'.format(var = self.var)):
                 raise RuntimeError('The rootfile with the generated information does not exist.')
-            tmptfile = r.TFile.Open('temp/{var}_/ClosureTest_{var}.root'.format(var = self.var))
+            tmptfile = r.TFile.Open('temp/{var}/ClosureTest_{var}.root'.format(var = self.var))
             tru = copy.deepcopy(tmptfile.Get('tW').Clone('tru'))
             tru.SetLineWidth(2)
             tru.SetLineColor(bp.colorMap[0])
             
-            if not os.path.isfile('temp/{var}_/ClosureTest_aMCatNLO_{var}.root'.format(var = self.var)):
+            if not os.path.isfile('temp/{var}/ClosureTest_aMCatNLO_{var}.root'.format(var = self.var)):
                 raise RuntimeError('The rootfile with the generated information from an aMCatNLO sample does not exist.')
-            tmptfile2 = r.TFile.Open('temp/{var}_/ClosureTest_aMCatNLO_{var}.root'.format(var = self.var))
+            tmptfile2 = r.TFile.Open('temp/{var}/ClosureTest_aMCatNLO_{var}.root'.format(var = self.var))
             aMCatNLO = copy.deepcopy(tmptfile2.Get('tW').Clone('aMCatNLO'))
             aMCatNLO.SetLineWidth(2)
             aMCatNLO.SetLineColor(r.kAzure)
             
-            if not os.path.isfile('temp/{var}_/ClosureTest_DS_{var}.root'.format(var = self.var)):
+            if not os.path.isfile('temp/{var}/ClosureTest_DS_{var}.root'.format(var = self.var)):
                 raise RuntimeError('The rootfile with the generated information with the DS variation does not exist.')
-            tmptfile3 = r.TFile.Open('temp/{var}_/ClosureTest_DS_{var}.root'.format(var = self.var))
+            tmptfile3 = r.TFile.Open('temp/{var}/ClosureTest_DS_{var}.root'.format(var = self.var))
             hDS = copy.deepcopy(tmptfile3.Get('tW').Clone('hDS'))
             hDS.SetLineWidth(2)
             hDS.SetLineColor(r.kGreen)
@@ -571,12 +571,12 @@ if __name__=="__main__":
             pathtothings    = sys.argv[2]
             print "> Special path to things chosen:", pathtothings, "\n"
         else:
-            pathtothings    = 'temp/{var}_/'.format(var = varName)
+            pathtothings    = 'temp/{var}/'.format(var = varName)
         
     else:
         print "> Default variable and path chosen\n"
         varName       = 'LeadingLepEta'
-        pathtothings  = 'temp/{var}_/'.format(var = varName)
+        pathtothings  = 'temp/{var}/'.format(var = varName)
 
     print "\n> Beginning unfolding...\n"
     a = Unfolder(varName, pathtothings + 'cutOutput_' + varName + '.root', 'temp/UnfoldingInfo.root')

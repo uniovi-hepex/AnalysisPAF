@@ -776,20 +776,16 @@ TCanvas* Plot::SetCanvas(){ // Returns the canvas
   TCanvas* c= new TCanvas("c","c",10,10,800,600);
   c->Divide(1,2);
 
-// Old design of plots (de Xuan)
-//   vector<float> vPadRatioMargins = TStringToFloat(kPadRatioMargins);
-//   vector<float> vPadRatioLimits  = TStringToFloat(kPadRatioLimits);
-//   plot = (TPad*)c->GetPad(1);
-//   SetPad(plot, kPadPlotLimits, kPadPlotMargins, kPadPlotSetGrid);
-// 
-//   pratio = (TPad*)c->GetPad(2);
-//   SetPad(pratio, kPadRatioLimits, kPadRatioMargins, kPadRatioSetGrid);
+  vector<float> vPadRatioMargins = TStringToFloat(kPadRatioMargins);
+  vector<float> vPadRatioLimits  = TStringToFloat(kPadRatioLimits);
   
   plot = (TPad*)c->GetPad(1);
+  SetPad(plot, kPadPlotLimits, kPadPlotMargins, kPadPlotSetGrid);
   plot->SetPad(0.0, 0.23, 1.0, 1.0);
   plot->SetTopMargin(0.06); plot->SetRightMargin(0.025);
-
+  
   pratio = (TPad*)c->GetPad(2);
+  SetPad(pratio, kPadRatioLimits, kPadRatioMargins, kPadRatioSetGrid);
   pratio->SetPad(0.0, 0.0, 1.0, 0.28);
   pratio->SetGridy();// pratio->SetGridx();
   pratio->SetTopMargin(0.03); pratio->SetBottomMargin(0.4); pratio->SetRightMargin(0.025);
@@ -1061,7 +1057,7 @@ void Plot::DrawStack(TString tag){
 
   cout << "Setting Y axis..." << endl;
   SetAxis(hStack->GetYaxis(), ytitle, ytitleSize, ytitleOffset, ytitleDivisions, ytitleLabelSize);
-//   hStack->GetYaxis()->CenterTitle();
+  if (centerYaxis) hStack->GetYaxis()->CenterTitle();
   hStack->GetXaxis()->SetLabelSize(0.0);
 
   cout << "Continuing..." << endl;
@@ -1070,7 +1066,7 @@ void Plot::DrawStack(TString tag){
   if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
     for(Int_t  i = 0; i < nSignals; i++) VSignals.at(i)->Draw(SignalDrawStyle + "same");
 
-  //---------  Draw systematic errors 
+  //---------  Draw systematic errors
   //if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
   hAllBkg->SetFillStyle(3444); // 3444 o 3004 (3145 default here)
   hAllBkg->SetFillColor(StackErrorColor); // kGray+2 as default
@@ -1099,8 +1095,9 @@ void Plot::DrawStack(TString tag){
 
   //--------- Set legend and other texts
   TLegend* leg = SetLegend();
-  if(doLegend) leg->Draw("same");      
-  texcms->Draw("same");     // CMS 
+  leg->AddEntry(hAllBkg, "Uncertainty", "f");
+  if(doLegend) leg->Draw("same");
+  texcms->Draw("same");     // CMS
   texlumi->Draw("same");    // The luminosity
   texPrelim->Draw("same");  // Preliminary
   if (chlabel != ""){
@@ -1312,7 +1309,7 @@ void Plot::SetTexChan(){
   texchan->SetX(chX); 
   texchan->SetY(chY);
   texchan->SetTextFont(42);
-  texchan->SetTextSize(0.06);
+  texchan->SetTextSize(texchansize);
   texchan->SetTextSizePixels(chSize);
 }
 

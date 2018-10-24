@@ -57,6 +57,7 @@ legpos       = (0.82, 0.65, 0.93, 0.93)
 if asimov: labellegend = 'Pseudodata'
 else:      labellegend = 'Data'
 
+storagepath = "/nfs/fanae/user/vrbouza/Storage/TWTTbar/MiniTrees/"
 
 def GetLastFolder(stpth):
     savefolders   = next(os.walk(stpth))[1]
@@ -301,18 +302,10 @@ varList['LeadingLepPt'] = {
     #'xaxis'       : 'p_{T}(\\ell_{1}) (GeV)',
     'xaxis'       : 'Leading lepton p_{T} (GeV)',
     'yaxis'       : 'd#sigma [pb]',
-    #'genbinning'  : [0, 50, 120, 190, 250],
-    #'recobinning' : [0, 50, 65, 85, 97, 110, 145, 180, 250],
-   #'genbinning'  : [0, 50, 120, 160, 250],                            # binning presentado en singletop
+   #'genbinning'  : [0, 50, 120, 160, 250],                           # binning presentado en singletop (junio/julio)
    #'recobinning' : [0, 50, 65, 85, 97, 110, 145, 180, 250],
-#    'genbinning'  : [0., 50., 90., 135., 250.],
-#    'recobinning' : [0., 50., 65., 80., 95., 110., 130., 150., 250.],
-    #'genbinning'  : [0., 50., 90., 135., 250.],
-    #'recobinning' : [0., 50., 60., 75., 90., 105., 115., 135., 250.],
     'genbinning'  : [0., 50., 90., 125., 150.],
     'recobinning' : [0., 50., 60., 70., 80., 90., 105., 125., 150.],  # antes de 15-10-2018
-    #'genbinning'  : [0., 50., 75., 115., 250.],
-    #'recobinning' : [0., 45., 55., 75., 85., 95., 105., 115., 250.],
     'var'         : 'min(TLeadingLepPt, 149.)',
     'var_response': 'LeadingLepPt',
     'var_gen'     : 'min(TGenLeadingLepPt, 149.)',

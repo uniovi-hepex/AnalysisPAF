@@ -6,8 +6,7 @@ from array import array
 print "===== Minitrees variables plotting (now in Python!)\n"
 vl.SetUpWarnings()
 
-storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
-pathToTree  = "../../../TW_temp/";
+pathToTree  = "../../../TWTTbar_temp/";
 NameOfTree  = "Mini1j1t";
 StandardCut = "Tpassreco == 1";
 ControlCut  = "TIsSS == 0 && TNJets == 1  && TNBtags == 1 && TnLooseCentral > 1";
@@ -26,11 +25,11 @@ else:
 
 if (len(sys.argv) > 2):
     if sys.argv[2] == 'last':
-        pathToTree    = vl.GetLastFolder(storagepath)
+        pathToTree    = vl.GetLastFolder(vl.storagepath)
     else:
-        pathToTree    = storagepath + sys.argv[2] + "/"
+        pathToTree    = vl.storagepath + sys.argv[2] + "/"
 else:
-    pathToTree  = "../../../TW_temp/"
+    pathToTree  = "../../../TWTTbar_temp/"
 print "> Minitrees will be read from:", pathToTree, "\n"
 
 r.gROOT.SetBatch(True)
@@ -39,7 +38,6 @@ r.gROOT.LoadMacro('../../Looper.C+')
 r.gROOT.LoadMacro('../../Plot.C+')
 r.gROOT.LoadMacro('../../PlotToPy.C+')
 r.gROOT.LoadMacro('../../PlotToPyC.C+')
-r.gROOT.LoadMacro('../../Datacard.C+')
 r.gROOT.LoadMacro('../../PDFunc.C+')
 
 

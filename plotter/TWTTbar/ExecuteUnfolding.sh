@@ -68,7 +68,7 @@ if [ "$variable" == "All" ]; then
     echo "> Unfolding all variables..."
     echo " "
     for ((i=0; i<=$uplimit; i++)); do
-        python unfoldTW_cut.py ${unfoldingvars[i]}
+        python unfoldTWTTbar.py ${unfoldingvars[i]}
     done
     
     source ../pre_start.sh
@@ -76,12 +76,6 @@ if [ "$variable" == "All" ]; then
     echo "> Obtaining all covariance matrices..."
     echo " "
     python getCovarianceMatrices.py All $ncores
-
-#     # 6) Get a txt with all the results
-#     echo "> Obtaining the covariance matrix..."
-#     echo " "
-#     python getYields.py All $ncores
-
 else
     echo "> Beggining full unfolding procedure of the variable"
     echo $variable
@@ -119,18 +113,13 @@ else
     # 4) Do a proper unfolding as you were taught by your mother when you were a child.
     echo "> Unfolding variable..."
     echo " "
-    python unfoldTW_cut.py $variable
+    python unfoldTWTTbar.py $variable
     
     source ../pre_start
     # 5) Obtain the covariance matrix
     echo "> Obtaining the covariance matrix..."
     echo " "
     python getCovarianceMatrices.py $variable
-    
-#     # 6) Get a txt with all the results
-#     echo "> Obtaining the covariance matrix..."
-#     echo " "
-#     python getYields.py $variable
 fi
 
 

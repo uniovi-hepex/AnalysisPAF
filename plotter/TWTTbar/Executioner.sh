@@ -55,11 +55,11 @@ noskimpath="LocalFile:/pool/ciencias/HeppyTreesSummer16/v2/noSkim/"
 noskimtmppath=""
 init="Tree_"
 final=".root"
-plotspath="/nfs/fanae/user/vrbouza/Documents/TFM/AnalysisPAF/TW_temp"
+plotspath="TWTTbar_temp"
 if [ "$4" != "" ]; then
   plotspath=$4
 fi
-sel="TW"
+sel="TWTTbar"
 
 if [ "$3" != "" ]; then
   sel=$3
