@@ -14,13 +14,10 @@ const TString sCut[nLevels] = {"dilepton", "ZVeto", "MET", "2jets", "1btag", "1j
 const TString gSys[nSysts] = {"0"};
 
 
-Bool_t GreaterThan(Float_t i, Float_t j){ return (i > j);}
-
-
-class TWAnalysis : public PAFChainItemSelector{
+class TWTTbarAnalysis : public PAFChainItemSelector{
   public:
-    TWAnalysis();
-    virtual ~TWAnalysis(){}
+    TWTTbarAnalysis();
+    virtual ~TWTTbarAnalysis(){}
     virtual void InsideLoop();
     virtual void Initialise();
     virtual void Summary();
@@ -427,5 +424,5 @@ class TWAnalysis : public PAFChainItemSelector{
     Bool_t  gIsFSRUp;
     Bool_t  gIsFSRDown;
     
-    ClassDef(TWAnalysis, 0);
+    ClassDef(TWTTbarAnalysis, 0);
 };

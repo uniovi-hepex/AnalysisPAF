@@ -1,12 +1,13 @@
-#include "TWAnalysis.h"
-ClassImp(TWAnalysis);
+#include "TWTTbarAnalysis.h"
+ClassImp(TWTTbarAnalysis);
 
+bool GreaterThan(float i, float j){ return (i > j);}
 
 //#####################################################################
 // Core PAF methods
 //---------------------------------------------------------------------
 
-TWAnalysis::TWAnalysis() : PAFChainItemSelector() {
+TWTTbarAnalysis::TWTTbarAnalysis() : PAFChainItemSelector() {
   fhDummy        = 0;
   passMETfilters = 0;
   passTrigger    = 0;
@@ -15,7 +16,7 @@ TWAnalysis::TWAnalysis() : PAFChainItemSelector() {
   for(Int_t i = 0; i < 254; i++) TLHEWeight[i] = 0;
 }
 
-void TWAnalysis::Initialise(){            //=============== Initialise
+void TWTTbarAnalysis::Initialise(){            //=============== Initialise
   gIsData      = GetParam<Bool_t>("IsData");
   gSelection   = GetParam<Int_t>("iSelection");
   gSampleName  = GetParam<TString>("sampleName");
@@ -45,8 +46,6 @@ void TWAnalysis::Initialise(){            //=============== Initialise
   fhDummy = CreateH1F("fhDummy", "fhDummy", 1, 0, 2);
   
   fMini1j1t   = CreateTree("Mini1j1t", "MiniMiniTree");
-  SetLeptonVariables();
-  SetJetVariables();
   SetTWVariables();
   
   genLeptons      = std::vector<Lepton>();
@@ -67,7 +66,7 @@ void TWAnalysis::Initialise(){            //=============== Initialise
   SergioLeps      = std::vector<Lepton>();
 }
 
-void TWAnalysis::InsideLoop() {            //=============== InsideLoop
+void TWTTbarAnalysis::InsideLoop() {            //=============== InsideLoop
   ReSetTWVariables();
   // Vectors with the objects
   genLeptons        = GetParam<vector<Lepton>>("genLeptons");
@@ -665,13 +664,13 @@ void TWAnalysis::InsideLoop() {            //=============== InsideLoop
 }
 
 
-void TWAnalysis::Summary(){}            //=============== Summary
+void TWTTbarAnalysis::Summary(){}            //=============== Summary
 
 
 //#####################################################################
 // Functions
 //---------------------------------------------------------------------
-void TWAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> VetoLeptons){
+void TWTTbarAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<Lepton> VetoLeptons){
   TNSelLeps = selLeptons.size();
   Int_t nVetoLeptons = VetoLeptons.size();
   TNVetoLeps = (nVetoLeptons == 0) ? TNSelLeps : nVetoLeptons;
@@ -739,7 +738,7 @@ void TWAnalysis::GetLeptonVariables(std::vector<Lepton> selLeptons, std::vector<
 }
 
 
-void TWAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut){
+void TWTTbarAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> cleanedJets15, Float_t ptCut){
   TNJets = selJets.size(); THT = 0;
   TNBtags = 0;
   THTJESUp = 0; THTJESDown = 0; 
@@ -849,7 +848,7 @@ void TWAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> clea
 }
 
 
-void TWAnalysis::GetGenJetVariables(std::vector<Jet> genJets, std::vector<Jet> mcJets){
+void TWTTbarAnalysis::GetGenJetVariables(std::vector<Jet> genJets, std::vector<Jet> mcJets){
   if(gIsData) return;
   nFiduJets = 0; nFidubJets = 0; 
   Int_t nGenJets = genJets.size();
@@ -906,7 +905,7 @@ void TWAnalysis::GetGenJetVariables(std::vector<Jet> genJets, std::vector<Jet> m
 }
 
 
-void TWAnalysis::GetGenLepVariables() {
+void TWTTbarAnalysis::GetGenLepVariables() {
   if(gIsData) return;
   nSergioGenLeps = Get<Int_t>("nGenLepSergio");
   
@@ -935,7 +934,7 @@ void TWAnalysis::GetGenLepVariables() {
   }
 }
 
-float TWAnalysis::getTopPtRW() {
+float TWTTbarAnalysis::getTopPtRW() {
   if (!gIsTTbar) return 1;
   
   float SF = 1;
@@ -953,7 +952,7 @@ float TWAnalysis::getTopPtRW() {
   }
 }
 
-void TWAnalysis::GetMET(){
+void TWTTbarAnalysis::GetMET(){
     TMET        = Get<Float_t>("met_pt");
     TMET_Phi    = Get<Float_t>("met_phi");  // MET phi
     if(gIsData) return;
@@ -974,7 +973,7 @@ void TWAnalysis::GetMET(){
     if(gIsLHE)  for(Int_t i = 0; i < Get<Int_t>("nLHEweight"); i++)   TLHEWeight[i] = Get<Float_t>("LHEweight_wgt", i);
 }
 
-void TWAnalysis::GetGenMET() {
+void TWTTbarAnalysis::GetGenMET() {
   if(gIsData) return;
   
   nSergioGenMET = Get<Int_t>("nGenMetSergio");
@@ -988,7 +987,7 @@ void TWAnalysis::GetGenMET() {
 }
 
 
-void TWAnalysis::SetTWVariables() {
+void TWTTbarAnalysis::SetTWVariables() {
   // Minitree 1j1t
   fMini1j1t->Branch("TChannel",              &TChannel,              "TChannel/I");
   fMini1j1t->Branch("TIsSS",                 &TIsSS,                 "TIsSS/B");
@@ -1240,7 +1239,7 @@ void TWAnalysis::SetTWVariables() {
 }
 
 
-void TWAnalysis::ReSetTWVariables() {
+void TWTTbarAnalysis::ReSetTWVariables() {
   hasTW = false;
   
   DilepMETJetPt  = -99;
@@ -1442,7 +1441,7 @@ void TWAnalysis::ReSetTWVariables() {
 }
 
 
-void TWAnalysis::CalculateTWVariables() {
+void TWTTbarAnalysis::CalculateTWVariables() {
   if (hasTW) return;
   hasTW = true;
 
@@ -1841,7 +1840,7 @@ void TWAnalysis::CalculateTWVariables() {
 }
 
 
-void TWAnalysis::get20Jets() {
+void TWTTbarAnalysis::get20Jets() {
   vector<float> looseJetPt;
   vector<float> looseJetPtJESUp;
   vector<float> looseJetPtJESDown;
@@ -1984,7 +1983,7 @@ void TWAnalysis::get20Jets() {
 }
 
 
-Double_t TWAnalysis::getHTtot(const TString& sys) {
+Double_t TWTTbarAnalysis::getHTtot(const TString& sys) {
   if (sys == "Norm")
     return selLeptons.at(0).p.Pt() + selLeptons.at(1).p.Pt() + TMET + selJets.at(0).p.Pt();
   else if (sys == "JESUp")
@@ -2000,7 +1999,7 @@ Double_t TWAnalysis::getHTtot(const TString& sys) {
 }
 
 
-Double_t TWAnalysis::getHTtot2j(const TString& sys) {
+Double_t TWTTbarAnalysis::getHTtot2j(const TString& sys) {
   if (sys == "Norm")
     return selLeptons.at(0).p.Pt() + selLeptons.at(1).p.Pt() + TMET + selJets.at(0).p.Pt() + selJets.at(1).p.Pt();
   else if (sys == "JESUp")
@@ -2016,7 +2015,7 @@ Double_t TWAnalysis::getHTtot2j(const TString& sys) {
 }
 
 
-Double_t TWAnalysis::getDilepMETJetPt(int sys) {
+Double_t TWTTbarAnalysis::getDilepMETJetPt(int sys) {
   TLorentzVector vSystem[4];
   vSystem[0] = selLeptons.at(0).p;                               // lep1
   vSystem[1] = selLeptons.at(1).p;                               // lep2
@@ -2037,14 +2036,14 @@ Double_t TWAnalysis::getDilepMETJetPt(int sys) {
     vSystem[3] = selJetsJER.at(0).p;
   }
   else{
-    cout << "Wrong systematic in TWAnalysis::getDilepMETJetPt" << endl;
+    cout << "Wrong systematic in TWTTbarAnalysis::getDilepMETJetPt" << endl;
     return -9999.;
   }
   return getPtSys(vSystem,4);
 }
 
 
-Double_t TWAnalysis::getDilepMETPt(int sys) {
+Double_t TWTTbarAnalysis::getDilepMETPt(int sys) {
   TLorentzVector vSystem[3];
   vSystem[0] = selLeptons.at(0).p;                               // lep1
   vSystem[1] = selLeptons.at(1).p;                               // lep2
@@ -2061,7 +2060,7 @@ Double_t TWAnalysis::getDilepMETPt(int sys) {
     vSystem[2].SetPtEtaPhiE(TMETJERUp,0,TMET_PhiJERUp,TMETJERUp); // met
   }
   else{
-    cout << "Wrong systematic in TWAnalysis::getDilepMETJetPt" << endl;
+    cout << "Wrong systematic in TWTTbarAnalysis::getDilepMETJetPt" << endl;
     return -9999.;
   }
 
@@ -2069,7 +2068,7 @@ Double_t TWAnalysis::getDilepMETPt(int sys) {
 }
 
 
-Double_t TWAnalysis::getDilepJetPt(const TString& sys) {
+Double_t TWTTbarAnalysis::getDilepJetPt(const TString& sys) {
   TLorentzVector vSystem[3];
   vSystem[0] = selLeptons.at(0).p;                               // lep1
   vSystem[1] = selLeptons.at(1).p;                               // lep2
@@ -2082,7 +2081,7 @@ Double_t TWAnalysis::getDilepJetPt(const TString& sys) {
   else if (sys == "JER")
     vSystem[2] = selJetsJER.at(0).p;                                    // jet 1
   else{
-    cout << "Wrong systematic in TWAnalysis::getDilepJetPt" << endl;
+    cout << "Wrong systematic in TWTTbarAnalysis::getDilepJetPt" << endl;
     return -9999.;
   }
 
@@ -2090,7 +2089,7 @@ Double_t TWAnalysis::getDilepJetPt(const TString& sys) {
 }
 
 
-Double_t TWAnalysis::getLep1METJetPt(const TString& sys) {
+Double_t TWTTbarAnalysis::getLep1METJetPt(const TString& sys) {
   TLorentzVector vSystem[3];
   vSystem[0] = selLeptons.at(0).p;
   if (sys == "Norm"){
@@ -2110,7 +2109,7 @@ Double_t TWAnalysis::getLep1METJetPt(const TString& sys) {
     vSystem[2] = selJetsJER.at(0).p;
   }  
   else{
-    cout << "Wrong systematic in TWAnalysis::getLep1METJetPt" << endl;
+    cout << "Wrong systematic in TWTTbarAnalysis::getLep1METJetPt" << endl;
     return -9999.;
   }
   
@@ -2118,7 +2117,7 @@ Double_t TWAnalysis::getLep1METJetPt(const TString& sys) {
 }
 
 
-Double_t TWAnalysis::getPtSys(TLorentzVector* vSystem, int nSystem) {
+Double_t TWTTbarAnalysis::getPtSys(TLorentzVector* vSystem, int nSystem) {
   TLorentzVector vSyst;
   vSyst = vSystem[0];
   for (int i = 1; i < nSystem; ++i){
@@ -2128,7 +2127,7 @@ Double_t TWAnalysis::getPtSys(TLorentzVector* vSystem, int nSystem) {
 }
 
 
-Double_t TWAnalysis::getDilepMETJet1Pz(const TString& sys) {
+Double_t TWTTbarAnalysis::getDilepMETJet1Pz(const TString& sys) {
   TLorentzVector vSystem[4];
   vSystem[0] = selLeptons.at(0).p;                               // lep1
   vSystem[1] = selLeptons.at(1).p;                               // lep2
@@ -2149,7 +2148,7 @@ Double_t TWAnalysis::getDilepMETJet1Pz(const TString& sys) {
     vSystem[3] = selJetsJER.at(0).p;                                    // jet 1
   }
   else{
-    cout << "Wrong systematic in TWAnalysis::getDilepMETJet1Pz" << endl;
+    cout << "Wrong systematic in TWTTbarAnalysis::getDilepMETJet1Pz" << endl;
     return -9999.;
   }
 
@@ -2157,7 +2156,7 @@ Double_t TWAnalysis::getDilepMETJet1Pz(const TString& sys) {
 }
 
 
-Double_t TWAnalysis::getPzSys(TLorentzVector* vSystem, int nSystem) {
+Double_t TWTTbarAnalysis::getPzSys(TLorentzVector* vSystem, int nSystem) {
  TLorentzVector vSyst;
   vSyst = vSystem[0];
   for (int i = 1; i < nSystem; ++i){
@@ -2167,7 +2166,7 @@ Double_t TWAnalysis::getPzSys(TLorentzVector* vSystem, int nSystem) {
 }
 
 
-Double_t TWAnalysis::getDPtDilep_JetMET(const TString& sys) {
+Double_t TWTTbarAnalysis::getDPtDilep_JetMET(const TString& sys) {
   vector<TLorentzVector> col1;
   vector<TLorentzVector> col2;
   TLorentzVector met;
@@ -2199,7 +2198,7 @@ Double_t TWAnalysis::getDPtDilep_JetMET(const TString& sys) {
 }
 
 
-Double_t TWAnalysis::getDPtL1_L2(const TString& sys) {
+Double_t TWTTbarAnalysis::getDPtL1_L2(const TString& sys) {
   vector<TLorentzVector> col1;
   vector<TLorentzVector> col2;
 
@@ -2211,7 +2210,7 @@ Double_t TWAnalysis::getDPtL1_L2(const TString& sys) {
 }
 
 
-Double_t TWAnalysis::getDPtDilep_MET(const TString& sys) {
+Double_t TWTTbarAnalysis::getDPtDilep_MET(const TString& sys) {
   vector<TLorentzVector> col1;
   vector<TLorentzVector> col2;
 
@@ -2228,7 +2227,7 @@ Double_t TWAnalysis::getDPtDilep_MET(const TString& sys) {
   else if (sys == "JER")
     met.SetPtEtaPhiE(TMETJERUp,0,TMET_PhiJERUp,TMETJERUp);
   else{
-    cout << "Wrong systematic in TWAnalysis::getDPtDilep_MET" << endl;
+    cout << "Wrong systematic in TWTTbarAnalysis::getDPtDilep_MET" << endl;
     return -9999.;
   }
   
@@ -2237,7 +2236,7 @@ Double_t TWAnalysis::getDPtDilep_MET(const TString& sys) {
 }
 
 
-Double_t TWAnalysis::getDPtLep1_MET(const TString& sys)
+Double_t TWTTbarAnalysis::getDPtLep1_MET(const TString& sys)
 {
   vector<TLorentzVector>  col1;
   vector<TLorentzVector>  col2;
@@ -2252,7 +2251,7 @@ Double_t TWAnalysis::getDPtLep1_MET(const TString& sys)
   else if (sys == "JER")
     met.SetPtEtaPhiE(TMETJERUp,0,TMET_PhiJERUp,TMETJERUp);
   else{
-    cout << "Wrong systematic in TWAnalysis::getDPtDilep_MET" << endl;
+    cout << "Wrong systematic in TWTTbarAnalysis::getDPtDilep_MET" << endl;
     return -9999.;
   }
   col2.push_back(met);
@@ -2260,7 +2259,7 @@ Double_t TWAnalysis::getDPtLep1_MET(const TString& sys)
 }
 
 
-Double_t TWAnalysis::getDeltaPt(vector<TLorentzVector> col1, vector<TLorentzVector> col2){
+Double_t TWTTbarAnalysis::getDeltaPt(vector<TLorentzVector> col1, vector<TLorentzVector> col2){
   TLorentzVector v1, v2;
   if (col1.size()*col2.size() == 0){
     cout << "[TAT::getDeltaPt] One of the collections is empty" << endl;
@@ -2278,7 +2277,7 @@ Double_t TWAnalysis::getDeltaPt(vector<TLorentzVector> col1, vector<TLorentzVect
 }
 
 
-Double_t TWAnalysis::getDPhiLep1_Lep2()
+Double_t TWTTbarAnalysis::getDPhiLep1_Lep2()
 {
   vector<TLorentzVector>  col1;
   vector<TLorentzVector>  col2;
@@ -2288,7 +2287,7 @@ Double_t TWAnalysis::getDPhiLep1_Lep2()
 }
 
 
-Double_t TWAnalysis::getDPhiLep1_Jet1(const TString& sys)
+Double_t TWTTbarAnalysis::getDPhiLep1_Jet1(const TString& sys)
 {
   vector<TLorentzVector>  col1;
   vector<TLorentzVector>  col2;
@@ -2302,14 +2301,14 @@ Double_t TWAnalysis::getDPhiLep1_Jet1(const TString& sys)
   else if (sys == "JER")
     col2.push_back(selJetsJER.at(0).p);
   else{
-    cout << "Wrong systematic in TWAnalysis::getDPhiLep1_Jet1" << endl;
+    cout << "Wrong systematic in TWTTbarAnalysis::getDPhiLep1_Jet1" << endl;
     return -9999.;
   }
   return getDeltaPhi(col1,col2);
 }
 
 
-Double_t TWAnalysis::getDPhiLep2_Jet1(const TString& sys) {
+Double_t TWTTbarAnalysis::getDPhiLep2_Jet1(const TString& sys) {
   vector<TLorentzVector>  col1;
   vector<TLorentzVector>  col2;
   col1.push_back(selLeptons.at(1).p);
@@ -2322,14 +2321,14 @@ Double_t TWAnalysis::getDPhiLep2_Jet1(const TString& sys) {
   else if (sys == "JER")
     col2.push_back(selJetsJER.at(0).p);
   else{
-    cout << "Wrong systematic in TWAnalysis::getDPhiLep1_Jet1" << endl;
+    cout << "Wrong systematic in TWTTbarAnalysis::getDPhiLep1_Jet1" << endl;
     return -9999.;
   }
   return getDeltaPhi(col1,col2);
 }
 
 
-Double_t TWAnalysis::getDeltaPhi(vector<TLorentzVector> col1, vector<TLorentzVector> col2) {
+Double_t TWTTbarAnalysis::getDeltaPhi(vector<TLorentzVector> col1, vector<TLorentzVector> col2) {
   TLorentzVector v1, v2;
   if (col1.size()*col2.size() == 0){
     cout << "[TAT::getDeltaPt] One of the collections is empty" << endl;
@@ -2347,7 +2346,7 @@ Double_t TWAnalysis::getDeltaPhi(vector<TLorentzVector> col1, vector<TLorentzVec
 }
 
 
-Double_t TWAnalysis::getSysM(const TString& sys) {
+Double_t TWTTbarAnalysis::getSysM(const TString& sys) {
   vector<TLorentzVector> col;
   TLorentzVector met;
   if (sys == "Norm"){
@@ -2377,7 +2376,7 @@ Double_t TWAnalysis::getSysM(const TString& sys) {
 }
 
 
-Double_t TWAnalysis::getM(vector<TLorentzVector> col) {
+Double_t TWTTbarAnalysis::getM(vector<TLorentzVector> col) {
   if (col.size() == 0){
     return -99.;
   }
@@ -2390,7 +2389,7 @@ Double_t TWAnalysis::getM(vector<TLorentzVector> col) {
 }
 
 
-Double_t TWAnalysis::getDilepPt() {
+Double_t TWTTbarAnalysis::getDilepPt() {
   TLorentzVector vSystem[2];
   vSystem[0] = selLeptons.at(0).p;
   vSystem[1] = selLeptons.at(1).p;
@@ -2398,7 +2397,7 @@ Double_t TWAnalysis::getDilepPt() {
 }
 
 
-Double_t TWAnalysis::getDeltaRDilep_METJets12(int sys) {
+Double_t TWTTbarAnalysis::getDeltaRDilep_METJets12(int sys) {
   vector<TLorentzVector>  col1;
   vector<TLorentzVector>  col2;
   col1.push_back(selLeptons.at(0).p);
@@ -2437,7 +2436,7 @@ Double_t TWAnalysis::getDeltaRDilep_METJets12(int sys) {
 }
 
 
-Double_t TWAnalysis::getDeltaRDilep_Jets12(int sys) {
+Double_t TWTTbarAnalysis::getDeltaRDilep_Jets12(int sys) {
   vector<TLorentzVector>  col1;
   vector<TLorentzVector>  col2;
   col1.push_back(selLeptons.at(0).p);
@@ -2465,7 +2464,7 @@ Double_t TWAnalysis::getDeltaRDilep_Jets12(int sys) {
 }
 
 
-Double_t TWAnalysis::getDeltaRLep1_Jet1(int sys) {
+Double_t TWTTbarAnalysis::getDeltaRLep1_Jet1(int sys) {
   vector<TLorentzVector>  col1;
   vector<TLorentzVector>  col2;
   col1.push_back(selLeptons.at(0).p);
@@ -2485,7 +2484,7 @@ Double_t TWAnalysis::getDeltaRLep1_Jet1(int sys) {
 }
 
 
-Double_t TWAnalysis::getDeltaR(vector<TLorentzVector> col1, vector<TLorentzVector> col2) {
+Double_t TWTTbarAnalysis::getDeltaR(vector<TLorentzVector> col1, vector<TLorentzVector> col2) {
   TLorentzVector v1, v2;
   if (col1.size()*col2.size() == 0){
     cout << "[TAT::getDeltaR] One of the collections is empty" << endl;
@@ -2503,7 +2502,7 @@ Double_t TWAnalysis::getDeltaR(vector<TLorentzVector> col1, vector<TLorentzVecto
 }
 
 
-Double_t TWAnalysis::getETSys(int sys) {
+Double_t TWTTbarAnalysis::getETSys(int sys) {
   if (sys == 0) {
     return selJets.at(0).p.Et() + selJets.at(1).p.Et() + selLeptons.at(0).p.Et() + selLeptons.at(1).p.Et() + TMET;
   }
@@ -2522,7 +2521,7 @@ Double_t TWAnalysis::getETSys(int sys) {
 }
 
 
-Double_t TWAnalysis::getET_LLJetMET(int sys) {
+Double_t TWTTbarAnalysis::getET_LLJetMET(int sys) {
   if (sys == 0) {
     return selJets.at(0).p.Et()  + selLeptons.at(0).p.Et() + selLeptons.at(1).p.Et() + TMET;
   }

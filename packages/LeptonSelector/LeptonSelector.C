@@ -1192,13 +1192,13 @@ void LeptonSelector::GetDiscLeptonVariables(Int_t i){ // Once per muon, get all 
     SF = 1;
   }
   else {
-    MVAID         = Get<Float_t>("DiscLep_mvaIdSpring16GP",i);   //* REMOVED DUE TO LACK OF IT IN LOCAL SAMPLES
-    isGlobalMuon  = Get<Int_t>("DiscLep_isGlobalMuon",i); REMOVED DUE TO LACK OF IT IN LOCAL SAMPLES
-    isTrackerMuon = Get<Int_t>("DiscLep_isTrackerMuon",i); REMOVED DUE TO LACK OF IT IN LOCAL SAMPLES
-    mcPrompt      = Get<Int_t>("DiscLep_mcPrompt", i); REMOVED DUE TO UNKONWN OF EXISTENCE OF IT IN LOCAL SAMPLES
-    mcMatchID     = Get<Int_t>("DiscLep_mcMatchId", i); REMOVED DUE TO UNKONWN OF EXISTENCE OF IT IN LOCAL SAMPLES
-    mcPromptGamma = Get<Int_t>("DiscLep_mcPromptGamma", i); REMOVED DUE TO UNKONWN OF EXISTENCE OF IT IN LOCAL SAMPLES
-    mcMatchPDGID  = Get<Int_t>("DiscLep_mcMatchPdgId", i); REMOVED DUE TO UNKONWN OF EXISTENCE OF IT IN LOCAL SAMPLES
+    MVAID         = Get<Float_t>("DiscLep_mvaIdSpring16GP",i);
+    isGlobalMuon  = Get<Int_t>("DiscLep_isGlobalMuon",i);
+    isTrackerMuon = Get<Int_t>("DiscLep_isTrackerMuon",i);
+    mcPrompt      = Get<Int_t>("DiscLep_mcPrompt", i);
+    mcMatchID     = Get<Int_t>("DiscLep_mcMatchId", i);
+    mcPromptGamma = Get<Int_t>("DiscLep_mcPromptGamma", i);
+    mcMatchPDGID  = Get<Int_t>("DiscLep_mcMatchPdgId", i);
   }
 }
 void LeptonSelector::GetGenLeptonVariables(Int_t i){
