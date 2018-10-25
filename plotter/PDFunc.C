@@ -141,6 +141,7 @@ public:
   void FillHistoWeights(Int_t bin = 0);
   void FillHistoWeightsAllBins();
   void SetBin(Int_t bin);
+  void SetLumi(Float_t lum);
   TH1F* GetHisto(Int_t bin);
 
   Float_t GetWyield(Int_t i);
@@ -312,6 +313,10 @@ Histo* PDFunc::GetSystVariation(TString dir, TString systname){
 
 void PDFunc::SetBin(Int_t bin){
   weights = wBins.at(bin);
+}
+
+void PDFunc::SetLumi(Float_t lum){
+  Lumi = lum;
 }
 
 TH1F* PDFunc::GetHisto(Int_t bin){

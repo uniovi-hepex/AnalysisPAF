@@ -1,0 +1,16 @@
+# -----
+# Dummy card so we can easily use Pietro's unfolding code
+imax 1
+jmax *
+kmax *
+##-----------
+shapes * ElMu temp/cardFile_{ref}.root $PROCESS $PROCESS_$SYSTEMATIC
+##-----------
+bin ElMu 
+observation {obs} 
+##-----------
+bin ElMu 
+process tW 
+process -1 
+rate {tW} 
+##-----------

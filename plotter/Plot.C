@@ -67,7 +67,7 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, TString sys
   Histo* h = GetH(p, sys, type);
   if(type != itData && !LoopOptions.Contains("noScaleLumi"))  h->Scale(Lumi*1000);
   PrepareHisto(h, p, pr, type, color, sys);
-} 
+}
 
 void Plot::GetStack(){ // Sets the histogram hStack
   if(hStack) delete hStack;
@@ -190,6 +190,35 @@ void Plot::AddSystematic(TString var, TString pr){
   }
   if(verbose) cout << "[Plot::AddSystematic] Systematic histograms added to the list for variation: " << var << endl;
 }
+
+
+void Plot::AddNormSyst( TString process, TString name, float norm)
+{
+  Histo* hBkgUp = (Histo*) GetHisto(process)->CloneHisto( process + "_" + name + "Up");
+  Histo* hBkgDn = (Histo*) GetHisto(process)->CloneHisto( process + "_" + name + "Down");
+  hBkgUp->Scale( 1 + norm); hBkgDn->Scale( 1 - norm );
+  hBkgUp->SetTag( process + "_" + name + "Up");
+  hBkgDn->SetTag( process + "_" + name + "Down");
+  hBkgUp->SetProcess( process); hBkgDn->SetProcess( process);
+  hBkgUp->SetType( itSys ); hBkgDn->SetType(itSys);
+  AddToHistos( hBkgUp ); AddToHistos(hBkgDn);
+  AddToSystematicLabels(name);
+  return;
+}
+
+
+void Plot::AddLumiSyst( float unc )
+// lumi applied to every process :D                                                                                                                                                                                                            
+{
+  vector<TString> alreadyConsidered;
+  for (auto& proc : VTagProcesses){
+    if (std::find( alreadyConsidered.begin(), alreadyConsidered.end(), proc) == alreadyConsidered.end()){
+      alreadyConsidered.push_back(proc);
+      AddNormSyst(proc, "lumi", unc);
+    }
+  }
+}
+
 
 void Plot::AddStatError(TString process){
   TString pr;
@@ -749,12 +778,18 @@ TCanvas* Plot::SetCanvas(){ // Returns the canvas
 
   vector<float> vPadRatioMargins = TStringToFloat(kPadRatioMargins);
   vector<float> vPadRatioLimits  = TStringToFloat(kPadRatioLimits);
+  
   plot = (TPad*)c->GetPad(1);
   SetPad(plot, kPadPlotLimits, kPadPlotMargins, kPadPlotSetGrid);
-
+  plot->SetPad(0.0, 0.23, 1.0, 1.0);
+  plot->SetTopMargin(0.06); plot->SetRightMargin(0.025);
+  
   pratio = (TPad*)c->GetPad(2);
   SetPad(pratio, kPadRatioLimits, kPadRatioMargins, kPadRatioSetGrid);
-
+  pratio->SetPad(0.0, 0.0, 1.0, 0.28);
+  pratio->SetGridy();// pratio->SetGridx();
+  pratio->SetTopMargin(0.03); pratio->SetBottomMargin(0.4); pratio->SetRightMargin(0.025);
+  
   if(textForLumi.Contains("%")) textForLumi = Form(textForLumi, Lumi);
   texlumi = new TLatex(-20.,50., textForLumi); // Form("%2.1f fb^{-1}, #sqrt{s} = 13 TeV", Lumi)
   texlumi->SetNDC();
@@ -1022,7 +1057,7 @@ void Plot::DrawStack(TString tag){
 
   cout << "Setting Y axis..." << endl;
   SetAxis(hStack->GetYaxis(), ytitle, ytitleSize, ytitleOffset, ytitleDivisions, ytitleLabelSize);
-  hStack->GetYaxis()->CenterTitle();
+  if (centerYaxis) hStack->GetYaxis()->CenterTitle();
   hStack->GetXaxis()->SetLabelSize(0.0);
 
   cout << "Continuing..." << endl;
@@ -1031,7 +1066,7 @@ void Plot::DrawStack(TString tag){
   if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
     for(Int_t  i = 0; i < nSignals; i++) VSignals.at(i)->Draw(SignalDrawStyle + "same");
 
-  //---------  Draw systematic errors 
+  //---------  Draw systematic errors
   //if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
   hAllBkg->SetFillStyle(3444); // 3444 o 3004 (3145 default here)
   hAllBkg->SetFillColor(StackErrorColor); // kGray+2 as default
@@ -1060,8 +1095,9 @@ void Plot::DrawStack(TString tag){
 
   //--------- Set legend and other texts
   TLegend* leg = SetLegend();
-  if(doLegend) leg->Draw("same");      
-  texcms->Draw("same");     // CMS 
+  leg->AddEntry(hAllBkg, "Uncertainty", "f");
+  if(doLegend) leg->Draw("same");
+  texcms->Draw("same");     // CMS
   texlumi->Draw("same");    // The luminosity
   texPrelim->Draw("same");  // Preliminary
   if (chlabel != ""){
@@ -1127,6 +1163,7 @@ void Plot::DrawStack(TString tag){
     TString dir = plotFolder;
     TString plotname = (outputName == "")? varname : outputName;
     if(outputName != "" && varname != "")  plotname += "_" + varname;
+    if(outputName != "" && NoShowVarName)  plotname = outputName;
     if(outputName != "" && tag != "")      plotname += "_" + tag;
     else outputName = tag;
     
@@ -1195,6 +1232,7 @@ void Plot::SaveHistograms(){
   if(outputName != "") {
     if(varname != "") filename = outputName + "_" + varname;
     else filename = outputName;
+    if (NoShowVarName) filename = outputName;
   }
   gSystem->mkdir(limitFolder, kTRUE);
   f = new TFile(limitFolder + filename + ".root", "recreate");
@@ -1245,7 +1283,7 @@ void Plot::SaveHistograms(){
   hData->SetTag("data_obs");
   hData->Write();
   hStack->Write();  
-
+  f->Close();
   cout << "All histograms saved in " << limitFolder + filename + ".root\n";
 }
 
@@ -1271,7 +1309,7 @@ void Plot::SetTexChan(){
   texchan->SetX(chX); 
   texchan->SetY(chY);
   texchan->SetTextFont(42);
-  texchan->SetTextSize(0.05);
+  texchan->SetTextSize(texchansize);
   texchan->SetTextSizePixels(chSize);
 }
 
@@ -1329,6 +1367,23 @@ void Plot::SetAxis(TAxis *a, TString tit, Float_t titSize, Float_t titOffset, In
 
 
 void Plot::SetYaxis(TAxis *a){
+  
+  if (yAxisTitleStyle != ""){
+    float binWidth = hStack->GetXaxis()->GetBinWidth(1);
+    ytitle = "Events";
+    if ( yAxisTitleStyle.Contains("units,")){
+      TString tmpStr = yAxisTitleStyle; tmpStr.ReplaceAll("units,","");
+      ytitle +=  "/" + tmpStr + " units";
+    }
+    
+    else if (yAxisTitleStyle == "gev"){
+      ytitle += "/";
+      ytitle +=  binWidth;
+      ytitle += " GeV";
+    }
+  }
+
+
   a->SetTitle(ytitle);
   a->SetTitleSize(ytitleSize);
   a->SetTitleOffset(ytitleOffset);

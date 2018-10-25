@@ -112,7 +112,7 @@ TH1D* PUWeight::LoadMCHistogram(const char* mcfolder, const char* mcproccess) {
 TH1D* PUWeight::LoadDataHistogram(float luminosity, const char* year) {
 
 #ifdef DEBUGPUWEIGHT
-  PAF_DEBUG("PUWeight", Form("Getting pileup for the %s pb-1 of data...", 
+  PAF_DEBUG("PUWeight", Form("Getting pileup for the %s pb-1 of data...",
 			     luminosity));
 #endif
   
@@ -120,11 +120,11 @@ TH1D* PUWeight::LoadDataHistogram(float luminosity, const char* year) {
   TFile* fdt = 0;
   if (luminosity > 0) {
     if (fIs3D)
-      dtfile.Form("/nfs/fanae/user/jfernan/www/PUhistos/Data%s/3D/PUdata_%.1f.root", 
+      dtfile.Form("/nfs/fanae/user/jfernan/www/PUhistos/Data%s/3D/PUdata_%.1f.root",
       year, luminosity);
     else
-      //dtfile.Form("/nfs/fanae/user/jfernan/www/PUhistos/Data%s/PUdata_%.1f.root", 
-      dtfile.Form("/nfs/fanae/user/palencia/www/PUhistos/Data%s/PUdata_%.1f.root", 
+      //dtfile.Form("/nfs/fanae/user/jfernan/www/PUhistos/Data%s/PUdata_%.1f.root",
+      dtfile.Form("/nfs/fanae/user/palencia/www/PUhistos/Data%s/PUdata_%.1f.root",
       year, luminosity);
 
   
