@@ -112,11 +112,8 @@ class LeptonSelector : public PAFChainItemSelector{
     void GetDiscLeptonVariables(Int_t i);
     void GetGenLeptonVariables(Int_t i);
     void GetGenLepFromTauVariables(Int_t i);
-<<<<<<< HEAD
     void GetGenParticleVariables(Int_t i);
-=======
     void GetGenBquarks();
->>>>>>> origin
     Bool_t getSIPcut(Float_t cut); 
     Bool_t getGoodVertex(Int_t wp); 
     Bool_t getRelIso03POG(Int_t wp); 
