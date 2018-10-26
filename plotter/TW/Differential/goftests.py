@@ -5,7 +5,7 @@ import sys, os, copy
 r.gROOT.SetBatch(True)
 vl.SetUpWarnings()
 
-print "REMEMBER TO RUN THIS WITH A CMSSW INSTALLATION (or with ROOT, Numpy, and Scipy)"
+print "\nREMEMBER TO RUN THIS WITH A CMSSW INSTALLATION (or with ROOT, Numpy, and Scipy)\n"
 import numpy as np
 from scipy.stats import chi2
 
@@ -206,21 +206,26 @@ def GiveMeMyGoodGOFTests(var):
     plot.addHisto(haMCatNLO, 'hist,same', 'tW aMC@NLO', 'L', 'mc')
     plot.addHisto(hData,     'hist,same', 'Data',       'L', 'mc')
     
-    l1 = r.TLatex(0.65, 0.650, '#scale[0.4]{DR - #chi^{2}: %4.7f}'%coses["DR"]["p-value"])
-    l2 = r.TLatex(0.65, 0.625, '#scale[0.4]{DS - #chi^{2}: %4.7f}'%coses["DS"]["p-value"])
-    l3 = r.TLatex(0.65, 0.600, '#scale[0.4]{aMC@NLO - #chi^{2}: %4.7f}'%coses["aMCatNLO"]["p-value"])
+    l1 = r.TLatex(0.65, 0.650, '#scale[0.4]{DR - p-val.: %4.7f}'%coses["DR"]["p-value"])
+    l2 = r.TLatex(0.65, 0.625, '#scale[0.4]{DR - stat.: %4.7f}'%coses["DR"]["statistic"])
+    l3 = r.TLatex(0.65, 0.600, '#scale[0.4]{DS - p-val.: %4.7f}'%coses["DS"]["p-value"])
+    l4 = r.TLatex(0.65, 0.575, '#scale[0.4]{DS - stat.: %4.7f}'%coses["DS"]["statistic"])
+    l5 = r.TLatex(0.65, 0.550, '#scale[0.4]{aMC@NLO - p-val.: %4.7f}'%coses["aMCatNLO"]["p-value"])
+    l6 = r.TLatex(0.65, 0.525, '#scale[0.4]{aMC@NLO - stat.: %4.7f}'%coses["aMCatNLO"]["statistic"])
     
-    l1.SetNDC(True); l2.SetNDC(True); l3.SetNDC(True)
+    l1.SetNDC(True); l2.SetNDC(True); l3.SetNDC(True); l4.SetNDC(True); l5.SetNDC(True); l6.SetNDC(True)
 
-    l1.Draw('same'); l2.Draw('same'); l3.Draw('same')
+    l1.Draw('same'); l2.Draw('same'); l3.Draw('same'); l4.Draw('same'); l5.Draw('same'); l6.Draw('same')
     
     plot.saveCanvas("TR")
     del plot
     
-    print 'DR - chi2:',      coses["DR"]["p-value"]
-    print 'DS - chi2:',      coses["DS"]["p-value"]
-    print 'aMC@NLO - chi2:', coses["aMCatNLO"]["p-value"]
-    
+    print 'DR - p-val.:',      coses["DR"]["p-value"]
+    print 'DR - stat.:',       coses["DR"]["statistic"]
+    print 'DS - p-val.:',      coses["DS"]["p-value"]
+    print 'DS - stat.:',       coses["DS"]["statistic"]
+    print 'aMC@NLO - p-val.:', coses["aMCatNLO"]["p-value"]
+    print 'aMC@NLO - stat.:',  coses["aMCatNLO"]["statistic"]
     return
 
 tasks   = []
