@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-LeptonSF::LeptonSF(TString path):
+LeptonSF::LeptonSF(TString path, TString options):
   fMuonTrackerSF(0),  // Muon Reco
   fMuonIdSF_BCDEF(0), // Muon Id
   fMuonIdSF_GH(0),    // Muon Id
@@ -48,6 +48,8 @@ LeptonSF::LeptonSF(TString path):
   fDoubleElSF(0),     // Trigger Double Elec
   fMuEGSF(0){         // Trigger Elec-Muon
   path_to_SF_histos = path;
+  if(options.Contains("2017")) gIs2017 = true; 
+  else gIs2017 = false;
 };
 
 
@@ -185,10 +187,15 @@ void LeptonSF::loadHisto(Int_t iHisto, Int_t wp){
     fElecTrackerSF = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fElecTrackerSF"); 
   }
   else if(iHisto == iElecId){
-    if     (wp == iVeto){   filename = "ElecVetoCBidM17";   histoname = "EGamma_SF2D";}
-    else if(wp == iLoose){  filename = "ElecLooseCBidM17";  histoname = "EGamma_SF2D";}
-    else if(wp == iMedium){ filename = "ElecMediumCBidM17"; histoname = "EGamma_SF2D";}
-    else if(wp == iTight){  filename = "ElecTightCBidM17";  histoname = "EGamma_SF2D";}
+    if     (gIs2017){
+      if(wp == iTight){  filename = "ElecTightCBid94X";  histoname = "EGamma_SF2D";}
+    }
+    else{
+      if     (wp == iVeto){   filename = "ElecVetoCBidM17";   histoname = "EGamma_SF2D";}
+      else if(wp == iLoose){  filename = "ElecLooseCBidM17";  histoname = "EGamma_SF2D";}
+      else if(wp == iMedium){ filename = "ElecMediumCBidM17"; histoname = "EGamma_SF2D";}
+      else if(wp == iTight){  filename = "ElecTightCBidM17";  histoname = "EGamma_SF2D";}
+    }
     fElecIdSF = GetHistogramFromFileD(path_to_SF_histos + filename + ".root", histoname, "fElecIdSF"); 
   }
   else if(iHisto == iElecIdSUSY){

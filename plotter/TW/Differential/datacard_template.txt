@@ -1,0 +1,20 @@
+imax 1
+jmax *
+kmax *
+##-----------
+shapes * ElMu temp/cardFile_{name}_{nuis}.root $PROCESS $PROCESS_$SYSTEMATIC
+##-----------
+bin ElMu 
+observation {obs} 
+##-----------
+bin ElMu ElMu ElMu ElMu ElMu 
+process VVttV DY ttbar Fakes tW 
+process 1 2 3 4  -1 
+rate {p[VVttV]} {p[DY]} {p[ttbar]} {p[Fakes]} {p[tW]} 
+##-----------
+Lumi lnN 1.025 1.025 1.025 1.025 1.025 
+VVttV lnN 1.50 - - - - 
+DY lnN - 1.50 - - - 
+ttbar lnN  - - 1.06 - - 
+NonWZ lnN  - - - 1.50 - 
+* autoMCStats 0

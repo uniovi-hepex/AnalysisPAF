@@ -19,6 +19,7 @@
 
 enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau, iOS1tau, i2lss_fake, iTriLep_fake, iElEl, iMuMu, i1Tau_emufakeOS ,i1Tau_emufakeSS, i2LOS, TotalDefinedChannels};
 std::vector<TString> TStringToVector(TString t, char separator = ',');
+std::vector<float> TStringToFloat(TString t, char separator = ',', float scale = 1);
 void PrintVector(std::vector<TString> v);
 void PrintVector(std::vector<Float_t> v);
 
@@ -239,6 +240,7 @@ public:
    path = "";
    sampleName = "";
    process = "";
+   sampleOptions = "";
    syst = "";
    weight = "";
    color = 0; type = 0;
@@ -251,7 +253,7 @@ public:
    sampleName = samplename;
    systematics = sys;
    weight = Weight;
-   options = op;
+   sampleOptions = op;
    process = pr;
    syst = sys;
    weight = Weight;
@@ -301,6 +303,7 @@ public:
   TString GetProcess(){ return process;}
   TString GetSyst(){ return syst;}
   TString GetWeight(){ return weight;}
+  TString GetSampleOptions(){ return sampleOptions;}
 
   Int_t GetPos(TString Name);
 
@@ -320,6 +323,7 @@ public:
 
   protected:
   TString process;
+  TString sampleOptions;
   Int_t color;
   Int_t type;
   TString syst;
@@ -413,6 +417,14 @@ std::vector<TString> TStringToVector(TString t, char separator){
     v.push_back(element);
   }
   v.push_back(t);
+  return v;
+}
+
+std::vector<float> TStringToFloat(TString t, char separator, float scale){
+  std::vector<float> v;
+  std::vector<TString> vstring = TStringToVector(t, separator);
+  int size = vstring.size();
+  for(int i = 0; i < size; i++) v.push_back(vstring.at(i).Atof()*scale);
   return v;
 }
 
@@ -559,6 +571,7 @@ TString CraftVar(TString varstring, TString sys, TTree *tree){
 }
 
 TString CraftFormula(TString cuts, TString chan, TString sys, TString weight, TTree* tree, TString options){
+  if(options.Contains("noSys")) sys = "";
   TString schan = ("1");
   if     (chan == "ElMu")  schan = (Form("(TChannel == %i)", iElMu));
   else if(chan == "Muon")  schan = (Form("(TChannel == %i)", iMuon));
@@ -649,7 +662,9 @@ TChain* GetChain(TString path, TString sample){
     vector<TString> samples = TStringToVector(sample);
     Int_t nSamples = samples.size();
     Files = GetAllFiles(path, samples.at(0));
+    cout << Form("Looping for %i samples!\n", nSamples);
     for(Int_t i = 1; i < nSamples; i++){
+      cout << ">>> Sample: " << samples.at(i) << endl;
       tempFiles = GetAllFiles(path, samples.at(i));
 			Files.insert(Files.end(), (tempFiles).begin(), (tempFiles).end());
     }
@@ -675,9 +690,24 @@ Histo* GetHistoFromHeppyTrees(TString path, TString sample, TString var, TString
   return h;
 }
 
+Histo* LoadHistogram(TString pathToFile, TString name){
+  if(!pathToFile.EndsWith(".root")) pathToFile += ".root";
+  TFile* f = TFile::Open(pathToFile);
+  TH1F* h = (TH1F*) f->Get(name);
+  h->SetStats(0); h->SetDirectory(0);
+  Histo* histo = new Histo(*h);
+  histo->SetDirectory(0);
+  delete f;
+  return histo; 
+}
 
-
-
+bool ExistsHistoInFile(TString pathToTree, TString name){
+  if(!pathToTree.EndsWith(".root")) pathToTree += ".root";
+  TFile* f = TFile::Open(pathToTree); 
+  if(!f) return false;
+  if(!f->GetListOfKeys()->Contains(name)) return false; 
+  return true;
+}
 
 
 

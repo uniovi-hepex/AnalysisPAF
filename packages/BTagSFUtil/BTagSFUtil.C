@@ -38,18 +38,23 @@ BTagSFUtil::BTagSFUtil(const string& MeasurementType,
   TaggerOP = BTagAlgorithm;
 
   BTagEntry::OperatingPoint op; 
+  // btag 2017: https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation94X
 
   if (OperatingPoint=="Loose")  {
     TaggerOP += "L";
     if (TaggerName=="CSV") TaggerCut = 0.244;
     if (TaggerName=="CSVv2") TaggerCut = 0.5426; // for Moriond17
     if (TaggerName=="DeepCSV") TaggerCut = 0.2219; // post-Moriond (2017-06-08)
+    if (TaggerName=="CSVv2_94XSF_V1_B_F") TaggerCut = 0.5803;
+    if (TaggerName=="DeepCSV_94XSF_V1_B_F") TaggerCut = 0.1522;
     op = BTagEntry::OP_LOOSE;
   } else if (OperatingPoint=="Medium")  {
     TaggerOP += "M";
     if (TaggerName=="CSV") TaggerCut = 0.679;
     if (TaggerName=="CSVv2") TaggerCut = 0.8484; // for Moriond17
     if (TaggerName=="DeepCSV") TaggerCut = 0.6324; // post-Moriond (2017-06-08)
+    if (TaggerName=="CSVv2_94XSF_V1_B_F") TaggerCut = 0.8838;
+    if (TaggerName=="DeepCSV_94XSF_V1_B_F") TaggerCut = 0.4941;
     op = BTagEntry::OP_MEDIUM;
   } else if (OperatingPoint=="Tight")  {
     TaggerOP += "T";
@@ -57,6 +62,8 @@ BTagSFUtil::BTagSFUtil(const string& MeasurementType,
     if (TaggerName=="TCHP") TaggerCut = 3.41;
     if (TaggerName=="CSVv2") TaggerCut = 0.9535; // for Moriond17
     if (TaggerName=="DeepCSV") TaggerCut = 0.8958; // post-Moriond (2017-06-08)
+    if (TaggerName=="CSVv2_94XSF_V1_B_F") TaggerCut = 0.9693;
+    if (TaggerName=="DeepCSV_94XSF_V1_B_F") TaggerCut = 0.8001;
     op = BTagEntry::OP_TIGHT;
 } 
   reader_b = new BTagCalibrationReader(op, "central", sysTypes);

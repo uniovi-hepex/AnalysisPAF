@@ -17,7 +17,7 @@ const Float_t lumiGH    = 16.1454;
 
 class LeptonSF {
  public:
-  LeptonSF(TString path = "~/AnalyserPAF/InputFiles/");
+  LeptonSF(TString path = "~/AnalyserPAF/InputFiles/", TString options = "");
   ~LeptonSF() {}
   void loadHisto(Int_t iHisto, Int_t wp = -1);
   Float_t GetTrackerMuonSF(Float_t eta);
@@ -92,5 +92,7 @@ class LeptonSF {
   TH2F *fDoubleMuSF;
   TH2F *fDoubleElSF;
   TH2F *fMuEGSF;
+
+  Bool_t gIs2017;
 };
 #endif

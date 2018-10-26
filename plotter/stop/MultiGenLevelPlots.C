@@ -35,7 +35,7 @@ TString NameOfTree = "tree";
 TString chan = "ElMu";
 TString dilepgen = "TNgenLeps >= 2";
 TString dilep    = "TNSelLeps >= 2"; 
-TString BaselineCut = "TNJets >= 2 && TNBtags >= 1 && !TIsSS && TPassTrigger && TPassMETfilters";
+TString BaselineCut = "TNJets >= 2 && TNBtags >= 1 && !TIsSS && TPassTrigger && TPassMETfilters && TNSelLeps == 2 && TLep0_Pt >= 25";
 
 void DrawPlot(TString name, TString xtitle = "");
 

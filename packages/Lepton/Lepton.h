@@ -6,6 +6,7 @@
 #include "ElecScaleClass.h"
 
 class Lepton;
+enum genLepMatch{kLGMtoGenLep, kLGMgood, kLGMfake, kLGMflip, kLGMconv, kLGMtoGenB, kLGMother};
 
 class Lepton : public TObject{
   public:
@@ -43,12 +44,12 @@ class Lepton : public TObject{
     ~Lepton(){};
     TLorentzVector p;
     Int_t charge;
+    Int_t type;
     Int_t decayMode;
     Int_t idDecayMode;
     Int_t idMVA;
     Int_t idAntiE;
     Int_t idAntiMu;
-    Int_t type;
     Int_t Mid; // mother Id, for gen leptons
     Bool_t isElec;
     Bool_t isMuon;
@@ -59,6 +60,7 @@ class Lepton : public TObject{
     void SetIso(Float_t val){ Iso = val;}
     void SetR9(Float_t val){ R9 = val;}
     void SetEnergyUnc(Float_t val){ EnergyUnc = val;}
+    void SetGenMatch(Int_t m){ genMatch = m;}
 
     Float_t Pt(){return p.Pt();}
     Float_t Eta(){return p.Eta();}
@@ -67,6 +69,8 @@ class Lepton : public TObject{
     Float_t GetIso(){ return Iso;} 
     Float_t GetR9(){return R9;}
     Float_t GetEnergyUnc(){return EnergyUnc;}
+    Int_t   GetGenMatch(){return genMatch;}
+    
 
     Lepton * lepMatch = 0;
     Int_t isPrompt;
@@ -78,6 +82,7 @@ class Lepton : public TObject{
     Float_t Iso;
     Float_t R9;
     Float_t EnergyUnc;
+    Int_t   genMatch;
 
     //ClassDef(Lepton, 0);
 };

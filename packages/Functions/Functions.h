@@ -41,8 +41,8 @@ const TString SFTString[nfiles] = {
 
 enum wps{iVeto, iVeryLoose, iLoose, iMedium, iTight, iVeryTight, iExtreamlyTight, iWPforStop, iLooseWPforStop, iWZMVA, iWZtopEl, iWZtopMu};
 
-enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, iHWWSelec, ittDMSelec, ittHSelec, iWZSelec, i4tSelec, iStopTopSelec, iNSelecs};
-const TString LabSelection[] = {"stop", "top", "tW", "WW", "tt+DM", "ttH", "WZ", "tttt"};
+enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, iHWWSelec, ittDMSelec, ittHSelec, iWZSelec, i4tSelec, iStopTopSelec, iTWTTbarSelec, iNSelecs};
+const TString LabSelection[] = {"stop", "top", "tW", "WW", "tt+DM", "ttH", "WZ", "tttt", "tWttbar"};
 
 enum eChannel{iNoChannel, iElMu, iMuon, iElec, i2lss, iTriLep, iFourLep, iSS1tau, iOS1tau, i2lss_fake, iTriLep_fake, iElEl, iMuMu, i1Tau_emufakeOS ,i1Tau_emufakeSS, i2LOS, TotalDefinedChannels};
 
@@ -75,6 +75,9 @@ Float_t LepScaleToMET(vector<Lepton> vlep, Float_t met, Float_t met_phi, Int_t i
 Float_t getJetJERpt(Jet jet, Float_t rho);
 Float_t p2(Float_t x);
 Jet GetMatchedJet(Jet origJet, std::vector<Jet> jetCollection, Float_t etaRange = 0.3, Float_t ptRange = 10000);
+Bool_t IsMatchedDeltaR(TLorentzVector t, std::vector<TLorentzVector> vb, Float_t DeltaR = 0.4);
+Bool_t IsMatchedDeltaR(TLorentzVector t, std::vector<Lepton> vb, Float_t DeltaR = 0.4);
+Bool_t IsMatchedDeltaR(TLorentzVector t, std::vector<Jet> vb, Float_t DeltaR = 0.4);
 
 Float_t getDeltaPhillJet(Lepton lep1, Lepton lep2, Jet jet);
 Float_t getDPhiClosestJet(vector<Jet> vJet, TLorentzVector lep);
@@ -126,5 +129,9 @@ const Int_t ExploredEvents[nExploredEvents] = {};
 float GetMuonPtScale();
 float GetMuonPtRes(float eta);
 float GetElecPtScaleRes();
+
+float GetCosTheta(TLorentzVector p1, TLorentzVector p2);
+Float_t GetWeightPolLetf(TLorentzVector stop, TLorentzVector top, TLorentzVector lep);
+Float_t GetWeightPolRight(TLorentzVector stop, TLorentzVector top, TLorentzVector lep);
 
 #endif

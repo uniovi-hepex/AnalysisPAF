@@ -57,6 +57,10 @@ Float_t  GetISRweight(std::vector<TString> Files, Float_t mStop, Float_t mLsp, B
 Float_t GetStopMass(TString options);
 Float_t GetLspMass(TString options);
 
+TChain *GetTChain(TString path, TString name, TString treeName = "tree");
+void Print2D(TH2* h, TString name = "myHisto", TString XTitle = "", TString YTitle = "");
+void Print1D(TH1* h, TString name = "myHisto", TString options = "png");
+TH1F* GetTH1FFromHeppy(TString path, TString samplename, TString var, TString cut, TString nbins, Float_t bin0, Float_t binN, Float_t *bins, TString name, TString xtitle, TString ytitle);
 
 
 
@@ -66,7 +70,7 @@ Float_t GetLspMass(TString options);
 
 //=== Get norm for [mStop, mLsp] in a T2tt scan
 Float_t GetSMSnorm(std::vector<TString> Files, Float_t mStop, Float_t mLsp){
-  cout << Form("\033[1;36m >>> Searching for normalization factor for stop point with masses [%1.1f, %1.1f]... ", mStop, mLsp);
+  cout << Form("\033[1;36m >>> Searching for normalization factor for stop point with masses [%1.1f, %1.1f]... \n", mStop, mLsp);
   Int_t nFiles = Files.size(); TFile *f;
   TH3D *hcount; Float_t val = 0; Float_t ms = 0; Float_t mn = 0;
   Float_t count = 0;
@@ -104,6 +108,9 @@ Float_t GetISRweight(std::vector<TString> Files, Float_t mStop, Float_t mLsp, Bo
   Float_t weight = 0; Float_t nEntries = 0; Float_t nWeightedEntries = 0; Float_t TotalWeightedEntries = 0; Float_t TotalEntries = 0;
   TTree* t;
 	TH1F *hcount;
+  if(mStop - int(mStop) == 0.5) mStop += 0.5;
+  if(mLsp  - int(mLsp ) == 0.5) mLsp  += 0.5;
+  if(mLsp == 0) mLsp = 1;
 	for(Int_t k = 0; k < nFiles; k++){
     f = TFile::Open(Files.at(k));
     f -> GetObject("tree", t);
@@ -231,7 +238,7 @@ Double_t GetStopXSec(Int_t StopMass){
     Float_t x  = float(StopMass%pass)/pass;
     Float_t newXsec = v0 + (vf-v0)*x;
 
-    cout << Form("xsec(%g) = %g; xsec(%g) = %g --> xsec(%g) = %g", pmass, v0, nmass, vf, (Float_t) StopMass, newXsec);
+    cout << Form("xsec(%g) = %g; xsec(%g) = %g --> xsec(%g) = %g\n", pmass, v0, nmass, vf, (Float_t) StopMass, newXsec);
 
     return newXsec;
   }
@@ -255,7 +262,7 @@ vector<TString> GetAllFiles(TString path, TString  filename, Bool_t verbose) {
   TString command("ls ");
   if(filename != "")
     command += 
-      path + "/" + filename + " " +
+      //path + "/" + filename + " " +
       path + "/" + filename + ".root " +
       path + "/" + filename + "_[0-9].root " +
       path + "/" + filename + "_[0-9][0-9].root " +
@@ -356,6 +363,7 @@ void SaveCountHistos(vector<TString> Files, TString filename){
   _SumOfLHEweights = GetHistoFromFiles(Files, "CountLHE");
   _Count           = GetHistoFromFiles(Files, "Count");
   
+  if(!filename.EndsWith(".root")) filename += ".root";
   TFile* _file = TFile::Open(filename, "UPDATE");
   if(_SumOfWeights) _SumOfWeights->Write();
   if(_SumOfLHEweights) _SumOfLHEweights->Write();
@@ -426,7 +434,7 @@ TString GetFunctionFromTH1F(TH1* h, TString funcname, TString varname){
   return out;
 }
 
-void Print2D(TH2* h, TString name, TString XTitle = "", TString YTitle = ""){
+void Print2D(TH2* h, TString name, TString XTitle, TString YTitle){
   TCanvas* c = new TCanvas("c","c",10,10,800,600);
   c->SetRightMargin(0.15);
   c->SetGrid(1, 1);
@@ -443,15 +451,35 @@ void Print2D(TH2* h, TString name, TString XTitle = "", TString YTitle = ""){
   else if(name.EndsWith(".pdf")) c->Print(name, "pdf");
   else                           c->Print(name+".png", "png");
 }
+/*
+void Print1D(TH1* h, TString name, TString options){
+    TCanvas* c = new TCanvas("c","c",10,10,800,600);
+  c->SetRightMargin(0.15);
+  c->SetGrid(1, 1);
+
+  if(options.Contains("log")) h->SetLogy();
+  if(     options.Contains(".png")) c->Print(name, "png");
+  else if(options.Contains(".pdf")) c->Print(name, "pdf");
+}*/
 
 
-TChain *GetTChain(TString path, TString name, TString treeName = "tree"){
+TChain *GetTChain(TString path, TString name, TString treeName){
   TChain* t = new TChain(treeName, treeName);
   vector<TString> files = GetAllFiles(path, name);
   for(int i = 0; i < (int) files.size(); i++) t->Add(files.at(i));
   return t;
 }
+/*
+TH1F* GetTH1FFromHeppy(TString path, TString samplename, TString var, TString cut, TString nbins, Float_t bin0 = 1, Float_t binN = 1, Float_t *bins = 0, TString name = "myHisto", TString xtitle = "", TString ytitle = "Events");
+  TH1F* h;
+  if(bin0 == binN) h = new TH1F(name, Form(";%s;%s", xtitle.Data(), ytitle.Data()), nbins, bins);
+  else             h = new TH1F(name, Form(";%s;%s", xtitle.Data(), ytitle.Data()), nbins, bin0, binN);
 
+  TChain* t = GetTChain(path, samplename, "tree");
+  t->Project(name, var, cut);
 
+  h->SetDirectory(0);
+  return h;
+}*/
 
 #endif

@@ -420,6 +420,29 @@ Jet GetMatchedJet(Jet origJet, std::vector<Jet> jetCollection, Float_t etaRange,
   return Jet(TLorentzVector(0,0,0,0), 0, 0, 0);
 }
 
+Bool_t IsMatchedDeltaR(TLorentzVector t, std::vector<TLorentzVector> vb, Float_t DeltaR){
+  Int_t nb = vb.size(); Int_t i;
+  for(i = 0; i < nb; i++) if( TMath::Abs(t.DeltaR(vb.at(i))) <= DeltaR) return true;
+  return false;
+}
+
+Bool_t IsMatchedDeltaR(TLorentzVector t, std::vector<Lepton> vb, Float_t DeltaR){
+  Int_t nb = vb.size(); Int_t i;
+  vector<TLorentzVector> vt;
+  for(i = 0; i < nb; i++) vt.push_back(vb.at(i).p);
+  return IsMatchedDeltaR(t, vt, DeltaR);
+}
+
+Bool_t IsMatchedDeltaR(TLorentzVector t, std::vector<Jet> vb, Float_t DeltaR){
+  Int_t nb = vb.size(); Int_t i;
+  vector<TLorentzVector> vt;
+  for(i = 0; i < nb; i++) vt.push_back(vb.at(i).p);
+  return IsMatchedDeltaR(t, vt, DeltaR);
+}
+
+
+
+
 // ==================================================================
 // ========================== Other ================================
 // ==================================================================
@@ -865,5 +888,48 @@ Float_t GetMuonEnergySigma(Float_t eta){
 
 Float_t GetMuonEnergyScale(){
   // https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonReferenceScaleResolRun2#Results_for_CMSSW_8_0_X_dataset
-  return 0.002; // flat 0.2%
+  return 0.02; // flat 0.2%
 }
+
+float GetCosTheta(TLorentzVector p1, TLorentzVector p2){
+  if(p1.P() == 0 || p2.P() == 0){
+    cout << "[GetCosTheta] ERROR: division by zero!!!! Returning 0... " << endl;
+    return 0;
+  }
+  return (p1.Px()*p2.Px() + p1.Py()*p2.Py() + p1.Pz()*p2.Pz() ) / ( p1.P()*p2.P() );
+}
+
+Float_t GetWeightPolLetf(TLorentzVector stop, TLorentzVector top, TLorentzVector lep){
+  float wL; float wR; float pL; float pR;
+
+  // Boost
+  TVector3 boost1(-stop.Px()/stop.Energy(),-stop.Py()/stop.Energy(),-stop.Pz()/stop.Energy());
+  top.Boost(boost1); lep.Boost(boost1);
+
+  float costh = GetCosTheta(top, lep);
+  pL = (top.Energy() + top.P()) * (1 - costh);
+  pR = (top.Energy() + top.P()) * (1 + costh);
+  wL = 2*pL/(pL + pR);
+  wR = 2*pR/(pL + pR);
+  return wL;
+} 
+
+Float_t GetWeightPolRight(TLorentzVector stop, TLorentzVector top, TLorentzVector lep){
+  float wL; float wR; float pL; float pR;
+
+  // Boost
+  TVector3 boost1(-stop.Px()/stop.Energy(),-stop.Py()/stop.Energy(),-stop.Pz()/stop.Energy());
+  top.Boost(boost1); lep.Boost(boost1);
+
+  float costh = GetCosTheta(top, lep);
+  pL = (top.Energy() + top.P()) * (1 - costh);
+  pR = (top.Energy() + top.P()) * (1 + costh);
+  wL = 2*pL/(pL + pR);
+  wR = 2*pR/(pL + pR);
+  return wR;
+} 
+
+
+  
+
+  

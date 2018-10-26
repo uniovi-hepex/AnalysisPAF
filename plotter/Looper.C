@@ -14,6 +14,7 @@ void Looper::SetFormulas(TString systematic){
   stringcut = CraftFormula(cut, chan, systematic, weight, tree, options);
   if(verbose) cout << "[Looper::SetFormulas] Formula: " << stringcut << endl;
   FormulasCuts = new TTreeFormula("Form_" + sampleName + "_" + systematic + "_cut", stringcut, tree);
+//   cout << FormulasCuts->GetTitle() << endl;
 
   //>>> var
   TString v = "";
@@ -32,6 +33,7 @@ void Looper::SetFormulas(TString systematic){
     }
     else vinst.push_back(0);
     FormulasVars = new TTreeFormula("Form_" + sampleName + "_" + systematic + "_var", stringvar, tree);
+//     cout << FormulasVars->GetTitle() << endl;
     vvars.push_back(FormulasVars);
   }
 }
@@ -163,7 +165,10 @@ void Multilooper::SetFormulas(TString systematic){
   //>>> var
   TString v = "";
   FormulasVars = NULL;
-  stringvar = CraftVar(var, systematic, tree);
+  TString usingSyst = systematic;
+  if(options.Contains("noSys")) usingSyst = "";
+  if(options.Contains("noSys")) cout << "NO SYSTEMATIC FOR THIS!!!" << endl;
+  stringvar = CraftVar(var, usingSyst, tree);
 
   if(stringvar.Contains("[") && stringvar.Contains("]") && !stringvar.Contains("(")){
     TString number = TString(stringvar(stringvar.First("["), stringvar.First("]")) );
@@ -289,13 +294,14 @@ void Hyperlooper::SetFormulas(Int_t pos, TString systematic){
   TTreeFormula* FormulasVars;
   
   //>>> Cut
-  stringcut = ""; stringvar = "";
-  stringcut = CraftFormula(d.cut, d.chan, systematic, weight, tree, d.options);
+  stringcut = ""; stringvar = ""; TString usingSyst = systematic;
+  if(sampleOptions.Contains("noSys")) usingSyst = "";
+  stringcut = CraftFormula(d.cut, d.chan, usingSyst, weight, tree, d.options);
   FormulasCuts = new TTreeFormula("Form_" + sampleName + "_" + systematic + "_cut", stringcut, tree);
 
   //>>> var
   FormulasVars = NULL;
-  stringvar = CraftVar(d.var, systematic, tree);
+  stringvar = CraftVar(d.var, usingSyst, tree);
 
   FormulasVars = new TTreeFormula("Form_" + sampleName + "_" + systematic + "_var", stringvar, tree);
   VDist.at(pos).vf.push_back(FormulasCuts);
