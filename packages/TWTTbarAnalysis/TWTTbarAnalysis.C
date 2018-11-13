@@ -804,23 +804,18 @@ void TWTTbarAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet>
   TNBtagsJERUp    = 0;
   TNJetsJERUp     = 0;
 
-  for (Int_t i = 0; i < (Int_t) cleanedJets15.size(); i++) {
-    if (cleanedJets15.at(i).pTJESUp > ptCut) {
-      THTJESUp += cleanedJets15.at(i).pTJESUp;
-      TNJetsJESUp++;
-      if (cleanedJets15.at(i).isBtag) TNBtagsJESUp++;
-      TJetJESUp_Pt[i] = cleanedJets15.at(i).pTJESUp;
-    }
-    
-    if (cleanedJets15.at(i).pTJESDown > ptCut) {
-      THTJESDown += cleanedJets15.at(i).pTJESDown;
-      TNJetsJESDown++;
-      if (cleanedJets15.at(i).isBtag) TNBtagsJESDown++;
-      TJetJESDown_Pt[i] = cleanedJets15.at(i).pTJESDown;
-    }
-  }
+  TNJetsJESUp   = selJetsJecUp.size();
+  TNJetsJESDown = selJetsJecDown.size();
   TNJetsJERUp   = selJetsJER.size();
   
+  for (auto& jet : selJetsJecUp) {
+    THTJESUp += jet.pTJESUp;
+    if (jet.isBtag) TNBtagsJESUp++;
+  }
+  for (auto& jet : selJetsJecDown) {
+    THTJESDown += jet.pTJESDown;
+    if (jet.isBtag) TNBtagsJESDown++;
+  }
   for (auto& jet : selJetsJER) {
     if (jet.isBtag) TNBtagsJERUp++;
   }
