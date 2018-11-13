@@ -225,7 +225,7 @@ def plotvariable(tsk):
     # Other settings
     p.SetDataStyle("psameE1")
     p.SetSignalStyle("SM")
-    p.doUncInLegend = False;
+    p.doUncInLegend = True;
     p.SetRatioMin( 0.6 );
     p.SetRatioMax( 1.4 );
     p.SetPadPlotMargins(vl.margins)
@@ -417,7 +417,7 @@ def plotcustomvariable(tsk):
     # Other settings
     p.SetDataStyle("psameE1")
     #p.SetStackErrorStyle(3144)
-    p.doUncInLegend = False;
+    p.doUncInLegend = True;
     p.SetRatioMin( 0.6 );
     p.SetRatioMax( 1.4 );
     p.SetPadPlotMargins(vl.margins)
@@ -609,7 +609,7 @@ def plotthenumberofjets(tsk):
     
     # Other settings
     p.SetDataStyle("psameE1")
-    p.doUncInLegend = False;
+    p.doUncInLegend = True
     p.SetRatioMin( 0.6 );
     p.SetRatioMax( 1.4 );
     p.SetPadPlotMargins(vl.margins)

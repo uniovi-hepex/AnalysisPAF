@@ -5,12 +5,10 @@
 plotspath="/nfs/fanae/user/vrbouza/www/TFM/Unfolding/Results/"
 indstr="index.php"
 crdplstr="Cardplots/"
-srsstr="srs/"
 compstr="comparison/"
-prefitstr="prefit/"
-fitsstr="fit_s/"
 cnstr="CondN/"
-covstr="covmatrices/"
+covstr="CovMat/"
+wwwpath="/nfs/fanae/user/vrbouza/www/index.php"
 
 if [ "$1" == "p" ]; then
   echo "===> Copying unfolding results!"
@@ -21,14 +19,10 @@ if [ "$1" == "p" ]; then
   echo " "
   echo "Copying plots..."
   cp -R Differential/results/. $plotspath
-  cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$indstr
-#  cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$crdplstr$indstr
-#   cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$srsstr$indstr
-#   cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$prefitstr$indstr
-#   cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$fitsstr$indstr
-#   cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$compstr$indstr
-#   cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$cnstr$indstr
-#   cp /nfs/fanae/user/vrbouza/www/index.php $plotspath$covstr$indstr
+  cp $wwwpath $plotspath$indstr
+  cp $wwwpath $plotspath$compstr$indstr
+  cp $wwwpath $plotspath$cnstr$indstr
+  cp $wwwpath $plotspath$covstr$indstr
   echo " "
   echo "Done!"
   return
