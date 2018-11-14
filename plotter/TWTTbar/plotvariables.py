@@ -29,16 +29,16 @@ if (len(sys.argv) > 2):
     else:
         pathToTree    = vl.storagepath + sys.argv[2] + "/"
 else:
-    pathToTree  = "../../../TWTTbar_temp/"
+    pathToTree  = "../../TWTTbar_temp/"
 print "> Minitrees will be read from:", pathToTree, "\n"
 
 r.gROOT.SetBatch(True)
-r.gROOT.LoadMacro('../../Histo.C+')
-r.gROOT.LoadMacro('../../Looper.C+')
-r.gROOT.LoadMacro('../../Plot.C+')
-r.gROOT.LoadMacro('../../PlotToPy.C+')
-r.gROOT.LoadMacro('../../PlotToPyC.C+')
-r.gROOT.LoadMacro('../../PDFunc.C+')
+r.gROOT.LoadMacro('../Histo.C+')
+r.gROOT.LoadMacro('../Looper.C+')
+r.gROOT.LoadMacro('../Plot.C+')
+r.gROOT.LoadMacro('../PlotToPy.C+')
+r.gROOT.LoadMacro('../PlotToPyC.C+')
+r.gROOT.LoadMacro('../PDFunc.C+')
 
 
 def plotvariable(tsk):
@@ -124,101 +124,101 @@ def plotvariable(tsk):
     p.AddSample("SingleMuon",                   "Data",         r.itData);
     p.AddSample("SingleElec",                   "Data",         r.itData);
     
-    p.AddSample("TW"                         ,  "tW",           r.itSys, 1, "JERUp");
-    p.AddSample("TW_noFullyHadr_isrUp"       ,  "tW",           r.itSys, 1, "isrUp");
-    p.AddSample("TW_noFullyHadr_isrDown"     ,  "tW",           r.itSys, 1, "isrDown");
-    p.AddSample("TW_noFullyHadr_fsrUp"       ,  "tW",           r.itSys, 1, "fsrUp");
-    p.AddSample("TW_noFullyHadr_fsrDown"     ,  "tW",           r.itSys, 1, "fsrDown");
-    p.AddSample("TW_noFullyHadr_MEscaleUp"   ,  "tW",           r.itSys, 1, "tW_MEUp");
-    p.AddSample("TW_noFullyHadr_MEscaleDown" ,  "tW",           r.itSys, 1, "tW_MEDown");
-    p.AddSample("TW_noFullyHadr_PSscaleUp"   ,  "tW",           r.itSys, 1, "tW_PSUp");
-    p.AddSample("TW_noFullyHadr_PSscaleDown" ,  "tW",           r.itSys, 1, "tW_PSDown");
+    #p.AddSample("TW"                         ,  "tW",           r.itSys, 1, "JERUp");
+    #p.AddSample("TW_noFullyHadr_isrUp"       ,  "tW",           r.itSys, 1, "isrUp");
+    #p.AddSample("TW_noFullyHadr_isrDown"     ,  "tW",           r.itSys, 1, "isrDown");
+    #p.AddSample("TW_noFullyHadr_fsrUp"       ,  "tW",           r.itSys, 1, "fsrUp");
+    #p.AddSample("TW_noFullyHadr_fsrDown"     ,  "tW",           r.itSys, 1, "fsrDown");
+    #p.AddSample("TW_noFullyHadr_MEscaleUp"   ,  "tW",           r.itSys, 1, "tW_MEUp");
+    #p.AddSample("TW_noFullyHadr_MEscaleDown" ,  "tW",           r.itSys, 1, "tW_MEDown");
+    #p.AddSample("TW_noFullyHadr_PSscaleUp"   ,  "tW",           r.itSys, 1, "tW_PSUp");
+    #p.AddSample("TW_noFullyHadr_PSscaleDown" ,  "tW",           r.itSys, 1, "tW_PSDown");
 
-    p.AddSample("TbarW"                        ,"tW",           r.itSys, 1, "JERUp");
-    p.AddSample("TbarW_noFullyHadr_isrUp"      ,"tW",           r.itSys, 1, "isrUp");
-    p.AddSample("TbarW_noFullyHadr_isrDown"    ,"tW",           r.itSys, 1, "isrDown");
-    p.AddSample("TbarW_noFullyHadr_fsrUp"      ,"tW",           r.itSys, 1, "fsrUp");
-    p.AddSample("TbarW_noFullyHadr_fsrDown"    ,"tW",           r.itSys, 1, "fsrDown");
-    p.AddSample("TbarW_noFullyHadr_MEscaleUp"  ,"tW",           r.itSys, 1, "tW_MEUp");
-    p.AddSample("TbarW_noFullyHadr_MEscaleDown","tW",           r.itSys, 1, "tW_MEDown");
-    p.AddSample("TbarW_noFullyHadr_PSscaleUp"  ,"tW",           r.itSys, 1, "tW_PSUp");
-    p.AddSample("TbarW_noFullyHadr_PSscaleDown","tW",           r.itSys, 1, "tW_PSDown");
+    #p.AddSample("TbarW"                        ,"tW",           r.itSys, 1, "JERUp");
+    #p.AddSample("TbarW_noFullyHadr_isrUp"      ,"tW",           r.itSys, 1, "isrUp");
+    #p.AddSample("TbarW_noFullyHadr_isrDown"    ,"tW",           r.itSys, 1, "isrDown");
+    #p.AddSample("TbarW_noFullyHadr_fsrUp"      ,"tW",           r.itSys, 1, "fsrUp");
+    #p.AddSample("TbarW_noFullyHadr_fsrDown"    ,"tW",           r.itSys, 1, "fsrDown");
+    #p.AddSample("TbarW_noFullyHadr_MEscaleUp"  ,"tW",           r.itSys, 1, "tW_MEUp");
+    #p.AddSample("TbarW_noFullyHadr_MEscaleDown","tW",           r.itSys, 1, "tW_MEDown");
+    #p.AddSample("TbarW_noFullyHadr_PSscaleUp"  ,"tW",           r.itSys, 1, "tW_PSUp");
+    #p.AddSample("TbarW_noFullyHadr_PSscaleDown","tW",           r.itSys, 1, "tW_PSDown");
 
-    p.AddSample("TW_noFullyHadr_DS",            "tW",           r.itSys, 1, "DSUp");
-    p.AddSample("TbarW_noFullyHadr_DS",         "tW",           r.itSys, 1, "DSUp");
-    p.AddSymmetricHisto("tW",  "DSUp");
-    p.AddSymmetricHisto("tW",  "JERUp");
+    #p.AddSample("TW_noFullyHadr_DS",            "tW",           r.itSys, 1, "DSUp");
+    #p.AddSample("TbarW_noFullyHadr_DS",         "tW",           r.itSys, 1, "DSUp");
+    #p.AddSymmetricHisto("tW",  "DSUp");
+    #p.AddSymmetricHisto("tW",  "JERUp");
     
-    p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itSys, 1, "JERUp");
+    #p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itSys, 1, "JERUp");
     
-    specialweight = vl.nUEUp_ttbar/vl.sigma_ttbar/(vl.nUEUp_ttbar/vl.sigma_ttbar + vl.nUEUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar_Powheg_ueUp",            "t#bar{t}",     r.itSys, 1, "ueUp");
-    specialweight = vl.nUEUp_dilep/vl.sigma_dilep/(vl.nUEUp_ttbar/vl.sigma_ttbar + vl.nUEUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar2L_Powheg_ueUp",          "t#bar{t}",     r.itSys, 1, "ueUp");
-    specialweight = vl.nUEDown_ttbar/vl.sigma_ttbar/(vl.nUEDown_ttbar/vl.sigma_ttbar + vl.nUEDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar_Powheg_ueDown",          "t#bar{t}",     r.itSys, 1, "ueDown");
-    specialweight = vl.nUEDown_dilep/vl.sigma_dilep/(vl.nUEDown_ttbar/vl.sigma_ttbar + vl.nUEDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar2L_Powheg_ueDown",        "t#bar{t}",     r.itSys, 1, "ueDown");
-    specialweight = vl.nhDampUp_ttbar/vl.sigma_ttbar/(vl.nhDampUp_ttbar/vl.sigma_ttbar + vl.nhDampUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar_Powheg_hdampUp",         "t#bar{t}",     r.itSys, 1, "hdampUp");
-    specialweight = vl.nhDampUp_dilep/vl.sigma_dilep/(vl.nhDampUp_ttbar/vl.sigma_ttbar + vl.nhDampUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar2L_Powheg_hdampUp",       "t#bar{t}",     r.itSys, 1, "hdampUp");
-    specialweight = vl.nhDampDown_ttbar/vl.sigma_ttbar/(vl.nhDampDown_ttbar/vl.sigma_ttbar + vl.nhDampDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar_Powheg_hdampDown",       "t#bar{t}",     r.itSys, 1, "hdampDown");
-    specialweight = vl.nhDampDown_dilep/vl.sigma_dilep/(vl.nhDampDown_ttbar/vl.sigma_ttbar + vl.nhDampDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar2L_Powheg_hdampDown",     "t#bar{t}",     r.itSys, 1, "hdampDown");
-    p.SetWeight("TWeight");
+    #specialweight = vl.nUEUp_ttbar/vl.sigma_ttbar/(vl.nUEUp_ttbar/vl.sigma_ttbar + vl.nUEUp_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar_Powheg_ueUp",            "t#bar{t}",     r.itSys, 1, "ueUp");
+    #specialweight = vl.nUEUp_dilep/vl.sigma_dilep/(vl.nUEUp_ttbar/vl.sigma_ttbar + vl.nUEUp_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar2L_Powheg_ueUp",          "t#bar{t}",     r.itSys, 1, "ueUp");
+    #specialweight = vl.nUEDown_ttbar/vl.sigma_ttbar/(vl.nUEDown_ttbar/vl.sigma_ttbar + vl.nUEDown_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar_Powheg_ueDown",          "t#bar{t}",     r.itSys, 1, "ueDown");
+    #specialweight = vl.nUEDown_dilep/vl.sigma_dilep/(vl.nUEDown_ttbar/vl.sigma_ttbar + vl.nUEDown_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar2L_Powheg_ueDown",        "t#bar{t}",     r.itSys, 1, "ueDown");
+    #specialweight = vl.nhDampUp_ttbar/vl.sigma_ttbar/(vl.nhDampUp_ttbar/vl.sigma_ttbar + vl.nhDampUp_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar_Powheg_hdampUp",         "t#bar{t}",     r.itSys, 1, "hdampUp");
+    #specialweight = vl.nhDampUp_dilep/vl.sigma_dilep/(vl.nhDampUp_ttbar/vl.sigma_ttbar + vl.nhDampUp_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar2L_Powheg_hdampUp",       "t#bar{t}",     r.itSys, 1, "hdampUp");
+    #specialweight = vl.nhDampDown_ttbar/vl.sigma_ttbar/(vl.nhDampDown_ttbar/vl.sigma_ttbar + vl.nhDampDown_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar_Powheg_hdampDown",       "t#bar{t}",     r.itSys, 1, "hdampDown");
+    #specialweight = vl.nhDampDown_dilep/vl.sigma_dilep/(vl.nhDampDown_ttbar/vl.sigma_ttbar + vl.nhDampDown_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar2L_Powheg_hdampDown",     "t#bar{t}",     r.itSys, 1, "hdampDown");
+    #p.SetWeight("TWeight");
     
-    p.AddSample("TTbar_Powheg_isrUp"          , "t#bar{t}",     r.itSys, 1, "isrUp");
-    p.AddSample("TTbar_Powheg_isrDown"        , "t#bar{t}",     r.itSys, 1, "isrDown");
-    p.AddSample("TTbar_Powheg_fsrUp"          , "t#bar{t}",     r.itSys, 1, "fsrUp");
-    p.AddSample("TTbar_Powheg_fsrDown"        , "t#bar{t}",     r.itSys, 1, "fsrDown");
+    #p.AddSample("TTbar_Powheg_isrUp"          , "t#bar{t}",     r.itSys, 1, "isrUp");
+    #p.AddSample("TTbar_Powheg_isrDown"        , "t#bar{t}",     r.itSys, 1, "isrDown");
+    #p.AddSample("TTbar_Powheg_fsrUp"          , "t#bar{t}",     r.itSys, 1, "fsrUp");
+    #p.AddSample("TTbar_Powheg_fsrDown"        , "t#bar{t}",     r.itSys, 1, "fsrDown");
     
-    specialweight = vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar_GluonMoveCRTune',        't#bar{t}',     r.itSys, 1, "GluonMoveCRTune")
-    specialweight = vl.nGluonMoveCRTune_dilep/vl.sigma_dilep/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTTo2L2Nu_GluonMoveCRTune',    't#bar{t}',     r.itSys, 1, "GluonMoveCRTune")
-    specialweight = vl.nPowhegerdON_ttbar/vl.sigma_ttbar/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar_Powheg_erdON',           't#bar{t}',     r.itSys, 1, "Powheg_erdON")
-    specialweight = vl.nPowhegerdON_dilep/vl.sigma_dilep/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTTo2L2Nu_Powheg_erdON',       't#bar{t}',     r.itSys, 1, "Powheg_erdON")
-    specialweight = vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar_GluonMoveCRTune_erdON',  't#bar{t}',     r.itSys, 1, "QCDbasedCRTune_erdON")
-    specialweight = vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTTo2L2Nu_QCDbasedCRTune_erdON','t#bar{t}',    r.itSys, 1, "QCDbasedCRTune_erdON")
-    p.SetWeight('TWeight')
+    #specialweight = vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTbar_GluonMoveCRTune',        't#bar{t}',     r.itSys, 1, "GluonMoveCRTune")
+    #specialweight = vl.nGluonMoveCRTune_dilep/vl.sigma_dilep/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTTo2L2Nu_GluonMoveCRTune',    't#bar{t}',     r.itSys, 1, "GluonMoveCRTune")
+    #specialweight = vl.nPowhegerdON_ttbar/vl.sigma_ttbar/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTbar_Powheg_erdON',           't#bar{t}',     r.itSys, 1, "Powheg_erdON")
+    #specialweight = vl.nPowhegerdON_dilep/vl.sigma_dilep/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTTo2L2Nu_Powheg_erdON',       't#bar{t}',     r.itSys, 1, "Powheg_erdON")
+    #specialweight = vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTbar_GluonMoveCRTune_erdON',  't#bar{t}',     r.itSys, 1, "QCDbasedCRTune_erdON")
+    #specialweight = vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTTo2L2Nu_QCDbasedCRTune_erdON','t#bar{t}',    r.itSys, 1, "QCDbasedCRTune_erdON")
+    #p.SetWeight('TWeight')
     
-    p.AddSample("TTbar_GluonMoveCRTune_erdON" , "t#bar{t}",     r.itSys, 1, "GluonMoveCRTune_erdON");
-    p.UseEnvelope("t#bar{t}", "GluonMoveCRTune,GluonMoveCRTune_erdON,Powheg_erdON,QCDbasedCRTune_erdON", "ColorReconnection");
-    p.AddSymmetricHisto("t#bar{t}",  "JERUp");
+    #p.AddSample("TTbar_GluonMoveCRTune_erdON" , "t#bar{t}",     r.itSys, 1, "GluonMoveCRTune_erdON");
+    #p.UseEnvelope("t#bar{t}", "GluonMoveCRTune,GluonMoveCRTune_erdON,Powheg_erdON,QCDbasedCRTune_erdON", "ColorReconnection");
+    #p.AddSymmetricHisto("t#bar{t}",  "JERUp");
     
-    pdf     = r.PDFToPy(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString(StandardCut) if cut == "signal" else r.TString(ControlCut), r.TString("ElMu"), r.TString(vl.varList[var]['var']), int(20), float(vl.varList[var]['recobinning'][0]), float(vl.varList[var]['recobinning'][-1]));
-    pdf.verbose = False
-    pdf.SetLumi(vl.Lumi * 1000)
-    hPDFUp  = pdf.GetSystHisto("up","pdf").CloneHisto();
-    hPDFDown= pdf.GetSystHisto("Down","pdf").CloneHisto();
-    hMEUp   = pdf.GetSystHisto("up","ME").CloneHisto();
-    hMEDown = pdf.GetSystHisto("Down","ME").CloneHisto();
-    p.PrepareHisto(hPDFUp,   "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarPDFUp");
-    p.PrepareHisto(hPDFDown, "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarPDFDown");
-    p.PrepareHisto(hMEUp,    "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarMEUp");
-    p.PrepareHisto(hMEDown,  "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarMEDown");
-    p.AddToSystematicLabels("ttbarPDF");
-    p.AddToSystematicLabels("ttbarME");
+    #pdf     = r.PDFToPy(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString(StandardCut) if cut == "signal" else r.TString(ControlCut), r.TString("ElMu"), r.TString(vl.varList[var]['var']), int(20), float(vl.varList[var]['recobinning'][0]), float(vl.varList[var]['recobinning'][-1]));
+    #pdf.verbose = False
+    #pdf.SetLumi(vl.Lumi * 1000)
+    #hPDFUp  = pdf.GetSystHisto("up","pdf").CloneHisto();
+    #hPDFDown= pdf.GetSystHisto("Down","pdf").CloneHisto();
+    #hMEUp   = pdf.GetSystHisto("up","ME").CloneHisto();
+    #hMEDown = pdf.GetSystHisto("Down","ME").CloneHisto();
+    #p.PrepareHisto(hPDFUp,   "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarPDFUp");
+    #p.PrepareHisto(hPDFDown, "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarPDFDown");
+    #p.PrepareHisto(hMEUp,    "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarMEUp");
+    #p.PrepareHisto(hMEDown,  "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarMEDown");
+    #p.AddToSystematicLabels("ttbarPDF");
+    #p.AddToSystematicLabels("ttbarME");
     
     # Other settings
     p.SetDataStyle("psameE1")
@@ -237,7 +237,7 @@ def plotvariable(tsk):
     thepos = vl.legpos
     p.SetLegendPosition(thepos[0], thepos[1], thepos[2], thepos[3])
     p.SetLegendTextSize(0.028)
-    p.SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/" if cut == 'signal' else "/nfs/fanae/user/vrbouza/www/TFM/1j1t/control/");
+    p.SetPlotFolder("results/varplots/" if cut == 'signal' else "results/varplots/control/");
     p.doYieldsInLeg = False;
     p.doSetLogy     = False;
     #p.doData        = False;
@@ -247,8 +247,8 @@ def plotvariable(tsk):
         p.NoShowVarName = True;
         p.SetOutputName(vl.varList[var]['var_response']);
     p.DrawStack();
-    p.PrintSystematics()
-    p.PrintSystYields()
+    #p.PrintSystematics()
+    #p.PrintSystYields()
     del p
     #del pdf
 
@@ -313,104 +313,104 @@ def plotcustomvariable(tsk):
     p.AddSample("SingleMuon",                   "Data",         r.itData);
     p.AddSample("SingleElec",                   "Data",         r.itData);
     
-    p.AddSample("TW"                         ,  "tW",           r.itSys, 1, "JERUp");
-    p.AddSample("TW_noFullyHadr_isrUp"       ,  "tW",           r.itSys, 1, "isrUp");
-    p.AddSample("TW_noFullyHadr_isrDown"     ,  "tW",           r.itSys, 1, "isrDown");
-    p.AddSample("TW_noFullyHadr_fsrUp"       ,  "tW",           r.itSys, 1, "fsrUp");
-    p.AddSample("TW_noFullyHadr_fsrDown"     ,  "tW",           r.itSys, 1, "fsrDown");
-    p.AddSample("TW_noFullyHadr_MEscaleUp"   ,  "tW",           r.itSys, 1, "tW_MEUp");
-    p.AddSample("TW_noFullyHadr_MEscaleDown" ,  "tW",           r.itSys, 1, "tW_MEDown");
-    p.AddSample("TW_noFullyHadr_PSscaleUp"   ,  "tW",           r.itSys, 1, "tW_PSUp");
-    p.AddSample("TW_noFullyHadr_PSscaleDown" ,  "tW",           r.itSys, 1, "tW_PSDown");
+    #p.AddSample("TW"                         ,  "tW",           r.itSys, 1, "JERUp");
+    #p.AddSample("TW_noFullyHadr_isrUp"       ,  "tW",           r.itSys, 1, "isrUp");
+    #p.AddSample("TW_noFullyHadr_isrDown"     ,  "tW",           r.itSys, 1, "isrDown");
+    #p.AddSample("TW_noFullyHadr_fsrUp"       ,  "tW",           r.itSys, 1, "fsrUp");
+    #p.AddSample("TW_noFullyHadr_fsrDown"     ,  "tW",           r.itSys, 1, "fsrDown");
+    #p.AddSample("TW_noFullyHadr_MEscaleUp"   ,  "tW",           r.itSys, 1, "tW_MEUp");
+    #p.AddSample("TW_noFullyHadr_MEscaleDown" ,  "tW",           r.itSys, 1, "tW_MEDown");
+    #p.AddSample("TW_noFullyHadr_PSscaleUp"   ,  "tW",           r.itSys, 1, "tW_PSUp");
+    #p.AddSample("TW_noFullyHadr_PSscaleDown" ,  "tW",           r.itSys, 1, "tW_PSDown");
 
-    p.AddSample("TbarW"                        ,"tW",           r.itSys, 1, "JERUp");
-    p.AddSample("TbarW_noFullyHadr_isrUp"      ,"tW",           r.itSys, 1, "isrUp");
-    p.AddSample("TbarW_noFullyHadr_isrDown"    ,"tW",           r.itSys, 1, "isrDown");
-    p.AddSample("TbarW_noFullyHadr_fsrUp"      ,"tW",           r.itSys, 1, "fsrUp");
-    p.AddSample("TbarW_noFullyHadr_fsrDown"    ,"tW",           r.itSys, 1, "fsrDown");
-    p.AddSample("TbarW_noFullyHadr_MEscaleUp"  ,"tW",           r.itSys, 1, "tW_MEUp");
-    p.AddSample("TbarW_noFullyHadr_MEscaleDown","tW",           r.itSys, 1, "tW_MEDown");
-    p.AddSample("TbarW_noFullyHadr_PSscaleUp"  ,"tW",           r.itSys, 1, "tW_PSUp");
-    p.AddSample("TbarW_noFullyHadr_PSscaleDown","tW",           r.itSys, 1, "tW_PSDown");
+    #p.AddSample("TbarW"                        ,"tW",           r.itSys, 1, "JERUp");
+    #p.AddSample("TbarW_noFullyHadr_isrUp"      ,"tW",           r.itSys, 1, "isrUp");
+    #p.AddSample("TbarW_noFullyHadr_isrDown"    ,"tW",           r.itSys, 1, "isrDown");
+    #p.AddSample("TbarW_noFullyHadr_fsrUp"      ,"tW",           r.itSys, 1, "fsrUp");
+    #p.AddSample("TbarW_noFullyHadr_fsrDown"    ,"tW",           r.itSys, 1, "fsrDown");
+    #p.AddSample("TbarW_noFullyHadr_MEscaleUp"  ,"tW",           r.itSys, 1, "tW_MEUp");
+    #p.AddSample("TbarW_noFullyHadr_MEscaleDown","tW",           r.itSys, 1, "tW_MEDown");
+    #p.AddSample("TbarW_noFullyHadr_PSscaleUp"  ,"tW",           r.itSys, 1, "tW_PSUp");
+    #p.AddSample("TbarW_noFullyHadr_PSscaleDown","tW",           r.itSys, 1, "tW_PSDown");
 
-    p.AddSample("TW_noFullyHadr_DS",            "tW",           r.itSys, 1, "DSUp");
-    p.AddSample("TbarW_noFullyHadr_DS",         "tW",           r.itSys, 1, "DSUp");
-    p.AddSymmetricHisto("tW",  "DSUp");
-    p.AddSymmetricHisto("tW",  "JERUp");
+    #p.AddSample("TW_noFullyHadr_DS",            "tW",           r.itSys, 1, "DSUp");
+    #p.AddSample("TbarW_noFullyHadr_DS",         "tW",           r.itSys, 1, "DSUp");
+    #p.AddSymmetricHisto("tW",  "DSUp");
+    #p.AddSymmetricHisto("tW",  "JERUp");
     
-    p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itSys, 1, "JERUp");
+    #p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itSys, 1, "JERUp");
     
-    specialweight = vl.nUEUp_ttbar/vl.sigma_ttbar/(vl.nUEUp_ttbar/vl.sigma_ttbar + vl.nUEUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar_Powheg_ueUp",            "t#bar{t}",     r.itSys, 1, "ueUp");
-    specialweight = vl.nUEUp_dilep/vl.sigma_dilep/(vl.nUEUp_ttbar/vl.sigma_ttbar + vl.nUEUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar2L_Powheg_ueUp",          "t#bar{t}",     r.itSys, 1, "ueUp");
-    specialweight = vl.nUEDown_ttbar/vl.sigma_ttbar/(vl.nUEDown_ttbar/vl.sigma_ttbar + vl.nUEDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar_Powheg_ueDown",          "t#bar{t}",     r.itSys, 1, "ueDown");
-    specialweight = vl.nUEDown_dilep/vl.sigma_dilep/(vl.nUEDown_ttbar/vl.sigma_ttbar + vl.nUEDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar2L_Powheg_ueDown",        "t#bar{t}",     r.itSys, 1, "ueDown");
-    specialweight = vl.nhDampUp_ttbar/vl.sigma_ttbar/(vl.nhDampUp_ttbar/vl.sigma_ttbar + vl.nhDampUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar_Powheg_hdampUp",         "t#bar{t}",     r.itSys, 1, "hdampUp");
-    specialweight = vl.nhDampUp_dilep/vl.sigma_dilep/(vl.nhDampUp_ttbar/vl.sigma_ttbar + vl.nhDampUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar2L_Powheg_hdampUp",       "t#bar{t}",     r.itSys, 1, "hdampUp");
-    specialweight = vl.nhDampDown_ttbar/vl.sigma_ttbar/(vl.nhDampDown_ttbar/vl.sigma_ttbar + vl.nhDampDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar_Powheg_hdampDown",       "t#bar{t}",     r.itSys, 1, "hdampDown");
-    specialweight = vl.nhDampDown_dilep/vl.sigma_dilep/(vl.nhDampDown_ttbar/vl.sigma_ttbar + vl.nhDampDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar2L_Powheg_hdampDown",     "t#bar{t}",     r.itSys, 1, "hdampDown");
-    p.SetWeight("TWeight");
+    #specialweight = vl.nUEUp_ttbar/vl.sigma_ttbar/(vl.nUEUp_ttbar/vl.sigma_ttbar + vl.nUEUp_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar_Powheg_ueUp",            "t#bar{t}",     r.itSys, 1, "ueUp");
+    #specialweight = vl.nUEUp_dilep/vl.sigma_dilep/(vl.nUEUp_ttbar/vl.sigma_ttbar + vl.nUEUp_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar2L_Powheg_ueUp",          "t#bar{t}",     r.itSys, 1, "ueUp");
+    #specialweight = vl.nUEDown_ttbar/vl.sigma_ttbar/(vl.nUEDown_ttbar/vl.sigma_ttbar + vl.nUEDown_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar_Powheg_ueDown",          "t#bar{t}",     r.itSys, 1, "ueDown");
+    #specialweight = vl.nUEDown_dilep/vl.sigma_dilep/(vl.nUEDown_ttbar/vl.sigma_ttbar + vl.nUEDown_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar2L_Powheg_ueDown",        "t#bar{t}",     r.itSys, 1, "ueDown");
+    #specialweight = vl.nhDampUp_ttbar/vl.sigma_ttbar/(vl.nhDampUp_ttbar/vl.sigma_ttbar + vl.nhDampUp_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar_Powheg_hdampUp",         "t#bar{t}",     r.itSys, 1, "hdampUp");
+    #specialweight = vl.nhDampUp_dilep/vl.sigma_dilep/(vl.nhDampUp_ttbar/vl.sigma_ttbar + vl.nhDampUp_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar2L_Powheg_hdampUp",       "t#bar{t}",     r.itSys, 1, "hdampUp");
+    #specialweight = vl.nhDampDown_ttbar/vl.sigma_ttbar/(vl.nhDampDown_ttbar/vl.sigma_ttbar + vl.nhDampDown_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar_Powheg_hdampDown",       "t#bar{t}",     r.itSys, 1, "hdampDown");
+    #specialweight = vl.nhDampDown_dilep/vl.sigma_dilep/(vl.nhDampDown_ttbar/vl.sigma_ttbar + vl.nhDampDown_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar2L_Powheg_hdampDown",     "t#bar{t}",     r.itSys, 1, "hdampDown");
+    #p.SetWeight("TWeight");
     
-    p.AddSample("TTbar_Powheg_isrUp"          , "t#bar{t}",     r.itSys, 1, "isrUp");
-    p.AddSample("TTbar_Powheg_isrDown"        , "t#bar{t}",     r.itSys, 1, "isrDown");
-    p.AddSample("TTbar_Powheg_fsrUp"          , "t#bar{t}",     r.itSys, 1, "fsrUp");
-    p.AddSample("TTbar_Powheg_fsrDown"        , "t#bar{t}",     r.itSys, 1, "fsrDown");
+    #p.AddSample("TTbar_Powheg_isrUp"          , "t#bar{t}",     r.itSys, 1, "isrUp");
+    #p.AddSample("TTbar_Powheg_isrDown"        , "t#bar{t}",     r.itSys, 1, "isrDown");
+    #p.AddSample("TTbar_Powheg_fsrUp"          , "t#bar{t}",     r.itSys, 1, "fsrUp");
+    #p.AddSample("TTbar_Powheg_fsrDown"        , "t#bar{t}",     r.itSys, 1, "fsrDown");
     
-    specialweight = vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar_GluonMoveCRTune',        't#bar{t}',     r.itSys, 1, "GluonMoveCRTune")
-    specialweight = vl.nGluonMoveCRTune_dilep/vl.sigma_dilep/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTTo2L2Nu_GluonMoveCRTune',    't#bar{t}',     r.itSys, 1, "GluonMoveCRTune")
-    specialweight = vl.nPowhegerdON_ttbar/vl.sigma_ttbar/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar_Powheg_erdON',           't#bar{t}',     r.itSys, 1, "Powheg_erdON")
-    specialweight = vl.nPowhegerdON_dilep/vl.sigma_dilep/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTTo2L2Nu_Powheg_erdON',       't#bar{t}',     r.itSys, 1, "Powheg_erdON")
-    specialweight = vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar_GluonMoveCRTune_erdON',  't#bar{t}',     r.itSys, 1, "QCDbasedCRTune_erdON")
-    specialweight = vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTTo2L2Nu_QCDbasedCRTune_erdON','t#bar{t}',    r.itSys, 1, "QCDbasedCRTune_erdON")
-    p.SetWeight('TWeight')
+    #specialweight = vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTbar_GluonMoveCRTune',        't#bar{t}',     r.itSys, 1, "GluonMoveCRTune")
+    #specialweight = vl.nGluonMoveCRTune_dilep/vl.sigma_dilep/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTTo2L2Nu_GluonMoveCRTune',    't#bar{t}',     r.itSys, 1, "GluonMoveCRTune")
+    #specialweight = vl.nPowhegerdON_ttbar/vl.sigma_ttbar/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTbar_Powheg_erdON',           't#bar{t}',     r.itSys, 1, "Powheg_erdON")
+    #specialweight = vl.nPowhegerdON_dilep/vl.sigma_dilep/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTTo2L2Nu_Powheg_erdON',       't#bar{t}',     r.itSys, 1, "Powheg_erdON")
+    #specialweight = vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTbar_GluonMoveCRTune_erdON',  't#bar{t}',     r.itSys, 1, "QCDbasedCRTune_erdON")
+    #specialweight = vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTTo2L2Nu_QCDbasedCRTune_erdON','t#bar{t}',    r.itSys, 1, "QCDbasedCRTune_erdON")
+    #p.SetWeight('TWeight')
     
-    p.AddSample("TTbar_GluonMoveCRTune_erdON" , "t#bar{t}",     r.itSys, 1, "GluonMoveCRTune_erdON");
-    p.UseEnvelope("t#bar{t}", "GluonMoveCRTune,GluonMoveCRTune_erdON,Powheg_erdON,QCDbasedCRTune_erdON", "ColorReconnection");
-    p.AddSymmetricHisto("t#bar{t}",  "JERUp");
+    #p.AddSample("TTbar_GluonMoveCRTune_erdON" , "t#bar{t}",     r.itSys, 1, "GluonMoveCRTune_erdON");
+    #p.UseEnvelope("t#bar{t}", "GluonMoveCRTune,GluonMoveCRTune_erdON,Powheg_erdON,QCDbasedCRTune_erdON", "ColorReconnection");
+    #p.AddSymmetricHisto("t#bar{t}",  "JERUp");
     
-    pdf     = r.PDFToPyC(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString(StandardCut) if cut == "signal" else r.TString(ControlCut), r.TString("ElMu"), r.TString(vl.varList[var]['var']), len(vl.varList[var]['recobinning']) - 1, binning, r.TString(''));
-    pdf.verbose = False
+    #pdf     = r.PDFToPyC(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString(StandardCut) if cut == "signal" else r.TString(ControlCut), r.TString("ElMu"), r.TString(vl.varList[var]['var']), len(vl.varList[var]['recobinning']) - 1, binning, r.TString(''));
+    #pdf.verbose = False
     #pdf.verbose = True
-    pdf.SetLumi(vl.Lumi * 1000)
+    #pdf.SetLumi(vl.Lumi * 1000)
     
-    hPDFUp  = pdf.GetSystHisto("up","pdf").CloneHisto();
-    hPDFDown= pdf.GetSystHisto("Down","pdf").CloneHisto();
-    hMEUp   = pdf.GetSystHisto("up","ME").CloneHisto();
-    hMEDown = pdf.GetSystHisto("Down","ME").CloneHisto();
-    p.PrepareHisto(hPDFUp,   "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarPDFUp");
-    p.PrepareHisto(hPDFDown, "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarPDFDown");
-    p.PrepareHisto(hMEUp,    "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarMEUp");
-    p.PrepareHisto(hMEDown,  "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarMEDown");
-    p.AddToSystematicLabels("ttbarPDF");
-    p.AddToSystematicLabels("ttbarME");
-    del pdf
+    #hPDFUp  = pdf.GetSystHisto("up","pdf").CloneHisto();
+    #hPDFDown= pdf.GetSystHisto("Down","pdf").CloneHisto();
+    #hMEUp   = pdf.GetSystHisto("up","ME").CloneHisto();
+    #hMEDown = pdf.GetSystHisto("Down","ME").CloneHisto();
+    #p.PrepareHisto(hPDFUp,   "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarPDFUp");
+    #p.PrepareHisto(hPDFDown, "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarPDFDown");
+    #p.PrepareHisto(hMEUp,    "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarMEUp");
+    #p.PrepareHisto(hMEDown,  "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarMEDown");
+    #p.AddToSystematicLabels("ttbarPDF");
+    #p.AddToSystematicLabels("ttbarME");
+    #del pdf
     
     # Other settings
     p.SetDataStyle("psameE1")
@@ -429,7 +429,7 @@ def plotcustomvariable(tsk):
     else:                           thepos = vl.legpos
     p.SetLegendPosition(thepos[0], thepos[1], thepos[2], thepos[3])
     p.SetLegendTextSize(0.028)
-    p.SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/" if cut == 'signal' else "/nfs/fanae/user/vrbouza/www/TFM/1j1t/control/");
+    p.SetPlotFolder("results/varplots/" if cut == 'signal' else "results/varplots/control/");
     p.doYieldsInLeg = False;
     p.doSetLogy     = False;
     #p.doData        = False;
@@ -440,8 +440,8 @@ def plotcustomvariable(tsk):
         p.NoShowVarName = True;
         p.SetOutputName('Custom_' + vl.varList[var]['var_response']);
     p.DrawStack();
-    p.PrintSystematics()
-    p.PrintSystYields()
+    #p.PrintSystematics()
+    #p.PrintSystYields()
     del p
 
 
@@ -506,104 +506,104 @@ def plotthenumberofjets(tsk):
     p.AddSample("SingleMuon",                   "Data",         r.itData);
     p.AddSample("SingleElec",                   "Data",         r.itData);
     
-    p.AddSample("TW"                         ,  "tW",           r.itSys, 1, "JERUp");
-    p.AddSample("TW_noFullyHadr_isrUp"       ,  "tW",           r.itSys, 1, "isrUp");
-    p.AddSample("TW_noFullyHadr_isrDown"     ,  "tW",           r.itSys, 1, "isrDown");
-    p.AddSample("TW_noFullyHadr_fsrUp"       ,  "tW",           r.itSys, 1, "fsrUp");
-    p.AddSample("TW_noFullyHadr_fsrDown"     ,  "tW",           r.itSys, 1, "fsrDown");
-    p.AddSample("TW_noFullyHadr_MEscaleUp"   ,  "tW",           r.itSys, 1, "tW_MEUp");
-    p.AddSample("TW_noFullyHadr_MEscaleDown" ,  "tW",           r.itSys, 1, "tW_MEDown");
-    p.AddSample("TW_noFullyHadr_PSscaleUp"   ,  "tW",           r.itSys, 1, "tW_PSUp");
-    p.AddSample("TW_noFullyHadr_PSscaleDown" ,  "tW",           r.itSys, 1, "tW_PSDown");
+    #p.AddSample("TW"                         ,  "tW",           r.itSys, 1, "JERUp");
+    #p.AddSample("TW_noFullyHadr_isrUp"       ,  "tW",           r.itSys, 1, "isrUp");
+    #p.AddSample("TW_noFullyHadr_isrDown"     ,  "tW",           r.itSys, 1, "isrDown");
+    #p.AddSample("TW_noFullyHadr_fsrUp"       ,  "tW",           r.itSys, 1, "fsrUp");
+    #p.AddSample("TW_noFullyHadr_fsrDown"     ,  "tW",           r.itSys, 1, "fsrDown");
+    #p.AddSample("TW_noFullyHadr_MEscaleUp"   ,  "tW",           r.itSys, 1, "tW_MEUp");
+    #p.AddSample("TW_noFullyHadr_MEscaleDown" ,  "tW",           r.itSys, 1, "tW_MEDown");
+    #p.AddSample("TW_noFullyHadr_PSscaleUp"   ,  "tW",           r.itSys, 1, "tW_PSUp");
+    #p.AddSample("TW_noFullyHadr_PSscaleDown" ,  "tW",           r.itSys, 1, "tW_PSDown");
 
-    p.AddSample("TbarW"                        ,"tW",           r.itSys, 1, "JERUp");
-    p.AddSample("TbarW_noFullyHadr_isrUp"      ,"tW",           r.itSys, 1, "isrUp");
-    p.AddSample("TbarW_noFullyHadr_isrDown"    ,"tW",           r.itSys, 1, "isrDown");
-    p.AddSample("TbarW_noFullyHadr_fsrUp"      ,"tW",           r.itSys, 1, "fsrUp");
-    p.AddSample("TbarW_noFullyHadr_fsrDown"    ,"tW",           r.itSys, 1, "fsrDown");
-    p.AddSample("TbarW_noFullyHadr_MEscaleUp"  ,"tW",           r.itSys, 1, "tW_MEUp");
-    p.AddSample("TbarW_noFullyHadr_MEscaleDown","tW",           r.itSys, 1, "tW_MEDown");
-    p.AddSample("TbarW_noFullyHadr_PSscaleUp"  ,"tW",           r.itSys, 1, "tW_PSUp");
-    p.AddSample("TbarW_noFullyHadr_PSscaleDown","tW",           r.itSys, 1, "tW_PSDown");
+    #p.AddSample("TbarW"                        ,"tW",           r.itSys, 1, "JERUp");
+    #p.AddSample("TbarW_noFullyHadr_isrUp"      ,"tW",           r.itSys, 1, "isrUp");
+    #p.AddSample("TbarW_noFullyHadr_isrDown"    ,"tW",           r.itSys, 1, "isrDown");
+    #p.AddSample("TbarW_noFullyHadr_fsrUp"      ,"tW",           r.itSys, 1, "fsrUp");
+    #p.AddSample("TbarW_noFullyHadr_fsrDown"    ,"tW",           r.itSys, 1, "fsrDown");
+    #p.AddSample("TbarW_noFullyHadr_MEscaleUp"  ,"tW",           r.itSys, 1, "tW_MEUp");
+    #p.AddSample("TbarW_noFullyHadr_MEscaleDown","tW",           r.itSys, 1, "tW_MEDown");
+    #p.AddSample("TbarW_noFullyHadr_PSscaleUp"  ,"tW",           r.itSys, 1, "tW_PSUp");
+    #p.AddSample("TbarW_noFullyHadr_PSscaleDown","tW",           r.itSys, 1, "tW_PSDown");
 
-    p.AddSample("TW_noFullyHadr_DS",            "tW",           r.itSys, 1, "DSUp");
-    p.AddSample("TbarW_noFullyHadr_DS",         "tW",           r.itSys, 1, "DSUp");
-    p.AddSymmetricHisto("tW",  "DSUp");
-    p.AddSymmetricHisto("tW",  "JERUp");
+    #p.AddSample("TW_noFullyHadr_DS",            "tW",           r.itSys, 1, "DSUp");
+    #p.AddSample("TbarW_noFullyHadr_DS",         "tW",           r.itSys, 1, "DSUp");
+    #p.AddSymmetricHisto("tW",  "DSUp");
+    #p.AddSymmetricHisto("tW",  "JERUp");
     
-    p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itSys, 1, "JERUp");
+    #p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itSys, 1, "JERUp");
     
-    specialweight = vl.nUEUp_ttbar/vl.sigma_ttbar/(vl.nUEUp_ttbar/vl.sigma_ttbar + vl.nUEUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar_Powheg_ueUp",            "t#bar{t}",     r.itSys, 1, "ueUp");
-    specialweight = vl.nUEUp_dilep/vl.sigma_dilep/(vl.nUEUp_ttbar/vl.sigma_ttbar + vl.nUEUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar2L_Powheg_ueUp",          "t#bar{t}",     r.itSys, 1, "ueUp");
-    specialweight = vl.nUEDown_ttbar/vl.sigma_ttbar/(vl.nUEDown_ttbar/vl.sigma_ttbar + vl.nUEDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar_Powheg_ueDown",          "t#bar{t}",     r.itSys, 1, "ueDown");
-    specialweight = vl.nUEDown_dilep/vl.sigma_dilep/(vl.nUEDown_ttbar/vl.sigma_ttbar + vl.nUEDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar2L_Powheg_ueDown",        "t#bar{t}",     r.itSys, 1, "ueDown");
-    specialweight = vl.nhDampUp_ttbar/vl.sigma_ttbar/(vl.nhDampUp_ttbar/vl.sigma_ttbar + vl.nhDampUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar_Powheg_hdampUp",         "t#bar{t}",     r.itSys, 1, "hdampUp");
-    specialweight = vl.nhDampUp_dilep/vl.sigma_dilep/(vl.nhDampUp_ttbar/vl.sigma_ttbar + vl.nhDampUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar2L_Powheg_hdampUp",       "t#bar{t}",     r.itSys, 1, "hdampUp");
-    specialweight = vl.nhDampDown_ttbar/vl.sigma_ttbar/(vl.nhDampDown_ttbar/vl.sigma_ttbar + vl.nhDampDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar_Powheg_hdampDown",       "t#bar{t}",     r.itSys, 1, "hdampDown");
-    specialweight = vl.nhDampDown_dilep/vl.sigma_dilep/(vl.nhDampDown_ttbar/vl.sigma_ttbar + vl.nhDampDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
-    p.AddSample("TTbar2L_Powheg_hdampDown",     "t#bar{t}",     r.itSys, 1, "hdampDown");
-    p.SetWeight("TWeight");
+    #specialweight = vl.nUEUp_ttbar/vl.sigma_ttbar/(vl.nUEUp_ttbar/vl.sigma_ttbar + vl.nUEUp_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar_Powheg_ueUp",            "t#bar{t}",     r.itSys, 1, "ueUp");
+    #specialweight = vl.nUEUp_dilep/vl.sigma_dilep/(vl.nUEUp_ttbar/vl.sigma_ttbar + vl.nUEUp_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar2L_Powheg_ueUp",          "t#bar{t}",     r.itSys, 1, "ueUp");
+    #specialweight = vl.nUEDown_ttbar/vl.sigma_ttbar/(vl.nUEDown_ttbar/vl.sigma_ttbar + vl.nUEDown_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar_Powheg_ueDown",          "t#bar{t}",     r.itSys, 1, "ueDown");
+    #specialweight = vl.nUEDown_dilep/vl.sigma_dilep/(vl.nUEDown_ttbar/vl.sigma_ttbar + vl.nUEDown_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar2L_Powheg_ueDown",        "t#bar{t}",     r.itSys, 1, "ueDown");
+    #specialweight = vl.nhDampUp_ttbar/vl.sigma_ttbar/(vl.nhDampUp_ttbar/vl.sigma_ttbar + vl.nhDampUp_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar_Powheg_hdampUp",         "t#bar{t}",     r.itSys, 1, "hdampUp");
+    #specialweight = vl.nhDampUp_dilep/vl.sigma_dilep/(vl.nhDampUp_ttbar/vl.sigma_ttbar + vl.nhDampUp_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar2L_Powheg_hdampUp",       "t#bar{t}",     r.itSys, 1, "hdampUp");
+    #specialweight = vl.nhDampDown_ttbar/vl.sigma_ttbar/(vl.nhDampDown_ttbar/vl.sigma_ttbar + vl.nhDampDown_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar_Powheg_hdampDown",       "t#bar{t}",     r.itSys, 1, "hdampDown");
+    #specialweight = vl.nhDampDown_dilep/vl.sigma_dilep/(vl.nhDampDown_ttbar/vl.sigma_ttbar + vl.nhDampDown_dilep/vl.sigma_dilep);
+    #p.SetWeight("TWeight*" + str(specialweight));
+    #p.AddSample("TTbar2L_Powheg_hdampDown",     "t#bar{t}",     r.itSys, 1, "hdampDown");
+    #p.SetWeight("TWeight");
     
-    p.AddSample("TTbar_Powheg_isrUp"          , "t#bar{t}",     r.itSys, 1, "isrUp");
-    p.AddSample("TTbar_Powheg_isrDown"        , "t#bar{t}",     r.itSys, 1, "isrDown");
-    p.AddSample("TTbar_Powheg_fsrUp"          , "t#bar{t}",     r.itSys, 1, "fsrUp");
-    p.AddSample("TTbar_Powheg_fsrDown"        , "t#bar{t}",     r.itSys, 1, "fsrDown");
+    #p.AddSample("TTbar_Powheg_isrUp"          , "t#bar{t}",     r.itSys, 1, "isrUp");
+    #p.AddSample("TTbar_Powheg_isrDown"        , "t#bar{t}",     r.itSys, 1, "isrDown");
+    #p.AddSample("TTbar_Powheg_fsrUp"          , "t#bar{t}",     r.itSys, 1, "fsrUp");
+    #p.AddSample("TTbar_Powheg_fsrDown"        , "t#bar{t}",     r.itSys, 1, "fsrDown");
     
-    specialweight = vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar_GluonMoveCRTune',        't#bar{t}',     r.itSys, 1, "GluonMoveCRTune")
-    specialweight = vl.nGluonMoveCRTune_dilep/vl.sigma_dilep/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTTo2L2Nu_GluonMoveCRTune',    't#bar{t}',     r.itSys, 1, "GluonMoveCRTune")
-    specialweight = vl.nPowhegerdON_ttbar/vl.sigma_ttbar/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar_Powheg_erdON',           't#bar{t}',     r.itSys, 1, "Powheg_erdON")
-    specialweight = vl.nPowhegerdON_dilep/vl.sigma_dilep/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTTo2L2Nu_Powheg_erdON',       't#bar{t}',     r.itSys, 1, "Powheg_erdON")
-    specialweight = vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar_GluonMoveCRTune_erdON',  't#bar{t}',     r.itSys, 1, "QCDbasedCRTune_erdON")
-    specialweight = vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTTo2L2Nu_QCDbasedCRTune_erdON','t#bar{t}',    r.itSys, 1, "QCDbasedCRTune_erdON")
-    p.SetWeight('TWeight')
+    #specialweight = vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTbar_GluonMoveCRTune',        't#bar{t}',     r.itSys, 1, "GluonMoveCRTune")
+    #specialweight = vl.nGluonMoveCRTune_dilep/vl.sigma_dilep/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTTo2L2Nu_GluonMoveCRTune',    't#bar{t}',     r.itSys, 1, "GluonMoveCRTune")
+    #specialweight = vl.nPowhegerdON_ttbar/vl.sigma_ttbar/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTbar_Powheg_erdON',           't#bar{t}',     r.itSys, 1, "Powheg_erdON")
+    #specialweight = vl.nPowhegerdON_dilep/vl.sigma_dilep/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTTo2L2Nu_Powheg_erdON',       't#bar{t}',     r.itSys, 1, "Powheg_erdON")
+    #specialweight = vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTbar_GluonMoveCRTune_erdON',  't#bar{t}',     r.itSys, 1, "QCDbasedCRTune_erdON")
+    #specialweight = vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTTo2L2Nu_QCDbasedCRTune_erdON','t#bar{t}',    r.itSys, 1, "QCDbasedCRTune_erdON")
+    #p.SetWeight('TWeight')
     
-    p.AddSample("TTbar_GluonMoveCRTune_erdON" , "t#bar{t}",     r.itSys, 1, "GluonMoveCRTune_erdON");
-    p.UseEnvelope("t#bar{t}", "GluonMoveCRTune,GluonMoveCRTune_erdON,Powheg_erdON,QCDbasedCRTune_erdON", "ColorReconnection");
-    p.AddSymmetricHisto("t#bar{t}",  "JERUp");
+    #p.AddSample("TTbar_GluonMoveCRTune_erdON" , "t#bar{t}",     r.itSys, 1, "GluonMoveCRTune_erdON");
+    #p.UseEnvelope("t#bar{t}", "GluonMoveCRTune,GluonMoveCRTune_erdON,Powheg_erdON,QCDbasedCRTune_erdON", "ColorReconnection");
+    #p.AddSymmetricHisto("t#bar{t}",  "JERUp");
     
-    pdf     = r.PDFToPyC(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString("TIsSS == 0 && TNJets == 1  && TNBtags == 1"), r.TString("ElMu"), r.TString(vl.varList[var]['var']), len(vl.varList[var]['recobinning']) - 1, binning, r.TString(''));
-    pdf.verbose = False
+    #pdf     = r.PDFToPyC(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString("TIsSS == 0 && TNJets == 1  && TNBtags == 1"), r.TString("ElMu"), r.TString(vl.varList[var]['var']), len(vl.varList[var]['recobinning']) - 1, binning, r.TString(''));
+    #pdf.verbose = False
     #pdf.verbose = True
-    pdf.SetLumi(vl.Lumi * 1000)
+    #pdf.SetLumi(vl.Lumi * 1000)
     
-    hPDFUp  = pdf.GetSystHisto("up","pdf").CloneHisto();
-    hPDFDown= pdf.GetSystHisto("Down","pdf").CloneHisto();
-    hMEUp   = pdf.GetSystHisto("up","ME").CloneHisto();
-    hMEDown = pdf.GetSystHisto("Down","ME").CloneHisto();
-    p.PrepareHisto(hPDFUp,   "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarPDFUp");
-    p.PrepareHisto(hPDFDown, "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarPDFDown");
-    p.PrepareHisto(hMEUp,    "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarMEUp");
-    p.PrepareHisto(hMEDown,  "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarMEDown");
-    p.AddToSystematicLabels("ttbarPDF");
-    p.AddToSystematicLabels("ttbarME");
-    del pdf
+    #hPDFUp  = pdf.GetSystHisto("up","pdf").CloneHisto();
+    #hPDFDown= pdf.GetSystHisto("Down","pdf").CloneHisto();
+    #hMEUp   = pdf.GetSystHisto("up","ME").CloneHisto();
+    #hMEDown = pdf.GetSystHisto("Down","ME").CloneHisto();
+    #p.PrepareHisto(hPDFUp,   "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarPDFUp");
+    #p.PrepareHisto(hPDFDown, "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarPDFDown");
+    #p.PrepareHisto(hMEUp,    "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarMEUp");
+    #p.PrepareHisto(hMEDown,  "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarMEDown");
+    #p.AddToSystematicLabels("ttbarPDF");
+    #p.AddToSystematicLabels("ttbarME");
+    #del pdf
     
     # Other settings
     p.SetDataStyle("psameE1")
@@ -621,7 +621,7 @@ def plotthenumberofjets(tsk):
     else:                                               thepos = vl.legpos
     p.SetLegendPosition(thepos[0], thepos[1], thepos[2], thepos[3])
     p.SetLegendTextSize(0.028)
-    p.SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/" if cut == 'signal' else "/nfs/fanae/user/vrbouza/www/TFM/1j1t/control/");
+    p.SetPlotFolder("results/varplots/" if cut == 'signal' else "results/varplots/control/");
     p.doYieldsInLeg = False;
     p.doSetLogy     = False;
     p.doSignal      = False;
@@ -631,8 +631,8 @@ def plotthenumberofjets(tsk):
         p.NoShowVarName = True;
         p.SetOutputName('Custom_' + vl.varList[var]['var_response']);
     p.DrawStack();
-    p.PrintSystematics()
-    p.PrintSystYields()
+    #p.PrintSystematics()
+    #p.PrintSystYields()
     del p
 
 
@@ -643,9 +643,10 @@ if __name__ == '__main__':
         for ct in ['signal', 'control']:
         #for ct in ['control']:
             tasks.append( (v, ct) )
-    
+
     #tasks.append( ("DilepMETJet1Pz", "signal") )
     #tasks.append( ("DPhiLL", "signal") )
+    #tasks.append( ("Custom_LeadingLepPt", "signal") )
     
     pool = Pool(nCores)
     pool.map(plotvariable, tasks)
