@@ -1,7 +1,7 @@
 #include "TWTTbarAnalysis.h"
 ClassImp(TWTTbarAnalysis);
 
-bool GreaterThan(float i, float j){ return (i > j);}
+bool GreaterThan(float i, float j){ return (i > j);} // implementa la funcion 'mayor que'
 
 //#####################################################################
 // Core PAF methods
@@ -203,7 +203,7 @@ void TWTTbarAnalysis::InsideLoop() {            //=============== InsideLoop
 
     if(gIsData) TWeight = 1;
     
-    CalculateTWVariables();
+    CalculateTWVariables(); //estas hay que cambiarlas por las de TWTTbar
     
     if ((TNJets == 1) && (TNBtags == 1) && (nLooseCentral == 1)) {
       Tpassreco = 1;
@@ -219,7 +219,7 @@ void TWTTbarAnalysis::InsideLoop() {            //=============== InsideLoop
     }
   }
   
-  //   Setting maximum value of the unfolding candidate variables.
+  //   Setting maximum value of the unfolding candidate variables. 
   if (TMET                 >= 200)         TMET                 = 199.999;
   if (TM_LeadingB          >= 400)         TM_LeadingB          = 399.999;
   if (TM_SubLeadingB       >= 300)         TM_SubLeadingB       = 299.999;
