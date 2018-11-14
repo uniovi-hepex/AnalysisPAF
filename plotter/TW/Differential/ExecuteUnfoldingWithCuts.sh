@@ -76,9 +76,17 @@ if [ "$variable" == "All" ]; then
     echo "> Obtaining all covariance matrices..."
     echo " "
     python getCovarianceMatrices.py All $ncores
-
-#     # 6) Get a txt with all the results
-#     echo "> Obtaining the covariance matrix..."
+    
+    cd
+    source ./pre_start_CMS.sh
+    cd Documents/TFM/AnalysisPAF/plotter/TW/Differential
+    # 6) Do GOF tests.
+    echo "> Performing GOF tests..."
+    echo " "
+    python goftests.py All
+    
+#     # 7) Get a txt with all the results
+#     echo "> Printing yields..."
 #     echo " "
 #     python getYields.py All $ncores
 
@@ -127,8 +135,16 @@ else
     echo " "
     python getCovarianceMatrices.py $variable
     
-#     # 6) Get a txt with all the results
-#     echo "> Obtaining the covariance matrix..."
+    cd
+    source ./pre_start_CMS.sh
+    cd Documents/TFM/AnalysisPAF/plotter/TW/Differential
+    # 6) Do GOF tests.
+    echo "> Performing GOF tests..."
+    echo " "
+    python goftests.py $variable
+    
+#     # 7) Get a txt with all the results
+#     echo "> Printing yields..."
 #     echo " "
 #     python getYields.py $variable
 fi

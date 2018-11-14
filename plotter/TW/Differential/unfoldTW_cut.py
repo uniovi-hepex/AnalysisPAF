@@ -449,6 +449,15 @@ class Unfolder():
         nominal_withErrors[0].SetLineColor(r.kBlue)
         nominal_withErrors[0].SetFillStyle(1001)
         
+        if not self.wearedoingasimov:
+            savetfile2 = r.TFile("temp/{var}_/unfOutput_{var}.root".format(var = self.var), "update")
+            nom0 = copy.deepcopy(nominal_withErrors[0].Clone("nom0"))
+            nom1 = copy.deepcopy(nominal_withErrors[1].Clone("nom1"))
+            nom0.Write()
+            nom1.Write()
+            savetfile2.Close()
+            del nom0,nom1
+        
         #############################
         print "\nLOS RESULTAOS - {uno} - {dos}".format(uno = "ASIMOV" if self.wearedoingasimov else "DATOS", dos = self.var)
         for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
