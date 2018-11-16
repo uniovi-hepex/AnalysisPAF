@@ -57,6 +57,8 @@ legpos       = (0.82, 0.65, 0.93, 0.93)
 if asimov: labellegend = 'Pseudodata'
 else:      labellegend = 'Data'
 
+storagepath = "/pool/ciencias/userstorage/vrbouza/proyectos/TW/MiniTrees/"
+minipath    = "../../../TW_temp/"
 
 def GetLastFolder(stpth):
     savefolders   = next(os.walk(stpth))[1]
@@ -226,7 +228,7 @@ varList['MET_Phiuncertainties'] = {
 }
 
 varList['LeadingJetPt'] = {
-    'xaxis'       : 'p_{T}(j) (GeV)',
+    'xaxis'       : 'Leading jet p_{T} (GeV)',
     'yaxis'       : 'd#sigma [pb]',
     #'genbinning'  : [0, 75, 200, 300],
     #'recobinning' : [0., 50., 75., 110., 150., 200., 300.],
@@ -234,8 +236,10 @@ varList['LeadingJetPt'] = {
    #'recobinning' : [0., 60., 80., 105., 120., 140., 170., 210., 300.],
 #    'genbinning'  : [0., 60., 110., 150., 300.],
 #    'recobinning' : [0., 60., 75., 90., 110., 125., 150., 175., 300.],
-    'genbinning'  : [0., 60., 90., 120., 150.],
-    'recobinning' : [0., 60., 70., 80, 90., 100., 110., 120., 150.],
+    #'genbinning'  : [0., 60., 90., 120., 150.],
+    #'recobinning' : [0., 60., 70., 80, 90., 100., 110., 120., 150.],
+    'genbinning'  : [30., 60., 90., 120., 150.],
+    'recobinning' : [30., 60., 70., 80, 90., 100., 110., 120., 150.],
     'var'         : 'min(TLeadingJetPt, 149.)',
     'var_response': 'LeadingJetPt',
     'var_gen'     : 'min(TGenLeadingJetPt, 149.)',
@@ -309,8 +313,10 @@ varList['LeadingLepPt'] = {
 #    'recobinning' : [0., 50., 65., 80., 95., 110., 130., 150., 250.],
     #'genbinning'  : [0., 50., 90., 135., 250.],
     #'recobinning' : [0., 50., 60., 75., 90., 105., 115., 135., 250.],
-    'genbinning'  : [0., 50., 90., 125., 150.],
-    'recobinning' : [0., 50., 60., 70., 80., 90., 105., 125., 150.],  # antes de 15-10-2018
+    #'genbinning'  : [0., 50., 90., 125., 150.],
+    #'recobinning' : [0., 50., 60., 70., 80., 90., 105., 125., 150.],  # antes de 15-10-2018
+    'genbinning'  : [25., 50., 90., 125., 150.],
+    'recobinning' : [25., 50., 60., 70., 80., 90., 105., 125., 150.],  # antes de 15-10-2018
     #'genbinning'  : [0., 50., 75., 115., 250.],
     #'recobinning' : [0., 45., 55., 75., 85., 95., 105., 115., 250.],
     'var'         : 'min(TLeadingLepPt, 149.)',
@@ -538,11 +544,15 @@ varList['DPhiLL'] = {
     #'xaxis'       : '\\Delta \\varphi(\\ell_{1}, \\ell_{2}) (rad)',
     'xaxis'       : '\\Delta \\varphi(e^{\\pm}, \\mu^{\\mp}) (rad)',
     'yaxis'       : 'd#sigma [pb]',
-    'genbinning'  : [0., .75, 1.5, 2.25, r.TMath.Pi()],
-    'recobinning' : [0., .35, .85, 1.25, 1.65, 2.05, 2.45, 2.85, r.TMath.Pi()],
-    'var'         : 'abs(TDPhiLL)',
+    'genbinning'  : [0., .25, .50, 0.75, 1.0],
+    'recobinning' : [0., .125, .25, .375, .50, .625, .75, .875, 1.0],
+    #'genbinning'  : [0., .75, 1.5, 2.25, r.TMath.Pi()],
+    #'recobinning' : [0., .35, .85, 1.25, 1.65, 2.05, 2.45, 2.85, r.TMath.Pi()],
+    'var'         : 'abs(TDPhiLL)/' + str(r.TMath.Pi()),
+    #'var'         : 'abs(TDPhiLL)',
     'var_response': 'DPhiLL',
-    'var_gen'     : 'abs(TGenDPhiLL)',
+    'var_gen'     : 'abs(TGenDPhiLL)/' + str(r.TMath.Pi()),
+    #'var_gen'     : 'abs(TGenDPhiLL)',
     #'legpos'      : (0.82, 0.14, 0.93, 0.47),
     'legpos'      : (0.15, 0.47, 0.26, 0.81),
     'legpos_fold' : "TL",
