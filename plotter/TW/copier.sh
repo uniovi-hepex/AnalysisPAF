@@ -45,7 +45,7 @@ fi
 lowerbar="_"
 slash="/"
 savefolder=$d$lowerbar$m$lowerbar$y
-storagepath="/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
+storagepath="/pool/cienciasrw/vrbouza/proyectos/TW/MiniTrees/"
 savepath=$storagepath$savefolder
 
 echo "===> Copying minitrees!"
