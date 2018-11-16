@@ -11,14 +11,13 @@ print("\n===== Unfolding procedures: Response matrices & ROOT files production =
 print("> Setting binning, paths, and other details...")
 # ---------------------------------------------------------------- PRELIMINARIES
 vl.SetUpWarnings()
-storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
-minipath    = "../../../TW_temp/"
+minipath = vl.minipath
 if (len(sys.argv) > 1):
   print("    - Manual minitrees' folder input!\n")
   if (sys.argv[1] == "last"):
-    minipath  = vl.GetLastFolder(storagepath)
+    minipath  = vl.GetLastFolder(vl.storagepath)
   else:
-    minipath  = storagepath + sys.argv[1] + "/"
+    minipath  = vl.storagepath + sys.argv[1] + "/"
 
 print "    - The minitrees' path is:\n", minipath
 plotsoutputpath  = "/nfs/fanae/user/vrbouza/www/TFM/Unfolding/"
