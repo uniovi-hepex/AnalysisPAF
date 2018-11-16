@@ -6,7 +6,6 @@ from array import array
 from multiprocessing import Pool
 ###################################################
 
-storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
 pathToTree  = ""
 NameOfTree  = "Mini1j1t";
 systlist    = "JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"
@@ -511,16 +510,16 @@ if __name__=="__main__":
                 else:
                     pathToTree    = storagepath + sys.argv[3] + "/"
             else:
-                pathToTree  = "../../../TW_temp/"
+                pathToTree  = vl.minipath
             print "> Minitrees will be read from:", pathToTree, "\n"
         else:
             print '> Sequential execution mode chosen'
             nCores      = 1
-            pathToTree  = "../../../TW_temp/"
+            pathToTree  = vl.minipath
     else:
         print "> Default choice of variable and minitrees\n"
         varName     = 'LeadingLepEta'
-        pathToTree  = "../../../TW_temp/"
+        pathToTree  = vl.minipath
         nCores      = 1
 
     print "> Beginning to produce histograms", "\n"
