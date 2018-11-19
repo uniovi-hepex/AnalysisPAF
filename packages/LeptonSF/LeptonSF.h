@@ -69,7 +69,10 @@ class LeptonSF {
   TH2D*  fMuonLooseTracksttH;
   TH2D*  fMuonLooseMiniIsottH;
   TH2D*  fMuonTightIP2DttH;
- 
+  TH2D*  fMuonEWKinoID;
+  TH2D*  fMuonEWKinomvaM;
+  TH2D*  fMuonEWKinomvaVT;
+
   // Elec SFs
   TH2D*  fElecTrackerSF;
   TH2D*  fElecIdSF;
@@ -81,6 +84,9 @@ class LeptonSF {
   TH2D*  fElecTightIP2DM17ttH;
   TH2D*  fElecMini4M17ttH;
   TH2D*  fElecConvVetoM17ttH;
+  TH2D*  fElecEWKinoID;
+  TH2D*  fElecEWKinomvaM;
+  TH2D*  fElecEWKinomvaVT;
 
   // Trigger SFs
   TH2F *fDoubleMuSF;
