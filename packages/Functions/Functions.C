@@ -667,26 +667,48 @@ std::vector<Lepton> AssignWZLeptons(std::vector<Lepton> leptonList){//Assign W a
         Float_t hypZmass = (leptonList.at(j).p + leptonList.at(i).p).M();
         if (TMath::Abs(hypZmass-91.1876) < dZmass){
           dZmass = TMath::Abs(hypZmass-91.1876);
-          indexZ1 = j;
-          indexZ2 = i;
           if (leptonList.at(j).Pt() > leptonList.at(i).Pt()) {
-            WZleps.push_back(leptonList.at(j));
-            WZleps.push_back(leptonList.at(i));
+            indexZ1 = j;
+            indexZ2 = i;
           }
           else{
-            WZleps.push_back(leptonList.at(i));
-            WZleps.push_back(leptonList.at(j));
+            indexZ2 = j;
+            indexZ1 = i;
           }
         }
       }
     }
   }
+  WZleps.push_back(leptonList.at(indexZ1));
+  WZleps.push_back(leptonList.at(indexZ2));
   for(Int_t i = 0; i < nLeptons; i++){
     if (i != indexZ1 && i != indexZ2){
       WZleps.push_back(leptonList.at(i));
     }
   }  
   return WZleps;
+}
+
+std::vector<Lepton> getMatchGenSelLeptons(std::vector<Lepton> selectedLeptons, std::vector<Lepton> generatedLeptons, Float_t dRMax, Bool_t doIdMatch){ //Match reco and gen leptons according to closest dR value. Used to discriminate by truth MC info
+  Int_t nSel       = selectedLeptons.size();
+  Int_t nGen       = generatedLeptons.size();
+  std::pair<Float_t,Int_t> dRValues[nSel*nGen];
+  for (Int_t i = 0; i < nSel ; i++){
+    for (Int_t j = 0; j < nGen ; j++){
+      dRValues[i*nGen + j] = {selectedLeptons.at(i).p.DeltaR(generatedLeptons.at(j).p),i*nGen+j};
+      if (selectedLeptons.at(i).type != generatedLeptons.at(j).type && doIdMatch){
+        dRValues[i*nGen +j].first = 2*dRMax;
+      }
+    }
+  }
+  std::sort(dRValues, dRValues + nGen*nSel);
+  for (Int_t k = 0; k < nGen*nSel; k++){
+    if (dRValues[k].first * dRValues[k].first < dRMax * dRMax &&  selectedLeptons.at(dRValues[k].second / nGen).lepMatch == 0 && generatedLeptons.at(dRValues[k].second % nGen).lepMatch == 0){
+      selectedLeptons.at(dRValues[k].second / nGen).lepMatch  =  &generatedLeptons.at(dRValues[k].second % nGen);
+      generatedLeptons.at(dRValues[k].second % nGen).lepMatch =  &selectedLeptons.at(dRValues[k].second / nGen);
+    }
+  }
+  return selectedLeptons;
 }
 
 Float_t GetTopPtWeight(Float_t Pt1, Float_t Pt2){

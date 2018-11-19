@@ -73,6 +73,7 @@ void Plot::GetStack(){ // Sets the histogram hStack
   if(hStack) delete hStack;
   hStack = new THStack(varname, "");
   Int_t nBkgs = VBkgs.size();
+  if (nBkgs == 0 && verbose){ std::cout << "Having no backgrounds was a mistake, you'll pay for that with a SegFault" << std::endl;}
   for(Int_t i = 0; i < nBkgs; i++){
     hStack->Add((TH1F*) VBkgs.at(i));
   }
@@ -84,7 +85,7 @@ void Plot::GetStack(){ // Sets the histogram hStack
   hAllBkg->SetTag("Uncertainty");
   if(doSys && ((Int_t) VSystLabel.size() > 0)) GroupSystematics();
   if(verbose) cout << Form(" Adding %i systematic to sum of bkg...\n", (Int_t) VSumHistoSystUp.size());
-  
+
   for(Int_t i = 0; i < (Int_t) VSumHistoSystUp.size(); i++){
     hAllBkg->AddToSystematics(VSumHistoSystUp.at(i));
     hAllBkg->AddToSystematics(VSumHistoSystDown.at(i));
@@ -751,7 +752,7 @@ TLegend* Plot::SetLegend(){ // To be executed before using the legend
 
   if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
     for(int i = VSignals.size()-1; i >= 0; i--) VSignals[i]->AddToLegend(leg, doYieldsInLeg);
-  
+  if(false) leg->AddEntry(hAllBkg, Form("SM Bkg: %1.0f", hAllBkg->Integral()), "l"); //Might be useful
   return leg;
 }
 
@@ -1137,6 +1138,19 @@ void Plot::DrawStack(TString tag){
   }
   else if(RatioYtitle == "S/sqrtB")   {cout << "Option not implemented yet!!!! Sorry!!!! [DO IT YOURSELF!]\n";}
   else if(RatioYtitle == "S/sqrtSpB") {cout << "Option not implemented yet!!!! Sorry!!!! [DO IT YOURSELF!]\n";}
+  else if(RatioYtitle == "S/SpB") {      if(doData) hratio = (TH1F*)hData->Clone("hratio");
+    if(doData) hratio = (TH1F*)hData->Clone("hratio");
+    else       hratio = (TH1F*)hAllBkg->Clone("hratio");
+    // ratio by hand so systematic (background) errors don't get summed up to statistical ones (data)
+    for (int bin = 0; bin < hratio->GetNbinsX(); ++bin){
+      if (hratio->GetBinContent(bin+1) > 0){ 
+        hratio->SetBinContent( bin+1, hratio->GetBinContent(bin+1) / (hAllBkg->GetBinContent(bin+1) + hSignal->GetBinContent(bin+1)));
+        hratio->SetBinError  ( bin+1, hratio->GetBinError  (bin+1) / (hAllBkg->GetBinContent(bin+1) + hSignal->GetBinContent(bin+1)));
+      }
+      else{ hratio->SetBinError  ( bin+1, 0.); }
+    }
+  }
+    //}
   else{ // ratio Data/MC
     //if(!doData) cout << "[Plot::DrawStack] WARNING: cannot print ratio Data/MC without data!!" << endl;
     //else{
@@ -1144,7 +1158,7 @@ void Plot::DrawStack(TString tag){
       else       hratio = (TH1F*)hAllBkg->Clone("hratio");
       // ratio by hand so systematic (background) errors don't get summed up to statistical ones (data)
       for (int bin = 0; bin < hratio->GetNbinsX(); ++bin){
-        if (hratio->GetBinContent(bin+1) > 0){
+        if (hratio->GetBinContent(bin+1) > 0){ 
           hratio->SetBinContent( bin+1, hratio->GetBinContent(bin+1) / hAllBkg->GetBinContent(bin+1));
           hratio->SetBinError  ( bin+1, hratio->GetBinError  (bin+1) / hAllBkg->GetBinContent(bin+1));
         }
