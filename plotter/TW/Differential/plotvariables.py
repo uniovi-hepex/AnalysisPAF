@@ -10,10 +10,11 @@ NameOfTree  = "Mini1j1t";
 StandardCut = "Tpassreco == 1";
 ControlCut  = "TIsSS == 0 && TNJets == 1  && TNBtags == 1 && TnLooseCentral > 1";
 systlist    = "JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"
-#systlist    = ""
+systlist    = ""
 labelsignal = "e^{#pm}#mu^{#mp}+1j1t+0j_{loose}"
 labelcontrol= "e^{#pm}#mu^{#mp}+1j1t+>0j_{loose}"
-
+#legtxtsize  = 0.028
+legtxtsize  = 0.055
 
 if (len(sys.argv) > 1):
     nCores      = int(sys.argv[1])
@@ -230,13 +231,14 @@ def plotvariable(tsk):
     p.SetPadRatioMargins(vl.marginsratio)
     p.SetTexChanSize(0.06)
     p.SetCenterYAxis(False)
+    if 'ncols' in vl.varList[var]: p.SetNColumns(vl.varList[var]['ncols'])
     
     p.SetCMSlabel("CMS");
     p.SetCMSmodeLabel("Preliminary");
     
     thepos = vl.legpos
     p.SetLegendPosition(thepos[0], thepos[1], thepos[2], thepos[3])
-    p.SetLegendTextSize(0.028)
+    p.SetLegendTextSize(legtxtsize)
     p.SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/" if cut == 'signal' else "/nfs/fanae/user/vrbouza/www/TFM/1j1t/control/");
     p.doYieldsInLeg = False;
     p.doSetLogy     = False;
@@ -423,13 +425,14 @@ def plotcustomvariable(tsk):
     p.SetPadRatioMargins(vl.marginsratio)
     p.SetTexChanSize(0.06)
     p.SetCenterYAxis(False)
+    if 'ncols' in vl.varList[var]: p.SetNColumns(vl.varList[var]['ncols'])
     
     p.SetCMSlabel("CMS");
     p.SetCMSmodeLabel("Preliminary");
     if 'legpos' in vl.varList[var]: thepos = vl.varList[var]['legpos']
     else:                           thepos = vl.legpos
     p.SetLegendPosition(thepos[0], thepos[1], thepos[2], thepos[3])
-    p.SetLegendTextSize(0.028)
+    p.SetLegendTextSize(legtxtsize)
     p.SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/" if cut == 'signal' else "/nfs/fanae/user/vrbouza/www/TFM/1j1t/control/");
     p.doYieldsInLeg = False;
     p.doSetLogy     = False;
@@ -616,13 +619,14 @@ def plotthenumberofjets(tsk):
     p.SetPadRatioMargins(vl.marginsratio)
     p.SetTexChanSize(0.06)
     p.SetCenterYAxis(False)
+    if 'ncols' in vl.varList[var]: p.SetNColumns(vl.varList[var]['ncols'])
     
     p.SetCMSlabel("CMS");
     p.SetCMSmodeLabel("Preliminary");
     if 'legpos' in vl.varList[var] and cut != "signal": thepos = vl.varList[var]['legpos']
     else:                                               thepos = vl.legpos
     p.SetLegendPosition(thepos[0], thepos[1], thepos[2], thepos[3])
-    p.SetLegendTextSize(0.028)
+    p.SetLegendTextSize(legtxtsize)
     p.SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/" if cut == 'signal' else "/nfs/fanae/user/vrbouza/www/TFM/1j1t/control/");
     p.doYieldsInLeg = False;
     p.doSetLogy     = False;
@@ -640,16 +644,17 @@ def plotthenumberofjets(tsk):
 
 
 if __name__ == '__main__':
-    print "> Beginning to plot descriptive histograms", "\n"
     tasks = []
     for v in vl.varList["Names"]["Variables"]:
         for ct in ['signal', 'control']:
+        #for ct in ['signal']:
         #for ct in ['control']:
             tasks.append( (v, ct) )
     
     #tasks.append( ("DilepMETJet1Pz", "control") )
     #tasks.append( ("DPhiLL", "signal") )
     
+    print "> Beginning to plot descriptive histograms", "\n"
     pool = Pool(nCores)
     pool.map(plotvariable, tasks)
     pool.close()
