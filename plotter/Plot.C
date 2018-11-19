@@ -709,6 +709,7 @@ TLegend* Plot::SetLegend(){ // To be executed before using the legend
   leg->SetTextSize(LegendTextSize);
   leg->SetBorderSize(0);
   leg->SetFillColor(10);
+  leg->SetNColumns(NCols);
   Float_t MinYield = 0; 
   int nVBkgs = VBkgs.size();
   if(nVBkgs > 0 && hAllBkg) MinYield = hAllBkg->GetYield()/5000;

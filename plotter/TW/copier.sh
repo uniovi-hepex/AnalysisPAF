@@ -18,7 +18,8 @@ if [ "$1" == "p" ]; then
   
   echo " "
   echo "Copying plots..."
-  cp -R Differential/results/. $plotspath
+#   cp -R Differential/results/. $plotspath
+  rsync -avzP Differential/results/. $plotspath
   cp $wwwpath $plotspath$indstr
   cp $wwwpath $plotspath$compstr$indstr
   cp $wwwpath $plotspath$cnstr$indstr
@@ -45,7 +46,7 @@ fi
 lowerbar="_"
 slash="/"
 savefolder=$d$lowerbar$m$lowerbar$y
-storagepath="/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
+storagepath="/pool/cienciasrw/userstorage/vrbouza/proyectos/TW/MiniTrees/"
 savepath=$storagepath$savefolder
 
 echo "===> Copying minitrees!"
@@ -57,7 +58,8 @@ mkdir -p $savepath
 echo " "
 echo "Copying files (note that this process can last even minutes depending on the size of the minitrees)..."
 savepath=$savepath$slash
-cp -R ../../TW_temp/. $savepath
+# cp -R ../../TW_temp/. $savepath
+rsync -avzP ../../TW_temp/ $savepath
 
 echo " "
 echo "Done!"

@@ -297,7 +297,8 @@ def PrintResponseMatrix(htemp, vname, nxb, xb, xmin, xmax, nyb, yb, ymin, ymax, 
   plot = c.GetPad(0);
   plot.SetPad(0.0, 0.23, 1.0, 1.0);
   plot.SetTopMargin(0.06); plot.SetRightMargin(0.08); plot.SetLeftMargin(0.075)
-  htemp.SetMarkerSize(markersize)
+  if 'resptxtsize' in vl.varList[vname]: htemp.SetMarkerSize(vl.varList[vname]['resptxtsize'])
+  else:                                  htemp.SetMarkerSize(markersize)
   htemp.SetMarkerColor(r.kRed)
   htemp.Draw("colz text e")
   r.gStyle.SetPaintTextFormat("4.3f")
