@@ -251,6 +251,12 @@ for i in range(vl.nuncs):
     if 'statbin' not in uncList[i][0]: uncList[i][1].SetLineColor(vl.NewColorMap[uncList[i][0]])
     else:                              uncList[i][1].SetLineColor(r.kAzure)
     uncList[i][1].SetLineWidth( 2 )
+    if "Stat" in uncList[i][0]:
+        uncList[i][1].SetLineColor(r.kBlack)
+        uncList[i][1].SetLineStyle( 2 )
+    elif "Lumi" in uncList[i][0]:
+        uncList[i][1].SetLineColor(r.kBlack)
+        uncList[i][1].SetLineStyle( 4 )
     plot.addHisto(uncList[i][1], 'hist,same' if i else 'hist', uncList[i][0], 'L')
 
 plot.addHisto(hincmax, 'hist,same', 'Total', 'L')

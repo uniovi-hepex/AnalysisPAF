@@ -208,21 +208,27 @@ class beautifulUnfoldingPlots:
         else:            self.canvas.cd()
         
         # Draw legend
-        textSize = 0.022
-        legWidth = 0.13
+        #textSize = 0.022
+        textSize = 0.035
+        if "unc" in self.name: legWidth = 0.13
+        else:                  legWidth = 0.23
         height = (.18 + textSize*max(len(self.objectsInLeg)-3,0))
-        if corner == "TR":
-            (x1,y1,x2,y2) = (0.93-legWidth if self.doWide else .85-legWidth, .93 - height, .865,         .93)
-        elif corner == "TC":
-            (x1,y1,x2,y2) = (.5,                                             .93 - height, .55+legWidth, .93)
-        elif corner == "TL":
-            (x1,y1,x2,y2) = (.18,                                            .835 - height, .18+legWidth, .835)
-        elif corner == "BR":
-            (x1,y1,x2,y2) = (.85 - legWidth,                                 .16 + height, .90,          .16)
-        elif corner == "BC":
-            (x1,y1,x2,y2) = (.5,                                             .16 + height, .5+legWidth,  .16)
-        elif corner == "BL":
-            (x1,y1,x2,y2) = (.2,                                             .16 + height, .2+legWidth,  .16)
+        
+        if isinstance(corner, str):
+            if corner == "TR":
+                (x1,y1,x2,y2) = (0.93-legWidth if self.doWide else .85-legWidth, .93 - height, .865,         .93)
+            elif corner == "TC":
+                (x1,y1,x2,y2) = (.5,                                             .93 - height, .55+legWidth, .93)
+            elif corner == "TL":
+                (x1,y1,x2,y2) = (.18,                                            .835 - height, .18+legWidth, .835)
+            elif corner == "BR":
+                (x1,y1,x2,y2) = (.85 - legWidth,                                 .16 + height, .90,          .16)
+            elif corner == "BC":
+                (x1,y1,x2,y2) = (.5,                                             .16 + height, .5+legWidth,  .16)
+            elif corner == "BL":
+                (x1,y1,x2,y2) = (.18,                                             .16 + height, .18+legWidth,  .16)
+        else:
+            (x1, y1, x2, y2) = corner
         
         if leg:
             leg = r.TLegend(x1,y1,x2,y2)
