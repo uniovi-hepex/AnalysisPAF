@@ -5,7 +5,6 @@ from array import array
 print "===== Plots for closure test comparisons procedure\n"
 vl.SetUpWarnings()
 
-storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
 pathToTree  = ""
 recocut     = "Tpassreco == 1"
 gencut      = '1/TWeight*TWeight_normal*(Tpassgen == 1)'
@@ -15,16 +14,16 @@ if (len(sys.argv) > 1):
     print "> Chosen variable:", varName, "\n"
     if (len(sys.argv) > 2):
         if sys.argv[2] == 'last':
-            pathToTree    = vl.GetLastFolder(storagepath)
+            pathToTree    = vl.GetLastFolder(vl.storagepath)
         else:
-            pathToTree    = storagepath + sys.argv[2] + "/"
+            pathToTree    = vl.storagepath + sys.argv[2] + "/"
     else:
-        pathToTree  = "../../../TW_temp/"
+        pathToTree  = vl.minipath
     print "> Minitrees will be read from:", pathToTree, "\n"
 else:
     print "> Default choice of variable and minitrees\n"
     varName     = 'LeadingLepEta'
-    pathToTree  = "../../../TW_temp/"
+    pathToTree  = vl.minipath
 
 
 NameOfTree = "Mini1j1t";

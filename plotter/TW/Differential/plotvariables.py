@@ -6,8 +6,6 @@ from array import array
 print "===== Minitrees variables plotting (now in Python!)\n"
 vl.SetUpWarnings()
 
-storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
-pathToTree  = "../../../TW_temp/";
 NameOfTree  = "Mini1j1t";
 StandardCut = "Tpassreco == 1";
 ControlCut  = "TIsSS == 0 && TNJets == 1  && TNBtags == 1 && TnLooseCentral > 1";
@@ -26,11 +24,11 @@ else:
 
 if (len(sys.argv) > 2):
     if sys.argv[2] == 'last':
-        pathToTree    = vl.GetLastFolder(storagepath)
+        pathToTree    = vl.GetLastFolder(vl.storagepath)
     else:
-        pathToTree    = storagepath + sys.argv[2] + "/"
+        pathToTree    = vl.storagepath + sys.argv[2] + "/"
 else:
-    pathToTree  = "../../../TW_temp/"
+    pathToTree  = vl.minipath
 print "> Minitrees will be read from:", pathToTree, "\n"
 
 r.gROOT.SetBatch(True)
@@ -225,7 +223,7 @@ def plotvariable(tsk):
     # Other settings
     p.SetDataStyle("psameE1")
     p.SetSignalStyle("SM")
-    p.doUncInLegend = False;
+    p.doUncInLegend = True;
     p.SetRatioMin( 0.6 );
     p.SetRatioMax( 1.4 );
     p.SetPadPlotMargins(vl.margins)
@@ -250,6 +248,7 @@ def plotvariable(tsk):
         p.SetOutputName(vl.varList[var]['var_response']);
     p.DrawStack();
     p.PrintSystematics()
+    p.PrintYields("", "", "", "")
     p.PrintSystYields()
     del p
     #del pdf
@@ -417,7 +416,7 @@ def plotcustomvariable(tsk):
     # Other settings
     p.SetDataStyle("psameE1")
     #p.SetStackErrorStyle(3144)
-    p.doUncInLegend = False;
+    p.doUncInLegend = True;
     p.SetRatioMin( 0.6 );
     p.SetRatioMax( 1.4 );
     p.SetPadPlotMargins(vl.margins)
@@ -443,6 +442,7 @@ def plotcustomvariable(tsk):
         p.SetOutputName('Custom_' + vl.varList[var]['var_response']);
     p.DrawStack();
     p.PrintSystematics()
+    p.PrintYields("", "", "", "")
     p.PrintSystYields()
     del p
 
@@ -609,7 +609,7 @@ def plotthenumberofjets(tsk):
     
     # Other settings
     p.SetDataStyle("psameE1")
-    p.doUncInLegend = False;
+    p.doUncInLegend = True
     p.SetRatioMin( 0.6 );
     p.SetRatioMax( 1.4 );
     p.SetPadPlotMargins(vl.margins)
@@ -634,6 +634,7 @@ def plotthenumberofjets(tsk):
         p.SetOutputName('Custom_' + vl.varList[var]['var_response']);
     p.DrawStack();
     p.PrintSystematics()
+    p.PrintYields("", "", "", "")
     p.PrintSystYields()
     del p
 
@@ -646,7 +647,7 @@ if __name__ == '__main__':
         #for ct in ['control']:
             tasks.append( (v, ct) )
     
-    #tasks.append( ("DilepMETJet1Pz", "signal") )
+    #tasks.append( ("DilepMETJet1Pz", "control") )
     #tasks.append( ("DPhiLL", "signal") )
     
     pool = Pool(nCores)

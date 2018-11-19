@@ -59,6 +59,10 @@ def printCovarianceMatrix(tsk):
     finalmat.SetXTitle(vl.varList[var]['xaxis'])
     finalmat.SetYTitle(vl.varList[var]['xaxis'])
     
+    fcovmat = r.TFile("temp/{vr}_/CovMat_{vr}.root".format(vr = var), "recreate")
+    finalmat.Write()
+    fcovmat.Close()
+    
     r.gStyle.SetPaintTextFormat("4.5f")
     r.gStyle.SetPadRightMargin(0.13)
     r.gStyle.SetPadTopMargin(0.05)
@@ -67,6 +71,7 @@ def printCovarianceMatrix(tsk):
     finalmat.Draw("colz text")
     c.SaveAs(plotsoutputpath + "/Cov_{vr}_{t}.png" .format(vr = var, t = ty))
     c.SaveAs(plotsoutputpath + "/Cov_{vr}_{t}.pdf" .format(vr = var, t = ty))
+    c.SaveAs(plotsoutputpath + "/Cov_{vr}_{t}.eps" .format(vr = var, t = ty))
     c.SaveAs(plotsoutputpath + "/Cov_{vr}_{t}.root".format(vr = var, t = ty))
     tfile.Close()
     del c, nominal, colup, coldn, tfile, varMat, finalmat, binning

@@ -391,7 +391,7 @@ void JetSelector::InsideLoop(){
   }
 
   // Loop over the jets
-  if (!gIsData && gSelection == iTWSelec || gSelection == iTWTTbarSelec){
+  if (!gIsData && (gSelection == iTWSelec || gSelection == iTWTTbarSelec)){
     nJet = Get<Int_t>("nJet_jecUp");
     for(Int_t i = 0; i < nJet; i++){
       GetJetVariables(i,"_jecUp");
@@ -411,7 +411,7 @@ void JetSelector::InsideLoop(){
     }
     std::sort( selJetsJecUp.begin(), selJetsJecUp.end(), ByPt);
   }
-  if (!gIsData  && gSelection == iTWSelec || gSelection == iTWTTbarSelec){
+  if (!gIsData  && (gSelection == iTWSelec || gSelection == iTWTTbarSelec)){
     nJet = Get<Int_t>("nJet_jecDown");
     for(Int_t i = 0; i < nJet; i++){
       GetJetVariables(i,"_jecDown");
@@ -432,7 +432,7 @@ void JetSelector::InsideLoop(){
     std::sort( selJetsJecDown.begin(), selJetsJecDown.end(), ByPt);
   }
 
-  if (!gIsData  && gSelection == iTWSelec || gSelection == iTWTTbarSelec){
+  if (!gIsData  && (gSelection == iTWSelec || gSelection == iTWTTbarSelec)){
     nJet = Get<Int_t>("nJet");
     TLorentzVector diffMET(0,0,0,0);
     for(Int_t i = 0; i < nJet; i++){

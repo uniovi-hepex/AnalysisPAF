@@ -74,7 +74,6 @@ class LeptonSelector : public PAFChainItemSelector{
     Float_t dxy;
     Float_t dz; 
     Float_t sip;
-    Float_t SF;
     Float_t MVATTH;
     Float_t MVASUSY;
     Int_t  TightCharge;

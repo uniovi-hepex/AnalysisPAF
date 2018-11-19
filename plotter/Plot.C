@@ -746,7 +746,8 @@ TLegend* Plot::SetLegend(){ // To be executed before using the legend
     else VBkgs.at(i)->AddToLegend(leg,doYieldsInLeg);
   }
 
-  if(doSys && doUncInLegend && ((Int_t) VSystLabel.size() > 0)) hAllBkg->AddToLegend(leg,doYieldsInLeg); // add legend for uncertainty
+//   if(doSys && doUncInLegend && ((Int_t) VSystLabel.size() > 0)) hAllBkg->AddToLegend(leg,doYieldsInLeg); // add legend for uncertainty
+  if(doSys && doUncInLegend && ((Int_t) VSystLabel.size() > 0)) leg->AddEntry(hAllBkg, "Uncertainty", "f"); // add legend for uncertainty
 
   if(doSignal && (SignalStyle == "scan" || SignalStyle == "BSM" || SignalStyle == "") )
     for(int i = VSignals.size()-1; i >= 0; i--) VSignals[i]->AddToLegend(leg, doYieldsInLeg);
@@ -1096,7 +1097,7 @@ void Plot::DrawStack(TString tag){
 
   //--------- Set legend and other texts
   TLegend* leg = SetLegend();
-  leg->AddEntry(hAllBkg, "Uncertainty", "f");
+//   if (doUncInLegend) leg->AddEntry(hAllBkg, "Uncertainty", "f");
   if(doLegend) leg->Draw("same");
   texcms->Draw("same");     // CMS
   texlumi->Draw("same");    // The luminosity

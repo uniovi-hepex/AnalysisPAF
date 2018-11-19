@@ -1099,49 +1099,56 @@ void TWAnalysis::GetJetVariables(std::vector<Jet> selJets, std::vector<Jet> clea
   SetParam("THT",THT);
 
   if(gIsData) return;  // For systematics...
+  
   // for(Int_t i = 0; i < TNJets; i++){
   //   if(selJets.at(i).isBtag_BtagUp    ) TNBtagsUp++;
   //   if(selJets.at(i).isBtag_BtagDown  ) TNBtagsDown++;
   //   if(selJets.at(i).isBtag_MisTagUp  ) TNBtagsMisTagUp++;
   //   if(selJets.at(i).isBtag_MisTagDown) TNBtagsMisTagDown++;
   // }
+  
   TNJetsJESUp     = 0;
   TNJetsJESDown   = 0;
+  TNJetsJERUp     = 0;
   TNBtagsJESUp    = 0;
   TNBtagsJESDown  = 0;
   TNBtagsJERUp    = 0;
-  TNJetsJERUp     = 0;
 
-  for (Int_t i = 0; i < (Int_t) cleanedJets15.size(); i++) {
-    if (cleanedJets15.at(i).pTJESUp > ptCut) {
-      THTJESUp += cleanedJets15.at(i).pTJESUp;
-      TNJetsJESUp++;
-      if (cleanedJets15.at(i).isBtag) TNBtagsJESUp++;
-      TJetJESUp_Pt[i] = cleanedJets15.at(i).pTJESUp;
-    }
-    
-    if (cleanedJets15.at(i).pTJESDown > ptCut) {
-      THTJESDown += cleanedJets15.at(i).pTJESDown;
-      TNJetsJESDown++;
-      if (cleanedJets15.at(i).isBtag) TNBtagsJESDown++;
-      TJetJESDown_Pt[i] = cleanedJets15.at(i).pTJESDown;
-    }
-    
+// HT TA MAL *=*=*=*=*=*=*=*=*==*=*=*=*=*=*=*=*=*=*=*=*=*=*=*==*=*=*=*=*=*=*=*=*=*=*=*=*=*==*=*=*=*=
+//   for (Int_t i = 0; i < (Int_t) cleanedJets15.size(); i++) {
+//     if (cleanedJets15.at(i).pTJESUp > ptCut) {
+//       THTJESUp += cleanedJets15.at(i).pTJESUp;
+//       TNJetsJESUp++;
+//       if (cleanedJets15.at(i).isBtag) TNBtagsJESUp++;
+//       TJetJESUp_Pt[i] = cleanedJets15.at(i).pTJESUp;
+//     }
+//     
+//     if (cleanedJets15.at(i).pTJESDown > ptCut) {
+//       THTJESDown += cleanedJets15.at(i).pTJESDown;
+//       TNJetsJESDown++;
+//       if (cleanedJets15.at(i).isBtag) TNBtagsJESDown++;
+//       TJetJESDown_Pt[i] = cleanedJets15.at(i).pTJESDown;
+//     }
+//     
 //     if(cleanedJets15.at(i).pTJERUpUp > ptCut){
 //       TNJetsJERUp++;
 //       TJetJERUp_Pt[i] = cleanedJets15.at(i).pTJERUpUp;
 //       if(cleanedJets15.at(i).isBtag) TNBtagsJERUp++;
 //     }
-  }
-//   TNJetsJESUp   = selJetsJecUp.size();
-//   TNJetsJESDown = selJetsJecDown.size();
+//   }
+  
+  TNJetsJESUp   = selJetsJecUp.size();
+  TNJetsJESDown = selJetsJecDown.size();
   TNJetsJERUp   = selJetsJER.size();
-//   for (auto& jet : selJetsJecUp) {
-//     if (jet.isBtag) TNBtagsJESUp++;
-//   }
-//   for (auto& jet : selJetsJecDown) {
-//     if (jet.isBtag) TNBtagsJESDown++;
-//   }
+  
+  for (auto& jet : selJetsJecUp) {
+    THTJESUp += jet.pTJESUp;
+    if (jet.isBtag) TNBtagsJESUp++;
+  }
+  for (auto& jet : selJetsJecDown) {
+    THTJESDown += jet.pTJESDown;
+    if (jet.isBtag) TNBtagsJESDown++;
+  }
   for (auto& jet : selJetsJER) {
     if (jet.isBtag) TNBtagsJERUp++;
   }

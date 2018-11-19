@@ -445,9 +445,19 @@ class Unfolder():
         plot.plotspath     = self.plotspath
         
         nominal.SetMarkerStyle(r.kFullCircle)
+        nominal.SetLineColor(r.kBlack)
         nominal_withErrors[0].SetFillColorAlpha(r.kBlue, 0.35)
         nominal_withErrors[0].SetLineColor(r.kBlue)
         nominal_withErrors[0].SetFillStyle(1001)
+        
+        if not self.wearedoingasimov:
+            savetfile2 = r.TFile("temp/{var}_/unfOutput_{var}.root".format(var = self.var), "update")
+            nom0 = copy.deepcopy(nominal_withErrors[0].Clone("nom0"))
+            nom1 = copy.deepcopy(nominal_withErrors[1].Clone("nom1"))
+            nom0.Write()
+            nom1.Write()
+            savetfile2.Close()
+            del nom0,nom1
         
         #############################
         print "\nLOS RESULTAOS - {uno} - {dos}".format(uno = "ASIMOV" if self.wearedoingasimov else "DATOS", dos = self.var)
@@ -540,6 +550,13 @@ class Unfolder():
         for i in range(vl.nuncs):
             uncList[i][1].SetLineColor( vl.NewColorMap[uncList[i][0]] )
             uncList[i][1].SetLineWidth( 2 )
+            if "Stat" in uncList[i][0]:
+                uncList[i][1].SetLineColor(r.kBlack)
+                uncList[i][1].SetLineStyle( 2 )
+            elif "Lumi" in uncList[i][0]:
+                uncList[i][1].SetLineColor(r.kBlack)
+                uncList[i][1].SetLineStyle( 4 )
+            
             plot2.addHisto(uncList[i][1], 'H,same' if i else 'H',uncList[i][0],'L')
         
         plot2.addHisto(hincmax, 'H,same', 'Total', 'L')
@@ -562,7 +579,7 @@ class Unfolder():
 if __name__=="__main__":
     vl.SetUpWarnings()
     r.gROOT.SetBatch(True)
-    verbose = True
+    verbose = False
     print "===== Unfolding procedure\n"
     if (len(sys.argv) > 1):
         varName = sys.argv[1]

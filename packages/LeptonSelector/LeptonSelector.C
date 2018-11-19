@@ -1235,23 +1235,32 @@ void LeptonSelector::GetLeptonVariables(Int_t i){ // Once per muon, get all the 
   lostHits       = Get<Int_t>("LepGood_lostHits", i);
   convVeto       = Get<Int_t>("LepGood_convVeto", i);
   sip           = Get<Float_t>("LepGood_sip3d",i);
-  MVATTH        = Get<Float_t>("LepGood_mvaTTH",i);       //*
-  MVASUSY        = Get<Float_t>("LepGood_mvaSUSY",i);       //*
-  TightCharge    = Get<Int_t>("LepGood_tightCharge",i);      //*
+  MVATTH        = Get<Float_t>("LepGood_mvaTTH",i);
+  MVASUSY        = Get<Float_t>("LepGood_mvaSUSY",i);
+  TightCharge    = Get<Int_t>("LepGood_tightCharge",i);
+  jetBTagCSV    = Get<Float_t>("LepGood_jetBTagCSV",i);
+  SegComp        = Get<Float_t>("LepGood_segmentCompatibility",i);
+  R9            = Get<Float_t>("LepGood_r9",i);
+  
+  if(!gIsData){
+    mcPrompt      = Get<Int_t>("LepGood_mcPrompt", i);
+    mcMatchID     = Get<Int_t>("LepGood_mcMatchId", i);
+    mcPromptGamma = Get<Int_t>("LepGood_mcPromptGamma", i);
+    mcMatchPDGID  = Get<Int_t>("LepGood_mcMatchPdgId", i);
+  }
+  
   if (gSelection != iTWSelec && gSelection != iTWTTbarSelec){
-    MVAID          = Get<Float_t>("LepGood_mvaIdSpring16GP",i);
-    isGlobalMuon = Get<Int_t>("LepGood_isGlobalMuon",i); 
+    MVAID         = Get<Float_t>("LepGood_mvaIdSpring16GP",i);
+    isGlobalMuon  = Get<Int_t>("LepGood_isGlobalMuon",i); 
     isTrackerMuon = Get<Int_t>("LepGood_isTrackerMuon",i); 
     ishltsafeElec = Get<Int_t>("LepGood_hltId",i);
   }
   else {
-    MVAID          = 0.;  
-    isGlobalMuon = 0.;
+    MVAID         = 0.;
+    isGlobalMuon  = 0.;
     isTrackerMuon = 0.;
   }
 
-  jetBTagCSV    = Get<Float_t>("LepGood_jetBTagCSV",i);   //*
-  SegComp        = Get<Float_t>("LepGood_segmentCompatibility",i);   //*
   isPrompt = 1;
   matchId  = 1;
   matchIdGamma = 0;
@@ -1259,15 +1268,6 @@ void LeptonSelector::GetLeptonVariables(Int_t i){ // Once per muon, get all the 
   if(!gIsData){ matchId      = TMath::Abs(Get<Int_t>("LepGood_mcMatchId",i));}
   if(!gIsData){ matchIdGamma = TMath::Abs(Get<Int_t>("LepGood_mcPromptGamma",i));}
 
-  R9            = Get<Float_t>("LepGood_r9",i);
-  if(!gIsData){
-    mcPrompt       = Get<Int_t>("LepGood_mcPrompt", i);
-    mcMatchID       = Get<Int_t>("LepGood_mcMatchId", i);
-    mcPromptGamma   = Get<Int_t>("LepGood_mcPromptGamma", i);
-    mcMatchPDGID    = Get<Int_t>("LepGood_mcMatchPdgId", i);
-  }
-
-  SF = 1;
 }
 
 void LeptonSelector::GetDiscLeptonVariables(Int_t i){ // Once per muon, get all the info
@@ -1300,7 +1300,6 @@ void LeptonSelector::GetDiscLeptonVariables(Int_t i){ // Once per muon, get all 
   MVASUSY       = Get<Float_t>("DiscLep_mvaSUSY",i);       //*
   TightCharge   = Get<Int_t>("DiscLep_tightCharge",i);      //*
   jetBTagCSV    = Get<Float_t>("DiscLep_jetBTagCSV",i);   //*
-  SF = 1;
   SegComp       = Get<Float_t>("DiscLep_segmentCompatibility",i);   //*
   
   if (gSelection == iTWSelec || gSelection == iTWTTbarSelec) {
@@ -1308,7 +1307,6 @@ void LeptonSelector::GetDiscLeptonVariables(Int_t i){ // Once per muon, get all 
     isGlobalMuon  = 0.;
     isTrackerMuon = 0.;
     ishltsafeElec = 0.;
-    SF = 1;
   }
   else {
     MVAID         = Get<Float_t>("DiscLep_mvaIdSpring16GP",i);
