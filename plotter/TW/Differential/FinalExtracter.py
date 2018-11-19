@@ -226,6 +226,15 @@ for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
     else:
         incmax.append(max([nominal_withErrors[0].GetBinError(bin), nominal_withErrors[1].GetBinError(bin)]))
 
+incsyst  = []
+for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
+    if math.sqrt(nominal_withErrors[1].GetBinError(bin)**2 - nominal.GetBinError(bin)**2) > nominal_withErrors[0].GetBinContent(bin):
+        incsyst.append(max([math.sqrt(nominal_withErrors[0].GetBinError(bin)**2 - nominal.GetBinError(bin)**2),
+                            nominal_withErrors[0].GetBinContent(bin)]))
+    else:
+        incsyst.append(max([math.sqrt(nominal_withErrors[0].GetBinError(bin)**2 - nominal.GetBinError(bin)**2), 
+                            math.sqrt(nominal_withErrors[1].GetBinError(bin)**2 - nominal.GetBinError(bin)**2)]))
+
 maxinctot = 0
 hincmax   = copy.deepcopy(nominal.Clone('hincmax'))
 for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
@@ -233,9 +242,18 @@ for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
     hincmax.SetBinError(bin, 0.)
     if (hincmax.GetBinContent(bin) > maxinctot): maxinctot = hincmax.GetBinContent(bin)
 
+hincsyst  = copy.deepcopy(nominal.Clone('hincsyst'))
+for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
+    hincsyst.SetBinContent(bin, incsyst[bin-1] / hincsyst.GetBinContent(bin))
+    hincsyst.SetBinError(bin, 0.)
+
 hincmax.SetLineColor(r.kBlack)
 hincmax.SetLineWidth( 2 )
 hincmax.SetFillColorAlpha(r.kBlue, 0.)
+hincsyst.SetLineColor(r.kBlack)
+hincsyst.SetLineWidth( 2 )
+hincsyst.SetLineStyle( 3 )
+hincsyst.SetFillColorAlpha(r.kBlue, 0.)
 
 #if (maxinctot >= 0.9):
     #if maxinctot >= 5:
@@ -259,7 +277,8 @@ for i in range(vl.nuncs):
         uncList[i][1].SetLineStyle( 4 )
     plot.addHisto(uncList[i][1], 'hist,same' if i else 'hist', uncList[i][0], 'L')
 
-plot.addHisto(hincmax, 'hist,same', 'Total', 'L')
+plot.addHisto(hincsyst, 'hist,same', 'Syst.', 'L')
+plot.addHisto(hincmax,  'hist,same', 'Total', 'L')
 plot.plotspath = "results/"
 
 if "uncleg_fold" in vl.varList[varName]: unclegpos = vl.varList[varName]["uncleg_fold"]
@@ -367,6 +386,15 @@ if not vl.asimov:
         else:
             incmax.append(max([nominal_withErrors[0].GetBinError(bin), nominal_withErrors[1].GetBinError(bin)]))
 
+    incsyst  = []
+    for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
+        if math.sqrt(nominal_withErrors[1].GetBinError(bin)**2 - nominal.GetBinError(bin)**2) > nominal_withErrors[0].GetBinContent(bin):
+            incsyst.append(max([math.sqrt(nominal_withErrors[0].GetBinError(bin)**2 - nominal.GetBinError(bin)**2),
+                                nominal_withErrors[0].GetBinContent(bin)]))
+        else:
+            incsyst.append(max([math.sqrt(nominal_withErrors[0].GetBinError(bin)**2 - nominal.GetBinError(bin)**2), 
+                                math.sqrt(nominal_withErrors[1].GetBinError(bin)**2 - nominal.GetBinError(bin)**2)]))
+
     maxinctot = 0
     hincmax   = copy.deepcopy(nominal.Clone('hincmax'))
     for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
@@ -374,9 +402,18 @@ if not vl.asimov:
         hincmax.SetBinError(bin, 0.)
         if (hincmax.GetBinContent(bin) > maxinctot): maxinctot = hincmax.GetBinContent(bin)
 
+    hincsyst  = copy.deepcopy(nominal.Clone('hincsyst'))
+    for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
+        hincsyst.SetBinContent(bin, incsyst[bin-1] / hincsyst.GetBinContent(bin))
+        hincsyst.SetBinError(bin, 0.)
+
     hincmax.SetLineColor(r.kBlack)
     hincmax.SetLineWidth( 2 )
     hincmax.SetFillColorAlpha(r.kBlue, 0.)
+    hincsyst.SetLineColor(r.kBlack)
+    hincsyst.SetLineWidth( 2 )
+    hincsyst.SetLineStyle( 3 )
+    hincsyst.SetFillColorAlpha(r.kBlue, 0.)
 
     #if (maxinctot >= 0.9):
         #if maxinctot >= 5:
@@ -400,7 +437,8 @@ if not vl.asimov:
             uncList[i][1].SetLineStyle( 4 )
         plot.addHisto(uncList[i][1], 'hist,same' if i else 'hist', uncList[i][0], 'L')
 
-    plot.addHisto(hincmax, 'hist,same', 'Total', 'L')
+    plot.addHisto(hincsyst, 'hist,same', 'Syst.', 'L')
+    plot.addHisto(hincmax,  'hist,same', 'Total', 'L')
     plot.plotspath = "results/"
     
     if "uncleg_foldas" in vl.varList[varName]: unclegpos_as = vl.varList[varName]["uncleg_foldas"]
