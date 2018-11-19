@@ -14,7 +14,6 @@ if not os.path.isdir(plotsoutputpath):
     os.system('mkdir -p ' + plotsoutputpath)
 scaleval        = 1/vl.Lumi/1000 if vl.doxsec else 1
 
-
 def printCovarianceMatrix(tsk):
     var, ty = tsk
     if ty == 'unfolded': tfile = r.TFile("temp/{vr}_/unfOutput_{vr}.root".format(vr = var), "read")
@@ -58,6 +57,9 @@ def printCovarianceMatrix(tsk):
     finalmat.SetStats(False)
     finalmat.SetXTitle(vl.varList[var]['xaxis'])
     finalmat.SetYTitle(vl.varList[var]['xaxis'])
+    if 'covtxtsizeunf' in vl.varList[var] and ty == "unfolded": finalmat.SetMarkerSize(vl.varList[var]['covtxtsizeunf'])
+    elif 'covtxtsizefol' in vl.varList[var] and ty == "folded": finalmat.SetMarkerSize(vl.varList[var]['covtxtsizefol'])
+    finalmat.SetMarkerColor(r.kRed)
     
     fcovmat = r.TFile("temp/{vr}_/CovMat_{vr}.root".format(vr = var), "recreate")
     finalmat.Write()
