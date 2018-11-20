@@ -10,11 +10,12 @@ NameOfTree  = "Mini1j1t";
 StandardCut = "Tpassreco == 1";
 ControlCut  = "TIsSS == 0 && TNJets == 1  && TNBtags == 1 && TnLooseCentral > 1";
 systlist    = "JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"
-systlist    = ""
+#systlist    = ""
 labelsignal = "e^{#pm}#mu^{#mp}+1j1t+0j_{loose}"
 labelcontrol= "e^{#pm}#mu^{#mp}+1j1t+>0j_{loose}"
 #legtxtsize  = 0.028
 legtxtsize  = 0.055
+labelpos    = (0.275, 0.89)
 
 if (len(sys.argv) > 1):
     nCores      = int(sys.argv[1])
@@ -53,7 +54,7 @@ def plotvariable(tsk):
     p.verbose  = False;
     p.verbose  = True;
     p.SetChLabel(labelsignal if cut == "signal" else labelcontrol)
-    p.SetChLabelPos(0.3, 0.85, -1)
+    p.SetChLabelPos(labelpos[0], labelpos[1], -1)
     
     
     p.AddSample("TTbar_PowhegSemi",             "Non-W|Z",      r.itBkg, 413, systlist)
@@ -267,7 +268,7 @@ def plotcustomvariable(tsk):
     p.verbose  = False;
     p.verbose  = True;
     p.SetChLabel(labelsignal if cut == "signal" else labelcontrol)
-    p.SetChLabelPos(0.3, 0.85, -1)
+    p.SetChLabelPos(labelpos[0], labelpos[1], -1)
     
     p.AddSample("TTbar_PowhegSemi",             "Non-W|Z",      r.itBkg, 413, systlist)
     p.AddSample("WJetsToLNu_MLM",               "Non-W|Z",      r.itBkg, 413, systlist)
@@ -462,7 +463,7 @@ def plotthenumberofjets(tsk):
     p.verbose  = False;
     p.verbose  = True;
     p.SetChLabel(labelsignal if cut == "signal" else labelcontrol)
-    p.SetChLabelPos(0.3, 0.85, -1)
+    p.SetChLabelPos(labelpos[0], labelpos[1], -1)
     
     p.AddSample("TTbar_PowhegSemi",             "Non-W|Z",      r.itBkg, 413, systlist)
     p.AddSample("WJetsToLNu_MLM",               "Non-W|Z",      r.itBkg, 413, systlist)
@@ -668,6 +669,6 @@ if __name__ == '__main__':
     pool.join()
     del pool
     
-    plotthenumberofjets(("nLooseCentral", "signal"))
+    #plotthenumberofjets(("nLooseCentral", "signal"))
     
     print "> Done!", "\n"

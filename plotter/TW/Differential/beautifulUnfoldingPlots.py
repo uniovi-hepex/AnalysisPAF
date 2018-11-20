@@ -133,12 +133,21 @@ class beautifulUnfoldingPlots:
             else:
                 options = options.replace('nomin', '')
             
-            if 'comp' in name: 
-                histo.GetYaxis().SetRangeUser(0.9, 1.1)
+            #if 'comp' in name:
+                #if 'reg' not in name: histo.GetYaxis().SetRangeUser(0.96, 1.04)
+                #else:
+                    ##histo.GetYaxis().SetRangeUser(r.Double(0.999999), r.Double(1.000001)) # Primeras variaciones en plots de asimov.
+                    #histo.GetYaxis().SetRangeUser(r.Double(0.99), r.Double(1.01))
+                    ##histo.GetYaxis().SetLabelSize(15)
+            if 'comp' in name:
+                histo.GetYaxis().SetRangeUser(r.Double(0.99), r.Double(1.01))
             
             if self.isLCurve:
                 for i in range(1, 25):
                     histo.GetXaxis().ChangeLabel(i, 45)
+            #if 'reg' in name:
+                #for i in range(1, 25):
+                    #histo.GetYaxis().ChangeLabel(i, 45)
             
             if self.doRatio:
                 histo.GetXaxis().SetLabelOffset(999)
@@ -148,6 +157,7 @@ class beautifulUnfoldingPlots:
             print '> Drawing a sym.-unc. histogram with the following options:', options
             
             histo.Draw(options)
+            if 'comp' in name and 'reg' in name: histo.Draw("axis,same")
             self.objectsInLeg.append( (histo, name, legOptions, idname) )
         return
     

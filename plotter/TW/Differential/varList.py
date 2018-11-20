@@ -562,8 +562,8 @@ varList['Mlluncertainties'] = {
 
 varList['DPhiLL'] = {
     #'xaxis'       : '\\Delta \\varphi(\\ell_{1}, \\ell_{2}) (rad)',
-    'xaxis'       : '\\Delta \\varphi(e^{\\pm}, \\mu^{\\mp})/\\pi',
-    'yaxis'       : 'd#sigma [pb]',
+    'xaxis'       : "\\Delta \\varphi(e^{\\pm}, \\mu^{\\mp})/\\pi",
+    'yaxis'       : "d#sigma [pb]",
     'genbinning'  : [0., .25, .50, 0.75, 1.0],
     'recobinning' : [0., .125, .25, .375, .50, .625, .75, .875, 1.0],
     #'genbinning'  : [0., .75, 1.5, 2.25, r.TMath.Pi()],

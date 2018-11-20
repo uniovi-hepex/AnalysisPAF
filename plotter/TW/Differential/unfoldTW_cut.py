@@ -8,7 +8,7 @@ import ROOT as r
 import beautifulUnfoldingPlots as bp
 import errorPropagator as ep
 import varList as vl
-import os,sys,math
+import os,sys,math,array
 
 class DataContainer:
     ''' Class to store all the needed inputs: response matrices and varied input distributions'''
@@ -128,7 +128,7 @@ class UnfolderHelper:
         self.lCurve     = r.TGraph(0)
 
         #self.themax = self.tunfolder.ScanLcurve(10000, 1e-10, 1e-4, self.lCurve, self.logTauX, self.logTauY, self.logTauCurv)
-        self.themax = self.tunfolder.ScanLcurve(5000, 1e-30, 1e-4, self.lCurve, self.logTauX,  self.logTauY, self.logTauCurv)
+        self.themax = self.tunfolder.ScanLcurve(10000, r.Double(1e-30), r.Double(1e-4), self.lCurve, self.logTauX,  self.logTauY, self.logTauCurv)
         
         self.tau = self.tunfolder.GetTau()
         return
@@ -183,11 +183,15 @@ class UnfolderHelper:
             plot.addHisto(self.lCurve,'ALnomin', '', 0)
         else:
             plot.addHisto(self.scanRes,'ALnomin','L curve',0)
-        
-        plot.addTLatex(0.75, 0.9, "#tau = {taupar}".format(taupar = round(self.tau, 15)))
+        grph = r.TGraph(1, array.array('d', [r.Double(self.tunfolder.GetLcurveX())]), array.array('d', [r.Double(self.tunfolder.GetLcurveY())]))
+        grph.SetMarkerColor(r.kRed)
+        grph.SetMarkerSize(2)
+        grph.SetMarkerStyle(29)
+        #grph.Draw("P")
+        plot.addTLatex(0.75, 0.9, "#tau = {taupar}".format(taupar = round(self.tau, 10)))
         #plot.addTLatex(0.75, 0.9, "#tau = {taupar}".format(taupar = self.tau))
         plot.saveCanvas('TR', leg = False)
-        del plot
+        del plot, grph
         
         # Second: L-curve curvature plot
         plot = bp.beautifulUnfoldingPlots('{var}_asimov_LogTauCurv'.format(var = self.var) if (self.wearedoingasimov) else '{var}_LogTauCurv'.format(var = self.var))
@@ -338,7 +342,7 @@ class Unfolder():
         regularized.GetXaxis().SetTitle(vl.varList[self.var]['xaxis'])
         regularized.GetYaxis().SetTitle('Reg./Unreg.')
         #regularized.GetYaxis().SetRangeUser(0, 1.1*regularized.GetMaximum())
-        plot.addHisto(regularized  ,'hist'     ,'regucomp'  ,'L')
+        plot.addHisto(regularized  ,'hist'     ,'regcomp'  ,'L')
 #        plot.addHisto(unregularized,'hist,same','UnRegularized','L')
         plot.plotspath = 'results/'
         plot.saveCanvas('BR', '', False)
