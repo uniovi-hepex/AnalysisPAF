@@ -9,7 +9,7 @@ vl.SetUpWarnings()
 pathToTree  = "../../../TWTTbar_temp/";
 NameOfTree  = "Mini1j1t";
 StandardCut = "Tpassreco == 1";
-ControlCut  = "TIsSS == 0 && TNJets == 1  && TNBtags == 1 && TnLooseCentral > 1";
+ControlCut  = "TIsSS == 0 && TNJets == 2  && TNBtags == 2 && TnLooseCentral > 1";
 systlist    = "JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"
 #systlist    = ""
 labelsignal = "e^{#pm}#mu^{#mp}+1j1t+0j_{loose}"
@@ -43,7 +43,7 @@ r.gROOT.LoadMacro('../PDFunc.C+')
 
 def plotvariable(tsk):
     var, cut = tsk
-    p = r.PlotToPy(r.TString(vl.varList[var]['var']), r.TString(StandardCut) if cut == "signal" else r.TString(ControlCut), r.TString('ElMu'), int(20), float(vl.varList[var]['recobinning'][0]), float(vl.varList[var]['recobinning'][-1]), r.TString(var), r.TString(vl.varList[var]['xaxis']))
+    p = r.PlotToPy(r.TString(vl.varList[var]['var']), r.TString(StandardCut) if cut == "signal" else r.TString(ControlCut), r.TString('All'), int(20), float(vl.varList[var]['recobinning'][0]), float(vl.varList[var]['recobinning'][-1]), r.TString(var), r.TString(vl.varList[var]['xaxis']))
     p.SetPath(pathToTree); 
     p.SetTreeName(NameOfTree);
     p.SetPathSignal(pathToTree);
@@ -206,7 +206,7 @@ def plotvariable(tsk):
     #p.UseEnvelope("t#bar{t}", "GluonMoveCRTune,GluonMoveCRTune_erdON,Powheg_erdON,QCDbasedCRTune_erdON", "ColorReconnection");
     #p.AddSymmetricHisto("t#bar{t}",  "JERUp");
     
-    #pdf     = r.PDFToPy(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString(StandardCut) if cut == "signal" else r.TString(ControlCut), r.TString("ElMu"), r.TString(vl.varList[var]['var']), int(20), float(vl.varList[var]['recobinning'][0]), float(vl.varList[var]['recobinning'][-1]));
+    #pdf     = r.PDFToPy(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString(StandardCut) if cut == "signal" else r.TString(ControlCut), r.TString("All"), r.TString(vl.varList[var]['var']), int(20), float(vl.varList[var]['recobinning'][0]), float(vl.varList[var]['recobinning'][-1]));
     #pdf.verbose = False
     #pdf.SetLumi(vl.Lumi * 1000)
     #hPDFUp  = pdf.GetSystHisto("up","pdf").CloneHisto();
@@ -255,7 +255,7 @@ def plotvariable(tsk):
 def plotcustomvariable(tsk):
     var, cut = tsk
     binning = array('f', vl.varList[var]['recobinning']) # For some reason, ROOT requires that you create FIRST this object, then put it inside the PlotToPyC.
-    p = r.PlotToPyC(r.TString(vl.varList[var]['var']), r.TString(StandardCut) if cut == "signal" else r.TString(ControlCut), r.TString('ElMu'), int(len(vl.varList[var]['recobinning']) - 1), binning, r.TString(var), r.TString(vl.varList[var]['xaxis']))
+    p = r.PlotToPyC(r.TString(vl.varList[var]['var']), r.TString(StandardCut) if cut == "signal" else r.TString(ControlCut), r.TString('All'), int(len(vl.varList[var]['recobinning']) - 1), binning, r.TString(var), r.TString(vl.varList[var]['xaxis']))
     p.SetPath(pathToTree);
     p.SetTreeName(NameOfTree);
     p.SetPathSignal(pathToTree);
@@ -395,7 +395,7 @@ def plotcustomvariable(tsk):
     #p.UseEnvelope("t#bar{t}", "GluonMoveCRTune,GluonMoveCRTune_erdON,Powheg_erdON,QCDbasedCRTune_erdON", "ColorReconnection");
     #p.AddSymmetricHisto("t#bar{t}",  "JERUp");
     
-    #pdf     = r.PDFToPyC(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString(StandardCut) if cut == "signal" else r.TString(ControlCut), r.TString("ElMu"), r.TString(vl.varList[var]['var']), len(vl.varList[var]['recobinning']) - 1, binning, r.TString(''));
+    #pdf     = r.PDFToPyC(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString(StandardCut) if cut == "signal" else r.TString(ControlCut), r.TString("All"), r.TString(vl.varList[var]['var']), len(vl.varList[var]['recobinning']) - 1, binning, r.TString(''));
     #pdf.verbose = False
     #pdf.verbose = True
     #pdf.SetLumi(vl.Lumi * 1000)
@@ -448,7 +448,7 @@ def plotcustomvariable(tsk):
 def plotthenumberofjets(tsk):
     var, cut = tsk
     binning = array('f', vl.varList[var]['recobinning']) # For some reason, ROOT requires that you create FIRST this object, then put it inside the PlotToPyC.
-    p = r.PlotToPyC(r.TString(vl.varList[var]['var']), r.TString("TIsSS == 0 && TNJets == 1  && TNBtags == 1"), r.TString('ElMu'), int(len(vl.varList[var]['recobinning']) - 1), binning, r.TString(var), r.TString(vl.varList[var]['xaxis']))
+    p = r.PlotToPyC(r.TString(vl.varList[var]['var']), r.TString("TIsSS == 0 && TNJets == 2  && TNBtags == 2"), r.TString('All'), int(len(vl.varList[var]['recobinning']) - 1), binning, r.TString(var), r.TString(vl.varList[var]['xaxis']))
     p.SetPath(pathToTree);
     p.SetTreeName(NameOfTree);
     p.SetPathSignal(pathToTree);
@@ -588,7 +588,7 @@ def plotthenumberofjets(tsk):
     #p.UseEnvelope("t#bar{t}", "GluonMoveCRTune,GluonMoveCRTune_erdON,Powheg_erdON,QCDbasedCRTune_erdON", "ColorReconnection");
     #p.AddSymmetricHisto("t#bar{t}",  "JERUp");
     
-    #pdf     = r.PDFToPyC(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString("TIsSS == 0 && TNJets == 1  && TNBtags == 1"), r.TString("ElMu"), r.TString(vl.varList[var]['var']), len(vl.varList[var]['recobinning']) - 1, binning, r.TString(''));
+    #pdf     = r.PDFToPyC(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString("TIsSS == 0 && TNJets == 2  && TNBtags == 2"), r.TString("All"), r.TString(vl.varList[var]['var']), len(vl.varList[var]['recobinning']) - 1, binning, r.TString(''));
     #pdf.verbose = False
     #pdf.verbose = True
     #pdf.SetLumi(vl.Lumi * 1000)
