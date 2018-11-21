@@ -6,15 +6,15 @@ samples=("TW" "TW_noFullyHadr"
   "WJetsToLNu_MLM" "ZZ" "WW" "WZ" "TTWToLNu" "TTZToQQ" "TTZToLLNuNu" "TTWToQQ" "TTGJets" 
   "MuonEG" "SingleElec" "SingleMuon")
 
-#samples_syst=("TTbar_Powheg_ueUp" "TTbar2L_Powheg_ueUp" "TTbar_Powheg_ueDown" "TTbar2L_Powheg_ueDown" 
- # "TTbar_Powheg_isrUp" "TTbar_Powheg_isrDown" "TTbar_Powheg_fsrUp" 
- # "TTbar_Powheg_fsrDown" "TTbar_Powheg_hdampUp" "TTbar2L_Powheg_hdampUp" 
- # "TTbar_Powheg_hdampDown" "TTbar2L_Powheg_hdampDown" "TTbar_Powheg_erdON" "TTTo2L2Nu_Powheg_erdON"
- # "TTbar_QCDbasedCRTune_erdON" "TTTo2L2Nu_QCDbasedCRTune_erdON" "TTbar_GluonMoveCRTune" "TTTo2L2Nu_GluonMoveCRTune" "TTbar_GluonMoveCRTune_erdON" 
- # "TW_noFullyHadr_isrUp" "TW_noFullyHadr_isrDown" "TW_noFullyHadr_fsrUp" "TW_noFullyHadr_fsrDown" "TW_noFullyHadr_MEscaleUp" "TW_noFullyHadr_MEscaleDown" 
- # "TW_noFullyHadr_PSscaleUp" "TW_noFullyHadr_PSscaleDown" "TW_noFullyHadr_DS" 
- # "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" 
- # "TbarW_noFullyHadr_PSscaleUp" "TbarW_noFullyHadr_PSscaleDown" "TbarW_noFullyHadr_DS")
+samples_syst=("TTbar_Powheg_ueUp" "TTbar2L_Powheg_ueUp" "TTbar_Powheg_ueDown" "TTbar2L_Powheg_ueDown" 
+  "TTbar_Powheg_isrUp" "TTbar_Powheg_isrDown" "TTbar_Powheg_fsrUp" 
+  "TTbar_Powheg_fsrDown" "TTbar_Powheg_hdampUp" "TTbar2L_Powheg_hdampUp" 
+  "TTbar_Powheg_hdampDown" "TTbar2L_Powheg_hdampDown" "TTbar_Powheg_erdON" "TTTo2L2Nu_Powheg_erdON"
+  "TTbar_QCDbasedCRTune_erdON" "TTTo2L2Nu_QCDbasedCRTune_erdON" "TTbar_GluonMoveCRTune" "TTTo2L2Nu_GluonMoveCRTune" "TTbar_GluonMoveCRTune_erdON" 
+  "TW_noFullyHadr_isrUp" "TW_noFullyHadr_isrDown" "TW_noFullyHadr_fsrUp" "TW_noFullyHadr_fsrDown" "TW_noFullyHadr_MEscaleUp" "TW_noFullyHadr_MEscaleDown" 
+  "TW_noFullyHadr_PSscaleUp" "TW_noFullyHadr_PSscaleDown" "TW_noFullyHadr_DS" 
+  "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" 
+  "TbarW_noFullyHadr_PSscaleUp" "TbarW_noFullyHadr_PSscaleDown" "TbarW_noFullyHadr_DS")
 
 samples_unf=("UNF_TW" "UNF_TW_noFullyHadr" "UNF_TW_noFullyHadr_isrUp" "UNF_TW_noFullyHadr_isrDown" "UNF_TW_noFullyHadr_fsrUp" "UNF_TW_noFullyHadr_fsrDown" "UNF_TW_noFullyHadr_MEscaleUp" "UNF_TW_noFullyHadr_MEscaleDown" 
   "UNF_TW_noFullyHadr_PSscaleUp" "UNF_TW_noFullyHadr_PSscaleDown" "UNF_TW_noFullyHadr_DS" 
@@ -29,15 +29,15 @@ runsamples=("TW_ext" "TW_noFullyHadr & TW_noFullyHadr_ext & TW_noFullyHadr_ext2"
   "WJetsToLNu_MLM & WJetsToLNu_MLM_ext2" "ZZ & ZZ_ext" "WW & WW_ext" "WZ & WZ_ext" "TTWToLNu_ext1 & TTWToLNu_ext2" "TTZToQQ" "TTZToLLNuNu_ext1 & TTZToLLNuNu_ext2" "TTWToQQ" "TTGJets & TTGJets_ext" 
   "MuonEG" "SingleElec" "SingleMuon")
 
-#runsamples_syst=("TTbar_Powheg_ueUp & TTbar_Powheg_ueUp_ext" "TTbar2L_Powheg_ueUp" "TTbar_Powheg_ueDown & TTbar_Powheg_ueDown_ext" "TTbar2L_Powheg_ueDown" 
-#"TTbar_Powheg_isrUp_ext & TTbar_Powheg_isrUp_ext2" "TTbar_Powheg_isrDown & TTbar_Powheg_isrDown_ext & TTbar_Powheg_isrDown_ext2"
- # "TTbar_Powheg_fsrUp & TTbar_Powheg_fsrUp_ext & TTbar_Powheg_fsrUp_ext2" "TTbar_Powheg_fsrDown & TTbar_Powheg_fsrDown_ext & TTbar_Powheg_fsrDown_ext2" "TTbar_Powheg_hdampUp & TTbar_Powheg_hdampUp_ext" #"TTbar2L_Powheg_hdampUp" 
- # "TTbar_Powheg_hdampDown & TTbar_Powheg_hdampDown_ext" "TTbar2L_Powheg_hdampDown" "TTbar_Powheg_erdON & TTbar_Powheg_erdON_ext" "TTTo2L2Nu_Powheg_erdON"
- # "TTbar_QCDbasedCRTune_erdON & TTbar_QCDbasedCRTune_erdON_ext" "TTTo2L2Nu_QCDbasedCRTune_erdON" "TTbar_GluonMoveCRTune" "TTTo2L2Nu_GluonMoveCRTune" "TTbar_GluonMoveCRTune_erdON" 
- # "TW_noFullyHadr_isrUp" "TW_noFullyHadr_isrDown" "TW_noFullyHadr_fsrUp" "TW_noFullyHadr_fsrDown" "TW_noFullyHadr_MEscaleUp" "TW_noFullyHadr_MEscaleDown" 
- # "TW_noFullyHadr_PSscaleUp" "TW_noFullyHadr_PSscaleDown" "TW_noFullyHadr_DS" 
- # "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" 
- # "TbarW_noFullyHadr_PSscaleUp" "TbarW_noFullyHadr_PSscaleDown" "TbarW_noFullyHadr_DS")
+runsamples_syst=("TTbar_Powheg_ueUp & TTbar_Powheg_ueUp_ext" "TTbar2L_Powheg_ueUp" "TTbar_Powheg_ueDown & TTbar_Powheg_ueDown_ext" "TTbar2L_Powheg_ueDown" 
+  "TTbar_Powheg_isrUp_ext & TTbar_Powheg_isrUp_ext2" "TTbar_Powheg_isrDown & TTbar_Powheg_isrDown_ext & TTbar_Powheg_isrDown_ext2"
+  "TTbar_Powheg_fsrUp & TTbar_Powheg_fsrUp_ext & TTbar_Powheg_fsrUp_ext2" "TTbar_Powheg_fsrDown & TTbar_Powheg_fsrDown_ext & TTbar_Powheg_fsrDown_ext2" "TTbar_Powheg_hdampUp & TTbar_Powheg_hdampUp_ext" "TTbar2L_Powheg_hdampUp" 
+  "TTbar_Powheg_hdampDown & TTbar_Powheg_hdampDown_ext" "TTbar2L_Powheg_hdampDown" "TTbar_Powheg_erdON & TTbar_Powheg_erdON_ext" "TTTo2L2Nu_Powheg_erdON"
+  "TTbar_QCDbasedCRTune_erdON & TTbar_QCDbasedCRTune_erdON_ext" "TTTo2L2Nu_QCDbasedCRTune_erdON" "TTbar_GluonMoveCRTune" "TTTo2L2Nu_GluonMoveCRTune" "TTbar_GluonMoveCRTune_erdON" 
+  "TW_noFullyHadr_isrUp" "TW_noFullyHadr_isrDown" "TW_noFullyHadr_fsrUp" "TW_noFullyHadr_fsrDown" "TW_noFullyHadr_MEscaleUp" "TW_noFullyHadr_MEscaleDown" 
+  "TW_noFullyHadr_PSscaleUp" "TW_noFullyHadr_PSscaleDown" "TW_noFullyHadr_DS" 
+  "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" 
+  "TbarW_noFullyHadr_PSscaleUp" "TbarW_noFullyHadr_PSscaleDown" "TbarW_noFullyHadr_DS")
 
 runsamples_unf=("TW_ext" "TW_noFullyHadr & TW_noFullyHadr_ext & TW_noFullyHadr_ext2" "TW_noFullyHadr_isrUp" "TW_noFullyHadr_isrDown" "TW_noFullyHadr_fsrUp" "TW_noFullyHadr_fsrDown" "TW_noFullyHadr_MEscaleUp" "TW_noFullyHadr_MEscaleDown" 
   "TW_noFullyHadr_PSscaleUp" "TW_noFullyHadr_PSscaleDown" "TW_noFullyHadr_DS" 
@@ -91,17 +91,17 @@ if [ "$1" == "an" ]; then
     echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Running general-purpose samples..."
     for ((i=0; i<=$uplimit; i++)); do
         if [ ${samples[i]} == "TTbar2L_powheg" ] || [ ${samples[i]} == "MuonEG" ] || [ ${samples[i]} == "SingleElec" ] || [ ${samples[i]} == "SingleMuon" ]; then
-            root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, -6, 0, 1.0, \"makeHadd\")"
+        root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, -6, 0, 1.0, \"makeHadd\")"
         elif [ ${samples[i]} == "TTbar_PowhegSemi" ]; then
-            root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, 0, 0, 1.0, \"Semi\")"
+        root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, 0, 0, 1.0, \"Semi\")"
         elif [ ${samples[i]} == "TW_aMCatNLO" ]; then
-            unset noskimtmppath
-            noskimtmppath=$noskimpath$init${runsamples[i]}$final
-            root -l -b -q "RunAnalyserPAF.C(\"$noskimtmppath\", \"$sel\", $2, 0, 0, 7.61064238831)"
-            cp TWTTbar_temp/Tree_TW_aMCatNLO_[0-9].root TWTTbar_temp/Tree_TW_aMCatNLO.root
-            rm TWTTbar_temp/Tree_TW_aMCatNLO_[0-9].root
+        unset noskimtmppath
+        noskimtmppath=$noskimpath$init${runsamples[i]}$final
+        root -l -b -q "RunAnalyserPAF.C(\"$noskimtmppath\", \"$sel\", $2, 0, 0, 7.61064238831)"
+        cp TWTTbar_temp/Tree_TW_aMCatNLO_[0-9].root TWTTbar_temp/Tree_TW_aMCatNLO.root
+        rm TWTTbar_temp/Tree_TW_aMCatNLO_[0-9].root
         else
-            root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2)"
+        root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2)"
         fi
         resetpaf -a
     done
