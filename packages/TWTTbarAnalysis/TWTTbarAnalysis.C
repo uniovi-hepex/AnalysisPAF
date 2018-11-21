@@ -46,7 +46,7 @@ void TWTTbarAnalysis::Initialise(){            //=============== Initialise
   fhDummy = CreateH1F("fhDummy", "fhDummy", 1, 0, 2);
   
   fMini1j1t   = CreateTree("Mini1j1t", "MiniMiniTree");
-  SetTWVariables();
+  SetTWTTbarVariables();
   
   genLeptons      = std::vector<Lepton>();
   selLeptons      = std::vector<Lepton>();
@@ -67,7 +67,7 @@ void TWTTbarAnalysis::Initialise(){            //=============== Initialise
 }
 
 void TWTTbarAnalysis::InsideLoop() {            //=============== InsideLoop
-  ReSetTWVariables();
+  ReSetTWTTbarVariables();
   // Vectors with the objects
   genLeptons        = GetParam<vector<Lepton>>("genLeptons");
   selLeptons        = GetParam<vector<Lepton>>("selLeptons");
@@ -149,7 +149,7 @@ void TWTTbarAnalysis::InsideLoop() {            //=============== InsideLoop
   }
   // Checking if we pass the selection with reco things
   if ((TNSelLeps >= 2) && passTrigger && passMETfilters && ((selLeptons.at(0).p + selLeptons.at(1).p).M() > 20) && 
-      (selLeptons.at(0).p.Pt() > 25) && (TChannel == iElMu) && (!isSS)) {
+      (selLeptons.at(0).p.Pt() > 25) && (TChannel == iElMu || TChannel == iElec || TChannel == iMuon) && (!isSS)) {
     Float_t lepSF     = selLeptons.at(0).GetSF( 0) * selLeptons.at(1).GetSF( 0);
     Float_t ElecSF    = 1; Float_t MuonSF   = 1;
     Float_t ElecSFUp  = 1; Float_t ElecSFDo = 1; Float_t MuonSFUp = 1; Float_t MuonSFDo = 1;
@@ -203,10 +203,13 @@ void TWTTbarAnalysis::InsideLoop() {            //=============== InsideLoop
 
     if(gIsData) TWeight = 1;
     
-    CalculateTWVariables(); //estas hay que cambiarlas por las de TWTTbar
+    CalculateTWTTbarVariables(); //estas hay que cambiarlas por las de TWTTbar
     
-    if ((TNJets == 1) && (TNBtags == 1) && (nLooseCentral == 1)) {
-      Tpassreco = 1;
+    if ((TNJets == 2) && (TNBtags == 2) && (nLooseCentral == 1)) {
+      if ((TChannel == iElec || TChannel == iMuon)) {
+          if ((TMET > 20) && (abs(TMll-90.19)>15)) {Tpassreco = 1;}
+      }
+      else {Tpassreco = 1;}
     }
     if ((TNJetsJESUp == 1) && (TNBtagsJESUp == 1) && (nLooseCentralJESUp == 1)) {
       TpassrecoJESUp = 1;
@@ -657,7 +660,7 @@ void TWTTbarAnalysis::InsideLoop() {            //=============== InsideLoop
     }
   }
   if (Tpassgen || Tpassreco || TpassrecoJESUp || TpassrecoJESDown || TpassrecoJERUp 
-      || (TNJets == 1 && TNBtags == 1) || (TNJetsJESUp == 1 && TNBtagsJESUp == 1) 
+      || (TNJets == 2 && TNBtags == 2) || (TNJetsJESUp == 1 && TNBtagsJESUp == 1) 
       || (TNJetsJESDown == 1 && TNBtagsJESDown == 1) || (TNJetsJERUp == 1 && TNBtagsJERUp == 1))  { // If needed, filling.
     fMini1j1t->Fill();
   }
@@ -982,7 +985,7 @@ void TWTTbarAnalysis::GetGenMET() {
 }
 
 
-void TWTTbarAnalysis::SetTWVariables() {
+void TWTTbarAnalysis::SetTWTTbarVariables() {
   // Minitree 1j1t
   fMini1j1t->Branch("TChannel",              &TChannel,              "TChannel/I");
   fMini1j1t->Branch("TIsSS",                 &TIsSS,                 "TIsSS/B");
@@ -1082,6 +1085,9 @@ void TWTTbarAnalysis::SetTWVariables() {
   fMini1j1t->Branch("TMET_Phi",                &TMET_Phi,                   "TMET_Phi/F");
   fMini1j1t->Branch("TM_LeadingB" ,            &TM_LeadingB,                "TM_LeadingB/F");
   fMini1j1t->Branch("TM_SubLeadingB",          &TM_SubLeadingB,             "TM_SubLeadingB/F");
+  fMini1j1t->Branch("TM_LeadingBj2",           &TM_LeadingBj2,              "TM_LeadingBj2/F"); // nueva 
+  fMini1j1t->Branch("TM_SubLeadingBj2",        &TM_SubLeadingBj2,           "TM_SubLeadingBj2/F"); // nueva
+  fMini1j1t->Branch("TM_bjetlepton_minmax",    &TM_bjetlepton_minmax,       "TM_bjetlepton_minmax/F"); // variable de atlas
   fMini1j1t->Branch("TE_LLB",                  &TE_LLB,                     "TE_LLB/F");
   fMini1j1t->Branch("TMT_LLMETB",              &TMT_LLMETB,                 "TMT_LLMETB/F");
   fMini1j1t->Branch("TM_LLB",                  &TM_LLB,                     "TM_LLB/F");
@@ -1234,7 +1240,7 @@ void TWTTbarAnalysis::SetTWVariables() {
 }
 
 
-void TWTTbarAnalysis::ReSetTWVariables() {
+void TWTTbarAnalysis::ReSetTWTTbarVariables() {
   hasTW = false;
   
   DilepMETJetPt  = -99;
@@ -1324,6 +1330,9 @@ void TWTTbarAnalysis::ReSetTWVariables() {
   TDilepPt        = -99;
   TM_LeadingB     = -99;
   TM_SubLeadingB  = -99;
+  TM_LeadingBj2        = -99; //nueva
+  TM_SubLeadingBj2     = -99; //nueva 
+  TM_bjetlepton_minmax = -99; //variable atlas
   TE_LLB          = -99;
   TMT_LLMETB      = -99;
   TM_LLB          = -99;
@@ -1436,13 +1445,13 @@ void TWTTbarAnalysis::ReSetTWVariables() {
 }
 
 
-void TWTTbarAnalysis::CalculateTWVariables() {
+void TWTTbarAnalysis::CalculateTWTTbarVariables() {
   if (hasTW) return;
   hasTW = true;
 
   get20Jets();
   TLorentzVector met;
-  if (TNJets == 1 && TNBtags == 1) {
+  if (TNJets == 2 && TNBtags == 2) {
     // cout << "1j1b NOM"<< endl;
     met.SetPtEtaPhiE(TMET,0,TMET_Phi,TMET);
     
@@ -1463,8 +1472,31 @@ void TWTTbarAnalysis::CalculateTWVariables() {
     TDilepPt          = (selLeptons.at(0).p + selLeptons.at(1).p).Pt();
     TMll              = (selLeptons.at(0).p + selLeptons.at(1).p).M();
     
-    TM_LeadingB       = (selJets.at(0).p + selLeptons.at(0).p).M();
-    TM_SubLeadingB    = (selJets.at(0).p + selLeptons.at(1).p).M();
+    TM_LeadingB       = (selJets.at(0).p + selLeptons.at(0).p).M(); //M(b1,l1)
+    TM_SubLeadingB    = (selJets.at(0).p + selLeptons.at(1).p).M(); //M(b1,l2)
+    //nuevas variables para la variable de ATLAS
+    TM_LeadingBj2     = (selJets.at(1).p + selLeptons.at(0).p).M(); //M(b2,l1)
+    TM_SubLeadingBj2  = (selJets.at(1).p + selLeptons.at(1).p).M(); //M(b2,l2)
+    if(GreaterThan(TM_LeadingB,TM_SubLeadingBj2)) {
+        if(GreaterThan(TM_SubLeadingB,TM_LeadingBj2)) {
+            if(!GreaterThan(TM_LeadingB,TM_SubLeadingB))       {TM_bjetlepton_minmax = TM_LeadingB;}
+            else                                               {TM_bjetlepton_minmax = TM_SubLeadingB;}
+        }
+        else {
+            if(!GreaterThan(TM_LeadingB,TM_LeadingBj2))       {TM_bjetlepton_minmax = TM_LeadingB; }
+            else                                               {TM_bjetlepton_minmax = TM_LeadingBj2;}
+        }
+    }
+    else {
+        if(GreaterThan(TM_SubLeadingB,TM_LeadingBj2)) {
+            if(!GreaterThan(TM_SubLeadingBj2,TM_SubLeadingB)) {TM_bjetlepton_minmax = TM_SubLeadingBj2;}
+            else                                               {TM_bjetlepton_minmax = TM_SubLeadingB;}
+        }
+        else {
+            if(!GreaterThan(TM_SubLeadingBj2,TM_LeadingBj2)) {TM_bjetlepton_minmax = TM_SubLeadingBj2;}
+            else                                               {TM_bjetlepton_minmax = TM_LeadingBj2;}
+        }  
+    }
     TE_LLB            = (selJets.at(0).p + selLeptons.at(0).p + selLeptons.at(1).p).E();
     TMT_LLMETB        = (selJets.at(0).p + selLeptons.at(0).p + selLeptons.at(1).p + met).Mt();
     TM_LLB            = (selJets.at(0).p + selLeptons.at(0).p + selLeptons.at(1).p).M();
