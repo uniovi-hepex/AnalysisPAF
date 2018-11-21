@@ -176,8 +176,9 @@ class TWTTbarAnalysis : public PAFChainItemSelector{
     // ADDED:
     Float_t TM_LeadingB       ;
     Float_t TM_SubLeadingB    ;
-    Float_t TM_LeadingB_j2    ; // nueva
-    Float_t TM_SubLeadingB_j2 ; // nueva
+    Float_t TM_LeadingBj2        ; // nueva
+    Float_t TM_SubLeadingBj2     ; // nueva
+    Float_t TM_bjetlepton_minmax ; // variable de ATLAS
     Float_t TE_LLB            ;
     Float_t TMT_LLMETB        ;
     Float_t TM_LLB            ;
@@ -213,7 +214,6 @@ class TWTTbarAnalysis : public PAFChainItemSelector{
     Float_t TDPhiLLJESUp      ;
     Float_t TDPhiLeadJetJESUp ;
     Float_t TDPhiSubLeadJetJESUp ;
-    Float_t TM_bjetlepton_minmax ; // variable de ATLAS
     
     Float_t TM_LeadingBJESDown       ;
     Float_t TM_SubLeadingBJESDown    ;
