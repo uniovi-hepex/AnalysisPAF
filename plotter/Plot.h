@@ -206,6 +206,7 @@ public:
     yRatioTitleSize = 0.12;
     yRatioTitleLabelSize = 0.12;
     yRatioTitleOffset = 0.26;
+    NCols = 1;
 
     dataStyle = "psameE1X0";
     dataTag   = "Data";
@@ -299,6 +300,7 @@ public:
   virtual void SetBinLabels(TString t, char separator = ','){VBinLabels = TStringToVector(t, separator);}
   void SetXaxisLabelSize(float x){xAxisLabelSize = x;}
   void SetXaxisTitleSize(float x){xAxisTitleSize = x;}
+  void SetNColumns(Int_t nc){NCols = nc;}
 
   void AddToHistos(Histo* p);
 	void AddVarHistos(TString sys);
@@ -483,6 +485,7 @@ protected:
   Int_t  RatioErrorStyle;
   Int_t  StackErrorColor;
   Int_t  StackErrorStyle;
+  Int_t  NCols;
 
   TString SystVar;
   Int_t iS;

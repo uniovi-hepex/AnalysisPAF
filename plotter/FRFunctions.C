@@ -126,6 +126,65 @@ Float_t GetFRweight(Float_t pt, Float_t eta, Float_t mvaVal){
   return f/(1-f);
 }
 
+Float_t GetFRweightMVAM(Float_t pt, Float_t eta, Int_t isTight, Int_t pdgId){
+  TH2F* hEl = GetFRhisto("mvaMFRhistoEl");
+  TH2F* hMu = GetFRhisto("mvaMFRhistoMu");
+  Float_t f = 0.;
+  if (pt >= 100) pt = 99;
+  eta = abs(eta);
+  if (pdgId == 1 && !isTight){//Electrons 
+    if (eta > 2.5) eta = 2.49;
+    f = hEl->GetBinContent(hEl->FindBin(pt,eta));
+  }
+  else if (pdgId == 0 && !isTight){
+    if (eta > 2.4) eta = 2.39;
+    f = hMu->GetBinContent(hMu->FindBin(pt,eta));
+  }
+//  if (f != 0) std::cout << f << std::endl;
+  return f;
+}
+
+Float_t GetFRweightMVAVT(Float_t pt, Float_t eta, Int_t isTight, Int_t pdgId){
+  TH2F* hEl = GetFRhisto("mvaVTFRhistoEl");
+  TH2F* hMu = GetFRhisto("mvaVTFRhistoMu");
+  Float_t f = 0.;
+  if (pt >= 100) pt = 99;
+  eta = abs(eta);
+  if (pdgId == 1 && !isTight){//Electrons 
+    if (eta > 2.5) eta = 2.49;
+    f = hEl->GetBinContent(hEl->FindBin(pt,eta));
+  }
+  else if (pdgId == 0 && !isTight){
+    if (eta > 2.4) eta = 2.39;
+    f = hMu->GetBinContent(hMu->FindBin(pt,eta));
+  }
+//  if (f != 0) std::cout << f << std::endl;
+  return f;
+}
+
+Float_t GetFRweightlepMVA3lep(Float_t f1, Float_t f2, Float_t f3, Int_t doSub){
+  Float_t f[3] = {f1,f2,f3};
+  Float_t fWeight = -1.;
+  for (int j = 0; j < 3; j++){
+    if  (f[j] > 0.){
+      fWeight *= -(f[j]/(1.-f[j]));
+    }
+  }
+
+  if (fWeight == -1.){
+    //std::cout << "Setting to 0\n";
+    fWeight = 0;
+  }
+  fWeight *= doSub;
+  //std::cout << fWeight << "," << f[0]<< "," << f[1] << "," << f[2] << std::endl;
+  return fWeight;
+}
+
+
+Float_t dumpFR(Float_t a){
+  return 1; //The way of the "2 hours for preap"
+} 
+
 Float_t GetStopTopPt(Float_t pt1, Float_t pt2){
   if(pt1 > 400) pt1 = 399;
   if(pt2 > 400) pt2 = 399;

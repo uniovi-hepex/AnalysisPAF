@@ -5,6 +5,7 @@
 #include "TString.h"
 #include "ElecScaleClass.h"
 
+class Lepton;
 enum genLepMatch{kLGMtoGenLep, kLGMgood, kLGMfake, kLGMflip, kLGMconv, kLGMtoGenB, kLGMother};
 
 class Lepton : public TObject{
@@ -71,6 +72,10 @@ class Lepton : public TObject{
     Int_t   GetGenMatch(){return genMatch;}
     
 
+    Lepton * lepMatch = 0;
+    Int_t isPrompt;
+    Int_t isConvVeto;
+    Int_t isTight = -1;
   protected:
     Float_t SF;
     Float_t SFerr;

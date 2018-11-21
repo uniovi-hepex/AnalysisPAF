@@ -11,14 +11,13 @@ print("\n===== Unfolding procedures: Response matrices & ROOT files production =
 print("> Setting binning, paths, and other details...")
 # ---------------------------------------------------------------- PRELIMINARIES
 vl.SetUpWarnings()
-storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
-minipath    = "../../../TW_temp/"
+minipath = vl.minipath
 if (len(sys.argv) > 1):
   print("    - Manual minitrees' folder input!\n")
   if (sys.argv[1] == "last"):
-    minipath  = vl.GetLastFolder(storagepath)
+    minipath  = vl.GetLastFolder(vl.storagepath)
   else:
-    minipath  = storagepath + sys.argv[1] + "/"
+    minipath  = vl.storagepath + sys.argv[1] + "/"
 
 print "    - The minitrees' path is:\n", minipath
 plotsoutputpath  = "/nfs/fanae/user/vrbouza/www/TFM/Unfolding/"
@@ -298,7 +297,8 @@ def PrintResponseMatrix(htemp, vname, nxb, xb, xmin, xmax, nyb, yb, ymin, ymax, 
   plot = c.GetPad(0);
   plot.SetPad(0.0, 0.23, 1.0, 1.0);
   plot.SetTopMargin(0.06); plot.SetRightMargin(0.08); plot.SetLeftMargin(0.075)
-  htemp.SetMarkerSize(markersize)
+  if 'resptxtsize' in vl.varList[vname]: htemp.SetMarkerSize(vl.varList[vname]['resptxtsize'])
+  else:                                  htemp.SetMarkerSize(markersize)
   htemp.SetMarkerColor(r.kRed)
   htemp.Draw("colz text e")
   r.gStyle.SetPaintTextFormat("4.3f")
@@ -355,7 +355,7 @@ def PrintResponseMatrix(htemp, vname, nxb, xb, xmin, xmax, nyb, yb, ymin, ymax, 
   c = r.TCanvas('c', "Purities and stabilities of " + vnametitle)
   plot = c.GetPad(0);
   #plot.SetPad(0.0, 0.23, 1.0, 1.0);
-  plot.SetTopMargin(0.06); plot.SetRightMargin(0.05); plot.SetLeftMargin(0.075)
+  plot.SetTopMargin(0.06); plot.SetRightMargin(0.05); plot.SetLeftMargin(0.1); plot.SetBottomMargin(0.12)
   
   hPur.SetXTitle(vl.varList[vname]['xaxis'])
   hPur.SetStats(False)
@@ -364,14 +364,22 @@ def PrintResponseMatrix(htemp, vname, nxb, xb, xmin, xmax, nyb, yb, ymin, ymax, 
   hPur.SetLineColor(r.kRed)
   hPur.SetMaximum(1.)
   hPur.SetMinimum(0.)
+  hPur.GetXaxis().SetTitleFont(43)
+  hPur.GetXaxis().SetTitleSize(22)
+  hPur.GetXaxis().SetLabelFont(43)
+  hPur.GetXaxis().SetLabelSize(22)
+  hPur.GetXaxis().SetLabelOffset(0.007)
+  hPur.GetYaxis().SetTitleFont(43)
+  hPur.GetYaxis().SetTitleSize(22)
+  hPur.GetYaxis().SetLabelFont(43)
+  hPur.GetYaxis().SetLabelSize(22)
+  hPur.GetYaxis().SetLabelOffset(0.007)
   hPur.Draw('')
   hStab.Draw('same')
   r.gPad.Update()
   
-  textSize      = 0.022
-  legWidth      = 0.05
-  height        = .11
-  (x1,y1,x2,y2) = (.85-legWidth, .95 - height, .90, .92)
+  textSize      = 0.035
+  (x1,y1,x2,y2) = (.80, .45, .90, .65)
   l             = r.TLegend(x1, y1, x2, y2);
   l.AddEntry(hStab, 'Stability')
   l.AddEntry(hPur, 'Purity')

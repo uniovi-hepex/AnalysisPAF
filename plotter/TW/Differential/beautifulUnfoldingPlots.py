@@ -133,12 +133,21 @@ class beautifulUnfoldingPlots:
             else:
                 options = options.replace('nomin', '')
             
-            if 'comp' in name: 
-                histo.GetYaxis().SetRangeUser(0.9, 1.1)
+            #if 'comp' in name:
+                #if 'reg' not in name: histo.GetYaxis().SetRangeUser(0.96, 1.04)
+                #else:
+                    ##histo.GetYaxis().SetRangeUser(r.Double(0.999999), r.Double(1.000001)) # Primeras variaciones en plots de asimov.
+                    #histo.GetYaxis().SetRangeUser(r.Double(0.99), r.Double(1.01))
+                    ##histo.GetYaxis().SetLabelSize(15)
+            if 'comp' in name:
+                histo.GetYaxis().SetRangeUser(r.Double(0.99), r.Double(1.01))
             
             if self.isLCurve:
                 for i in range(1, 25):
                     histo.GetXaxis().ChangeLabel(i, 45)
+            #if 'reg' in name:
+                #for i in range(1, 25):
+                    #histo.GetYaxis().ChangeLabel(i, 45)
             
             if self.doRatio:
                 histo.GetXaxis().SetLabelOffset(999)
@@ -148,6 +157,7 @@ class beautifulUnfoldingPlots:
             print '> Drawing a sym.-unc. histogram with the following options:', options
             
             histo.Draw(options)
+            if 'comp' in name and 'reg' in name: histo.Draw("axis,same")
             self.objectsInLeg.append( (histo, name, legOptions, idname) )
         return
     
@@ -208,21 +218,27 @@ class beautifulUnfoldingPlots:
         else:            self.canvas.cd()
         
         # Draw legend
-        textSize = 0.022
-        legWidth = 0.13
+        #textSize = 0.022
+        textSize = 0.035
+        if "unc" in self.name: legWidth = 0.13
+        else:                  legWidth = 0.23
         height = (.18 + textSize*max(len(self.objectsInLeg)-3,0))
-        if corner == "TR":
-            (x1,y1,x2,y2) = (0.93-legWidth if self.doWide else .85-legWidth, .93 - height, .865,         .93)
-        elif corner == "TC":
-            (x1,y1,x2,y2) = (.5,                                             .93 - height, .55+legWidth, .93)
-        elif corner == "TL":
-            (x1,y1,x2,y2) = (.18,                                            .835 - height, .18+legWidth, .835)
-        elif corner == "BR":
-            (x1,y1,x2,y2) = (.85 - legWidth,                                 .16 + height, .90,          .16)
-        elif corner == "BC":
-            (x1,y1,x2,y2) = (.5,                                             .16 + height, .5+legWidth,  .16)
-        elif corner == "BL":
-            (x1,y1,x2,y2) = (.2,                                             .16 + height, .2+legWidth,  .16)
+        
+        if isinstance(corner, str):
+            if corner == "TR":
+                (x1,y1,x2,y2) = (0.93-legWidth if self.doWide else .85-legWidth, .93 - height, .865,         .93)
+            elif corner == "TC":
+                (x1,y1,x2,y2) = (.5,                                             .93 - height, .55+legWidth, .93)
+            elif corner == "TL":
+                (x1,y1,x2,y2) = (.18,                                            .835 - height, .18+legWidth, .835)
+            elif corner == "BR":
+                (x1,y1,x2,y2) = (.85 - legWidth,                                 .16 + height, .90,          .16)
+            elif corner == "BC":
+                (x1,y1,x2,y2) = (.5,                                             .16 + height, .5+legWidth,  .16)
+            elif corner == "BL":
+                (x1,y1,x2,y2) = (.18,                                             .16 + height, .18+legWidth,  .16)
+        else:
+            (x1, y1, x2, y2) = corner
         
         if leg:
             leg = r.TLegend(x1,y1,x2,y2)

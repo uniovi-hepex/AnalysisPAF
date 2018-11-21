@@ -6,8 +6,6 @@ from array import array
 print "===== Minitrees variables plotting (now in Python!)\n"
 vl.SetUpWarnings()
 
-storagepath = "/nfs/fanae/user/vrbouza/Storage/TW/MiniTrees/"
-pathToTree  = "../../../TW_temp/";
 NameOfTree  = "Mini1j1t";
 StandardCut = "Tpassreco == 1";
 ControlCut  = "TIsSS == 0 && TNJets == 1  && TNBtags == 1 && TnLooseCentral > 1";
@@ -15,7 +13,9 @@ systlist    = "JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"
 #systlist    = ""
 labelsignal = "e^{#pm}#mu^{#mp}+1j1t+0j_{loose}"
 labelcontrol= "e^{#pm}#mu^{#mp}+1j1t+>0j_{loose}"
-
+#legtxtsize  = 0.028
+legtxtsize  = 0.055
+labelpos    = (0.275, 0.89)
 
 if (len(sys.argv) > 1):
     nCores      = int(sys.argv[1])
@@ -26,11 +26,11 @@ else:
 
 if (len(sys.argv) > 2):
     if sys.argv[2] == 'last':
-        pathToTree    = vl.GetLastFolder(storagepath)
+        pathToTree    = vl.GetLastFolder(vl.storagepath)
     else:
-        pathToTree    = storagepath + sys.argv[2] + "/"
+        pathToTree    = vl.storagepath + sys.argv[2] + "/"
 else:
-    pathToTree  = "../../../TW_temp/"
+    pathToTree  = vl.minipath
 print "> Minitrees will be read from:", pathToTree, "\n"
 
 r.gROOT.SetBatch(True)
@@ -54,7 +54,7 @@ def plotvariable(tsk):
     p.verbose  = False;
     p.verbose  = True;
     p.SetChLabel(labelsignal if cut == "signal" else labelcontrol)
-    p.SetChLabelPos(0.3, 0.85, -1)
+    p.SetChLabelPos(labelpos[0], labelpos[1], -1)
     
     
     p.AddSample("TTbar_PowhegSemi",             "Non-W|Z",      r.itBkg, 413, systlist)
@@ -232,13 +232,14 @@ def plotvariable(tsk):
     p.SetPadRatioMargins(vl.marginsratio)
     p.SetTexChanSize(0.06)
     p.SetCenterYAxis(False)
+    if 'ncols' in vl.varList[var]: p.SetNColumns(vl.varList[var]['ncols'])
     
     p.SetCMSlabel("CMS");
     p.SetCMSmodeLabel("Preliminary");
     
     thepos = vl.legpos
     p.SetLegendPosition(thepos[0], thepos[1], thepos[2], thepos[3])
-    p.SetLegendTextSize(0.028)
+    p.SetLegendTextSize(legtxtsize)
     p.SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/" if cut == 'signal' else "/nfs/fanae/user/vrbouza/www/TFM/1j1t/control/");
     p.doYieldsInLeg = False;
     p.doSetLogy     = False;
@@ -250,6 +251,7 @@ def plotvariable(tsk):
         p.SetOutputName(vl.varList[var]['var_response']);
     p.DrawStack();
     p.PrintSystematics()
+    p.PrintYields("", "", "", "")
     p.PrintSystYields()
     del p
     #del pdf
@@ -266,7 +268,7 @@ def plotcustomvariable(tsk):
     p.verbose  = False;
     p.verbose  = True;
     p.SetChLabel(labelsignal if cut == "signal" else labelcontrol)
-    p.SetChLabelPos(0.3, 0.85, -1)
+    p.SetChLabelPos(labelpos[0], labelpos[1], -1)
     
     p.AddSample("TTbar_PowhegSemi",             "Non-W|Z",      r.itBkg, 413, systlist)
     p.AddSample("WJetsToLNu_MLM",               "Non-W|Z",      r.itBkg, 413, systlist)
@@ -424,13 +426,14 @@ def plotcustomvariable(tsk):
     p.SetPadRatioMargins(vl.marginsratio)
     p.SetTexChanSize(0.06)
     p.SetCenterYAxis(False)
+    if 'ncols' in vl.varList[var]: p.SetNColumns(vl.varList[var]['ncols'])
     
     p.SetCMSlabel("CMS");
     p.SetCMSmodeLabel("Preliminary");
     if 'legpos' in vl.varList[var]: thepos = vl.varList[var]['legpos']
     else:                           thepos = vl.legpos
     p.SetLegendPosition(thepos[0], thepos[1], thepos[2], thepos[3])
-    p.SetLegendTextSize(0.028)
+    p.SetLegendTextSize(legtxtsize)
     p.SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/" if cut == 'signal' else "/nfs/fanae/user/vrbouza/www/TFM/1j1t/control/");
     p.doYieldsInLeg = False;
     p.doSetLogy     = False;
@@ -443,6 +446,7 @@ def plotcustomvariable(tsk):
         p.SetOutputName('Custom_' + vl.varList[var]['var_response']);
     p.DrawStack();
     p.PrintSystematics()
+    p.PrintYields("", "", "", "")
     p.PrintSystYields()
     del p
 
@@ -459,7 +463,7 @@ def plotthenumberofjets(tsk):
     p.verbose  = False;
     p.verbose  = True;
     p.SetChLabel(labelsignal if cut == "signal" else labelcontrol)
-    p.SetChLabelPos(0.3, 0.85, -1)
+    p.SetChLabelPos(labelpos[0], labelpos[1], -1)
     
     p.AddSample("TTbar_PowhegSemi",             "Non-W|Z",      r.itBkg, 413, systlist)
     p.AddSample("WJetsToLNu_MLM",               "Non-W|Z",      r.itBkg, 413, systlist)
@@ -616,13 +620,14 @@ def plotthenumberofjets(tsk):
     p.SetPadRatioMargins(vl.marginsratio)
     p.SetTexChanSize(0.06)
     p.SetCenterYAxis(False)
+    if 'ncols' in vl.varList[var]: p.SetNColumns(vl.varList[var]['ncols'])
     
     p.SetCMSlabel("CMS");
     p.SetCMSmodeLabel("Preliminary");
     if 'legpos' in vl.varList[var] and cut != "signal": thepos = vl.varList[var]['legpos']
     else:                                               thepos = vl.legpos
     p.SetLegendPosition(thepos[0], thepos[1], thepos[2], thepos[3])
-    p.SetLegendTextSize(0.028)
+    p.SetLegendTextSize(legtxtsize)
     p.SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/" if cut == 'signal' else "/nfs/fanae/user/vrbouza/www/TFM/1j1t/control/");
     p.doYieldsInLeg = False;
     p.doSetLogy     = False;
@@ -634,21 +639,23 @@ def plotthenumberofjets(tsk):
         p.SetOutputName('Custom_' + vl.varList[var]['var_response']);
     p.DrawStack();
     p.PrintSystematics()
+    p.PrintYields("", "", "", "")
     p.PrintSystYields()
     del p
 
 
 if __name__ == '__main__':
-    print "> Beginning to plot descriptive histograms", "\n"
     tasks = []
     for v in vl.varList["Names"]["Variables"]:
         for ct in ['signal', 'control']:
+        #for ct in ['signal']:
         #for ct in ['control']:
             tasks.append( (v, ct) )
     
-    #tasks.append( ("DilepMETJet1Pz", "signal") )
+    #tasks.append( ("DilepMETJet1Pz", "control") )
     #tasks.append( ("DPhiLL", "signal") )
     
+    print "> Beginning to plot descriptive histograms", "\n"
     pool = Pool(nCores)
     pool.map(plotvariable, tasks)
     pool.close()
@@ -662,6 +669,6 @@ if __name__ == '__main__':
     pool.join()
     del pool
     
-    plotthenumberofjets(("nLooseCentral", "signal"))
+    #plotthenumberofjets(("nLooseCentral", "signal"))
     
     print "> Done!", "\n"

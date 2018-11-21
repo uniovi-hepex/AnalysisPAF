@@ -8,7 +8,7 @@ import ROOT as r
 import beautifulUnfoldingPlots as bp
 import errorPropagator as ep
 import varList as vl
-import os,sys,math
+import os,sys,math,array
 
 class DataContainer:
     ''' Class to store all the needed inputs: response matrices and varied input distributions'''
@@ -128,7 +128,7 @@ class UnfolderHelper:
         self.lCurve     = r.TGraph(0)
 
         #self.themax = self.tunfolder.ScanLcurve(10000, 1e-10, 1e-4, self.lCurve, self.logTauX, self.logTauY, self.logTauCurv)
-        self.themax = self.tunfolder.ScanLcurve(5000, 1e-30, 1e-4, self.lCurve, self.logTauX,  self.logTauY, self.logTauCurv)
+        self.themax = self.tunfolder.ScanLcurve(10000, r.Double(1e-30), r.Double(1e-4), self.lCurve, self.logTauX,  self.logTauY, self.logTauCurv)
         
         self.tau = self.tunfolder.GetTau()
         return
@@ -183,11 +183,15 @@ class UnfolderHelper:
             plot.addHisto(self.lCurve,'ALnomin', '', 0)
         else:
             plot.addHisto(self.scanRes,'ALnomin','L curve',0)
-        
-        plot.addTLatex(0.75, 0.9, "#tau = {taupar}".format(taupar = round(self.tau, 15)))
+        grph = r.TGraph(1, array.array('d', [r.Double(self.tunfolder.GetLcurveX())]), array.array('d', [r.Double(self.tunfolder.GetLcurveY())]))
+        grph.SetMarkerColor(r.kRed)
+        grph.SetMarkerSize(2)
+        grph.SetMarkerStyle(29)
+        #grph.Draw("P")
+        plot.addTLatex(0.75, 0.9, "#tau = {taupar}".format(taupar = round(self.tau, 10)))
         #plot.addTLatex(0.75, 0.9, "#tau = {taupar}".format(taupar = self.tau))
         plot.saveCanvas('TR', leg = False)
-        del plot
+        del plot, grph
         
         # Second: L-curve curvature plot
         plot = bp.beautifulUnfoldingPlots('{var}_asimov_LogTauCurv'.format(var = self.var) if (self.wearedoingasimov) else '{var}_LogTauCurv'.format(var = self.var))
@@ -338,7 +342,7 @@ class Unfolder():
         regularized.GetXaxis().SetTitle(vl.varList[self.var]['xaxis'])
         regularized.GetYaxis().SetTitle('Reg./Unreg.')
         #regularized.GetYaxis().SetRangeUser(0, 1.1*regularized.GetMaximum())
-        plot.addHisto(regularized  ,'hist'     ,'regucomp'  ,'L')
+        plot.addHisto(regularized  ,'hist'     ,'regcomp'  ,'L')
 #        plot.addHisto(unregularized,'hist,same','UnRegularized','L')
         plot.plotspath = 'results/'
         plot.saveCanvas('BR', '', False)
@@ -445,6 +449,7 @@ class Unfolder():
         plot.plotspath     = self.plotspath
         
         nominal.SetMarkerStyle(r.kFullCircle)
+        nominal.SetLineColor(r.kBlack)
         nominal_withErrors[0].SetFillColorAlpha(r.kBlue, 0.35)
         nominal_withErrors[0].SetLineColor(r.kBlue)
         nominal_withErrors[0].SetFillStyle(1001)
@@ -524,6 +529,15 @@ class Unfolder():
             else:
                 incmax.append(max([nominal_withErrors[0].GetBinError(bin), nominal_withErrors[1].GetBinError(bin)]))
 
+        incsyst  = []
+        for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
+            if math.sqrt(nominal_withErrors[1].GetBinError(bin)**2 - nominal.GetBinError(bin)**2) > nominal_withErrors[0].GetBinContent(bin):
+                incsyst.append(max([math.sqrt(nominal_withErrors[0].GetBinError(bin)**2 - nominal.GetBinError(bin)**2),
+                                    nominal_withErrors[0].GetBinContent(bin)]))
+            else:
+                incsyst.append(max([math.sqrt(nominal_withErrors[0].GetBinError(bin)**2 - nominal.GetBinError(bin)**2), 
+                                    math.sqrt(nominal_withErrors[1].GetBinError(bin)**2 - nominal.GetBinError(bin)**2)]))
+
         maxinctot = 0
         hincmax   = nominal_withErrors[0].Clone('hincmax')
         for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
@@ -531,9 +545,18 @@ class Unfolder():
             hincmax.SetBinError(bin, 0)
             if (hincmax.GetBinContent(bin) > maxinctot): maxinctot = hincmax.GetBinContent(bin)
 
+        hincsyst  = copy.deepcopy(nominal.Clone('hincsyst'))
+        for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
+            hincsyst.SetBinContent(bin, incsyst[bin-1] / hincsyst.GetBinContent(bin))
+            hincsyst.SetBinError(bin, 0.)
+
         hincmax.SetLineColor(r.kBlack)
         hincmax.SetLineWidth( 2 )
         hincmax.SetFillColorAlpha(r.kBlue, 0)
+        hincsyst.SetLineColor(r.kBlack)
+        hincsyst.SetLineWidth( 2 )
+        hincsyst.SetLineStyle( 3 )
+        hincsyst.SetFillColorAlpha(r.kBlue, 0.)
 
         #if (maxinctot >= 0.9):
             #if maxinctot >= 5:
@@ -549,9 +572,17 @@ class Unfolder():
         for i in range(vl.nuncs):
             uncList[i][1].SetLineColor( vl.NewColorMap[uncList[i][0]] )
             uncList[i][1].SetLineWidth( 2 )
+            if "Stat" in uncList[i][0]:
+                uncList[i][1].SetLineColor(r.kBlack)
+                uncList[i][1].SetLineStyle( 2 )
+            elif "Lumi" in uncList[i][0]:
+                uncList[i][1].SetLineColor(r.kBlack)
+                uncList[i][1].SetLineStyle( 4 )
+            
             plot2.addHisto(uncList[i][1], 'H,same' if i else 'H',uncList[i][0],'L')
         
-        plot2.addHisto(hincmax, 'H,same', 'Total', 'L')
+        plot2.addHisto(hincsyst, 'hist,same', 'Syst.', 'L')
+        plot2.addHisto(hincmax,  'hist,same', 'Total', 'L')
         plot2.plotspath = self.plotspath
         
         if   "uncleg_unf"   in vl.varList[self.var] and not self.wearedoingasimov: unclegpos = vl.varList[self.var]["uncleg_unf"]
@@ -571,7 +602,7 @@ class Unfolder():
 if __name__=="__main__":
     vl.SetUpWarnings()
     r.gROOT.SetBatch(True)
-    verbose = True
+    verbose = False
     print "===== Unfolding procedure\n"
     if (len(sys.argv) > 1):
         varName = sys.argv[1]

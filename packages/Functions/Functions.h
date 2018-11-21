@@ -20,9 +20,9 @@ enum iSFs{
   iElecFastSim, iElecIdFastSimStop, iElecIsoFastSimStop,
   iTrigDoubleMuon, iTrigDoubleElec, iTrigElMu,
   iMuonlepMVA2lSSttH, iMuonlepMVA3l4lttH, 
-  iMuonLooseTracksttH, iMuonLooseMiniIsottH, iMuonTightIP2DttH,
+  iMuonLooseTracksttH, iMuonLooseMiniIsottH, iMuonTightIP2DttH, iMuonEWKinoID, iMuonEWKinomvaM, iMuonEWKinomvaVT,
   iEleclepMVA2lSSttH, iEleclepMVA3l4lttH, 
-  iElecTightIP2DM17ttH, iElecMini4M17ttH, iElecConvVetoM17ttH,
+  iElecTightIP2DM17ttH, iElecMini4M17ttH, iElecConvVetoM17ttH, iElecEWKinoID, iElecEWKinomvaM, iElecEWKinomvaVT,
   nfiles
 };
 
@@ -33,13 +33,13 @@ const TString SFTString[nfiles] = {
   "iElecFastSim", "iElecIdFastSimStop", "iElecIsoFastSimStop",
   "iTrigDoubleMuon", "iTrigDoubleElec", "iTrigElMu",
   "iMuonlepMVA2lSSttH", "iMuonlepMVA3l4lttH", 
-  "iMuonLooseTracksttH", "iMuonLooseMiniIsottH", "iMuonTightIP2DttH",
+  "iMuonLooseTracksttH", "iMuonLooseMiniIsottH", "iMuonTightIP2DttH","iMuonEWKinoID","iMuonEWKinomvaM","iMuonEWKinomvaVT",
   "iEleclepMVA2lSSttH", "iEleclepMVA3l4lttH", 
-  "iElecTightIP2DM17ttH", "iElecMini4M17ttH", "iElecConvVetoM17ttH"
+  "iElecTightIP2DM17ttH", "iElecMini4M17ttH", "iElecConvVetoM17ttH","iElecEWKinoID","iElecEWKinomvaM","iElecEWKinomvaVT",
 };
 
 
-enum wps{iVeto, iVeryLoose, iLoose, iMedium, iTight, iVeryTight, iExtreamlyTight, iWPforStop, iLooseWPforStop};
+enum wps{iVeto, iVeryLoose, iLoose, iMedium, iTight, iVeryTight, iExtreamlyTight, iWPforStop, iLooseWPforStop, iWZMVA, iWZtopEl, iWZtopMu};
 
 enum sel{iStopSelec, iTopSelec, iTWSelec, iWWSelec, iHWWSelec, ittDMSelec, ittHSelec, iWZSelec, i4tSelec, iStopTopSelec, iTWTTbarSelec, iNSelecs};
 const TString LabSelection[] = {"stop", "top", "tW", "WW", "tt+DM", "ttH", "WZ", "tttt", "tWttbar"};
@@ -105,6 +105,7 @@ Bool_t IsThere3SS(vector<Lepton> lepton);
 Bool_t ByPt(Jet, Jet);
 Int_t GetDileptonicChannel(vector<Lepton> leptons);
 vector<Lepton> AssignWZLeptons(vector<Lepton> leptonList);
+vector<Lepton> getMatchGenSelLeptons(std::vector<Lepton> selectedLeptons, std::vector<Lepton> generatedLeptons, Float_t dRMax, Bool_t doIdMatch = true);
 
 Float_t GetFSR_JECSF_Up(Float_t pt);
 Float_t GetFSR_JECSF_Down(Float_t pt);
