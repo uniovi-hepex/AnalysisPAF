@@ -205,7 +205,7 @@ void TWTTbarAnalysis::InsideLoop() {            //=============== InsideLoop
     
     CalculateTWTTbarVariables(); //estas hay que cambiarlas por las de TWTTbar
     
-    if ((TNJets == 2) && (TNBtags == 2) && (nLooseCentral == 1)) {
+    if ((TNJets == 2) && (TNBtags == 2) && (nLooseCentral == 2)) {
       if ((TChannel == iElec || TChannel == iMuon)) {
           if ((TMET > 20) && (abs(TMll-90.19)>15)) {Tpassreco = 1;}
       }
@@ -659,9 +659,11 @@ void TWTTbarAnalysis::InsideLoop() {            //=============== InsideLoop
         TDPhiSubLeadJetJERUp   = 99999;
     }
   }
-  if (Tpassgen || Tpassreco || TpassrecoJESUp || TpassrecoJESDown || TpassrecoJERUp 
-      || (TNJets == 2 && TNBtags == 2) || (TNJetsJESUp == 1 && TNBtagsJESUp == 1) 
-      || (TNJetsJESDown == 1 && TNBtagsJESDown == 1) || (TNJetsJERUp == 1 && TNBtagsJERUp == 1))  { // If needed, filling.
+  if (Tpassreco || (TNJets == 2 && TNBtags == 2)) {
+  
+  //if (Tpassgen || Tpassreco || TpassrecoJESUp || TpassrecoJESDown || TpassrecoJERUp 
+      //|| (TNJets == 2 && TNBtags == 2) || (TNJetsJESUp == 1 && TNBtagsJESUp == 1) 
+      //|| (TNJetsJESDown == 1 && TNBtagsJESDown == 1) || (TNJetsJERUp == 1 && TNBtagsJERUp == 1))  { // If needed, filling.
     fMini1j1t->Fill();
   }
 }
