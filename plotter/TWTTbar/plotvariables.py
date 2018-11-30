@@ -6,12 +6,11 @@ from array import array
 print "===== Minitrees variables plotting (now in Python!)\n"
 vl.SetUpWarnings()
 
-pathToTree  = "../../../TWTTbar_temp/";
 NameOfTree  = "Mini1j1t";
 StandardCut = "Tpassreco == 1";
 ControlCut  = "TIsSS == 0 && TNJets == 2  && TNBtags == 2 && TnLooseCentral > 1";
 systlist    = "JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"
-#systlist    = ""
+systlist    = ""
 labelsignal = "e^{#pm}#mu^{#mp}+1j1t+0j_{loose}"
 labelcontrol= "e^{#pm}#mu^{#mp}+1j1t+>0j_{loose}"
 
@@ -123,6 +122,8 @@ def plotvariable(tsk):
     p.AddSample("MuonEG",                       "Data",         r.itData);
     p.AddSample("SingleMuon",                   "Data",         r.itData);
     p.AddSample("SingleElec",                   "Data",         r.itData);
+    p.AddSample("DoubleMuon",                   "Data",         r.itData);
+    p.AddSample("DoubleEG",                     "Data",         r.itData);
     
     #p.AddSample("TW"                         ,  "tW",           r.itSys, 1, "JERUp");
     #p.AddSample("TW_noFullyHadr_isrUp"       ,  "tW",           r.itSys, 1, "isrUp");
@@ -240,6 +241,7 @@ def plotvariable(tsk):
     p.SetPlotFolder("results/varplots/" if cut == 'signal' else "results/varplots/control/");
     p.doYieldsInLeg = False;
     p.doSetLogy     = False;
+    if "M_bjetlepton_minmax" in vl.varList[var]['var']: p.doSetLogy = True;
     #p.doData        = False;
     p.doSignal      = False;
     
@@ -312,6 +314,8 @@ def plotcustomvariable(tsk):
     p.AddSample("MuonEG",                       "Data",         r.itData);
     p.AddSample("SingleMuon",                   "Data",         r.itData);
     p.AddSample("SingleElec",                   "Data",         r.itData);
+    p.AddSample("DoubleMuon",                   "Data",         r.itData);
+    p.AddSample("DoubleEG",                     "Data",         r.itData);
     
     #p.AddSample("TW"                         ,  "tW",           r.itSys, 1, "JERUp");
     #p.AddSample("TW_noFullyHadr_isrUp"       ,  "tW",           r.itSys, 1, "isrUp");
@@ -432,6 +436,7 @@ def plotcustomvariable(tsk):
     p.SetPlotFolder("results/varplots/" if cut == 'signal' else "results/varplots/control/");
     p.doYieldsInLeg = False;
     p.doSetLogy     = False;
+    if "M_bjetlepton_minmax" in vl.varList[var]['var']: p.doSetLogy = True;
     #p.doData        = False;
     p.doSignal      = False;
     #p.SetTitleY(r.TString(vl.varList[var]['yaxis']))
@@ -505,6 +510,8 @@ def plotthenumberofjets(tsk):
     p.AddSample("MuonEG",                       "Data",         r.itData);
     p.AddSample("SingleMuon",                   "Data",         r.itData);
     p.AddSample("SingleElec",                   "Data",         r.itData);
+    p.AddSample("DoubleMuon",                   "Data",         r.itData);
+    p.AddSample("DoubleEG",                     "Data",         r.itData);
     
     #p.AddSample("TW"                         ,  "tW",           r.itSys, 1, "JERUp");
     #p.AddSample("TW_noFullyHadr_isrUp"       ,  "tW",           r.itSys, 1, "isrUp");
@@ -646,7 +653,8 @@ if __name__ == '__main__':
 
     #tasks.append( ("DilepMETJet1Pz", "signal") )
     #tasks.append( ("DPhiLL", "signal") )
-    #tasks.append( ("Custom_LeadingLepPt", "signal") )
+    #tasks.append( ("LeadingLepPt", "signal") )
+    #tasks.append( ("M_bjetlepton_minmax", "signal") )
     
     pool = Pool(nCores)
     pool.map(plotvariable, tasks)
@@ -663,4 +671,4 @@ if __name__ == '__main__':
     
     plotthenumberofjets(("nLooseCentral", "signal"))
     
-    print "> Done!", "\n"
+print "> Done!", "\n"
