@@ -96,7 +96,7 @@ varList['Names'] = {
     #'Variables'   : ["M_LeadingB", "M_SubLeadingB", "LeadingLepPt", "LLMETBEta", "DilepMETJet1Pz", "DPhiLL", "DPhiLeadJet", "DPhiSubLeadJet"], # Nuevinas
     #'Variables'   : ["LeadingJetPt", "LeadingLepPt"],
     #'Variables'   : ["LeadingLepPt", "LeadingLepEta"],
-    'Variables'   : ["LeadingLepPt", "LeadingJetPt", "DPhiLL", "DilepMETJet1Pz", "MT_LLMETB", "M_LLB"], # Variables single top 15-10-2018
+    'Variables'   : ["LeadingLepPt", "LeadingJetPt", "DPhiLL", "DilepMETJet1Pz", "MT_LLMETB", "M_LLB", "M_bjetlepton_minmax"], # Variables TWTTbar
     'ExpSysts'    : ["JESUp", "JESDown", "JERUp", "ElecEffUp", "ElecEffDown", "MuonEffUp", #   DO NOT MOVE THE FIRST THREE TO OTHER
                      "MuonEffDown", "TrigUp", "TrigDown", "PUUp", "PUDown", "BtagUp",      # POSITION: it will affect the calculus
                      "BtagDown", "MistagUp", "MistagDown"],                                # of the response matrices.
@@ -206,28 +206,15 @@ varList['M_bjetlepton_minmax'] = {
     'recobinning' : [0., 40, 60., 80., 100., 120., 140., 160., 180., 200., 220., 240., 270., 310., 380., 420.],
     'var'         : 'TM_bjetlepton_minmax',
     'var_response': 'M_bjetlepton_minmax',
-    #'var_gen'     : 'TGenM_bjetlepton_minmax',
+    'var_gen'     : 'TGenM_bjetlepton_minmax',
 }
 
-varList['M_bjetlepton_minmaxuncertainties'] = {
-    'xaxis'       : varList['M_bjetlepton_minmax']['xaxis'],
-    'yaxis'       : 'Relative uncertainty'
-}
+#varList['M_bjetlepton_minmaxuncertainties'] = {
+    #'xaxis'       : varList['M_bjetlepton_minmax']['xaxis'],
+    #'yaxis'       : 'Relative uncertainty'
+#}
 
 
-varList['MET'] = {
-    'xaxis'       : '\\slash{E}_{T} (GeV)',
-    'yaxis'       : 'd#sigma [pb]',
-    'genbinning'  : [0, 50, 140, 200],
-    'recobinning' : [0., 20., 35., 50., 70., 140., 200.],
-    'var'         : 'TMET',
-    'var_response': 'MET',
-    'var_gen'     : 'TGenMET'
-}
-varList['METuncertainties'] = {
-    'xaxis'       : varList['MET']['xaxis'],
-    'yaxis'       : 'Relative uncertainty'
-}
 
 varList['MET_Phi'] = {
     'xaxis'       : '\\varphi(\\slash{E}_{T}) (GeV)',
