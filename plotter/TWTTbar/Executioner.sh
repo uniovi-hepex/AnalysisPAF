@@ -4,7 +4,7 @@ samples=("TW" "TW_noFullyHadr"
   "TbarW" "TbarW_noFullyHadr" "TW_aMCatNLO" 
   "TTbar_Powheg" "TTbar_PowhegSemi" "TTbar2L_powheg" "DYJetsToLL_M50_MLM" "DYJetsToLL_M5to50_MLM" "DYJetsToLL_M50_aMCatNLO" "DYJetsToLL_M10to50_aMCatNLO" 
   "WJetsToLNu_MLM" "ZZ" "WW" "WZ" "TTWToLNu" "TTZToQQ" "TTZToLLNuNu" "TTWToQQ" "TTGJets" 
-  "MuonEG" "SingleElec" "SingleMuon")
+  "MuonEG" "SingleElec" "SingleMuon" "DoubleEG" "DoubleMuon")
 
 samples_syst=("TTbar_Powheg_ueUp" "TTbar2L_Powheg_ueUp" "TTbar_Powheg_ueDown" "TTbar2L_Powheg_ueDown" 
   "TTbar_Powheg_isrUp" "TTbar_Powheg_isrDown" "TTbar_Powheg_fsrUp" 
@@ -27,7 +27,7 @@ runsamples=("TW_ext" "TW_noFullyHadr & TW_noFullyHadr_ext & TW_noFullyHadr_ext2"
   "TbarW_ext" "TbarW_noFullyHadr & TbarW_noFullyHadr_ext & TbarW_noFullyHadr_ext2" "TW_aMCatNLO_[0-9]" 
   "TTbar_Powheg" "TTbar_Powheg" "TTbar2L_powheg" "DYJetsToLL_M50_MLM_ext & DYJetsToLL_M50_MLM_ext2" "DYJetsToLL_M5to50_MLM" "DYJetsToLL_M50_aMCatNLO" "DYJetsToLL_M10to50_aMCatNLO & DYJetsToLL_M10to50_aMCatNLO_ext" 
   "WJetsToLNu_MLM & WJetsToLNu_MLM_ext2" "ZZ & ZZ_ext" "WW & WW_ext" "WZ & WZ_ext" "TTWToLNu_ext1 & TTWToLNu_ext2" "TTZToQQ" "TTZToLLNuNu_ext1 & TTZToLLNuNu_ext2" "TTWToQQ" "TTGJets & TTGJets_ext" 
-  "MuonEG" "SingleElec" "SingleMuon")
+  "MuonEG" "SingleElec" "SingleMuon" "DoubleEG" "DoubleMuon")
 
 runsamples_syst=("TTbar_Powheg_ueUp & TTbar_Powheg_ueUp_ext" "TTbar2L_Powheg_ueUp" "TTbar_Powheg_ueDown & TTbar_Powheg_ueDown_ext" "TTbar2L_Powheg_ueDown" 
   "TTbar_Powheg_isrUp_ext & TTbar_Powheg_isrUp_ext2" "TTbar_Powheg_isrDown & TTbar_Powheg_isrDown_ext & TTbar_Powheg_isrDown_ext2"
@@ -90,7 +90,7 @@ if [ "$1" == "an" ]; then
   
     echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Running general-purpose samples..."
     for ((i=0; i<=$uplimit; i++)); do
-        if [ ${samples[i]} == "TTbar2L_powheg" ] || [ ${samples[i]} == "MuonEG" ] || [ ${samples[i]} == "SingleElec" ] || [ ${samples[i]} == "SingleMuon" ]; then
+        if [ ${samples[i]} == "TTbar2L_powheg" ] || [ ${samples[i]} == "MuonEG" ] || [ ${samples[i]} == "SingleElec" ] || [ ${samples[i]} == "SingleMuon" ] || [ ${samples[i]} == "DoubleEG" ] || [ ${samples[i]} == "DoubleMuon" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, -6, 0, 1.0, \"makeHadd\")"
         elif [ ${samples[i]} == "TTbar_PowhegSemi" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, 0, 0, 1.0, \"Semi\")"
