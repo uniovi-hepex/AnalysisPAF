@@ -241,7 +241,7 @@ def plotvariable(tsk):
     p.SetPlotFolder("results/varplots/" if cut == 'signal' else "results/varplots/control/");
     p.doYieldsInLeg = False;
     p.doSetLogy     = False;
-    if "M_bjetlepton_minmax" in vl.varList[var]['var']: p.doSetLogy = True;
+    #if "M_bjetlepton_minmax" in vl.varList[var]['var']: p.doSetLogy = True;
     #p.doData        = False;
     p.doSignal      = False;
     
@@ -436,7 +436,7 @@ def plotcustomvariable(tsk):
     p.SetPlotFolder("results/varplots/" if cut == 'signal' else "results/varplots/control/");
     p.doYieldsInLeg = False;
     p.doSetLogy     = False;
-    if "M_bjetlepton_minmax" in vl.varList[var]['var']: p.doSetLogy = True;
+    #if "M_bjetlepton_minmax" in vl.varList[var]['var']: p.doSetLogy = True;
     #p.doData        = False;
     p.doSignal      = False;
     #p.SetTitleY(r.TString(vl.varList[var]['yaxis']))
