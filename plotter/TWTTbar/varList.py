@@ -202,7 +202,7 @@ varList['M_SubLeadingBuncertainties'] = {
 varList['M_bjetlepton_minmax'] = {
     'xaxis'       : 'min\{max(m_{b_{1}l_{1}},m_{b_{2}l_{2}}),max(m_{b_{1}l_{2}},m_{b_{2}l_{1}})\} (GeV)',
     'yaxis'       : 'd#sigma [pb]',
-    #'genbinning'  : [0., 60., 100., 150., 300.],
+    'genbinning'  : [0., 60., 100., 150., 300.,420.],
     'recobinning' : [0., 40, 60., 80., 100., 120., 140., 160., 180., 200., 220., 240., 270., 310., 380., 420.],
     'var'         : 'TM_bjetlepton_minmax',
     'var_response': 'M_bjetlepton_minmax',
