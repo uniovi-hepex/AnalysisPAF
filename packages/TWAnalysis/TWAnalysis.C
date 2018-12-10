@@ -69,7 +69,34 @@ void TWAnalysis::Initialise(){
   gIsTTbar     = false;
   gIsTW        = false;
   gIsLHE       = false;
+  
+  
+// PREFIRING CHECK
+  TFile* fPrefWeight1 = TFile::Open("/nfs/fanae/user/sscruz/TW_jun4/AnalysisPAF/prefMaps/Map_Jet_L1FinOReff_bxm1_looseJet_JetHT_Run2016B-H.root");
+  TFile* fPrefWeight2 = TFile::Open("/nfs/fanae/user/sscruz/TW_jun4/AnalysisPAF/prefMaps/Map_Jet_L1FinOReff_bxm1_looseJet_SingleMuon_Run2016B-H.root");
+  TFile* fPrefWeight3 = TFile::Open("/nfs/fanae/user/sscruz/TW_jun4/AnalysisPAF/prefMaps/Map_Jet_L1IsoEG30eff_bxm1_looseJet_JetHT_Run2016B-H.root");
 
+  TEfficiency* hTemPrefWeight1 = (TEfficiency*) fPrefWeight1->Get("prefireEfficiencyMap");
+  hPrefWeight1 = (TEfficiency*) hTemPrefWeight1->Clone("prefireEfficiencyMap1");
+  hPrefWeight1->SetDirectory(0);
+  fPrefWeight1->Close();
+
+  
+  TEfficiency* hTemPrefWeight2 = (TEfficiency*) fPrefWeight2->Get("prefireEfficiencyMap");
+  hPrefWeight2 = (TEfficiency*) hTemPrefWeight2->Clone("prefireEfficiencyMap2");
+  hPrefWeight2->SetDirectory(0);
+  fPrefWeight2->Close();
+
+  TEfficiency* hTemPrefWeight3 = (TEfficiency*) fPrefWeight3->Get("prefireEfficiencyMap");
+  hPrefWeight3 = (TEfficiency*) hTemPrefWeight3->Clone("prefireEfficiencyMap3");
+  hPrefWeight3->SetDirectory(0);
+  fPrefWeight3->Close();
+
+  if (!hPrefWeight1) cout << "Its not gonna work" << endl;
+  if (!hPrefWeight2) cout << "Its not gonna work" << endl;
+  if (!hPrefWeight3) cout << "Its not gonna work" << endl;
+  
+  
   gIsFSRUp = false; gIsFSRDown = false;
   if     (gSampleName.Contains("TTbar_Powheg") && gSampleName.Contains("fsrUp"))   gIsFSRUp = true;
   else if(gSampleName.Contains("TTbar_Powheg") && gSampleName.Contains("fsrDown")) gIsFSRDown = true;
@@ -1863,6 +1890,10 @@ void TWAnalysis::SetTWVariables()
   fMini1j1t->Branch("TDPhiLeadJetJERUp",       &TDPhiLeadJetJERUp,          "TDPhiLeadJetJERUp/F");
   fMini1j1t->Branch("TDPhiSubLeadJetJERUp",    &TDPhiSubLeadJetJERUp,       "TDPhiSubLeadJetJERUp/F");
   
+  fMini1j1t->Branch("prefWeight1",             &prefWeight1,                "prefWeight1/F");
+  fMini1j1t->Branch("prefWeight2",             &prefWeight2,                "prefWeight2/F");
+  fMini1j1t->Branch("prefWeight3",             &prefWeight3,                "prefWeight3/F");
+  
   if (gPar.Contains("Unfolding")) {
     fMini1j1t->Branch("Tpassgen",                &Tpassgen,                   "Tpassgen/B");
     fMini1j1t->Branch("TnSergioJets",            &nSergioJets,                "TnSergioJets/I");
@@ -2237,11 +2268,35 @@ void TWAnalysis::ReSetTWVariables()
   TWeight_normal  = -99;
 }
 
-void TWAnalysis::CalculateTWVariables()
-{
+
+void TWAnalysis::CalculateTWVariables() {
   if (hasTW) return;
   hasTW = true;
+  
+  prefWeight1 = 1;
+  prefWeight2 = 1;
+  prefWeight3 = 1;
+  
+  for (Int_t j = 0; j < Get<Int_t>("nJet"); ++j) {
+    Float_t pt  = Get<Float_t>("Jet_pt" ,j);
+    Float_t eta = Get<Float_t>("Jet_eta",j);
+    prefWeight1 *= (1 - getWeightFromHist(pt, eta, hPrefWeight1));
+    prefWeight2 *= (1 - getWeightFromHist(pt, eta, hPrefWeight2));
+    prefWeight3 *= (1 - getWeightFromHist(pt, eta, hPrefWeight3));
+  }
 
+  for (Int_t j = 0; j < Get<Int_t>("nJetFwd"); ++j) {
+    Float_t pt  = Get<Float_t>("JetFwd_pt" ,j);
+    Float_t eta = Get<Float_t>("JetFwd_eta",j);
+    prefWeight1 *= (1 - getWeightFromHist(pt, eta, hPrefWeight1));
+    prefWeight2 *= (1 - getWeightFromHist(pt, eta, hPrefWeight2));
+    prefWeight3 *= (1 - getWeightFromHist(pt, eta, hPrefWeight3));
+  }
+  
+  prefWeight1 = 1 - prefWeight1;
+  prefWeight2 = 1 - prefWeight2;
+  prefWeight3 = 1 - prefWeight3;
+  
   get20Jets();
   TLorentzVector met;
   if (TNJets == 1 && TNBtags == 1) {
@@ -3840,4 +3895,13 @@ Double_t TWAnalysis::getET_LLJetMET(int sys) {
   else {
     return -999;
   }
+}
+
+Float_t TWAnalysis::getWeightFromHist(Float_t pt, Float_t eta, TEfficiency* hist) {
+  Int_t etabin = hist->GetPassedHistogram()->GetXaxis()->FindBin(TMath::Abs(eta));
+  Int_t ptbin  = hist->GetPassedHistogram()->GetYaxis()->FindBin(pt);
+  Int_t bin    = hist->GetPassedHistogram()->GetBin(etabin,ptbin);
+  Float_t wei  = hist->GetEfficiency(bin);
+  if (wei == 0) wei = 1;
+  return wei;
 }
