@@ -6,6 +6,8 @@
 #include <vector>
 #include "TMVA/Factory.h"
 #include "TMVA/Reader.h"
+#include "TEfficiency.h"
+#include "TFile.h"
 
 //enum eChannels{iUnkChan, iElMu, iMuon, iElec, nChannels};
 const Int_t nChannels = 3;
@@ -132,6 +134,7 @@ class TWAnalysis : public PAFChainItemSelector{
 
     Double_t getDilepMETPt(int sys= 0);
 
+    Float_t getWeightFromHist(Float_t pt, Float_t eta, TEfficiency* hist);
 
     //Variables
     Float_t TWeight;   // Total nominal weight
@@ -335,6 +338,14 @@ class TWAnalysis : public PAFChainItemSelector{
     TLorentzVector tpL;
     TLorentzVector SergioMET;
     TLorentzVector tMET;
+    
+    Float_t prefWeight1;
+    Float_t prefWeight2;
+    Float_t prefWeight3;
+    
+    TEfficiency* hPrefWeight1;
+    TEfficiency* hPrefWeight2;
+    TEfficiency* hPrefWeight3;
 
     // For systematics...
     Int_t   TNJetsJESUp;
