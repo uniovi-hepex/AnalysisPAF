@@ -1325,7 +1325,7 @@ void LeptonSelector::GetGenLeptonVariables(Int_t i){
   gpdgMId = TMath::Abs(Get<Int_t>("genLep_motherId", i));
   gpdgGMId = TMath::Abs(Get<Int_t>("genLep_motherId", i));
   type = TMath::Abs(Get<Int_t>("genLep_pdgId",i)) == 11 ? 1 : 0;
-  isPrompt = (Get<Int_t>("genLep_isPromptHard",i) != 0);
+  if (gSelection != iTWSelec && gSelection != iTWTTbarSelec) isPrompt = (Get<Int_t>("genLep_isPromptHard",i) != 0);
 }
 
 void LeptonSelector::GetGenParticleVariables(Int_t i){
@@ -1334,7 +1334,7 @@ void LeptonSelector::GetGenParticleVariables(Int_t i){
   gpdgMId = TMath::Abs(Get<Int_t>("GenPart_motherId", i));
   gpdgGMId = TMath::Abs(Get<Int_t>("GenPart_motherId", i));
   type = TMath::Abs(Get<Int_t>("GenPart_pdgId",i));
-  isPrompt = Get<Int_t>("GenPart_isPromptHard",i) ;
+  if (gSelection != iTWSelec && gSelection != iTWTTbarSelec) isPrompt = Get<Int_t>("GenPart_isPromptHard",i) ;
 }
 
 void LeptonSelector::GetGenLepFromTauVariables(Int_t i){
@@ -1343,7 +1343,7 @@ void LeptonSelector::GetGenLepFromTauVariables(Int_t i){
   gpdgMId = TMath::Abs(Get<Int_t>("genLepFromTau_grandmotherId", i));
   gpdgGMId = TMath::Abs(Get<Int_t>("genLepFromTau_grandmotherId", i));
   type = TMath::Abs(Get<Int_t>("genLepFromTau_pdgId",i)) == 11 ? 1 : 0;
-  isPrompt = Get<Int_t>("genLep_isPromptHard",i);
+  if (gSelection != iTWSelec && gSelection != iTWTTbarSelec) isPrompt = Get<Int_t>("genLep_isPromptHard",i);
 }
 
 void LeptonSelector::GetGenBquarks(){
