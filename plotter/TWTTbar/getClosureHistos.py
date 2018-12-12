@@ -129,6 +129,8 @@ p.SetWeight('TWeight*' + str(specialweight))
 p.AddSample('TbarW_noFullyHadr',      'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), '', opts)
 p.SetWeight('TWeight')
 
+p.AddSample("TTbar_Powheg",    "ttbar", r.itBkg, 2, '', opts)
+
 p.NoShowVarName = True;
 p.SetOutputName("ClosureTest_recobinning_" + varName);
 p.SaveHistograms();
