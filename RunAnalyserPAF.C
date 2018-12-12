@@ -326,7 +326,7 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
   if(sampleName.Contains("_ext1")) sampleName.ReplaceAll("_ext1",""); 
   if(sampleName.Contains("_ext"))  sampleName.ReplaceAll("_ext",""); 
   if(options == "Semi")            sampleName += "Semi";
-  if(options == "Unfolding")       sampleName = "UNF_" + sampleName;
+  if(options.Contains("Unfolding")) sampleName = "UNF_" + sampleName;
   
   //if     (nEvents > 0 && FirstEvent == 0) myProject->SetNEvents(nEvents);
   if(nEvents < 0 && FirstEvent <= 0){ // Divide the sample
