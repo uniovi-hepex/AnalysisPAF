@@ -70,15 +70,15 @@ def plotvariable(tsk):
     p.AddSample("DYJetsToLL_M5to50_MLM",        "DY",           r.itBkg, 852, systlist);
     p.AddSample("DYJetsToLL_M50_MLM",           "DY",           r.itBkg, 852, systlist);
     
-    #p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itBkg, 633, systlist)
+    p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itBkg, 633, systlist)
     
-    specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar_Powheg',          't#bar{t}',    r.itBkg, 633, systlist)
-    specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar2L_powheg',        't#bar{t}',    r.itBkg, 633, systlist)
-    p.SetWeight('TWeight')
+    #specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTbar_Powheg',          't#bar{t}',    r.itBkg, 633, systlist)
+    #specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTbar2L_powheg',        't#bar{t}',    r.itBkg, 633, systlist)
+    #p.SetWeight('TWeight')
     
     #p.AddSample("TW",                           "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
     #p.AddSample("TbarW",                        "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist);
@@ -284,15 +284,15 @@ def plotcustomvariable(tsk):
     p.AddSample("DYJetsToLL_M5to50_MLM",        "DY",           r.itBkg, 852, systlist);
     p.AddSample("DYJetsToLL_M50_MLM",           "DY",           r.itBkg, 852, systlist);
     
-    #p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itBkg, 633, systlist)
+    p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itBkg, 633, systlist)
     
-    specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar_Powheg',          't#bar{t}',    r.itBkg, 633, systlist)
-    specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar2L_powheg',        't#bar{t}',    r.itBkg, 633, systlist)
-    p.SetWeight('TWeight')
+    #specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTbar_Powheg',          't#bar{t}',    r.itBkg, 633, systlist)
+    #specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTbar2L_powheg',        't#bar{t}',    r.itBkg, 633, systlist)
+    #p.SetWeight('TWeight')
     
     #p.AddSample("TW",                           "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
     #p.AddSample("TbarW",                        "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist);
@@ -480,15 +480,15 @@ def plotthenumberofjets(tsk):
     p.AddSample("DYJetsToLL_M5to50_MLM",        "DY",           r.itBkg, 852, systlist);
     p.AddSample("DYJetsToLL_M50_MLM",           "DY",           r.itBkg, 852, systlist);
     
-    #p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itBkg, 633, systlist)
+    p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itBkg, 633, systlist)
     
-    specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar_Powheg',          't#bar{t}',    r.itBkg, 633, systlist)
-    specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar2L_powheg',        't#bar{t}',    r.itBkg, 633, systlist)
-    p.SetWeight('TWeight')
+    #specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTbar_Powheg',          't#bar{t}',    r.itBkg, 633, systlist)
+    #specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTbar2L_powheg',        't#bar{t}',    r.itBkg, 633, systlist)
+    #p.SetWeight('TWeight')
     
     #p.AddSample("TW",                           "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
     #p.AddSample("TbarW",                        "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist);
