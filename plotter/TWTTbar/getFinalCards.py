@@ -85,7 +85,7 @@ def GiveMeMyHistos(var):
         p.AddSample("DoubleEG",          "Data",     r.itData, 0, '', opts)
         p.AddSample("DoubleMuon",        "Data",     r.itData, 0, '', opts)
     else:
-        hData=r.Histo(p.GetHisto('tW').Clone("Data"))
+        hData=r.Histo(p.GetHisto('tWttbar').Clone("Data"))
         for proc in ['ttbar', 'VVttbarV', "DY", "Non-WorZ"]:
             hData.Add( p.GetHisto(proc) )
         hData.SetProcess("Data")
@@ -275,7 +275,7 @@ def GiveMeMyAsimovHistos(var):
     p.AddSample('TbarW_noFullyHadr',      'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts)
     p.SetWeight('TWeight')
     
-    hData = r.Histo(copy.deepcopy(p.GetHisto('tW').Clone("hData")))
+    hData = r.Histo(copy.deepcopy(p.GetHisto('tWttbar').Clone("hData")))
     for proc in ['ttbar', 'VVttbarV', "DY", "Non-WorZ"]:
         tmph = copy.deepcopy(p.GetHisto(proc).Clone(proc + "_tmp"))
         hData.Add( tmph )
