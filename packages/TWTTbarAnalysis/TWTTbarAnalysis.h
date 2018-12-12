@@ -282,6 +282,9 @@ class TWTTbarAnalysis : public PAFChainItemSelector{
     Float_t TGenM_LeadingB    ;
     Float_t TGenM_SubLeadingB ;
     Float_t TGenE_LLB         ;
+    Float_t TGenM_LeadingBj2  ;
+    Float_t TGenM_SubLeadingBj2;
+    Float_t TGenM_bjetlepton_minmax;
     Float_t TGenMT_LLMETB     ;
     Float_t TGenM_LLB         ;
     Float_t TGenDilepPt        ;
