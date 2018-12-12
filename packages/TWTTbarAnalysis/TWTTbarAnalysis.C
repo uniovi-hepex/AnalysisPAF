@@ -118,15 +118,38 @@ void TWTTbarAnalysis::InsideLoop() {            //=============== InsideLoop
   
   TWeight_normal = NormWeight;
   
-  if ((gPar.Contains("Unfolding")) && (nSergioLeps >= 2) && (nSergioJets == 1) && (nSergiobJets == 1)) { // Checking if we pass the selection with gen things
+  if ((gPar.Contains("Unfolding")) && (nSergioLeps >= 2) && (nSergioJets == 2) && (nSergiobJets == 2)) { // Checking if we pass the selection with gen things
     if(SergioLeps.at(0).isElec && SergioLeps.at(1).isMuon) GenChannel = iElMu; // ...but first, let's redefine the GenChannel to get it right
     if(SergioLeps.at(0).isMuon && SergioLeps.at(1).isElec) GenChannel = iElMu;
     if(SergioLeps.at(0).isMuon && SergioLeps.at(1).isMuon) GenChannel = iMuon;
     if(SergioLeps.at(0).isElec && SergioLeps.at(1).isElec) GenChannel = iElec;
     TGenIsSS            = (SergioLeps.at(0).charge * SergioLeps.at(1).charge) > 0;
     
-    TGenM_LeadingB      = (SergioJets.at(0).p + SergioLeps.at(0).p).M();
+    TGenM_LeadingB     = (SergioJets.at(0).p + SergioLeps.at(0).p).M();
     TGenM_SubLeadingB   = (SergioJets.at(0).p + SergioLeps.at(1).p).M();
+    //nuevas variables para la variable de ATLAS
+    TGenM_LeadingBj2    = (SergioJets.at(1).p + SergioLeps.at(0).p).M();
+    TGenM_SubLeadingBj2 = (SergioJets.at(1).p + SergioLeps.at(1).p).M();
+    if(GreaterThan(TGenM_LeadingB,TGenM_SubLeadingBj2)) {
+        if(GreaterThan(TGenM_SubLeadingB,TGenM_LeadingBj2)) {
+            if(!GreaterThan(TGenM_LeadingB,TGenM_SubLeadingB)) {TGenM_bjetlepton_minmax = TGenM_LeadingB;}
+            else                                               {TGenM_bjetlepton_minmax = TGenM_SubLeadingB;}
+        }
+        else {
+            if(!GreaterThan(TGenM_LeadingB,TGenM_LeadingBj2))  {TGenM_bjetlepton_minmax = TGenM_LeadingB; }
+            else                                               {TGenM_bjetlepton_minmax = TGenM_LeadingBj2;}
+        }
+    }
+    else {
+        if(GreaterThan(TGenM_SubLeadingB,TGenM_LeadingBj2)) {
+            if(!GreaterThan(TGenM_SubLeadingBj2,TGenM_SubLeadingB)) {TGenM_bjetlepton_minmax = TGenM_SubLeadingBj2;}
+            else                                                    {TGenM_bjetlepton_minmax = TGenM_SubLeadingB;}
+        }
+        else {
+            if(!GreaterThan(TGenM_SubLeadingBj2,TGenM_LeadingBj2))  {TGenM_bjetlepton_minmax = TGenM_SubLeadingBj2;}
+            else                                                    {TGenM_bjetlepton_minmax = TGenM_LeadingBj2;}
+        }  
+    }
     TGenE_LLB           = (SergioJets.at(0).p + SergioLeps.at(0).p + SergioLeps.at(1).p).E();
     TGenMT_LLMETB       = (SergioJets.at(0).p + SergioLeps.at(0).p + SergioLeps.at(1).p + SergioMET).Mt();
     TGenM_LLB           = (SergioJets.at(0).p + SergioLeps.at(0).p + SergioLeps.at(1).p).M();
@@ -143,8 +166,11 @@ void TWTTbarAnalysis::InsideLoop() {            //=============== InsideLoop
     TGenDPhiSubLeadJet  = SergioLeps.at(1).p.DeltaPhi(SergioJets.at(0).p);
     
     if (((SergioLeps.at(0).p + SergioLeps.at(1).p).M() > 20) && (SergioLeps.at(0).p.Pt() > 25) && 
-        (GenChannel == iElMu) && !TGenIsSS && (nSergioLooseCentralJets == 1)) {
-      Tpassgen        = 1;
+        (GenChannel == iElMu || GenChannel == iMuon || GenChannel == iElec) && !TGenIsSS && (nSergioLooseCentralJets == 2)) {
+      if (GenChannel == iMuon || GenChannel == iElec) {
+        if ((TGenMET > 20) && (abs(TGenMll-90.19)>15)) {Tpassgen = 1;}   
+      }
+      else {Tpassgen = 1;}
     }
   }
   // Checking if we pass the selection with reco things
@@ -203,11 +229,11 @@ void TWTTbarAnalysis::InsideLoop() {            //=============== InsideLoop
 
     if(gIsData) TWeight = 1;
     
-    CalculateTWTTbarVariables(); //estas hay que cambiarlas por las de TWTTbar
+    CalculateTWTTbarVariables(); 
     
     if ((TNJets == 2) && (TNBtags == 2) && (nLooseCentral == 2)) {
-      if ((TChannel == iElec || TChannel == iMuon)) {
-          if ((TMET > 20) && (abs(TMll-90.19)>15)) {Tpassreco = 1;}
+      if (TChannel == iMuon || TChannel == iElec) {
+          if ((TMET > 20) && (abs(TMll-90.19)>15)) {Tpassreco = 1;}   
       }
       else {Tpassreco = 1;}
     }
@@ -226,6 +252,9 @@ void TWTTbarAnalysis::InsideLoop() {            //=============== InsideLoop
   if (TMET                 >= 200)         TMET                 = 199.999;
   if (TM_LeadingB          >= 400)         TM_LeadingB          = 399.999;
   if (TM_SubLeadingB       >= 300)         TM_SubLeadingB       = 299.999;
+  if (TM_LeadingBj2        >= 400)         TM_LeadingBj2        = 399.999;
+  if (TM_SubLeadingBj2     >= 300)         TM_SubLeadingBj2     = 299.999;
+  if (TM_bjetlepton_minmax >= 420)         TM_bjetlepton_minmax = 419.999;
   if (TM_LLB               >= 400)         TM_LLB               = 399.999;
   if (TMT_LLMETB           >= 500)         TMT_LLMETB           = 499.999;
   if (TE_LLB               >= 700)         TE_LLB               = 699.999;
@@ -256,6 +285,9 @@ void TWTTbarAnalysis::InsideLoop() {            //=============== InsideLoop
   if (TMET                 < 0)            TMET                 = 0;
   if (TM_LeadingB          < 0)            TM_LeadingB          = 0;
   if (TM_SubLeadingB       < 0)            TM_SubLeadingB       = 0;
+  if (TM_LeadingBj2        < 0)            TM_LeadingBj2        = 0;
+  if (TM_SubLeadingBj2     < 0)            TM_SubLeadingBj2     = 0;
+  if (TM_bjetlepton_minmax < 0)            TM_bjetlepton_minmax = 0;
   if (TM_LLB               < 0)            TM_LLB               = 0;
   if (TMT_LLMETB           < 0)            TMT_LLMETB           = 0;
   if (TE_LLB               < 0)            TE_LLB               = 0;
@@ -471,6 +503,9 @@ void TWTTbarAnalysis::InsideLoop() {            //=============== InsideLoop
   if (TGenM_LeadingB       >= 400)         TGenM_LeadingB       = 399.999;
   if (TGenM_SubLeadingB    >= 300)         TGenM_SubLeadingB    = 299.999;
   if (TGenM_LLB            >= 400)         TGenM_LLB            = 399.999;
+  if (TGenM_LeadingBj2     >= 400)         TGenM_LeadingBj2     = 399.999;
+  if (TGenM_SubLeadingBj2  >= 300)         TGenM_SubLeadingBj2  = 299.999;
+  if (TGenM_bjetlepton_minmax>=420)        TGenM_bjetlepton_minmax=419.999;
   if (TGenMT_LLMETB        >= 500)         TGenMT_LLMETB        = 499.999;
   if (TGenE_LLB            >= 700)         TGenE_LLB            = 699.999;
   if (TGenDilepPt          >= 200)         TGenDilepPt          = 199.999;
@@ -501,6 +536,9 @@ void TWTTbarAnalysis::InsideLoop() {            //=============== InsideLoop
   if (TGenM_LeadingB       < 0)            TGenM_LeadingB       = 0;
   if (TGenM_SubLeadingB    < 0)            TGenM_SubLeadingB    = 0;
   if (TGenM_LLB            < 0)            TGenM_LLB            = 0;
+  if (TGenM_LeadingBj2     < 0)            TGenM_LeadingBj2     = 0;
+  if (TGenM_SubLeadingBj2  < 0)            TGenM_SubLeadingBj2  = 0;
+  if (TGenM_bjetlepton_minmax<0)           TGenM_bjetlepton_minmax=0;
   if (TGenMT_LLMETB        < 0)            TGenMT_LLMETB        = 0;
   if (TGenE_LLB            < 0)            TGenE_LLB            = 0;
   if (TGenDilepPt          < 0)            TGenDilepPt          = 0;
@@ -536,6 +574,9 @@ void TWTTbarAnalysis::InsideLoop() {            //=============== InsideLoop
         TM_LeadingB       = 99999;
         TM_SubLeadingB    = 99999;
         TM_LLB            = 99999;
+        TM_LeadingBj2     = 99999;
+        TM_SubLeadingBj2  = 99999;
+        TM_bjetlepton_minmax=99999;
         TMT_LLMETB        = 99999;
         TE_LLB            = 99999;
         TDilepPt          = 99999;
@@ -659,7 +700,7 @@ void TWTTbarAnalysis::InsideLoop() {            //=============== InsideLoop
         TDPhiSubLeadJetJERUp   = 99999;
     }
   }
-  if (Tpassreco || (TNJets == 2 && TNBtags == 2)) {
+  if (Tpassreco || (TNJets == 2 && TNBtags == 2) || Tpassgen) {
   
   //if (Tpassgen || Tpassreco || TpassrecoJESUp || TpassrecoJESDown || TpassrecoJERUp 
       //|| (TNJets == 2 && TNBtags == 2) || (TNJetsJESUp == 1 && TNBtagsJESUp == 1) 
@@ -1205,6 +1246,9 @@ void TWTTbarAnalysis::SetTWTTbarVariables() {
     fMini1j1t->Branch("TGenM_LeadingB" ,         &TGenM_LeadingB,             "TGenM_LeadingB/F");
     fMini1j1t->Branch("TGenM_SubLeadingB",       &TGenM_SubLeadingB,          "TGenM_SubLeadingB/F");
     fMini1j1t->Branch("TGenE_LLB",               &TGenE_LLB,                  "TGenE_LLB/F");
+    fMini1j1t->Branch("TGenM_LeadingBj2" ,       &TGenM_LeadingBj2,           "TGenM_LeadingBj2/F");
+    fMini1j1t->Branch("TGenM_SubLeadingBj2",     &TGenM_SubLeadingBj2,        "TGenM_SubLeadingBj2/F");
+    fMini1j1t->Branch("TGenM_bjetlepton_minmax", &TGenM_bjetlepton_minmax,    "TGenM_bjetlepton_minmax/F");
     fMini1j1t->Branch("TGenMT_LLMETB",           &TGenMT_LLMETB,              "TGenMT_LLMETB/F");
     fMini1j1t->Branch("TGenM_LLB",               &TGenM_LLB,                  "TGenM_LLB/F");
     fMini1j1t->Branch("TGenDilepPt",             &TGenDilepPt,                "TGenDilepPt/F");
@@ -1397,6 +1441,9 @@ void TWTTbarAnalysis::ReSetTWTTbarVariables() {
   TGenM_LeadingB     = -99;
   TGenM_SubLeadingB  = -99;
   TGenE_LLB          = -99;
+  TGenM_LeadingBj2   = -99;
+  TGenM_SubLeadingBj2= -99;
+  TGenM_bjetlepton_minmax=-99;
   TGenMT_LLMETB      = -99;
   TGenM_LLB          = -99;
   TGenDilepJetPt     = -99;
@@ -1527,6 +1574,9 @@ void TWTTbarAnalysis::CalculateTWTTbarVariables() {
     TM_LeadingB      = -99.;
     TM_SubLeadingB   = -99.;
     TE_LLB           = -99.;
+    TM_LeadingBj2    = -99.;
+    TM_SubLeadingBj2 = -99.;
+    TM_bjetlepton_minmax= -99.;
     TMT_LLMETB       = -99.;
     TM_LLB           = -99.;
     TLLMETBEta       = -99.;
