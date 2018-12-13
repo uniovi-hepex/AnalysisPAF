@@ -10,7 +10,6 @@ pathToTree  = ""
 NameOfTree  = "Mini1j1t";
 systlist    = "JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"
 StandardCut = "(Tpassreco == 1)"
-#StandardCut = "(Tpassreco == 1) * (prefWeight1)"; # for prefiring checks!
 opts        = ''
 
 r.gROOT.SetBatch(True)

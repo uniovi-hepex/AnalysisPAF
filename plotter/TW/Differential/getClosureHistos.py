@@ -7,7 +7,6 @@ vl.SetUpWarnings()
 
 pathToTree  = ""
 recocut     = "Tpassreco == 1"
-#recocut     = "(Tpassreco == 1) * (prefWeight1)" # for prefiring checks!
 gencut      = '1/TWeight*TWeight_normal*(Tpassgen == 1)'
 
 if (len(sys.argv) > 1):

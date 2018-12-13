@@ -2297,7 +2297,7 @@ void TWAnalysis::CalculateTWVariables() {
     prefWeight1 *= (1 - getWeightFromHist(pt, eta, hPrefWeight1));
     prefWeight2 *= (1 - getWeightFromHist(pt, eta, hPrefWeight2));
     prefWeight3 *= (1 - getWeightFromHist(pt, eta, hPrefWeight3));
-    prefWeight *= (1 - getWeightFromTrueHist(pt, eta, hPrefWeight));
+    prefWeight  *= (1 - getWeightFromTrueHist(pt, eta, hPrefWeight));
   }
 
   for (Int_t j = 0; j < Get<Int_t>("nJetFwd"); ++j) {
@@ -2306,7 +2306,7 @@ void TWAnalysis::CalculateTWVariables() {
     prefWeight1 *= (1 - getWeightFromHist(pt, eta, hPrefWeight1));
     prefWeight2 *= (1 - getWeightFromHist(pt, eta, hPrefWeight2));
     prefWeight3 *= (1 - getWeightFromHist(pt, eta, hPrefWeight3));
-    prefWeight *= (1 - getWeightFromTrueHist(pt, eta, hPrefWeight));
+    prefWeight  *= (1 - getWeightFromTrueHist(pt, eta, hPrefWeight));
   }
   prefWeight1 = 1 - prefWeight1;
   prefWeight2 = 1 - prefWeight2;
@@ -3918,7 +3918,7 @@ Float_t TWAnalysis::getWeightFromHist(Float_t pt, Float_t eta, TEfficiency* hist
   Int_t ptbin  = hist->GetPassedHistogram()->GetYaxis()->FindBin(pt);
   Int_t bin    = hist->GetPassedHistogram()->GetBin(etabin,ptbin);
   Float_t wei  = hist->GetEfficiency(bin);
-  if (wei == 0) wei = 1;
+//   if (wei == 0) wei = 1;
   return wei;
 }
 
@@ -3927,6 +3927,6 @@ Float_t TWAnalysis::getWeightFromTrueHist(Float_t pt, Float_t eta, TH2F* hist) {
   Int_t ptbin  = hist->GetYaxis()->FindBin(pt);
   Int_t bin    = hist->GetBin(etabin, ptbin);
   Float_t wei  = hist->GetBinContent(bin);
-  if (wei == 0) wei = 1;
+//   if (wei == 0) wei = 1;
   return wei;
 }
