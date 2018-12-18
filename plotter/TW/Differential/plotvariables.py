@@ -16,6 +16,7 @@ labelcontrol= "e^{#pm}#mu^{#mp}+1j1t+>0j_{loose}"
 #legtxtsize  = 0.028
 legtxtsize  = 0.055
 labelpos    = (0.275, 0.89)
+doPrefChecks= False
 
 if (len(sys.argv) > 1):
     nCores      = int(sys.argv[1])
@@ -55,6 +56,7 @@ def plotvariable(tsk):
     p.verbose  = True;
     p.SetChLabel(labelsignal if cut == "signal" else labelcontrol)
     p.SetChLabelPos(labelpos[0], labelpos[1], -1)
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight)')   # FOR PREFIRING CHECKS
     
     
     p.AddSample("TTbar_PowhegSemi",             "Non-W|Z",      r.itBkg, 413, systlist)
@@ -76,29 +78,37 @@ def plotvariable(tsk):
     #p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itBkg, 633, systlist)
     
     specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample('TTbar_Powheg',          't#bar{t}',    r.itBkg, 633, systlist)
     specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample('TTbar2L_powheg',        't#bar{t}',    r.itBkg, 633, systlist)
-    p.SetWeight('TWeight')
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight)')   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight')
     
     #p.AddSample("TW",                           "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
     #p.AddSample("TbarW",                        "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist);
     
     specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample('TW',                     'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
     specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample('TW_noFullyHadr',         'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
     specialweight = vl.n_tbarw/vl.sigma_tw/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample('TbarW',                  'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
     specialweight = vl.n_tbarwnohad/vl.sigma_twnohad/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample('TbarW_noFullyHadr',      'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
-    p.SetWeight('TWeight')
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight)')   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight')
     
     #p.AddSample("TW_noFullyHadr_DS",            "tW (DS)",      r.itSignal, r.kBlue)
     #p.AddSample("TbarW_noFullyHadr_DS",         "tW (DS)",      r.itSignal, r.kBlue)
@@ -154,30 +164,39 @@ def plotvariable(tsk):
     p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itSys, 1, "JERUp");
     
     specialweight = vl.nUEUp_ttbar/vl.sigma_ttbar/(vl.nUEUp_ttbar/vl.sigma_ttbar + vl.nUEUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar_Powheg_ueUp",            "t#bar{t}",     r.itSys, 1, "ueUp");
     specialweight = vl.nUEUp_dilep/vl.sigma_dilep/(vl.nUEUp_ttbar/vl.sigma_ttbar + vl.nUEUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar2L_Powheg_ueUp",          "t#bar{t}",     r.itSys, 1, "ueUp");
     specialweight = vl.nUEDown_ttbar/vl.sigma_ttbar/(vl.nUEDown_ttbar/vl.sigma_ttbar + vl.nUEDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar_Powheg_ueDown",          "t#bar{t}",     r.itSys, 1, "ueDown");
     specialweight = vl.nUEDown_dilep/vl.sigma_dilep/(vl.nUEDown_ttbar/vl.sigma_ttbar + vl.nUEDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar2L_Powheg_ueDown",        "t#bar{t}",     r.itSys, 1, "ueDown");
     specialweight = vl.nhDampUp_ttbar/vl.sigma_ttbar/(vl.nhDampUp_ttbar/vl.sigma_ttbar + vl.nhDampUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar_Powheg_hdampUp",         "t#bar{t}",     r.itSys, 1, "hdampUp");
     specialweight = vl.nhDampUp_dilep/vl.sigma_dilep/(vl.nhDampUp_ttbar/vl.sigma_ttbar + vl.nhDampUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar2L_Powheg_hdampUp",       "t#bar{t}",     r.itSys, 1, "hdampUp");
     specialweight = vl.nhDampDown_ttbar/vl.sigma_ttbar/(vl.nhDampDown_ttbar/vl.sigma_ttbar + vl.nhDampDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar_Powheg_hdampDown",       "t#bar{t}",     r.itSys, 1, "hdampDown");
     specialweight = vl.nhDampDown_dilep/vl.sigma_dilep/(vl.nhDampDown_ttbar/vl.sigma_ttbar + vl.nhDampDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar2L_Powheg_hdampDown",     "t#bar{t}",     r.itSys, 1, "hdampDown");
-    p.SetWeight("TWeight");
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight)')   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight')
     
     p.AddSample("TTbar_Powheg_isrUp"          , "t#bar{t}",     r.itSys, 1, "isrUp");
     p.AddSample("TTbar_Powheg_isrDown"        , "t#bar{t}",     r.itSys, 1, "isrDown");
@@ -185,24 +204,31 @@ def plotvariable(tsk):
     p.AddSample("TTbar_Powheg_fsrDown"        , "t#bar{t}",     r.itSys, 1, "fsrDown");
     
     specialweight = vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) *' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight *' + str(specialweight))
     p.AddSample('TTbar_GluonMoveCRTune',        't#bar{t}',     r.itSys, 1, "GluonMoveCRTune")
     specialweight = vl.nGluonMoveCRTune_dilep/vl.sigma_dilep/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) *' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight *' + str(specialweight))
     p.AddSample('TTTo2L2Nu_GluonMoveCRTune',    't#bar{t}',     r.itSys, 1, "GluonMoveCRTune")
     specialweight = vl.nPowhegerdON_ttbar/vl.sigma_ttbar/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) *' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight *' + str(specialweight))
     p.AddSample('TTbar_Powheg_erdON',           't#bar{t}',     r.itSys, 1, "Powheg_erdON")
     specialweight = vl.nPowhegerdON_dilep/vl.sigma_dilep/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) *' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight *' + str(specialweight))
     p.AddSample('TTTo2L2Nu_Powheg_erdON',       't#bar{t}',     r.itSys, 1, "Powheg_erdON")
     specialweight = vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) *' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight *' + str(specialweight))
     p.AddSample('TTbar_GluonMoveCRTune_erdON',  't#bar{t}',     r.itSys, 1, "QCDbasedCRTune_erdON")
     specialweight = vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) *' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight *' + str(specialweight))
     p.AddSample('TTTo2L2Nu_QCDbasedCRTune_erdON','t#bar{t}',    r.itSys, 1, "QCDbasedCRTune_erdON")
-    p.SetWeight('TWeight')
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight)')   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight')
     
     p.AddSample("TTbar_GluonMoveCRTune_erdON" , "t#bar{t}",     r.itSys, 1, "GluonMoveCRTune_erdON");
     p.UseEnvelope("t#bar{t}", "GluonMoveCRTune,GluonMoveCRTune_erdON,Powheg_erdON,QCDbasedCRTune_erdON", "ColorReconnection");
@@ -211,6 +237,7 @@ def plotvariable(tsk):
     pdf     = r.PDFToPy(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString(StandardCut) if cut == "signal" else r.TString(ControlCut), r.TString("ElMu"), r.TString(vl.varList[var]['var']), int(20), float(vl.varList[var]['recobinning'][0]), float(vl.varList[var]['recobinning'][-1]));
     pdf.verbose = False
     pdf.SetLumi(vl.Lumi * 1000)
+    if doPrefChecks: pdf.SetWeight("TWeight * (1 - prefWeight)")
     hPDFUp  = pdf.GetSystHisto("up","pdf").CloneHisto();
     hPDFDown= pdf.GetSystHisto("Down","pdf").CloneHisto();
     hMEUp   = pdf.GetSystHisto("up","ME").CloneHisto();
@@ -269,6 +296,7 @@ def plotcustomvariable(tsk):
     p.verbose  = True;
     p.SetChLabel(labelsignal if cut == "signal" else labelcontrol)
     p.SetChLabelPos(labelpos[0], labelpos[1], -1)
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight)')   # FOR PREFIRING CHECKS
     
     p.AddSample("TTbar_PowhegSemi",             "Non-W|Z",      r.itBkg, 413, systlist)
     p.AddSample("WJetsToLNu_MLM",               "Non-W|Z",      r.itBkg, 413, systlist)
@@ -289,29 +317,37 @@ def plotcustomvariable(tsk):
     #p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itBkg, 633, systlist)
     
     specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) *' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight *' + str(specialweight))
     p.AddSample('TTbar_Powheg',          't#bar{t}',    r.itBkg, 633, systlist)
     specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) *' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight *' + str(specialweight))
     p.AddSample('TTbar2L_powheg',        't#bar{t}',    r.itBkg, 633, systlist)
-    p.SetWeight('TWeight')
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight)')   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight')
     
     #p.AddSample("TW",                           "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
     #p.AddSample("TbarW",                        "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist);
     
     specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) *' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight *' + str(specialweight))
     p.AddSample('TW',                     'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
     specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) *' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight *' + str(specialweight))
     p.AddSample('TW_noFullyHadr',         'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
     specialweight = vl.n_tbarw/vl.sigma_tw/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) *' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight *' + str(specialweight))
     p.AddSample('TbarW',                  'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
     specialweight = vl.n_tbarwnohad/vl.sigma_twnohad/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) *' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight *' + str(specialweight))
     p.AddSample('TbarW_noFullyHadr',      'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
-    p.SetWeight('TWeight')
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight)')   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight')
     
     p.AddSample("MuonEG",                       "Data",         r.itData);
     p.AddSample("SingleMuon",                   "Data",         r.itData);
@@ -345,30 +381,39 @@ def plotcustomvariable(tsk):
     p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itSys, 1, "JERUp");
     
     specialweight = vl.nUEUp_ttbar/vl.sigma_ttbar/(vl.nUEUp_ttbar/vl.sigma_ttbar + vl.nUEUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar_Powheg_ueUp",            "t#bar{t}",     r.itSys, 1, "ueUp");
     specialweight = vl.nUEUp_dilep/vl.sigma_dilep/(vl.nUEUp_ttbar/vl.sigma_ttbar + vl.nUEUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar2L_Powheg_ueUp",          "t#bar{t}",     r.itSys, 1, "ueUp");
     specialweight = vl.nUEDown_ttbar/vl.sigma_ttbar/(vl.nUEDown_ttbar/vl.sigma_ttbar + vl.nUEDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar_Powheg_ueDown",          "t#bar{t}",     r.itSys, 1, "ueDown");
     specialweight = vl.nUEDown_dilep/vl.sigma_dilep/(vl.nUEDown_ttbar/vl.sigma_ttbar + vl.nUEDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar2L_Powheg_ueDown",        "t#bar{t}",     r.itSys, 1, "ueDown");
     specialweight = vl.nhDampUp_ttbar/vl.sigma_ttbar/(vl.nhDampUp_ttbar/vl.sigma_ttbar + vl.nhDampUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar_Powheg_hdampUp",         "t#bar{t}",     r.itSys, 1, "hdampUp");
     specialweight = vl.nhDampUp_dilep/vl.sigma_dilep/(vl.nhDampUp_ttbar/vl.sigma_ttbar + vl.nhDampUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar2L_Powheg_hdampUp",       "t#bar{t}",     r.itSys, 1, "hdampUp");
     specialweight = vl.nhDampDown_ttbar/vl.sigma_ttbar/(vl.nhDampDown_ttbar/vl.sigma_ttbar + vl.nhDampDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar_Powheg_hdampDown",       "t#bar{t}",     r.itSys, 1, "hdampDown");
     specialweight = vl.nhDampDown_dilep/vl.sigma_dilep/(vl.nhDampDown_ttbar/vl.sigma_ttbar + vl.nhDampDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar2L_Powheg_hdampDown",     "t#bar{t}",     r.itSys, 1, "hdampDown");
-    p.SetWeight("TWeight");
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight)')   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight')
     
     p.AddSample("TTbar_Powheg_isrUp"          , "t#bar{t}",     r.itSys, 1, "isrUp");
     p.AddSample("TTbar_Powheg_isrDown"        , "t#bar{t}",     r.itSys, 1, "isrDown");
@@ -376,24 +421,31 @@ def plotcustomvariable(tsk):
     p.AddSample("TTbar_Powheg_fsrDown"        , "t#bar{t}",     r.itSys, 1, "fsrDown");
     
     specialweight = vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample('TTbar_GluonMoveCRTune',        't#bar{t}',     r.itSys, 1, "GluonMoveCRTune")
     specialweight = vl.nGluonMoveCRTune_dilep/vl.sigma_dilep/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample('TTTo2L2Nu_GluonMoveCRTune',    't#bar{t}',     r.itSys, 1, "GluonMoveCRTune")
     specialweight = vl.nPowhegerdON_ttbar/vl.sigma_ttbar/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample('TTbar_Powheg_erdON',           't#bar{t}',     r.itSys, 1, "Powheg_erdON")
     specialweight = vl.nPowhegerdON_dilep/vl.sigma_dilep/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample('TTTo2L2Nu_Powheg_erdON',       't#bar{t}',     r.itSys, 1, "Powheg_erdON")
     specialweight = vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample('TTbar_GluonMoveCRTune_erdON',  't#bar{t}',     r.itSys, 1, "QCDbasedCRTune_erdON")
     specialweight = vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample('TTTo2L2Nu_QCDbasedCRTune_erdON','t#bar{t}',    r.itSys, 1, "QCDbasedCRTune_erdON")
-    p.SetWeight('TWeight')
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight)')   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight')
     
     p.AddSample("TTbar_GluonMoveCRTune_erdON" , "t#bar{t}",     r.itSys, 1, "GluonMoveCRTune_erdON");
     p.UseEnvelope("t#bar{t}", "GluonMoveCRTune,GluonMoveCRTune_erdON,Powheg_erdON,QCDbasedCRTune_erdON", "ColorReconnection");
@@ -403,6 +455,7 @@ def plotcustomvariable(tsk):
     pdf.verbose = False
     #pdf.verbose = True
     pdf.SetLumi(vl.Lumi * 1000)
+    if doPrefChecks: pdf.SetWeight("TWeight * (1 - prefWeight)")
     
     hPDFUp  = pdf.GetSystHisto("up","pdf").CloneHisto();
     hPDFDown= pdf.GetSystHisto("Down","pdf").CloneHisto();
@@ -464,6 +517,7 @@ def plotthenumberofjets(tsk):
     p.verbose  = True;
     p.SetChLabel(labelsignal if cut == "signal" else labelcontrol)
     p.SetChLabelPos(labelpos[0], labelpos[1], -1)
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight)')   # FOR PREFIRING CHECKS
     
     p.AddSample("TTbar_PowhegSemi",             "Non-W|Z",      r.itBkg, 413, systlist)
     p.AddSample("WJetsToLNu_MLM",               "Non-W|Z",      r.itBkg, 413, systlist)
@@ -484,29 +538,37 @@ def plotthenumberofjets(tsk):
     #p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itBkg, 633, systlist)
     
     specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample('TTbar_Powheg',          't#bar{t}',    r.itBkg, 633, systlist)
     specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample('TTbar2L_powheg',        't#bar{t}',    r.itBkg, 633, systlist)
-    p.SetWeight('TWeight')
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight)')   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight')
     
     #p.AddSample("TW",                           "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
     #p.AddSample("TbarW",                        "tW",           r.itBkg, r.TColor.GetColor("#ffcc33"), systlist);
     
     specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample('TW',                     'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
     specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample('TW_noFullyHadr',         'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
     specialweight = vl.n_tbarw/vl.sigma_tw/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample('TbarW',                  'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
     specialweight = vl.n_tbarwnohad/vl.sigma_twnohad/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample('TbarW_noFullyHadr',      'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), systlist)
-    p.SetWeight('TWeight')
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight)')   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight')
     
     p.AddSample("MuonEG",                       "Data",         r.itData);
     p.AddSample("SingleMuon",                   "Data",         r.itData);
@@ -540,30 +602,39 @@ def plotthenumberofjets(tsk):
     p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itSys, 1, "JERUp");
     
     specialweight = vl.nUEUp_ttbar/vl.sigma_ttbar/(vl.nUEUp_ttbar/vl.sigma_ttbar + vl.nUEUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar_Powheg_ueUp",            "t#bar{t}",     r.itSys, 1, "ueUp");
     specialweight = vl.nUEUp_dilep/vl.sigma_dilep/(vl.nUEUp_ttbar/vl.sigma_ttbar + vl.nUEUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar2L_Powheg_ueUp",          "t#bar{t}",     r.itSys, 1, "ueUp");
     specialweight = vl.nUEDown_ttbar/vl.sigma_ttbar/(vl.nUEDown_ttbar/vl.sigma_ttbar + vl.nUEDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar_Powheg_ueDown",          "t#bar{t}",     r.itSys, 1, "ueDown");
     specialweight = vl.nUEDown_dilep/vl.sigma_dilep/(vl.nUEDown_ttbar/vl.sigma_ttbar + vl.nUEDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar2L_Powheg_ueDown",        "t#bar{t}",     r.itSys, 1, "ueDown");
     specialweight = vl.nhDampUp_ttbar/vl.sigma_ttbar/(vl.nhDampUp_ttbar/vl.sigma_ttbar + vl.nhDampUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar_Powheg_hdampUp",         "t#bar{t}",     r.itSys, 1, "hdampUp");
     specialweight = vl.nhDampUp_dilep/vl.sigma_dilep/(vl.nhDampUp_ttbar/vl.sigma_ttbar + vl.nhDampUp_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar2L_Powheg_hdampUp",       "t#bar{t}",     r.itSys, 1, "hdampUp");
     specialweight = vl.nhDampDown_ttbar/vl.sigma_ttbar/(vl.nhDampDown_ttbar/vl.sigma_ttbar + vl.nhDampDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar_Powheg_hdampDown",       "t#bar{t}",     r.itSys, 1, "hdampDown");
     specialweight = vl.nhDampDown_dilep/vl.sigma_dilep/(vl.nhDampDown_ttbar/vl.sigma_ttbar + vl.nhDampDown_dilep/vl.sigma_dilep);
-    p.SetWeight("TWeight*" + str(specialweight));
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) * ' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight*' + str(specialweight))
     p.AddSample("TTbar2L_Powheg_hdampDown",     "t#bar{t}",     r.itSys, 1, "hdampDown");
-    p.SetWeight("TWeight");
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight)')   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight')
     
     p.AddSample("TTbar_Powheg_isrUp"          , "t#bar{t}",     r.itSys, 1, "isrUp");
     p.AddSample("TTbar_Powheg_isrDown"        , "t#bar{t}",     r.itSys, 1, "isrDown");
@@ -571,24 +642,31 @@ def plotthenumberofjets(tsk):
     p.AddSample("TTbar_Powheg_fsrDown"        , "t#bar{t}",     r.itSys, 1, "fsrDown");
     
     specialweight = vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) *' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight *' + str(specialweight))
     p.AddSample('TTbar_GluonMoveCRTune',        't#bar{t}',     r.itSys, 1, "GluonMoveCRTune")
     specialweight = vl.nGluonMoveCRTune_dilep/vl.sigma_dilep/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) *' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight *' + str(specialweight))
     p.AddSample('TTTo2L2Nu_GluonMoveCRTune',    't#bar{t}',     r.itSys, 1, "GluonMoveCRTune")
     specialweight = vl.nPowhegerdON_ttbar/vl.sigma_ttbar/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) *' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight *' + str(specialweight))
     p.AddSample('TTbar_Powheg_erdON',           't#bar{t}',     r.itSys, 1, "Powheg_erdON")
     specialweight = vl.nPowhegerdON_dilep/vl.sigma_dilep/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) *' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight *' + str(specialweight))
     p.AddSample('TTTo2L2Nu_Powheg_erdON',       't#bar{t}',     r.itSys, 1, "Powheg_erdON")
     specialweight = vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) *' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight *' + str(specialweight))
     p.AddSample('TTbar_GluonMoveCRTune_erdON',  't#bar{t}',     r.itSys, 1, "QCDbasedCRTune_erdON")
     specialweight = vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight) *' + str(specialweight))   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight *' + str(specialweight))
     p.AddSample('TTTo2L2Nu_QCDbasedCRTune_erdON','t#bar{t}',    r.itSys, 1, "QCDbasedCRTune_erdON")
-    p.SetWeight('TWeight')
+    if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight)')   # FOR PREFIRING CHECKS
+    else:            p.SetWeight('TWeight')
     
     p.AddSample("TTbar_GluonMoveCRTune_erdON" , "t#bar{t}",     r.itSys, 1, "GluonMoveCRTune_erdON");
     p.UseEnvelope("t#bar{t}", "GluonMoveCRTune,GluonMoveCRTune_erdON,Powheg_erdON,QCDbasedCRTune_erdON", "ColorReconnection");
@@ -598,6 +676,7 @@ def plotthenumberofjets(tsk):
     pdf.verbose = False
     #pdf.verbose = True
     pdf.SetLumi(vl.Lumi * 1000)
+    if doPrefChecks: pdf.SetWeight("TWeight * (1 - prefWeight)")
     
     hPDFUp  = pdf.GetSystHisto("up","pdf").CloneHisto();
     hPDFDown= pdf.GetSystHisto("Down","pdf").CloneHisto();
@@ -643,32 +722,29 @@ def plotthenumberofjets(tsk):
     p.PrintSystYields()
     del p
 
+def lazyoptimisation(tsk):
+    var, reg, bnng = tsk
+    if var == "nLooseCentral": return plotthenumberofjets(tsk[:-1])
+    elif bnng == "custom":     return plotcustomvariable(tsk[:-1])
+    else:                      return plotvariable(tsk[:-1])
+    return
+
 
 if __name__ == '__main__':
     tasks = []
+    tasks.append( ("nLooseCentral", "signal", "wololo") )
     for v in vl.varList["Names"]["Variables"]:
         for ct in ['signal', 'control']:
-        #for ct in ['signal']:
-        #for ct in ['control']:
-            tasks.append( (v, ct) )
+            for bnng in ['custom', 'descriptive']:
+                tasks.append( (v, ct, bnng) )
     
-    #tasks.append( ("DilepMETJet1Pz", "control") )
-    #tasks.append( ("DPhiLL", "signal") )
+    #tasks.append( ("DilepMETJet1Pz", "control", "custom") )
+    #tasks.append( ("DPhiLL", "signal", "descriptive") )
     
-    print "> Beginning to plot descriptive histograms", "\n"
+    print "> Launching plotting processes..."
     pool = Pool(nCores)
-    pool.map(plotvariable, tasks)
+    pool.map(lazyoptimisation, tasks)
     pool.close()
     pool.join()
     del pool
-    
-    print "> Beginning to plot histograms with actual reconstruction binning", "\n"
-    pool = Pool(nCores)
-    pool.map(plotcustomvariable, tasks)
-    pool.close()
-    pool.join()
-    del pool
-    
-    #plotthenumberofjets(("nLooseCentral", "signal"))
-    
     print "> Done!", "\n"
