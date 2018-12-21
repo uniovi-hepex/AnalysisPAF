@@ -135,8 +135,8 @@ varList['LeadingJetEuncertainties'] = {
 }
 
 varList['MT_LLMETB'] = {
-    #'xaxis'       : 'm_{T}(\\ell_{1}, \\ell_{2},\\slash{E}_{T}, j) (GeV)',
-    'xaxis'       : 'm_{T}(e^{\\pm}, \\mu^{\\mp}, \\slash{E}_{T}, j) (GeV)',
+    'xaxis'       : 'm_{T}(\\ell_{1}, \\ell_{2},\\slash{E}_{T}, j) (GeV)',
+    #'xaxis'       : 'm_{T}(e^{\\pm}, \\mu^{\\mp}, \\slash{E}_{T}, j) (GeV)',
     'yaxis'       : 'd#sigma [pb]',
     'genbinning'  : [0., 225., 325., 425., 500.],
     'recobinning' : [0., 225., 250., 275., 300., 325., 350., 425., 500.],
@@ -155,8 +155,8 @@ varList['MT_LLMETBuncertainties'] = {
 }
 
 varList['M_LLB'] = {
-    #'xaxis'       : 'm(\\ell_{1}, \\ell_{2}, j) (GeV)',
-    'xaxis'       : 'm(e^{#pm}, #mu^{#mp}, j) (GeV)',
+    'xaxis'       : 'm(\\ell_{1}, \\ell_{2}, j) (GeV)',
+    #'xaxis'       : 'm(e^{#pm}, #mu^{#mp}, j) (GeV)',
     'yaxis'       : 'd#sigma [pb]',
     'genbinning'  : [0., 125., 250., 350., 400.],
     'recobinning' : [0., 125., 170., 180., 200., 240., 290., 350., 400.],
@@ -228,12 +228,12 @@ varList['M_SubLeadingBuncertainties'] = {
 
 
 varList['M_bjetlepton_minmax'] = {
-    'xaxis'       : 'min\{max(m_{b_{1}l_{1}},m_{b_{2}l_{2}}),max(m_{b_{1}l_{2}},m_{b_{2}l_{1}})\} (GeV)',
+    'xaxis'       : 'm_{b\\ell}^{minimax} (GeV)',
     'yaxis'       : 'd#sigma [pb]',
     'genbinning'  : [0., 60., 100., 140., 180., 220., 310., 420.],
     'recobinning' : [0., 40., 60., 80., 100., 120., 140., 160., 180., 200., 220., 240., 270., 310., 380., 420.],
     'var'         : 'TM_bjetlepton_minmax',
-    'var_response': 'M_bjetlepton_minmax',
+    'var_response': 'Mbjetleptonminmax',
     'var_gen'     : 'TGenM_bjetlepton_minmax',
 }
 
@@ -259,7 +259,7 @@ varList['MET_Phiuncertainties'] = {
 }
 
 varList['LeadingJetPt'] = {
-    'xaxis'       : 'p_{T}(j) (GeV)',
+    'xaxis'       : 'Leading jet p_{T} (GeV)',
     'yaxis'       : 'd#sigma [pb]',
     #'genbinning'  : [0, 75, 200, 300],
     #'recobinning' : [0., 50., 75., 110., 150., 200., 300.],
@@ -500,7 +500,8 @@ varList['HTtotuncertainties'] = {
 
 
 varList['DilepMETJet1Pz'] = {
-    'xaxis'       : 'p_{Z} (e^{\\pm}, \\mu^{\\mp}, j) (GeV)',
+    #'xaxis'       : 'p_{Z} (e^{\\pm}, \\mu^{\\mp}, j) (GeV)',
+    'xaxis'       : 'p_{Z} (\\ell^{\\pm}, \\ell^{\\mp}, j) (GeV)',
     'yaxis'       : 'd#sigma [pb]',
     'genbinning'  : [0., 100., 200., 350., 450.],
     'recobinning' : [0., 50., 100., 150., 200., 250., 300., 350., 450.],
@@ -538,7 +539,7 @@ varList['MSys'] = {
     'recobinning' : [0., 225., 250., 275., 300., 325., 350., 425., 700.],
     'var'         : 'TMSys',
     'var_response': 'MSys',
-    'var_gen'     : 'TGenMSys',
+    'var_gen'     : 'abs(TGenMSys)',
 }
 varList['MSysuncertainties'] = {
     'xaxis'       : varList['MSys']['xaxis'],
@@ -552,7 +553,7 @@ varList['Mll'] = {
     'recobinning' : [0., 25., 45., 60., 75., 100., 125., 150., 300.],
     'var'         : 'TMll',
     'var_response': 'Mll',
-    'var_gen'     : 'TGenMll',
+    'var_gen'     : 'abs(TGenMll)',
 }
 varList['Mlluncertainties'] = {
     'xaxis'       : varList['Mll']['xaxis'],
@@ -560,8 +561,8 @@ varList['Mlluncertainties'] = {
 }
 
 varList['DPhiLL'] = {
-    #'xaxis'       : '\\Delta \\varphi(\\ell_{1}, \\ell_{2}) (rad)',
-    'xaxis'       : '\\Delta \\varphi(e^{\\pm}, \\mu^{\\mp}) (rad)',
+    'xaxis'       : '\\Delta \\varphi(\\ell_{1}, \\ell_{2}) (rad)',
+    #'xaxis'       : '\\Delta \\varphi(e^{\\pm}, \\mu^{\\mp}) (rad)',
     'yaxis'       : 'd#sigma [pb]',
     'genbinning'  : [0., .75, 1.5, 2.25, r.TMath.Pi()],
     'recobinning' : [0., .35, .85, 1.25, 1.65, 2.05, 2.45, 2.85, r.TMath.Pi()],
