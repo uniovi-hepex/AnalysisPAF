@@ -33,15 +33,16 @@ def GiveMeMyHistos(var):
     p.SetLumi(vl.Lumi)
     p.verbose = True
 
-    p.AddSample("TTbar_Powheg",          "ttbar",    r.itBkg, 633, systlist, opts)
-
-#    specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-#    p.SetWeight('TWeight*' + str(specialweight))
-#    p.AddSample('TTbar_Powheg',          'ttbar',    r.itBkg, 633, systlist, opts)
-#    specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-#    p.SetWeight('TWeight*' + str(specialweight))
-#    p.AddSample('TTbar2L_powheg',        'ttbar',    r.itBkg, 633, systlist, opts)
-#    p.SetWeight('TWeight')
+    #p.AddSample("TTbar_Powheg",          "t#bar{t}",    r.itBkg, 633, systlist, opts)
+    #p.AddSample("TTbar2L_powheg",          "t#bar{t}",    r.itBkg, 633, systlist, opts)
+    
+    specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TTbar_Powheg',          "t#bar{t}",    r.itBkg, 633, systlist, opts)
+    specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TTbar2L_powheg',        "t#bar{t}",    r.itBkg, 633, systlist, opts)
+    p.SetWeight('TWeight')
 
     p.AddSample("TTbar_PowhegSemi",      "Non-WorZ", r.itBkg, 413, systlist, opts)
     p.AddSample("WJetsToLNu_MLM",        "Non-WorZ", r.itBkg, 413, systlist, opts)
@@ -85,8 +86,8 @@ def GiveMeMyHistos(var):
         p.AddSample("DoubleEG",          "Data",     r.itData, 0, '', opts)
         p.AddSample("DoubleMuon",        "Data",     r.itData, 0, '', opts)
     else:
-        hData=r.Histo(p.GetHisto('tWttbar').Clone("Data"))
-        for proc in ['ttbar', 'VVttbarV', "DY", "Non-WorZ"]:
+        hData=r.Histo(p.GetHisto('tW').Clone("Data"))
+        for proc in ['t#bar{t}', 'VVttbarV', "DY", "Non-WorZ"]:
             hData.Add( p.GetHisto(proc) )
         hData.SetProcess("Data")
         hData.SetTag("Data")
@@ -120,60 +121,60 @@ def GiveMeMyHistos(var):
 #    p.AddSymmetricHisto("tW",  "DSUp");
 #    p.AddSymmetricHisto("tW",  "JERUp");
 
-#    p.AddSample("TTbar_Powheg",                 "ttbar",     r.itSys, 1, "JERUp");
+#    p.AddSample("TTbar_Powheg",                 "t#bar{t}",     r.itSys, 1, "JERUp");
 
 #    specialweight = vl.nUEUp_ttbar/vl.sigma_ttbar/(vl.nUEUp_ttbar/vl.sigma_ttbar + vl.nUEUp_dilep/vl.sigma_dilep);
 #    p.SetWeight("TWeight*" + str(specialweight));
-#    p.AddSample("TTbar_Powheg_ueUp",            "ttbar",     r.itSys, 1, "UEUp");
+#    p.AddSample("TTbar_Powheg_ueUp",            "t#bar{t}",     r.itSys, 1, "UEUp");
 #    specialweight = vl.nUEUp_dilep/vl.sigma_dilep/(vl.nUEUp_ttbar/vl.sigma_ttbar + vl.nUEUp_dilep/vl.sigma_dilep);
 #    p.SetWeight("TWeight*" + str(specialweight));
-#    p.AddSample("TTbar2L_Powheg_ueUp",          "ttbar",     r.itSys, 1, "UEUp");
+#    p.AddSample("TTbar2L_Powheg_ueUp",          "t#bar{t}",     r.itSys, 1, "UEUp");
 #    specialweight = vl.nUEDown_ttbar/vl.sigma_ttbar/(vl.nUEDown_ttbar/vl.sigma_ttbar + vl.nUEDown_dilep/vl.sigma_dilep);
 #    p.SetWeight("TWeight*" + str(specialweight));
-#    p.AddSample("TTbar_Powheg_ueDown",          "ttbar",     r.itSys, 1, "UEDown");
+#    p.AddSample("TTbar_Powheg_ueDown",          "t#bar{t}",     r.itSys, 1, "UEDown");
 #    specialweight = vl.nUEDown_dilep/vl.sigma_dilep/(vl.nUEDown_ttbar/vl.sigma_ttbar + vl.nUEDown_dilep/vl.sigma_dilep);
 #    p.SetWeight("TWeight*" + str(specialweight));
-#    p.AddSample("TTbar2L_Powheg_ueDown",        "ttbar",     r.itSys, 1, "UEDown");
+#    p.AddSample("TTbar2L_Powheg_ueDown",        "t#bar{t}",     r.itSys, 1, "UEDown");
 #    specialweight = vl.nhDampUp_ttbar/vl.sigma_ttbar/(vl.nhDampUp_ttbar/vl.sigma_ttbar + vl.nhDampUp_dilep/vl.sigma_dilep);
 #    p.SetWeight("TWeight*" + str(specialweight));
-#    p.AddSample("TTbar_Powheg_hdampUp",         "ttbar",     r.itSys, 1, "hDampUp");
+#    p.AddSample("TTbar_Powheg_hdampUp",         "t#bar{t}",     r.itSys, 1, "hDampUp");
 #    specialweight = vl.nhDampUp_dilep/vl.sigma_dilep/(vl.nhDampUp_ttbar/vl.sigma_ttbar + vl.nhDampUp_dilep/vl.sigma_dilep);
 #    p.SetWeight("TWeight*" + str(specialweight));
-#    p.AddSample("TTbar2L_Powheg_hdampUp",       "ttbar",     r.itSys, 1, "hDampUp");
+#    p.AddSample("TTbar2L_Powheg_hdampUp",       "t#bar{t}",     r.itSys, 1, "hDampUp");
 #    specialweight = vl.nhDampDown_ttbar/vl.sigma_ttbar/(vl.nhDampDown_ttbar/vl.sigma_ttbar + vl.nhDampDown_dilep/vl.sigma_dilep);
 #    p.SetWeight("TWeight*" + str(specialweight));
-#    p.AddSample("TTbar_Powheg_hdampDown",       "ttbar",     r.itSys, 1, "hDampDown");
+#    p.AddSample("TTbar_Powheg_hdampDown",       "t#bar{t}",     r.itSys, 1, "hDampDown");
 #    specialweight = vl.nhDampDown_dilep/vl.sigma_dilep/(vl.nhDampDown_ttbar/vl.sigma_ttbar + vl.nhDampDown_dilep/vl.sigma_dilep);
 #    p.SetWeight("TWeight*" + str(specialweight));
-#    p.AddSample("TTbar2L_Powheg_hdampDown",     "ttbar",     r.itSys, 1, "hDampDown");
+#    p.AddSample("TTbar2L_Powheg_hdampDown",     "t#bar{t}",     r.itSys, 1, "hDampDown");
 #    p.SetWeight("TWeight");
 
-#    p.AddSample("TTbar_Powheg_isrUp"          , "ttbar",     r.itSys, 1, "isrUp");
-#    p.AddSample("TTbar_Powheg_isrDown"        , "ttbar",     r.itSys, 1, "isrDown");
-#    p.AddSample("TTbar_Powheg_fsrUp"          , "ttbar",     r.itSys, 1, "fsrUp");
-#    p.AddSample("TTbar_Powheg_fsrDown"        , "ttbar",     r.itSys, 1, "fsrDown");
+#    p.AddSample("TTbar_Powheg_isrUp"          , "t#bar{t}",     r.itSys, 1, "isrUp");
+#    p.AddSample("TTbar_Powheg_isrDown"        , "t#bar{t}",     r.itSys, 1, "isrDown");
+#    p.AddSample("TTbar_Powheg_fsrUp"          , "t#bar{t}",     r.itSys, 1, "fsrUp");
+#    p.AddSample("TTbar_Powheg_fsrDown"        , "t#bar{t}",     r.itSys, 1, "fsrDown");
 
 #    specialweight = vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
 #    p.SetWeight('TWeight*' + str(specialweight))
-#    p.AddSample('TTbar_GluonMoveCRTune',        'ttbar',     r.itSys, 1, "GluonMoveCRTune")
+#    p.AddSample('TTbar_GluonMoveCRTune',        "t#bar{t}",     r.itSys, 1, "GluonMoveCRTune")
 #    specialweight = vl.nGluonMoveCRTune_dilep/vl.sigma_dilep/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
 #    p.SetWeight('TWeight*' + str(specialweight))
-#    p.AddSample('TTTo2L2Nu_GluonMoveCRTune',    'ttbar',     r.itSys, 1, "GluonMoveCRTune")
+#    p.AddSample('TTTo2L2Nu_GluonMoveCRTune',    "t#bar{t}",     r.itSys, 1, "GluonMoveCRTune")
 #    specialweight = vl.nPowhegerdON_ttbar/vl.sigma_ttbar/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
 #    p.SetWeight('TWeight*' + str(specialweight))
-#    p.AddSample('TTbar_Powheg_erdON',           'ttbar',     r.itSys, 1, "PowhegerdON")
+#    p.AddSample('TTbar_Powheg_erdON',           "t#bar{t}",     r.itSys, 1, "PowhegerdON")
 #    specialweight = vl.nPowhegerdON_dilep/vl.sigma_dilep/(vl.nPowhegerdON_ttbar/vl.sigma_ttbar + vl.nPowhegerdON_dilep/vl.sigma_dilep)
 #    p.SetWeight('TWeight*' + str(specialweight))
-#    p.AddSample('TTTo2L2Nu_Powheg_erdON',       'ttbar',     r.itSys, 1, "PowhegerdON")
+#    p.AddSample('TTTo2L2Nu_Powheg_erdON',       "t#bar{t}",     r.itSys, 1, "PowhegerdON")
 #    specialweight = vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
 #    p.SetWeight('TWeight*' + str(specialweight))
-#    p.AddSample('TTbar_GluonMoveCRTune_erdON',  'ttbar',     r.itSys, 1, "QCDbasedCRTuneerdON")
+#    p.AddSample('TTbar_GluonMoveCRTune_erdON',  "t#bar{t}",     r.itSys, 1, "QCDbasedCRTuneerdON")
 #    specialweight = vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep/(vl.nQCDbasedCRTuneerdON_ttbar/vl.sigma_ttbar + vl.nQCDbasedCRTuneerdON_dilep/vl.sigma_dilep)
 #    p.SetWeight('TWeight*' + str(specialweight))
-#    p.AddSample('TTTo2L2Nu_QCDbasedCRTune_erdON','ttbar',    r.itSys, 1, "QCDbasedCRTuneerdON")
+#    p.AddSample('TTTo2L2Nu_QCDbasedCRTune_erdON',"t#bar{t}",    r.itSys, 1, "QCDbasedCRTuneerdON")
 #    p.SetWeight('TWeight')
 
-#    p.AddSample("TTbar_GluonMoveCRTune_erdON" , "ttbar",     r.itSys, 1, "GluonMoveCRTuneerdON");
+#    p.AddSample("TTbar_GluonMoveCRTune_erdON" , "t#bar{t}",     r.itSys, 1, "GluonMoveCRTuneerdON");
 #    p.UseEnvelope("ttbar", "GluonMoveCRTune,GluonMoveCRTuneerdON,PowhegerdON,QCDbasedCRTuneerdON", "ColorReconnection");
 #    p.AddSymmetricHisto("ttbar",  "JERUp");
 
@@ -187,10 +188,10 @@ def GiveMeMyHistos(var):
 #    hPDFDown= pdf.GetSystHisto("Down","pdf").CloneHisto();
 #    hMEUp   = pdf.GetSystHisto("up","ME").CloneHisto();
 #    hMEDown = pdf.GetSystHisto("Down","ME").CloneHisto();
-#    p.PrepareHisto(hPDFUp,   "TTbar_Powheg", "ttbar", r.itSys, 0, "pdfUp");
-#    p.PrepareHisto(hPDFDown, "TTbar_Powheg", "ttbar", r.itSys, 0, "pdfDown");
-#    p.PrepareHisto(hMEUp,    "TTbar_Powheg", "ttbar", r.itSys, 0, "ttbarMEUp");
-#    p.PrepareHisto(hMEDown,  "TTbar_Powheg", "ttbar", r.itSys, 0, "ttbarMEDown");
+#    p.PrepareHisto(hPDFUp,   "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "pdfUp");
+#    p.PrepareHisto(hPDFDown, "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "pdfDown");
+#    p.PrepareHisto(hMEUp,    "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarMEUp");
+#    p.PrepareHisto(hMEDown,  "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarMEDown");
 #    p.AddToSystematicLabels("pdf");
 #    p.AddToSystematicLabels("ttbarME");
 #    del pdf
@@ -231,15 +232,16 @@ def GiveMeMyAsimovHistos(var):
     p.SetLumi(vl.Lumi)
     p.verbose = True
 
-    p.AddSample("TTbar_Powheg",          "ttbar",    r.itBkg, 633, "", opts)
+    #p.AddSample("TTbar_Powheg",           "t#bar{t}",    r.itBkg, 633, "", opts)
+    #p.AddSample("TTbar2L_powheg",          "t#bar{t}",    r.itBkg, 633, "", opts)
 
-    #specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    #p.SetWeight('TWeight*' + str(specialweight))
-    #p.AddSample('TTbar_Powheg',          'ttbar',    r.itBkg, 633, "", opts)
-    #specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    #p.SetWeight('TWeight*' + str(specialweight))
-    #p.AddSample('TTbar2L_powheg',        'ttbar',    r.itBkg, 633, "", opts)
-    #p.SetWeight('TWeight')
+    specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TTbar_Powheg',          "t#bar{t}",    r.itBkg, 633, "", opts)
+    specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TTbar2L_powheg',        "t#bar{t}",    r.itBkg, 633, "", opts)
+    p.SetWeight('TWeight')
 
     p.AddSample("TTbar_PowhegSemi",      "Non-WorZ", r.itBkg, 413, "", opts)
     p.AddSample("WJetsToLNu_MLM",        "Non-WorZ", r.itBkg, 413, "", opts)
@@ -275,8 +277,8 @@ def GiveMeMyAsimovHistos(var):
     p.AddSample('TbarW_noFullyHadr',      'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), "", opts)
     p.SetWeight('TWeight')
     
-    hData = r.Histo(copy.deepcopy(p.GetHisto('tWttbar').Clone("hData")))
-    for proc in ['ttbar', 'VVttbarV', "DY", "Non-WorZ"]:
+    hData = r.Histo(copy.deepcopy(p.GetHisto('tW').Clone("hData")))
+    for proc in ['t#bar{t}', 'VVttbarV', "DY", "Non-WorZ"]:
         tmph = copy.deepcopy(p.GetHisto(proc).Clone(proc + "_tmp"))
         hData.Add( tmph )
         del tmph
@@ -318,15 +320,16 @@ def GiveMeMyGoodAsimovHistos(var):
     p.SetLumi(vl.Lumi)
     p.verbose = True
 
-    p.AddSample("TTbar_Powheg",          "ttbar",    r.itBkg, 633, "", opts)
+    #p.AddSample("TTbar_Powheg",          "t#bar{t}",    r.itBkg, 633, "", opts)
+    #p.AddSample("TTbar2L_powheg",          "t#bar{t}",    r.itBkg, 633, "", opts)
 
-#    specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-#    p.SetWeight('TWeight*' + str(specialweight))
-#    p.AddSample('TTbar_Powheg',          'ttbar',    r.itBkg, 633, "", opts)
-#    specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-#    p.SetWeight('TWeight*' + str(specialweight))
-#    p.AddSample('TTbar2L_powheg',        'ttbar',    r.itBkg, 633, "", opts)
-#    p.SetWeight('TWeight')
+    specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TTbar_Powheg',          "t#bar{t}",    r.itBkg, 633, "", opts)
+    specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    p.SetWeight('TWeight*' + str(specialweight))
+    p.AddSample('TTbar2L_powheg',        "t#bar{t}",    r.itBkg, 633, "", opts)
+    p.SetWeight('TWeight')
 
     p.AddSample("TTbar_PowhegSemi",      "Non-WorZ", r.itBkg, 413, "", opts)
     p.AddSample("WJetsToLNu_MLM",        "Non-WorZ", r.itBkg, 413, "", opts)
@@ -363,7 +366,7 @@ def GiveMeMyGoodAsimovHistos(var):
     p.SetWeight('TWeight')
 
     hData = r.Histo(copy.deepcopy(p.GetHisto('tW').Clone("hData")))
-    for proc in ['ttbar', 'VVttbarV', "DY", "Non-WorZ"]:
+    for proc in ['t#bar{t}', 'VVttbarV', "DY", "Non-WorZ"]:
         tmph = copy.deepcopy(p.GetHisto(proc).Clone(proc + "_tmp"))
         hData.Add( tmph )
         del tmph
@@ -520,7 +523,7 @@ if __name__=="__main__":
             pathToTree  = "../../TWTTbar_temp/"
     else:
         print "> Default choice of variable and minitrees\n"
-        varName     = 'LeadingLepEta'
+        varName     = 'LeadingLepPt'
         pathToTree  = "../../TWTTbar_temp/"
         nCores      = 1
 
