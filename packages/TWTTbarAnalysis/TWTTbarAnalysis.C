@@ -512,7 +512,7 @@ void TWTTbarAnalysis::InsideLoop() {            //=============== InsideLoop
   if (TGenDilepJetPt       >= 200)         TGenDilepJetPt       = 199.999;
   if (TGenDilepMETJetPt    >= 150)         TGenDilepMETJetPt    = 149.999;
   if (TGenHTtot            >= 600)         TGenHTtot            = 599.999;
-  if (TGenLeadingJetPt     >= 300)         TGenLeadingJetPt     = 299.999;
+  if (TGenLeadingJetPt     >= 150)         TGenLeadingJetPt     = 149.999;
   if (TGenLeadingJetE      >= 400)         TGenLeadingJetE      = 399.999;
   if (TGenLeadingJetPhi    >= TMath::Pi()) TGenLeadingJetPhi    = 3.14;
   if (TGenLeadingJetEta    >= 2.4)         TGenLeadingJetEta    = 2.39999;
@@ -700,7 +700,7 @@ void TWTTbarAnalysis::InsideLoop() {            //=============== InsideLoop
         TDPhiSubLeadJetJERUp   = 99999;
     }
   }
-  if (Tpassreco || (TNJets == 2 && TNBtags == 2) || Tpassgen) {
+  if (Tpassreco || Tpassgen) {
   
   //if (Tpassgen || Tpassreco || TpassrecoJESUp || TpassrecoJESDown || TpassrecoJERUp 
       //|| (TNJets == 2 && TNBtags == 2) || (TNJetsJESUp == 1 && TNBtagsJESUp == 1) 
