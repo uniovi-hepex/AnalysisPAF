@@ -34,15 +34,15 @@ def GiveMeMyHistos(var):
     p.verbose = True
 
     #p.AddSample("TTbar_Powheg",          "t#bar{t}",    r.itBkg, 633, systlist, opts)
-    #p.AddSample("TTbar2L_powheg",          "t#bar{t}",    r.itBkg, 633, systlist, opts)
+    p.AddSample("TTbar2L_powheg",          "t#bar{t}",    r.itBkg, 633, systlist, opts)
     
-    specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar_Powheg',          "t#bar{t}",    r.itBkg, 633, systlist, opts)
-    specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar2L_powheg',        "t#bar{t}",    r.itBkg, 633, systlist, opts)
-    p.SetWeight('TWeight')
+    #specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTbar_Powheg',          "t#bar{t}",    r.itBkg, 633, systlist, opts)
+    #specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTbar2L_powheg',        "t#bar{t}",    r.itBkg, 633, systlist, opts)
+    #p.SetWeight('TWeight')
 
     p.AddSample("TTbar_PowhegSemi",      "Non-WorZ", r.itBkg, 413, systlist, opts)
     p.AddSample("WJetsToLNu_MLM",        "Non-WorZ", r.itBkg, 413, systlist, opts)
@@ -233,15 +233,15 @@ def GiveMeMyAsimovHistos(var):
     p.verbose = True
 
     #p.AddSample("TTbar_Powheg",           "t#bar{t}",    r.itBkg, 633, "", opts)
-    #p.AddSample("TTbar2L_powheg",          "t#bar{t}",    r.itBkg, 633, "", opts)
+    p.AddSample("TTbar2L_powheg",          "t#bar{t}",    r.itBkg, 633, "", opts)
 
-    specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar_Powheg',          "t#bar{t}",    r.itBkg, 633, "", opts)
-    specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar2L_powheg',        "t#bar{t}",    r.itBkg, 633, "", opts)
-    p.SetWeight('TWeight')
+    #specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTbar_Powheg',          "t#bar{t}",    r.itBkg, 633, "", opts)
+    #specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTbar2L_powheg',        "t#bar{t}",    r.itBkg, 633, "", opts)
+    #p.SetWeight('TWeight')
 
     p.AddSample("TTbar_PowhegSemi",      "Non-WorZ", r.itBkg, 413, "", opts)
     p.AddSample("WJetsToLNu_MLM",        "Non-WorZ", r.itBkg, 413, "", opts)
@@ -321,15 +321,15 @@ def GiveMeMyGoodAsimovHistos(var):
     p.verbose = True
 
     #p.AddSample("TTbar_Powheg",          "t#bar{t}",    r.itBkg, 633, "", opts)
-    #p.AddSample("TTbar2L_powheg",          "t#bar{t}",    r.itBkg, 633, "", opts)
+    p.AddSample("TTbar2L_powheg",          "t#bar{t}",    r.itBkg, 633, "", opts)
 
-    specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar_Powheg',          "t#bar{t}",    r.itBkg, 633, "", opts)
-    specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar2L_powheg',        "t#bar{t}",    r.itBkg, 633, "", opts)
-    p.SetWeight('TWeight')
+    #specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTbar_Powheg',          "t#bar{t}",    r.itBkg, 633, "", opts)
+    #specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+    #p.SetWeight('TWeight*' + str(specialweight))
+    #p.AddSample('TTbar2L_powheg',        "t#bar{t}",    r.itBkg, 633, "", opts)
+    #p.SetWeight('TWeight')
 
     p.AddSample("TTbar_PowhegSemi",      "Non-WorZ", r.itBkg, 413, "", opts)
     p.AddSample("WJetsToLNu_MLM",        "Non-WorZ", r.itBkg, 413, "", opts)
