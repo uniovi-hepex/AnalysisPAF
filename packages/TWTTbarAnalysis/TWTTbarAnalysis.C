@@ -262,11 +262,11 @@ void TWTTbarAnalysis::InsideLoop() {            //=============== InsideLoop
   if (DilepJetPt           >= 200)         DilepJetPt           = 199.999;
   if (DilepMETJetPt        >= 150)         DilepMETJetPt        = 149.999;
   if (THTtot               >= 600)         THTtot               = 599.999;
-  if (TLeadingJetPt        >= 150)         TLeadingJetPt        = 149.999;
+  if (TLeadingJetPt        >= 300)         TLeadingJetPt        = 299.999;
   if (TLeadingJetE         >= 400)         TLeadingJetE         = 399.999;
   if (TLeadingJetPhi       >= TMath::Pi()) TLeadingJetPhi       = 3.14;
   if (TLeadingJetEta       >= 2.4)         TLeadingJetEta       = 2.39999;
-  if (TLeadingLepPt        >= 150)         TLeadingLepPt        = 149.999;
+  if (TLeadingLepPt        >= 300)         TLeadingLepPt        = 299.999;
   if (TLeadingLepE         >= 350)         TLeadingLepE         = 349.999;
   if (TLeadingLepPhi       >= TMath::Pi()) TLeadingLepPhi       = 3.14;
   if (TLeadingLepEta       >= 2.4)         TLeadingLepEta       = 2.39999;
@@ -512,11 +512,11 @@ void TWTTbarAnalysis::InsideLoop() {            //=============== InsideLoop
   if (TGenDilepJetPt       >= 200)         TGenDilepJetPt       = 199.999;
   if (TGenDilepMETJetPt    >= 150)         TGenDilepMETJetPt    = 149.999;
   if (TGenHTtot            >= 600)         TGenHTtot            = 599.999;
-  if (TGenLeadingJetPt     >= 150)         TGenLeadingJetPt     = 149.999;
+  if (TGenLeadingJetPt     >= 300)         TGenLeadingJetPt     = 299.999;
   if (TGenLeadingJetE      >= 400)         TGenLeadingJetE      = 399.999;
   if (TGenLeadingJetPhi    >= TMath::Pi()) TGenLeadingJetPhi    = 3.14;
   if (TGenLeadingJetEta    >= 2.4)         TGenLeadingJetEta    = 2.39999;
-  if (TGenLeadingLepPt     >= 150)         TGenLeadingLepPt     = 149.999;
+  if (TGenLeadingLepPt     >= 300)         TGenLeadingLepPt     = 299.999;
   if (TGenLeadingLepE      >= 350)         TGenLeadingLepE      = 349.999;
   if (TGenLeadingLepPhi    >= TMath::Pi()) TGenLeadingLepPhi    = 3.14;
   if (TGenLeadingLepEta    >= 2.4)         TGenLeadingLepEta    = 2.39999;
