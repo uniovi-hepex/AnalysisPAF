@@ -12,20 +12,15 @@ python getFinalCards.py 'All' 20
 echo "(two / three) running getClosureHistos.py for all the variables selected in varList"
 python getClosureHistos.py 'LeadingLepPt'
 python getClosureHistos.py 'LeadingJetPt'
-python getClosureHistos.py 'M_bjetlepton_minmax'
-python getClosureHistos.py 'M_LLB'
-python getClosureHistos.py 'MT_LLMETB'
-python getClosureHistos.py 'DilepMETJet1Pz'
-python getClosureHistos.py 'DPhiLL'
+python getClosureHistos.py 'M_bl_minmax_ATLAS'
+python getClosureHistos.py 'M_bl_minmax_opt'
 
 echo "(three / three) running FinalExtracter.py for all the variables selected in varList"
 python FinalExtracter.py 'LeadingLepPt'
 python FinalExtracter.py 'LeadingJetPt'
-python FinalExtracter.py 'M_bjetlepton_minmax'
-python FinalExtracter.py 'M_LLB'
-python FinalExtracter.py 'MT_LLMETB'
-python FinalExtracter.py 'DilepMETJet1Pz'
-python FinalExtracter.py 'DPhiLL'
+python FinalExtracter.py 'M_bl_minmax_ATLAS'
+python FinalExtracter.py 'M_bl_minmax_opt'
+
 
 echo "After that, getting the response matrices..."
 python getMatrices.py
@@ -33,11 +28,9 @@ python getMatrices.py
 echo "And finally, unfolding..."
 python unfoldTWTTbar.py 'LeadingLepPt'
 python unfoldTWTTbar.py 'LeadingJetPt'
-python unfoldTWTTbar.py 'M_bjetlepton_minmax'
-python unfoldTWTTbar.py 'M_LLB'
-python unfoldTWTTbar.py 'MT_LLMETB'
-python unfoldTWTTbar.py 'DilepMETJet1Pz'
-python unfoldTWTTbar.py 'DPhiLL'
+python unfoldTWTTbar.py 'M_bl_minmax_ATLAS'
+python unfoldTWTTbar.py 'M_bl_minmax_opt'
+
 
 echo "Coping all the plots to the personal website www.hep.uniovi.es/ireneaj/"
 source copier.sh p
