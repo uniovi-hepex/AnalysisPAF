@@ -87,23 +87,20 @@ varList['LCurve'] = {
 }
 
 varList['Names'] = {
-    #'Variables'   : ["E_LLB", "LeadingJetE", "MT_LLMETB", "M_LLB", "M_LeadingB", "M_SubLeadingB", 
-                     #"MET", "MET_Phi", "LeadingJetPt", "LeadingJetEta", "LeadingJetPhi", 
-                     #"LeadingLepE", "LeadingLepPt", "LeadingLepPhi", "LeadingLepEta", 
-                     #"SubLeadingLepE", "SubLeadingLepPt", "SubLeadingLepPhi", "SubLeadingLepEta", 
-                     #"DilepPt", "DilepJetPt", "DilepMETJetPt", "HTtot", 
-                     #"DilepMETJet1Pz", "LLMETBEta", "MSys", "Mll", "DPhiLL", "DPhiLeadJet", "DPhiSubLeadJet"], # Nuevinas
-    #'Variables'   : ["M_LeadingB", "M_SubLeadingB", "LeadingLepPt", "LLMETBEta", "DilepMETJet1Pz", "DPhiLL", "DPhiLeadJet", "DPhiSubLeadJet"], # Nuevinas
-    #'Variables'   : ["LeadingJetPt", "LeadingLepPt"],
-    #'Variables'   : ["LeadingLepPt", "LeadingLepEta"],
-    'Variables'   : ["LeadingLepPt", "LeadingJetPt", "DPhiLL", "DilepMETJet1Pz", "MT_LLMETB", "M_LLB", "M_bjetlepton_minmax"], # Variables TWTTbar
-    'ExpSysts'    : ["JESUp", "JESDown", "JERUp", "ElecEffUp", "ElecEffDown", "MuonEffUp", #   DO NOT MOVE THE FIRST THREE TO OTHER
-                     "MuonEffDown", "TrigUp", "TrigDown", "PUUp", "PUDown", "BtagUp",      # POSITION: it will affect the calculus
-                     "BtagDown", "MistagUp", "MistagDown"],                                # of the response matrices.
-    'ttbarSysts'  : ["ttbarMEUp", "ttbarMEDown", "pdfUp", "pdfDown", "hDampUp", "hDampDown", "UEUp", "UEDown"],
-    'specialSysts': ["JERDown", "DSDown"],
-    'colorSysts'  : ["GluonMoveCRTuneerdON", "PowhegerdON", "QCDbasedCRTuneerdON", "GluonMoveCRTune"],
-    'NormSysts'   : ["ttbarUp", "ttbarDown", "Non-WorZUp", "Non-WorZDown", "DYUp", "DYDown", "VVttbarVUp", "VVttbarVDown"],
+    #'Variables'   : ["LeadingLepPt", "LeadingJetPt", "DPhiLL", "DilepMETJet1Pz", "MT_LLMETB", "M_LLB", "M_bl_minmax_ATLAS", "M_bl_minmax_opt"], # Variables TWTTbar
+    'Variables'   : ["LeadingLepPt", "LeadingJetPt", "M_bl_minmax_ATLAS", "M_bl_minmax_opt"], #variables TFG Irene 
+    #'ExpSysts'    : ["JESUp", "JESDown", "JERUp", "ElecEffUp", "ElecEffDown", "MuonEffUp", # DO NOT MOVE THE FIRST THREE TO OTHER
+    #                 "MuonEffDown", "TrigUp", "TrigDown", "PUUp", "PUDown", "BtagUp",      # POSITION: it will affect the calculus
+    #                 "BtagDown", "MistagUp", "MistagDown"],                                # of the response matrices.
+    'ExpSysts'    : [],
+    'ttbarSysts'  : [],                 
+    'specialSysts': [],
+    'colorSysts'  : [],
+    'NormSysts'   : [],
+    #'ttbarSysts'  : ["ttbarMEUp", "ttbarMEDown", "pdfUp", "pdfDown", "hDampUp", "hDampDown", "UEUp", "UEDown"],
+    #'specialSysts': ["JERDown", "DSDown"],
+    #'colorSysts'  : ["GluonMoveCRTuneerdON", "PowhegerdON", "QCDbasedCRTuneerdON", "GluonMoveCRTune"],
+    #'NormSysts'   : ["ttbarUp", "ttbarDown", "Non-WorZUp", "Non-WorZDown", "DYUp", "DYDown", "VVttbarVUp", "VVttbarVDown"],
 }
 
 varList['E_LLB'] = {
@@ -227,14 +224,35 @@ varList['M_SubLeadingBuncertainties'] = {
 }
 
 
-varList['M_bjetlepton_minmax'] = {
+varList['M_bl_minmax_ATLAS'] = {
     'xaxis'       : 'm_{b\\ell}^{minimax} (GeV)',
     'yaxis'       : 'd#sigma [pb]',
-    'genbinning'  : [0., 60., 100., 140., 180., 220., 310., 420.],
-    'recobinning' : [0., 40., 60., 80., 100., 120., 140., 160., 180., 200., 220., 240., 270., 310., 380., 420.],
+    'genbinning'  : [0., 40., 60., 80., 100., 120., 140., 160., 180., 200., 220., 240., 270., 310., 380., 420.], #DO NOT CHANGE THESE BECAUSE THEY ARE ATLAS' ONES
+    'recobinning' : [0., 42., 48., 54., 60., 66., 70., 74., 78., 82., 86., 90., 94., 98., 102., 106., 110., 114., 118., 122., 126., 130., 134., 138., 144., 160., 200., 250., 310., 370., 420.],
     'var'         : 'TM_bjetlepton_minmax',
-    'var_response': 'Mbjetleptonminmax',
+    'name'        : 'M_bjetlepton_minmax',
+    'var_response': 'MblminmaxATLAS',
     'var_gen'     : 'TGenM_bjetlepton_minmax',
+    'doReg'       :  True,  
+    'doArea'      :  True, 
+}
+
+#varList['M_bjetlepton_minmaxuncertainties'] = {
+    #'xaxis'       : varList['M_bjetlepton_minmax']['xaxis'],
+    #'yaxis'       : 'Relative uncertainty'
+#}
+
+varList['M_bl_minmax_opt'] = {
+    'xaxis'       : 'm_{b\\ell}^{minimax} (GeV)',
+    'yaxis'       : 'd#sigma [pb]',
+    'genbinning'  : [0., 50., 70., 90., 105., 120., 135., 155., 240., 330., 420.], 
+    'recobinning' : [0., 40., 48., 56., 64., 72., 80., 88., 96., 104., 112., 120., 128., 136., 144., 152., 160., 210., 260., 330., 420.], 
+    'name'        : 'M_bjetlepton_minmax',
+    'var'         : 'TM_bjetlepton_minmax',
+    'var_response': 'Mblminmaxopt',
+    'var_gen'     : 'TGenM_bjetlepton_minmax',
+    'doReg'       : False,   
+    'doArea'      : False, 
 }
 
 #varList['M_bjetlepton_minmaxuncertainties'] = {
@@ -261,19 +279,15 @@ varList['MET_Phiuncertainties'] = {
 varList['LeadingJetPt'] = {
     'xaxis'       : 'Leading jet p_{T} (GeV)',
     'yaxis'       : 'd#sigma [pb]',
-    #'genbinning'  : [0, 75, 200, 300],
-    #'recobinning' : [0., 50., 75., 110., 150., 200., 300.],
-   #'genbinning'  : [0., 75., 140., 200., 300.],                            # binning presentado en singletop
-   #'recobinning' : [0., 60., 80., 105., 120., 140., 170., 210., 300.],
-#    'genbinning'  : [0., 60., 110., 150., 300.],
-#    'recobinning' : [0., 60., 75., 90., 110., 125., 150., 175., 300.],
-    'genbinning'  : [0., 60., 90., 120., 150.],
-    'recobinning' : [0., 60., 70., 80, 90., 100., 110., 120., 150.],
-    'var'         : 'min(TLeadingJetPt, 149.)',
+   'genbinning'  : [30., 55., 70., 85., 105., 130., 160., 200., 250.], #mandado
+    'recobinning' : [30., 48., 57., 66., 75., 84., 93., 102., 111., 120., 130., 140., 150., 162., 180., 215., 250. ], #mandado
+    'var'         : 'min(TLeadingJetPt, 250.)',
     'var_response': 'LeadingJetPt',
-    'var_gen'     : 'min(TGenLeadingJetPt, 149.)',
+    'var_gen'     : 'min(TGenLeadingJetPt, 250.)',
     'uncleg_fold' : "TL",
     'uncleg_unf'  : "TC",
+    'doReg'       : True,  
+    'doArea'      : True, 
 }
 varList['LeadingJetPtuncertainties'] = {
     'xaxis'       : varList['LeadingJetPt']['xaxis'],
@@ -336,12 +350,14 @@ varList['LeadingLepPt'] = {
     'yaxis'       : 'd#sigma [pb]',
    #'genbinning'  : [0, 50, 120, 160, 250],                           # binning presentado en singletop (junio/julio)
    #'recobinning' : [0, 50, 65, 85, 97, 110, 145, 180, 250],
-    'genbinning'  : [0., 50., 90., 125., 150.],
-    'recobinning' : [0., 50., 60., 70., 80., 90., 105., 125., 150.],  # antes de 15-10-2018
-    'var'         : 'min(TLeadingLepPt, 149.)',
+    'genbinning'  : [25., 35., 45., 55., 65., 75., 85., 95., 105., 115., 135., 160., 200.],
+    'recobinning' : [25., 30., 35., 40., 45., 50., 55., 60., 65., 70., 75., 80., 85., 90., 95., 100., 106., 112., 118., 124., 132., 140., 150., 175., 200.],
+    'var'         : 'min(TLeadingLepPt, 200.)',
     'var_response': 'LeadingLepPt',
-    'var_gen'     : 'min(TGenLeadingLepPt, 149.)',
+    'var_gen'     : 'min(TGenLeadingLepPt, 200.)',
     'uncleg_fold' : "TL",
+    'doReg'       : False,
+    'doArea'      : False,
 }
 varList['LeadingLepPtuncertainties'] = {
     'xaxis'       : varList['LeadingLepPt']['xaxis'],
