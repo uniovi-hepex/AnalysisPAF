@@ -17,8 +17,8 @@ if [ "$1" == "p" ]; then
   
   echo " "
   echo "Copying plots..."
-  #cp -R results/. $plotspath
-  rsync -avzP results/. $plotspath
+  cp -R results/. $plotspath
+  #rsync -avzP results/. $plotspath
   cp $indexpath $plotspath$indstr
   cp $indexpath $plotspath$dos$indstr
   #cp $indexpath $plotspath$covstr$indstr
