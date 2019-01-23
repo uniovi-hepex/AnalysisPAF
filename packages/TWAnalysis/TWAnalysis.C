@@ -71,7 +71,7 @@ void TWAnalysis::Initialise(){
   gIsLHE       = false;
   
   
-// PREFIRING CHECK
+// PREFIRING CHECK (old)
   TFile* fPrefWeight1 = TFile::Open("/nfs/fanae/user/sscruz/TW_jun4/AnalysisPAF/prefMaps/Map_Jet_L1FinOReff_bxm1_looseJet_JetHT_Run2016B-H.root");
   TFile* fPrefWeight2 = TFile::Open("/nfs/fanae/user/sscruz/TW_jun4/AnalysisPAF/prefMaps/Map_Jet_L1FinOReff_bxm1_looseJet_SingleMuon_Run2016B-H.root");
   TFile* fPrefWeight3 = TFile::Open("/nfs/fanae/user/sscruz/TW_jun4/AnalysisPAF/prefMaps/Map_Jet_L1IsoEG30eff_bxm1_looseJet_JetHT_Run2016B-H.root");
@@ -95,6 +95,17 @@ void TWAnalysis::Initialise(){
   if (!hPrefWeight1) cout << "Its not gonna work" << endl;
   if (!hPrefWeight2) cout << "Its not gonna work" << endl;
   if (!hPrefWeight3) cout << "Its not gonna work" << endl;
+  
+  
+// PREFIRING CHECK
+  TFile* fPrefWeight = TFile::Open("/pool/cienciasrw/userstorage/vrbouza/proyectos/TW/prefiring/L1prefiring_jetpt_2016BtoH.root");
+
+  TH2F* hTemPrefWeight = (TH2F*) fPrefWeight->Get("L1prefiring_jetpt_2016BtoH");
+  hPrefWeight = (TH2F*) hTemPrefWeight->Clone("prefiringeffmapfinal");
+  hPrefWeight->SetDirectory(0);
+  fPrefWeight->Close();
+  
+  if (!hPrefWeight) cout << "Its not gonna work" << endl;
   
   
   gIsFSRUp = false; gIsFSRDown = false;
@@ -1890,6 +1901,7 @@ void TWAnalysis::SetTWVariables()
   fMini1j1t->Branch("TDPhiLeadJetJERUp",       &TDPhiLeadJetJERUp,          "TDPhiLeadJetJERUp/F");
   fMini1j1t->Branch("TDPhiSubLeadJetJERUp",    &TDPhiSubLeadJetJERUp,       "TDPhiSubLeadJetJERUp/F");
   
+  fMini1j1t->Branch("prefWeight",              &prefWeight,                 "prefWeight/F");
   fMini1j1t->Branch("prefWeight1",             &prefWeight1,                "prefWeight1/F");
   fMini1j1t->Branch("prefWeight2",             &prefWeight2,                "prefWeight2/F");
   fMini1j1t->Branch("prefWeight3",             &prefWeight3,                "prefWeight3/F");
@@ -2273,9 +2285,11 @@ void TWAnalysis::CalculateTWVariables() {
   if (hasTW) return;
   hasTW = true;
   
+// Old prefiring
   prefWeight1 = 1;
   prefWeight2 = 1;
   prefWeight3 = 1;
+  prefWeight = 1;
   
   for (Int_t j = 0; j < Get<Int_t>("nJet"); ++j) {
     Float_t pt  = Get<Float_t>("Jet_pt" ,j);
@@ -2283,6 +2297,7 @@ void TWAnalysis::CalculateTWVariables() {
     prefWeight1 *= (1 - getWeightFromHist(pt, eta, hPrefWeight1));
     prefWeight2 *= (1 - getWeightFromHist(pt, eta, hPrefWeight2));
     prefWeight3 *= (1 - getWeightFromHist(pt, eta, hPrefWeight3));
+    prefWeight  *= (1 - getWeightFromTrueHist(pt, eta, hPrefWeight));
   }
 
   for (Int_t j = 0; j < Get<Int_t>("nJetFwd"); ++j) {
@@ -2291,11 +2306,12 @@ void TWAnalysis::CalculateTWVariables() {
     prefWeight1 *= (1 - getWeightFromHist(pt, eta, hPrefWeight1));
     prefWeight2 *= (1 - getWeightFromHist(pt, eta, hPrefWeight2));
     prefWeight3 *= (1 - getWeightFromHist(pt, eta, hPrefWeight3));
+    prefWeight  *= (1 - getWeightFromTrueHist(pt, eta, hPrefWeight));
   }
-  
   prefWeight1 = 1 - prefWeight1;
   prefWeight2 = 1 - prefWeight2;
   prefWeight3 = 1 - prefWeight3;
+  prefWeight  = 1 - prefWeight;
   
   get20Jets();
   TLorentzVector met;
@@ -3902,6 +3918,15 @@ Float_t TWAnalysis::getWeightFromHist(Float_t pt, Float_t eta, TEfficiency* hist
   Int_t ptbin  = hist->GetPassedHistogram()->GetYaxis()->FindBin(pt);
   Int_t bin    = hist->GetPassedHistogram()->GetBin(etabin,ptbin);
   Float_t wei  = hist->GetEfficiency(bin);
-  if (wei == 0) wei = 1;
+//   if (wei == 0) wei = 1;
+  return wei;
+}
+
+Float_t TWAnalysis::getWeightFromTrueHist(Float_t pt, Float_t eta, TH2F* hist) {
+  Int_t etabin = hist->GetXaxis()->FindBin(TMath::Abs(eta));
+  Int_t ptbin  = hist->GetYaxis()->FindBin(pt);
+  Int_t bin    = hist->GetBin(etabin, ptbin);
+  Float_t wei  = hist->GetBinContent(bin);
+//   if (wei == 0) wei = 1;
   return wei;
 }

@@ -135,6 +135,7 @@ class TWAnalysis : public PAFChainItemSelector{
     Double_t getDilepMETPt(int sys= 0);
 
     Float_t getWeightFromHist(Float_t pt, Float_t eta, TEfficiency* hist);
+    Float_t getWeightFromTrueHist(Float_t pt, Float_t eta, TH2F* hist);
 
     //Variables
     Float_t TWeight;   // Total nominal weight
@@ -339,10 +340,12 @@ class TWAnalysis : public PAFChainItemSelector{
     TLorentzVector SergioMET;
     TLorentzVector tMET;
     
+    Float_t prefWeight;
     Float_t prefWeight1;
     Float_t prefWeight2;
     Float_t prefWeight3;
     
+    TH2F* hPrefWeight;
     TEfficiency* hPrefWeight1;
     TEfficiency* hPrefWeight2;
     TEfficiency* hPrefWeight3;
