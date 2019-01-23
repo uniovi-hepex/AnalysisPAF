@@ -492,6 +492,12 @@ def GiveMeMyGoodAsimovHistos(var):
     del p, hData
     return
 
+def lazyoptimisation(tsk):
+    var, ty = tsk
+    if ty == "histos":    return GiveMeMyHistos(var)
+    elif ty == "asihist": return GiveMeMyAsimovHistos(var)
+    else:                 return GiveMeMyGoodAsimovHistos(var)
+    return
 
 
 if __name__=="__main__":
@@ -523,34 +529,21 @@ if __name__=="__main__":
         nCores      = 1
 
     print "> Beginning to produce histograms", "\n"
+    tasks = []
+    if varName == 'All':
+        for vr in vl.varList['Names']['Variables']:
+            for ty in ["histos", "asihist", "goodasihist"]:
+                if not vl.asimov:      tasks.append( (vr, ty) )
+                elif (ty == "histos"): tasks.append( (vr, ty) )
+    else:
+        for ty in ["histos", "asihist", "goodasihist"]:
+            if not vl.asimov:      tasks.append( (varName, ty) )
+            elif (ty == "histos"): tasks.append( (varName, ty) )
 
-    if varName == 'All': tasks = [(el) for el in vl.varList['Names']['Variables']]
-    else:                tasks = [(varName)]
-
-    #if nCores == 1: # NOTE: pure sequential execution might lead to problems due to
-                     #       memory issues when treating ROOT histograms.
-        #GiveMeMyHistos(tasks[0])
-    #else:
     pool    = Pool(nCores)
-    pool.map(GiveMeMyHistos, tasks)
+    pool.map(lazyoptimisation, tasks)
     pool.close()
     pool.join()
     del pool
 
-    if not vl.asimov:
-        #if nCores == 1: # NOTE: pure sequential execution might lead to problems due to
-                         #       memory issues when treating ROOT histograms.
-            #GiveMeMyAsimovHistos(tasks[0])
-        #else:
-        pool    = Pool(nCores)
-        pool.map(GiveMeMyAsimovHistos, tasks)
-        pool.close()
-        pool.join()
-        del pool
-        
-        pool    = Pool(nCores)
-        pool.map(GiveMeMyGoodAsimovHistos, tasks)
-        pool.close()
-        pool.join()
-        del pool
     print "> Done!", "\n"
