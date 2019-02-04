@@ -78,10 +78,10 @@ class TWTTbarAnalysis : public PAFChainItemSelector{
     Float_t  TVetoJet3_Pt;
     Float_t  TVetoJet3_Eta;
   
-    void CalculateTWVariables();
+    void CalculateTWTTbarVariables();
     void get20Jets();
-    void ReSetTWVariables();
-    void SetTWVariables();
+    void ReSetTWTTbarVariables();
+    void SetTWTTbarVariables();
     Double_t getDilepMETJetPt(Int_t sys = 0);
     Double_t getDilepPt();
     Double_t getDilepJetPt(const TString& sys = "Norm");
@@ -176,6 +176,9 @@ class TWTTbarAnalysis : public PAFChainItemSelector{
     // ADDED:
     Float_t TM_LeadingB       ;
     Float_t TM_SubLeadingB    ;
+    Float_t TM_LeadingBj2        ; // nueva
+    Float_t TM_SubLeadingBj2     ; // nueva
+    Float_t TM_bjetlepton_minmax ; // variable de ATLAS
     Float_t TE_LLB            ;
     Float_t TMT_LLMETB        ;
     Float_t TM_LLB            ;
@@ -279,6 +282,9 @@ class TWTTbarAnalysis : public PAFChainItemSelector{
     Float_t TGenM_LeadingB    ;
     Float_t TGenM_SubLeadingB ;
     Float_t TGenE_LLB         ;
+    Float_t TGenM_LeadingBj2  ;
+    Float_t TGenM_SubLeadingBj2;
+    Float_t TGenM_bjetlepton_minmax;
     Float_t TGenMT_LLMETB     ;
     Float_t TGenM_LLB         ;
     Float_t TGenDilepPt        ;

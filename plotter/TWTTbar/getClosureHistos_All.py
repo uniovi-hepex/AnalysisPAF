@@ -1,0 +1,8 @@
+python getClosureHistos.py 'LeadingLepEta'
+python getClosureHistos.py 'LeadingLepPt'
+python getClosureHistos.py 'LeadingJetPt'
+python getClosureHistos.py 'M_bjetlepton_minmax'
+python getClosureHistos.py 'M_LLB'
+python getClosureHistos.py 'M_LLMETB'
+python getClosureHistos.py 'DilepMETJet1Pz'
+python getClosureHistos.py 'DPhiLL'
