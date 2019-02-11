@@ -78,7 +78,7 @@ class TWAnalysis : public PAFChainItemSelector{
     Bool_t  passTrigger;
     Bool_t  isSS;
     Float_t NormWeight;
-    Float_t  BtagSF          ;    
+    Float_t  BtagSF          ;
     Float_t  BtagSFBtagUp    ;
     Float_t  BtagSFBtagDown  ;
     Float_t  BtagSFMistagUp  ;

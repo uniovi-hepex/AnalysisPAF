@@ -8,6 +8,7 @@ import ROOT as r
 import beautifulUnfoldingPlots as bp
 import errorPropagator as ep
 import varList as vl
+import warnings as wr
 import os,sys,math,array
 
 class DataContainer:
@@ -43,10 +44,10 @@ class DataContainer:
         tfile = r.TFile.Open(self.fileNameReponse)
         for key in tfile.GetListOfKeys():
             if key.GetName()[0] != 'R': continue
-            if vl.varList[self.var]['var_response'] not in key.GetName(): continue
-            if key.GetName() == 'R' + vl.varList[self.var]['var_response']:
+            if vl.varList[self.var]['var_response'] not in key.GetName() and self.var not in key.GetName(): continue
+            if key.GetName() == 'R' + vl.varList[self.var]['var_response'] or key.GetName() == 'R' + self.var:
                 self.responseMatrices[''] = copy.deepcopy(key.ReadObj())
-            elif 'R' + vl.varList[self.var]['var_response'] + '_' in key.GetName():
+            elif 'R' + vl.varList[self.var]['var_response'] + '_' in key.GetName() or 'R' + self.var + '_' in key.GetName():
                 sysName = '_'.join(key.GetName().split('_')[1:])
                 self.systListResp.append(sysName)
                 self.responseMatrices[sysName] = copy.deepcopy(key.ReadObj())
@@ -55,7 +56,7 @@ class DataContainer:
         scalevalone = vl.Lumi*1000
         for key in tfile.GetListOfKeys():
             if key.GetName()[0] != 'F': continue
-            if vl.varList[self.var]['var_response'] not in key.GetName(): continue
+            if vl.varList[self.var]['var_response'] not in key.GetName() and self.var not in key.GetName(): continue
             if key.GetName() == 'F' + vl.varList[self.var]['var_response']:
                 self.bkgs[''] = copy.deepcopy(key.ReadObj())
                 self.bkgs[''].Scale(scalevalone)
@@ -79,9 +80,9 @@ class DataContainer:
         if nuis in vl.varList['Names']['ttbarSysts'] + vl.varList['Names']['colorSysts'] + vl.varList['Names']['NormSysts'] + ['LumiUp','LumiDown', 'asimov']:
             return self.unfoldingInputs[nuis], self.responseMatrices[''], self.bkgs['']
         elif nuis == 'JERDown':
-            return self.unfoldingInputs['JERUp'], self.responseMatrices['JERUp'], self.bkgs['JERUp']
+            return self.unfoldingInputs['JERDown'], self.responseMatrices['JERUp'], self.bkgs['JERUp']
         elif nuis == 'DSDown':
-            return self.unfoldingInputs['DSUp'], self.responseMatrices['DSUp'], self.bkgs['DSUp']
+            return self.unfoldingInputs['DSDown'], self.responseMatrices['DSUp'], self.bkgs['DSUp']
         else:
             if nuis not in self.responseMatrices:
                 raise RuntimeError("%s is not in the list of varied response matrices nor in the blacklist of systs. w/o associated response matrices."%nuis)
@@ -390,9 +391,14 @@ class Unfolder():
         if verbose: print '> Unfolding nominal distribution'
         self.helpers[''].tunfolder.DoUnfold(tauval)
         nominal     = copy.deepcopy(self.helpers[''].tunfolder.GetOutput(self.var))
-        covnom = copy.deepcopy(self.helpers[''].tunfolder.GetEmatrixTotal("CovMat"))
-        for bin in range(1, nominal.GetNbinsX() + 1):
-            nominal.SetBinError(bin, math.sqrt(covnom.GetBinContent(bin, bin)))
+        
+        if self.wearedoingasimov and "Fiducial" in self.var:                                     #### TODO: UNRESOLVED BUG
+            print "\n"
+            wr.warn("WARNING: you are calculating the fiducial cross section for the Asimov dataset. For unknown reasons, the obtention of the full covariance matrix after the unfolding gives an error. As a by-pass of this situation, the statistical uncertainty that the nominal results will carry will be ONLY the ones introduced as input, NOT the ones related with the response matrix nor the signal efficiency / fiducial region efficiency detection. TAKE THIS INTO ACCOUNT.\n")
+        else:
+            covnom = copy.deepcopy(self.helpers[''].tunfolder.GetEmatrixTotal("CovMat"))
+            for bin in range(1, nominal.GetNbinsX() + 1):
+                nominal.SetBinError(bin, math.sqrt(covnom.GetBinContent(bin, bin)))
         
         for nuis in self.sysList:
             if verbose: print '> Unfolding distribution of {sys} systematic'.format(sys = nuis)
@@ -628,9 +634,9 @@ if __name__=="__main__":
     a.doAreaConstraint= vl.doArea
     
     a.doUnfoldingForAllNuis()       # Unfolding
-    a.doScanPlots()                 # L-Curve and curvature plots
-    a.doRegularizationComparison()  # Comparison plot between regularisation and not
-    a.doAreaConstraintComparison()  # Comparison plot between area constraint and not
+    if varName != "Fiducial": a.doScanPlots()                 # L-Curve and curvature plots
+    if varName != "Fiducial": a.doRegularizationComparison()  # Comparison plot between regularisation and not
+    if varName != "Fiducial": a.doAreaConstraintComparison()  # Comparison plot between area constraint and not
     
                                     # Condition numbers text file
     if not os.path.isdir('results/CondN'):
@@ -653,8 +659,7 @@ if __name__=="__main__":
         b.doAreaConstraint= vl.doArea
         
         b.doUnfoldingForAllNuis()       # Unfolding
-        b.doScanPlots()                 # L-Curve and curvature plots
-        b.doRegularizationComparison()  # Comparison plot between regularisation and not
-        b.doAreaConstraintComparison()  # Comparison plot between area constraint and not
+        if varName != "Fiducial": b.doScanPlots()                 # L-Curve and curvature plots
+        if varName != "Fiducial": b.doRegularizationComparison()  # Comparison plot between regularisation and not
+        if varName != "Fiducial": b.doAreaConstraintComparison()  # Comparison plot between area constraint and not
     print "> Unfolding done!"
-    

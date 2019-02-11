@@ -25,9 +25,11 @@ fi
 
 # unfoldingvars=("M_LeadingB" "M_SubLeadingB" "LeadingLepPt" "DilepMETJet1Pz" "LLMETBEta" "DPhiLL" "DPhiLeadJet" "DPhiSubLeadJet")
 # unfoldingvars=("LeadingJetPt" "LeadingLepPt")
-unfoldingvars=("LeadingJetPt" "LeadingLepPt" "DPhiLL" "DilepMETJet1Pz" "MT_LLMETB" "M_LLB") # Variables single top 15-10-2018
+unfoldingvarscut=("LeadingJetPt" "LeadingLepPt" "DPhiLL" "DilepMETJet1Pz" "MT_LLMETB" "M_LLB") # Variables single top 15-10-2018
+unfoldingvars=("LeadingJetPt" "LeadingLepPt" "DPhiLL" "DilepMETJet1Pz" "MT_LLMETB" "M_LLB" "Fiducial") # Variables single top 15-10-2018
 
 uplimit=$((${#unfoldingvars[@]}-1))
+uplimitcuts=$((${#unfoldingvarscut[@]}-1))
 
 
 if [ "$variable" == "All" ]; then
@@ -84,6 +86,13 @@ if [ "$variable" == "All" ]; then
     echo "> Performing GOF tests..."
     echo " "
     python goftests.py "All"
+    
+    # 7) Get fiducial results.
+    echo "> Getting fiducial results..."
+    echo " "
+    for ((i=0; i<=$uplimitcuts; i++)); do
+        python doFiducial.py ${unfoldingvarscut[i]}
+    done
     
 #     # 7) Get a txt with all the results
 #     echo "> Printing yields..."
@@ -142,6 +151,11 @@ else
     echo "> Performing GOF tests..."
     echo " "
     python goftests.py $variable
+    
+    # 7) Get fiducial results.
+    echo "> Getting fiducial results..."
+    echo " "
+    python doFiducial.py $variable
     
 #     # 7) Get a txt with all the results
 #     echo "> Printing yields..."

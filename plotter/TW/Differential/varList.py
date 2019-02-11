@@ -97,7 +97,8 @@ varList['Names'] = {
     #'Variables'   : ["M_LeadingB", "M_SubLeadingB", "LeadingLepPt", "LLMETBEta", "DilepMETJet1Pz", "DPhiLL", "DPhiLeadJet", "DPhiSubLeadJet"], # Nuevinas
     #'Variables'   : ["LeadingJetPt", "LeadingLepPt"],
     #'Variables'   : ["LeadingLepPt", "LeadingLepEta"],
-    'Variables'   : ["LeadingLepPt", "LeadingJetPt", "DPhiLL", "DilepMETJet1Pz", "MT_LLMETB", "M_LLB"], # Variables single top 15-10-2018
+    #'Variables'   : ["LeadingLepPt", "LeadingJetPt", "DPhiLL", "DilepMETJet1Pz", "MT_LLMETB", "M_LLB"], # Variables single top 15-10-2018
+    'Variables'   : ["LeadingLepPt", "LeadingJetPt", "DPhiLL", "DilepMETJet1Pz", "MT_LLMETB", "M_LLB", "Fiducial"], # Variables single top escogidas pero tamien pa la fiducial
     'ExpSysts'    : ["JESUp", "JESDown", "JERUp", "ElecEffUp", "ElecEffDown", "MuonEffUp", #   DO NOT MOVE THE FIRST THREE TO OTHER
                      "MuonEffDown", "TrigUp", "TrigDown", "PUUp", "PUDown", "BtagUp",      # POSITION: it will affect the calculus
                      "BtagDown", "MistagUp", "MistagDown"],                                # of the response matrices.
@@ -139,6 +140,7 @@ varList['MT_LLMETB'] = {
     #'xaxis'       : 'm_{T}(\\ell_{1}, \\ell_{2},\\slash{E}_{T}, j) (GeV)',
     'xaxis'       : 'm_{T}(e^{\\pm}, \\mu^{\\mp}, \\slash{E}_{T}, j) (GeV)',
     'yaxis'       : 'd#sigma [pb]',
+    'yaxisfid'    : '(1/#sigma)d#sigma [adim.]',
     'genbinning'  : [0., 225., 325., 425., 500.],
     'recobinning' : [0., 225., 250., 275., 300., 325., 350., 425., 500.],
     'var'         : 'min(TMT_LLMETB, 499.)',
@@ -147,10 +149,12 @@ varList['MT_LLMETB'] = {
     'legpos'      : (0.51, 0.55, 0.71, 0.93),
     'legpos_foldas':"BL",
     'legpos_fold' : "BL",
+    'legpos_fid'  : "TL",
     'legpos_unf'  : "TL",
     'legpos_unfas': "TL",
     'uncleg_fold' : "TL",
     'uncleg_unf'  : "TC",
+    'uncleg_fid'  : "TL",
     'resptxtsize' : 0.9,
     'covtxtsizefol': 0.75,
     'covtxtsizeunf': 2,
@@ -164,6 +168,7 @@ varList['M_LLB'] = {
     #'xaxis'       : 'm(\\ell_{1}, \\ell_{2}, j) (GeV)',
     'xaxis'       : 'm(e^{#pm}, #mu^{#mp}, j) (GeV)',
     'yaxis'       : 'd#sigma [pb]',
+    'yaxisfid'    : '(1/#sigma)d#sigma [adim.]',
     'genbinning'  : [0., 125., 250., 350., 400.],
     'recobinning' : [0., 125., 170., 180., 200., 240., 290., 350., 400.],
     'legpos'      : (0.75, 0.55, 0.95, 0.93),
@@ -171,6 +176,7 @@ varList['M_LLB'] = {
     'var_response': 'MLLB',
     'var_gen'     : 'min(TGenM_LLB, 399.)',
     'uncleg_fold' : "TC",
+    'uncleg_fid'  : "TL",
     'covtxtsizefol': 0.5,
     'covtxtsizeunf': 2,
 }
@@ -238,6 +244,7 @@ varList['MET_Phiuncertainties'] = {
 varList['LeadingJetPt'] = {
     'xaxis'       : 'Leading jet p_{T} (GeV)',
     'yaxis'       : 'd#sigma [pb]',
+    'yaxisfid'    : '(1/#sigma)d#sigma [adim.]',
     #'genbinning'  : [0, 75, 200, 300],
     #'recobinning' : [0., 50., 75., 110., 150., 200., 300.],
    #'genbinning'  : [0., 75., 140., 200., 300.],                            # binning presentado en singletop
@@ -254,6 +261,7 @@ varList['LeadingJetPt'] = {
     'var_gen'     : 'min(TGenLeadingJetPt, 149.)',
     'uncleg_fold' : "TL",
     'uncleg_unf'  : "TL",
+    'uncleg_fid'  : "TL",
     'resptxtsize' : 1.5,
     'covtxtsizeunf': 2,
     'covtxtsizefol': 1.25,
@@ -317,6 +325,7 @@ varList['LeadingLepPt'] = {
     #'xaxis'       : 'p_{T}(\\ell_{1}) (GeV)',
     'xaxis'       : 'Leading lepton p_{T} (GeV)',
     'yaxis'       : 'd#sigma [pb]',
+    'yaxisfid'    : '(1/#sigma)d#sigma [adim.]',
     #'genbinning'  : [0, 50, 120, 190, 250],
     #'recobinning' : [0, 50, 65, 85, 97, 110, 145, 180, 250],
    #'genbinning'  : [0, 50, 120, 160, 250],                            # binning presentado en singletop
@@ -336,6 +345,7 @@ varList['LeadingLepPt'] = {
     'var_response': 'LeadingLepPt',
     'var_gen'     : 'min(TGenLeadingLepPt, 149.)',
     'uncleg_fold' : "TL",
+    'uncleg_fid'  : "TL",
     'resptxtsize' : 1.5,
     'covtxtsizefol': 1.2,
     'covtxtsizeunf': 2,
@@ -347,6 +357,24 @@ varList['LeadingLepPtuncertainties'] = {
 varList['ResponseLeadingLepPt'] = {
     'xaxis'       : 'Gen Leading lep p_{T} (GeV)',
     'yaxis'       : 'Leading lep p_{T} (GeV)'
+}
+
+varList['Fiducial'] = {
+    'xaxis'       : 'a.u.',
+    'yaxis'       : 'd#sigma [pb]',
+    'genbinning'  : [25., 150.],
+    'recobinning' : [25., 150.],
+    'var'         : 'min(TLeadingLepPt, 149.)',
+    'var_response': 'LeadingLepPt',
+    'var_gen'     : 'min(TGenLeadingLepPt, 149.)',
+}
+varList['Fiducialuncertainties'] = {
+    'xaxis'       : 'a.u.',
+    'yaxis'       : 'Relative uncertainty'
+}
+varList['ResponseFiducial'] = {
+    'xaxis'       : 'a.u.',
+    'yaxis'       : 'a.u.'
 }
 
 varList['LeadingLepPhi'] = {
@@ -499,6 +527,7 @@ varList['HTtotuncertainties'] = {
 varList['DilepMETJet1Pz'] = {
     'xaxis'       : 'p_{Z} (e^{\\pm}, \\mu^{\\mp}, j) (GeV)',
     'yaxis'       : 'd#sigma [pb]',
+    'yaxisfid'    : '(1/#sigma)d#sigma [adim.]',
     'genbinning'  : [0., 100., 200., 350., 450.],
     'recobinning' : [0., 50., 100., 150., 200., 250., 300., 350., 450.],
     'var'         : 'min(abs(TDilepMETJet1Pz), 449.)',
@@ -509,6 +538,7 @@ varList['DilepMETJet1Pz'] = {
     'legpos_fold' : (.5, .685, .725, .93),
     'legpos_foldas':"BL",
     'uncleg_fold' : "TL",
+    'uncleg_fid'  : "TL",
     'resptxtsize' : 1.7,
     'covtxtsizeunf': 2,
     'covtxtsizefol': 1.4,
@@ -564,6 +594,7 @@ varList['DPhiLL'] = {
     #'xaxis'       : '\\Delta \\varphi(\\ell_{1}, \\ell_{2}) (rad)',
     'xaxis'       : "\\Delta \\varphi(e^{\\pm}, \\mu^{\\mp})/\\pi",
     'yaxis'       : "d#sigma [pb]",
+    'yaxisfid'    : '(1/#sigma)d#sigma [adim.]',
     'genbinning'  : [0., .25, .50, 0.75, 1.0],
     'recobinning' : [0., .125, .25, .375, .50, .625, .75, .875, 1.0],
     #'genbinning'  : [0., .75, 1.5, 2.25, r.TMath.Pi()],
@@ -576,6 +607,7 @@ varList['DPhiLL'] = {
     #'legpos'      : (0.82, 0.14, 0.93, 0.47),
     'legpos'      : (0.15, 0.425, 0.35, 0.81),
     'legpos_fold' : "TL",
+    'legpos_fid'  : "BR",
     'legpos_unf'  : "TL",
     'legpos_unf'  : (.18, .59, .3, .835),
     'legpos_foldas':"TL",

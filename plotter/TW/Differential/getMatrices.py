@@ -62,8 +62,8 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None)
   if not isinstance(t1, list):
     hGen1 = r.TH1F('hGen1', '', nxb, xb)
     hGen2 = r.TH1F('hGen2', '', nxb, xb)
-    t1.Draw(vnamegen + '>>hGen1', genCut + "*(abs(TGen{vr}) < 1000)".format(vr = vname))
-    t2.Draw(vnamegen + '>>hGen2', genCut + "*(abs(TGen{vr}) < 1000)".format(vr = vname))
+    t1.Draw(vnamegen + '>>hGen1', genCut + "*(abs(TGen{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
+    t2.Draw(vnamegen + '>>hGen2', genCut + "*(abs(TGen{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
     hGen1.Add(hGen2)
     del hGen2
   else:
@@ -73,11 +73,11 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None)
     hGen2noF = r.TH1F('hGen2noF', '', nxb, xb)
     
     specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-    t1[0].Draw(vnamegen + '>>hGen1', genCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname))
-    t2[0].Draw(vnamegen + '>>hGen2', genCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname))
+    t1[0].Draw(vnamegen + '>>hGen1', genCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
+    t2[0].Draw(vnamegen + '>>hGen2', genCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
     specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-    t1[1].Draw(vnamegen + '>>hGen1noF', genCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname))
-    t2[1].Draw(vnamegen + '>>hGen2noF', genCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname))
+    t1[1].Draw(vnamegen + '>>hGen1noF', genCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
+    t2[1].Draw(vnamegen + '>>hGen2noF', genCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
     hGen1.Add(hGen2)
     hGen1noF.Add(hGen2noF)
     hGen1.Add(hGen1noF)
@@ -95,8 +95,8 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None)
     h1    = r.TH2F('h1', "", nxb, xb, nyb, yb)
     h2    = r.TH2F('h2', '', nxb, xb, nyb, yb)
     
-    t1.Project('h1', vnamereco + ":" + vnamegen, tmpcut + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname))
-    t2.Project('h2', vnamereco + ":" + vnamegen, tmpcut + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname))
+    t1.Project('h1', vnamereco + ":" + vnamegen, tmpcut + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
+    t2.Project('h2', vnamereco + ":" + vnamegen, tmpcut + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
     h1.Add(h2)
     del h2
   else:
@@ -106,11 +106,11 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None)
     h2noF = r.TH2F('h2noF', '', nxb, xb, nyb, yb)
     
     specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-    t1[0].Project('h1', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname))
-    t2[0].Project('h2', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname))
+    t1[0].Project('h1', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
+    t2[0].Project('h2', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
     specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-    t1[1].Project('h1noF', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname))
-    t2[1].Project('h2noF', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname))
+    t1[1].Project('h1noF', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
+    t2[1].Project('h2noF', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
     h1.Add(h2)
     h1noF.Add(h2noF)
     h1.Add(h1noF)
@@ -120,8 +120,8 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None)
     if not isinstance(t1, list):
       hReco1 = r.TH1F('hReco1', '', nyb, yb)
       hReco2 = r.TH1F('hReco2', '', nyb, yb)
-      t1.Draw(vnamereco + '>>hReco1', recoCut + "*(abs(T{vr}) < 1000)".format(vr = vname))
-      t2.Draw(vnamereco + '>>hReco2', recoCut + "*(abs(T{vr}) < 1000)".format(vr = vname))
+      t1.Draw(vnamereco + '>>hReco1', recoCut + "*(abs(T{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
+      t2.Draw(vnamereco + '>>hReco2', recoCut + "*(abs(T{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
       hReco1.Add(hReco2)
       del hReco2
     else:
@@ -131,11 +131,11 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None)
       hReco2noF = r.TH1F('hReco2noF', '', nyb, yb)
       
       specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-      t1[0].Draw(vnamereco + '>>hReco1', recoCut + '*' + str(specialweight) + "*(abs(T{vr}) < 1000)".format(vr = vname))
-      t2[0].Draw(vnamereco + '>>hReco2', recoCut + '*' + str(specialweight) + "*(abs(T{vr}) < 1000)".format(vr = vname))
+      t1[0].Draw(vnamereco + '>>hReco1', recoCut + '*' + str(specialweight) + "*(abs(T{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
+      t2[0].Draw(vnamereco + '>>hReco2', recoCut + '*' + str(specialweight) + "*(abs(T{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
       specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-      t1[1].Draw(vnamereco + '>>hReco1noF', recoCut + '*' + str(specialweight) + "*(abs(T{vr}) < 1000)".format(vr = vname))
-      t2[1].Draw(vnamereco + '>>hReco2noF', recoCut + '*' + str(specialweight) + "*(abs(T{vr}) < 1000)".format(vr = vname))
+      t1[1].Draw(vnamereco + '>>hReco1noF', recoCut + '*' + str(specialweight) + "*(abs(T{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
+      t2[1].Draw(vnamereco + '>>hReco2noF', recoCut + '*' + str(specialweight) + "*(abs(T{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
       
       hReco1.Add(hReco2)
       hReco1noF.Add(hReco2noF)
@@ -165,15 +165,15 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None)
     if ('fsr' in t1.GetName() or 'FSR' in t1.GetName() or 'isr' in t1.GetName() or 'ISR' in t1.GetName()):
       h1nom = r.TH2F('h1nom', "", nxb, xb, nyb, yb)
       h2nom = r.TH2F('h2nom', '', nxb, xb, nyb, yb)
-      nomtree[0].Project('h1nom', vnamereco + ":" + vnamegen, tmpcut + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname))
-      nomtree[1].Project('h2nom', vnamereco + ":" + vnamegen, tmpcut + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname))
+      nomtree[0].Project('h1nom', vnamereco + ":" + vnamegen, tmpcut + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
+      nomtree[1].Project('h2nom', vnamereco + ":" + vnamegen, tmpcut + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
       h1nom.Add(h2nom)
       del h2nom
       hGen1nom = r.TH1F('hGen1nom', '', nxb, xb)
       hGen2nom = r.TH1F('hGen2nom', '', nxb, xb)
 
-      nomtree[0].Draw(vnamegen + '>>hGen1nom', genCut + "*(abs(TGen{vr}) < 1000)".format(vr = vname))
-      nomtree[1].Draw(vnamegen + '>>hGen2nom', genCut + "*(abs(TGen{vr}) < 1000)".format(vr = vname))
+      nomtree[0].Draw(vnamegen + '>>hGen1nom', genCut + "*(abs(TGen{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
+      nomtree[1].Draw(vnamegen + '>>hGen2nom', genCut + "*(abs(TGen{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
 
       hGen1nom.Add(hGen2nom)
       del hGen2nom
@@ -238,8 +238,8 @@ def GetFiducialHisto(t1, t2, vname, nyb, yb, sys = "", nomtree = None):
     h1 = r.TH1F('h1', "Fiducial histogram - T" + vnametitle, nyb, yb)
     h2 = r.TH1F('h2', '',                                    nyb, yb)
     
-    t1.Draw(vnamereco + '>>h1', tmpcut + "*(abs(T{vr}) < 1000)".format(vr = vname))
-    t2.Draw(vnamereco + '>>h2', tmpcut + "*(abs(T{vr}) < 1000)".format(vr = vname))
+    t1.Draw(vnamereco + '>>h1', tmpcut + "*(abs(T{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
+    t2.Draw(vnamereco + '>>h2', tmpcut + "*(abs(T{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
 
     h1.Add(h2)
     del h2
@@ -265,8 +265,8 @@ def GetFiducialHisto(t1, t2, vname, nyb, yb, sys = "", nomtree = None):
     if ('fsr' in t1.GetName() or 'FSR' in t1.GetName() or 'isr' in t1.GetName() or 'ISR' in t1.GetName()):
       h1nom = r.TH1F('h1nom', "", nyb, yb)
       h2nom = r.TH1F('h2nom', '', nyb, yb)
-      nomtree[0].Draw(vnamereco + '>>h1nom', tmpcut + "*(abs(T{vr}) < 1000)".format(vr = vname))
-      nomtree[1].Draw(vnamereco + '>>h2nom', tmpcut + "*(abs(T{vr}) < 1000)".format(vr = vname))
+      nomtree[0].Draw(vnamereco + '>>h1nom', tmpcut + "*(abs(T{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
+      nomtree[1].Draw(vnamereco + '>>h2nom', tmpcut + "*(abs(T{vr}) < 1000)".format(vr = vname if vname != "Fiducial" else "LeadingLepPt"))
       h1nom.Add(h2nom)
       del h2nom
       
@@ -429,8 +429,9 @@ xmax    = [int(round(i[-1])) for i in VarBins_Y]
 ymin    = xmin
 ymax    = xmax
 nybins  = [len(i)-1  for i in VarBins_Y]
-nxbins  = [int(i/2) for i in nybins]  ### IMPORTANT!!!! The relation 1(gen):2(reco) in the number of bins MUST be preserved
-
+nxbins  = [int(i/2)  for i in nybins]  ### IMPORTANT!!!! The relation 1(gen):2(reco) in the number of bins MUST be preserved
+for i in range(len(nxbins)):
+  if nxbins[i] == 0: nxbins[i] = 1
 
 # ---------------------------------------------------------------- INFO IMPORTING FROM MINITREES
 print("\n> Importing minitrees' information...")

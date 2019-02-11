@@ -19,7 +19,7 @@ doSanityCheck = True
 
 def getXsecForSys(syst, tfile):
     data = copy.deepcopy(tfile.Get('data_obs').Clone('data_%s'%syst))
-
+    
     sysString = ('_' + syst) if (syst != '' and 'asimov' not in syst) else ''
     ttbar     = tfile.Get('ttbar' + sysString )
     dy        = tfile.Get('DY'    + sysString )
