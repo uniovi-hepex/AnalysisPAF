@@ -2,11 +2,12 @@
 #
 #
 
-plotspath="/nfs/fanae/user/DIRECCIÓNDEIRENEQUE-YPRESTE"
+plotspath="/nfs/fanae/user/ireneaj/www/TFG/results/"
+dos="varplots/"
 indstr="index.php"
 cnstr="CondN/"
 covstr="CovMat/"
-indexpath="~/www/index.php"
+indexpath="/nfs/fanae/user/ireneaj/www/index.php"
 
 if [ "$1" == "p" ]; then
   echo "===> Copying unfolding results!"
@@ -17,9 +18,11 @@ if [ "$1" == "p" ]; then
   echo " "
   echo "Copying plots..."
   cp -R results/. $plotspath
+  #rsync -avzP results/. $plotspath
   cp $indexpath $plotspath$indstr
-  cp $indexpath $plotspath$covstr$indstr
-  cp $indexpath $plotspath$cnstr$indstr
+  cp $indexpath $plotspath$dos$indstr
+  #cp $indexpath $plotspath$covstr$indstr
+  #cp $indexpath $plotspath$cnstr$indstr
   echo " "
   echo "Done!"
   return
@@ -42,7 +45,7 @@ fi
 lowerbar="_"
 slash="/"
 savefolder=$y$lowerbar$m$lowerbar$d
-storagepath="/nfs/fanae/user/vrbouza/Storage/TWTTbar/MiniTrees/"
+storagepath="/pool/cienciasrw/userstorage/vrbouza/proyectos/TWTTbar/MiniTrees/"
 savepath=$storagepath$savefolder
 
 echo "===> Copying minitrees!"
@@ -54,7 +57,8 @@ mkdir -p $savepath
 echo " "
 echo "Copying files (note that this process can last even minutes depending on the size of the minitrees)..."
 savepath=$savepath$slash
-cp -R ../../TW_temp/. $savepath
+#cp -R ../../TWTTbar_temp/. $savepath
+rsync -avzP ../../TWTTbar_temp/ $savepath
 
 echo " "
 echo "Done!"
