@@ -145,6 +145,7 @@ def propagateHistoAsym(nom, varDict, doEnv = False, doAsimov = False):
                     del tmpDict[key]
             if doAsimov: valasimov = hasimov.GetBinError(bin)
             if 'asimov' in varDict: del tmpDict['asimov']
+            
             outUp.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, +1), err, tmpuncUp, valasimov]))
             outDown.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, -1), err, abs(tmpuncDown), valasimov]))
     else:
