@@ -45,9 +45,9 @@ class DataContainer:
         for key in tfile.GetListOfKeys():
             if key.GetName()[0] != 'R': continue
             if vl.varList[self.var]['var_response'] not in key.GetName() and self.var not in key.GetName(): continue
-            if key.GetName() == 'R' + vl.varList[self.var]['var_response'] or key.GetName() == 'R' + self.var:
+            if key.GetName() == 'R' + vl.varList[self.var]['var_response']:
                 self.responseMatrices[''] = copy.deepcopy(key.ReadObj())
-            elif 'R' + vl.varList[self.var]['var_response'] + '_' in key.GetName() or 'R' + self.var + '_' in key.GetName():
+            elif 'R' + vl.varList[self.var]['var_response'] + '_' in key.GetName():
                 sysName = '_'.join(key.GetName().split('_')[1:])
                 self.systListResp.append(sysName)
                 self.responseMatrices[sysName] = copy.deepcopy(key.ReadObj())
@@ -56,11 +56,11 @@ class DataContainer:
         scalevalone = vl.Lumi*1000
         for key in tfile.GetListOfKeys():
             if key.GetName()[0] != 'F': continue
-            if vl.varList[self.var]['var_response'] not in key.GetName() and self.var not in key.GetName(): continue
+            if vl.varList[self.var]['var_response'] not in key.GetName(): continue
             if key.GetName() == 'F' + vl.varList[self.var]['var_response']:
                 self.bkgs[''] = copy.deepcopy(key.ReadObj())
                 self.bkgs[''].Scale(scalevalone)
-            else:
+            elif "F" + vl.varList[self.var]['var_response'] + "_" in key.GetName():
                 sysName = '_'.join(key.GetName().split('_')[1:])
                 self.bkgs[sysName] = copy.deepcopy(key.ReadObj())
                 self.bkgs[sysName].Scale(scalevalone)
@@ -76,7 +76,7 @@ class DataContainer:
 
     def getInputs(self,nuis):
         # ttbar-related systs. are the only that don't have a varied response matrix
-        if verbose: print '> Getting inputs for nuisance', nuis, vl.varList['Names']['ttbarSysts'] + vl.varList['Names']['colorSysts']
+        if verbose: print '\n> Getting inputs for nuisance', nuis
         if nuis in vl.varList['Names']['ttbarSysts'] + vl.varList['Names']['colorSysts'] + vl.varList['Names']['NormSysts'] + ['LumiUp','LumiDown', 'asimov']:
             return self.unfoldingInputs[nuis], self.responseMatrices[''], self.bkgs['']
         elif nuis == 'JERDown':
@@ -86,6 +86,8 @@ class DataContainer:
         else:
             if nuis not in self.responseMatrices:
                 raise RuntimeError("%s is not in the list of varied response matrices nor in the blacklist of systs. w/o associated response matrices."%nuis)
+                
+                
             return self.unfoldingInputs[nuis], self.responseMatrices[nuis], self.bkgs[nuis]
 
     def getResponse(self, nuis):
@@ -112,7 +114,15 @@ class UnfolderHelper:
         self.tunfolder = r.TUnfoldDensity(self.response, r.TUnfold.kHistMapOutputHoriz,
                                              r.TUnfold.kRegModeCurvature, r.TUnfold.kEConstraintArea if self.doArea else r.TUnfold.kEConstraintNone,
                                              r.TUnfoldDensity.kDensityModeNone)
-
+        
+        #wololo = r.TUnfoldBinning("LeadingLepPt", 0)
+        #wololo.AddAxis("LeadingLepPt", 1, array.array("d", [25., 150.]), True, True)
+        
+        #self.tunfolder = r.TUnfoldDensity(self.response, r.TUnfold.kHistMapOutputHoriz,
+                                             #r.TUnfold.kRegModeCurvature, r.TUnfold.kEConstraintArea if self.doArea else r.TUnfold.kEConstraintNone,
+                                             #r.TUnfoldDensity.kDensityModeNone, wololo)
+        
+        
         #for bin in range(1, self.unfInput.GetNbinsX() + 1):
             #self.unfInput.SetBinContent(bin, self.unfInput.GetBinContent(bin) - self.bkg.GetBinContent(bin))
         self.tunfolder.SetInput(self.unfInput)
@@ -169,6 +179,7 @@ class UnfolderHelper:
         # First: L-curve plot
         plot = bp.beautifulUnfoldingPlots('{var}_asimov_LCurve'.format(var = self.var) if (self.wearedoingasimov) else '{var}_LCurve'.format(var = self.var))
         plot.isLCurve = True
+        plot.doPreliminary  = vl.doPre
         plot.plotspath  = self.plotspath
         if not hasattr(self,'scanRes'):
             self.logTauX.GetKnot( self.themax, t, x)
@@ -197,6 +208,7 @@ class UnfolderHelper:
         # Second: L-curve curvature plot
         plot = bp.beautifulUnfoldingPlots('{var}_asimov_LogTauCurv'.format(var = self.var) if (self.wearedoingasimov) else '{var}_LogTauCurv'.format(var = self.var))
         plot.plotspath  = self.plotspath
+        plot.doPreliminary  = vl.doPre
         plot.initCanvasAndAll()
         #plot.addHisto(self.lCurve, 'AL','',0)
         plot.canvas.cd()
@@ -293,7 +305,9 @@ class Unfolder():
         plot = bp.beautifulUnfoldingPlots(self.var)
         data.SetMarkerStyle(r.kFullCircle)
         data.GetXaxis().SetNdivisions(505,True)
-        plot.plotspath  = self.plotspath
+        plot.plotspath       = self.plotspath
+        plot.doPreliminary   = vl.doPre
+        plot.doSupplementary = True
         
         if self.doSanityCheck:
             if not os.path.isfile('temp/{var}_/ClosureTest_{var}.root'.format(var = self.var)):
@@ -308,17 +322,18 @@ class Unfolder():
             aMCatNLO = copy.deepcopy(tmptfile2.Get('tW'))
             aMCatNLO.SetLineWidth(2)
             aMCatNLO.SetLineColor(bp.colorMap[1])
+            aMCatNLO.SetLineStyle(2)
             for bin in range(1, tru.GetNbinsX()):
                 tru.SetBinError(bin, 0.)
                 aMCatNLO.SetBinError(bin, 0.)
-            plot.addHisto(tru, 'L', 'tW Powheg', 'L')
-            plot.addHisto(aMCatNLO, 'L,same', 'tW aMCatNLO', 'L')
-            plot.addHisto(data, 'P,E,same', vl.labellegend, 'P')
+            plot.addHisto(tru,                'L,same', 'tW Powheg DR + Pythia8',   'L', 'mc')
+            plot.addHisto(aMCatNLO,           'L,same', 'tW aMC@NLO DR + Pythia8', 'L', 'mc')
+            plot.addHisto(data, 'P,E,same{s}'.format(s = ",X0" if "equalbinsunf" in vl.varList[self.var.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')] else ""), vl.labellegend, 'PE')
             plot.saveCanvas('TR')
             tmptfile.Close()
             tmptfile2.Close()
         else:
-            plot.addHisto(data,'P,E', vl.labellegend,'P')
+            plot.addHisto(data,'P,E{s}'.format(s = ",X0" if "equalbinsunf" in vl.varList[self.var.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')] else ""), vl.labellegend,'PE')
             plot.saveCanvas('TR')
 
 
@@ -346,6 +361,7 @@ class Unfolder():
         plot.addHisto(regularized  ,'hist'     ,'regcomp'  ,'L')
 #        plot.addHisto(unregularized,'hist,same','UnRegularized','L')
         plot.plotspath = 'results/'
+        plot.doPreliminary  = vl.doPre
         plot.saveCanvas('BR', '', False)
 
 
@@ -376,6 +392,7 @@ class Unfolder():
         withareaconst.GetYaxis().SetTitle('Area/No area')
         plot.addHisto(withareaconst  ,'hist'     ,'areacomp'  ,'L')
         plot.plotspath = 'results/'
+        plot.doPreliminary  = vl.doPre
         plot.saveCanvas('BR', '', False)
 
 
@@ -388,14 +405,36 @@ class Unfolder():
         tauval = 0
         if self.doRegularisation: tauval = self.taulist['']
 
-        if verbose: print '> Unfolding nominal distribution'
+        if verbose: print '\n> Unfolding nominal distribution'
         self.helpers[''].tunfolder.DoUnfold(tauval)
         nominal     = copy.deepcopy(self.helpers[''].tunfolder.GetOutput(self.var))
         
-        if self.wearedoingasimov and "Fiducial" in self.var:                                     #### TODO: UNRESOLVED BUG
+        if "Fiducial" in self.var:
             print "\n"
-            wr.warn("WARNING: you are calculating the fiducial cross section for the Asimov dataset. For unknown reasons, the obtention of the full covariance matrix after the unfolding gives an error. As a by-pass of this situation, the statistical uncertainty that the nominal results will carry will be ONLY the ones introduced as input, NOT the ones related with the response matrix nor the signal efficiency / fiducial region efficiency detection. TAKE THIS INTO ACCOUNT.\n")
+            #wr.warn("WARNING: you are calculating the fiducial cross section for the Asimov dataset. For unknown reasons, the obtention of the full covariance matrix after the unfolding gives an error. As a by-pass of this situation, the statistical uncertainty that the nominal results will carry will be ONLY the ones introduced as input, NOT the ones related with the response matrix nor the signal efficiency / fiducial region efficiency detection. TAKE THIS INTO ACCOUNT.")
+            
+            mat = self.helpers[''].response.GetBinContent(1, 1)
+            incmat = self.helpers[''].response.GetBinError(1, 1)
+            
+            ns = self.helpers[''].unfInput.GetBinContent(1)
+            incns = self.helpers[''].unfInput.GetBinError(1)
+            
+            nf = self.helpers[''].bkg.GetBinContent(1)
+            incnf = self.helpers[''].bkg.GetBinError(1)
+            
+            valor = ( ns - nf ) / mat
+            inc = incns/mat + incnf/mat + (ns-nf)/mat**2 * incmat
+            
+            print "ns", ns, "nf", nf, "mat", mat, "ns-nf", ns-nf
+            
+            print "valor nom.", valor/vl.Lumi/1000, "inc. nom.", inc/vl.Lumi/1000, "\n"
+            #sys.exit()
+            
+            nominal.SetBinContent(1, valor); nominal.SetBinError(1, inc);
+            covnom = r.TH2F("CovMat", "", 1, vl.varList[self.var]['genbinning'][0], vl.varList[self.var]['genbinning'][-1], 1, vl.varList[self.var]['genbinning'][0], vl.varList[self.var]['genbinning'][-1])
+            covnom.SetBinContent(1, 1, inc)
         else:
+            if verbose: print '> Obtaining covariance matrix of all the statistical components that take part here.'
             covnom = copy.deepcopy(self.helpers[''].tunfolder.GetEmatrixTotal("CovMat"))
             for bin in range(1, nominal.GetNbinsX() + 1):
                 nominal.SetBinError(bin, math.sqrt(covnom.GetBinContent(bin, bin)))
@@ -404,6 +443,22 @@ class Unfolder():
             if verbose: print '> Unfolding distribution of {sys} systematic'.format(sys = nuis)
             self.helpers[nuis].tunfolder.DoUnfold(tauval)
             allHistos[nuis] = self.helpers[nuis].tunfolder.GetOutput(self.var + '_' + nuis)
+            if "Fiducial" in self.var:
+                mat = self.helpers[nuis].response.GetBinContent(1, 1)
+                incmat = self.helpers[nuis].response.GetBinError(1, 1)
+                
+                ns = self.helpers[nuis].unfInput.GetBinContent(1)
+                incns = self.helpers[nuis].unfInput.GetBinError(1)
+                
+                nf = self.helpers[nuis].bkg.GetBinContent(1)
+                incnf = self.helpers[nuis].bkg.GetBinError(1)
+                
+                valor = ( ns - nf ) / mat
+                inc = incns/mat + incnf/mat + (ns-nf)/mat**2 * incmat
+                
+                allHistos[nuis].SetBinContent(1, 1, valor)
+                allHistos[nuis].SetBinError(1, 1, inc)
+                
         
         scaleval = 1/vl.Lumi/1000 if vl.doxsec else 1
         nominal.Scale(scaleval)
@@ -452,12 +507,15 @@ class Unfolder():
         plot               = bp.beautifulUnfoldingPlots(self.var + "_asimov"  if self.wearedoingasimov else self.var)
         plot.doRatio       = True
         plot.doFit         = False
+        plot.doPreliminary  = vl.doPre
+        plot.doSupplementary = True
         plot.plotspath     = self.plotspath
         
         nominal.SetMarkerStyle(r.kFullCircle)
         nominal.SetLineColor(r.kBlack)
+        nominal.SetMarkerSize(1)
         nominal_withErrors[0].SetFillColorAlpha(r.kBlue, 0.35)
-        nominal_withErrors[0].SetLineColor(r.kBlue)
+        nominal_withErrors[0].SetLineColor(0)
         nominal_withErrors[0].SetFillStyle(1001)
         
         if not self.wearedoingasimov:
@@ -489,12 +547,17 @@ class Unfolder():
             tru.SetLineWidth(2)
             tru.SetLineColor(bp.colorMap[0])
             
+            print "tW DR", tru.GetBinContent(1)
+            
             if not os.path.isfile('temp/{var}_/ClosureTest_aMCatNLO_{var}.root'.format(var = self.var)):
                 raise RuntimeError('The rootfile with the generated information from an aMCatNLO sample does not exist.')
             tmptfile2 = r.TFile.Open('temp/{var}_/ClosureTest_aMCatNLO_{var}.root'.format(var = self.var))
             aMCatNLO = copy.deepcopy(tmptfile2.Get('tW').Clone('aMCatNLO'))
             aMCatNLO.SetLineWidth(2)
             aMCatNLO.SetLineColor(r.kAzure)
+            aMCatNLO.SetLineStyle(2)
+            
+            print "tW aMCatNLO DR", aMCatNLO.GetBinContent(1)
             
             if not os.path.isfile('temp/{var}_/ClosureTest_DS_{var}.root'.format(var = self.var)):
                 raise RuntimeError('The rootfile with the generated information with the DS variation does not exist.')
@@ -503,30 +566,34 @@ class Unfolder():
             hDS.SetLineWidth(2)
             hDS.SetLineColor(r.kGreen)
             
-            plot.addHisto(nominal_withErrors, 'hist',   'Total unc.',   'F', 'unc')
-            plot.addHisto(tru,                'L,same', 'tW Powheg',    'L', 'mc')
-            plot.addHisto(aMCatNLO,           'L,same', 'tW aMCatNLO',  'L', 'mc')
-            plot.addHisto(hDS,                'L,same', 'tW DS',        'L', 'mc')
+            print "tW DS", hDS.GetBinContent(1)
+            #sys.exit()
+            plot.addHisto(nominal_withErrors, 'hist',   'Uncertainty',   'F', 'unc')
+            plot.addHisto(tru,                'L,same', 'tW Powheg DR + Pythia8',   'L', 'mc')
+            plot.addHisto(hDS,                'L,same', 'tW Powheg DS + Pythia8',   'L', 'mc')
+            plot.addHisto(aMCatNLO,           'L,same', 'tW aMC@NLO DR + Pythia8',  'L', 'mc')
             
-            if self.wearedoingasimov: plot.addHisto(nominal, 'P,E,same',"Pseudodata",'P', 'data')
-            else:                     plot.addHisto(nominal, 'P,E,same',vl.labellegend,'P', 'data')
+            if self.wearedoingasimov: plot.addHisto(nominal, 'P,E,same{s}'.format(s = ",X0" if "equalbinsunf" in vl.varList[self.var.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')] else ""), "Pseudodata",   'PE{s}'.format(s = "L" if not "equalbinsunf" in vl.varList[self.var.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')] else ""), 'data')
+            else:                     plot.addHisto(nominal, 'P,E,same{s}'.format(s = ",X0" if "equalbinsunf" in vl.varList[self.var.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')] else ""), vl.labellegend, 'PE{s}'.format(s = "L" if not "equalbinsunf" in vl.varList[self.var.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')] else ""), 'data')
             plot.saveCanvas(legloc)
             tmptfile.Close()
             tmptfile2.Close()
             tmptfile3.Close()
         else:
-            plot.addHisto(nominal_withErrors, 'E2',     'Total unc.',   'F')
-            if self.wearedoingasimov: plot.addHisto(nominal, 'P,same',"Pseudodata",'P', 'data')
-            else:                     plot.addHisto(nominal, 'P,same',vl.labellegend,'P', 'data')
+            plot.addHisto(nominal_withErrors, 'E2',     'Uncertainty',   'F')
+            if self.wearedoingasimov: plot.addHisto(nominal, 'P,same{s}'.format(s = ",X0" if "equalbinsunf" in vl.varList[self.var.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')] else ""), "Pseudodata",   'PE{s}'.format(s = "L" if not "equalbinsunf" in vl.varList[self.var.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')] else ""), 'data')
+            else:                     plot.addHisto(nominal, 'P,same{s}'.format(s = ",X0" if "equalbinsunf" in vl.varList[self.var.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')] else ""), vl.labellegend, 'PE{s}'.format(s = "L" if not "equalbinsunf" in vl.varList[self.var.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')] else ""), 'data')
             plot.saveCanvas(legloc)
 
         del plot
         plot2       = bp.beautifulUnfoldingPlots(self.var + 'uncertainties_asimov' if self.wearedoingasimov else self.var + 'uncertainties')
         plot2.doFit = False
-        if not self.wearedoingasimov: uncList = ep.getUncList(nominal, allHistos, self.doColorEnvelope, False, True)
-        else:                         uncList = ep.getUncList(nominal, allHistos, self.doColorEnvelope, False)
-        print 'Full uncertainties list (ordered by impact):', uncList
-        uncList     = uncList[:vl.nuncs]
+        plot2.doPreliminary   = vl.doPre
+        plot2.doSupplementary = True
+        if not self.wearedoingasimov: uncListorig = ep.getUncList(nominal, allHistos, self.doColorEnvelope, False, True)
+        else:                         uncListorig = ep.getUncList(nominal, allHistos, self.doColorEnvelope, False)
+        print 'Full uncertainties list (ordered by impact):', uncListorig
+        uncList     = uncListorig[:vl.nuncs]
         
         incmax  = []
         for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
@@ -573,22 +640,44 @@ class Unfolder():
         #else:
             #uncList[0][1].GetYaxis().SetRangeUser(0, 0.9)
         
-        uncList[0][1].GetYaxis().SetRangeUser(0, 2)
-        
+        hincmax.GetYaxis().SetRangeUser(0, 2.0)
+        plot2.addHisto(hincmax,  'hist', 'Total', 'L')
+        plot2.addHisto(hincsyst, 'hist,same', 'Systematic', 'L')
+        actualindex = 0
+        isstat = False
         for i in range(vl.nuncs):
-            uncList[i][1].SetLineColor( vl.NewColorMap[uncList[i][0]] )
-            uncList[i][1].SetLineWidth( 2 )
-            if "Stat" in uncList[i][0]:
-                uncList[i][1].SetLineColor(r.kBlack)
-                uncList[i][1].SetLineStyle( 2 )
-            elif "Lumi" in uncList[i][0]:
-                uncList[i][1].SetLineColor(r.kBlack)
-                uncList[i][1].SetLineStyle( 4 )
-            
-            plot2.addHisto(uncList[i][1], 'H,same' if i else 'H',uncList[i][0],'L')
-        
-        plot2.addHisto(hincsyst, 'hist,same', 'Syst.', 'L')
-        plot2.addHisto(hincmax,  'hist,same', 'Total', 'L')
+            #if "Stat" in uncListorig[i][0]:
+                #uncListorig[actualindex][1].SetLineColor(r.kBlack)
+                #uncListorig[actualindex][1].SetLineStyle( 2 )
+            #if "Stat" in uncListorig[actualindex][0]:
+                #actualindex += 1
+            uncListorig[actualindex][1].SetLineColor( vl.NewColorMap[uncListorig[actualindex][0]] )
+            uncListorig[actualindex][1].SetLineWidth( 2 )
+            if "Lumi" in uncListorig[actualindex][0]:
+                uncListorig[actualindex][1].SetLineColor(r.kBlack)
+                uncListorig[actualindex][1].SetLineStyle( 4 )
+            if "Stat" in uncListorig[actualindex][0]:
+                isstat = True
+                uncListorig[actualindex][1].SetLineColor(r.kBlack)
+                uncListorig[actualindex][1].SetLineStyle( 2 )
+                plot2.addHisto(uncListorig[actualindex][1], 'hist,same', vl.SysNameTranslator[uncListorig[actualindex][0]], 'L')
+                actualindex += 1
+            elif (not isstat and actualindex == vl.nuncs - 1):
+                isstat = True
+                for j in range(len(uncListorig)):
+                    if "Stat" in uncListorig[j][0]:
+                        uncListorig[j][1].SetLineColor(r.kBlack)
+                        uncListorig[j][1].SetLineStyle( 2 )
+                        plot2.addHisto(uncListorig[j][1], 'hist,same', vl.SysNameTranslator[uncListorig[j][0]], 'L')
+            else:
+                plot2.addHisto(uncListorig[actualindex][1], 'H,same', vl.SysNameTranslator[uncListorig[actualindex][0]], 'L')
+            actualindex += 1
+
+        #for i in range(len(uncListorig)):
+            #if "Stat" in uncListorig[i][0]:
+                #uncListorig[i][1].SetLineColor(r.kBlack)
+                #uncListorig[i][1].SetLineStyle( 2 )
+                #plot2.addHisto(uncListorig[i][1], 'hist,same', 'Statistical', 'L')
         plot2.plotspath = self.plotspath
         
         if   "uncleg_unf"   in vl.varList[self.var] and not self.wearedoingasimov: unclegpos = vl.varList[self.var]["uncleg_unf"]
@@ -634,9 +723,9 @@ if __name__=="__main__":
     a.doAreaConstraint= vl.doArea
     
     a.doUnfoldingForAllNuis()       # Unfolding
-    if varName != "Fiducial": a.doScanPlots()                 # L-Curve and curvature plots
-    if varName != "Fiducial": a.doRegularizationComparison()  # Comparison plot between regularisation and not
-    if varName != "Fiducial": a.doAreaConstraintComparison()  # Comparison plot between area constraint and not
+    if "Fiducial" not in varName and "ATLAS" not in varName: a.doScanPlots()                 # L-Curve and curvature plots
+    if "Fiducial" not in varName and "ATLAS" not in varName: a.doRegularizationComparison()  # Comparison plot between regularisation and not
+    if "Fiducial" not in varName and "ATLAS" not in varName: a.doAreaConstraintComparison()  # Comparison plot between area constraint and not
     
                                     # Condition numbers text file
     if not os.path.isdir('results/CondN'):
@@ -659,7 +748,7 @@ if __name__=="__main__":
         b.doAreaConstraint= vl.doArea
         
         b.doUnfoldingForAllNuis()       # Unfolding
-        if varName != "Fiducial": b.doScanPlots()                 # L-Curve and curvature plots
-        if varName != "Fiducial": b.doRegularizationComparison()  # Comparison plot between regularisation and not
-        if varName != "Fiducial": b.doAreaConstraintComparison()  # Comparison plot between area constraint and not
+        if "Fiducial" not in varName  and "ATLAS" not in varName: b.doScanPlots()                 # L-Curve and curvature plots
+        if "Fiducial" not in varName  and "ATLAS" not in varName: b.doRegularizationComparison()  # Comparison plot between regularisation and not
+        if "Fiducial" not in varName  and "ATLAS" not in varName: b.doAreaConstraintComparison()  # Comparison plot between area constraint and not
     print "> Unfolding done!"
