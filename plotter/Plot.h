@@ -11,6 +11,7 @@
 #include "TLatex.h"
 #include "TString.h"
 #include "TGaxis.h"
+#include "TExec.h"
 #include <iostream>
 #include "TResultsTable.h"
 
@@ -191,6 +192,9 @@ public:
     StackErrorStyle = 3444;
     weight = "TWeight";
     systematics = "";
+    
+    heightcanvas = 600;
+    widthcanvas  = 800;
 
     ytitle = "";
     xtitleOffset = 1.2;
@@ -207,6 +211,8 @@ public:
     yRatioTitleLabelSize = 0.12;
     yRatioTitleOffset = 0.26;
     NCols = 1;
+    doDecimalsInXAxis = true;
+    Xerrorbars        = true;
 
     dataStyle = "psameE1X0";
     dataTag   = "Data";
@@ -289,17 +295,23 @@ public:
 	void SetTitle(TString tit){title = tit;}
 	virtual void SetTitleX(TString xtit, Float_t size = -999){xtitle = xtit; if(size != -999) xtitle = size;}
 	virtual void SetTitleY(TString ytit, Float_t size = -999){ytitle = ytit; if(size != -999) ytitleSize = size;}
+  void SetDecimalsInXAxis(Bool_t x){doDecimalsInXAxis = x;}
 	void AddLumiSyst( float);
 	void AddNormSyst( TString, TString, float);
 
   void SetDataTag(TString t){dataTag = t;}
   void SetDataStyle(TString t){dataStyle = t;}
   virtual void SetYaxisDivisions(Int_t div){ytitleDivisions = div;}
+  virtual void SetXaxisDivisions(Int_t div){xtitleDivisions = div;}
+  virtual void SetXaxisOffset(Float_t Offset, Float_t size = -999){ xtitleOffset = Offset; if(size != -999) ytitleLabelSize = size;}
   virtual void SetYaxisOffset(Float_t Offset, Float_t size = -999){ ytitleOffset = Offset; if(size != -999) ytitleLabelSize = size;}
   virtual void SetYratioOffset(Float_t offset, Float_t size = -999){ yRatioTitleOffset = offset; if(size != -999) yRatioTitleSize = size;}
   virtual void SetBinLabels(TString t, char separator = ','){VBinLabels = TStringToVector(t, separator);}
+  void ObliterateXErrorBars() {Xerrorbars = false;}
   void SetXaxisLabelSize(float x){xAxisLabelSize = x;}
   void SetXaxisTitleSize(float x){xAxisTitleSize = x;}
+  void SetTextLumiPosX(Float_t x){texlumiX = x;}
+  void SetTextLumiPosY(Float_t x){texlumiY = x;}
   void SetNColumns(Int_t nc){NCols = nc;}
 
   void AddToHistos(Histo* p);
@@ -367,6 +379,9 @@ public:
   virtual void RemoveSystematic(TString sys);
   virtual void UseEnvelope(TString pr, TString tags, TString newname = "");
 
+  virtual void SetCanvasHeight(Float_t r) { heightcanvas = r;}
+  virtual void SetCanvasWidth(Float_t r)  { widthcanvas = r;}
+  
   void SetHistoTotalSyst(Histo* h){ hAllBkg = h->CloneHisto("AllBkg"); hAllBkg->SetDirectory(0); doExternalSyst = true;}
   virtual void SetWeight(TString t){ weight = t;}
   virtual void SetSystematics(TString t){ weight = t;}
@@ -459,7 +474,15 @@ protected:
   Float_t chX;
   Float_t chY;
   Float_t chSize;
- 
+  
+  Bool_t doDecimalsInXAxis;
+  
+  TExec *ex1;
+  TExec *ex2;
+  Bool_t  Xerrorbars;
+  Float_t heightcanvas;
+  Float_t widthcanvas;
+  
   TString dataStyle;
   TString dataTag;
   TString SignalProcess;
