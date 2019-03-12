@@ -772,11 +772,9 @@ void Plot::SetLegendPosition(TString pos)
 }
 
 
-
-
 TCanvas* Plot::SetCanvas(){ // Returns the canvas
-  
-  TCanvas* c= new TCanvas("c","c",10,10,800,600);
+//   TCanvas* c= new TCanvas("c", "c", 10, 10, 800, 600);
+  TCanvas* c= new TCanvas("c", "c", 10, 10, widthcanvas, heightcanvas);
   c->Divide(1,2);
 
   vector<float> vPadRatioMargins = TStringToFloat(kPadRatioMargins);
@@ -785,13 +783,13 @@ TCanvas* Plot::SetCanvas(){ // Returns the canvas
   plot = (TPad*)c->GetPad(1);
   SetPad(plot, kPadPlotLimits, kPadPlotMargins, kPadPlotSetGrid);
   plot->SetPad(0.0, 0.23, 1.0, 1.0);
-  plot->SetTopMargin(0.06); plot->SetRightMargin(0.025);
+//   plot->SetTopMargin(0.06); plot->SetRightMargin(0.025);
   
   pratio = (TPad*)c->GetPad(2);
   SetPad(pratio, kPadRatioLimits, kPadRatioMargins, kPadRatioSetGrid);
   pratio->SetPad(0.0, 0.0, 1.0, 0.28);
   pratio->SetGridy();// pratio->SetGridx();
-  pratio->SetTopMargin(0.03); pratio->SetBottomMargin(0.4); pratio->SetRightMargin(0.025);
+//   pratio->SetTopMargin(0.03); pratio->SetBottomMargin(0.4); pratio->SetRightMargin(0.025);
   
   if(textForLumi.Contains("%")) textForLumi = Form(textForLumi, Lumi);
   texlumi = new TLatex(-20.,50., textForLumi); // Form("%2.1f fb^{-1}, #sqrt{s} = 13 TeV", Lumi)
@@ -1025,6 +1023,7 @@ void Plot::DrawStack(TString tag){
     hSigDraw->Add((TH1F*) hAllBkg->Clone("hAllBkg_clone"));
     hSigDraw->Draw("hist"); 
   }*/
+
   hStack->Draw("hist");
   cout << ">>>>>>>>>>>>>>>> NUMBER OF SIGNALS: " << VSignalsStack.size() << endl;
   //for(int i = 0; i < (int) VSignalsStack.size(); i++) VSignalsStack.at(i)->Draw("hist,same");
@@ -1079,7 +1078,13 @@ void Plot::DrawStack(TString tag){
   if(doSys && ((Int_t) VSystLabel.size() > 0 || doExternalSyst))  hAllBkg->Draw("same,e2");
 
   //--------- Draw Data
+  if (!Xerrorbars) {
+    ex1 = new TExec("ex1", "gStyle->SetErrorX(0.);");
+    ex2 = new TExec("ex2", "gStyle->SetErrorX(0.5);");
+    ex1->Draw("same");
+  }
   if(doData && RatioYtitle != "S/B") hData->Draw(dataStyle);
+  if (!Xerrorbars) ex2->Draw("same");
 
   //--------- Draw systematics ratio
   hAllBkg->SetFillStyle(StackErrorStyle);
@@ -1157,7 +1162,7 @@ void Plot::DrawStack(TString tag){
       if(doData) hratio = (TH1F*)hData->Clone("hratio");
       else       hratio = (TH1F*)hAllBkg->Clone("hratio");
       // ratio by hand so systematic (background) errors don't get summed up to statistical ones (data)
-      for (int bin = 0; bin < hratio->GetNbinsX(); ++bin){
+      for (Int_t bin = 0; bin < hratio->GetNbinsX(); ++bin){
         if (hratio->GetBinContent(bin+1) > 0){ 
           hratio->SetBinContent( bin+1, hratio->GetBinContent(bin+1) / hAllBkg->GetBinContent(bin+1));
           hratio->SetBinError  ( bin+1, hratio->GetBinError  (bin+1) / hAllBkg->GetBinContent(bin+1));
@@ -1167,30 +1172,33 @@ void Plot::DrawStack(TString tag){
     //}
   }
   SetHRatio(hratio);
-  //if(!RatioYtitle.Contains("S")) hratio->SetLineWidth(0); 
-  hratio->Draw("same");
+  //if(!RatioYtitle.Contains("S")) hratio->SetLineWidth(0);
+  hratio->Draw("sameE1X0");
 
   cout << "Drawing hline...\n";
   if(RatioYtitle == "S/B") hline->Draw();
   hratioerr->Draw("same,e2"); //hratio->Draw("same");
-  hratio->Draw("same");
+  hratio->Draw("sameE1X0");
 
   //-------- Saving options
-    TString dir = plotFolder;
-    TString plotname = (outputName == "")? varname : outputName;
-    if(outputName != "" && varname != "")  plotname += "_" + varname;
-    if(outputName != "" && NoShowVarName)  plotname = outputName;
-    if(outputName != "" && tag != "")      plotname += "_" + tag;
-    else outputName = tag;
-    
-    gSystem->mkdir(dir, kTRUE);
-    plotname.ReplaceAll(" ","");
-    plotname.ReplaceAll("/","_");
-    c->Print( dir + plotname + ".pdf", "pdf");
-    c->Print( dir + plotname + ".png", "png");
-    c->Print( dir + plotname + ".eps", "eps");
-    c->SaveAs( dir + plotname + ".root");
-    delete c;
+  TString dir = plotFolder;
+  TString plotname = (outputName == "")? varname : outputName;
+  if(outputName != "" && varname != "")  plotname += "_" + varname;
+  if(outputName != "" && NoShowVarName)  plotname = outputName;
+  if(outputName != "" && tag != "")      plotname += "_" + tag;
+  else outputName = tag;
+  
+  gSystem->mkdir(dir, kTRUE);
+  plotname.ReplaceAll(" ","");
+  plotname.ReplaceAll("/","_");
+  c->Print( dir + plotname + ".pdf", "pdf");
+  c->Print( dir + plotname + ".png", "png");
+  c->Print( dir + plotname + ".eps", "eps");
+  c->SaveAs( dir + plotname + ".root");
+  delete c;
+  if (!Xerrorbars) {
+    delete ex1; delete ex2;
+  }
   //if(leg) delete leg; if(hratioerr) delete hratioerr; if(hline) delete hline;
   //VStackedSignals.clear();
 }
@@ -1380,7 +1388,6 @@ void Plot::SetAxis(TAxis *a, TString tit, Float_t titSize, Float_t titOffset, In
   a->SetNoExponent(kFALSE);
   TGaxis::SetMaxDigits(3);
 }
-
 
 void Plot::SetYaxis(TAxis *a){
   

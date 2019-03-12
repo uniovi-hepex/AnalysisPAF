@@ -68,10 +68,16 @@ p.SetWeight('TWeight*' + str(specialweight))
 p.AddSample('UNF_TbarW_noFullyHadr',      'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), '', opts)
 p.SetWeight('TWeight')
 
+if "twttbar" in varName.lower():
+    p.AddSample("UNF_TTbar2L_powheg_0",    "tW", r.itBkg, r.TColor.GetColor("#ffcc33"), '', opts)
+
+
 p.NoShowVarName = True;
 p.SetOutputName("ClosureTest_" + varName);
 p.SaveHistograms();
 del p
+
+
 
 p = r.PlotToPyC(r.TString(vl.varList[varName]['var_gen']), r.TString(gencut), r.TString('All'), len(binning)-1, binning, r.TString('TGen' + varName), r.TString(''))
 p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
@@ -83,10 +89,15 @@ p.SetLumi(vl.Lumi)
 
 p.AddSample("UNF_TW_aMCatNLO",    "tW", r.itBkg, 2, '', opts)
 
+if "twttbar" in varName.lower():
+    p.AddSample("UNF_TTbar2L_powheg_0", "tW", r.itBkg, r.TColor.GetColor("#ffcc33"), '', opts)
+
 p.NoShowVarName = True;
 p.SetOutputName("ClosureTest_aMCatNLO_" + varName);
 p.SaveHistograms();
 del p
+
+
 
 p = r.PlotToPyC(r.TString(vl.varList[varName]['var_gen']), r.TString(gencut), r.TString('All'), len(binning)-1, binning, r.TString('TGen' + varName), r.TString(''))
 p.SetPath(pathToTree); p.SetTreeName(NameOfTree);
@@ -98,6 +109,9 @@ p.SetLumi(vl.Lumi)
 
 p.AddSample("UNF_TW_noFullyHadr_DS",    "tW", r.itBkg, 2, '', opts)
 p.AddSample("UNF_TbarW_noFullyHadr_DS", "tW", r.itBkg, 2, '', opts)
+
+if "twttbar" in varName.lower():
+    p.AddSample("UNF_TTbar2L_powheg_0", "tW", r.itBkg, r.TColor.GetColor("#ffcc33"), '', opts)
 
 p.NoShowVarName = True;
 p.SetOutputName("ClosureTest_DS_" + varName);
@@ -129,6 +143,9 @@ p.SetWeight('TWeight*' + str(specialweight))
 p.AddSample('TbarW_noFullyHadr',      'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), '', opts)
 p.SetWeight('TWeight')
 
+if "twttbar" in varName.lower():
+    p.AddSample("TTbar2L_powheg", "tW", r.itBkg, r.TColor.GetColor("#ffcc33"), '', opts)
+
 p.NoShowVarName = True;
 p.SetOutputName("ClosureTest_recobinning_" + varName);
 p.SaveHistograms();
@@ -143,6 +160,9 @@ p.verbose = False
 p.SetLumi(vl.Lumi)
 
 p.AddSample("TW_aMCatNLO",    "tW", r.itBkg, 2, '', opts)
+
+if "twttbar" in varName.lower():
+    p.AddSample("TTbar2L_powheg",    "tW", r.itBkg, r.TColor.GetColor("#ffcc33"), '', opts)
 
 p.NoShowVarName = True;
 p.SetOutputName("ClosureTest_aMCatNLO_recobinning_" + varName);
@@ -159,6 +179,9 @@ p.SetLumi(vl.Lumi)
 
 p.AddSample("TW_noFullyHadr_DS",    "tW", r.itBkg, 2, '', opts)
 p.AddSample("TbarW_noFullyHadr_DS", "tW", r.itBkg, 2, '', opts)
+
+if "twttbar" in varName.lower():
+    p.AddSample("TTbar2L_powheg",    "tW", r.itBkg, r.TColor.GetColor("#ffcc33"), '', opts)
 
 p.NoShowVarName = True;
 p.SetOutputName("ClosureTest_DS_recobinning_" + varName);

@@ -345,6 +345,8 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
         command = Form("root -l -b -q \'RunAnalyserPAF.C(\"%s\", \"%s\", %i, %lli, %i, %i, \"%s\")\'", orig_sampleName.Data(), Selection.Data(), nSlots, nEvents, firstEvent, i, options.Data());
         cout << command << endl;
         os << command << endl;
+        gSystem->Exec("sleep 10");
+        gSystem->Exec("resetpaf -a");
       }
       return;
     }
@@ -354,8 +356,8 @@ void RunAnalyserPAF(TString sampleName, TString Selection, Int_t nSlots,
       nEvents = nTrueEntries/nChunks;
       if(i == nChunks - 1) nEvents = nTrueEntries-firstEvent;
       RunAnalyserPAF(orig_sampleName, Selection, nSlots, nEvents, firstEvent, i, options);
-      //gSystem->Exec("resetpaf -a");
-      //gSystem->Exec("resetpaf -a");
+      gSystem->Exec("sleep 10");
+      gSystem->Exec("resetpaf -a");
     }
     cout << "\033[1;31m >>> Merging trees... \n\033[0m";
     

@@ -118,7 +118,7 @@ def GetResponseMatrix(t1, t2, t3, vname, nxb, xb, nyb, yb, sys = "", nomtree = N
     
     t1.Project('h1', vnamereco + ":" + vnamegen, tmpcut + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname1))
     t2.Project('h2', vnamereco + ":" + vnamegen, tmpcut + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname1))
-    t2.Project('h3', vnamereco + ":" + vnamegen, tmpcut + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname1))
+    t2.Project('h3', vnamereco + ":" + vnamegen, tmpcut + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname1))   # ERROR EN LO DE IRENE
     h1.Add(h2)
     h1.Add(h3)
     del h2, h3

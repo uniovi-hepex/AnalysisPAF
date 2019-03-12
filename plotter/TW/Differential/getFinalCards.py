@@ -8,7 +8,10 @@ from multiprocessing import Pool
 
 pathToTree  = ""
 NameOfTree  = "Mini1j1t";
-systlist    = "JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"
+
+systlist    = vl.GiveMeTheExpNamesWOJER(vl.varList["Names"]["ExpSysts"])
+#systlist    = ""
+
 StandardCut = "(Tpassreco == 1)"
 opts        = ''
 
@@ -20,6 +23,7 @@ r.gROOT.LoadMacro('../../PlotToPy.C+')
 r.gROOT.LoadMacro('../../PlotToPyC.C+')
 r.gROOT.LoadMacro('../../PDFunc.C+')
 
+############ NOTE: we are using for the tw+ttbar fiducial as nominal ttbar powheg + ttbar2l powheg, but for the resp. mat. only ttbar2l
 
 def GiveMeMyHistos(var):
     binning = array('f', vl.varList[var]['recobinning']) # For some reason, PyROOT requires that you create FIRST this object, then put it inside the PlotToPyC.
@@ -32,15 +36,21 @@ def GiveMeMyHistos(var):
     p.SetLumi(vl.Lumi)
     p.verbose = True
 
-    #p.AddSample("TTbar_Powheg",          "ttbar",    r.itBkg, 633, systlist, opts)
-
-    specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar_Powheg',          'ttbar',    r.itBkg, 633, systlist, opts)
-    specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar2L_powheg',        'ttbar',    r.itBkg, 633, systlist, opts)
-    p.SetWeight('TWeight')
+    #if "twttbar" not in var.lower():
+        #p.AddSample("TTbar_Powheg",          "ttbar",    r.itBkg, 633, systlist, opts)
+    #else:
+        #p.AddSample('TTbar2L_powheg',        'ttbar',    r.itBkg, 633, systlist, opts)
+    
+    if "twttbar" not in var.lower():
+        specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample('TTbar_Powheg',          'ttbar',    r.itBkg, 633, systlist, opts)
+        specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample('TTbar2L_powheg',        'ttbar',    r.itBkg, 633, systlist, opts)
+        p.SetWeight('TWeight')
+    else:
+        p.AddSample('TTbar2L_powheg',        'ttbar',    r.itBkg, 633, systlist, opts)
 
     p.AddSample("TTbar_PowhegSemi",      "Non-WorZ", r.itBkg, 413, systlist, opts)
     p.AddSample("WJetsToLNu_MLM",        "Non-WorZ", r.itBkg, 413, systlist, opts)
@@ -99,8 +109,6 @@ def GiveMeMyHistos(var):
     p.AddSample("TW_noFullyHadr_fsrDown"     ,  "tW",           r.itSys, 1, "fsrDown");
     p.AddSample("TW_noFullyHadr_MEscaleUp"   ,  "tW",           r.itSys, 1, "tWMEUp");
     p.AddSample("TW_noFullyHadr_MEscaleDown" ,  "tW",           r.itSys, 1, "tWMEDown");
-    p.AddSample("TW_noFullyHadr_PSscaleUp"   ,  "tW",           r.itSys, 1, "tWPSUp");
-    p.AddSample("TW_noFullyHadr_PSscaleDown" ,  "tW",           r.itSys, 1, "tWPSDown");
 
     p.AddSample("TbarW"                        ,"tW",           r.itSys, 1, "JERUp");
     p.AddSample("TbarW_noFullyHadr_isrUp"      ,"tW",           r.itSys, 1, "isrUp");
@@ -109,8 +117,6 @@ def GiveMeMyHistos(var):
     p.AddSample("TbarW_noFullyHadr_fsrDown"    ,"tW",           r.itSys, 1, "fsrDown");
     p.AddSample("TbarW_noFullyHadr_MEscaleUp"  ,"tW",           r.itSys, 1, "tWMEUp");
     p.AddSample("TbarW_noFullyHadr_MEscaleDown","tW",           r.itSys, 1, "tWMEDown");
-    p.AddSample("TbarW_noFullyHadr_PSscaleUp"  ,"tW",           r.itSys, 1, "tWPSUp");
-    p.AddSample("TbarW_noFullyHadr_PSscaleDown","tW",           r.itSys, 1, "tWPSDown");
 
     p.AddSample("TW_noFullyHadr_DS",            "tW",           r.itSys, 1, "DSUp");
     p.AddSample("TbarW_noFullyHadr_DS",         "tW",           r.itSys, 1, "DSUp");
@@ -229,16 +235,22 @@ def GiveMeMyAsimovHistos(var):
     p.SetLumi(vl.Lumi)
     p.verbose = True
 
-    #p.AddSample("TTbar_Powheg",          "ttbar",    r.itBkg, 633, "", opts)
-
-    specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar_Powheg',          'ttbar',    r.itBkg, 633, "", opts)
-    specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar2L_powheg',        'ttbar',    r.itBkg, 633, "", opts)
-    p.SetWeight('TWeight')
-
+    #if "twttbar" not in var.lower():
+        #p.AddSample("TTbar_Powheg",          "ttbar",    r.itBkg, 633, systlist, opts)
+    #else:
+        #p.AddSample('TTbar2L_powheg',        'ttbar',    r.itBkg, 633, systlist, opts)
+    
+    if "twttbar" not in var.lower():
+        specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample('TTbar_Powheg',          'ttbar',    r.itBkg, 633, systlist, opts)
+        specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample('TTbar2L_powheg',        'ttbar',    r.itBkg, 633, systlist, opts)
+        p.SetWeight('TWeight')
+    else:
+        p.AddSample('TTbar2L_powheg',        'ttbar',    r.itBkg, 633, systlist, opts)
+    
     p.AddSample("TTbar_PowhegSemi",      "Non-WorZ", r.itBkg, 413, "", opts)
     p.AddSample("WJetsToLNu_MLM",        "Non-WorZ", r.itBkg, 413, "", opts)
 
@@ -316,16 +328,22 @@ def GiveMeMyGoodAsimovHistos(var):
     p.SetLumi(vl.Lumi)
     p.verbose = True
 
-    #p.AddSample("TTbar_Powheg",          "ttbar",    r.itBkg, 633, "", opts)
-
-    specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar_Powheg',          'ttbar',    r.itBkg, 633, "", opts)
-    specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
-    p.SetWeight('TWeight*' + str(specialweight))
-    p.AddSample('TTbar2L_powheg',        'ttbar',    r.itBkg, 633, "", opts)
-    p.SetWeight('TWeight')
-
+    #if "twttbar" not in var.lower():
+        #p.AddSample("TTbar_Powheg",          "ttbar",    r.itBkg, 633, systlist, opts)
+    #else:
+        #p.AddSample('TTbar2L_powheg',        'ttbar',    r.itBkg, 633, systlist, opts)
+    
+    if "twttbar" not in var.lower():
+        specialweight = vl.n_ttbar/vl.sigma_ttbar/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample('TTbar_Powheg',          'ttbar',    r.itBkg, 633, systlist, opts)
+        specialweight = vl.n_dilep/vl.sigma_dilep/(vl.n_ttbar/vl.sigma_ttbar + vl.n_dilep/vl.sigma_dilep)
+        p.SetWeight('TWeight*' + str(specialweight))
+        p.AddSample('TTbar2L_powheg',        'ttbar',    r.itBkg, 633, systlist, opts)
+        p.SetWeight('TWeight')
+    else:
+        p.AddSample('TTbar2L_powheg',        'ttbar',    r.itBkg, 633, systlist, opts)
+    
     p.AddSample("TTbar_PowhegSemi",      "Non-WorZ", r.itBkg, 413, "", opts)
     p.AddSample("WJetsToLNu_MLM",        "Non-WorZ", r.itBkg, 413, "", opts)
 
@@ -379,8 +397,6 @@ def GiveMeMyGoodAsimovHistos(var):
     p.AddSample("TW_noFullyHadr_fsrDown"     ,  "tW",           r.itSys, 1, "fsrDown");
     p.AddSample("TW_noFullyHadr_MEscaleUp"   ,  "tW",           r.itSys, 1, "tWMEUp");
     p.AddSample("TW_noFullyHadr_MEscaleDown" ,  "tW",           r.itSys, 1, "tWMEDown");
-    p.AddSample("TW_noFullyHadr_PSscaleUp"   ,  "tW",           r.itSys, 1, "tWPSUp");
-    p.AddSample("TW_noFullyHadr_PSscaleDown" ,  "tW",           r.itSys, 1, "tWPSDown");
 
     p.AddSample("TbarW"                        ,"tW",           r.itSys, 1, "JERUp");
     p.AddSample("TbarW_noFullyHadr_isrUp"      ,"tW",           r.itSys, 1, "isrUp");
@@ -389,8 +405,6 @@ def GiveMeMyGoodAsimovHistos(var):
     p.AddSample("TbarW_noFullyHadr_fsrDown"    ,"tW",           r.itSys, 1, "fsrDown");
     p.AddSample("TbarW_noFullyHadr_MEscaleUp"  ,"tW",           r.itSys, 1, "tWMEUp");
     p.AddSample("TbarW_noFullyHadr_MEscaleDown","tW",           r.itSys, 1, "tWMEDown");
-    p.AddSample("TbarW_noFullyHadr_PSscaleUp"  ,"tW",           r.itSys, 1, "tWPSUp");
-    p.AddSample("TbarW_noFullyHadr_PSscaleDown","tW",           r.itSys, 1, "tWPSDown");
 
     p.AddSample("TW_noFullyHadr_DS",            "tW",           r.itSys, 1, "DSUp");
     p.AddSample("TbarW_noFullyHadr_DS",         "tW",           r.itSys, 1, "DSUp");

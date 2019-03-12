@@ -9,17 +9,19 @@ samples=("TW" "TW_noFullyHadr"
 samples_syst=("TTbar_Powheg_ueUp" "TTbar2L_Powheg_ueUp" "TTbar_Powheg_ueDown" "TTbar2L_Powheg_ueDown" 
   "TTbar_Powheg_isrUp" "TTbar_Powheg_isrDown" "TTbar_Powheg_fsrUp" 
   "TTbar_Powheg_fsrDown" "TTbar_Powheg_hdampUp" "TTbar2L_Powheg_hdampUp" 
-  "TTbar_Powheg_hdampDown" "TTbar2L_Powheg_hdampDown" "TTbar_Powheg_erdON" "TTTo2L2Nu_Powheg_erdON"
+  "TTbar_Powheg_hdampDown" "TTbar2L_Powheg_hdampDown" "TTbar_Powheg_erdON" "TTTo2L2Nu_Powheg_erdON" 
   "TTbar_QCDbasedCRTune_erdON" "TTTo2L2Nu_QCDbasedCRTune_erdON" "TTbar_GluonMoveCRTune" "TTTo2L2Nu_GluonMoveCRTune" "TTbar_GluonMoveCRTune_erdON" 
   "TW_noFullyHadr_isrUp" "TW_noFullyHadr_isrDown" "TW_noFullyHadr_fsrUp" "TW_noFullyHadr_fsrDown" "TW_noFullyHadr_MEscaleUp" "TW_noFullyHadr_MEscaleDown" 
-  "TW_noFullyHadr_PSscaleUp" "TW_noFullyHadr_PSscaleDown" "TW_noFullyHadr_DS" 
-  "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" 
-  "TbarW_noFullyHadr_PSscaleUp" "TbarW_noFullyHadr_PSscaleDown" "TbarW_noFullyHadr_DS")
+  "TW_noFullyHadr_DS" "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" 
+  "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" "TbarW_noFullyHadr_DS")
 
-samples_unf=("UNF_TW" "UNF_TW_noFullyHadr" "UNF_TW_noFullyHadr_isrUp" "UNF_TW_noFullyHadr_isrDown" "UNF_TW_noFullyHadr_fsrUp" "UNF_TW_noFullyHadr_fsrDown" "UNF_TW_noFullyHadr_MEscaleUp" "UNF_TW_noFullyHadr_MEscaleDown" 
-  "UNF_TW_noFullyHadr_PSscaleUp" "UNF_TW_noFullyHadr_PSscaleDown" "UNF_TW_noFullyHadr_DS" 
-  "UNF_TbarW" "UNF_TbarW_noFullyHadr" "UNF_TbarW_noFullyHadr_isrUp" "UNF_TbarW_noFullyHadr_isrDown" "UNF_TbarW_noFullyHadr_fsrUp" "UNF_TbarW_noFullyHadr_fsrDown" "UNF_TbarW_noFullyHadr_MEscaleUp" "UNF_TbarW_noFullyHadr_MEscaleDown" 
-  "UNF_TbarW_noFullyHadr_PSscaleUp" "UNF_TbarW_noFullyHadr_PSscaleDown" "UNF_TbarW_noFullyHadr_DS" "UNF_TW_aMCatNLO")
+samples_unf=("UNF_TW" "UNF_TW_noFullyHadr" "UNF_TW_noFullyHadr_isrUp" "UNF_TW_noFullyHadr_isrDown" "UNF_TW_noFullyHadr_fsrUp" "UNF_TW_noFullyHadr_fsrDown" 
+             "UNF_TW_noFullyHadr_MEscaleUp" "UNF_TW_noFullyHadr_MEscaleDown" "UNF_TW_noFullyHadr_DS" 
+             "UNF_TbarW" "UNF_TbarW_noFullyHadr" "UNF_TbarW_noFullyHadr_isrUp" "UNF_TbarW_noFullyHadr_isrDown" "UNF_TbarW_noFullyHadr_fsrUp" "UNF_TbarW_noFullyHadr_fsrDown" 
+             "UNF_TbarW_noFullyHadr_MEscaleUp" "UNF_TbarW_noFullyHadr_MEscaleDown" "UNF_TbarW_noFullyHadr_DS" 
+             "UNF_TW_aMCatNLO" 
+             "UNF_TTbar2L_powheg_0" "UNF_TTbar_Powheg_erdON" "UNF_TTbar_Powheg_fsrDown" "UNF_TTbar_Powheg_fsrUp" "UNF_TTbar_Powheg_hdampDown" "UNF_TTbar_Powheg_hdampUp"
+             "UNF_TTbar_Powheg_isrDown" "UNF_TTbar_Powheg_isrUp" "UNF_TTbar_Powheg_ueDown" "UNF_TTbar_Powheg_ueUp")
 
 
 
@@ -35,14 +37,17 @@ runsamples_syst=("TTbar_Powheg_ueUp & TTbar_Powheg_ueUp_ext" "TTbar2L_Powheg_ueU
   "TTbar_Powheg_hdampDown & TTbar_Powheg_hdampDown_ext" "TTbar2L_Powheg_hdampDown" "TTbar_Powheg_erdON & TTbar_Powheg_erdON_ext" "TTTo2L2Nu_Powheg_erdON"
   "TTbar_QCDbasedCRTune_erdON & TTbar_QCDbasedCRTune_erdON_ext" "TTTo2L2Nu_QCDbasedCRTune_erdON" "TTbar_GluonMoveCRTune" "TTTo2L2Nu_GluonMoveCRTune" "TTbar_GluonMoveCRTune_erdON" 
   "TW_noFullyHadr_isrUp" "TW_noFullyHadr_isrDown" "TW_noFullyHadr_fsrUp" "TW_noFullyHadr_fsrDown" "TW_noFullyHadr_MEscaleUp" "TW_noFullyHadr_MEscaleDown" 
-  "TW_noFullyHadr_PSscaleUp" "TW_noFullyHadr_PSscaleDown" "TW_noFullyHadr_DS" 
-  "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" 
-  "TbarW_noFullyHadr_PSscaleUp" "TbarW_noFullyHadr_PSscaleDown" "TbarW_noFullyHadr_DS")
+  "TW_noFullyHadr_DS" "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" 
+  "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" "TbarW_noFullyHadr_DS")
 
-runsamples_unf=("TW_ext" "TW_noFullyHadr & TW_noFullyHadr_ext & TW_noFullyHadr_ext2" "TW_noFullyHadr_isrUp" "TW_noFullyHadr_isrDown" "TW_noFullyHadr_fsrUp" "TW_noFullyHadr_fsrDown" "TW_noFullyHadr_MEscaleUp" "TW_noFullyHadr_MEscaleDown" 
-  "TW_noFullyHadr_PSscaleUp" "TW_noFullyHadr_PSscaleDown" "TW_noFullyHadr_DS" 
-  "TbarW_ext" "TbarW_noFullyHadr & TbarW_noFullyHadr_ext & TbarW_noFullyHadr_ext2" "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" 
-  "TbarW_noFullyHadr_PSscaleUp" "TbarW_noFullyHadr_PSscaleDown" "TbarW_noFullyHadr_DS" "TW_aMCatNLO")
+runsamples_unf=("TW_ext" "TW_noFullyHadr & TW_noFullyHadr_ext & TW_noFullyHadr_ext2" "TW_noFullyHadr_isrUp" "TW_noFullyHadr_isrDown" 
+                "TW_noFullyHadr_fsrUp" "TW_noFullyHadr_fsrDown" "TW_noFullyHadr_MEscaleUp" "TW_noFullyHadr_MEscaleDown" "TW_noFullyHadr_DS" 
+                "TbarW_ext" "TbarW_noFullyHadr & TbarW_noFullyHadr_ext & TbarW_noFullyHadr_ext2" "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" 
+                "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" 
+                "TbarW_noFullyHadr_DS" "TW_aMCatNLO" 
+                "TTbar2L_powheg_0 & TTbar2L_powheg_1 & TTbar2L_powheg_2 & TTbar2L_powheg_3" "TTbar_Powheg_erdON & TTbar_Powheg_erdON_ext" "TTbar_Powheg_fsrDown & TTbar_Powheg_fsrDown_ext"
+                "TTbar_Powheg_fsrUp & TTbar_Powheg_fsrUp_ext" "TTbar_Powheg_hdampDown & TTbar_Powheg_hdampDown_ext" "TTbar_Powheg_hdampUp & TTbar_Powheg_hdampUp_ext" 
+                "TTbar_Powheg_isrDown & TTbar_Powheg_isrDown_ext" "TTbar_Powheg_isrUp_ext" "TTbar_Powheg_ueDown & TTbar_Powheg_ueDown_ext" "TTbar_Powheg_ueUp & TTbar_Powheg_ueUp_ext")
 
 
 uplimit=$((${#runsamples[@]}-1))
@@ -103,12 +108,14 @@ if [ "$1" == "an" ]; then
         else
         root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2)"
         fi
+        sleep 5
         resetpaf -a
     done
 
     echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Running samples for systematic uncertanties..."
     for ((i=0; i<=$uplimit_syst; i++)); do
         root -l -b -q "RunAnalyserPAF.C(\"${runsamples_syst[i]}\", \"$sel\", $2)"
+        sleep 5
         resetpaf -a
     done
 
@@ -127,9 +134,12 @@ if [ "$1" == "an" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
         elif [ ${samples_unf[i]} == "UNF_TbarW_noFullyHadr" ]; then
         root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
+        elif [ ${samples_unf[i]} == "UNF_TTbar2L_powheg_0" ]; then
+            root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_0 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_1 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_2 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_3\", \"$sel\", $2, -10, 0, $xsec, \"Unfolding makeHadd xsec:88.28769753\")"
         else
         root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
         fi
+        sleep 5
         resetpaf -a
     done
   
@@ -179,6 +189,7 @@ elif [ "$1" == "ch" ]; then
         echo " "
         if [ ${samples[i]} == "TTbar2L_powheg" ]; then
           root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, -6, 0, 1.0, \"makeHadd\")"
+#           root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, -6, 0, 1.0, \"\")"
         elif [ ${samples[i]} == "TTbar_PowhegSemi" ]; then
           root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, 0, 0, 1.0, \"Semi\")"
         elif [ ${samples[i]} == "TW_aMCatNLO" ]; then
@@ -190,6 +201,7 @@ elif [ "$1" == "ch" ]; then
         else
           root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2)"
         fi
+        sleep 5
         resetpaf -a
         
         allok=$(($allok-8))
@@ -207,6 +219,7 @@ elif [ "$1" == "ch" ]; then
           echo " "
           if [ ${samples[i]} == "TTbar2L_powheg" ]; then
             root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, -6, 0, 1.0, \"makeHadd\")"
+#             root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, -6, 0, 1.0, \"\")"
           elif [ ${samples[i]} == "TTbar_PowhegSemi" ]; then
             root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2, 0, 0, 1.0, \"Semi\")"
           elif [ ${samples[i]} == "TW_aMCatNLO" ]; then
@@ -218,6 +231,7 @@ elif [ "$1" == "ch" ]; then
           else
             root -l -b -q "RunAnalyserPAF.C(\"${runsamples[i]}\", \"$sel\", $2)"
           fi
+          sleep 5
           resetpaf -a
           
           allok=$(($allok-8))
@@ -259,6 +273,7 @@ elif [ "$1" == "ch" ]; then
         echo "Reanalysing..."
         echo " "
         root -l -b -q "RunAnalyserPAF.C(\"${runsamples_syst[i]}\", \"$sel\", $2)"
+        sleep 5
         resetpaf -a
         
         allok=$(($allok-8))
@@ -275,6 +290,7 @@ elif [ "$1" == "ch" ]; then
           echo "Reanalysing..."
           echo " "
           root -l -b -q "RunAnalyserPAF.C(\"${runsamples_syst[i]}\", \"$sel\", $2)"
+          sleep 5
           resetpaf -a
           
           allok=$(($allok-8))
@@ -328,9 +344,12 @@ elif [ "$1" == "ch" ]; then
           root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
         elif [ ${samples_unf[i]} == "UNF_TbarW_noFullyHadr" ]; then
           root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
+        elif [ ${samples_unf[i]} == "UNF_TTbar2L_powheg_0" ]; then
+            root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_0 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_1 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_2 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_3\", \"$sel\", $2, -10, 0, $xsec, \"Unfolding makeHadd xsec:88.28769753\")"
         else
           root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
         fi
+        sleep 5
         resetpaf -a
         
         allok=$(($allok-8))
@@ -357,9 +376,12 @@ elif [ "$1" == "ch" ]; then
             root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
           elif [ ${samples_unf[i]} == "UNF_TbarW_noFullyHadr" ]; then
             root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
+        elif [ ${samples_unf[i]} == "UNF_TTbar2L_powheg_0" ]; then
+            root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_0 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_1 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_2 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_3\", \"$sel\", $2, -10, 0, $xsec, \"Unfolding makeHadd xsec:88.28769753\")"
           else
             root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
           fi
+          sleep 5
           resetpaf -a
           
           allok=$(($allok-8))
