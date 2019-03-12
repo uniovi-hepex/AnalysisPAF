@@ -25,8 +25,14 @@ fi
 
 # unfoldingvars=("M_LeadingB" "M_SubLeadingB" "LeadingLepPt" "DilepMETJet1Pz" "LLMETBEta" "DPhiLL" "DPhiLeadJet" "DPhiSubLeadJet")
 # unfoldingvars=("LeadingJetPt" "LeadingLepPt")
-unfoldingvarscut=("LeadingJetPt" "LeadingLepPt" "DPhiLL" "DilepMETJet1Pz" "MT_LLMETB" "M_LLB") # Variables single top 15-10-2018
-unfoldingvars=("LeadingJetPt" "LeadingLepPt" "DPhiLL" "DilepMETJet1Pz" "MT_LLMETB" "M_LLB" "Fiducial") # Variables single top 15-10-2018
+# unfoldingvarscut=("LeadingJetPt" "LeadingLepPt" "DPhiLL" "DilepMETJet1Pz" "MT_LLMETB" "M_LLB") # Variables single top 15-10-2018
+# unfoldingvars=("LeadingJetPt" "LeadingLepPt" "DPhiLL" "DilepMETJet1Pz" "MT_LLMETB" "M_LLB" "Fiducial") # Variables single top 15-10-2018
+# unfoldingvarscut=("LeadingJetPt" "LeadingLepPt" "DPhiLL" "DilepMETJet1Pz" "MT_LLMETB" "M_LLB") # Variables single top 15-10-2018
+# unfoldingvars=("LeadingJetPt" "LeadingLepPt" "DPhiLL" "DilepMETJet1Pz" "MT_LLMETB" "M_LLB" "Fiducial" "FiducialtWttbar")
+unfoldingvarscut=("LeadingJetPt" "LeadingLepPt" "DPhiLL" "DilepMETJet1Pz" "MT_LLMETB" "M_LLB" "MT_LLMETBATLAS" "M_LLBATLAS")
+unfoldingvars=("LeadingJetPt" "LeadingLepPt" "DPhiLL" "DilepMETJet1Pz" "MT_LLMETB" "M_LLB" "MT_LLMETBATLAS" "M_LLBATLAS" "Fiducial" "FiducialtWttbar")
+# unfoldingvarscut=("MT_LLMETBATLAS" "M_LLBATLAS")
+# unfoldingvars=("MT_LLMETBATLAS" "M_LLBATLAS")
 
 uplimit=$((${#unfoldingvars[@]}-1))
 uplimitcuts=$((${#unfoldingvarscut[@]}-1))
@@ -69,12 +75,20 @@ if [ "$variable" == "All" ]; then
     # 4) Do a proper unfolding as you were taught by your mother when you were a child.
     echo "> Unfolding all variables..."
     echo " "
-    for ((i=0; i<=$uplimit; i++)); do
-        python unfoldTW_cut.py ${unfoldingvars[i]}
+    for ((i=0; i<=$uplimitcuts; i++)); do
+        python unfoldTW_cut.py ${unfoldingvarscut[i]}
+    done
+        
+    source ../pre_start.sh
+    # 5) Get fiducial results.
+    echo "> Getting fiducial results..."
+    echo " "
+    for ((i=0; i<=$uplimitcuts; i++)); do
+        python doFiducial.py ${unfoldingvarscut[i]}
     done
     
     source ../pre_start.sh
-    # 5) Obtain all covariance matrices.
+    # 6) Obtain all covariance matrices.
     echo "> Obtaining all covariance matrices..."
     echo " "
     python getCovarianceMatrices.py All $ncores
@@ -82,19 +96,12 @@ if [ "$variable" == "All" ]; then
     cd
     source ./pre_start_CMS.sh
     cd Documents/TFM/AnalysisPAF/plotter/TW/Differential
-    # 6) Do GOF tests.
+    # 7) Do GOF tests.
     echo "> Performing GOF tests..."
     echo " "
     python goftests.py "All"
     
-    # 7) Get fiducial results.
-    echo "> Getting fiducial results..."
-    echo " "
-    for ((i=0; i<=$uplimitcuts; i++)); do
-        python doFiducial.py ${unfoldingvarscut[i]}
-    done
-    
-#     # 7) Get a txt with all the results
+#     # 8) Get a txt with all the results
 #     echo "> Printing yields..."
 #     echo " "
 #     python getYields.py All $ncores
@@ -138,8 +145,13 @@ else
     echo " "
     python unfoldTW_cut.py $variable
     
+    # 5) Get fiducial results.
+    echo "> Getting fiducial results..."
+    echo " "
+    python doFiducial.py $variable
+    
     source ../pre_start
-    # 5) Obtain the covariance matrix
+    # 6) Obtain the covariance matrix
     echo "> Obtaining the covariance matrix..."
     echo " "
     python getCovarianceMatrices.py $variable
@@ -147,17 +159,12 @@ else
     cd
     source ./pre_start_CMS.sh
     cd Documents/TFM/AnalysisPAF/plotter/TW/Differential
-    # 6) Do GOF tests.
+    # 7) Do GOF tests.
     echo "> Performing GOF tests..."
     echo " "
     python goftests.py $variable
     
-    # 7) Get fiducial results.
-    echo "> Getting fiducial results..."
-    echo " "
-    python doFiducial.py $variable
-    
-#     # 7) Get a txt with all the results
+#     # 8) Get a txt with all the results
 #     echo "> Printing yields..."
 #     echo " "
 #     python getYields.py $variable
