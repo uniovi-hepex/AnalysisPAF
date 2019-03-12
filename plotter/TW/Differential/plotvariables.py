@@ -9,10 +9,10 @@ vl.SetUpWarnings()
 NameOfTree  = "Mini1j1t";
 StandardCut = "Tpassreco == 1";
 ControlCut  = "TIsSS == 0 && TNJets == 1  && TNBtags == 1 && TnLooseCentral > 1";
-systlist    = "JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"
+systlist    = vl.GiveMeTheExpNamesWOJER(vl.varList["Names"]["ExpSysts"])
 #systlist    = ""
-labelsignal = "e^{#pm}#mu^{#mp}+1j1t+0j_{loose}"
-labelcontrol= "e^{#pm}#mu^{#mp}+1j1t+>0j_{loose}"
+labelsignal = "e^{#pm}#mu^{#mp}+1j1b+0j_{loose}"
+labelcontrol= "e^{#pm}#mu^{#mp}+1j1b+>0j_{loose}"
 #legtxtsize  = 0.028
 legtxtsize  = 0.055
 labelpos    = (0.275, 0.89)
@@ -46,21 +46,29 @@ r.gROOT.LoadMacro('../../PDFunc.C+')
 
 def plotvariable(tsk):
     var, cut = tsk
-    p = r.PlotToPy(r.TString(vl.varList[var]['var']), r.TString(StandardCut) if cut == "signal" else r.TString(ControlCut), r.TString('ElMu'), int(20), float(vl.varList[var]['recobinning'][0]), float(vl.varList[var]['recobinning'][-1]), r.TString(var), r.TString(vl.varList[var]['xaxis']))
+    nbins    = int(20) if "ndescbins" not in vl.varList[var] else int(vl.varList[var]['ndescbins'])
+    lowedge  = float(vl.varList[var]['recobinning'][0]) if "descbinning" not in vl.varList[var] else float(vl.varList[var]['descbinning'][0])
+    highedge = float(vl.varList[var]['recobinning'][-1]) if "descbinning" not in vl.varList[var] else float(vl.varList[var]['descbinning'][1])
+    width    = (highedge - lowedge)/nbins
+    
+    p = r.PlotToPy(r.TString(vl.varList[var]['var']), r.TString(StandardCut) if cut == "signal" else r.TString(ControlCut), r.TString('ElMu'), nbins, lowedge, highedge, r.TString(var), r.TString(vl.varList[var]['xaxis']))
     p.SetPath(pathToTree); 
     p.SetTreeName(NameOfTree);
     p.SetPathSignal(pathToTree);
-    p.SetTitleY("Events")
+    p.SetTitleY("Events / " + str(int(round(width, 0))) + " GeV" if var != "DPhiLL" else "Events / bin" )
     p.SetLumi(vl.Lumi)
     p.verbose  = False;
     p.verbose  = True;
     p.SetChLabel(labelsignal if cut == "signal" else labelcontrol)
     p.SetChLabelPos(labelpos[0], labelpos[1], -1)
+    
+    p.SetCanvasHeight(600)
+    p.SetCanvasWidth(600)
+    
     if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight)')   # FOR PREFIRING CHECKS
     
-    
-    p.AddSample("TTbar_PowhegSemi",             "Non-W|Z",      r.itBkg, 413, systlist)
-    p.AddSample("WJetsToLNu_MLM",               "Non-W|Z",      r.itBkg, 413, systlist)
+    p.AddSample("TTbar_PowhegSemi",             "Non-W/Z",      r.itBkg, 413, systlist)
+    p.AddSample("WJetsToLNu_MLM",               "Non-W/Z",      r.itBkg, 413, systlist)
     
     p.AddSample("WZ",                           "VV+t#bar{t}V", r.itBkg, 390, systlist);
     p.AddSample("WW",                           "VV+t#bar{t}V", r.itBkg, 390, systlist);
@@ -143,8 +151,6 @@ def plotvariable(tsk):
     p.AddSample("TW_noFullyHadr_fsrDown"     ,  "tW",           r.itSys, 1, "fsrDown");
     p.AddSample("TW_noFullyHadr_MEscaleUp"   ,  "tW",           r.itSys, 1, "tW_MEUp");
     p.AddSample("TW_noFullyHadr_MEscaleDown" ,  "tW",           r.itSys, 1, "tW_MEDown");
-    p.AddSample("TW_noFullyHadr_PSscaleUp"   ,  "tW",           r.itSys, 1, "tW_PSUp");
-    p.AddSample("TW_noFullyHadr_PSscaleDown" ,  "tW",           r.itSys, 1, "tW_PSDown");
 
     p.AddSample("TbarW"                        ,"tW",           r.itSys, 1, "JERUp");
     p.AddSample("TbarW_noFullyHadr_isrUp"      ,"tW",           r.itSys, 1, "isrUp");
@@ -153,8 +159,6 @@ def plotvariable(tsk):
     p.AddSample("TbarW_noFullyHadr_fsrDown"    ,"tW",           r.itSys, 1, "fsrDown");
     p.AddSample("TbarW_noFullyHadr_MEscaleUp"  ,"tW",           r.itSys, 1, "tW_MEUp");
     p.AddSample("TbarW_noFullyHadr_MEscaleDown","tW",           r.itSys, 1, "tW_MEDown");
-    p.AddSample("TbarW_noFullyHadr_PSscaleUp"  ,"tW",           r.itSys, 1, "tW_PSUp");
-    p.AddSample("TbarW_noFullyHadr_PSscaleDown","tW",           r.itSys, 1, "tW_PSDown");
 
     p.AddSample("TW_noFullyHadr_DS",            "tW",           r.itSys, 1, "DSUp");
     p.AddSample("TbarW_noFullyHadr_DS",         "tW",           r.itSys, 1, "DSUp");
@@ -234,7 +238,7 @@ def plotvariable(tsk):
     p.UseEnvelope("t#bar{t}", "GluonMoveCRTune,GluonMoveCRTune_erdON,Powheg_erdON,QCDbasedCRTune_erdON", "ColorReconnection");
     p.AddSymmetricHisto("t#bar{t}",  "JERUp");
     
-    pdf     = r.PDFToPy(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString(StandardCut) if cut == "signal" else r.TString(ControlCut), r.TString("ElMu"), r.TString(vl.varList[var]['var']), int(20), float(vl.varList[var]['recobinning'][0]), float(vl.varList[var]['recobinning'][-1]));
+    pdf     = r.PDFToPy(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString(StandardCut) if cut == "signal" else r.TString(ControlCut), r.TString("ElMu"), r.TString(vl.varList[var]['var']), nbins, lowedge, highedge);
     pdf.verbose = False
     pdf.SetLumi(vl.Lumi * 1000)
     if doPrefChecks: pdf.SetWeight("TWeight * (1 - prefWeight)")
@@ -248,6 +252,7 @@ def plotvariable(tsk):
     p.PrepareHisto(hMEDown,  "TTbar_Powheg", "t#bar{t}", r.itSys, 0, "ttbarMEDown");
     p.AddToSystematicLabels("ttbarPDF");
     p.AddToSystematicLabels("ttbarME");
+    del pdf
     
     # Other settings
     p.SetDataStyle("psameE1")
@@ -258,13 +263,19 @@ def plotvariable(tsk):
     p.SetPadPlotMargins(vl.margins)
     p.SetPadRatioMargins(vl.marginsratio)
     p.SetTexChanSize(0.06)
+    p.SetTextLumiPosX(0.69)
+    p.SetYratioOffset(0.35)
     p.SetCenterYAxis(False)
+    p.SetXaxisOffset(1.1)
+    p.ObliterateXErrorBars()
     if 'ncols' in vl.varList[var]: p.SetNColumns(vl.varList[var]['ncols'])
     
     p.SetCMSlabel("CMS");
-    p.SetCMSmodeLabel("Preliminary");
+    if vl.doPre: p.SetCMSmodeLabel("Preliminary");
+    else:        p.SetCMSmodeLabel("");
     
-    thepos = vl.legpos
+    if 'legposdesc' in vl.varList[var]: thepos = vl.varList[var]['legposdesc']
+    else:                               thepos = vl.legpos
     p.SetLegendPosition(thepos[0], thepos[1], thepos[2], thepos[3])
     p.SetLegendTextSize(legtxtsize)
     p.SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/" if cut == 'signal' else "/nfs/fanae/user/vrbouza/www/TFM/1j1t/control/");
@@ -275,13 +286,14 @@ def plotvariable(tsk):
     
     if "abs" in vl.varList[var]['var'] or "min" in vl.varList[var]['var']:
         p.NoShowVarName = True;
-        p.SetOutputName(vl.varList[var]['var_response']);
+        p.SetOutputName(vl.varList[var]['var_response'] * ("ATLAS" not in var) + var * ("ATLAS" in var));
     p.DrawStack();
     p.PrintSystematics()
     p.PrintYields("", "", "", "")
     p.PrintSystYields()
     del p
     #del pdf
+
 
 def plotcustomvariable(tsk):
     var, cut = tsk
@@ -296,10 +308,14 @@ def plotcustomvariable(tsk):
     p.verbose  = True;
     p.SetChLabel(labelsignal if cut == "signal" else labelcontrol)
     p.SetChLabelPos(labelpos[0], labelpos[1], -1)
+    
+    p.SetCanvasHeight(600)
+    p.SetCanvasWidth(600)
+    
     if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight)')   # FOR PREFIRING CHECKS
     
-    p.AddSample("TTbar_PowhegSemi",             "Non-W|Z",      r.itBkg, 413, systlist)
-    p.AddSample("WJetsToLNu_MLM",               "Non-W|Z",      r.itBkg, 413, systlist)
+    p.AddSample("TTbar_PowhegSemi",             "Non-W/Z",      r.itBkg, 413, systlist)
+    p.AddSample("WJetsToLNu_MLM",               "Non-W/Z",      r.itBkg, 413, systlist)
     
     p.AddSample("WZ",                           "VV+t#bar{t}V", r.itBkg, 390, systlist);
     p.AddSample("WW",                           "VV+t#bar{t}V", r.itBkg, 390, systlist);
@@ -360,8 +376,6 @@ def plotcustomvariable(tsk):
     p.AddSample("TW_noFullyHadr_fsrDown"     ,  "tW",           r.itSys, 1, "fsrDown");
     p.AddSample("TW_noFullyHadr_MEscaleUp"   ,  "tW",           r.itSys, 1, "tW_MEUp");
     p.AddSample("TW_noFullyHadr_MEscaleDown" ,  "tW",           r.itSys, 1, "tW_MEDown");
-    p.AddSample("TW_noFullyHadr_PSscaleUp"   ,  "tW",           r.itSys, 1, "tW_PSUp");
-    p.AddSample("TW_noFullyHadr_PSscaleDown" ,  "tW",           r.itSys, 1, "tW_PSDown");
 
     p.AddSample("TbarW"                        ,"tW",           r.itSys, 1, "JERUp");
     p.AddSample("TbarW_noFullyHadr_isrUp"      ,"tW",           r.itSys, 1, "isrUp");
@@ -370,8 +384,6 @@ def plotcustomvariable(tsk):
     p.AddSample("TbarW_noFullyHadr_fsrDown"    ,"tW",           r.itSys, 1, "fsrDown");
     p.AddSample("TbarW_noFullyHadr_MEscaleUp"  ,"tW",           r.itSys, 1, "tW_MEUp");
     p.AddSample("TbarW_noFullyHadr_MEscaleDown","tW",           r.itSys, 1, "tW_MEDown");
-    p.AddSample("TbarW_noFullyHadr_PSscaleUp"  ,"tW",           r.itSys, 1, "tW_PSUp");
-    p.AddSample("TbarW_noFullyHadr_PSscaleDown","tW",           r.itSys, 1, "tW_PSDown");
 
     p.AddSample("TW_noFullyHadr_DS",            "tW",           r.itSys, 1, "DSUp");
     p.AddSample("TbarW_noFullyHadr_DS",         "tW",           r.itSys, 1, "DSUp");
@@ -478,11 +490,14 @@ def plotcustomvariable(tsk):
     p.SetPadPlotMargins(vl.margins)
     p.SetPadRatioMargins(vl.marginsratio)
     p.SetTexChanSize(0.06)
+    p.SetYratioOffset(0.35)
     p.SetCenterYAxis(False)
+    if "equalbinsfol" in vl.varList[var]: p.ObliterateXErrorBars()
     if 'ncols' in vl.varList[var]: p.SetNColumns(vl.varList[var]['ncols'])
     
     p.SetCMSlabel("CMS");
-    p.SetCMSmodeLabel("Preliminary");
+    if vl.doPre: p.SetCMSmodeLabel("Preliminary");
+    else:        p.SetCMSmodeLabel("");
     if 'legpos' in vl.varList[var]: thepos = vl.varList[var]['legpos']
     else:                           thepos = vl.legpos
     p.SetLegendPosition(thepos[0], thepos[1], thepos[2], thepos[3])
@@ -496,8 +511,10 @@ def plotcustomvariable(tsk):
     p.SetOutputName("Custom");
     if "abs" in vl.varList[var]['var'] or "min" in vl.varList[var]['var']:
         p.NoShowVarName = True;
-        p.SetOutputName('Custom_' + vl.varList[var]['var_response']);
+        p.SetOutputName('Custom_' + vl.varList[var]['var_response'] * ("ATLAS" not in var) + var * ("ATLAS" in var));
+    print "JOJOJO"
     p.DrawStack();
+    print "JEJEJE"
     p.PrintSystematics()
     p.PrintYields("", "", "", "")
     p.PrintSystYields()
@@ -507,20 +524,24 @@ def plotcustomvariable(tsk):
 def plotthenumberofjets(tsk):
     var, cut = tsk
     binning = array('f', vl.varList[var]['recobinning']) # For some reason, ROOT requires that you create FIRST this object, then put it inside the PlotToPyC.
-    p = r.PlotToPyC(r.TString(vl.varList[var]['var']), r.TString("TIsSS == 0 && TNJets == 1  && TNBtags == 1"), r.TString('ElMu'), int(len(vl.varList[var]['recobinning']) - 1), binning, r.TString(var), r.TString(vl.varList[var]['xaxis']))
+    p = r.PlotToPyC(r.TString(vl.varList[var]['var'] + "- 1"), r.TString("TIsSS == 0 && TNJets == 1  && TNBtags == 1"), r.TString('ElMu'), int(len(vl.varList[var]['recobinning']) - 1), binning, r.TString(var), r.TString(vl.varList[var]['xaxis']))
     p.SetPath(pathToTree);
     p.SetTreeName(NameOfTree);
     p.SetPathSignal(pathToTree);
-    p.SetTitleY("Events")
+    p.SetTitleY("Events / bin")
     p.SetLumi(vl.Lumi)
     p.verbose  = False;
     p.verbose  = True;
-    p.SetChLabel(labelsignal if cut == "signal" else labelcontrol)
+    p.SetChLabel("e^{#pm}#mu^{#mp}+1j1b")
     p.SetChLabelPos(labelpos[0], labelpos[1], -1)
+    
+    p.SetCanvasHeight(600)
+    p.SetCanvasWidth(600)
+    
     if doPrefChecks: p.SetWeight('TWeight * (1 - prefWeight)')   # FOR PREFIRING CHECKS
     
-    p.AddSample("TTbar_PowhegSemi",             "Non-W|Z",      r.itBkg, 413, systlist)
-    p.AddSample("WJetsToLNu_MLM",               "Non-W|Z",      r.itBkg, 413, systlist)
+    p.AddSample("TTbar_PowhegSemi",             "Non-W/Z",      r.itBkg, 413, systlist)
+    p.AddSample("WJetsToLNu_MLM",               "Non-W/Z",      r.itBkg, 413, systlist)
     
     p.AddSample("WZ",                           "VV+t#bar{t}V", r.itBkg, 390, systlist);
     p.AddSample("WW",                           "VV+t#bar{t}V", r.itBkg, 390, systlist);
@@ -581,8 +602,6 @@ def plotthenumberofjets(tsk):
     p.AddSample("TW_noFullyHadr_fsrDown"     ,  "tW",           r.itSys, 1, "fsrDown");
     p.AddSample("TW_noFullyHadr_MEscaleUp"   ,  "tW",           r.itSys, 1, "tW_MEUp");
     p.AddSample("TW_noFullyHadr_MEscaleDown" ,  "tW",           r.itSys, 1, "tW_MEDown");
-    p.AddSample("TW_noFullyHadr_PSscaleUp"   ,  "tW",           r.itSys, 1, "tW_PSUp");
-    p.AddSample("TW_noFullyHadr_PSscaleDown" ,  "tW",           r.itSys, 1, "tW_PSDown");
 
     p.AddSample("TbarW"                        ,"tW",           r.itSys, 1, "JERUp");
     p.AddSample("TbarW_noFullyHadr_isrUp"      ,"tW",           r.itSys, 1, "isrUp");
@@ -591,8 +610,6 @@ def plotthenumberofjets(tsk):
     p.AddSample("TbarW_noFullyHadr_fsrDown"    ,"tW",           r.itSys, 1, "fsrDown");
     p.AddSample("TbarW_noFullyHadr_MEscaleUp"  ,"tW",           r.itSys, 1, "tW_MEUp");
     p.AddSample("TbarW_noFullyHadr_MEscaleDown","tW",           r.itSys, 1, "tW_MEDown");
-    p.AddSample("TbarW_noFullyHadr_PSscaleUp"  ,"tW",           r.itSys, 1, "tW_PSUp");
-    p.AddSample("TbarW_noFullyHadr_PSscaleDown","tW",           r.itSys, 1, "tW_PSDown");
 
     p.AddSample("TW_noFullyHadr_DS",            "tW",           r.itSys, 1, "DSUp");
     p.AddSample("TbarW_noFullyHadr_DS",         "tW",           r.itSys, 1, "DSUp");
@@ -672,7 +689,7 @@ def plotthenumberofjets(tsk):
     p.UseEnvelope("t#bar{t}", "GluonMoveCRTune,GluonMoveCRTune_erdON,Powheg_erdON,QCDbasedCRTune_erdON", "ColorReconnection");
     p.AddSymmetricHisto("t#bar{t}",  "JERUp");
     
-    pdf     = r.PDFToPyC(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString("TIsSS == 0 && TNJets == 1  && TNBtags == 1"), r.TString("ElMu"), r.TString(vl.varList[var]['var']), len(vl.varList[var]['recobinning']) - 1, binning, r.TString(''));
+    pdf     = r.PDFToPyC(r.TString(pathToTree), r.TString("TTbar_Powheg"), r.TString(NameOfTree), r.TString("TIsSS == 0 && TNJets == 1  && TNBtags == 1"), r.TString("ElMu"), r.TString(vl.varList[var]['var'] + "- 1"), len(vl.varList[var]['recobinning']) - 1, binning, r.TString(''));
     pdf.verbose = False
     #pdf.verbose = True
     pdf.SetLumi(vl.Lumi * 1000)
@@ -698,13 +715,21 @@ def plotthenumberofjets(tsk):
     p.SetPadPlotMargins(vl.margins)
     p.SetPadRatioMargins(vl.marginsratio)
     p.SetTexChanSize(0.06)
+    p.SetTextLumiPosX(0.69)
+    p.SetYratioOffset(0.35)
     p.SetCenterYAxis(False)
+    p.SetXaxisDivisions(010)
+    p.ObliterateXErrorBars()
+    p.SetBinLabels("0,1,2,3,#geq4")
+    p.SetXaxisLabelSize(0.16 / 0.66666) # This is because ROOT automatically changes the size of labels when transforming them to alphanumeric because of reasons
+    #r.gPad.Update()
     if 'ncols' in vl.varList[var]: p.SetNColumns(vl.varList[var]['ncols'])
     
     p.SetCMSlabel("CMS");
-    p.SetCMSmodeLabel("Preliminary");
-    if 'legpos' in vl.varList[var] and cut != "signal": thepos = vl.varList[var]['legpos']
-    else:                                               thepos = vl.legpos
+    if vl.doPre: p.SetCMSmodeLabel("Preliminary");
+    else:        p.SetCMSmodeLabel("");
+    if 'legpos' in vl.varList[var]: thepos = vl.varList[var]['legpos']
+    else:                           thepos = vl.legpos
     p.SetLegendPosition(thepos[0], thepos[1], thepos[2], thepos[3])
     p.SetLegendTextSize(legtxtsize)
     p.SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/" if cut == 'signal' else "/nfs/fanae/user/vrbouza/www/TFM/1j1t/control/");
@@ -732,14 +757,20 @@ def lazyoptimisation(tsk):
 
 if __name__ == '__main__':
     tasks = []
-    tasks.append( ("nLooseCentral", "signal", "wololo") )
+    #tasks.append( ("nLooseCentral", "signal", "wololo") )
     for v in vl.varList["Names"]["Variables"]:
+        if "Fiducial" in v: continue
         for ct in ['signal', 'control']:
             for bnng in ['custom', 'descriptive']:
                 tasks.append( (v, ct, bnng) )
+            #tasks.append( (v, ct, 'custom') )
+        #tasks.append( (v, "control", "custom") )
+        #tasks.append( (v, "signal", "descriptive") )
     
-    #tasks.append( ("DilepMETJet1Pz", "control", "custom") )
-    #tasks.append( ("DPhiLL", "signal", "descriptive") )
+    #tasks.append( ("LeadingLepPt", "control", "custom") )
+    #tasks.append( ("LeadingLepPt", "signal", "descriptive") )
+    #tasks.append( ("DilepMETJet1Pz", "signal", "descriptive") )
+    #tasks.append( ("MT_LLMETB", "signal", "descriptive") )
     
     print "> Launching plotting processes..."
     pool = Pool(nCores)
