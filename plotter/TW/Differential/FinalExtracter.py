@@ -35,14 +35,23 @@ def getXsecForSys(syst, tfile):
     if not vvttbarv:
         vvttbarv = tfile.Get('VVttbarV')
     
-    if 'fsr' in syst or 'FSR' in syst or 'isr' in syst or 'ISR' in syst:
+    if ('fsr' in syst or 'FSR' in syst or 'isr' in syst or 'ISR' in syst) and ("twttbar" not in varName.lower()):
         ttbarclone = copy.deepcopy(ttbar.Clone("ttbarclone"))
         oldandgoodttbar = tfile.Get('ttbar')
         for bin in range(1, data.GetNbinsX() + 1):
             ttbarclone.SetBinContent(bin, oldandgoodttbar.GetBinContent(bin) + (ttbar.GetBinContent(bin) - oldandgoodttbar.GetBinContent(bin))/math.sqrt(2))
         data.Add(ttbarclone, -1)
         del ttbarclone, oldandgoodttbar
-    else: data.Add( ttbar , -1 )
+    elif ('fsr' in syst or 'FSR' in syst or 'isr' in syst or 'ISR' in syst):
+        ttbarclone = copy.deepcopy(ttbar.Clone("ttbarclone"))
+        oldandgoodttbar = tfile.Get('ttbar')
+        for bin in range(1, data.GetNbinsX() + 1):
+            ttbarclone.SetBinContent(bin, oldandgoodttbar.GetBinContent(bin) + (ttbar.GetBinContent(bin) - oldandgoodttbar.GetBinContent(bin))/math.sqrt(2))
+        data.Add(oldandgoodttbar, -1)
+        data.Add(ttbarclone,      +1)
+        del ttbarclone, oldandgoodttbar
+    elif ("twttbar" not in varName.lower()): data.Add( ttbar , -1 )
+    
     data.Add(dy       , -1 )
     data.Add(fakes    , -1 )
     data.Add(vvttbarv , -1 )
@@ -61,14 +70,14 @@ def getXSecForNomSys(process, tfile, size):
     
     eval(process).Scale( 1 + size)
 
-    dataUp.Add( ttbar , -1 )
+    if "twttbar" not in varName.lower(): dataUp.Add( ttbar , -1 )
     dataUp.Add( dy    , -1 )
     dataUp.Add( fakes , -1 )
     dataUp.Add( vvttbarv , -1 )
     
     eval(process).Scale( 1 / (1+size)**2)
 
-    dataDn.Add( ttbar , -1 )
+    if "twttbar" not in varName.lower(): dataDn.Add( ttbar , -1 )
     dataDn.Add( dy    , -1 )
     dataDn.Add( fakes , -1 )
     dataDn.Add( vvttbarv , -1 )
@@ -92,7 +101,7 @@ def getLumiUnc(tfile):
     fakes.Scale( 1 + vl.uncLumi)
     vvttbarv.Scale( 1 + vl.uncLumi)
 
-    dataUp.Add( ttbar , -1 )
+    if "twttbar" not in varName.lower(): dataUp.Add( ttbar , -1 )
     dataUp.Add( dy    , -1 )
     dataUp.Add( fakes , -1 )
     dataUp.Add( vvttbarv , -1 )
@@ -102,7 +111,8 @@ def getLumiUnc(tfile):
     fakes.Scale( 1 / (1 + vl.uncLumi)**2)
     vvttbarv.Scale( 1 / (1 + vl.uncLumi)**2)
 
-    dataDn.Add( ttbar , -1 )
+    
+    if "twttbar" not in varName.lower(): dataDn.Add( ttbar , -1 )
     dataDn.Add( dy    , -1 )
     dataDn.Add( fakes , -1 )
     dataDn.Add( vvttbarv , -1 )
@@ -117,6 +127,8 @@ sysList = []
 
 sysList += vl.varList['Names']['ExpSysts'] + vl.varList['Names']['ttbarSysts'] + vl.varList['Names']['colorSysts'] + vl.varList['Names']['specialSysts'] + ['DSUp', 'LumiUp', 'LumiDown', 'fsrUp', 'fsrDown', 'isrUp', 'isrDown', 'tWMEUp', 'tWMEDown'] + vl.varList['Names']['NormSysts']
 
+if "twttbar" in varName.lower(): 
+    sysList.remove("ttbarUp"); sysList.remove("ttbarDown")
 nominal = getXsecForSys('', tfile)
 variations = {}
 for syst in sysList:
@@ -124,6 +136,7 @@ for syst in sysList:
 
 procs2 = ['ttbar','dy','fakes','vvttbarv']
 for proc, size in zip(procs2, [0.04, 0.5, 0.5, 0.5]):
+    if "twttbar" in varName.lower() and proc == "ttbar": continue
     dataUp, dataDn = getXSecForNomSys(proc, tfile, size)
     variations[procs[procs2.index(proc)] + 'Up']   = dataUp
     variations[procs[procs2.index(proc)] + 'Down'] = dataDn
@@ -159,12 +172,13 @@ plot                = bp.beautifulUnfoldingPlots('{var}_folded'.format(var = var
 plot.doRatio        = True
 plot.doFit          = False
 plot.plotspath      = "results/"
+plot.doPreliminary  = vl.doPre
 
 nominal.SetMarkerStyle(r.kFullCircle)
 nominal.GetXaxis().SetNdivisions(505, True)
 
 nominal_withErrors[0].SetFillColorAlpha(r.kBlue, 0.35)
-nominal_withErrors[0].SetLineColor(r.kBlue)
+nominal_withErrors[0].SetLineColor(0)
 nominal_withErrors[0].SetFillStyle(1001)
 
 if "legpos_fold" in vl.varList[varName]: legloc = vl.varList[varName]["legpos_fold"]
@@ -185,6 +199,7 @@ if doSanityCheck:
     aMCatNLO = copy.deepcopy(tmptfile2.Get('tW'))
     aMCatNLO.SetLineWidth(2)
     aMCatNLO.SetLineColor(r.kAzure)
+    aMCatNLO.SetLineStyle(2)
     
     if not os.path.isfile('temp/{var}_/ClosureTest_DS_recobinning_{var}.root'.format(var = varName)):
         raise RuntimeError('The rootfile with the generated DS variation information does not exist')
@@ -197,26 +212,27 @@ if doSanityCheck:
     if nominal_withErrors[0].GetMaximum() <= aMCatNLO.GetMaximum(): nominal_withErrors[0].SetMaximum(aMCatNLO.GetMaximum())
     if nominal_withErrors[0].GetMaximum() <= hDS.GetMaximum():      nominal_withErrors[0].SetMaximum(hDS.GetMaximum())
     
-    plot.addHisto(nominal_withErrors, 'hist',     'Total unc.',   'F', 'unc')
-    plot.addHisto(tru,                'L,same',   'tW Powheg',    'L', 'mc')
-    plot.addHisto(aMCatNLO,           'L,same',   'tW aMCatNLO',  'L', 'mc')
-    plot.addHisto(hDS,                'L,same',   'tW DS',        'L', 'mc')
-    plot.addHisto(nominal,            'P,E,same', vl.labellegend, 'P', 'data')
+    plot.addHisto(nominal_withErrors, 'histnomin',     'Uncertainty',   'F', 'unc')
+    plot.addHisto(tru,                'L,same',   'tW Powheg DR + Pythia8',   'L', 'mc')
+    plot.addHisto(hDS,                'L,same',   'tW Powheg DS + Pythia8',   'L', 'mc')
+    plot.addHisto(aMCatNLO,           'L,same',   'tW aMC@NLO DR + Pythia8',  'L', 'mc')
+    plot.addHisto(nominal,            'P,E,same', vl.labellegend, 'PE', 'data')
     plot.saveCanvas(legloc)
     tmptfile3.Close()
     tmptfile2.Close()
     tmptfile.Close()
 else:
-    plot.addHisto(nominal_withErrors, 'hist', 'Total unc.', 'F')
-    plot.addHisto(nominal, 'P,same', vl.labellegend, 'P', 'data')
+    plot.addHisto(nominal_withErrors, 'hist', 'Uncertainty', 'F')
+    plot.addHisto(nominal, 'P,same', vl.labellegend, 'PE', 'data')
     plot.saveCanvas(legloc)
 del plot
 
 
-uncList = ep.getUncList(nominal, variations, True, False)
-print "Full list of uncs.", uncList
-uncList = uncList[:vl.nuncs]
+uncListorig = ep.getUncList(nominal, variations, True, False)
+print "Full list of uncs.", uncListorig
+uncList = uncListorig[:vl.nuncs]
 plot    = bp.beautifulUnfoldingPlots('{var}uncertainties_folded'.format(var = varName))
+plot.doPreliminary  = vl.doPre
 uncList[0][1].Draw()
 
 incmax  = []
@@ -265,18 +281,27 @@ hincsyst.SetFillColorAlpha(r.kBlue, 0.)
 
 uncList[0][1].GetYaxis().SetRangeUser(0., 1.1)
 
+actualindex = 0
 for i in range(vl.nuncs):
-    if 'statbin' not in uncList[i][0]: uncList[i][1].SetLineColor(vl.NewColorMap[uncList[i][0]])
-    else:                              uncList[i][1].SetLineColor(r.kAzure)
-    uncList[i][1].SetLineWidth( 2 )
-    if "Stat" in uncList[i][0]:
-        uncList[i][1].SetLineColor(r.kBlack)
-        uncList[i][1].SetLineStyle( 2 )
-    elif "Lumi" in uncList[i][0]:
-        uncList[i][1].SetLineColor(r.kBlack)
-        uncList[i][1].SetLineStyle( 4 )
-    plot.addHisto(uncList[i][1], 'hist,same' if i else 'hist', uncList[i][0], 'L')
+    #if "Stat" in uncListorig[i][0]:
+        #uncListorig[actualindex][1].SetLineColor(r.kBlack)
+        #uncListorig[actualindex][1].SetLineStyle( 2 )
+    if   "Stat" in uncListorig[actualindex][0]:
+        actualindex += 1
+    elif "Lumi" in uncListorig[actualindex][0]:
+        uncListorig[actualindex][1].SetLineColor(r.kBlack)
+        uncListorig[actualindex][1].SetLineStyle( 4 )
+    
+    uncListorig[actualindex][1].SetLineColor( vl.NewColorMap[uncListorig[actualindex][0]] )
+    uncListorig[actualindex][1].SetLineWidth( 2 )
+    plot.addHisto(uncListorig[actualindex][1], 'H,same' if i else 'H', uncListorig[actualindex][0],'L')
+    actualindex += 1
 
+for i in range(len(uncListorig)):
+    if "Stat" in uncListorig[i][0]:
+        uncListorig[i][1].SetLineColor(r.kBlack)
+        uncListorig[i][1].SetLineStyle( 2 )
+        plot.addHisto(uncListorig[i][1], 'hist,same', 'Stat.', 'L')
 plot.addHisto(hincsyst, 'hist,same', 'Syst.', 'L')
 plot.addHisto(hincmax,  'hist,same', 'Total', 'L')
 plot.plotspath = "results/"
@@ -296,6 +321,7 @@ if not vl.asimov:
 
     procs2 = ['ttbar','dy','fakes','vvttbarv']
     for proc, size in zip(procs2, [0.04, 0.5, 0.5, 0.5]):
+        if "twttbar" in varName.lower() and proc == "ttbar": continue
         dataUp, dataDn = getXSecForNomSys(proc, tfile, size)
         variations[procs[procs2.index(proc)] + 'Up']   = dataUp
         variations[procs[procs2.index(proc)] + 'Down'] = dataDn
@@ -322,12 +348,13 @@ if not vl.asimov:
     plot.doRatio        = True
     plot.doFit          = False
     plot.plotspath      = "results/"
+    plot.doPreliminary  = vl.doPre
 
     nominal.SetMarkerStyle(r.kFullCircle)
     nominal.GetXaxis().SetNdivisions(505, True)
 
     nominal_withErrors[0].SetFillColorAlpha(r.kBlue, 0.35)
-    nominal_withErrors[0].SetLineColor(r.kBlue)
+    nominal_withErrors[0].SetLineColor(0)
     nominal_withErrors[0].SetFillStyle(1001)
 
     if "legpos_foldas" in vl.varList[varName]: legloc_as = vl.varList[varName]["legpos_foldas"]
@@ -348,6 +375,7 @@ if not vl.asimov:
         aMCatNLO = copy.deepcopy(tmptfile2.Get('tW'))
         aMCatNLO.SetLineWidth(2)
         aMCatNLO.SetLineColor(r.kAzure)
+        aMCatNLO.SetLineStyle(2)
         
         if not os.path.isfile('temp/{var}_/ClosureTest_DS_recobinning_{var}.root'.format(var = varName)):
             raise RuntimeError('The rootfile with the generated DS variation information does not exist')
@@ -360,23 +388,25 @@ if not vl.asimov:
         if nominal_withErrors[0].GetMaximum() <= aMCatNLO.GetMaximum(): nominal_withErrors[0].SetMaximum(aMCatNLO.GetMaximum())
         if nominal_withErrors[0].GetMaximum() <= hDS.GetMaximum():      nominal_withErrors[0].SetMaximum(hDS.GetMaximum())
         
-        plot.addHisto(nominal_withErrors, 'hist',     'Total unc.',   'F', 'unc')
-        plot.addHisto(tru,                'L,same',   'tW Powheg',    'L', 'mc')
-        plot.addHisto(aMCatNLO,           'L,same',   'tW aMCatNLO',  'L', 'mc')
-        plot.addHisto(hDS,                'L,same',   'tW DS',        'L', 'mc')
-        plot.addHisto(nominal,            'P,E,same', "Pseudodata",   'P', 'data')
+        plot.addHisto(nominal_withErrors, 'histnomin',     'Uncertainty',   'F', 'unc')
+        plot.addHisto(tru,                'L,same',   'tW Powheg DR + Pythia8',   'L', 'mc')
+        plot.addHisto(hDS,                'L,same',   'tW Powheg DS + Pythia8',   'L', 'mc')
+        plot.addHisto(aMCatNLO,           'L,same',   'tW aMC@NLO DR + Pythia8',  'L', 'mc')
+        plot.addHisto(nominal,            'P,E,same', "Pseudodata",   'PE', 'data')
         plot.saveCanvas(legloc_as)
         tmptfile2.Close()
         tmptfile.Close()
     else:
-        plot.addHisto(nominal_withErrors, 'hist', 'Total unc.', 'F')
-        plot.addHisto(nominal, 'P,same', "Pseudodata", 'P', 'data')
+        plot.addHisto(nominal_withErrors, 'hist', 'Uncertainty', 'F')
+        plot.addHisto(nominal, 'P,same', "Pseudodata", 'PE', 'data')
         plot.saveCanvas(legloc_as)
     del plot
 
 
-    uncList = ep.getUncList(nominal, variations, True, False)[:vl.nuncs]
+    uncListorig = ep.getUncList(nominal, variations, True, False)
+    uncList = uncListorig[:vl.nuncs]
     plot    = bp.beautifulUnfoldingPlots('{var}uncertainties_asimov_folded'.format(var = varName))
+    plot.doPreliminary  = vl.doPre
     uncList[0][1].Draw()
 
     incmax  = []
@@ -425,18 +455,27 @@ if not vl.asimov:
 
     uncList[0][1].GetYaxis().SetRangeUser(0., 1.1)
     
+    actualindex = 0
     for i in range(vl.nuncs):
-        if 'statbin' not in uncList[i][0]: uncList[i][1].SetLineColor(vl.NewColorMap[uncList[i][0]])
-        else:                              uncList[i][1].SetLineColor(r.kAzure)
-        uncList[i][1].SetLineWidth( 2 )
-        if "Stat" in uncList[i][0]:
-            uncList[i][1].SetLineColor(r.kBlack)
-            uncList[i][1].SetLineStyle( 2 )
-        elif "Lumi" in uncList[i][0]:
-            uncList[i][1].SetLineColor(r.kBlack)
-            uncList[i][1].SetLineStyle( 4 )
-        plot.addHisto(uncList[i][1], 'hist,same' if i else 'hist', uncList[i][0], 'L')
+        #if "Stat" in uncListorig[i][0]:
+            #uncListorig[actualindex][1].SetLineColor(r.kBlack)
+            #uncListorig[actualindex][1].SetLineStyle( 2 )
+        if   "Stat" in uncListorig[actualindex][0]:
+            actualindex += 1
+        uncListorig[actualindex][1].SetLineColor( vl.NewColorMap[uncListorig[actualindex][0]] )
+        uncListorig[actualindex][1].SetLineWidth( 2 )
+        if "Lumi" in uncListorig[actualindex][0]:
+            uncListorig[actualindex][1].SetLineColor(r.kBlack)
+            uncListorig[actualindex][1].SetLineStyle( 4 )
+        
+        plot.addHisto(uncListorig[actualindex][1], 'H,same' if i else 'H', uncListorig[actualindex][0],'L')
+        actualindex += 1
 
+    for i in range(len(uncListorig)):
+        if "Stat" in uncListorig[i][0]:
+            uncListorig[i][1].SetLineColor(r.kBlack)
+            uncListorig[i][1].SetLineStyle( 2 )
+            plot.addHisto(uncListorig[i][1], 'hist,same', 'Stat.', 'L')
     plot.addHisto(hincsyst, 'hist,same', 'Syst.', 'L')
     plot.addHisto(hincmax,  'hist,same', 'Total', 'L')
     plot.plotspath = "results/"
