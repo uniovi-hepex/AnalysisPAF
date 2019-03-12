@@ -396,6 +396,7 @@ class TWAnalysis : public PAFChainItemSelector{
     Float_t  TWeight_BtagUp    ;
     Float_t  TWeight_BtagDown  ;
     Float_t  TWeight_TopPt  ;
+    Float_t  TWeight_TopPtDown;
     
     Float_t   LeadingLeptPt_   ;
     Float_t   LeadingLeptEta_  ;    
