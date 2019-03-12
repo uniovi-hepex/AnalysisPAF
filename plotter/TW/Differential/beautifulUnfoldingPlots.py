@@ -29,6 +29,8 @@ class beautifulUnfoldingPlots:
         self.doRatio        = False
         self.isLCurve       = False
         self.doFit          = True
+        self.doPreliminary  = True
+        self.doSupplementary= False
 
 
     def initCanvasAndAll(self):
@@ -39,21 +41,34 @@ class beautifulUnfoldingPlots:
         topSpamSize     = 1.2
         doOfficialCMS   = True
 
-        plotformat  = (1200,600) if self.doWide else (600,600)
-        height      = plotformat[1]+150 if self.doRatio else plotformat[1]
+        #plotformat  = (1200, 600) if self.doWide else (600,600)
+        plotformat  = (600, 600)
+        #height      = plotformat[1]+150 if self.doRatio else plotformat[1]
+        height      = plotformat[1]
 
         self.canvas = r.TCanvas(self.name+"_canvas", self.name, plotformat[0], height)
         
-        self.canvas.SetTopMargin(self.canvas.GetTopMargin()*topSpamSize)
+        self.canvas.SetTopMargin(self.canvas.GetTopMargin() * topSpamSize)
         topsize = 0.12*600./height if self.doRatio else 0.06*600./height
         if doOfficialCMS: self.canvas.SetTopMargin(topsize*1.2 if self.doWide else topsize)
-        self.canvas.SetWindowSize(plotformat[0] + (plotformat[0] - self.canvas.GetWw()), (plotformat[1]+150 + (plotformat[1]+150 - self.canvas.GetWh())))
+        #self.canvas.SetWindowSize(plotformat[0] + (plotformat[0] - self.canvas.GetWw()), (plotformat[1]+150 + (plotformat[1]+150 - self.canvas.GetWh())))
+        self.canvas.SetRightMargin(0.03)
 
         if self.doRatio:
             self.canvas.Divide(1, 2)
             self.canvas.GetPad(1).SetPad(*vl.plotlimits)
             self.canvas.GetPad(2).SetPad(*vl.ratiolimits)
-            self.canvas.GetPad(2).SetBottomMargin(0.3)
+            self.canvas.GetPad(1).SetTopMargin(0.08)
+            self.canvas.GetPad(1).SetRightMargin(0.03)
+            self.canvas.GetPad(1).SetLeftMargin(0.16)
+            self.canvas.GetPad(1).SetBottomMargin(0.025)
+            #self.canvas.GetPad(2).SetBottomMargin(0.3)
+            self.canvas.GetPad(2).SetBottomMargin(0.35)
+            self.canvas.GetPad(2).SetBottomMargin(0.375)
+            self.canvas.GetPad(2).SetRightMargin(0.03)
+            self.canvas.GetPad(2).SetLeftMargin(0.16)
+        else:
+            self.canvas.SetBottomMargin(0.1)
         return
     
     
@@ -69,17 +84,18 @@ class beautifulUnfoldingPlots:
                 asymhisto.SetPointEYhigh(bin, histo.GetBinError(bin + 1))
                 asymhisto.SetPointEYlow(bin, histos[1].GetBinError(bin + 1))
             
-            if self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "") in vl.varList:
-                asymhisto.GetXaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "")]['xaxis'] )
+            if self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '') in vl.varList:
+                asymhisto.GetXaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')]['xaxis'] )
                 if not vl.doxsec:             asymhisto.GetYaxis().SetTitle( 'Events' )
-                elif "fiducial" in self.name and not "uncertainties" in self.name: asymhisto.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "")]['yaxisfid'] )
-                else:                         asymhisto.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "")]['yaxis'] )
+                elif "fiducial" in self.name and not "uncertainties" in self.name and not "norm" in self.name: asymhisto.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')]['yaxisfid'] )
+                elif "norm" in self.name and not "uncertainties" in self.name: asymhisto.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')]['yaxisfidbin'] )
+                else:                         asymhisto.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')]['yaxis'] )
             
             asymhisto.GetXaxis().SetRangeUser(histo.GetXaxis().GetBinLowEdge(1), histo.GetXaxis().GetBinUpEdge(histo.GetNbinsX()))
             
             asymhisto.GetXaxis().SetTitleFont(43)
             asymhisto.GetXaxis().SetTitleSize(22)
-            asymhisto.GetXaxis().SetTitleOffset(1.4)
+            asymhisto.GetXaxis().SetTitleOffset(1.4 if "unc" not in self.name else 1.1)
             asymhisto.GetXaxis().SetLabelFont(43)
             asymhisto.GetXaxis().SetLabelSize(22)
             asymhisto.GetXaxis().SetLabelOffset(0.007)
@@ -108,15 +124,16 @@ class beautifulUnfoldingPlots:
             self.objectsInLeg.append( (asymhisto, name, legOptions, idname) )
         else:
             histo = histos
-            if self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "") in vl.varList:
-                histo.GetXaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "")]['xaxis'] )
-                if not vl.doxsec:             histo.GetYaxis().SetTitle( 'Events' )
-                elif "fiducial" in self.name and not "uncertainties" in self.name: histo.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "")]['yaxisfid'] )
-                else:                         histo.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "")]['yaxis'] )
+            if self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '') in vl.varList:
+                histo.GetXaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')]['xaxis'] )
+                if not vl.doxsec:             histo.GetYaxis().SetTitle( 'Events' ).replace('norm', '')
+                elif "fiducial" in self.name and not "uncertainties" in self.name and not "norm" in self.name: histo.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')]['yaxisfid'] )
+                elif "norm" in self.name and not "uncertainties" in self.name: histo.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')]['yaxisfidbin'] )
+                else:                         histo.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')]['yaxis'] )
 
             histo.GetXaxis().SetTitleFont(43)
             histo.GetXaxis().SetTitleSize(22)
-            histo.GetXaxis().SetTitleOffset(1.7 if self.isLCurve else 1.5)
+            histo.GetXaxis().SetTitleOffset(1.7 if (self.isLCurve) else 1.1 if "unc" in self.name else 1.4)
             histo.GetXaxis().SetLabelFont(43)
             histo.GetXaxis().SetLabelSize(13 if self.isLCurve else 22)
             histo.GetXaxis().SetLabelOffset(0.033 if self.isLCurve else 0.007)
@@ -124,7 +141,7 @@ class beautifulUnfoldingPlots:
             
             histo.GetYaxis().SetTitleFont(43)
             histo.GetYaxis().SetTitleSize(22)
-            histo.GetYaxis().SetTitleOffset(0.5 if self.doWide else 1.8 if not self.doRatio else 2.2)
+            histo.GetYaxis().SetTitleOffset(0.5 if self.doWide else 1.8 if not self.doRatio else 2.1)
             histo.GetYaxis().SetLabelFont(43)
             histo.GetYaxis().SetLabelSize(13 if self.isLCurve else 22)
             histo.GetYaxis().SetLabelOffset(0.007)
@@ -172,10 +189,11 @@ class beautifulUnfoldingPlots:
         histo = histos
 
         if self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "") in vl.varList:
-            histo.GetXaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "")]['xaxis'] )
+            histo.GetXaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')]['xaxis'] )
             if not vl.doxsec:             histo.GetYaxis().SetTitle( 'Events' )
-            elif "fiducial" in self.name and not "uncertainties" in self.name: histo.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "")]['yaxisfid'] )
-            else:                         histo.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "")]['yaxis'] )
+            elif "fiducial" in self.name and not "uncertainties" in self.name and not "norm" in self.name: histo.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')]['yaxisfid'] )
+            elif "norm" in self.name and not "uncertainties" in self.name: histo.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')]['yaxisfidbin'] )
+            else:                         histo.GetYaxis().SetTitle( vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')]['yaxis'] )
 
         histo.GetXaxis().SetTitleFont(43)
         histo.GetXaxis().SetTitleSize(22)
@@ -222,24 +240,31 @@ class beautifulUnfoldingPlots:
         
         # Draw legend
         #textSize = 0.022
-        textSize = 0.035
+        textSize = 0.035 if "unc" in self.name else 0.0435
         if "unc" in self.name: legWidth = 0.13
-        else:                  legWidth = 0.23
-        height = (.18 + textSize*max(len(self.objectsInLeg)-3,0))
+        #else:                  legWidth = 0.385 # this is tight
+        else:                  legWidth = 0.2
+        height = (.18 + textSize * max(len(self.objectsInLeg) - 3, 0))
         
         if isinstance(corner, str):
             if corner == "TR":
-                (x1,y1,x2,y2) = (0.93-legWidth if self.doWide else .85-legWidth, .93 - height, .865,         .93)
+                (x1,y1,x2,y2) = (0.93-legWidth if self.doWide else .85-legWidth, .9 - height, .865,         .9)
             elif corner == "TC":
-                (x1,y1,x2,y2) = (.5,                                             .93 - height, .55+legWidth, .93)
+                (x1,y1,x2,y2) = (.5,                                             .9 - height, .55+legWidth, .9)
             elif corner == "TL":
                 (x1,y1,x2,y2) = (.18,                                            .835 - height, .18+legWidth, .835)
+            elif corner == "MR":
+                (x1,y1,x2,y2) = (.85 - legWidth,                                 .3 + height, .90,          .3)
+            elif corner == "MC":
+                (x1,y1,x2,y2) = (.5,                                             .3 + height, .5+legWidth,  .3)
+            elif corner == "ML":
+                (x1,y1,x2,y2) = (.18,                                            .3 + height, .18+legWidth, .3)
             elif corner == "BR":
-                (x1,y1,x2,y2) = (.85 - legWidth,                                 .16 + height, .90,          .16)
+                (x1,y1,x2,y2) = (.85 - legWidth,                                 .1 + height, .90,          .1)
             elif corner == "BC":
-                (x1,y1,x2,y2) = (.5,                                             .16 + height, .5+legWidth,  .16)
+                (x1,y1,x2,y2) = (.5,                                             .1 + height, .5+legWidth,  .1)
             elif corner == "BL":
-                (x1,y1,x2,y2) = (.18,                                             .16 + height, .18+legWidth,  .16)
+                (x1,y1,x2,y2) = (.18,                                            .1 + height, .18+legWidth,  .1)
         else:
             (x1, y1, x2, y2) = corner
         
@@ -249,14 +274,21 @@ class beautifulUnfoldingPlots:
             leg.SetTextSize(textSize)
             leg.SetBorderSize(0)
             leg.SetFillColor(10)
+            leg.SetFillStyle(0); # transparent legend!
             for obj,name,opt,idnam in self.objectsInLeg:
-                if opt:
+                if "data" in name.lower():
+                    leg.AddEntry(obj, name, opt)
+                
+            for obj,name,opt,idnam in self.objectsInLeg:
+                if opt and "data" not in name.lower():
                     leg.AddEntry(obj, name, opt)
             leg.Draw('same')
 
         if not hasattr(self, 'noCMS'):
             CMS_lumi.lumi_13TeV = "%.1f fb^{-1}" %(vl.Lumi)
-            CMS_lumi.extraText  = 'Preliminary'
+            if self.doPreliminary: CMS_lumi.extraText  = 'Preliminary'
+            else:                  CMS_lumi.extraText  = ''
+            if self.doSupplementary: CMS_lumi.extraText  += 'Supplementary'
             CMS_lumi.lumi_sqrtS = '#sqrt{s} = 13 TeV'
             CMS_lumi.CMS_lumi(r.gPad, 4, 10, -0.005 if self.doWide and self.doRatio else 0.01 if self.doWide else 0.05)
         
@@ -298,7 +330,7 @@ class beautifulUnfoldingPlots:
             fitunc.SetLineColor(r.kBlack)
             fitunc.SetFillStyle(1001)
             fitunc.SetLineWidth(1)
-            fitunc.SetMarkerSize(0.)
+            #fitunc.SetMarkerSize(0.)
             
             totalunc.SetLineColor(r.kBlack)
             totalunc.SetFillStyle(1001)
@@ -308,7 +340,7 @@ class beautifulUnfoldingPlots:
             totalunc.GetXaxis().SetRangeUser(fitunc.GetXaxis().GetBinLowEdge(1), fitunc.GetXaxis().GetBinUpEdge(fitunc.GetNbinsX()))
             #else:          totalunc.GetXaxis().SetRangeUser(datavalues.GetXaxis().GetBinLowEdge(1), datavalues.GetXaxis().GetBinUpEdge(datavalues.GetNbinsX()))
             
-            totalunc.GetXaxis().SetTitle(vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "")]['xaxis'])
+            totalunc.GetXaxis().SetTitle(vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')]['xaxis'])
             totalunc.GetXaxis().SetTitleFont(43)
             totalunc.GetXaxis().SetTitleSize(22)
             totalunc.GetXaxis().SetTitleOffset(4)
@@ -321,7 +353,7 @@ class beautifulUnfoldingPlots:
             totalunc.GetYaxis().SetTitle('Pred./Data')
             totalunc.GetYaxis().SetTitleFont(43)
             totalunc.GetYaxis().SetTitleSize(22)
-            totalunc.GetYaxis().SetTitleOffset(0.5 if self.doWide else 1.8)
+            totalunc.GetYaxis().SetTitleOffset(0.5 if self.doWide else 2.2)
             totalunc.GetYaxis().CenterTitle(True)
             totalunc.GetYaxis().SetLabelFont(43)
             totalunc.GetYaxis().SetLabelSize(22)
@@ -331,7 +363,8 @@ class beautifulUnfoldingPlots:
             # Drawing
             self.canvas.cd(2)
             totalunc.Draw('a2')
-            fitunc.Draw('E2,L,same')
+            #fitunc.Draw('E2,L,same')
+            fitunc.Draw('P,E,same{s}'.format(s = ",X0" if "equalbinsunf" in vl.varList[self.name.replace('_folded', '').replace('_asimov', '').replace("_fiducial", "").replace('norm', '')] else ""))
             for el in ratiohistos:
                 el.Draw('L,same')
         
