@@ -101,7 +101,6 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None,
       del hGen3
     del hGen2, hGen1noF, hGen2noF
     
-  print "WOLOLO", hGen1.GetBinContent(1)
   hGen  = r.TH2F('hGen', '', nxb, xb, nyb, yb)
   
   for i in range(0, nxb+2):
@@ -203,7 +202,6 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None,
     purities.append(tmppur)
     del tmppur, hReco1
   
-  print "WELELE", h1.GetBinContent(1, 1)
   if not isinstance(t1, list):
     if ('fsr' in t1.GetName() or 'FSR' in t1.GetName() or 'isr' in t1.GetName() or 'ISR' in t1.GetName()):
       h1nom = r.TH2F('h1nom', "", nxb, xb, nyb, yb)
@@ -243,7 +241,42 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None,
       h1 = h1nom.Clone("h1")
       #h1.SetTitle("Response matrix - " + vnametitle)
       hGen = hGennom.Clone("hGen")
-      del hGennom, h1nom
+      del hGennom, h1nom, hGen1nom
+    elif ("mtop" in t1.GetName()):
+      h1nom = r.TH2F('h1nom', "", nxb, xb, nyb, yb)
+      h2nom = r.TH2F('h2nom', '', nxb, xb, nyb, yb)
+      nomtree[0].Project('h1nom', vnamereco + ":" + vnamegen, tmpcut + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+      nomtree[1].Project('h2nom', vnamereco + ":" + vnamegen, tmpcut + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+      h1nom.Add(h2nom)
+      del h2nom
+      hGen1nom = r.TH1F('hGen1nom', '', nxb, xb)
+      hGen2nom = r.TH1F('hGen2nom', '', nxb, xb)
+
+      nomtree[0].Draw(vnamegen + '>>hGen1nom', genCut + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+      nomtree[1].Draw(vnamegen + '>>hGen2nom', genCut + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+
+      hGen1nom.Add(hGen2nom)
+      del hGen2nom
+      
+      hGennom = r.TH2F('Gennom', '', nxb, xb, nyb, yb)
+
+      for i in range(0, nxb+2):
+        for j in range(0, nyb+2):
+          hGennom.SetBinContent(i, j, hGen1nom.GetBinContent(i))
+          hGennom.SetBinError(i, j, hGen1nom.GetBinError(i))
+      
+      h1.Add(h1nom, -1)
+      hGen.Add(hGennom, -1)
+      
+      h1nom.Add(h1, r.Double(1./3.))
+      hGennom.Add(hGen, r.Double(1./3.))
+      
+      del h1, hGen
+      h1 = h1nom.Clone("h1")
+      #h1.SetTitle("Response matrix - " + vnametitle)
+      hGen = hGennom.Clone("hGen")
+      del hGennom, h1nom, hGen1nom
+      
   
   h1.Divide(hGen)
   del hGen, hGen1
@@ -345,6 +378,21 @@ def GetFiducialHisto(t1, t2, vname, nyb, yb, sys = "", nomtree = None, t3 = None
       
       h1.Add(h1nom, -1)
       h1nom.Add(h1, r.Double(1/r.TMath.Sqrt(2)))
+      del h1
+      h1 = h1nom.Clone("h1")
+      h1.SetTitle("Fiducial histogram - T" + vnametitle)
+      del h1nom
+    
+    elif ("mtop" in t1.GetName()):
+      h1nom = r.TH1F('h1nom', "", nyb, yb)
+      h2nom = r.TH1F('h2nom', '', nyb, yb)
+      nomtree[0].Draw(vnamereco + '>>h1nom', tmpcut + "*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+      nomtree[1].Draw(vnamereco + '>>h2nom', tmpcut + "*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+      h1nom.Add(h2nom)
+      del h2nom
+      
+      h1.Add(h1nom, -1)
+      h1nom.Add(h1, r.Double(1./3.))
       del h1
       h1 = h1nom.Clone("h1")
       h1.SetTitle("Fiducial histogram - T" + vnametitle)
@@ -546,6 +594,8 @@ fTW_isrUp         = r.TFile.Open(minipath + "Tree_UNF_TW_noFullyHadr_isrUp.root"
 fTW_isrDown       = r.TFile.Open(minipath + "Tree_UNF_TW_noFullyHadr_isrDown.root")
 fTW_MEUp          = r.TFile.Open(minipath + "Tree_UNF_TW_noFullyHadr_MEscaleUp.root")
 fTW_MEDown        = r.TFile.Open(minipath + "Tree_UNF_TW_noFullyHadr_MEscaleDown.root")
+fTW_mtopUp        = r.TFile.Open(minipath + "Tree_UNF_TW_noFullyHadr_mtop1755.root")
+fTW_mtopDown      = r.TFile.Open(minipath + "Tree_UNF_TW_noFullyHadr_mtop1695.root")
 
 fTbarW            = r.TFile.Open(minipath + "Tree_UNF_TbarW.root")
 fTbarW_noFully    = r.TFile.Open(minipath + "Tree_UNF_TbarW_noFullyHadr.root")
@@ -556,8 +606,10 @@ fTbarW_isrUp      = r.TFile.Open(minipath + "Tree_UNF_TbarW_noFullyHadr_isrUp.ro
 fTbarW_isrDown    = r.TFile.Open(minipath + "Tree_UNF_TbarW_noFullyHadr_isrDown.root")
 fTbarW_MEUp       = r.TFile.Open(minipath + "Tree_UNF_TbarW_noFullyHadr_MEscaleUp.root")
 fTbarW_MEDown     = r.TFile.Open(minipath + "Tree_UNF_TbarW_noFullyHadr_MEscaleDown.root")
+fTbarW_mtopUp     = r.TFile.Open(minipath + "Tree_UNF_TbarW_noFullyHadr_mtop1755.root")
+fTbarW_mtopDown   = r.TFile.Open(minipath + "Tree_UNF_TbarW_noFullyHadr_mtop1695.root")
 
-fTTbar            = r.TFile.Open(minipath + "Tree_UNF_TTbar2L_powheg_0.root")
+#fTTbar            = r.TFile.Open(minipath + "Tree_UNF_TTbar2L_powheg_0.root")
 fTTbar_fsrUp      = r.TFile.Open(minipath + "Tree_UNF_TTbar_Powheg_fsrUp.root")
 fTTbar_fsrDown    = r.TFile.Open(minipath + "Tree_UNF_TTbar_Powheg_fsrDown.root")
 fTTbar_isrUp      = r.TFile.Open(minipath + "Tree_UNF_TTbar_Powheg_isrUp.root")
@@ -586,6 +638,11 @@ treeTW_MEUp       = fTW_MEUp.Get('Mini1j1t')
 treeTW_MEUp.SetName("tWMEUp")
 treeTW_MEDown     = fTW_MEDown.Get('Mini1j1t')
 treeTW_MEDown.SetName("tWMEDown")
+treeTW_mtopUp     = fTW_mtopUp.Get('Mini1j1t')
+treeTW_mtopUp.SetName("mtopUp")
+treeTW_mtopDown   = fTW_mtopDown.Get('Mini1j1t')
+treeTW_mtopDown.SetName("mtopDown")
+
 
 treeTbarW         = fTbarW.Get('Mini1j1t')
 treeTbarW_noFully = fTbarW_noFully.Get('Mini1j1t')
@@ -603,8 +660,13 @@ treeTbarW_MEUp    = fTbarW_MEUp.Get('Mini1j1t')
 treeTbarW_MEUp.SetName("tWMEUp")
 treeTbarW_MEDown  = fTbarW_MEDown.Get('Mini1j1t')
 treeTbarW_MEDown.SetName("tWMEDown")
+treeTbarW_mtopUp  = fTbarW_mtopUp.Get('Mini1j1t')
+treeTbarW_mtopUp.SetName("mtopUp")
+treeTbarW_mtopDown= fTbarW_mtopDown.Get('Mini1j1t')
+treeTbarW_mtopDown.SetName("mtopDown")
 
-treeTTbar         = fTTbar.Get('Mini1j1t')
+#treeTTbar         = fTTbar.Get('Mini1j1t')
+treeTTbar = 0
 treeTTbar_fsrUp   = fTTbar_fsrUp.Get('Mini1j1t')
 treeTTbar_fsrUp.SetName("fsrUp")
 treeTTbar_fsrDown = fTTbar_fsrDown.Get('Mini1j1t')
@@ -691,6 +753,7 @@ for i in range(nvars):
   htemp = GetFiducialHisto(treeTW_isrUp,    treeTbarW_isrUp,    VarNames[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar_isrUp)
   htemp.Write()
   PrintFiducialHisto(htemp, VarNames[i])
+  
   #htemp = GetResponseMatrix(treeTW_MEUp,    treeTbarW_MEUp,     VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_MEUp)
   htemp = GetResponseMatrix(treeTW_MEUp,    treeTbarW_MEUp,     VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar)
   htemp.Write()
@@ -699,12 +762,28 @@ for i in range(nvars):
   htemp = GetFiducialHisto(treeTW_MEUp,     treeTbarW_MEUp,     VarNames[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar)
   htemp.Write()
   PrintFiducialHisto(htemp, VarNames[i])
+  
   #htemp = GetResponseMatrix(treeTW_MEDown,  treeTbarW_MEDown,   VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_MEDown)
   htemp = GetResponseMatrix(treeTW_MEDown,  treeTbarW_MEDown,   VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar)
   htemp.Write()
   PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
   #htemp = GetFiducialHisto(treeTW_MEDown,   treeTbarW_MEDown,   VarNames[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_MEDown)
   htemp = GetFiducialHisto(treeTW_MEDown,   treeTbarW_MEDown,   VarNames[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar)
+  htemp.Write()
+  PrintFiducialHisto(htemp, VarNames[i])
+  
+  # MTOP
+  htemp = GetResponseMatrix(treeTW_mtopUp,  treeTbarW_mtopUp,   VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar)
+  htemp.Write()
+  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
+  htemp = GetFiducialHisto(treeTW_mtopUp, treeTbarW_mtopUp, VarNames[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar)
+  htemp.Write()
+  PrintFiducialHisto(htemp, VarNames[i])
+  
+  htemp = GetResponseMatrix(treeTW_mtopDown,  treeTbarW_mtopDown,   VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar)
+  htemp.Write()
+  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
+  htemp = GetFiducialHisto(treeTW_mtopDown, treeTbarW_mtopDown, VarNames[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar)
   htemp.Write()
   PrintFiducialHisto(htemp, VarNames[i])
   
