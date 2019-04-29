@@ -106,13 +106,15 @@ varList['Names'] = {
     #'Variables'   : ["LeadingJetPt", "LeadingLepPt"],
     #'Variables'   : ["LeadingLepPt", "LeadingLepEta"],
     #'Variables'   : ["LeadingLepPt", "LeadingJetPt", "DPhiLL", "DilepMETJet1Pz", "MT_LLMETB", "M_LLB"], # Variables single top 15-10-2018
-    #'Variables'   : ["LeadingLepPt", "LeadingJetPt", "DPhiLL", "DilepMETJet1Pz", "MT_LLMETB", "M_LLB", "Fiducial"], # Variables single top escogidas pero tamien pa la fiducial
-    'Variables'   : ["LeadingLepPt", "LeadingJetPt", "DPhiLL", "DilepMETJet1Pz", "MT_LLMETB", "M_LLB", "Fiducial", "FiducialtWttbar", "M_LLBATLAS", "MT_LLMETBATLAS"],
+    'Variables'   : ["LeadingLepPt", "LeadingJetPt", "DPhiLL", "DilepMETJet1Pz", "MT_LLMETB", "M_LLB", "Fiducial"], # Variables single top escogidas pero tamien pa la fiducial
+    #'Variables'   : ["LeadingLepPt"], # DEBUGGG
+    #'Variables'   : ["LeadingLepPt", "LeadingJetPt", "DPhiLL", "DilepMETJet1Pz", "MT_LLMETB", "M_LLB", "Fiducial", "FiducialtWttbar", "M_LLBATLAS", "MT_LLMETBATLAS"],
     #'Variables'   : ["FiducialtWttbar"],
     #'Variables'   : ["M_LLBATLAS", "MT_LLMETBATLAS"], # Variables single top de igual binning de ATLAS
     'ExpSysts'    : ["JESUp", "JESDown", "JERUp", "ElecEffUp", "ElecEffDown", "MuonEffUp", #   DO NOT MOVE THE FIRST THREE TO OTHER
                      "MuonEffDown", "TrigUp", "TrigDown", "PUUp", "PUDown", "BtagUp",      # POSITION: it will affect the calculus
-                     "BtagDown", "MistagUp", "MistagDown"],                                # of the response matrices.
+                     #"BtagDown", "MistagUp", "MistagDown"],                                # of the response matrices.
+                     "BtagDown", "MistagUp", "MistagDown", "TopPtUp", "TopPtDown"],        # of the response matrices.  WITH TOP PT REW
     #'ExpSysts'    : ["JESUp", "JESDown", "JERUp", "ElecEffUp", "ElecEffDown", "MuonEffUp", # WITH TOP PT REW.
                      #"MuonEffDown", "TrigUp", "TrigDown", "PUUp", "PUDown", "BtagUp",
                      #"BtagDown", "MistagUp", "MistagDown", "TopPtUp", "TopPtDown"],
@@ -156,8 +158,27 @@ varList['MT_LLMETB'] = {
     'yaxis'       : 'd#sigma/d(#it{m}_{T}(#it{e}^{#pm}, #it{#mu}^{#mp}, #it{p}_{T}^{miss}, #it{j})) (pb)',
     'yaxisfid'    : '(1/#sigma_{fid.})d#sigma/d(#it{m}_{T}(#it{e}^{#pm}, #it{#mu}^{#mp}, #it{p}_{T}^{miss}, #it{j})) (adim.)',
     'yaxisfidbin' : '(1/#sigma_{fid.})d#sigma/d(#it{m}_{T}(#it{e}^{#pm}, #it{#mu}^{#mp}, #it{p}_{T}^{miss}, #it{j})) (1/GeV)',
-    'genbinning'  : [0., 225., 325., 425., 500.],
-    'recobinning' : [0., 225., 250., 275., 300., 325., 350., 425., 500.],
+    #'genbinning'  : [0., 225., 325., 425., 500.],                         # usado en drafts, en nota, etc. (4 bins)
+    #'recobinning' : [0., 225., 250., 275., 300., 325., 350., 425., 500.], # usado en drafts, en nota, etc. (4 bins)
+    
+    'genbinning'  : [0., 220., 300., 325., 400., 500.], # propuesta (5 bins)
+    'recobinning' : [0., 220., 250., 260., 270., 280., 290., 300., 325., 400., 500.], # propuesta (5 bins) SELECCIONADA
+    
+    #'genbinning'  : [0., 220., 270., 300., 325., 400., 500.], # propuesta (6 bins)
+    #'recobinning' : [0., 220., 240., 250., 260., 270., 280., 290., 300., 310., 325., 400., 500.], # propuesta (6 bins)
+    
+    #'genbinning'  : [0., 220., 260., 280., 300., 325., 400., 500.], # propuesta (7 bins)
+    #'recobinning' : [0., 220., 240., 250., 260., 270., 275., 280., 285., 290., 300., 310., 325., 400., 500.], # propuesta (7 bins)
+    
+    #'genbinning'  : [0., 220., 240., 270., 300., 320., 350., 430., 500.], # propuesta (8 bins)
+    #'recobinning' : [0., 190., 220., 230., 240., 250., 260., 270., 280., 290., 300., 310., 320., 330., 350., 430., 500.], # propuesta (8 bins)
+    
+    #'genbinning'  : [0., 220., 240., 250., 260., 270., 280., 320., 400., 500.], # propuesta (9 bins)
+    #'recobinning' : [0., 220., 230., 240., 250., 255., 260., 265., 270., 275., 280., 285., 290., 300., 310., 320., 330., 400., 500.], # propuesta (9 bins)
+    
+    #'genbinning'  : [0., 220., 240., 250., 260., 270., 280., 300., 320., 400., 500.], # propuesta (10 bins)
+    #'recobinning' : [0., 220., 230., 240., 250., 255., 260., 265., 270., 275., 280., 285., 290., 295., 300., 305., 310., 320., 330., 400., 500.], # propuesta (10 bins)
+    
     #'descbinning' : [0., 800.], ## TEMPORAL
     #'ndescbins'   : 20, ## TEMPORAL
     'var'         : 'min(TMT_LLMETB, 499.)',
@@ -226,8 +247,27 @@ varList['M_LLB'] = {
     'yaxis'       : 'd#sigma/d(#it{m}(#it{e}^{#pm}, #it{#mu}^{#mp}, #it{j})) (pb)',
     'yaxisfid'    : '(1/#sigma_{fid.})d#sigma/d(#it{m}(#it{e}^{#pm}, #it{#mu}^{#mp}, #it{j})) (adim.)',
     'yaxisfidbin' : '(1/#sigma_{fid.})d#sigma/d(#it{m}(#it{e}^{#pm}, #it{#mu}^{#mp}, #it{j})) (1/GeV)',
-    'genbinning'  : [0., 125., 250., 350., 400.],
-    'recobinning' : [0., 125., 170., 180., 200., 240., 290., 350., 400.],
+    #'genbinning'  : [0., 125., 250., 350., 400.],                         # usado en drafts, en nota, etc. (4 bins)
+    #'recobinning' : [0., 125., 170., 180., 200., 240., 290., 350., 400.], # usado en drafts, en nota, etc. (4 bins)
+    
+    #'genbinning'  : [0., 130., 170., 200., 325., 400.], # propuesta (5 bins)
+    #'recobinning' : [0., 130., 140., 150., 160., 170., 180., 190., 200., 325., 400.], # propuesta (5 bins)
+    
+    'genbinning'  : [0., 130., 170., 200., 250., 325., 400.], # propuesta (6 bins)
+    'recobinning' : [0., 130., 140., 150., 160., 170., 180., 190., 200., 210., 220., 250., 325., 400.], # propuesta (6 bins) SELECCIONADA
+    
+    #'genbinning'  : [0., 130., 150., 170., 200., 250., 325., 400.], # propuesta (7 bins)
+    #'recobinning' : [0., 130., 140., 150., 155., 160., 165., 170., 180., 190., 200., 210., 220., 250., 325., 400.], # propuesta (7 bins)
+    
+    #'genbinning'  : [0., 125., 170., 180., 200., 240., 290., 350., 400.], # propuesta (8 bins)
+    #'recobinning' : [0., 125., 150., 160., 170., 180., 190., 200., 210., 220., 230., 240., 250., 275., 290., 350., 400.], # propuesta (8 bins)
+    
+    #'genbinning'  : [0., 130., 150., 160., 170., 180., 200., 250., 325., 400.], # propuesta (9 bins)
+    #'recobinning' : [0., 130., 140., 145., 150., 155., 160., 165., 170., 175., 180., 185., 190., 195., 200., 225., 250., 325., 400.], # propuesta (9 bins)
+    
+    #'genbinning'  : [0., 130., 140., 150., 160., 170., 180., 200., 250., 325., 400.], # propuesta (10 bins)
+    #'recobinning' : [0., 130., 140., 145., 150., 155., 160., 165., 170., 175., 180., 185., 190., 195., 200., 205., 210., 220., 250., 325., 400.], # propuesta (10 bins)
+    
     'descbinning' : [0., 400.],
     'ndescbins'   : 16,
     'legpos'      : (0.75, 0.55, 0.95, 0.93),
@@ -346,13 +386,32 @@ varList['LeadingJetPt'] = {
 #    'recobinning' : [0., 60., 75., 90., 110., 125., 150., 175., 300.],
     #'genbinning'  : [0., 60., 90., 120., 150.],
     #'recobinning' : [0., 60., 70., 80, 90., 100., 110., 120., 150.],
-    'genbinning'  : [30., 60., 90., 120., 150.],
-    'recobinning' : [30., 60., 70., 80, 90., 100., 110., 120., 150.],
+    #'genbinning'  : [30., 60., 90., 120., 150.],                        # usado en drafts, en nota, etc. (4 bins)
+    #'recobinning' : [30., 60., 70., 80, 90., 100., 110., 120., 150.],   # usado en drafts, en nota, etc. (4 bins)
+    
+    'genbinning'  : [30., 50., 70., 90., 125., 150.], # propuesta (5 bins)
+    'recobinning' : [30., 40., 45., 50., 55., 60., 65., 70., 90., 125., 150.], # propuesta (5 bins) SELECCTIONADA
+    
+    #'genbinning'  : [30., 40., 50., 70., 90., 125., 150.], # propuesta (6 bins)
+    #'recobinning' : [30., 35., 40., 45., 50., 55., 60., 65., 70., 90., 105., 125., 150.], # propuesta (6 bins)
+    
+    #'genbinning'  : [30., 40., 50., 60., 70., 90., 125., 150.], # propuesta (7 bins)
+    #'recobinning' : [30., 35., 37.5,40., 42.5, 45., 50., 55.,  60., 65., 70., 80., 105., 125., 150.], # propuesta (7 bins)
+    
+    #'genbinning'  : [30., 50., 60., 70., 80., 90., 105., 125., 150.], # propuesta (8 bins)
+    #'recobinning' : [30., 40., 50., 55., 60., 65., 70., 75., 80., 85., 90., 95., 100., 105., 115., 125., 150.], # propuesta (8 bins)
+    
+    #'genbinning'  : [30., 40., 45., 50., 55., 60., 70., 80., 125., 150.], # propuesta (9 bins)
+    #'recobinning' : [30., 37.5, 40.,42.5, 45.,47.5, 50.,52.5,  55., 57.5, 60., 65., 70., 75., 80., 90., 105., 125., 150.], # propuesta (9 bins)
+    
+    #'genbinning'  : [30., 40., 45., 50., 55., 60., 70., 80., 90., 125., 150.], # propuesta (10 bins)
+    #'recobinning' : [30., 35.,37.5, 40.,42.5, 45.,47.5, 50.,52.5,  55., 57.5, 60., 65., 70., 75., 80., 85., 90., 105., 125., 150.], # propuesta (10 bins)
+    
     'descbinning' : [10., 150.],
     'ndescbins'   : 14,
     'legpos'      : (0.7, 0.55, 0.90, 0.93),
     'legposdesc'  : (0.7, 0.55, 0.90, 0.93),
-    "legpos_unf"  : "TC",
+    #"legpos_unf"  : "TC",
     'var'         : 'min(TLeadingJetPt, 149.)',
     'var_response': 'LeadingJetPt',
     'var_gen'     : 'min(TGenLeadingJetPt, 149.)',
@@ -436,11 +495,28 @@ varList['LeadingLepPt'] = {
     #'genbinning'  : [0., 50., 90., 135., 250.],
     #'recobinning' : [0., 50., 60., 75., 90., 105., 115., 135., 250.],
     #'genbinning'  : [0., 50., 90., 125., 150.],
-    #'recobinning' : [0., 50., 60., 70., 80., 90., 105., 125., 150.],  # antes de 15-10-2018
-    'genbinning'  : [25., 50., 90., 125., 150.],
-    'recobinning' : [25., 50., 60., 70., 80., 90., 105., 125., 150.],  # antes de 15-10-2018
-    #'genbinning'  : [0., 50., 75., 115., 250.],
-    #'recobinning' : [0., 45., 55., 75., 85., 95., 105., 115., 250.],
+    #'recobinning' : [0., 50., 60., 70., 80., 90., 105., 125., 150.], # antes de 15-10-2018
+    #'genbinning'  : [25., 50., 90., 125., 150.],                      # usado en drafts, en nota, etc. (4 bins)
+    #'recobinning' : [25., 50., 60., 70., 80., 90., 105., 125., 150.], # usado en drafts, en nota, etc. (4 bins)
+    
+    #'genbinning'  : [25., 45., 65., 90., 125., 150.], # propuesta (5 bins)
+    #'recobinning' : [25., 35., 45., 50.,  55., 60., 65., 75., 90., 125., 150.], # propuesta (5 bins)
+    
+    #'genbinning'  : [25., 45., 65., 85., 100., 125., 150.], # propuesta (6 bins)
+    #'recobinning' : [25., 35., 45., 50., 55., 60., 65., 75., 85., 100., 115., 125., 150.], # propuesta (6 bins)
+    
+    #'genbinning'  : [25., 45., 55., 65., 85., 100., 125., 150.], # propuesta (7 bins)
+    #'recobinning' : [25., 35., 45., 50., 55.,  60.,  65.,  70., 75., 80., 85., 100., 115., 125., 150.], # propuesta (7 bins)
+    
+    'genbinning'  : [25., 50., 60., 70., 80., 90., 105., 125., 150.], # propuesta (8 bins)
+    'recobinning' : [25., 35., 50., 55., 60., 65.,  70.,  75.,  80., 85., 90., 95., 100., 105., 115., 125., 150.], # propuesta (8 bins) SELECCIONADA
+    
+    #'genbinning'  : [25., 45., 50., 55., 60., 65., 85., 100., 125., 150.], # propuesta (9 bins)
+    #'recobinning' : [25., 40., 42.5, 45.,47.5,50.,52.5,  55., 57.5,  60., 62.5, 65., 70., 75., 85., 100., 115., 125., 150.], # propuesta (9 bins)
+    
+    #'genbinning'  : [25., 35., 45., 50., 55., 60., 65., 85., 100., 125., 150.], # propuesta (10 bins)
+    #'recobinning' : [25., 35., 40., 42.5, 45., 47.5, 50., 52.5, 55., 57.5, 60., 62.5, 65., 67.5, 70., 75., 85., 100., 115., 125., 150.], # propuesta (10 bins)
+    
     'descbinning' : [10., 150.],
     'ndescbins'   : 14,
     'legpos'      : (0.7, 0.55, 0.90, 0.93),
@@ -656,8 +732,27 @@ varList['DilepMETJet1Pz'] = {
     'yaxis'       : 'd#sigma/d(#it{p}_{Z} (#it{e}^{#pm}, #it{#mu}^{#mp}, #it{j})) (pb)',
     'yaxisfid'    : '(1/#sigma_{fid.})d#sigma/d(#it{p}_{Z} (#it{e}^{#pm}, #it{#mu}^{#mp}, #it{j})) (adim.)',
     'yaxisfidbin' : '(1/#sigma_{fid.})d#sigma/d(#it{p}_{Z} (#it{e}^{#pm}, #it{#mu}^{#mp}, #it{j})) (1/GeV)',
-    'genbinning'  : [0., 100., 200., 350., 450.],
-    'recobinning' : [0., 50., 100., 150., 200., 250., 300., 350., 450.],
+    #'genbinning'  : [0., 100., 200., 350., 450.],                        # usado en drafts, en nota, etc. (4 bins)
+    #'recobinning' : [0., 50., 100., 150., 200., 250., 300., 350., 450.], # usado en drafts, en nota, etc. (4 bins)
+    
+    #'genbinning'  : [0., 40., 100., 175., 300., 450.],  # propuesta (5 bins)
+    #'recobinning' : [0., 20., 40., 60., 80., 100., 125., 150., 175., 350., 450.], # propuesta (5 bins)
+    
+    #'genbinning'  : [0., 40., 100., 175., 250., 350., 450.],  # propuesta (6 bins)
+    #'recobinning' : [0., 20., 40., 60., 80., 100., 125., 150., 175., 200., 250., 350., 450.], # propuesta (6 bins)
+    
+    #'genbinning'  : [0., 40., 60., 100., 175., 250., 350., 450.],  # propuesta (7 bins)
+    #'recobinning' : [0., 20., 30.,  40.,  50.,  60.,  80., 100., 125., 150., 175., 200., 250., 350., 450.], # propuesta (7 bins)
+    
+    'genbinning'  : [0., 50., 100., 150., 200., 250., 300., 350., 450.],                        # propuesta (8 bins)
+    'recobinning' : [0., 20., 40., 60., 80., 100., 125., 150., 175., 200., 225., 250., 275., 300., 350., 400., 450.], # propuesta (8 bins) SELECCIONADA
+    
+    #'genbinning'  : [0., 20., 40., 60., 80., 100., 175., 250., 350., 450.],  # propuesta (9 bins)
+    #'recobinning' : [0., 5.,  10., 15., 20.,  25.,  30.,  40.,  50.,  60.,  70.,  80.,  90., 100., 150., 175., 250., 350., 450.], # propuesta (9 bins)
+    
+    #'genbinning'  : [0., 20., 40., 60., 80., 100., 125., 175., 250., 350., 450.],  # propuesta (10 bins)
+    #'recobinning' : [0., 5.,  10., 15., 20.,  25.,  30.,  40.,  50.,  60.,  70.,  80.,  90., 100., 125., 150., 175., 200., 250., 350., 450.], # propuesta (10 bins)
+    
     'descbinning' : [0., 450.],
     'ndescbins'   : 18,
     'var'         : 'min(abs(TDilepMETJet1Pz), 449.)',
@@ -730,10 +825,29 @@ varList['DPhiLL'] = {
     'yaxis'       : "d#sigma/d(#Delta#it{#varphi}(#it{e}^{#pm}, #it{#mu}^{#mp})/#it{#pi}) (pb)",
     'yaxisfid'    : '(1/#sigma_{fid.})d#sigma/d(#Delta#it{#varphi}(#it{e}^{#pm}, #it{#mu}^{#mp})/#it{#pi}) (adim.)',
     'yaxisfidbin' : '(1/#sigma_{fid.})d#sigma/d(#Delta#it{#varphi}(#it{e}^{#pm}, #it{#mu}^{#mp})/#it{#pi}) (adim.)',
-    'genbinning'  : [0., .25, .50, 0.75, 1.0],
-    'recobinning' : [0., .125, .25, .375, .50, .625, .75, .875, 1.0],
+    #'genbinning'  : [0., .25, .50, 0.75, 1.0],                        # usado en drafts, en nota, etc. (4 bins)
+    #'recobinning' : [0., .125, .25, .375, .50, .625, .75, .875, 1.0], # usado en drafts, en nota, etc. (4 bins)
     #'genbinning'  : [0., .75, 1.5, 2.25, r.TMath.Pi()],
     #'recobinning' : [0., .35, .85, 1.25, 1.65, 2.05, 2.45, 2.85, r.TMath.Pi()],
+    
+    #'genbinning'  : [0., .2, .4, .6, .8, 1.0],                        # propuesta (5 bins)
+    #'recobinning' : [0., 0.1, .2, 0.3, 0.4, 0.5, .6, 0.7, 0.8, 0.9, 1.0], # propuesta (5 bins)
+    
+    'genbinning'  : [0., .17, .33, .5, .67, .83, 1.0],                        # propuesta (6 bins)
+    'recobinning' : [0., 0.083, .17, 0.25, 0.33, 0.417, .5, 0.583, 0.67, 0.75, 0.83, 0.917, 1.0], # propuesta (6 bins)
+    
+    #'genbinning'  : [0., .14, .29, .42, .57, .71, .86, 1.0],                        # propuesta (7 bins)
+    #'recobinning' : [0., 0.07, .14, 0.21, 0.29, 0.36, .43, 0.5, 0.57, .64, 0.71, .79, 0.86, 0.93, 1.0], # propuesta (7 bins)
+    
+    #'genbinning'  : [0., .125, .25, .375, .50, .625, .75, .875, 1.0],                        # propuesta (8 bins)
+    #'recobinning' : [0., 0.0625, .125, 0.1875, 0.25, 0.3125, .375, 0.4375, 0.50, 0.5625, 0.625, 0.6875, 0.75, 0.8125, 0.875, 0.9375, 1.0], # propuesta (8 bins)
+    
+    #'genbinning'  : [0., .11, .22, .33, .44, .56, .67, .78, .89, 1.0],                        # propuesta (9 bins)
+    #'recobinning' : [0., 0.056, .11, 0.17, 0.22, 0.28, .33, 0.39, 0.44, 0.5, 0.56, .61, .67, .72, .78, .83, .89, .94, 1.0], # propuesta (9 bins)
+    
+    #'genbinning'  : [0., .1, .2, .3, .4, .5, .6, .7, .8, .9, 1.0],                        # propuesta (10 bins)
+    #'recobinning' : [0., 0.05, .1, 0.15, 0.2, 0.25, .3, 0.35, 0.4, 0.45, 0.5, 0.55, .6, .65, .7, .75, .8, .85, .9, .95, 1.0], # propuesta (10 bins)
+    
     'var'         : 'abs(TDPhiLL)/' + str(r.TMath.Pi()),
     #'var'         : 'abs(TDPhiLL)',
     'var_response': 'DPhiLL',
@@ -918,6 +1032,7 @@ NewColorMap = {
     'VVttbarV'              : r.kSpring-9,
     'Stat.'                 : r.TColor.GetColor("#fb9a99"),
     'TopPt'                 : r.kGreen+1,
+    'mtop'                  : r.kBlue+3,
     'Lumi'                  : r.kPink-5,
     'asimov'                : r.kTeal,
 }
@@ -938,7 +1053,8 @@ SysNameTranslator = {
     'ElecEff'               : "Electron eff.",
     'MuonEff'               : "Muon eff.",
     'Trig'                  : "Trigger eff.",
-    'TopPt'                 : "Top p_T rew.",
+    'TopPt'                 : "Top p_{T} rew.",
+    'mtop'                  : "m_{top} unc.",
     'PU'                    : "PU",
     'Btag'                  : "B-tagging",
     'Mistag'                : "Mistagging",

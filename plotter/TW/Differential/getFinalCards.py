@@ -52,6 +52,8 @@ def GiveMeMyHistos(var):
     else:
         p.AddSample('TTbar2L_powheg',        'ttbar',    r.itBkg, 633, systlist, opts)
 
+    #p.AddSample('TTbar_Powheg',          'ttbar',    r.itBkg, 633, systlist, opts)
+    
     p.AddSample("TTbar_PowhegSemi",      "Non-WorZ", r.itBkg, 413, systlist, opts)
     p.AddSample("WJetsToLNu_MLM",        "Non-WorZ", r.itBkg, 413, systlist, opts)
 
@@ -102,24 +104,28 @@ def GiveMeMyHistos(var):
         p.AddToHistos(hData)
     
     # Modelling systematics
-    p.AddSample("TW"                         ,  "tW",           r.itSys, 1, "JERUp");
-    p.AddSample("TW_noFullyHadr_isrUp"       ,  "tW",           r.itSys, 1, "isrUp");
-    p.AddSample("TW_noFullyHadr_isrDown"     ,  "tW",           r.itSys, 1, "isrDown");
-    p.AddSample("TW_noFullyHadr_fsrUp"       ,  "tW",           r.itSys, 1, "fsrUp");
-    p.AddSample("TW_noFullyHadr_fsrDown"     ,  "tW",           r.itSys, 1, "fsrDown");
-    p.AddSample("TW_noFullyHadr_MEscaleUp"   ,  "tW",           r.itSys, 1, "tWMEUp");
-    p.AddSample("TW_noFullyHadr_MEscaleDown" ,  "tW",           r.itSys, 1, "tWMEDown");
+    p.AddSample("TW"                           , "tW",           r.itSys, 1, "JERUp");
+    p.AddSample("TW_noFullyHadr_isrUp"         , "tW",           r.itSys, 1, "isrUp");
+    p.AddSample("TW_noFullyHadr_isrDown"       , "tW",           r.itSys, 1, "isrDown");
+    p.AddSample("TW_noFullyHadr_fsrUp"         , "tW",           r.itSys, 1, "fsrUp");
+    p.AddSample("TW_noFullyHadr_fsrDown"       , "tW",           r.itSys, 1, "fsrDown");
+    p.AddSample("TW_noFullyHadr_MEscaleUp"     , "tW",           r.itSys, 1, "tWMEUp");
+    p.AddSample("TW_noFullyHadr_MEscaleDown"   , "tW",           r.itSys, 1, "tWMEDown");
+    p.AddSample("TW_noFullyHadr_mtop1755"      , "tW",           r.itSys, 1, "mtopUp");
+    p.AddSample("TW_noFullyHadr_mtop1695"      , "tW",           r.itSys, 1, "mtopDown");
 
-    p.AddSample("TbarW"                        ,"tW",           r.itSys, 1, "JERUp");
-    p.AddSample("TbarW_noFullyHadr_isrUp"      ,"tW",           r.itSys, 1, "isrUp");
-    p.AddSample("TbarW_noFullyHadr_isrDown"    ,"tW",           r.itSys, 1, "isrDown");
-    p.AddSample("TbarW_noFullyHadr_fsrUp"      ,"tW",           r.itSys, 1, "fsrUp");
-    p.AddSample("TbarW_noFullyHadr_fsrDown"    ,"tW",           r.itSys, 1, "fsrDown");
-    p.AddSample("TbarW_noFullyHadr_MEscaleUp"  ,"tW",           r.itSys, 1, "tWMEUp");
-    p.AddSample("TbarW_noFullyHadr_MEscaleDown","tW",           r.itSys, 1, "tWMEDown");
+    p.AddSample("TbarW"                        , "tW",           r.itSys, 1, "JERUp");
+    p.AddSample("TbarW_noFullyHadr_isrUp"      , "tW",           r.itSys, 1, "isrUp");
+    p.AddSample("TbarW_noFullyHadr_isrDown"    , "tW",           r.itSys, 1, "isrDown");
+    p.AddSample("TbarW_noFullyHadr_fsrUp"      , "tW",           r.itSys, 1, "fsrUp");
+    p.AddSample("TbarW_noFullyHadr_fsrDown"    , "tW",           r.itSys, 1, "fsrDown");
+    p.AddSample("TbarW_noFullyHadr_MEscaleUp"  , "tW",           r.itSys, 1, "tWMEUp");
+    p.AddSample("TbarW_noFullyHadr_MEscaleDown", "tW",           r.itSys, 1, "tWMEDown");
+    p.AddSample("TbarW_noFullyHadr_mtop1755"   , "tW",           r.itSys, 1, "mtopUp");
+    p.AddSample("TbarW_noFullyHadr_mtop1695"   , "tW",           r.itSys, 1, "mtopDown");
 
-    p.AddSample("TW_noFullyHadr_DS",            "tW",           r.itSys, 1, "DSUp");
-    p.AddSample("TbarW_noFullyHadr_DS",         "tW",           r.itSys, 1, "DSUp");
+    p.AddSample("TW_noFullyHadr_DS",             "tW",           r.itSys, 1, "DSUp");
+    p.AddSample("TbarW_noFullyHadr_DS",          "tW",           r.itSys, 1, "DSUp");
     p.AddSymmetricHisto("tW",  "DSUp");
     p.AddSymmetricHisto("tW",  "JERUp");
 
@@ -155,6 +161,8 @@ def GiveMeMyHistos(var):
     p.AddSample("TTbar_Powheg_isrDown"        , "ttbar",     r.itSys, 1, "isrDown");
     p.AddSample("TTbar_Powheg_fsrUp"          , "ttbar",     r.itSys, 1, "fsrUp");
     p.AddSample("TTbar_Powheg_fsrDown"        , "ttbar",     r.itSys, 1, "fsrDown");
+    p.AddSample("TTbar_Powheg_mtop1755"       , "ttbar",     r.itSys, 1, "mtopUp");
+    p.AddSample("TTbar_Powheg_mtop1695"       , "ttbar",     r.itSys, 1, "mtopDown");
 
     specialweight = vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
     p.SetWeight('TWeight*' + str(specialweight))
@@ -251,6 +259,8 @@ def GiveMeMyAsimovHistos(var):
     else:
         p.AddSample('TTbar2L_powheg',        'ttbar',    r.itBkg, 633, systlist, opts)
     
+    #p.AddSample('TTbar_Powheg',          'ttbar',    r.itBkg, 633, systlist, opts)
+    
     p.AddSample("TTbar_PowhegSemi",      "Non-WorZ", r.itBkg, 413, "", opts)
     p.AddSample("WJetsToLNu_MLM",        "Non-WorZ", r.itBkg, 413, "", opts)
 
@@ -344,6 +354,8 @@ def GiveMeMyGoodAsimovHistos(var):
     else:
         p.AddSample('TTbar2L_powheg',        'ttbar',    r.itBkg, 633, systlist, opts)
     
+    #p.AddSample('TTbar_Powheg',          'ttbar',    r.itBkg, 633, systlist, opts)
+    
     p.AddSample("TTbar_PowhegSemi",      "Non-WorZ", r.itBkg, 413, "", opts)
     p.AddSample("WJetsToLNu_MLM",        "Non-WorZ", r.itBkg, 413, "", opts)
 
@@ -390,24 +402,28 @@ def GiveMeMyGoodAsimovHistos(var):
     p.AddToHistos(hData)
     
     # Modelling systematics
-    p.AddSample("TW"                         ,  "tW",           r.itSys, 1, "JERUp");
-    p.AddSample("TW_noFullyHadr_isrUp"       ,  "tW",           r.itSys, 1, "isrUp");
-    p.AddSample("TW_noFullyHadr_isrDown"     ,  "tW",           r.itSys, 1, "isrDown");
-    p.AddSample("TW_noFullyHadr_fsrUp"       ,  "tW",           r.itSys, 1, "fsrUp");
-    p.AddSample("TW_noFullyHadr_fsrDown"     ,  "tW",           r.itSys, 1, "fsrDown");
-    p.AddSample("TW_noFullyHadr_MEscaleUp"   ,  "tW",           r.itSys, 1, "tWMEUp");
-    p.AddSample("TW_noFullyHadr_MEscaleDown" ,  "tW",           r.itSys, 1, "tWMEDown");
+    p.AddSample("TW"                           , "tW",           r.itSys, 1, "JERUp");
+    p.AddSample("TW_noFullyHadr_isrUp"         , "tW",           r.itSys, 1, "isrUp");
+    p.AddSample("TW_noFullyHadr_isrDown"       , "tW",           r.itSys, 1, "isrDown");
+    p.AddSample("TW_noFullyHadr_fsrUp"         , "tW",           r.itSys, 1, "fsrUp");
+    p.AddSample("TW_noFullyHadr_fsrDown"       , "tW",           r.itSys, 1, "fsrDown");
+    p.AddSample("TW_noFullyHadr_MEscaleUp"     , "tW",           r.itSys, 1, "tWMEUp");
+    p.AddSample("TW_noFullyHadr_MEscaleDown"   , "tW",           r.itSys, 1, "tWMEDown");
+    p.AddSample("TW_mtop1755"                  , "tW",           r.itSys, 1, "mtopUp");
+    p.AddSample("TW_mtop1695"                  , "tW",           r.itSys, 1, "mtopDown");
 
-    p.AddSample("TbarW"                        ,"tW",           r.itSys, 1, "JERUp");
-    p.AddSample("TbarW_noFullyHadr_isrUp"      ,"tW",           r.itSys, 1, "isrUp");
-    p.AddSample("TbarW_noFullyHadr_isrDown"    ,"tW",           r.itSys, 1, "isrDown");
-    p.AddSample("TbarW_noFullyHadr_fsrUp"      ,"tW",           r.itSys, 1, "fsrUp");
-    p.AddSample("TbarW_noFullyHadr_fsrDown"    ,"tW",           r.itSys, 1, "fsrDown");
-    p.AddSample("TbarW_noFullyHadr_MEscaleUp"  ,"tW",           r.itSys, 1, "tWMEUp");
-    p.AddSample("TbarW_noFullyHadr_MEscaleDown","tW",           r.itSys, 1, "tWMEDown");
+    p.AddSample("TbarW"                        , "tW",           r.itSys, 1, "JERUp");
+    p.AddSample("TbarW_noFullyHadr_isrUp"      , "tW",           r.itSys, 1, "isrUp");
+    p.AddSample("TbarW_noFullyHadr_isrDown"    , "tW",           r.itSys, 1, "isrDown");
+    p.AddSample("TbarW_noFullyHadr_fsrUp"      , "tW",           r.itSys, 1, "fsrUp");
+    p.AddSample("TbarW_noFullyHadr_fsrDown"    , "tW",           r.itSys, 1, "fsrDown");
+    p.AddSample("TbarW_noFullyHadr_MEscaleUp"  , "tW",           r.itSys, 1, "tWMEUp");
+    p.AddSample("TbarW_noFullyHadr_MEscaleDown", "tW",           r.itSys, 1, "tWMEDown");
+    p.AddSample("TbarW_noFullyHadr_mtop1755"   , "tW",           r.itSys, 1, "mtopUp");
+    p.AddSample("TbarW_noFullyHadr_mtop1695"   , "tW",           r.itSys, 1, "mtopDown");
 
-    p.AddSample("TW_noFullyHadr_DS",            "tW",           r.itSys, 1, "DSUp");
-    p.AddSample("TbarW_noFullyHadr_DS",         "tW",           r.itSys, 1, "DSUp");
+    p.AddSample("TW_noFullyHadr_DS",             "tW",           r.itSys, 1, "DSUp");
+    p.AddSample("TbarW_noFullyHadr_DS",          "tW",           r.itSys, 1, "DSUp");
     p.AddSymmetricHisto("tW",  "DSUp");
     p.AddSymmetricHisto("tW",  "JERUp");
 
@@ -443,6 +459,8 @@ def GiveMeMyGoodAsimovHistos(var):
     p.AddSample("TTbar_Powheg_isrDown"        , "ttbar",     r.itSys, 1, "isrDown");
     p.AddSample("TTbar_Powheg_fsrUp"          , "ttbar",     r.itSys, 1, "fsrUp");
     p.AddSample("TTbar_Powheg_fsrDown"        , "ttbar",     r.itSys, 1, "fsrDown");
+    p.AddSample("TTbar_Powheg_mtop1755"       , "ttbar",     r.itSys, 1, "mtopUp");
+    p.AddSample("TTbar_Powheg_mtop1695"       , "ttbar",     r.itSys, 1, "mtopDown");
 
     specialweight = vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar/(vl.nGluonMoveCRTune_ttbar/vl.sigma_ttbar + vl.nGluonMoveCRTune_dilep/vl.sigma_dilep)
     p.SetWeight('TWeight*' + str(specialweight))

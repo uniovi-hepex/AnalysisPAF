@@ -159,7 +159,7 @@ class beautifulUnfoldingPlots:
                     #histo.GetYaxis().SetRangeUser(r.Double(0.99), r.Double(1.01))
                     ##histo.GetYaxis().SetLabelSize(15)
             if 'comp' in name:
-                histo.GetYaxis().SetRangeUser(r.Double(0.99), r.Double(1.01))
+                histo.GetYaxis().SetRangeUser(r.Double(0.98), r.Double(1.02))
             
             if self.isLCurve:
                 for i in range(1, 25):

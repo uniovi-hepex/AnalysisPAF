@@ -25,12 +25,12 @@ fi
 
 # unfoldingvars=("M_LeadingB" "M_SubLeadingB" "LeadingLepPt" "DilepMETJet1Pz" "LLMETBEta" "DPhiLL" "DPhiLeadJet" "DPhiSubLeadJet")
 # unfoldingvars=("LeadingJetPt" "LeadingLepPt")
-# unfoldingvarscut=("LeadingJetPt" "LeadingLepPt" "DPhiLL" "DilepMETJet1Pz" "MT_LLMETB" "M_LLB") # Variables single top 15-10-2018
-# unfoldingvars=("LeadingJetPt" "LeadingLepPt" "DPhiLL" "DilepMETJet1Pz" "MT_LLMETB" "M_LLB" "Fiducial") # Variables single top 15-10-2018
+unfoldingvarscut=("LeadingJetPt" "LeadingLepPt" "DPhiLL" "DilepMETJet1Pz" "MT_LLMETB" "M_LLB") # Variables single top 15-10-2018
+unfoldingvars=("LeadingJetPt" "LeadingLepPt" "DPhiLL" "DilepMETJet1Pz" "MT_LLMETB" "M_LLB" "Fiducial") # Variables single top 15-10-2018
 # unfoldingvarscut=("LeadingJetPt" "LeadingLepPt" "DPhiLL" "DilepMETJet1Pz" "MT_LLMETB" "M_LLB") # Variables single top 15-10-2018
 # unfoldingvars=("LeadingJetPt" "LeadingLepPt" "DPhiLL" "DilepMETJet1Pz" "MT_LLMETB" "M_LLB" "Fiducial" "FiducialtWttbar")
-unfoldingvarscut=("LeadingJetPt" "LeadingLepPt" "DPhiLL" "DilepMETJet1Pz" "MT_LLMETB" "M_LLB" "MT_LLMETBATLAS" "M_LLBATLAS")
-unfoldingvars=("LeadingJetPt" "LeadingLepPt" "DPhiLL" "DilepMETJet1Pz" "MT_LLMETB" "M_LLB" "MT_LLMETBATLAS" "M_LLBATLAS" "Fiducial" "FiducialtWttbar")
+# unfoldingvarscut=("LeadingJetPt" "LeadingLepPt" "DPhiLL" "DilepMETJet1Pz" "MT_LLMETB" "M_LLB" "MT_LLMETBATLAS" "M_LLBATLAS")
+# unfoldingvars=("LeadingJetPt" "LeadingLepPt" "DPhiLL" "DilepMETJet1Pz" "MT_LLMETB" "M_LLB" "MT_LLMETBATLAS" "M_LLBATLAS" "Fiducial" "FiducialtWttbar")
 # unfoldingvarscut=("MT_LLMETBATLAS" "M_LLBATLAS")
 # unfoldingvars=("MT_LLMETBATLAS" "M_LLBATLAS")
 
@@ -75,8 +75,8 @@ if [ "$variable" == "All" ]; then
     # 4) Do a proper unfolding as you were taught by your mother when you were a child.
     echo "> Unfolding all variables..."
     echo " "
-    for ((i=0; i<=$uplimitcuts; i++)); do
-        python unfoldTW_cut.py ${unfoldingvarscut[i]}
+    for ((i=0; i<=$uplimit; i++)); do
+        python unfoldTW_cut.py ${unfoldingvars[i]}
     done
         
     source ../pre_start.sh

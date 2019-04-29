@@ -307,6 +307,8 @@ void TWAnalysis::InsideLoop(){
     
     if (((SergioLeps.at(0).p + SergioLeps.at(1).p).M() > 20) && (SergioLeps.at(0).p.Pt() > 25) && 
         (GenChannel == iElMu) && !TGenIsSS && (nSergioLooseCentralJets == 1)) {
+//     if (((SergioLeps.at(0).p + SergioLeps.at(1).p).M() > 20) && (SergioLeps.at(0).p.Pt() > 25) && 
+//         (GenChannel == iElMu) && !TGenIsSS) {
       Tpassgen        = 1;
     }
   }
@@ -387,6 +389,18 @@ void TWAnalysis::InsideLoop(){
     if ((TNJetsJERUp == 1) && (TNBtagsJERUp == 1) && (nLooseCentralJERUp == 1)) {
       TpassrecoJERUp = 1;
     }
+//     if ((TNJets == 1) && (TNBtags == 1)) {
+//       Tpassreco = 1;
+//     }
+//     if ((TNJetsJESUp == 1) && (TNBtagsJESUp == 1)) {
+//       TpassrecoJESUp = 1;
+//     }
+//     if ((TNJetsJESDown == 1) && (TNBtagsJESDown == 1)) {
+//       TpassrecoJESDown = 1;
+//     }
+//     if ((TNJetsJERUp == 1) && (TNBtagsJERUp == 1)) {
+//       TpassrecoJERUp = 1;
+//     }
   }
   
   //   Setting maximum value of the unfolding candidate variables.

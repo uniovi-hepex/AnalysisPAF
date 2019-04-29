@@ -390,9 +390,9 @@ class Unfolder():
         plot = bp.beautifulUnfoldingPlots(self.var + '_asimov_areacomp' if (self.wearedoingasimov) else self.var + '_areacomp')
         withareaconst.GetXaxis().SetTitle(vl.varList[self.var]['xaxis'])
         withareaconst.GetYaxis().SetTitle('Area/No area')
-        plot.addHisto(withareaconst  ,'hist'     ,'areacomp'  ,'L')
-        plot.plotspath = 'results/'
-        plot.doPreliminary  = vl.doPre
+        plot.addHisto(withareaconst, 'hist', 'areacomp', 'L')
+        plot.plotspath     = 'results/'
+        plot.doPreliminary = vl.doPre
         plot.saveCanvas('BR', '', False)
 
 

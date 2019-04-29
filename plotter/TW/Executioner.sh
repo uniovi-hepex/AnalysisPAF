@@ -3,6 +3,7 @@
 samples=("TW" "TW_noFullyHadr" 
   "TbarW" "TbarW_noFullyHadr" "TW_aMCatNLO" 
   "TTbar_Powheg" "TTbar_PowhegSemi" "TTbar2L_powheg" "DYJetsToLL_M50_MLM" "DYJetsToLL_M5to50_MLM" "DYJetsToLL_M50_aMCatNLO" "DYJetsToLL_M10to50_aMCatNLO" 
+  "TTbar_Powheg" "TTbar_PowhegSemi" "DYJetsToLL_M50_MLM" "DYJetsToLL_M5to50_MLM" "DYJetsToLL_M50_aMCatNLO" "DYJetsToLL_M10to50_aMCatNLO" 
   "WJetsToLNu_MLM" "ZZ" "WW" "WZ" "TTWToLNu" "TTZToQQ" "TTZToLLNuNu" "TTWToQQ" "TTGJets" 
   "MuonEG" "SingleElec" "SingleMuon")
 
@@ -11,23 +12,39 @@ samples_syst=("TTbar_Powheg_ueUp" "TTbar2L_Powheg_ueUp" "TTbar_Powheg_ueDown" "T
   "TTbar_Powheg_fsrDown" "TTbar_Powheg_hdampUp" "TTbar2L_Powheg_hdampUp" 
   "TTbar_Powheg_hdampDown" "TTbar2L_Powheg_hdampDown" "TTbar_Powheg_erdON" "TTTo2L2Nu_Powheg_erdON" 
   "TTbar_QCDbasedCRTune_erdON" "TTTo2L2Nu_QCDbasedCRTune_erdON" "TTbar_GluonMoveCRTune" "TTTo2L2Nu_GluonMoveCRTune" "TTbar_GluonMoveCRTune_erdON" 
+  "TTbar_Powheg_mtop1695" "TTbar_Powheg_mtop1755" 
   "TW_noFullyHadr_isrUp" "TW_noFullyHadr_isrDown" "TW_noFullyHadr_fsrUp" "TW_noFullyHadr_fsrDown" "TW_noFullyHadr_MEscaleUp" "TW_noFullyHadr_MEscaleDown" 
-  "TW_noFullyHadr_DS" "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" 
-  "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" "TbarW_noFullyHadr_DS")
+  "TW_noFullyHadr_DS" "TW_noFullyHadr_mtop1695" "TW_noFullyHadr_mtop1755" "TW_mtop1695" "TW_mtop1755" 
+  "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" 
+  "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" 
+  "TbarW_noFullyHadr_DS" "TbarW_noFullyHadr_mtop1695" "TbarW_noFullyHadr_mtop1755" "TbarW_mtop1695" "TbarW_mtop1755")
 
-samples_unf=("UNF_TW" "UNF_TW_noFullyHadr" "UNF_TW_noFullyHadr_isrUp" "UNF_TW_noFullyHadr_isrDown" "UNF_TW_noFullyHadr_fsrUp" "UNF_TW_noFullyHadr_fsrDown" 
+samples_unf=("UNF_TW" "UNF_TW_noFullyHadr" 
+             "UNF_TW_noFullyHadr_isrUp" "UNF_TW_noFullyHadr_isrDown" 
+             "UNF_TW_noFullyHadr_fsrUp" "UNF_TW_noFullyHadr_fsrDown" 
              "UNF_TW_noFullyHadr_MEscaleUp" "UNF_TW_noFullyHadr_MEscaleDown" "UNF_TW_noFullyHadr_DS" 
-             "UNF_TbarW" "UNF_TbarW_noFullyHadr" "UNF_TbarW_noFullyHadr_isrUp" "UNF_TbarW_noFullyHadr_isrDown" "UNF_TbarW_noFullyHadr_fsrUp" "UNF_TbarW_noFullyHadr_fsrDown" 
+             "UNF_TW_noFullyHadr_mtop1695" "UNF_TW_noFullyHadr_mtop1755" 
+             "UNF_TbarW" "UNF_TbarW_noFullyHadr" 
+             "UNF_TbarW_noFullyHadr_isrUp" "UNF_TbarW_noFullyHadr_isrDown" 
+             "UNF_TbarW_noFullyHadr_fsrUp" "UNF_TbarW_noFullyHadr_fsrDown" 
              "UNF_TbarW_noFullyHadr_MEscaleUp" "UNF_TbarW_noFullyHadr_MEscaleDown" "UNF_TbarW_noFullyHadr_DS" 
+             "UNF_TbarW_noFullyHadr_mtop1695" "UNF_TbarW_noFullyHadr_mtop1755" 
              "UNF_TW_aMCatNLO" 
-             "UNF_TTbar2L_powheg_0" "UNF_TTbar_Powheg_erdON" "UNF_TTbar_Powheg_fsrDown" "UNF_TTbar_Powheg_fsrUp" "UNF_TTbar_Powheg_hdampDown" "UNF_TTbar_Powheg_hdampUp"
-             "UNF_TTbar_Powheg_isrDown" "UNF_TTbar_Powheg_isrUp" "UNF_TTbar_Powheg_ueDown" "UNF_TTbar_Powheg_ueUp")
+             "UNF_TTbar2L_powheg_0" 
+             "UNF_TTbar_Powheg_erdON" 
+             "UNF_TTbar_Powheg_fsrDown" "UNF_TTbar_Powheg_fsrUp" 
+             "UNF_TTbar_Powheg_hdampDown" "UNF_TTbar_Powheg_hdampUp"
+             "UNF_TTbar_Powheg_isrDown" "UNF_TTbar_Powheg_isrUp" 
+             "UNF_TTbar_Powheg_ueDown" "UNF_TTbar_Powheg_ueUp")
 
 
 
 runsamples=("TW_ext" "TW_noFullyHadr & TW_noFullyHadr_ext & TW_noFullyHadr_ext2" 
   "TbarW_ext" "TbarW_noFullyHadr & TbarW_noFullyHadr_ext & TbarW_noFullyHadr_ext2" "TW_aMCatNLO_[0-9]" 
-  "TTbar_Powheg" "TTbar_Powheg" "TTbar2L_powheg" "DYJetsToLL_M50_MLM_ext & DYJetsToLL_M50_MLM_ext2" "DYJetsToLL_M5to50_MLM" "DYJetsToLL_M50_aMCatNLO" "DYJetsToLL_M10to50_aMCatNLO & DYJetsToLL_M10to50_aMCatNLO_ext" 
+#   "TTbar_Powheg & TTbar_Powheg_backup" "TTbar_Powheg & TTbar_Powheg_backup" "TTbar2L_powheg"                          # DEBERIAMOS USAR ESTAS, PERO NO LO HACEMOS (¡LO DE LOS PESOS!)
+  "TTbar_Powheg" "TTbar_Powheg" "TTbar2L_powheg" 
+  "DYJetsToLL_M50_MLM_ext & DYJetsToLL_M50_MLM_ext2" "DYJetsToLL_M5to50_MLM" "DYJetsToLL_M50_aMCatNLO" "DYJetsToLL_M10to50_aMCatNLO & DYJetsToLL_M10to50_aMCatNLO_ext" 
+  "TTbar_Powheg" "TTbar_Powheg" "DYJetsToLL_M50_MLM_ext & DYJetsToLL_M50_MLM_ext2" "DYJetsToLL_M5to50_MLM" "DYJetsToLL_M50_aMCatNLO" "DYJetsToLL_M10to50_aMCatNLO & DYJetsToLL_M10to50_aMCatNLO_ext" 
   "WJetsToLNu_MLM & WJetsToLNu_MLM_ext2" "ZZ & ZZ_ext" "WW & WW_ext" "WZ & WZ_ext" "TTWToLNu_ext1 & TTWToLNu_ext2" "TTZToQQ" "TTZToLLNuNu_ext1 & TTZToLLNuNu_ext2" "TTWToQQ" "TTGJets & TTGJets_ext" 
   "MuonEG" "SingleElec" "SingleMuon")
 
@@ -36,18 +53,30 @@ runsamples_syst=("TTbar_Powheg_ueUp & TTbar_Powheg_ueUp_ext" "TTbar2L_Powheg_ueU
   "TTbar_Powheg_fsrUp & TTbar_Powheg_fsrUp_ext & TTbar_Powheg_fsrUp_ext2" "TTbar_Powheg_fsrDown & TTbar_Powheg_fsrDown_ext & TTbar_Powheg_fsrDown_ext2" "TTbar_Powheg_hdampUp & TTbar_Powheg_hdampUp_ext" "TTbar2L_Powheg_hdampUp" 
   "TTbar_Powheg_hdampDown & TTbar_Powheg_hdampDown_ext" "TTbar2L_Powheg_hdampDown" "TTbar_Powheg_erdON & TTbar_Powheg_erdON_ext" "TTTo2L2Nu_Powheg_erdON"
   "TTbar_QCDbasedCRTune_erdON & TTbar_QCDbasedCRTune_erdON_ext" "TTTo2L2Nu_QCDbasedCRTune_erdON" "TTbar_GluonMoveCRTune" "TTTo2L2Nu_GluonMoveCRTune" "TTbar_GluonMoveCRTune_erdON" 
+  "TTbar_Powheg_mtop1695_ext & TTbar_Powheg_mtop1695_ext2 & TTbar_Powheg_mtop1695_backup" "TTbar_Powheg_mtop1755" 
   "TW_noFullyHadr_isrUp" "TW_noFullyHadr_isrDown" "TW_noFullyHadr_fsrUp" "TW_noFullyHadr_fsrDown" "TW_noFullyHadr_MEscaleUp" "TW_noFullyHadr_MEscaleDown" 
-  "TW_noFullyHadr_DS" "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" 
-  "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" "TbarW_noFullyHadr_DS")
+  "TW_noFullyHadr_DS" "TW_noFullyHadr_mtop1695" "TW_noFullyHadr_mtop1755" "TW_mtop1695" "TW_mtop1755" 
+  "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" 
+  "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" 
+  "TbarW_noFullyHadr_DS" "TbarW_noFullyHadr_mtop1695" "TbarW_noFullyHadr_mtop1755" "TbarW_mtop1695" "TbarW_mtop1755")
 
-runsamples_unf=("TW_ext" "TW_noFullyHadr & TW_noFullyHadr_ext & TW_noFullyHadr_ext2" "TW_noFullyHadr_isrUp" "TW_noFullyHadr_isrDown" 
-                "TW_noFullyHadr_fsrUp" "TW_noFullyHadr_fsrDown" "TW_noFullyHadr_MEscaleUp" "TW_noFullyHadr_MEscaleDown" "TW_noFullyHadr_DS" 
-                "TbarW_ext" "TbarW_noFullyHadr & TbarW_noFullyHadr_ext & TbarW_noFullyHadr_ext2" "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" 
-                "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" 
-                "TbarW_noFullyHadr_DS" "TW_aMCatNLO" 
-                "TTbar2L_powheg_0 & TTbar2L_powheg_1 & TTbar2L_powheg_2 & TTbar2L_powheg_3" "TTbar_Powheg_erdON & TTbar_Powheg_erdON_ext" "TTbar_Powheg_fsrDown & TTbar_Powheg_fsrDown_ext"
-                "TTbar_Powheg_fsrUp & TTbar_Powheg_fsrUp_ext" "TTbar_Powheg_hdampDown & TTbar_Powheg_hdampDown_ext" "TTbar_Powheg_hdampUp & TTbar_Powheg_hdampUp_ext" 
-                "TTbar_Powheg_isrDown & TTbar_Powheg_isrDown_ext" "TTbar_Powheg_isrUp_ext" "TTbar_Powheg_ueDown & TTbar_Powheg_ueDown_ext" "TTbar_Powheg_ueUp & TTbar_Powheg_ueUp_ext")
+runsamples_unf=("TW_ext" "TW_noFullyHadr & TW_noFullyHadr_ext & TW_noFullyHadr_ext2" 
+                "TW_noFullyHadr_isrUp" "TW_noFullyHadr_isrDown" 
+                "TW_noFullyHadr_fsrUp" "TW_noFullyHadr_fsrDown" 
+                "TW_noFullyHadr_MEscaleUp" "TW_noFullyHadr_MEscaleDown" "TW_noFullyHadr_DS" 
+                "TW_noFullyHadr_mtop1695" "TW_noFullyHadr_mtop1755" 
+                "TbarW_ext" "TbarW_noFullyHadr & TbarW_noFullyHadr_ext & TbarW_noFullyHadr_ext2" 
+                "TbarW_noFullyHadr_isrUp" "TbarW_noFullyHadr_isrDown" 
+                "TbarW_noFullyHadr_fsrUp" "TbarW_noFullyHadr_fsrDown" 
+                "TbarW_noFullyHadr_MEscaleUp" "TbarW_noFullyHadr_MEscaleDown" "TbarW_noFullyHadr_DS" 
+                "TbarW_noFullyHadr_mtop1695" "TbarW_noFullyHadr_mtop1755" 
+                "TW_aMCatNLO" 
+                "TTbar2L_powheg_0 & TTbar2L_powheg_1 & TTbar2L_powheg_2 & TTbar2L_powheg_3" 
+                "TTbar_Powheg_erdON & TTbar_Powheg_erdON_ext" 
+                "TTbar_Powheg_fsrDown & TTbar_Powheg_fsrDown_ext" "TTbar_Powheg_fsrUp & TTbar_Powheg_fsrUp_ext"
+                "TTbar_Powheg_hdampDown & TTbar_Powheg_hdampDown_ext" "TTbar_Powheg_hdampUp & TTbar_Powheg_hdampUp_ext" 
+                "TTbar_Powheg_isrDown & TTbar_Powheg_isrDown_ext" "TTbar_Powheg_isrUp_ext" 
+                "TTbar_Powheg_ueDown & TTbar_Powheg_ueDown_ext" "TTbar_Powheg_ueUp & TTbar_Powheg_ueUp_ext")
 
 
 uplimit=$((${#runsamples[@]}-1))
@@ -124,20 +153,20 @@ if [ "$1" == "an" ]; then
         unset unftmppath
         unftmppath=$unfpath${runsamples_unf[i]}$final
         if [[ ${samples_unf[i]} == *"noFullyHadr"* ]]; then
-        xsec=19.4674104
+            xsec=19.4674104
         else
-        xsec=35.85
+            xsec=35.85
         fi
         if [ ${runsamples_unf[i]} == "TW_aMCatNLO" ]; then
-        root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, 7.61064238831, \"Unfolding\")"
+            root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, 7.61064238831, \"Unfolding\")"
         elif [ ${samples_unf[i]} == "UNF_TW_noFullyHadr" ]; then
-        root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
+            root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
         elif [ ${samples_unf[i]} == "UNF_TbarW_noFullyHadr" ]; then
-        root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
+            root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TbarW_noFullyHadr_ext2\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
         elif [ ${samples_unf[i]} == "UNF_TTbar2L_powheg_0" ]; then
             root -l -b -q "RunAnalyserPAF.C(\"LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_0 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_1 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_2 & LocalFile:/pool/ciencias/userstorage/sscruz/TW/ntuples_sep28/productionSep28/TTbar2L_powheg_3\", \"$sel\", $2, -10, 0, $xsec, \"Unfolding makeHadd xsec:88.28769753\")"
         else
-        root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
+            root -l -b -q "RunAnalyserPAF.C(\"$unftmppath\", \"$sel\", $2, 0, 0, $xsec, \"Unfolding\")"
         fi
         sleep 5
         resetpaf -a

@@ -30,14 +30,25 @@ else:
 
 def BibhuFunction(dv, df, dfinal, covm):
     for key in dv:
-        print key
+        if key == "LeadingLepPt_asimov": print key
+        
         for bin in range(1, dv[key].GetNbinsX() + 1):
             goodunc = r.TMath.Sqrt( dv[key].GetBinError(bin)**2 / df[key.replace(varName, "Fiducial")].GetBinContent(bin)**2 +
                                     dv[key].GetBinContent(bin)**2 * df[key.replace(varName, "Fiducial")].GetBinError(bin)**2 / df[key.replace(varName, "Fiducial")].GetBinContent(bin)**4 -
                                     2 * dv[key].GetBinContent(bin) / df[key.replace(varName, "Fiducial")].GetBinContent(bin)**3 * sum([covm.GetBinContent(bin, j) for j in range(1, dv[key].GetNbinsX() + 1)]) )
             
             dfinal[key].SetBinError(bin, goodunc)
-            print goodunc, dfinal[key].GetBinContent(bin)
+            #if key == "LeadingLepPt_asimov":
+                #print "dv[key].GetBinError(bin)**2", dv[key].GetBinError(bin)**2
+                #print "df[key.replace(varName, Fiducial)].GetBinContent(bin)**2", df[key.replace(varName, "Fiducial")].GetBinContent(bin)**2
+                #print "df[key.replace(varName, Fiducial)].GetBinContent(bin)**3", df[key.replace(varName, "Fiducial")].GetBinContent(bin)**3
+                #print "df[key.replace(varName, Fiducial)].GetBinContent(bin)**4", df[key.replace(varName, "Fiducial")].GetBinContent(bin)**4
+                #print "df[key.replace(varName, Fiducial)].GetBinError(bin)**2", df[key.replace(varName, "Fiducial")].GetBinError(bin)**2
+                #print "sum([covm.GetBinContent(bin, j) for j in range(1, dv[key].GetNbinsX() + 1)])", sum([covm.GetBinContent(bin, j) for j in range(1, dv[key].GetNbinsX() + 1)])
+                #print "dv[key].GetBinError(bin)**2 / df[key.replace(varName, Fiducial)].GetBinContent(bin)**2 + dv[key].GetBinContent(bin)**2 * df[key.replace(varName, Fiducial)].GetBinError(bin)**2 / df[key.replace(varName, Fiducial)].GetBinContent(bin)**4 - 2 * dv[key].GetBinContent(bin) / df[key.replace(varName, Fiducial)].GetBinContent(bin)**3 * sum([covm.GetBinContent(bin, j) for j in range(1, dv[key].GetNbinsX() + 1)])", dv[key].GetBinError(bin)**2 / df[key.replace(varName, "Fiducial")].GetBinContent(bin)**2 + dv[key].GetBinContent(bin)**2 * df[key.replace(varName, "Fiducial")].GetBinError(bin)**2 / df[key.replace(varName, "Fiducial")].GetBinContent(bin)**4 - 2 * dv[key].GetBinContent(bin) / df[key.replace(varName, "Fiducial")].GetBinContent(bin)**3 * sum([covm.GetBinContent(bin, j) for j in range(1, dv[key].GetNbinsX() + 1)])
+                #print "primero", dv[key].GetBinError(bin)**2 / df[key.replace(varName, "Fiducial")].GetBinContent(bin)**2 + dv[key].GetBinContent(bin)**2 * df[key.replace(varName, "Fiducial")].GetBinError(bin)**2 / df[key.replace(varName, "Fiducial")].GetBinContent(bin)**4
+                #print "segundo", 2 * dv[key].GetBinContent(bin) / df[key.replace(varName, "Fiducial")].GetBinContent(bin)**3 * sum([covm.GetBinContent(bin, j) for j in range(1, dv[key].GetNbinsX() + 1)])
+                #print goodunc, dfinal[key].GetBinContent(bin)
     return
 
 

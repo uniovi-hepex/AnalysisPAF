@@ -100,15 +100,15 @@ def printCovarianceMatrix(tsk):
                            dxs.GetBinContent(bin1) * dxs.GetBinContent(bin2) * dfid.GetBinError(bin1)**2 / dfid.GetBinContent(bin1)**4 -
                            dxs.GetBinContent(bin2) / dfid.GetBinContent(bin1)**3 * sum([covm.GetBinContent(bin1, j) for j in range(1, dxs.GetNbinsX() + 1)]) -
                            dxs.GetBinContent(bin1) / dfid.GetBinContent(bin1)**3 * sum([covm.GetBinContent(bin2, j) for j in range(1, dxs.GetNbinsX() + 1)]) )
-                #if bin1 == bin2: print "bin", bin1, goodunc
+                if bin1 == bin2: print "bin", bin1, goodunc
                 newmat.SetBinContent(bin1, bin2, goodunc)
         
         if normornot:
             newmat.Scale(1, "width"); # THIS IS A COVARIANCE!! Constants that apply to the random variable apply SQUARED to the covariance (and variance)! NOTE: when you have a 2D histo, the scale is already done "two times".
-            #print "\nFiducialnorm"
+            print "\nFiducialnorm"
         varMat["statistical"] = copy.deepcopy(newmat.Clone("statistical"))
-        #for bin in range(1, nominal.GetNbinsX() + 1):
-            #print "bin", bin, newmat.GetBinContent(bin, bin)
+        for bin in range(1, nominal.GetNbinsX() + 1):
+            print "bin", bin, newmat.GetBinContent(bin, bin)
         ffid.Close(); fvar.Close(); del ffid, fvar, dfid, dxs, newmat;
     
     if ty == "folded":
@@ -121,8 +121,12 @@ def printCovarianceMatrix(tsk):
     finalmat = r.TH2F('finalmat', '', nominal.GetNbinsX(), binning, nominal.GetNbinsX(), binning)
     for key in varMat:
         idnx += 1
-        #print idnx, key
+        print idnx, key
+        #print "finalmat.GetNbinsX()", finalmat.GetNbinsX()
+        #print "varMat[key].GetNbinsX()", varMat[key].GetNbinsX()
         finalmat.Add(varMat[key])
+    
+    for bin in range(1, nominal.GetNbinsX() + 1): print "matfinal bin", bin, ":", finalmat.GetBinContent(bin, bin)
     
     if fidornot and ("unfCovMat" in varMat or "statistical" not in varMat): raise RuntimeError("You are calculating the covariance matrix of some fiducial results but you do not have the statistical uncertainties covariance matrix!!!!")
     
