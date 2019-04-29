@@ -9,8 +9,6 @@ print "\nREMEMBER TO RUN THIS WITH A CMSSW INSTALLATION (or with ROOT, Numpy, an
 import numpy as np
 from scipy.stats import chisquare, chi2
 
-sysList = ['', 'tW'] + [syst for syst in vl.systMap]
-
 if (len(sys.argv) > 1):
     varName     = sys.argv[1]
     if sys.argv[1] == 'All':
@@ -116,13 +114,16 @@ def Chi2TestForMultivarNormal(w1, V1, w2, V2):
     if len(w1) != V1.shape[0] or len(w2) != V2.shape[0]: raise RuntimeError("The length of one (or both) array is not the same as the number of lines or columns of its respective covariance matrix.")
     
     dof = len(w1) - 1
+    #V1 = np.diag([ V1[el, el] for el in range(len(w1)) ]) ### FORCED DIAGONALISATION
     invV1 = np.linalg.inv(V1); invV2 = np.linalg.inv(V2)
     W1 = sum(w1); W2 = sum(w2)
-    #print "W1:", W1
-    #print "W2:", W2
+    print "W1:",  W1
+    print "W2:",  W2
+    print "dof:", dof
+    print "pruebina:", invV1.dot(V1)[2, 2]
     # 1) Calculation of MLE of the vector of probabilities of each bin
     p    = np.linalg.inv(W1**2 * invV1 + W2**2 * invV2).dot( W1 * invV1.dot(w1) + W2 * invV2.dot(w2) )
-    #print "el p esti", p
+    print "el p esti", p
     # 2) Calculation of the Pearson's chi-squared test statistic
     est  = ((w1 - W1 * p).dot(invV1)).dot((w1 - W1 * p).transpose()) + ((w2 - W2 * p).dot(invV2)).dot((w2 - W2 * p).transpose())
     
@@ -216,20 +217,20 @@ def GiveMeMyGoodGOFTests(tsk):
     
     #print "\nWOLOLO\n", coses["aMCatNLO"]["covmat"]
     
-    covmatdiagonal = np.diag(np.array(np.linalg.eig(covmat)[0], dtype = np.double))
-    matriztransf   = np.linalg.eig(covmat)[1]
-    res2           = matriztransf.dot(vdata)
-    res2DR         = matriztransf.dot(np.array([coses["DR"]["hist"].GetBinContent(bin) for bin in range(1, coses["DR"]["hist"].GetNbinsX() + 1)], dtype = np.double))
-    covmatres2DR   = (np.linalg.inv(matriztransf).dot(coses["DR"]["covmat"])).dot(matriztransf)
-    res2DS         = matriztransf.dot(np.array([coses["DS"]["hist"].GetBinContent(bin) for bin in range(1, coses["DS"]["hist"].GetNbinsX() + 1)], dtype = np.double))
-    covmatres2DS   = (np.linalg.inv(matriztransf).dot(coses["DS"]["covmat"])).dot(matriztransf)
-    res2aMC        = matriztransf.dot(np.array([coses["aMCatNLO"]["hist"].GetBinContent(bin) for bin in range(1, coses["aMCatNLO"]["hist"].GetNbinsX() + 1)], dtype = np.double))
-    covmatres2aMC  = (np.linalg.inv(matriztransf).dot(coses["aMCatNLO"]["covmat"])).dot(matriztransf)
+    #covmatdiagonal = np.diag(np.array(np.linalg.eig(covmat)[0], dtype = np.double))
+    #matriztransf   = np.linalg.eig(covmat)[1]
+    #res2           = matriztransf.dot(vdata)
+    #res2DR         = matriztransf.dot(np.array([coses["DR"]["hist"].GetBinContent(bin) for bin in range(1, coses["DR"]["hist"].GetNbinsX() + 1)], dtype = np.double))
+    #covmatres2DR   = (np.linalg.inv(matriztransf).dot(coses["DR"]["covmat"])).dot(matriztransf)
+    #res2DS         = matriztransf.dot(np.array([coses["DS"]["hist"].GetBinContent(bin) for bin in range(1, coses["DS"]["hist"].GetNbinsX() + 1)], dtype = np.double))
+    #covmatres2DS   = (np.linalg.inv(matriztransf).dot(coses["DS"]["covmat"])).dot(matriztransf)
+    #res2aMC        = matriztransf.dot(np.array([coses["aMCatNLO"]["hist"].GetBinContent(bin) for bin in range(1, coses["aMCatNLO"]["hist"].GetNbinsX() + 1)], dtype = np.double))
+    #covmatres2aMC  = (np.linalg.inv(matriztransf).dot(coses["aMCatNLO"]["covmat"])).dot(matriztransf)
     
-    hData2 = copy.deepcopy(hData.Clone("hData2"))
-    hDR2   = copy.deepcopy(coses["DR"]["hist"].Clone("hDR2"))
-    hDS2   = copy.deepcopy(coses["DS"]["hist"].Clone("hDS2"))
-    haMC2  = copy.deepcopy(coses["aMCatNLO"]["hist"].Clone("haMC2"))
+    #hData2 = copy.deepcopy(hData.Clone("hData2"))
+    #hDR2   = copy.deepcopy(coses["DR"]["hist"].Clone("hDR2"))
+    #hDS2   = copy.deepcopy(coses["DS"]["hist"].Clone("hDS2"))
+    #haMC2  = copy.deepcopy(coses["aMCatNLO"]["hist"].Clone("haMC2"))
     
     #print res2
     #print res2DR
@@ -239,18 +240,18 @@ def GiveMeMyGoodGOFTests(tsk):
     #print covmatres2DS
     #print covmatres2aMC
     
-    for bin in range(1, hData2.GetNbinsX() + 1):
-        hData2.SetBinContent(bin, res2[bin - 1])
-        hData2.SetBinError(bin, r.TMath.Sqrt(covmatdiagonal[bin-1, bin-1]))
-        hDR2.SetBinContent(bin, res2DR[bin - 1])
-        hDR2.SetBinError(bin, r.TMath.Sqrt(covmatres2DR[bin-1, bin-1]))
-        #print "dif. DR y datos al cuadrao", (hDR2.GetBinContent(bin) - hData2.GetBinContent(bin))**2
-        #print "cov. de datos en este bin", covmatdiagonal[bin-1, bin-1]
-        #print "Cov. de DR en este bin", covmatres2DR[bin-1, bin-1]
-        hDS2.SetBinContent(bin, res2DS[bin - 1])
-        hDS2.SetBinError(bin, r.TMath.Sqrt(covmatres2DS[bin-1, bin-1]))
-        haMC2.SetBinContent(bin, res2aMC[bin - 1])
-        haMC2.SetBinError(bin, r.TMath.Sqrt(covmatres2aMC[bin-1, bin-1]))
+    #for bin in range(1, hData2.GetNbinsX() + 1):
+        #hData2.SetBinContent(bin, res2[bin - 1])
+        #hData2.SetBinError(bin, r.TMath.Sqrt(covmatdiagonal[bin-1, bin-1]))
+        #hDR2.SetBinContent(bin, res2DR[bin - 1])
+        #hDR2.SetBinError(bin, r.TMath.Sqrt(covmatres2DR[bin-1, bin-1]))
+        ##print "dif. DR y datos al cuadrao", (hDR2.GetBinContent(bin) - hData2.GetBinContent(bin))**2
+        ##print "cov. de datos en este bin", covmatdiagonal[bin-1, bin-1]
+        ##print "Cov. de DR en este bin", covmatres2DR[bin-1, bin-1]
+        #hDS2.SetBinContent(bin, res2DS[bin - 1])
+        #hDS2.SetBinError(bin, r.TMath.Sqrt(covmatres2DS[bin-1, bin-1]))
+        #haMC2.SetBinContent(bin, res2aMC[bin - 1])
+        #haMC2.SetBinError(bin, r.TMath.Sqrt(covmatres2aMC[bin-1, bin-1]))
     
     #print "\nPRUEBINA", ty
     #print 'DR - p-val.:',        hData2.KolmogorovTest(hDR2)
@@ -280,20 +281,36 @@ def GiveMeMyGoodGOFTests(tsk):
     #print "estad.:", estad
     #print "p-valor:", 1 - chi2.cdf(estad, hData.GetNbinsX() - 1)
     
-    #print "Lo mismo pero no en lo de aquello\n"
+    #print "\nLo mismo pero no en lo de aquello"
     #estad = ((vdata - np.array([coses["DR"]["hist"].GetBinContent(bin) for bin in range(1, coses["DR"]["hist"].GetNbinsX() + 1)], dtype = np.double)).dot(np.linalg.inv(covmat))).dot((vdata - np.array([coses["DR"]["hist"].GetBinContent(bin) for bin in range(1, coses["DR"]["hist"].GetNbinsX() + 1)], dtype = np.double)).transpose())
     #print "estad.:", estad
     #print "p-valor:", 1 - chi2.cdf(estad, hData.GetNbinsX() - 1)
     
     #sys.exit()
     
+    ## Valores de atlas manualmente: (E(b))
+    #ATLASdata = np.array([ 0.00438, 0.00613, 0.00474, 0.00252, 0.00103 ], dtype = np.double)
+    #ATLASmc   = np.array([ 0.0054, 0.0075, 0.005, 0.003, 0.0006 ], dtype = np.double)
+    #ATLAScov  = np.diag(([ 0.41, 0.34, 0.44, 0.53, 0.18 ] * ATLASdata)**2)
+    
+    #pv, es = Chi2TestForMultivarNormal(ATLASdata, ATLAScov, ATLASmc, ATLAScov)
+    #print "pv:", pv, "est", es
+    #sys.exit()
+    
+    
     for key in coses:
         vtemp = np.array([coses[key]["hist"].GetBinContent(bin) for bin in range(1, coses[key]["hist"].GetNbinsX() + 1)], dtype = np.double)
-        #print "\ncomprobacion de lo que-y metemos al alg."
-        #print "covmat datos bin 1", covmat[0,0]
-        #print "datos", vdata
-        #print "covmat MC bin 1", coses[key]["covmat"][0,0]
-        #print "mc", vtemp
+        print "\ncomprobacion de lo que-y metemos al alg."
+        print "covmat datos bin 1", covmat[0,0]
+        print "covmat datos bin 2", covmat[1,1]
+        print "covmat datos bin 3", covmat[2,2]
+        print "covmat datos bin 4", covmat[3,3]
+        print "datos", vdata
+        print "covmat MC bin 1", coses[key]["covmat"][0,0]
+        print "covmat MC bin 2", coses[key]["covmat"][1,1]
+        print "covmat MC bin 3", coses[key]["covmat"][2,2]
+        print "covmat MC bin 4", coses[key]["covmat"][3,3]
+        print "mc", vtemp
         pv, es = Chi2TestForMultivarNormal(vdata, covmat, vtemp, coses[key]["covmat"])
         coses[key]["p-value"]   = pv
         coses[key]["statistic"] = es
