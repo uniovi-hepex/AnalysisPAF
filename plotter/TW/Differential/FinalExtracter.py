@@ -50,6 +50,13 @@ def getXsecForSys(syst, tfile):
         data.Add(oldandgoodttbar, -1)
         data.Add(ttbarclone,      +1)
         del ttbarclone, oldandgoodttbar
+    elif ('mtop' in syst):
+        ttbarclone = copy.deepcopy(ttbar.Clone("ttbarclone"))
+        oldandgoodttbar = tfile.Get('ttbar')
+        for bin in range(1, data.GetNbinsX() + 1):
+            ttbarclone.SetBinContent(bin, oldandgoodttbar.GetBinContent(bin) + (ttbar.GetBinContent(bin) - oldandgoodttbar.GetBinContent(bin)) / 3.)
+        data.Add(ttbarclone,      -1)
+        del ttbarclone, oldandgoodttbar
     elif ("twttbar" not in varName.lower()): data.Add( ttbar , -1 )
     
     data.Add(dy       , -1 )
@@ -125,9 +132,9 @@ def getLumiUnc(tfile):
 tfile   = r.TFile.Open('temp/{var}_/forCards_{var}.root'.format(var = varName), "read")
 sysList = []
 
-sysList += vl.varList['Names']['ExpSysts'] + vl.varList['Names']['ttbarSysts'] + vl.varList['Names']['colorSysts'] + vl.varList['Names']['specialSysts'] + ['DSUp', 'LumiUp', 'LumiDown', 'fsrUp', 'fsrDown', 'isrUp', 'isrDown', 'tWMEUp', 'tWMEDown'] + vl.varList['Names']['NormSysts']
+sysList += vl.varList['Names']['ExpSysts'] + vl.varList['Names']['ttbarSysts'] + vl.varList['Names']['colorSysts'] + vl.varList['Names']['specialSysts'] + ['DSUp', 'LumiUp', 'LumiDown', 'fsrUp', 'fsrDown', 'isrUp', 'isrDown', 'tWMEUp', 'tWMEDown', "mtopUp", "mtopDown"] + vl.varList['Names']['NormSysts']
 
-if "twttbar" in varName.lower(): 
+if "twttbar" in varName.lower():
     sysList.remove("ttbarUp"); sysList.remove("ttbarDown")
 nominal = getXsecForSys('', tfile)
 variations = {}
