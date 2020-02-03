@@ -19,6 +19,7 @@ Datasets/
 inputdata.root
 plotter/TW/Differential/temp/*
 plotter/TW/Differential/results/*
+plotter/TW/slurm-*
 plotter/TWTTbar/temp/*
 plotter/TWTTbar/results/*
 plotter/TWTTbar/logs/*
