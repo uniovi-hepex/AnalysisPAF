@@ -23,6 +23,7 @@ plotter/TW/slurm-*
 plotter/TWTTbar/temp/*
 plotter/TWTTbar/results/*
 plotter/TWTTbar/logs/*
+out_*.txt
 
 #Higgs combine output :)
 higgsCombine*.root
