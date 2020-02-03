@@ -165,7 +165,8 @@ def printCovarianceMatrix(tsk):
     finalmat.Draw("colz text{s}".format(s = vl.varList[var]['covtxtangle'] if 'covtxtangle' in vl.varList[var] and ty == "folded" else vl.varList[var]['covtxtangleunf'] if ('covtxtangleunf' in vl.varList[var] and ty == "unfolded" and not fidornot) else vl.varList[var]['covtxtangleunffid'] if ('covtxtangleunffid' in vl.varList[var] and fidornot and not normornot) else vl.varList[var]['covtxtangleunffidnorm'] if ('covtxtangleunffidnorm' in vl.varList[var] and normornot) else ""))
     r.gPad.Update()
     CMS_lumi.lumi_13TeV = ""
-    CMS_lumi.extraText  = 'Simulation Supplementary'
+    #CMS_lumi.extraText  = 'Simulation Supplementary'
+    CMS_lumi.extraText  = 'Simulation Preliminary'
     CMS_lumi.lumi_sqrtS = ''
     #CMS_lumi.cmsTextSize += 0.1
     CMS_lumi.CMS_lumi(r.gPad, 0, 0, 0.05)

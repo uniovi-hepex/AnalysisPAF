@@ -304,10 +304,10 @@ class Unfolder():
         print 'Unfolded distribution integral', data.Integral()
         plot = bp.beautifulUnfoldingPlots(self.var)
         data.SetMarkerStyle(r.kFullCircle)
-        data.GetXaxis().SetNdivisions(505,True)
+        data.GetXaxis().SetNdivisions(510,True)
         plot.plotspath       = self.plotspath
         plot.doPreliminary   = vl.doPre
-        plot.doSupplementary = True
+        plot.doSupplementary = False
         
         if self.doSanityCheck:
             if not os.path.isfile('temp/{var}_/ClosureTest_{var}.root'.format(var = self.var)):
@@ -502,13 +502,13 @@ class Unfolder():
             #covithree.Write()
             savetfile.Close()
         
-        if not self.wearedoingasimov: nominal_withErrors = ep.propagateHistoAsym(nominal, allHistos, self.doColorEnvelope, True)
-        else:                         nominal_withErrors = ep.propagateHistoAsym(nominal, allHistos, self.doColorEnvelope)
+        if not self.wearedoingasimov: nominal_withErrors = ep.propagateHistoAsym(nominal, allHistos, self.doColorEnvelope, True, doSym = vl.doSym)
+        else:                         nominal_withErrors = ep.propagateHistoAsym(nominal, allHistos, self.doColorEnvelope, doSym = vl.doSym)
         plot               = bp.beautifulUnfoldingPlots(self.var + "_asimov"  if self.wearedoingasimov else self.var)
         plot.doRatio       = True
         plot.doFit         = False
         plot.doPreliminary  = vl.doPre
-        plot.doSupplementary = True
+        plot.doSupplementary = False
         plot.plotspath     = self.plotspath
         
         nominal.SetMarkerStyle(r.kFullCircle)
@@ -518,6 +518,8 @@ class Unfolder():
         nominal_withErrors[0].SetLineColor(0)
         nominal_withErrors[0].SetFillStyle(1001)
         
+        if "yaxisuplimitunf" in vl.varList[self.var]: plot.yaxisuplimit = vl.varList[self.var]["yaxisuplimitunf"]
+
         if not self.wearedoingasimov:
             savetfile2 = r.TFile("temp/{var}_/unfOutput_{var}.root".format(var = self.var), "update")
             nom0 = copy.deepcopy(nominal_withErrors[0].Clone("nom0"))
@@ -547,7 +549,7 @@ class Unfolder():
             tru.SetLineWidth(2)
             tru.SetLineColor(bp.colorMap[0])
             
-            print "tW DR", tru.GetBinContent(1)
+            #print "tW DR", tru.GetBinContent(1)
             
             if not os.path.isfile('temp/{var}_/ClosureTest_aMCatNLO_{var}.root'.format(var = self.var)):
                 raise RuntimeError('The rootfile with the generated information from an aMCatNLO sample does not exist.')
@@ -557,7 +559,7 @@ class Unfolder():
             aMCatNLO.SetLineColor(r.kAzure)
             aMCatNLO.SetLineStyle(2)
             
-            print "tW aMCatNLO DR", aMCatNLO.GetBinContent(1)
+            #print "tW aMCatNLO DR", aMCatNLO.GetBinContent(1)
             
             if not os.path.isfile('temp/{var}_/ClosureTest_DS_{var}.root'.format(var = self.var)):
                 raise RuntimeError('The rootfile with the generated information with the DS variation does not exist.')
@@ -566,7 +568,7 @@ class Unfolder():
             hDS.SetLineWidth(2)
             hDS.SetLineColor(r.kGreen)
             
-            print "tW DS", hDS.GetBinContent(1)
+            #print "tW DS", hDS.GetBinContent(1)
             #sys.exit()
             plot.addHisto(nominal_withErrors, 'hist',   'Uncertainty',   'F', 'unc')
             plot.addHisto(tru,                'L,same', 'tW Powheg DR + Pythia8',   'L', 'mc')
@@ -589,7 +591,7 @@ class Unfolder():
         plot2       = bp.beautifulUnfoldingPlots(self.var + 'uncertainties_asimov' if self.wearedoingasimov else self.var + 'uncertainties')
         plot2.doFit = False
         plot2.doPreliminary   = vl.doPre
-        plot2.doSupplementary = True
+        plot2.doSupplementary = False
         if not self.wearedoingasimov: uncListorig = ep.getUncList(nominal, allHistos, self.doColorEnvelope, False, True)
         else:                         uncListorig = ep.getUncList(nominal, allHistos, self.doColorEnvelope, False)
         print 'Full uncertainties list (ordered by impact):', uncListorig
@@ -640,7 +642,10 @@ class Unfolder():
         #else:
             #uncList[0][1].GetYaxis().SetRangeUser(0, 0.9)
         
-        hincmax.GetYaxis().SetRangeUser(0, 2.0)
+        yaxismax_unc = 2
+        if "yaxismax_unf" in vl.varList[self.var]: yaxismax_unc = vl.varList[self.var]["yaxismax_unf"]
+
+        hincmax.GetYaxis().SetRangeUser(0, yaxismax_unc)
         plot2.addHisto(hincmax,  'hist', 'Total', 'L')
         plot2.addHisto(hincsyst, 'hist,same', 'Systematic', 'L')
         actualindex = 0

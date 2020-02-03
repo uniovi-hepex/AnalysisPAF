@@ -30,7 +30,7 @@ else:
 
 def BibhuFunction(dv, df, dfinal, covm):
     for key in dv:
-        if key == "LeadingLepPt_asimov": print key
+        #if key == "LeadingLepPt_asimov": print key
         
         for bin in range(1, dv[key].GetNbinsX() + 1):
             goodunc = r.TMath.Sqrt( dv[key].GetBinError(bin)**2 / df[key.replace(varName, "Fiducial")].GetBinContent(bin)**2 +
@@ -70,7 +70,7 @@ for key in ffid.GetListOfKeys():
 
 for key in fvar.GetListOfKeys():
     if varName not in key.GetName(): continue
-    dirvar[key.GetName()] = copy.deepcopy(key.ReadObj())
+    dirvar[key.GetName()] = copy.deepcopy(key.ReadObj().Clone(key.GetName()))
 
 covmat = copy.deepcopy(fvar.Get("CovMat").Clone("covmat"))
 
@@ -84,7 +84,7 @@ for key in dirvar:
 
 
 BibhuFunction(dirvar, dirfid, dirfinal, covmat)
-del dirfid, dirvar
+del dirfid
 
 nominal   = copy.deepcopy(dirfinal[varName])
 allHistos = { key.replace(varName + "_", "") : dirfinal[key] for key in dirfinal}
@@ -96,7 +96,7 @@ nominal.Write()
 for key in allHistos: allHistos[key].Write()
 savetfile.Close(); del savetfile
 
-nominal_withErrors = ep.propagateHistoAsym(nominal, allHistos, True, False)
+nominal_withErrors = ep.propagateHistoAsym(nominal, allHistos, True, False, doSym = vl.doSym)
 plot               = bp.beautifulUnfoldingPlots(varName + "_fiducial")
 plot.doRatio       = True
 plot.doFit         = False
@@ -109,6 +109,7 @@ nominal_withErrors[0].SetFillColorAlpha(r.kBlue, 0.35)
 nominal_withErrors[0].SetLineColor(0)
 nominal_withErrors[0].SetFillStyle(1001)
 
+
 savetfile2 = r.TFile("temp/{var}_/fidOutput_{var}.root".format(var = varName), "update")
 nom0 = copy.deepcopy(nominal_withErrors[0].Clone("nom0"))
 nom1 = copy.deepcopy(nominal_withErrors[1].Clone("nom1"))
@@ -117,7 +118,7 @@ nom1.Write()
 savetfile2.Close(); del nom0,nom1,savetfile2
 
 #############################
-print "\nLOS RESULTAOS - {uno} - {dos}".format(uno = "DATOS", dos = varName)
+print "\nLOS RESULTAOS NORMALIZAOS A SECCION EF. FID. - {uno} - {dos}".format(uno = "DATOS", dos = varName)
 for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
     print "Bin", bin, "(abs.): (", round(nominal.GetBinContent(bin), 4), "+", round(nominal_withErrors[0].GetBinError(bin), 4), "-", round(nominal_withErrors[1].GetBinError(bin), 4), ") pb"
     print "Bin", bin, "(rel.): (", round(nominal.GetBinContent(bin), 4), "+", round(nominal_withErrors[0].GetBinError(bin)/nominal.GetBinContent(bin)*100, 4), "-", round(nominal_withErrors[1].GetBinError(bin)/nominal.GetBinContent(bin)*100, 4), ") pb\n"
@@ -127,6 +128,9 @@ print "\n"
 if "legpos_fid" in vl.varList[varName]: legloc = vl.varList[varName]["legpos_fid"]
 else:                                   legloc = "TR"
 
+yaxismax_fid = 1.4
+if "yaxismax_fid" in vl.varList[varName]: yaxismax_fid = vl.varList[varName]["yaxismax_fid"]
+else:                                     yaxismax_fid = 1.4
 
 if not os.path.isfile('temp/{var}_/ClosureTest_{var}.root'.format(var = varName)):
     raise RuntimeError('The rootfile with the generated information does not exist.')
@@ -256,7 +260,7 @@ for i in range(vl.nuncs):
     if "Lumi" in uncListorig[actualindex][0]:
         uncListorig[actualindex][1].SetLineColor(r.kBlack)
         uncListorig[actualindex][1].SetLineStyle( 4 )
-    if i == 0: uncListorig[actualindex][1].GetYaxis().SetRangeUser(0, 1.4)
+    if i == 0: uncListorig[actualindex][1].GetYaxis().SetRangeUser(0, yaxismax_fid)
     plot2.addHisto(uncListorig[actualindex][1], 'H,same' if i else 'H', uncListorig[actualindex][0],'L')
     actualindex += 1
 
@@ -279,6 +283,10 @@ del plot2
 print "> Fiducial vainas done!"
 print "> Now let's obtain the same plots normalised but also divided by the bin's width!!"
 
+yaxismax_fidnorm = 1.4
+if "yaxismax_fidnorm" in vl.varList[varName]: yaxismax_fidnorm = vl.varList[varName]["yaxismax_fidnorm"]
+else:                                         yaxismax_fidnorm = 1.4
+
 del nominal_withErrors, tru, aMCatNLO, hDS
 nominal.Scale(1, "width")
 for key in allHistos:
@@ -291,7 +299,7 @@ for key in allHistos: allHistos[key].Write()
 savetfile2.Close(); del savetfile2
 
 
-nominal_withErrors = ep.propagateHistoAsym(nominal, allHistos, True, False)
+nominal_withErrors = ep.propagateHistoAsym(nominal, allHistos, True, False, doSym = vl.doSym)
 plot               = bp.beautifulUnfoldingPlots(varName + "_fiducialnorm")
 plot.doRatio       = True
 plot.doFit         = False
@@ -304,12 +312,18 @@ nominal_withErrors[0].SetFillColorAlpha(r.kBlue, 0.35)
 nominal_withErrors[0].SetLineColor(0)
 nominal_withErrors[0].SetFillStyle(1001)
 
+if "yaxisuplimitunffidnorm" in vl.varList[varName]: plot.yaxisuplimit = vl.varList[varName]["yaxisuplimitunffidnorm"]
 
 #############################
 print "\nLOS RESULTAOS NORMALIZAOS A SEC. EF. FID. Y POR BIN- {uno} - {dos}".format(uno = "DATOS", dos = varName)
+comprobasao = 0
 for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
     print "Bin", bin, "(abs.): (", round(nominal.GetBinContent(bin), 6), "+", round(nominal_withErrors[0].GetBinError(bin), 6), "-", round(nominal_withErrors[1].GetBinError(bin), 6), ") pb"
     print "Bin", bin, "(rel.): (", round(nominal.GetBinContent(bin), 6), "+", round(nominal_withErrors[0].GetBinError(bin)/nominal.GetBinContent(bin)*100, 6), "-", round(nominal_withErrors[1].GetBinError(bin)/nominal.GetBinContent(bin)*100, 6), ") pb\n"
+    comprobasao += nominal.GetBinContent(bin) * nominal.GetBinWidth(bin)
+print "Comprobasao:", comprobasao, "\n"
+print "Underflow:", nominal.GetBinContent(0)
+print "Overflow:",  nominal.GetBinContent(nominal.GetNbinsX() + 1)
 print "\n"
 #############################
 
@@ -383,7 +397,7 @@ del plot
 plot2       = bp.beautifulUnfoldingPlots(varName + 'uncertainties_fiducialnorm')
 plot2.doFit = False
 plot2.doPreliminary = vl.doPre
-uncListorig     = ep.getUncList(nominal, allHistos, True, False, False)
+uncListorig = ep.getUncList(nominal, allHistos, True, False, False)
 print 'Full uncertainties list (ordered by impact):', uncListorig
 uncList     = uncListorig[:vl.nuncs]
 
@@ -433,7 +447,7 @@ hincsyst.SetFillColorAlpha(r.kBlue, 0.)
     #uncList[0][1].GetYaxis().SetRangeUser(0, 0.9)
 
 
-hincmax.GetYaxis().SetRangeUser(0, 1.4)
+hincmax.GetYaxis().SetRangeUser(0, yaxismax_fidnorm)
 plot2.addHisto(hincmax,  'hist', 'Total', 'L')
 plot2.addHisto(hincsyst, 'hist,same', 'Systematic', 'L')
 actualindex = 0
@@ -481,5 +495,231 @@ del plot2
 
 
 print "> Fiducial vainas but also normalised per bin width done!"
+print "> Now let's obtain the same plots only normalised to the bin width!!"
+del nominal, nominal_withErrors, tru, aMCatNLO, hDS, allHistos
+
+nominal   = copy.deepcopy(dirvar[varName])
+allHistos = { key.replace(varName + "_", "") : dirvar[key] for key in dirvar}
+del allHistos[varName]
+
+nominal.Scale(1, "width")
+for key in allHistos:
+    allHistos[key].Scale(1, "width")
+
+savetfile = r.TFile("temp/{var}_/normOutput_{var}.root".format(var = varName), "recreate")
+nominal.Write()
+for key in allHistos: allHistos[key].Write()
+savetfile.Close()
 
 
+nominal_withErrors = ep.propagateHistoAsym(nominal, allHistos, True, False, doSym = vl.doSym)
+plot               = bp.beautifulUnfoldingPlots(varName + "_norm")
+plot.doRatio       = True
+plot.doFit         = False
+plot.plotspath     = 'results/'
+plot.doPreliminary = vl.doPre
+
+if "yaxisuplimitunfnorm" in vl.varList[varName]: plot.yaxisuplimit = vl.varList[varName]["yaxisuplimitunfnorm"]
+
+nominal.SetMarkerStyle(r.kFullCircle)
+nominal.SetLineColor(r.kBlack)
+nominal_withErrors[0].SetFillColorAlpha(r.kBlue, 0.35)
+nominal_withErrors[0].SetLineColor(0)
+nominal_withErrors[0].SetFillStyle(1001)
+
+
+savetfile1 = r.TFile("temp/{var}_/normOutput_{var}.root".format(var = varName), "update")
+nom0 = copy.deepcopy(nominal_withErrors[0].Clone("nom0"))
+nom1 = copy.deepcopy(nominal_withErrors[1].Clone("nom1"))
+nom0.Write()
+nom1.Write()
+savetfile1.Close()
+
+
+#############################
+print "\nLOS RESULTAOS NORMALIZAOS A ANCHO DEL BIN - {uno} - {dos}".format(uno = "DATOS", dos = varName)
+
+comprobasao = 0
+
+for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
+    print "Bin", bin, "(abs.): (", round(nominal.GetBinContent(bin), 5), "+", round(nominal_withErrors[0].GetBinError(bin), 5), "-", round(nominal_withErrors[1].GetBinError(bin), 5), ") pb"
+    print "Bin", bin, "(rel.): (", round(nominal.GetBinContent(bin), 4), "+", round(nominal_withErrors[0].GetBinError(bin)/nominal.GetBinContent(bin)*100, 5), "-", round(nominal_withErrors[1].GetBinError(bin)/nominal.GetBinContent(bin)*100, 5), ") pb\n"
+#############################
+
+
+
+if "legpos_norm" in vl.varList[varName]: legloc = vl.varList[varName]["legpos_norm"]
+else:                                    legloc = "TR"
+
+yaxismax_norm = 1.4
+if "yaxismax_norm" in vl.varList[varName]: yaxismax_norm = vl.varList[varName]["yaxismax_norm"]
+else:                                      yaxismax_norm = 1.4
+
+if not os.path.isfile('temp/{var}_/ClosureTest_{var}.root'.format(var = varName)):
+    raise RuntimeError('The rootfile with the generated information does not exist.')
+tmptfile = r.TFile.Open('temp/{var}_/ClosureTest_{var}.root'.format(var = varName))
+tru = copy.deepcopy(tmptfile.Get('tW').Clone('tru'))
+tru.SetLineWidth(2)
+tru.SetLineColor(bp.colorMap[0])
+tru.Scale(1, "width")
+tmptfile.Close(); del tmptfile
+
+if not os.path.isfile('temp/{var}_/ClosureTest_aMCatNLO_{var}.root'.format(var = varName)):
+    raise RuntimeError('The rootfile with the generated information from an aMCatNLO sample does not exist.')
+tmptfile2 = r.TFile.Open('temp/{var}_/ClosureTest_aMCatNLO_{var}.root'.format(var = varName))
+aMCatNLO = copy.deepcopy(tmptfile2.Get('tW').Clone('aMCatNLO'))
+aMCatNLO.SetLineWidth(2)
+aMCatNLO.SetLineColor(r.kAzure)
+aMCatNLO.SetLineStyle(2)
+aMCatNLO.Scale(1, "width")
+tmptfile2.Close(); del tmptfile2
+
+if not os.path.isfile('temp/{var}_/ClosureTest_DS_{var}.root'.format(var = varName)):
+    raise RuntimeError('The rootfile with the generated information with the DS variation does not exist.')
+tmptfile3 = r.TFile.Open('temp/{var}_/ClosureTest_DS_{var}.root'.format(var = varName))
+hDS = copy.deepcopy(tmptfile3.Get('tW').Clone('hDS'))
+hDS.SetLineWidth(2)
+hDS.SetLineColor(r.kGreen)
+hDS.Scale(1, "width")
+tmptfile3.Close(); del tmptfile3
+
+
+savetfile2 = r.TFile("temp/{var}_/normOutput_{var}.root".format(var = varName), "update")
+tru.Write()
+aMCatNLO.Write()
+hDS.Write()
+savetfile2.Close(); del savetfile2
+
+plot.addHisto(nominal_withErrors, 'hist',   'Uncertainty',              'F', 'unc')
+plot.addHisto(tru,                'L,same', 'tW Powheg DR + Pythia8',   'L', 'mc')
+plot.addHisto(hDS,                'L,same', 'tW Powheg DS + Pythia8',   'L', 'mc')
+plot.addHisto(aMCatNLO,           'L,same', 'tW aMC@NLO DR + Pythia8',  'L', 'mc')
+plot.addHisto(nominal,            'P,E,same',vl.labellegend,          'PEL', 'data')
+plot.saveCanvas(legloc)
+
+#plot.addHisto(nominal_withErrors, 'E2',     'Uncertainty',   'F')
+#plot.addHisto(nominal, 'P,same',vl.labellegend,'PE', 'data')
+#plot.saveCanvas(legloc)
+
+del plot
+
+plot2       = bp.beautifulUnfoldingPlots(varName + 'uncertainties_norm')
+plot2.doFit = False
+plot2.doPreliminary = vl.doPre
+uncListorig     = ep.getUncList(nominal, allHistos, True, False, False)
+print 'Full uncertainties list (ordered by impact):', uncListorig
+uncList     = uncListorig[:vl.nuncs]
+
+incmax  = []
+for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
+    if nominal_withErrors[1].GetBinError(bin) > nominal_withErrors[0].GetBinContent(bin):
+        incmax.append(max([nominal_withErrors[0].GetBinError(bin), nominal_withErrors[0].GetBinContent(bin)]))
+    else:
+        incmax.append(max([nominal_withErrors[0].GetBinError(bin), nominal_withErrors[1].GetBinError(bin)]))
+
+incsyst  = []
+for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
+    if math.sqrt(nominal_withErrors[1].GetBinError(bin)**2 - nominal.GetBinError(bin)**2) > nominal_withErrors[0].GetBinContent(bin):
+        incsyst.append(max([math.sqrt(nominal_withErrors[0].GetBinError(bin)**2 - nominal.GetBinError(bin)**2),
+                            nominal_withErrors[0].GetBinContent(bin)]))
+    else:
+        incsyst.append(max([math.sqrt(nominal_withErrors[0].GetBinError(bin)**2 - nominal.GetBinError(bin)**2),
+                            math.sqrt(nominal_withErrors[1].GetBinError(bin)**2 - nominal.GetBinError(bin)**2)]))
+
+maxinctot = 0
+hincmax   = nominal_withErrors[0].Clone('hincmax')
+for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
+    hincmax.SetBinContent(bin, incmax[bin-1] / hincmax.GetBinContent(bin))
+    hincmax.SetBinError(bin, 0)
+    if (hincmax.GetBinContent(bin) > maxinctot): maxinctot = hincmax.GetBinContent(bin)
+
+hincsyst  = copy.deepcopy(nominal.Clone('hincsyst'))
+for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
+    hincsyst.SetBinContent(bin, incsyst[bin-1] / hincsyst.GetBinContent(bin))
+    hincsyst.SetBinError(bin, 0.)
+
+hincmax.SetLineColor(r.kBlack)
+hincmax.SetLineWidth( 2 )
+hincmax.SetFillColorAlpha(r.kBlue, 0)
+hincsyst.SetLineColor(r.kBlack)
+hincsyst.SetLineWidth( 2 )
+hincsyst.SetLineStyle( 3 )
+hincsyst.SetFillColorAlpha(r.kBlue, 0.)
+
+#if (maxinctot >= 0.9):
+    #if maxinctot >= 5:
+        #uncList[0][1].GetYaxis().SetRangeUser(0, 5)
+    #else:
+        #uncList[0][1].GetYaxis().SetRangeUser(0, maxinctot + 0.1)
+
+#else:
+    #uncList[0][1].GetYaxis().SetRangeUser(0, 0.9)
+
+
+actualindex = 0
+hincmax.GetYaxis().SetRangeUser(0, yaxismax_norm)
+plot2.addHisto(hincmax,  'hist', 'Total', 'L')
+plot2.addHisto(hincsyst, 'hist,same', 'Systematic', 'L')
+#for i in range(vl.nuncs):
+    ##if "Stat" in uncListorig[i][0]:
+        ##uncListorig[actualindex][1].SetLineColor(r.kBlack)
+        ##uncListorig[actualindex][1].SetLineStyle( 2 )
+    #if "Stat" in uncListorig[actualindex][0]:
+        #actualindex += 1
+    #uncListorig[actualindex][1].SetLineColor( vl.NewColorMap[uncListorig[actualindex][0]] )
+    #uncListorig[actualindex][1].SetLineWidth( 2 )
+    #if "Lumi" in uncListorig[actualindex][0]:
+        #uncListorig[actualindex][1].SetLineColor(r.kBlack)
+        #uncListorig[actualindex][1].SetLineStyle( 4 )
+    #if i == 0: uncListorig[actualindex][1].GetYaxis().SetRangeUser(0, yaxismax_fid)
+    #plot2.addHisto(uncListorig[actualindex][1], 'H,same' if i else 'H', vl.SysNameTranslator[uncListorig[actualindex][0]],'L')
+    #actualindex += 1
+
+for i in range(vl.nuncs):
+    #if "Stat" in uncListorig[i][0]:
+        #uncListorig[actualindex][1].SetLineColor(r.kBlack)
+        #uncListorig[actualindex][1].SetLineStyle( 2 )
+    #if "Stat" in uncListorig[actualindex][0]:
+        #actualindex += 1
+    uncListorig[actualindex][1].SetLineColor( vl.NewColorMap[uncListorig[actualindex][0]] )
+    uncListorig[actualindex][1].SetLineWidth( 2 )
+    if "Lumi" in uncListorig[actualindex][0]:
+        uncListorig[actualindex][1].SetLineColor(r.kBlack)
+        uncListorig[actualindex][1].SetLineStyle( 4 )
+    if "Stat" in uncListorig[actualindex][0]:
+        isstat = True
+        uncListorig[actualindex][1].SetLineColor(r.kBlack)
+        uncListorig[actualindex][1].SetLineStyle( 2 )
+        plot2.addHisto(uncListorig[actualindex][1], 'hist,same', vl.SysNameTranslator[uncListorig[actualindex][0]], 'L')
+        actualindex += 1
+    elif (not isstat and actualindex == vl.nuncs - 1):
+        isstat = True
+        for j in range(len(uncListorig)):
+            if "Stat" in uncListorig[j][0]:
+                uncListorig[j][1].SetLineColor(r.kBlack)
+                uncListorig[j][1].SetLineStyle( 2 )
+                plot2.addHisto(uncListorig[j][1], 'hist,same', vl.SysNameTranslator[uncListorig[j][0]], 'L')
+    else:
+        plot2.addHisto(uncListorig[actualindex][1], 'H,same', vl.SysNameTranslator[uncListorig[actualindex][0]],'L')
+    actualindex += 1
+
+#for i in range(len(uncListorig)):
+    #if "Stat" in uncListorig[i][0]:
+        #uncListorig[i][1].SetLineColor(r.kBlack)
+        #uncListorig[i][1].SetLineStyle( 2 )
+        #plot2.addHisto(uncListorig[i][1], 'hist,same', 'Stat.', 'L')
+#plot2.addHisto(hincsyst, 'hist,same', 'Syst.', 'L')
+#plot2.addHisto(hincmax,  'hist,same', 'Total', 'L')
+plot2.plotspath = "results/"
+
+if "uncleg_norm" in vl.varList[varName]: unclegpos = vl.varList[varName]["uncleg_norm"]
+else:                                    unclegpos = "TR"
+
+plot2.saveCanvas(unclegpos)
+del plot2
+
+
+savetfile3 = r.TFile("temp/{var}_/normOutput_{var}.root".format(var = varName), "update")
+hincmax.Write()
+hincsyst.Write()
+savetfile3.Close(); del savetfile3

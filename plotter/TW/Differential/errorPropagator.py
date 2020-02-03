@@ -9,32 +9,27 @@ def quadSum(elements):
 
 
 def GetMaxUnc(nominal, uncUp, uncDown):
-    return max( map(lambda x : x*x, [nominal - uncUp, nominal - uncDown]))
+    return max(map(lambda x : x*x, [nominal - uncUp, nominal - uncDown]))
+
+
+def GetSymUnc(nominal, uncUp, uncDown):
+    return vl.mean([abs(nominal - uncUp), abs(nominal - uncDown)])**2 # Applying the AVERAGE of the uncs.
+    #return max    ([abs(nominal - uncUp), abs(nominal - uncDown)])**2 # Applying the MAXIMUM of the uncs.
 
 
 def propagateQuantity(nom, varDict, case = 0):
     tot = 0.
-    if case == 0:
-        for key in varDict: 
+    if case == 0: ### Symmetric case
+        for key in varDict:
             if 'Down' in key: continue
             if not 'Up' in key:
                 raise RuntimeError('Use case is not supported yet. Syst %s is not supported'%key)
 
-            if key.replace('Up','Down') in varDict:
-                tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])
+            if key.replace('Up', 'Down') in varDict:
+                tot = tot + GetSymUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])
             else:
-                tot = tot + max( map(lambda x : x*x, [nom - varDict[key]]))
-            
-            #if key.replace('Up','Down') in varDict:
-                #if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
-                    #tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])/2
-                #else:
-                    #tot = tot + GetMaxUnc(nom, varDict[key], varDict[key.replace('Up', 'Down')])
-            #else:
-                #if 'fsr' in key or 'FSR' in key or 'isr' in key or 'ISR' in key:
-                    #tot = tot + max( map(lambda x : x*x, [nom - varDict[key]]))/2
-                #else:
-                    #tot = tot + max( map(lambda x : x*x, [nom - varDict[key]]))
+                tot = tot + (nom - varDict[key])**2
+
     elif case > 0:
         for key in varDict: 
             if 'Down' in key: continue
@@ -118,7 +113,8 @@ def propagateHisto( nom, varDict, doEnv = False ):
     return out
 
 
-def propagateHistoAsym(nom, varDict, doEnv = False, doAsimov = False):
+def propagateHistoAsym(nom, varDict, doEnv = False, doAsimov = False, doSym = False):
+    ### Introducimos la simetrizacion aqui porque en la otra no esta todo lo nuevo.
     outUp   = nom.Clone(nom.GetName() + '_uncUp')
     outDown = nom.Clone(nom.GetName() + '_uncDown')
     
@@ -145,9 +141,14 @@ def propagateHistoAsym(nom, varDict, doEnv = False, doAsimov = False):
                     del tmpDict[key]
             if doAsimov: valasimov = hasimov.GetBinError(bin)
             if 'asimov' in varDict: del tmpDict['asimov']
-            
-            outUp.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, +1), err, tmpuncUp, valasimov]))
-            outDown.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, -1), err, abs(tmpuncDown), valasimov]))
+
+            if doSym:
+                meanEnv   = vl.mean([tmpuncUp, abs(tmpuncDown)])
+                totsymunc = quadSum([propagateQuantity(cont, tmpDict, 0), err, meanEnv, valasimov])
+                outUp.SetBinError(bin, totsymunc); outDown.SetBinError(bin, totsymunc)
+            else:
+                outUp.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, +1), err, tmpuncUp, valasimov]))
+                outDown.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, -1), err, abs(tmpuncDown), valasimov]))
     else:
         for bin in range(1, nom.GetNbinsX() + 1):
             err     = outUp.GetBinError(bin)    # <==  Fit unc. taken here
@@ -155,8 +156,13 @@ def propagateHistoAsym(nom, varDict, doEnv = False, doAsimov = False):
             tmpDict = dict([(key, histo.GetBinContent(bin)) for (key, histo) in varDict.iteritems()])
             if doAsimov: valasimov = hasimov.GetBinError(bin)
             if 'asimov' in varDict: del tmpDict['asimov']
-            outUp.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, +1), err, valasimov]))
-            outDown.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, -1), err, valasimov]))
+
+            if doSym:
+                totsymunc = quadSum([propagateQuantity(cont, tmpDict, 0), err, valasimov])
+                outUp.SetBinError(bin, totsymunc); outDown.SetBinError(bin, totsymunc)
+            else:
+                outUp.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, +1), err, valasimov]))
+                outDown.SetBinError(bin, quadSum([propagateQuantity(cont, tmpDict, -1), err, valasimov]))
     return [outUp, outDown]
 
 

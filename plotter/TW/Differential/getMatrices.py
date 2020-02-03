@@ -24,10 +24,12 @@ print "    - The minitrees' path is:\n", minipath
 plotsoutputpath  = "/nfs/fanae/user/vrbouza/www/TFM/Unfolding/"
 matrixoutputpath = "./temp/"
 
+#nominal_weight = "(TWeight)"
+nominal_weight = "(TWeight_TopPtUp)"
 genCut      = "TWeight_normal * (Tpassgen == 1)"
 recoCut     = "TWeight_normal * (Tpassreco == 1)"
-Cut         = "TWeight * (Tpassgen == 1)"
-fiduCut     = "TWeight * ((Tpassreco == 1) && (Tpassgen == 0))"
+Cut         = "TWeight * (" + nominal_weight + " / TWeight) * (Tpassgen == 1)"
+fiduCut     = "TWeight * (" + nominal_weight + " / TWeight) * ((Tpassreco == 1) && (Tpassgen == 0))"
 
 markersize  = 0.8
 
@@ -53,7 +55,7 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None,
     vnamereco   = vnamereco.replace(vname, vname + sys) if "Fiducial" not in vname else vnamereco.replace("LeadingLepPt", "LeadingLepPt" + sys)
     vnametitle  = vnametitle.replace("_", "") + "_" + sys
   elif (sys in SysList[3:]):
-    tmpcut      = tmpcut.replace("TWeight", "TWeight_" + sys)
+    tmpcut      = tmpcut.replace("TWeight", "TWeight_" + sys, 1) if "TopPt" not in sys else "TWeight * (Tpassgen == 1)" if "Down" in sys else "TWeight_TopPtUp * (TWeight_TopPtUp / TWeight) * (Tpassgen == 1)"
     vnametitle  = vnametitle.replace("_", "") + "_" + sys
   elif (sys == "modeling" and not "twttbar" in vname.lower()):
     vnametitle  = vnametitle.replace("_", "") + "_" + t1.GetName()
@@ -82,24 +84,36 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None,
     hGen2 = r.TH1F('hGen2', '', nxb, xb)
     hGen1noF = r.TH1F('hGen1noF', '', nxb, xb)
     hGen2noF = r.TH1F('hGen2noF', '', nxb, xb)
+    hGen1extra = r.TH1F('hGen1extra', '', nxb, xb)
+    hGen2extra = r.TH1F('hGen2extra', '', nxb, xb)
+    hGen1noFextra = r.TH1F('hGen1noFextra', '', nxb, xb)
+    hGen2noFextra = r.TH1F('hGen2noFextra', '', nxb, xb)
     
     specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
     t1[0].Draw(vnamegen + '>>hGen1', genCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    t1[0].Draw(vnamegen + '>>hGen1extra', genCut + "/TWeight_normal*" + recoCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
     specialweight = vl.n_tbarw/vl.sigma_tw/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
     t2[0].Draw(vnamegen + '>>hGen2', genCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    t2[0].Draw(vnamegen + '>>hGen2extra', genCut + "/TWeight_normal*" + recoCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
     specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
     t1[1].Draw(vnamegen + '>>hGen1noF', genCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    t1[1].Draw(vnamegen + '>>hGen1noFextra', genCut + "/TWeight_normal*" + recoCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
     specialweight = vl.n_tbarwnohad/vl.sigma_twnohad/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
     t2[1].Draw(vnamegen + '>>hGen2noF', genCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    t2[1].Draw(vnamegen + '>>hGen2noFextra', genCut + "/TWeight_normal*" + recoCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
     hGen1.Add(hGen2)
     hGen1noF.Add(hGen2noF)
     hGen1.Add(hGen1noF)
+    hGen1extra.Add(hGen2extra)
+    hGen1noFextra.Add(hGen2noFextra)
+    hGen1extra.Add(hGen1noFextra)
     if "twttbar" in vname.lower():
       hGen3 = r.TH1F('hGen3', '', nxb, xb)
       t3.Draw(vnamegen + '>>hGen3', genCut + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
       hGen1.Add(hGen3)
       del hGen3
     del hGen2, hGen1noF, hGen2noF
+    del hGen2extra, hGen1noFextra, hGen2noFextra
     
   hGen  = r.TH2F('hGen', '', nxb, xb, nyb, yb)
   
@@ -122,29 +136,57 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None,
       h1.Add(h3)
       del h3
   else:
-    h1    = r.TH2F('h1', "", nxb, xb, nyb, yb)
-    h2    = r.TH2F('h2', "", nxb, xb, nyb, yb)
+    h1    = r.TH2F('h1',    "", nxb, xb, nyb, yb)
+    h2    = r.TH2F('h2',    "", nxb, xb, nyb, yb)
     h1noF = r.TH2F('h1noF', "", nxb, xb, nyb, yb)
     h2noF = r.TH2F('h2noF', '', nxb, xb, nyb, yb)
     
     specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-    t1[0].Project('h1', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    t1[0].Project('h1', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt") + "*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") + sys * ("JER" in sys or "JES" in sys) if "Fiducial" not in vname else "LeadingLepPt"))
     specialweight = vl.n_tbarw/vl.sigma_tw/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
-    t2[0].Project('h2', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    t2[0].Project('h2', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt") + "*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") + sys * ("JER" in sys or "JES" in sys) if "Fiducial" not in vname else "LeadingLepPt"))
     specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-    t1[1].Project('h1noF', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    t1[1].Project('h1noF', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt") + "*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") + sys * ("JER" in sys or "JES" in sys) if "Fiducial" not in vname else "LeadingLepPt"))
     specialweight = vl.n_tbarwnohad/vl.sigma_twnohad/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
-    t2[1].Project('h2noF', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    t2[1].Project('h2noF', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt") + "*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") + sys * ("JER" in sys or "JES" in sys) if "Fiducial" not in vname else "LeadingLepPt"))
+
+    #### PRUEBINA
+    #specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
+    #t1[0].Project('h1', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname)    + "*(TLeadingJetPtJERUp < 1000)")
+    #specialweight = vl.n_tbarw/vl.sigma_tw/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
+    #t2[0].Project('h2', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname)    + "*(TLeadingJetPtJERUp < 1000)")
+    #specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
+    #t1[1].Project('h1noF', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname) + "*(TLeadingJetPtJERUp < 1000)")
+    #specialweight = vl.n_tbarwnohad/vl.sigma_twnohad/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
+    #t2[1].Project('h2noF', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname) + "*(TLeadingJetPtJERUp < 1000)")
+
+
     h1.Add(h2)
     h1noF.Add(h2noF)
     h1.Add(h1noF)
     if "twttbar" in vname.lower():
       h3    = r.TH2F('h3', "", nxb, xb, nyb, yb)
-      t3.Project('h3', vnamereco + ":" + vnamegen, tmpcut + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+      t3.Project('h3', vnamereco + ":" + vnamegen, tmpcut + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt") + "*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") + sys * ("JER" in sys or "JES" in sys) if "Fiducial" not in vname else "LeadingLepPt"))
       h1.Add(h3)
       del h3
     del h2, h1noF, h2noF
-    
+
+  #### COMPROBACIOIS
+  #if (sys == "JERUp"):
+    #print "Comp.: numerador - valores"
+    #print "Bin 1:", h1.GetBinContent( h1.GetXaxis().FindBin(40), h1.GetYaxis().FindBin(140)), "+-", h1.GetBinError( h1.GetXaxis().FindBin(40), h1.GetYaxis().FindBin(140))
+    #print "Bin 2:", h1.GetBinContent( h1.GetXaxis().FindBin(60), h1.GetYaxis().FindBin(140)), "+-", h1.GetBinError( h1.GetXaxis().FindBin(60), h1.GetYaxis().FindBin(140))
+    #print "Bin 3:", h1.GetBinContent( h1.GetXaxis().FindBin(80), h1.GetYaxis().FindBin(140)), "+-", h1.GetBinError( h1.GetXaxis().FindBin(80), h1.GetYaxis().FindBin(140))
+    #print "\nComp.: denominador - valores"
+    #print "Bin 1:", hGen.GetBinContent(hGen.GetXaxis().FindBin(40), hGen.GetYaxis().FindBin(140)), "+-", hGen.GetBinError( hGen.GetXaxis().FindBin(40), hGen.GetYaxis().FindBin(140))
+    #print "Bin 2:", hGen.GetBinContent(hGen.GetXaxis().FindBin(60), hGen.GetYaxis().FindBin(140)), "+-", hGen.GetBinError( hGen.GetXaxis().FindBin(60), hGen.GetYaxis().FindBin(140))
+    #print "Bin 3:", hGen.GetBinContent(hGen.GetXaxis().FindBin(80), hGen.GetYaxis().FindBin(140)), "+-", hGen.GetBinError( hGen.GetXaxis().FindBin(80), hGen.GetYaxis().FindBin(140))
+    #print "\nCociente (x100)"
+    #print "Bin 1:", 100 * h1.GetBinContent( h1.GetXaxis().FindBin(40), h1.GetYaxis().FindBin(140)) / hGen.GetBinContent(hGen.GetXaxis().FindBin(40), hGen.GetYaxis().FindBin(140))
+    #print "Bin 2:", 100 * h1.GetBinContent( h1.GetXaxis().FindBin(60), h1.GetYaxis().FindBin(140)) / hGen.GetBinContent(hGen.GetXaxis().FindBin(60), hGen.GetYaxis().FindBin(140))
+    #print "Bin 3:", 100 * h1.GetBinContent( h1.GetXaxis().FindBin(80), h1.GetYaxis().FindBin(140)) / hGen.GetBinContent(hGen.GetXaxis().FindBin(80), hGen.GetYaxis().FindBin(140))
+
+
   if (sys == ""):
     if not isinstance(t1, list):
       hReco1 = r.TH1F('hReco1', '', nyb, yb)
@@ -185,11 +227,31 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None,
     
     tmppur  = []
     tmpstab = []
+
+    ## BUENO
+    #for i in range(1, nxb+1):
+      #sumstab = 0
+      #for j in range(1, nyb+1):
+        #sumstab += h1.GetBinContent(i, j)
+      #try: tmpstab.append(sumstab/hGen1.GetBinContent(i))
+      #except ZeroDivisionError: tmpstab.append(0)
+    #stabilities.append(tmpstab)
+    #del tmpstab
+    #for j in range(1, nyb+1):
+      #sumpur  = 0
+      #for i in range(1, nxb+1):
+        #sumpur  += h1.GetBinContent(i, j)
+      #try: tmppur.append(sumpur/hReco1.GetBinContent(j))
+      #except ZeroDivisionError: tmppur.append(0)
+    #purities.append(tmppur)
+    #del tmppur, hReco1
+
+    ## EL QUE QUIEREN
     for i in range(1, nxb+1):
       sumstab = 0
       for j in range(1, nyb+1):
         sumstab += h1.GetBinContent(i, j)
-      try: tmpstab.append(sumstab/hGen1.GetBinContent(i))
+      try: tmpstab.append(sumstab/hGen1extra.GetBinContent(i))
       except ZeroDivisionError: tmpstab.append(0)
     stabilities.append(tmpstab)
     del tmpstab
@@ -201,6 +263,8 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None,
       except ZeroDivisionError: tmppur.append(0)
     purities.append(tmppur)
     del tmppur, hReco1
+
+
   
   if not isinstance(t1, list):
     if ('fsr' in t1.GetName() or 'FSR' in t1.GetName() or 'isr' in t1.GetName() or 'ISR' in t1.GetName()):
@@ -310,7 +374,8 @@ def GetFiducialHisto(t1, t2, vname, nyb, yb, sys = "", nomtree = None, t3 = None
     vnamereco   = vnamereco.replace(vname, vname + sys) if "Fiducial" not in vname else vnamereco.replace("LeadingLepPt", "LeadingLepPt" + sys)
     vnametitle  = vnametitle.replace("_", "") + "_" + sys
   elif (sys in SysList[3:]):
-    tmpcut      = tmpcut.replace("TWeight", "TWeight_" + sys)
+    #tmpcut      = tmpcut.replace("TWeight", "TWeight_" + sys, 1) if "TopPt" not in sys else "TWeight * ((Tpassreco == 1) && (Tpassgen == 0))"
+    tmpcut      = tmpcut.replace("TWeight", "TWeight_" + sys, 1) if "TopPt" not in sys else "TWeight * ((Tpassreco == 1) && (Tpassgen == 0))" if "Down" in sys else "TWeight_TopPtUp * (TWeight_TopPtUp / TWeight) * ((Tpassreco == 1) && (Tpassgen == 0))"
     vnametitle  = vnametitle.replace("_", "") + "_" + sys
   elif (sys == "modeling" and not "twttbar" in vname.lower()):
     vnametitle  = vnametitle.replace("_", "") + "_" + t1.GetName()
@@ -438,7 +503,8 @@ def PrintResponseMatrix(htemp, vname, nxb, xb, xmin, xmax, nyb, yb, ymin, ymax, 
   htemp.Draw("colz text e")
   r.gStyle.SetPaintTextFormat("4.3f")
   CMS_lumi.lumi_13TeV = ""
-  CMS_lumi.extraText  = 'Simulation Supplementary'
+  #CMS_lumi.extraText  = 'Simulation Supplementary'
+  CMS_lumi.extraText  = 'Simulation Preliminary'
   CMS_lumi.lumi_sqrtS = ''
   #CMS_lumi.cmsTextSize += 0.1
   CMS_lumi.CMS_lumi(r.gPad, 0, 0, 0.05)
@@ -510,7 +576,8 @@ def PrintResponseMatrix(htemp, vname, nxb, xb, xmin, xmax, nyb, yb, ymin, ymax, 
   hStab.SetLineColor(r.kBlue)
   hPur.SetLineColor(r.kRed)
   hPur.SetMaximum(1.)
-  hPur.SetMinimum(0.)
+  #hPur.SetMinimum(0.)
+  hPur.SetMinimum(0.6)
   hPur.GetXaxis().SetTitleFont(43)
   hPur.GetXaxis().SetTitleSize(22)
   hPur.GetXaxis().SetLabelFont(43)
@@ -707,6 +774,7 @@ for i in range(nvars):
   
   # JES, JER and weight-related systematics response matrices
   for j in range(nsys):
+    #if j != 2: continue
     htemp = GetResponseMatrix([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], SysList[j], t3 = treeTTbar)
     htemp.Write()
     PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])

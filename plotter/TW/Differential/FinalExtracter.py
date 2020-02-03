@@ -174,7 +174,7 @@ nominal.Scale(scaleval)
 for key in variations:
     variations[key].Scale(scaleval)
 
-nominal_withErrors  = ep.propagateHistoAsym(nominal, variations, True)
+nominal_withErrors  = ep.propagateHistoAsym(nominal, variations, True, doSym = vl.doSym)
 plot                = bp.beautifulUnfoldingPlots('{var}_folded'.format(var = varName))
 plot.doRatio        = True
 plot.doFit          = False
@@ -317,6 +317,20 @@ if "uncleg_fold" in vl.varList[varName]: unclegpos = vl.varList[varName]["uncleg
 else:                                    unclegpos = "TR"
 
 plot.saveCanvas(unclegpos)
+
+
+out2 = r.TFile.Open('temp/{var}_/cutOutput_{var}.root'.format(var = varName), 'update')
+nom0 = copy.deepcopy(nominal_withErrors[0].Clone("nom0"))
+nom1 = copy.deepcopy(nominal_withErrors[1].Clone("nom1"))
+nom0.Write()
+nom1.Write()
+hincmax.Write()
+hincsyst.Write()
+out2.Close(); del out2
+
+
+
+
 del plot, variations, nominal, dataUp, dataDn
 
 if not vl.asimov:
@@ -350,7 +364,7 @@ if not vl.asimov:
     for key in variations:
         variations[key].Scale(scaleval)
 
-    nominal_withErrors  = ep.propagateHistoAsym(nominal, variations, True)
+    nominal_withErrors  = ep.propagateHistoAsym(nominal, variations, True, doSym = vl.doSym)
     plot                = bp.beautifulUnfoldingPlots('{var}_asimov_folded'.format(var = varName))
     plot.doRatio        = True
     plot.doFit          = False
