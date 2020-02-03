@@ -98,7 +98,7 @@ void TWAnalysis::Initialise(){
   
   
 // PREFIRING CHECK
-  TFile* fPrefWeight = TFile::Open("/pool/cienciasrw/userstorage/vrbouza/proyectos/TW/prefiring/L1prefiring_jetpt_2016BtoH.root");
+  TFile* fPrefWeight = TFile::Open("/pool/phedex/userstorage/vrbouza/proyectos/TW/prefiring/L1prefiring_jetpt_2016BtoH.root");
 
   TH2F* hTemPrefWeight = (TH2F*) fPrefWeight->Get("L1prefiring_jetpt_2016BtoH");
   hPrefWeight = (TH2F*) hTemPrefWeight->Clone("prefiringeffmapfinal");
@@ -115,12 +115,12 @@ void TWAnalysis::Initialise(){
 
   if (gSampleName.Contains("TTbar") || gSampleName.Contains("TTJets")) gIsTTbar = true;
   if (gSampleName.Contains("TW")    || gSampleName.Contains("TbarW") ) gIsTW    = true;
-  if (gSampleName == "TTbar_Powheg")   gIsLHE = true;
+  if (gSampleName.Contains("TTbar_Powheg") || gSampleName.Contains("TTbar2L"))   gIsLHE = true;
   // Esto en python seria media linea :D
-  if (gSampleName.Contains("_")){
-    TObjArray *tx = gSampleName.Tokenize("_");
-    if (((TObjString*) tx->Last())->GetString().IsDigit()) gIsLHE = true;
-  }
+//   if (gSampleName.Contains("_")){
+//     TObjArray *tx = gSampleName.Tokenize("_");
+//     if (((TObjString*) tx->Last())->GetString().IsDigit()) gIsLHE = true;
+//   }
   // if ( gSampleName=="treeProducerSusyMultilepton_tree") gIsLHE=true;
   // cout << "sample name is " << gSampleName << endl;
   // cout << "Is LHE ? " << gIsLHE << endl;
@@ -840,12 +840,40 @@ void TWAnalysis::InsideLoop(){
         TDPhiSubLeadJetJERUp   = 99999;
     }
   }
-  if (Tpassgen || Tpassreco || TpassrecoJESUp || TpassrecoJESDown || TpassrecoJERUp 
-      || (TNJets == 1 && TNBtags == 1 && TIsSS == 0) || (TNJetsJESUp == 1 && TNBtagsJESUp == 1 && TIsSS == 0) 
-      || (TNJetsJESDown == 1 && TNBtagsJESDown == 1 && TIsSS == 0) || (TNJetsJERUp == 1 && TNBtagsJERUp == 1 && TIsSS == 0) )  { // If needed, filling.
+
+  // CHECKS FOR THOSE STRANGE EVENTS THAT HAVE APPARENTLY (RECO. JETS GENERATED WITH LOW PT AND RECONSTRUCTED WITH LARGE PT
+  if (Tpassgen && TpassrecoJERUp && TGenLeadingJetPt < 90 && TLeadingJetPtJERUp > 125) {
+    cout << endl;
+    cout << "============================================================ Detected another event!" << endl;
+    cout << "> List of generated jets with pT, eta and phi." << endl;
+    for (UInt_t i = 0; i < SergioJets.size(); i++) {
+      cout << "### Gen. jet num. " << (i+1) << "/" << SergioJets.size() << endl;
+      cout << "    - pT  = "  << SergioJets.at(i).Pt() << " GeV" << endl;
+      cout << "    - eta = " << SergioJets.at(i).Eta() << endl;
+      cout << "    - phi = " << SergioJets.at(i).Phi() << " rad" << endl;
+      cout << "    - E   = " << SergioJets.at(i).E()   << " GeV" << endl;
+    }
+
+    cout << endl;
+    cout << "> List of reconstructed jets with pT, eta and phi." << endl;
+    for (UInt_t i = 0; i < selJetsJER.size(); i++) {
+      cout << "### Reco. jet num. " << (i+1) << "/" << selJetsJER.size() << endl;
+      cout << "    - pT  = " << selJetsJER.at(i).Pt()  << " GeV" << endl;
+      cout << "    - eta = " << selJetsJER.at(i).Eta() << endl;
+      cout << "    - phi = " << selJetsJER.at(i).Phi() << " rad" << endl;
+      cout << "    - E   = " << selJetsJER.at(i).E()   << " GeV" << endl;
+    }
+    cout << endl;
+  }
+
+
+  /*if (Tpassgen || Tpassreco || TpassrecoJESUp || TpassrecoJESDown || TpassrecoJERUp
+//       || (TIsSS == 0))  {
+     || (TNJets == 1 && TNBtags == 1 && TIsSS == 0) || (TNJetsJESUp == 1 && TNBtagsJESUp == 1 && TIsSS == 0)
+     || (TNJetsJESDown == 1 && TNBtagsJESDown == 1 && TIsSS == 0) || (TNJetsJERUp == 1 && TNBtagsJERUp == 1 && TIsSS == 0) )  { // If needed, filling.
 //      || (nSergiobJets == 1 && nSergioJets == 1 && TGenIsSS == 0))  { // If needed, filling.
     fMini1j1t->Fill();
-  }
+  }*/
 }
   
 //   else {
@@ -1919,7 +1947,6 @@ void TWAnalysis::SetTWVariables()
   fMini1j1t->Branch("prefWeight1",             &prefWeight1,                "prefWeight1/F");
   fMini1j1t->Branch("prefWeight2",             &prefWeight2,                "prefWeight2/F");
   fMini1j1t->Branch("prefWeight3",             &prefWeight3,                "prefWeight3/F");
-  
   if (gPar.Contains("Unfolding")) {
     fMini1j1t->Branch("Tpassgen",                &Tpassgen,                   "Tpassgen/B");
     fMini1j1t->Branch("TnSergioJets",            &nSergioJets,                "TnSergioJets/I");
