@@ -588,10 +588,23 @@ TString CraftFormula(TString cuts, TString chan, TString sys, TString weight, TT
   else schan = chan;
 
   //TString weight = TString("TWeight");
-  if(weight.Contains("TWeight") && tree->GetBranchStatus("TWeight_" + sys)){
-    weight = ReplaceWords(weight, "TWeight", "TWeight_" + sys); 
+  if (sys.Contains("TopPtDown")) {
+    weight = ReplaceWords(weight, "TWeight_TopPtUp/TWeight", "1");
   }
-
+  else if (sys.Contains("TopPtUp")) {
+    weight = ReplaceWords(weight, "TWeight_TopPtUp/TWeight", "wololo");
+    weight = ReplaceWords(weight, "TWeight", "TWeight_TopPtUp");
+    weight = ReplaceWords(weight, "wololo", "TWeight_TopPtUp/TWeight");
+  }
+  else if (weight.Contains("TWeight") && tree->GetBranchStatus("TWeight_" + sys) && (!weight.Contains("TWeight_TopPtUp/TWeight")) ) {
+    weight = ReplaceWords(weight, "TWeight", "TWeight_" + sys);
+  }
+  else if (weight.Contains("TWeight") && tree->GetBranchStatus("TWeight_" + sys)) {
+    weight = ReplaceWords(weight, "TWeight_TopPtUp/TWeight", "wololo");
+    weight = ReplaceWords(weight, "TWeight", "TWeight_" + sys);
+    weight = ReplaceWords(weight, "wololo", "TWeight_TopPtUp/TWeight");
+  }
+//   cout << "SYS: " << sys << ", WEIGHT: " << weight << endl;
   std::vector<TString> AllVars = GetAllVars((TString) cuts);
   Int_t nvars = AllVars.size();
   if(sys != "" && sys != "0"){
