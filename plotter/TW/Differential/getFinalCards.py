@@ -344,8 +344,8 @@ def GiveMeMyGoodHistosToShowThem(var):
 
     p.AddSample("TW_noFullyHadr_DS",             "tW",           r.itSys, 1, "DSUp");
     p.AddSample("TbarW_noFullyHadr_DS",          "tW",           r.itSys, 1, "DSUp");
-    p.AddSymmetricHisto("tW",  "DSUp");
-    p.AddSymmetricHisto("tW",  "JERUp");
+    p.AddSymmetricHisto("tW", "DSUp");
+    p.AddSymmetricHisto("tW", "JERUp");
 
     p.AddSample("TTbar_Powheg",                 "ttbar",     r.itSys, 1, "JERUp");
 

@@ -31,7 +31,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->SetCanvasWidth(600);
 
   p->SetChLabel("e^{#pm}#mu^{#mp}");
-  p->SetChLabelPos(0.275, 0.89, -1);
+//   p->SetChLabelPos(0.275, 0.89, -1);
+  p->SetChLabelPos(0.34, 0.89, -1);
   p->SetLumi(35.864);
 
   vector<TString> labels = { "(0, 0)","(1, 0)","(1, 1)","(2, 0)","(2, 1)","(2, 2)","(#geq3, #geq0)" };
@@ -95,7 +96,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->AddSample("TTbar_Powheg", "t#bar{t}", itSys, 1, "pdfUp"); 
   p->AddSample("TTbar_Powheg", "t#bar{t}", itSys, 1, "pdfDown"); 
 
-
+  p->AddLumiSyst(0.025);
   p->AddSystematic("stat,JES,Btag,Mistag,PU,ElecEff,MuonEff,Trig"); //,LepEff
   //p->AddSystematic("stat"); //,LepEff
 
@@ -111,6 +112,7 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->SetYratioOffset(0.35);
   p->SetCenterYAxis(false);
   p->SetXaxisOffset(1.1);
+  p->SetPlotMaximum(120000);
   p->ObliterateXErrorBars();
 
   p->SetCMSlabel("CMS");
@@ -119,7 +121,8 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->SetPlotFolder("/nfs/fanae/user/vrbouza/www/TFM/1j1t/control/");
 
   //p->SetLegendPosition(0.66, 0.65, 0.98, 0.85);
-  p->SetLegendPosition(0.4, 0.52, 0.63, 0.92);
+//   p->SetLegendPosition(0.4, 0.52, 0.63, 0.92);
+  p->SetLegendPosition(0.58, 0.52, 0.81, 0.92);
   p->SetLegendTextSize(0.055);
   p->SetCMSlabel("CMS");
 

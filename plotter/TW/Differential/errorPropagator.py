@@ -287,7 +287,7 @@ def getCovarianceFromVar(nom, var, name, ty = "folded", doCorr = False):
     nbins   = nom.GetXaxis().GetNbins()
     binning = array('f', vl.varList[name]['recobinning'] if ty == "folded" else vl.varList[name]['genbinning'])
     if ty == "folded" and vl.doxsec: var.Scale(1/vl.Lumi/1000)
-    cov     = r.TH2F(var.GetName().replace("data_", "").replace(name+"_", ''), '', nbins, binning, nbins, binning)
+    cov     = r.TH2D(var.GetName().replace("data_", "").replace(name+"_", ''), '', nbins, binning, nbins, binning)
     for x in range(nbins):
         for y in range(nbins):
             bin = cov.GetBin(x + 1, y + 1)

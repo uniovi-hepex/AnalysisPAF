@@ -229,29 +229,11 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None,
     tmpstab = []
 
     ## BUENO
-    #for i in range(1, nxb+1):
-      #sumstab = 0
-      #for j in range(1, nyb+1):
-        #sumstab += h1.GetBinContent(i, j)
-      #try: tmpstab.append(sumstab/hGen1.GetBinContent(i))
-      #except ZeroDivisionError: tmpstab.append(0)
-    #stabilities.append(tmpstab)
-    #del tmpstab
-    #for j in range(1, nyb+1):
-      #sumpur  = 0
-      #for i in range(1, nxb+1):
-        #sumpur  += h1.GetBinContent(i, j)
-      #try: tmppur.append(sumpur/hReco1.GetBinContent(j))
-      #except ZeroDivisionError: tmppur.append(0)
-    #purities.append(tmppur)
-    #del tmppur, hReco1
-
-    ## EL QUE QUIEREN
     for i in range(1, nxb+1):
       sumstab = 0
       for j in range(1, nyb+1):
         sumstab += h1.GetBinContent(i, j)
-      try: tmpstab.append(sumstab/hGen1extra.GetBinContent(i))
+      try: tmpstab.append(sumstab/hGen1.GetBinContent(i))
       except ZeroDivisionError: tmpstab.append(0)
     stabilities.append(tmpstab)
     del tmpstab
@@ -263,6 +245,24 @@ def GetResponseMatrix(t1, t2, vname, nxb, xb, nyb, yb, sys = "", nomtree = None,
       except ZeroDivisionError: tmppur.append(0)
     purities.append(tmppur)
     del tmppur, hReco1
+
+    ### EL QUE QUIEREN
+    #for i in range(1, nxb+1):
+      #sumstab = 0
+      #for j in range(1, nyb+1):
+        #sumstab += h1.GetBinContent(i, j)
+      #try: tmpstab.append(sumstab/hGen1extra.GetBinContent(i))
+      #except ZeroDivisionError: tmpstab.append(0)
+    #stabilities.append(tmpstab)
+    #del tmpstab
+    #for j in range(1, nyb+1):
+      #sumpur  = 0
+      #for i in range(1, nxb+1):
+        #sumpur  += h1.GetBinContent(i, j)
+      #try: tmppur.append(sumpur/hReco1.GetBinContent(j))
+      #except ZeroDivisionError: tmppur.append(0)
+    #purities.append(tmppur)
+    #del tmppur, hReco1
 
 
   
@@ -576,8 +576,8 @@ def PrintResponseMatrix(htemp, vname, nxb, xb, xmin, xmax, nyb, yb, ymin, ymax, 
   hStab.SetLineColor(r.kBlue)
   hPur.SetLineColor(r.kRed)
   hPur.SetMaximum(1.)
-  #hPur.SetMinimum(0.)
-  hPur.SetMinimum(0.6)
+  hPur.SetMinimum(0.)
+  #hPur.SetMinimum(0.6)
   hPur.GetXaxis().SetTitleFont(43)
   hPur.GetXaxis().SetTitleSize(22)
   hPur.GetXaxis().SetLabelFont(43)

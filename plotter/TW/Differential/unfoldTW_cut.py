@@ -6,6 +6,7 @@ Piece of art for doing the unfolding analysis - with a bit of tW flavor.
 import copy
 import ROOT as r
 import beautifulUnfoldingPlots as bp
+import getLaTeXtable as tex
 import errorPropagator as ep
 import varList as vl
 import warnings as wr
@@ -537,6 +538,8 @@ class Unfolder():
         print "\n"
         #############################
         
+        if not self.wearedoingasimov and varName != "Fiducial": tex.saveLaTeXfromhisto(nominal, varName, path = vl.tablespath, errhisto = nominal_withErrors[0], ty = "unfolded")
+
         if   "legpos_unf"   in vl.varList[self.var] and not self.wearedoingasimov: legloc = vl.varList[self.var]["legpos_unf"]
         elif "legpos_unfas" in vl.varList[self.var] and     self.wearedoingasimov: legloc = vl.varList[self.var]["legpos_unfas"]
         else:                                                                      legloc = "TR"
@@ -699,7 +702,7 @@ class Unfolder():
 
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     vl.SetUpWarnings()
     r.gROOT.SetBatch(True)
     verbose = False
@@ -732,7 +735,8 @@ if __name__=="__main__":
     if "Fiducial" not in varName and "ATLAS" not in varName: a.doRegularizationComparison()  # Comparison plot between regularisation and not
     if "Fiducial" not in varName and "ATLAS" not in varName: a.doAreaConstraintComparison()  # Comparison plot between area constraint and not
     
-                                    # Condition numbers text file
+
+    # Condition numbers text file
     if not os.path.isdir('results/CondN'):
         os.system('mkdir -p results/CondN')
     fcn = open('results/CondN/{var}'.format(var = varName) + '.txt', 'w')
@@ -743,7 +747,7 @@ if __name__=="__main__":
     fcn.write(out)
     fcn.close
     del a
-    
+
     if not vl.asimov:
         b = Unfolder(varName, pathtothings + 'cutOutput_' + varName + '_goodasimov.root', 'temp/UnfoldingInfo.root')
         b.plotspath       = "results/"

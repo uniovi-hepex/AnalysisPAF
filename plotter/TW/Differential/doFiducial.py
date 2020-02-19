@@ -9,6 +9,7 @@ import errorPropagator as ep
 import varList as vl
 import warnings as wr
 import os, sys, math, array, copy
+import getLaTeXtable as tex
 
 vl.SetUpWarnings()
 r.gROOT.SetBatch(True)
@@ -124,6 +125,9 @@ for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
     print "Bin", bin, "(rel.): (", round(nominal.GetBinContent(bin), 4), "+", round(nominal_withErrors[0].GetBinError(bin)/nominal.GetBinContent(bin)*100, 4), "-", round(nominal_withErrors[1].GetBinError(bin)/nominal.GetBinContent(bin)*100, 4), ") pb\n"
 print "\n"
 #############################
+
+tex.saveLaTeXfromhisto(nominal, varName, path = vl.tablespath, errhisto = nominal_withErrors[0], ty = "unfolded_norm")
+
 
 if "legpos_fid" in vl.varList[varName]: legloc = vl.varList[varName]["legpos_fid"]
 else:                                   legloc = "TR"
@@ -326,6 +330,8 @@ print "Underflow:", nominal.GetBinContent(0)
 print "Overflow:",  nominal.GetBinContent(nominal.GetNbinsX() + 1)
 print "\n"
 #############################
+
+tex.saveLaTeXfromhisto(nominal, varName, path = vl.tablespath, errhisto = nominal_withErrors[0], ty = "unfolded_binnorm")
 
 if "legpos_fidbin" in vl.varList[varName]: legloc = vl.varList[varName]["legpos_fidbin"]
 else:                                      legloc = "TR"
@@ -546,6 +552,7 @@ for bin in range(1, nominal_withErrors[0].GetNbinsX() + 1):
     print "Bin", bin, "(rel.): (", round(nominal.GetBinContent(bin), 4), "+", round(nominal_withErrors[0].GetBinError(bin)/nominal.GetBinContent(bin)*100, 5), "-", round(nominal_withErrors[1].GetBinError(bin)/nominal.GetBinContent(bin)*100, 5), ") pb\n"
 #############################
 
+tex.saveLaTeXfromhisto(nominal, varName, path = vl.tablespath, errhisto = nominal_withErrors[0], ty = "unfolded_bin")
 
 
 if "legpos_norm" in vl.varList[varName]: legloc = vl.varList[varName]["legpos_norm"]

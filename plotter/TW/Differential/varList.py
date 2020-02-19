@@ -65,6 +65,8 @@ else:      labellegend = 'Data'
 #storagepath = "/pool/ciencias/userstorage/vrbouza/proyectos/TW/MiniTrees/"
 storagepath = "/pool/phedex/userstorage/vrbouza/proyectos/TW/MiniTrees/"
 minipath    = "../../../TW_temp/"
+tablespath  = "./results/tables"
+gofpath     = "./results/goftests"
 
 def GetLastFolder(stpth):
     savefolders   = next(os.walk(stpth))[1]
@@ -163,6 +165,9 @@ varList['LeadingJetEuncertainties'] = {
 varList['MT_LLMETB'] = {
     #'xaxis'       : 'm_{T}(\\ell_{1}, \\ell_{2},\\slash{E}_{T}, j) (GeV)',
     'xaxis'       : '#it{m}_{T}(#it{e}^{#pm}, #it{#mu}^{#mp}, #it{p}_{T}^{miss}, #it{j}) (GeV)',
+    'printname'   : "\\transmassvar (\GeV)",
+    'printnamenodim':"\\transmassvar",
+    'mathprintname': "\\transmassvar",
     'yaxis'       : 'd#sigma/d(#it{m}_{T}(#it{e}^{#pm}, #it{#mu}^{#mp}, #it{p}_{T}^{miss}, #it{j})) (pb)',
     'yaxisfid'    : '(1/#sigma_{fid.})d#sigma/d(#it{m}_{T}(#it{e}^{#pm}, #it{#mu}^{#mp}, #it{p}_{T}^{miss}, #it{j})) (adim.)',
     'yaxisfidbin' : '(1/#sigma_{fid.})d#sigma/d(#it{m}_{T}(#it{e}^{#pm}, #it{#mu}^{#mp}, #it{p}_{T}^{miss}, #it{j})) (1/GeV)',
@@ -196,7 +201,9 @@ varList['MT_LLMETB'] = {
     'var_response': 'MTLLMETB',
     'var_gen'     : 'max(min(TGenMT_LLMETB, 499.), 100.)',
     'legpos'      : (0.51, 0.55, 0.71, 0.93),
-    'legposdesc'  : (0.15, 0.425, 0.35, 0.81),
+    #'legposdesc'  : (0.15, 0.425, 0.35, 0.81),
+    "legposdesc"  : (0.65, 0.55, 0.85, 0.93),
+    "maxdesc"  : 2600,
     'legpos_foldas':"BL",
     'legpos_fold' : "BL",
     'legpos_fid'  : "TL",
@@ -206,7 +213,8 @@ varList['MT_LLMETB'] = {
     'uncleg_fold' : "TL",
     'uncleg_unf'  : "TC",
     'uncleg_fid'  : "TL",
-    'legpos_fidbin':(.18, .75, .36, .52),
+    #'legpos_fidbin':(.175, .73, .27, .49),
+    'legpos_fidbin': (.52, .9, .72, .65),
     'uncleg_fidbin':"TL",
     'resptxtsize' : 0.9,
     'covtxtsizefol': 0.75,
@@ -216,15 +224,18 @@ varList['MT_LLMETB'] = {
     'covtxtangleunffidnorm': 35,
     "yaxisuplimitunf": 0.176,
     "yaxismax_fid" : 1.6,
-    "yaxismax_fidnorm" : 1.8,
+    #"yaxismax_fidnorm" : 1.8,
+    "yaxismax_fidnorm" : 1.2,
     "yaxismax_unf" : 2,
     #"yaxismax_norm": 2.0,
     "yaxismax_norm": 2.1,
     'legpos_norm': "TL",
     "uncleg_norm" : "TC",
     "yaxisuplimitunfnorm": 0.0038,
-    "yaxismax_ratio_fidnorm" : 4.0,
+    #"yaxismax_ratio_fidnorm" : 4.0,
+    "yaxismax_ratio_fidnorm" : 2.5,
     "yaxismax_ratio_norm" : 5.0,
+    "yaxisuplimitunffidnorm": 0.0155,
 }
 varList['MT_LLMETBuncertainties'] = {
     'xaxis'       : varList['MT_LLMETB']['xaxis'],
@@ -269,6 +280,9 @@ varList['MT_LLMETBATLASuncertainties'] = {
 varList['M_LLB'] = {
     #'xaxis'       : 'm(#ell_{1}, #ell_{2}, j) (GeV)',
     'xaxis'       : '#it{m}(#it{e}^{#pm}, #it{#mu}^{#mp}, #it{j}) (GeV)',
+    'printname'   : '\\invmassvar (\\GeV)',
+    'printnamenodim':'\\invmassvar',
+    'mathprintname': '\\invmassvar',
     'yaxis'       : 'd#sigma/d(#it{m}(#it{e}^{#pm}, #it{#mu}^{#mp}, #it{j})) (pb)',
     'yaxisfid'    : '(1/#sigma_{fid.})d#sigma/d(#it{m}(#it{e}^{#pm}, #it{#mu}^{#mp}, #it{j})) (adim.)',
     'yaxisfidbin' : '(1/#sigma_{fid.})d#sigma/d(#it{m}(#it{e}^{#pm}, #it{#mu}^{#mp}, #it{j})) (1/GeV)',
@@ -303,7 +317,8 @@ varList['M_LLB'] = {
     'ndescbins'   : 16,
     'legpos'      : (0.75, 0.55, 0.95, 0.93),
     #'legposdesc'  : (0.11, 0.435, 0.31, 0.82),
-    'legposdesc'  : (0.65, 0.55, 0.85, 0.93),
+    #'legposdesc'  : (0.65, 0.55, 0.85, 0.93),
+    'legposdesc'  : (0.7, 0.55, 0.90, 0.93),
     'var'         : 'max(min(TM_LLB, 399.), 50.)',
     'var_response': 'MLLB',
     'var_gen'     : 'max(min(TGenM_LLB, 399.), 50.)',
@@ -325,6 +340,7 @@ varList['M_LLB'] = {
     "yaxisuplimitunfnorm": 0.004,
     "uncleg_norm" : (.18, .5, .31, .785),
     "uncleg_fidbin": (.4, .615, .58, .9),
+    "yaxismax_ratio_fidnorm" : 2.5,
 }
 varList['M_LLBuncertainties'] = {
     'xaxis'       : varList['M_LLB']['xaxis'],
@@ -415,6 +431,9 @@ varList['MET_Phiuncertainties'] = {
 }
 
 varList['LeadingJetPt'] = {
+    'printname'   : 'Jet \\pt (\\GeV)',
+    'printnamenodim':'Jet \\pt',
+    'mathprintname': '\\text{Jet }\\pt',
     'xaxis'       : 'Jet #it{p}_{T} (GeV)',
     'yaxis'       : 'd#sigma/d(jet #it{p}_{T}) (pb)',
     'yaxisfid'    : '(1/#sigma_{fid.})d#sigma/d(jet #it{p}_{T}) (adim.)',
@@ -456,6 +475,7 @@ varList['LeadingJetPt'] = {
     'ndescbins'   : 14,
     'legpos'      : (0.7, 0.55, 0.90, 0.93),
     'legposdesc'  : (0.7, 0.55, 0.90, 0.93),
+    'maxdesc'     : 3600,
     "legpos_unf"  : "TC",
     'var'         : 'min(TLeadingJetPt, 149.)',
     'var_response': 'LeadingJetPt',
@@ -474,12 +494,14 @@ varList['LeadingJetPt'] = {
     "yaxisuplimitunf": 0.20,
     "yaxisuplimitunffidnorm": 0.029,
     "yaxismax_fid" : 1.8,
-    "yaxismax_fidnorm" : 1.4,
+    #"yaxismax_fidnorm" : 1.4,
+    "yaxismax_fidnorm" : 1.2,
     "yaxismax_unf" : 2.3,
     "yaxismax_norm": 1.8,
     "yaxisuplimitunfnorm": 0.010,
     "uncleg_norm" : "TL",
     "yaxismax_ratio_norm" : 3.5,
+    "yaxismax_ratio_fidnorm" : 2.5,
 }
 varList['LeadingJetPtuncertainties'] = {
     'xaxis'       : varList['LeadingJetPt']['xaxis'],
@@ -538,6 +560,9 @@ varList['LeadingLepEuncertainties'] = {
 
 varList['LeadingLepPt'] = {
     #'xaxis'       : 'p_{T}(\\ell_{1}) (GeV)',
+    'printname'   : 'Leading lepton \\pt (\\GeV)',
+    'printnamenodim': 'Leading lepton \\pt',
+    'mathprintname':'\\text{Leading lepton }\\pt',
     'xaxis'       : 'Leading lepton #it{p}_{T} (GeV)',
     'yaxis'       : 'd#sigma/d(leading lepton #it{p}_{T}) (pb)',
     'yaxisfid'    : '(1/#sigma_{fid.})d#sigma/d(leading lepton #it{p}_{T}) (adim.)',
@@ -577,7 +602,8 @@ varList['LeadingLepPt'] = {
     'descbinning' : [10., 150.],
     'ndescbins'   : 14,
     'legpos'      : (0.7, 0.55, 0.90, 0.93),
-    'legposdesc'  : (0.58, 0.55, 0.78, 0.93),
+    'legposdesc'  : (0.7, 0.55, 0.90, 0.93),
+    "maxdesc"     : 3300,
     'var'         : 'min(TLeadingLepPt, 149.)',
     'var_response': 'LeadingLepPt',
     'var_gen'     : 'min(TGenLeadingLepPt, 149.)',
@@ -585,10 +611,10 @@ varList['LeadingLepPt'] = {
     'uncleg_fid'  : "TL",
     #"legpos_unf"   : (.18, .3, .32, .05),
     "legpos_unf"   : "TC",
-    'legpos_fidbin':"TC",
-    'uncleg_unf'   :"TL",
-    'uncleg_fidbin':"TL",
-    'resptxtsize' : 1.5,
+    'legpos_fidbin': "TC",
+    'uncleg_unf'   : "TL",
+    'uncleg_fidbin': "TL",
+    'resptxtsize'  : 1.5,
     'covtxtsizefol': 1.2,
     'covtxtsizeunf': 1.35,
     'covtxtangleunf': 42.50,
@@ -597,10 +623,12 @@ varList['LeadingLepPt'] = {
     "yaxisuplimitunf": 0.2,
     "yaxisuplimitunffidnorm": 0.025,
     "yaxismax_fid" : 1.1,
-    "yaxismax_fidnorm" : 1.1,
+    #"yaxismax_fidnorm" : 1.1,
+    "yaxismax_fidnorm" : 0.8,
     "yaxismax_unf" : 1.35,
     "yaxisuplimitunfnorm": 0.0085,
     "uncleg_norm" : "TL",
+    "yaxismax_ratio_fidnorm" : 2.5,
 }
 varList['LeadingLepPtuncertainties'] = {
     'xaxis'       : varList['LeadingLepPt']['xaxis'],
@@ -802,6 +830,9 @@ varList['HTtotuncertainties'] = {
 
 varList['DilepMETJet1Pz'] = {
     'xaxis'       : '#it{p}_{Z} (#it{e}^{#pm}, #it{#mu}^{#mp}, #it{j}) (GeV)',
+    'printname'   : '\\pzvar (\\GeV)',
+    'printnamenodim':'\\pzvar',
+    'mathprintname': '\\pzvar',
     'yaxis'       : 'd#sigma/d(#it{p}_{Z} (#it{e}^{#pm}, #it{#mu}^{#mp}, #it{j})) (pb)',
     'yaxisfid'    : '(1/#sigma_{fid.})d#sigma/d(#it{p}_{Z} (#it{e}^{#pm}, #it{#mu}^{#mp}, #it{j})) (adim.)',
     'yaxisfidbin' : '(1/#sigma_{fid.})d#sigma/d(#it{p}_{Z} (#it{e}^{#pm}, #it{#mu}^{#mp}, #it{j})) (1/GeV)',
@@ -833,7 +864,8 @@ varList['DilepMETJet1Pz'] = {
     'var_response': 'DilepMETJet1Pz',
     'var_gen'     : 'min(abs(TGenDilepMETJet1Pz), 449.)',
     'legpos'      : (0.51, 0.55, 0.71, 0.93),
-    'legposdesc'  : (0.57, 0.55, 0.78, 0.93),
+    #'legposdesc'  : (0.57, 0.55, 0.78, 0.93),
+    'legposdesc'  : (0.65, 0.55, 0.85, 0.93),
     #'legpos_fold':  "TC",
     'legpos_fold' : (.5, .685, .725, .93),
     'legpos_foldas':"BL",
@@ -852,10 +884,12 @@ varList['DilepMETJet1Pz'] = {
     "yaxisuplimitunf": 0.1,
     "yaxisuplimitunffidnorm": 0.0065,
     "yaxismax_fid" : 1,
-    "yaxismax_fidnorm" : 1,
+    #"yaxismax_fidnorm" : 1,
+    "yaxismax_fidnorm" : 0.7,
     "yaxismax_unf" : 1.3,
     "yaxisuplimitunfnorm" : 0.002,
     "uncleg_norm" : "TC",
+    "yaxismax_ratio_fidnorm" : 2.5,
 }
 varList['DilepMETJet1Pzuncertainties'] = {
     'xaxis'       : varList['DilepMETJet1Pz']['xaxis'],
@@ -907,6 +941,9 @@ varList['Mlluncertainties'] = {
 varList['DPhiLL'] = {
     #'xaxis'       : '\\Delta \\varphi(\\ell_{1}, \\ell_{2}) (rad)',
     'xaxis'       : "#Delta#it{#varphi}(#it{e}^{#pm}, #it{#mu}^{#mp})/#it{#pi} (adim.)",
+    'printname'   : "$\\deltaPhiVar/ \\pi$",
+    'printnamenodim':"$\\deltaPhiVar/ \\pi$",
+    'mathprintname': "\\deltaPhiVar/ \\pi",
     'yaxis'       : "d#sigma/d(#Delta#it{#varphi}(#it{e}^{#pm}, #it{#mu}^{#mp})/#it{#pi}) (pb)",
     'yaxisfid'    : '(1/#sigma_{fid.})d#sigma/d(#Delta#it{#varphi}(#it{e}^{#pm}, #it{#mu}^{#mp})/#it{#pi}) (adim.)',
     'yaxisfidbin' : '(1/#sigma_{fid.})d#sigma/d(#Delta#it{#varphi}(#it{e}^{#pm}, #it{#mu}^{#mp})/#it{#pi}) (adim.)',
@@ -941,7 +978,9 @@ varList['DPhiLL'] = {
     #'var_gen'     : 'abs(TGenDPhiLL)',
     #'legpos'      : (0.82, 0.14, 0.93, 0.47),
     'legpos'      : (0.15, 0.425, 0.35, 0.81),
-    'legposdesc'  : (0.15, 0.425, 0.35, 0.81),
+    #'legposdesc'  : (0.15, 0.425, 0.35, 0.81),
+    'legposdesc'  : (0.15, 0.52, 0.35, 0.9215),
+    'maxdesc'     : 2000,
     'legpos_fold' : "TL",
     'legpos_fid'  : "BR",
     #'legpos_unf'  : "BC",
@@ -960,11 +999,13 @@ varList['DPhiLL'] = {
     "equalbinsunf" : True,
     "equalbinsfol" : True,
     "yaxismax_fid" : 0.4,
-    "yaxismax_fidnorm" : 0.4,
+    #"yaxismax_fidnorm" : 0.4,
+    "yaxismax_fidnorm" : 0.35,
     "yaxismax_unf" : 1,
     #'legpos_norm':(.18, .75, .36, .52),
     'legpos_norm': (.35, 0.58950, .585, .9),
     "yaxisuplimitunfnorm" : 0.85,
+    "yaxismax_ratio_fidnorm" : 2.5,
 }
 varList['DPhiLLuncertainties'] = {
     'xaxis'       : varList['DPhiLL']['xaxis'],
@@ -1022,6 +1063,7 @@ varList['NJetsNBJets'] = {
     'recobinning' : [-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5],
     'legpos'      : (0.7, 0.55, 0.90, 0.93),
     'legposdesc'  : (0.58, 0.55, 0.78, 0.93),
+    "maxdesc"     : 110000,
     'var'         : 'nJetsnBs(TNJets, TNBJets)',
     'var_response': 'NBJets',
     'var_gen'     : 'TDressNBJets',
@@ -1152,31 +1194,117 @@ NewColorMap = {
 
 
 SysNameTranslator = {
-    'JES'                   : "JES",
-    'fsr'                   : "FSR",
-    'isr'                   : "ISR",
-    'tWME'                  : "tW #mu_{R}/#mu_{F}",
-    'DS'                    : "tW DS-DR",
-    'hDamp'                 : "ME/PS",
-    'UE'                    : "UE",
-    'ttbarME'               : "t#bar{t} #mu_{R}/#mu_{F}",
-    'pdf'                   : "PDF",
-    'ColorR'                : "Colour rec.",
-    'JER'                   : "JER",
-    'ElecEff'               : "Electron eff.",
-    'MuonEff'               : "Muon eff.",
-    'Trig'                  : "Trigger eff.",
-    'TopPt'                 : "Top p_{T} rew.",
-    'mtop'                  : "m_{top} unc.",
-    'PU'                    : "PU",
-    'Btag'                  : "B-tagging",
-    'Mistag'                : "Mistagging",
-    'ttbar'                 : "t#bar{t} norm.",
-    'Non-WorZ'              : "Non-W/Z norm.",
-    'DY'                    : "DY norm.",
-    'VVttbarV'              : "VV+t#bar{t}V norm.",
-    'Stat.'                 : "Statistical",
-    'Lumi'                  : "Luminosity",
-    'asimov'                : "asimov",
+    'JES'      : "JES",
+    'fsr'      : "FSR",
+    'isr'      : "ISR",
+    'tWME'     : "tW #mu_{R}/#mu_{F}",
+    'DS'       : "tW DS-DR",
+    'hDamp'    : "ME/PS",
+    'UE'       : "UE",
+    'ttbarME'  : "t#bar{t} #mu_{R}/#mu_{F}",
+    'pdf'      : "PDF",
+    'ColorR'   : "Colour rec.",
+    'JER'      : "JER",
+    'ElecEff'  : "Electron eff.",
+    'MuonEff'  : "Muon eff.",
+    'Trig'     : "Trigger eff.",
+    'TopPt'    : "Top p_{T} rew.",
+    'mtop'     : "m_{top} unc.",
+    'PU'       : "PU",
+    'Btag'     : "B-tagging",
+    'Mistag'   : "Mistagging",
+    'ttbar'    : "t#bar{t} norm.",
+    'Non-WorZ' : "Non-W/Z norm.",
+    'DY'       : "DY norm.",
+    'VVttbarV' : "VV+t#bar{t}V norm.",
+    'Stat.'    : "Statistical",
+    'Lumi'     : "Luminosity",
+    'asimov'   : "asimov",
+    ''         : "Nominal",
 }
 
+
+PrintSysNameTranslator = {
+    'JES'      : "JES",
+    'fsr'      : "FSR",
+    'isr'      : "ISR",
+    'tWME'     : "tW $\\mu_{R}/\\mu_{F}$",
+    'DS'       : "tW DS-DR",
+    'hDamp'    : "ME/PS",
+    'UE'       : "UE",
+    'ttbarME'  : "\\ttbar \\mu_{R}/\\mu_{F}",
+    'pdf'      : "PDF",
+    'ColorR'   : "Colour rec.",
+    'JER'      : "JER",
+    'ElecEff'  : "Electron eff.",
+    'MuonEff'  : "Muon eff.",
+    'Trig'     : "Trigger eff.",
+    'TopPt'    : "Top \pt rew.",
+    'mtop'     : "$m_{top}$ unc.",
+    'PU'       : "PU",
+    'Btag'     : "B-tagging",
+    'Mistag'   : "Mistagging",
+    'ttbar'    : "\\ttbar norm.",
+    'Non-WorZ' : "Non-W/Z norm.",
+    'DY'       : "DY norm.",
+    'VVttbarV' : "VV+\\ttbar V norm.",
+    'Stat.'    : "Statistical",
+    'Lumi'     : "Luminosity",
+    'asimov'   : "asimov",
+    ''         : "Nominal",
+}
+
+
+NormUncDict = {
+    "ttbar"    : 0.04,
+    "dy"       : 0.5,
+    "fakes"    : 0.5,
+    "vvttbarv" : 0.5,
+}
+
+
+# Details for transcribing to table
+ProcessNameTranslator = {
+    "ttbar"    : "\\ttbar",
+    "t#bar{t}" : "\\ttbar",
+    "Non-WorZ" : "Non W/Z",
+    "DY"       : "Drell-Yan",
+    "VVttbarV" : "VV and \\ttbar V",
+    "VV+t#bar{t}V" : "VV and \\ttbar V",
+    "tW"       : "tW (signal)",
+}
+
+
+GOFTranslator = {
+    "DR"       : "\\POWHEG DR",
+    "DS"       : "\\POWHEG DS",
+    "aMCatNLO" : "\\MGaMCatNLO",
+}
+
+
+TableDict = {
+    "folded" : {
+            "prefix"     : "$d\\sigma/d\\left(",
+            "dimensions" : "(pb)",
+        },
+    "folded_bin" : {
+            "prefix"     : "$d\\sigma/d\\left(",
+            "dimensions" : "(pb/\\GeV)",
+        },
+    "unfolded" : {
+            "prefix"     : "$d\\sigma/d\\left(",
+            "dimensions" : "(pb)",
+        },
+    "unfolded_bin" : {
+            "prefix"     : "$d\\sigma/d\\left(",
+            "dimensions" : "(pb/\\GeV)",
+        },
+    "unfolded_binnorm" : {
+            "prefix"     : "$(1/\\sigma_{\\rm{fid}})d\\sigma/d\\left(",
+            "dimensions" : "(1/\\GeV)",
+        },
+    "unfolded_norm" : {
+            "prefix"     : "$(1/\\sigma_{\\rm{fid}})d\\sigma/d\\left(",
+            "dimensions" : "",
+        },
+}

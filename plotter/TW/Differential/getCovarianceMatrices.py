@@ -19,7 +19,8 @@ def printCovarianceMatrix(tsk):
     var, ty, fidornot, normornot = tsk
     if ty == 'unfolded' and not fidornot: tfile = r.TFile("temp/{vr}_/unfOutput_{vr}.root".format(vr = var), "read")
     elif fidornot and not normornot:      tfile = r.TFile("temp/{vr}_/fidOutput_{vr}.root".format(vr = var), "read")
-    elif normornot:                       tfile = r.TFile("temp/{vr}_/fidOutput_{vr}norm.root".format(vr = var), "read")
+    elif normornot and fidornot:          tfile = r.TFile("temp/{vr}_/fidOutput_{vr}norm.root".format(vr = var), "read")
+    elif not fidornot and normornot:      tfile = r.TFile("temp/{vr}_/unfOutput_{vr}.root".format(vr = var), "read")
     else:                                 tfile = r.TFile("temp/{vr}_/cutOutput_{vr}.root".format(vr = var), "read")
     
     if ty == "folded": nominal = copy.deepcopy(tfile.Get("data_").Clone("nominal"))
@@ -30,7 +31,8 @@ def printCovarianceMatrix(tsk):
     for key in tfile.GetListOfKeys():
         if key.GetName() == "data_" or "asimov" in key.GetName() or key.GetName().replace("data_", "").replace(var + "_", '') in vl.varList['Names']['colorSysts'] or key.GetName() == var or key.GetName() == "nom0" or key.GetName() == "nom1":
             continue # Colour envelope is applied in any case
-        elif key.GetName() == "CovMat" and ty == "unfolded": varMat["unfCovMat"] = copy.deepcopy(key.ReadObj())
+        elif key.GetName() == "CovMat" and ty == "unfolded":
+            varMat["unfCovMat"] = copy.deepcopy(key.ReadObj())
         else:
             if "Down" in key.GetName() or "Up" not in key.GetName(): continue
             #elif "Up" not in key.GetName():
@@ -38,8 +40,10 @@ def printCovarianceMatrix(tsk):
                 #varMat[key.GetName().replace("data_", "").replace(var + "_", "")] = copy.deepcopy(ep.getCovarianceFromVar(nominal, key.ReadObj(), var, ty))
             else:
                 tmphistoup = copy.deepcopy(key.ReadObj().Clone("tmphistoup"))
+
                 for key2 in tfile.GetListOfKeys():
-                    if key2.GetName() == key.GetName().replace("Up", "Down"): tmphistodw = copy.deepcopy(key2.ReadObj().Clone("tmphistodw"))
+                    if key2.GetName() == key.GetName().replace("Up", "Down"):
+                        tmphistodw = copy.deepcopy(key2.ReadObj().Clone("tmphistodw"))
                 
                 varsup  = [abs(tmphistoup.GetBinContent(binin) - nominal.GetBinContent(binin)) for binin in range(1, nominal.GetNbinsX() + 1)]
                 varsdw  = [abs(tmphistodw.GetBinContent(binin) - nominal.GetBinContent(binin)) for binin in range(1, nominal.GetNbinsX() + 1)]
@@ -100,15 +104,15 @@ def printCovarianceMatrix(tsk):
                            dxs.GetBinContent(bin1) * dxs.GetBinContent(bin2) * dfid.GetBinError(bin1)**2 / dfid.GetBinContent(bin1)**4 -
                            dxs.GetBinContent(bin2) / dfid.GetBinContent(bin1)**3 * sum([covm.GetBinContent(bin1, j) for j in range(1, dxs.GetNbinsX() + 1)]) -
                            dxs.GetBinContent(bin1) / dfid.GetBinContent(bin1)**3 * sum([covm.GetBinContent(bin2, j) for j in range(1, dxs.GetNbinsX() + 1)]) )
-                if bin1 == bin2: print "bin", bin1, goodunc
+                #if bin1 == bin2: print "bin", bin1, goodunc
                 newmat.SetBinContent(bin1, bin2, goodunc)
         
         if normornot:
             newmat.Scale(1, "width"); # THIS IS A COVARIANCE!! Constants that apply to the random variable apply SQUARED to the covariance (and variance)! NOTE: when you have a 2D histo, the scale is already done "two times".
-            print "\nFiducialnorm"
+            #print "\nFiducialnorm"
         varMat["statistical"] = copy.deepcopy(newmat.Clone("statistical"))
-        for bin in range(1, nominal.GetNbinsX() + 1):
-            print "bin", bin, newmat.GetBinContent(bin, bin)
+        #for bin in range(1, nominal.GetNbinsX() + 1):
+            #print "bin", bin, newmat.GetBinContent(bin, bin)
         ffid.Close(); fvar.Close(); del ffid, fvar, dfid, dxs, newmat;
     
     if ty == "folded":
@@ -121,13 +125,15 @@ def printCovarianceMatrix(tsk):
     finalmat = r.TH2F('finalmat', '', nominal.GetNbinsX(), binning, nominal.GetNbinsX(), binning)
     for key in varMat:
         idnx += 1
-        print idnx, key
+        #print idnx, key
         #print "finalmat.GetNbinsX()", finalmat.GetNbinsX()
         #print "varMat[key].GetNbinsX()", varMat[key].GetNbinsX()
         finalmat.Add(varMat[key])
     
-    for bin in range(1, nominal.GetNbinsX() + 1): print "matfinal bin", bin, ":", finalmat.GetBinContent(bin, bin)
+    #for bin in range(1, nominal.GetNbinsX() + 1): print "matfinal bin", bin, ":", finalmat.GetBinContent(bin, bin)
     
+    if normornot and not fidornot: finalmat.Scale(1, "width")
+
     if fidornot and ("unfCovMat" in varMat or "statistical" not in varMat): raise RuntimeError("You are calculating the covariance matrix of some fiducial results but you do not have the statistical uncertainties covariance matrix!!!!")
     
     tdrstyle.setTDRStyle()
@@ -201,6 +207,7 @@ if __name__=="__main__":
             printCovarianceMatrix((varName, 'unfolded', False, False))
             printCovarianceMatrix((varName, 'unfolded', True,  False))
             printCovarianceMatrix((varName, 'unfolded', True,  True))
+            printCovarianceMatrix((varName, 'unfolded', False,  True))
         else:
             for var in vl.varList['Names']['Variables']:
                 if "Fiducial" in var: continue
@@ -208,6 +215,7 @@ if __name__=="__main__":
                 printCovarianceMatrix((var, 'unfolded', False, False))
                 printCovarianceMatrix((var, 'unfolded', True,  False))
                 printCovarianceMatrix((var, 'unfolded', True,  True))
+                printCovarianceMatrix((var, 'unfolded', False,  True))
     else:
         tasks = []
         if varName == "All":
@@ -218,11 +226,13 @@ if __name__=="__main__":
                     if el == "unfolded": 
                         tasks.append( (var, el, True, False))
                         tasks.append( (var, el, True, True) )
+                        tasks.append( (var, el, False, True) )
         else:
             tasks.append((varName, 'folded',   False, False))
             tasks.append((varName, 'unfolded', False, False))
             tasks.append((varName, 'unfolded', True,  False))
             tasks.append((varName, 'unfolded', True,  True))
+            tasks.append((varName, 'unfolded', False,  True))
         pool = Pool(nCores)
         pool.map(printCovarianceMatrix, tasks)
         pool.close()
