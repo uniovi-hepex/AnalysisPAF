@@ -35,12 +35,13 @@ void DrawPlot(TString var, TString cut, TString chan, Int_t nbins, Float_t bin0,
   p->SetChLabelPos(0.34, 0.89, -1);
   p->SetLumi(35.864);
 
-  vector<TString> labels = { "(0, 0)","(1, 0)","(1, 1)","(2, 0)","(2, 1)","(2, 2)","(#geq3, #geq0)" };
+  vector<TString> labels = { "(0, 0)","(1, 0)","(1, 1)","(2, 0)","(2, 1)","(2, 2)", "(#geq3, #geq0)"};
   p->VBinLabels = labels;
 
 //   p->chlabel="e^{#pm}#mu^{#mp}";
   p->SetChLabel("e^{#pm}#mu^{#mp}");
-
+  p->SetTitleY("Events / bin");
+  p->SetYaxisOffset(0.8);
 
 
   p->AddSample("TTbar_PowhegSemi"           , "Non-W/Z" , itBkg, 413);
