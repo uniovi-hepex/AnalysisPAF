@@ -71,16 +71,16 @@ if [ "$variable" == "All" ]; then
 
 #     source ../pre_start.sh
     source ../pre_start.sh devel
-    for ((i=0; i<=$uplimit; i++)); do
+#     for ((i=0; i<=$uplimit; i++)); do
 #         # 2) Get the histograms for the closure test.
 #         echo "> Obtaining histograms for closure test..."
 #         echo " "
 #         python getClosureHistos.py ${unfoldingvars[i]} $4
       # 3) Get the folded results.
-        echo "> Obtaining folded results and signal information..."
-        echo " "
-        python FinalExtracter.py ${unfoldingvars[i]} $4
-    done
+#         echo "> Obtaining folded results and signal information..."
+#         echo " "
+#         python FinalExtracter.py ${unfoldingvars[i]} $4
+#     done
 
 #      source ../pre_start.sh devel
 #      4) Do a proper unfolding as you were taught by your mother when you were a child.
@@ -100,9 +100,9 @@ if [ "$variable" == "All" ]; then
 
 #     source ../pre_start.sh devel
     # 6) Obtain all covariance matrices.
-    echo "> Obtaining all covariance matrices..."
-    echo " "
-    python getCovarianceMatrices.py All $ncores
+#     echo "> Obtaining all covariance matrices..."
+#     echo " "
+#     python getCovarianceMatrices.py All $ncores
 #
 #     cd
 #     source ./pre_start_CMS.sh
