@@ -7,7 +7,9 @@ vl.SetUpWarnings()
 
 pathToTree  = ""
 recocut     = "Tpassreco == 1"
-gencut      = '1/TWeight*TWeight_normal*(Tpassgen == 1)'
+#nominal_weight = "(TWeight)"
+nominal_weight = "(TWeight_TopPtUp)"
+gencut      = '1/' + nominal_weight + " * TWeight_normal * (Tpassgen == 1)"
 
 if (len(sys.argv) > 1):
     varName     = sys.argv[1]
@@ -50,23 +52,24 @@ p.SetPathSignal(pathToTree);
 p.verbose = True
 p.verbose = False
 p.SetLumi(vl.Lumi)
+p.SetWeight(nominal_weight)
 
 #p.AddSample("UNF_TW",    "tW", r.itBkg, 2, '', opts)
 #p.AddSample("UNF_TbarW", "tW", r.itBkg, 2, '', opts)
 
 specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-p.SetWeight('TWeight*' + str(specialweight))
+p.SetWeight(nominal_weight + "*" + str(specialweight))
 p.AddSample('UNF_TW',                     'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), '', opts)
 specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-p.SetWeight('TWeight*' + str(specialweight))
+p.SetWeight(nominal_weight + "*" + str(specialweight))
 p.AddSample('UNF_TW_noFullyHadr',         'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), '', opts)
 specialweight = vl.n_tbarw/vl.sigma_tw/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
-p.SetWeight('TWeight*' + str(specialweight))
+p.SetWeight(nominal_weight + "*" + str(specialweight))
 p.AddSample('UNF_TbarW',                  'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), '', opts)
 specialweight = vl.n_tbarwnohad/vl.sigma_twnohad/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
-p.SetWeight('TWeight*' + str(specialweight))
+p.SetWeight(nominal_weight + "*" + str(specialweight))
 p.AddSample('UNF_TbarW_noFullyHadr',      'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), '', opts)
-p.SetWeight('TWeight')
+p.SetWeight(nominal_weight)
 
 if "twttbar" in varName.lower():
     p.AddSample("UNF_TTbar2L_powheg_0",    "tW", r.itBkg, r.TColor.GetColor("#ffcc33"), '', opts)
@@ -86,6 +89,7 @@ p.SetPathSignal(pathToTree);
 p.verbose = True
 p.verbose = False
 p.SetLumi(vl.Lumi)
+p.SetWeight(nominal_weight)
 
 p.AddSample("UNF_TW_aMCatNLO",    "tW", r.itBkg, 2, '', opts)
 
@@ -106,6 +110,7 @@ p.SetPathSignal(pathToTree);
 p.verbose = True
 p.verbose = False
 p.SetLumi(vl.Lumi)
+p.SetWeight(nominal_weight)
 
 p.AddSample("UNF_TW_noFullyHadr_DS",    "tW", r.itBkg, 2, '', opts)
 p.AddSample("UNF_TbarW_noFullyHadr_DS", "tW", r.itBkg, 2, '', opts)
@@ -125,23 +130,24 @@ p.SetPathSignal(pathToTree);
 p.verbose = True
 p.verbose = False
 p.SetLumi(vl.Lumi)
+p.SetWeight(nominal_weight)
 
 #p.AddSample("TW",    "tW", r.itBkg, 2, '', opts)
 #p.AddSample("TbarW", "tW", r.itBkg, 2, '', opts)
 
 specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-p.SetWeight('TWeight*' + str(specialweight))
+p.SetWeight(nominal_weight + "*" + str(specialweight))
 p.AddSample('TW',                     'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), '', opts)
 specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
-p.SetWeight('TWeight*' + str(specialweight))
+p.SetWeight(nominal_weight + "*" + str(specialweight))
 p.AddSample('TW_noFullyHadr',         'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), '', opts)
 specialweight = vl.n_tbarw/vl.sigma_tw/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
-p.SetWeight('TWeight*' + str(specialweight))
+p.SetWeight(nominal_weight + "*" + str(specialweight))
 p.AddSample('TbarW',                  'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), '', opts)
 specialweight = vl.n_tbarwnohad/vl.sigma_twnohad/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
-p.SetWeight('TWeight*' + str(specialweight))
+p.SetWeight(nominal_weight + "*" + str(specialweight))
 p.AddSample('TbarW_noFullyHadr',      'tW',      r.itBkg, r.TColor.GetColor("#ffcc33"), '', opts)
-p.SetWeight('TWeight')
+p.SetWeight(nominal_weight)
 
 if "twttbar" in varName.lower():
     p.AddSample("TTbar2L_powheg", "tW", r.itBkg, r.TColor.GetColor("#ffcc33"), '', opts)
@@ -158,6 +164,7 @@ p.SetPathSignal(pathToTree);
 p.verbose = True
 p.verbose = False
 p.SetLumi(vl.Lumi)
+p.SetWeight(nominal_weight)
 
 p.AddSample("TW_aMCatNLO",    "tW", r.itBkg, 2, '', opts)
 
@@ -176,6 +183,7 @@ p.SetPathSignal(pathToTree);
 p.verbose = True
 p.verbose = False
 p.SetLumi(vl.Lumi)
+p.SetWeight(nominal_weight)
 
 p.AddSample("TW_noFullyHadr_DS",    "tW", r.itBkg, 2, '', opts)
 p.AddSample("TbarW_noFullyHadr_DS", "tW", r.itBkg, 2, '', opts)

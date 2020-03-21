@@ -342,6 +342,22 @@ def GiveMeMyGoodGOFTests(tsk):
     plot.saveCanvas("TR")
     del plot
     
+    if not os.path.isdir(vl.gofpath): os.system("mkdir -p " + vl.gofpath)
+    outfile = open(vl.gofpath + "/" + var + "_goftests_" + ty + ".txt", "w")
+
+    outtxt = ""
+    outtxt += "Results of GOF tests\n"
+    outtxt += "Variable: {vr} \n".format(vr = var)
+    outtxt += "=========================================\n"
+
+    for key in ["DR", "DS", "aMCatNLO"]:
+        outtxt += key + " / p-value: "        + str(coses[key]["p-value"])   + "\n"
+        outtxt += key + " / test statistic: " + str(coses[key]["statistic"]) + "\n"
+
+    outfile.write(outtxt)
+    outfile.close(); del outfile;
+
+
     print '\nDR - p-val.:',    coses["DR"]["p-value"]
     print 'DR - stat.:',       coses["DR"]["statistic"]
     print 'DS - p-val.:',      coses["DS"]["p-value"]
@@ -351,8 +367,8 @@ def GiveMeMyGoodGOFTests(tsk):
     del coses
     return
 
-tasks   = []
 
+tasks = []
 if varName == 'All':
     for var in vl.varList['Names']['Variables']:
         if "Fiducial" in var: continue
