@@ -69,6 +69,7 @@ void Plot::AddSample(TString p, TString pr, Int_t type, Int_t color, TString sys
   PrepareHisto(h, p, pr, type, color, sys);
 }
 
+
 void Plot::GetStack(){ // Sets the histogram hStack
   if(hStack) delete hStack;
   hStack = new THStack(varname, "");
@@ -193,7 +194,7 @@ void Plot::AddSystematic(TString var, TString pr){
 }
 
 
-void Plot::AddNormSyst( TString process, TString name, float norm)
+void Plot::AddNormSyst(TString process, TString name, float norm)
 {
   Histo* hBkgUp = (Histo*) GetHisto(process)->CloneHisto( process + "_" + name + "Up");
   Histo* hBkgDn = (Histo*) GetHisto(process)->CloneHisto( process + "_" + name + "Down");

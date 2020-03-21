@@ -11,23 +11,17 @@
 if [ "$1" == "devel" ]; then
     root6devel
 
-    source /cms/slc6_amd64_gcc630/external/gcc/6.3.0/etc/profile.d/init.sh
-    source /cms/slc6_amd64_gcc630/external/python/2.7.11-omkpbe2/etc/profile.d/init.sh
-    source /cms/slc6_amd64_gcc630/external/python/2.7.11-omkpbe2/etc/profile.d/dependencies-setup.sh
-    source /cms/slc6_amd64_gcc630/external/cmake/3.7.0/etc/profile.d/init.sh
-    source /cms/slc6_amd64_gcc630/external/py2-numpy/1.14.1-omkpbe2/etc/profile.d/init.sh
-    source /nfs/fanae/root6.devel/bin/thisroot.sh
+#     source /cvmfs/sft.cern.ch/lcg/app/releases/ROOT/6.16.00/x86_64-centos7-gcc48-opt/bin/thisroot.sh
 else
     root6
 
-    source /cms/slc6_amd64_gcc530/external/gcc/5.3.0/etc/profile.d/init.sh
-    source /cms/slc6_amd64_gcc530/external/python/2.7.11-giojec2/etc/profile.d/init.sh
-    source /cms/slc6_amd64_gcc530/external/python/2.7.11-giojec2/etc/profile.d/dependencies-setup.sh
-    source /cms/slc6_amd64_gcc530/external/cmake/3.5.2/etc/profile.d/init.sh
-    source /opt/root6/bin/thisroot.sh
+    source /cms/slc7_amd64_gcc530/external/gcc/5.3.0/etc/profile.d/init.sh;
+    source /cms/slc7_amd64_gcc530/external/python/2.7.11-giojec2/etc/profile.d/init.sh;
+    source /cms/slc7_amd64_gcc530/external/python/2.7.11-giojec2/etc/profile.d/dependencies-setup.sh;
+    source /cms/slc7_amd64_gcc530/external/py2-numpy/1.11.1-giojec2/etc/profile.d/init.sh;
+    source /opt/root/bin/thisroot.sh
 
     source /opt/PAF/PAF_setup.sh
-
 fi
 
 

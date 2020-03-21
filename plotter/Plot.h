@@ -41,6 +41,7 @@ public:
   bool doUncInLegend   = false;
   bool doExternalSyst  = false;
   bool NoShowVarName   = false;
+  bool resizemtop      = false;
 
   std::vector<Histo*> VBkgs;
   std::vector<Histo*> VSignals;
@@ -313,6 +314,7 @@ public:
   void SetTextLumiPosX(Float_t x){texlumiX = x;}
   void SetTextLumiPosY(Float_t x){texlumiY = x;}
   void SetNColumns(Int_t nc){NCols = nc;}
+  void doResizemtop(Bool_t doornot){resizemtop = doornot;}
 
   void AddToHistos(Histo* p);
 	void AddVarHistos(TString sys);
