@@ -818,7 +818,7 @@ def lazyoptimisation(tsk):
 
 if __name__ == '__main__':
     tasks = []
-    tasks.append( ("nLooseCentral", "signal", "wololo") )
+    #tasks.append( ("nLooseCentral", "signal", "wololo") )
     #for v in vl.varList["Names"]["Variables"]:
         #if "Fiducial" in v: continue
         #for ct in ['signal', 'control']:
@@ -833,11 +833,11 @@ if __name__ == '__main__':
     #tasks.append( ("LeadingLepPt", "control", "custom") )
     #tasks.append( ("LeadingLepPt", "control", "descriptive") )
     tasks.append( ("LeadingLepPt", "signal", "descriptive") )
-    tasks.append( ("DPhiLL", "signal", "descriptive") )
-    tasks.append( ("LeadingJetPt", "signal", "descriptive") )
-    tasks.append( ("DilepMETJet1Pz", "signal", "descriptive") )
-    tasks.append( ("MT_LLMETB", "signal", "descriptive") )
-    tasks.append( ("M_LLB",     "signal", "descriptive") )
+    #tasks.append( ("DPhiLL", "signal", "descriptive") )
+    #tasks.append( ("LeadingJetPt", "signal", "descriptive") )
+    #tasks.append( ("DilepMETJet1Pz", "signal", "descriptive") )
+    #tasks.append( ("MT_LLMETB", "signal", "descriptive") )
+    #tasks.append( ("M_LLB",     "signal", "descriptive") )
     
     print "> Launching plotting processes..."
     pool = Pool(nCores)

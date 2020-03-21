@@ -761,137 +761,300 @@ treeTTbar_erdON.SetName("erdON")
 print "\n> Drawing matrices and writing ROOT file (old one will be overwritten!)."
 print "The matrices will be saved in " + str(matrixoutputpath)
 print "The plots will be drawn in " + str(plotsoutputpath)
-f       = r.TFile(matrixoutputpath + "UnfoldingInfo.root", "recreate")
-for i in range(nvars):
-  print("\n    - Drawing and saving the response matrices of the variable "+ VarNames[i] + " ...")
-  # Nominal response matrices
-  htemp = GetResponseMatrix([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], t3 = treeTTbar)
-  htemp.Write()
-  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i], purities[i], stabilities[i])
-  htemp = GetFiducialHisto([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nybins[i], VarBins_Y[i], t3 = treeTTbar)
-  htemp.Write()
-  PrintFiducialHisto(htemp, VarNames[i])
+#f       = r.TFile(matrixoutputpath + "UnfoldingInfo.root", "recreate")
+#for i in range(nvars):
+  #print("\n    - Drawing and saving the response matrices of the variable "+ VarNames[i] + " ...")
+  ## Nominal response matrices
+  #htemp = GetResponseMatrix([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], t3 = treeTTbar)
+  #htemp.Write()
+  #PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i], purities[i], stabilities[i])
+  #htemp = GetFiducialHisto([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nybins[i], VarBins_Y[i], t3 = treeTTbar)
+  #htemp.Write()
+  #PrintFiducialHisto(htemp, VarNames[i])
   
-  # JES, JER and weight-related systematics response matrices
-  for j in range(nsys):
-    #if j != 2: continue
-    htemp = GetResponseMatrix([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], SysList[j], t3 = treeTTbar)
-    htemp.Write()
-    PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
-    htemp = GetFiducialHisto([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nybins[i], VarBins_Y[i], SysList[j], t3 = treeTTbar)
-    htemp.Write()
-    PrintFiducialHisto(htemp, VarNames[i])
+  ## JES, JER and weight-related systematics response matrices
+  #for j in range(nsys):
+    ##if j != 2: continue
+    #htemp = GetResponseMatrix([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], SysList[j], t3 = treeTTbar)
+    #htemp.Write()
+    #PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
+    #htemp = GetFiducialHisto([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nybins[i], VarBins_Y[i], SysList[j], t3 = treeTTbar)
+    #htemp.Write()
+    #PrintFiducialHisto(htemp, VarNames[i])
   
-  # Modeling systematics response matrices
-  htemp = GetResponseMatrix(treeTW_DSUp,    treeTbarW_DSUp,       VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar)
-  htemp.Write()
-  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
-  htemp = GetFiducialHisto(treeTW_DSUp,     treeTbarW_DSUp,       VarNames[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar)
-  htemp.Write()
-  PrintFiducialHisto(htemp, VarNames[i])
-  #htemp = GetResponseMatrix(treeTW_fsrUp,   treeTbarW_fsrUp,    VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", [treeTW, treeTbarW, treeTTbar], t3 = treeTTbar_fsrUp)
-  htemp = GetResponseMatrix(treeTW_fsrUp,   treeTbarW_fsrUp,    VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar_fsrUp)
-  htemp.Write()
-  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
-  #htemp = GetFiducialHisto(treeTW_fsrUp,    treeTbarW_fsrUp,    VarNames[i], nybins[i], VarBins_Y[i], "modeling", [treeTW, treeTbarW, treeTTbar], t3 = treeTTbar_fsrUp)
-  htemp = GetFiducialHisto(treeTW_fsrUp,    treeTbarW_fsrUp,    VarNames[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar_fsrUp)
-  htemp.Write()
-  PrintFiducialHisto(htemp, VarNames[i])
-  #htemp = GetResponseMatrix(treeTW_fsrDown, treeTbarW_fsrDown,  VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", [treeTW, treeTbarW, treeTTbar], t3 = treeTTbar_fsrDown)
-  htemp = GetResponseMatrix(treeTW_fsrDown, treeTbarW_fsrDown,  VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar_fsrDown)
-  htemp.Write()
-  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
-  #htemp = GetFiducialHisto(treeTW_fsrDown,  treeTbarW_fsrDown,  VarNames[i], nybins[i], VarBins_Y[i], "modeling", [treeTW, treeTbarW, treeTTbar], t3 = treeTTbar_fsrDown)
-  htemp = GetFiducialHisto(treeTW_fsrDown,  treeTbarW_fsrDown,  VarNames[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar_fsrDown)
-  htemp.Write()
-  PrintFiducialHisto(htemp, VarNames[i])
-  #htemp = GetResponseMatrix(treeTW_isrDown, treeTbarW_isrDown,  VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", [treeTW, treeTbarW, treeTTbar], t3 = treeTTbar_isrDown)
-  htemp = GetResponseMatrix(treeTW_isrDown, treeTbarW_isrDown,  VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar_isrDown)
-  htemp.Write()
-  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
-  #htemp = GetFiducialHisto(treeTW_isrDown,  treeTbarW_isrDown,  VarNames[i], nybins[i], VarBins_Y[i], "modeling", [treeTW, treeTbarW, treeTTbar], t3 = treeTTbar_isrDown)
-  htemp = GetFiducialHisto(treeTW_isrDown,  treeTbarW_isrDown,  VarNames[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar_isrDown)
-  htemp.Write()
-  PrintFiducialHisto(htemp, VarNames[i])
-  #htemp = GetResponseMatrix(treeTW_isrUp,   treeTbarW_isrUp,    VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", [treeTW, treeTbarW, treeTTbar], t3 = treeTTbar_isrUp)
-  htemp = GetResponseMatrix(treeTW_isrUp,   treeTbarW_isrUp,    VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar_isrUp)
-  htemp.Write()
-  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
-  #htemp = GetFiducialHisto(treeTW_isrUp,    treeTbarW_isrUp,    VarNames[i], nybins[i], VarBins_Y[i], "modeling", [treeTW, treeTbarW, treeTTbar], t3 = treeTTbar_isrUp)
-  htemp = GetFiducialHisto(treeTW_isrUp,    treeTbarW_isrUp,    VarNames[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar_isrUp)
-  htemp.Write()
-  PrintFiducialHisto(htemp, VarNames[i])
+  ## Modeling systematics response matrices
+  #htemp = GetResponseMatrix(treeTW_DSUp,    treeTbarW_DSUp,       VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar)
+  #htemp.Write()
+  #PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
+  #htemp = GetFiducialHisto(treeTW_DSUp,     treeTbarW_DSUp,       VarNames[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar)
+  #htemp.Write()
+  #PrintFiducialHisto(htemp, VarNames[i])
+  ##htemp = GetResponseMatrix(treeTW_fsrUp,   treeTbarW_fsrUp,    VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", [treeTW, treeTbarW, treeTTbar], t3 = treeTTbar_fsrUp)
+  #htemp = GetResponseMatrix(treeTW_fsrUp,   treeTbarW_fsrUp,    VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar_fsrUp)
+  #htemp.Write()
+  #PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
+  ##htemp = GetFiducialHisto(treeTW_fsrUp,    treeTbarW_fsrUp,    VarNames[i], nybins[i], VarBins_Y[i], "modeling", [treeTW, treeTbarW, treeTTbar], t3 = treeTTbar_fsrUp)
+  #htemp = GetFiducialHisto(treeTW_fsrUp,    treeTbarW_fsrUp,    VarNames[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar_fsrUp)
+  #htemp.Write()
+  #PrintFiducialHisto(htemp, VarNames[i])
+  ##htemp = GetResponseMatrix(treeTW_fsrDown, treeTbarW_fsrDown,  VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", [treeTW, treeTbarW, treeTTbar], t3 = treeTTbar_fsrDown)
+  #htemp = GetResponseMatrix(treeTW_fsrDown, treeTbarW_fsrDown,  VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar_fsrDown)
+  #htemp.Write()
+  #PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
+  ##htemp = GetFiducialHisto(treeTW_fsrDown,  treeTbarW_fsrDown,  VarNames[i], nybins[i], VarBins_Y[i], "modeling", [treeTW, treeTbarW, treeTTbar], t3 = treeTTbar_fsrDown)
+  #htemp = GetFiducialHisto(treeTW_fsrDown,  treeTbarW_fsrDown,  VarNames[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar_fsrDown)
+  #htemp.Write()
+  #PrintFiducialHisto(htemp, VarNames[i])
+  ##htemp = GetResponseMatrix(treeTW_isrDown, treeTbarW_isrDown,  VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", [treeTW, treeTbarW, treeTTbar], t3 = treeTTbar_isrDown)
+  #htemp = GetResponseMatrix(treeTW_isrDown, treeTbarW_isrDown,  VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar_isrDown)
+  #htemp.Write()
+  #PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
+  ##htemp = GetFiducialHisto(treeTW_isrDown,  treeTbarW_isrDown,  VarNames[i], nybins[i], VarBins_Y[i], "modeling", [treeTW, treeTbarW, treeTTbar], t3 = treeTTbar_isrDown)
+  #htemp = GetFiducialHisto(treeTW_isrDown,  treeTbarW_isrDown,  VarNames[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar_isrDown)
+  #htemp.Write()
+  #PrintFiducialHisto(htemp, VarNames[i])
+  ##htemp = GetResponseMatrix(treeTW_isrUp,   treeTbarW_isrUp,    VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", [treeTW, treeTbarW, treeTTbar], t3 = treeTTbar_isrUp)
+  #htemp = GetResponseMatrix(treeTW_isrUp,   treeTbarW_isrUp,    VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar_isrUp)
+  #htemp.Write()
+  #PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
+  ##htemp = GetFiducialHisto(treeTW_isrUp,    treeTbarW_isrUp,    VarNames[i], nybins[i], VarBins_Y[i], "modeling", [treeTW, treeTbarW, treeTTbar], t3 = treeTTbar_isrUp)
+  #htemp = GetFiducialHisto(treeTW_isrUp,    treeTbarW_isrUp,    VarNames[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar_isrUp)
+  #htemp.Write()
+  #PrintFiducialHisto(htemp, VarNames[i])
   
-  #htemp = GetResponseMatrix(treeTW_MEUp,    treeTbarW_MEUp,     VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_MEUp)
-  htemp = GetResponseMatrix(treeTW_MEUp,    treeTbarW_MEUp,     VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar)
-  htemp.Write()
-  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
-  #htemp = GetFiducialHisto(treeTW_MEUp,     treeTbarW_MEUp,     VarNames[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_MEUp)
-  htemp = GetFiducialHisto(treeTW_MEUp,     treeTbarW_MEUp,     VarNames[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar)
-  htemp.Write()
-  PrintFiducialHisto(htemp, VarNames[i])
+  ##htemp = GetResponseMatrix(treeTW_MEUp,    treeTbarW_MEUp,     VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_MEUp)
+  #htemp = GetResponseMatrix(treeTW_MEUp,    treeTbarW_MEUp,     VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar)
+  #htemp.Write()
+  #PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
+  ##htemp = GetFiducialHisto(treeTW_MEUp,     treeTbarW_MEUp,     VarNames[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_MEUp)
+  #htemp = GetFiducialHisto(treeTW_MEUp,     treeTbarW_MEUp,     VarNames[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar)
+  #htemp.Write()
+  #PrintFiducialHisto(htemp, VarNames[i])
   
-  #htemp = GetResponseMatrix(treeTW_MEDown,  treeTbarW_MEDown,   VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_MEDown)
-  htemp = GetResponseMatrix(treeTW_MEDown,  treeTbarW_MEDown,   VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar)
-  htemp.Write()
-  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
-  #htemp = GetFiducialHisto(treeTW_MEDown,   treeTbarW_MEDown,   VarNames[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_MEDown)
-  htemp = GetFiducialHisto(treeTW_MEDown,   treeTbarW_MEDown,   VarNames[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar)
-  htemp.Write()
-  PrintFiducialHisto(htemp, VarNames[i])
+  ##htemp = GetResponseMatrix(treeTW_MEDown,  treeTbarW_MEDown,   VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_MEDown)
+  #htemp = GetResponseMatrix(treeTW_MEDown,  treeTbarW_MEDown,   VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar)
+  #htemp.Write()
+  #PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
+  ##htemp = GetFiducialHisto(treeTW_MEDown,   treeTbarW_MEDown,   VarNames[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_MEDown)
+  #htemp = GetFiducialHisto(treeTW_MEDown,   treeTbarW_MEDown,   VarNames[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar)
+  #htemp.Write()
+  #PrintFiducialHisto(htemp, VarNames[i])
   
-  # MTOP
-  htemp = GetResponseMatrix(treeTW_mtopUp,  treeTbarW_mtopUp,   VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar)
-  htemp.Write()
-  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
-  htemp = GetFiducialHisto(treeTW_mtopUp, treeTbarW_mtopUp, VarNames[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar)
-  htemp.Write()
-  PrintFiducialHisto(htemp, VarNames[i])
+  ## MTOP
+  #htemp = GetResponseMatrix(treeTW_mtopUp,  treeTbarW_mtopUp,   VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar)
+  #htemp.Write()
+  #PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
+  #htemp = GetFiducialHisto(treeTW_mtopUp, treeTbarW_mtopUp, VarNames[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar)
+  #htemp.Write()
+  #PrintFiducialHisto(htemp, VarNames[i])
   
-  htemp = GetResponseMatrix(treeTW_mtopDown,  treeTbarW_mtopDown,   VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar)
-  htemp.Write()
-  PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
-  htemp = GetFiducialHisto(treeTW_mtopDown, treeTbarW_mtopDown, VarNames[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar)
-  htemp.Write()
-  PrintFiducialHisto(htemp, VarNames[i])
+  #htemp = GetResponseMatrix(treeTW_mtopDown,  treeTbarW_mtopDown,   VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar)
+  #htemp.Write()
+  #PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
+  #htemp = GetFiducialHisto(treeTW_mtopDown, treeTbarW_mtopDown, VarNames[i], nybins[i], VarBins_Y[i], "modeling", [treeTW_noFully, treeTbarW_noFully, treeTTbar], t3 = treeTTbar)
+  #htemp.Write()
+  #PrintFiducialHisto(htemp, VarNames[i])
   
-  if "twttbar" in VarNames[i].lower():
-    htemp = GetResponseMatrix([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_UEDown)
-    htemp.Write()
-    PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
-    htemp = GetFiducialHisto([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_UEDown)
-    htemp.Write()
-    PrintFiducialHisto(htemp, VarNames[i])
+  #if "twttbar" in VarNames[i].lower():
+    #htemp = GetResponseMatrix([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_UEDown)
+    #htemp.Write()
+    #PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
+    #htemp = GetFiducialHisto([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_UEDown)
+    #htemp.Write()
+    #PrintFiducialHisto(htemp, VarNames[i])
     
-    htemp = GetResponseMatrix([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_UEUp)
-    htemp.Write()
-    PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
-    htemp = GetFiducialHisto([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_UEUp)
-    htemp.Write()
-    PrintFiducialHisto(htemp, VarNames[i])
+    #htemp = GetResponseMatrix([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_UEUp)
+    #htemp.Write()
+    #PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
+    #htemp = GetFiducialHisto([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_UEUp)
+    #htemp.Write()
+    #PrintFiducialHisto(htemp, VarNames[i])
     
-    htemp = GetResponseMatrix([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_erdON)
-    htemp.Write()
-    PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
-    htemp = GetFiducialHisto([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_erdON)
-    htemp.Write()
-    PrintFiducialHisto(htemp, VarNames[i])
+    #htemp = GetResponseMatrix([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_erdON)
+    #htemp.Write()
+    #PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
+    #htemp = GetFiducialHisto([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_erdON)
+    #htemp.Write()
+    #PrintFiducialHisto(htemp, VarNames[i])
     
-    htemp = GetResponseMatrix([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_hDampDown)
-    htemp.Write()
-    PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
-    htemp = GetFiducialHisto([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_hDampDown)
-    htemp.Write()
-    PrintFiducialHisto(htemp, VarNames[i])
+    #htemp = GetResponseMatrix([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_hDampDown)
+    #htemp.Write()
+    #PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
+    #htemp = GetFiducialHisto([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_hDampDown)
+    #htemp.Write()
+    #PrintFiducialHisto(htemp, VarNames[i])
     
-    htemp = GetResponseMatrix([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_hDampUp)
-    htemp.Write()
-    PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
-    htemp = GetFiducialHisto([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_hDampUp)
-    htemp.Write()
-    PrintFiducialHisto(htemp, VarNames[i])
+    #htemp = GetResponseMatrix([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nxbins[i], VarBins_X[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_hDampUp)
+    #htemp.Write()
+    #PrintResponseMatrix(htemp, VarNames[i], nxbins[i], VarBins_X[i], xmin[i], xmax[i], nybins[i], VarBins_Y[i], ymin[i], ymax[i])
+    #htemp = GetFiducialHisto([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[i], nybins[i], VarBins_Y[i], "modeling", t3 = treeTTbar_hDampUp)
+    #htemp.Write()
+    #PrintFiducialHisto(htemp, VarNames[i])
     
-f.Write()
-f.Close()
+#f.Write()
+#f.Close()
   
 print("> Done!")
+
+######################################################################################## lo del overlap
+
+
+def GetOverlap(t1, t2, vname, nxb, xb, nyb, yb):
+  '''This function used to obtain the response matrix combining information of two trees.
+  Now it does not.'''
+
+  vnamegen   = vl.varList[vname]['var_gen'] # Generation name (without any kind of systematic thing)
+  vnamereco  = vl.varList[vname]['var']     # Reconstruction name (can have a systematic-name tail)
+  vnametitle = vname # Name to be shown as the title (and name) of the histogram
+  tmpcut     = Cut   # cuts
+  sys        = ""
+
+  if (sys in SysList[:3]):
+    tmpcut      = tmpcut.replace("Tpassreco", "Tpassreco" + sys)
+    vnamereco   = vnamereco.replace(vname, vname + sys) if "Fiducial" not in vname else vnamereco.replace("LeadingLepPt", "LeadingLepPt" + sys)
+    vnametitle  = vnametitle.replace("_", "") + "_" + sys
+  elif (sys in SysList[3:]):
+    tmpcut      = tmpcut.replace("TWeight", "TWeight_" + sys, 1) if "TopPt" not in sys else "TWeight * (Tpassgen == 1)" if "Down" in sys else "TWeight_TopPtUp * (TWeight_TopPtUp / TWeight) * (Tpassgen == 1)"
+    vnametitle  = vnametitle.replace("_", "") + "_" + sys
+  elif (sys == "modeling" and not "twttbar" in vname.lower()):
+    vnametitle  = vnametitle.replace("_", "") + "_" + t1.GetName()
+  elif (sys == "modeling" and "twttbar" in vname.lower()):
+    if isinstance(t1, list):
+      vnametitle  = vnametitle.replace("_", "") + "_" + t1[0].GetName()*(t1[0].GetName() != "Mini1j1t") + t3.GetName()*(t1[0].GetName() == "Mini1j1t")
+    else:
+      vnametitle  = vnametitle.replace("_", "") + "_" + t1.GetName()   *(t1.GetName() != "Mini1j1t")    + t3.GetName()*(t1.GetName() == "Mini1j1t")
+  else:
+    vnametitle  = vnametitle.replace("_", "")
+
+  hGen1 = r.TH1F('hGen1', '', nxb, xb)
+  hGen2 = r.TH1F('hGen2', '', nxb, xb)
+
+  if not isinstance(t1, list):
+    t1.Draw(vnamegen + '>>hGen1', genCut + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    t2.Draw(vnamegen + '>>hGen2', genCut + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    hGen1.Add(hGen2)
+    del hGen2
+  else:
+    hGen1noF = r.TH1F('hGen1noF', '', nxb, xb)
+    hGen2noF = r.TH1F('hGen2noF', '', nxb, xb)
+    hGen1extra = r.TH1F('hGen1extra', '', nxb, xb)
+    hGen2extra = r.TH1F('hGen2extra', '', nxb, xb)
+    hGen1noFextra = r.TH1F('hGen1noFextra', '', nxb, xb)
+    hGen2noFextra = r.TH1F('hGen2noFextra', '', nxb, xb)
+
+    specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
+    t1[0].Draw(vnamegen + '>>hGen1', genCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    t1[0].Draw(vnamegen + '>>hGen1extra', genCut + "/TWeight_normal*" + recoCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    specialweight = vl.n_tbarw/vl.sigma_tw/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
+    t2[0].Draw(vnamegen + '>>hGen2', genCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    t2[0].Draw(vnamegen + '>>hGen2extra', genCut + "/TWeight_normal*" + recoCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
+    t1[1].Draw(vnamegen + '>>hGen1noF', genCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    t1[1].Draw(vnamegen + '>>hGen1noFextra', genCut + "/TWeight_normal*" + recoCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    specialweight = vl.n_tbarwnohad/vl.sigma_twnohad/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
+    t2[1].Draw(vnamegen + '>>hGen2noF', genCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    t2[1].Draw(vnamegen + '>>hGen2noFextra', genCut + "/TWeight_normal*" + recoCut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    hGen1.Add(hGen2)
+    hGen1noF.Add(hGen2noF)
+    hGen1.Add(hGen1noF)
+    hGen1extra.Add(hGen2extra)
+    hGen1noFextra.Add(hGen2noFextra)
+    hGen1extra.Add(hGen1noFextra)
+    del hGen2, hGen1noF, hGen2noF
+    del hGen2extra, hGen1noFextra, hGen2noFextra
+
+  # corte gen: hGen1
+
+  h1    = r.TH2F('h1',    "", nxb, xb, nyb, yb)
+  h2    = r.TH2F('h2',    "", nxb, xb, nyb, yb)
+  if not isinstance(t1, list):
+    t1.Project('h1', vnamereco + ":" + vnamegen, tmpcut + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    t2.Project('h2', vnamereco + ":" + vnamegen, tmpcut + "*(abs(TGen{vr}) < 1000)*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    h1.Add(h2)
+    del h2
+  else:
+    h1noF = r.TH2F('h1noF', "", nxb, xb, nyb, yb)
+    h2noF = r.TH2F('h2noF', '', nxb, xb, nyb, yb)
+
+    specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
+    t1[0].Project('h1', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt") + "*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") + sys * ("JER" in sys or "JES" in sys) if "Fiducial" not in vname else "LeadingLepPt"))
+    specialweight = vl.n_tbarw/vl.sigma_tw/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
+    t2[0].Project('h2', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt") + "*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") + sys * ("JER" in sys or "JES" in sys) if "Fiducial" not in vname else "LeadingLepPt"))
+    specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
+    t1[1].Project('h1noF', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt") + "*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") + sys * ("JER" in sys or "JES" in sys) if "Fiducial" not in vname else "LeadingLepPt"))
+    specialweight = vl.n_tbarwnohad/vl.sigma_twnohad/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
+    t2[1].Project('h2noF', vnamereco + ":" + vnamegen, tmpcut + '*' + str(specialweight) + "*(abs(TGen{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt") + "*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") + sys * ("JER" in sys or "JES" in sys) if "Fiducial" not in vname else "LeadingLepPt"))
+
+    h1.Add(h2)
+    h1noF.Add(h2noF)
+    h1.Add(h1noF)
+    del h2, h1noF, h2noF
+
+
+
+  if not isinstance(t1, list):
+    hReco1 = r.TH1F('hReco1', '', nyb, yb)
+    hReco2 = r.TH1F('hReco2', '', nyb, yb)
+    t1.Draw(vnamereco + '>>hReco1', recoCut + "*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    t2.Draw(vnamereco + '>>hReco2', recoCut + "*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    hReco1.Add(hReco2)
+    del hReco2
+    if "twttbar" in vname.lower():
+      hReco3 = r.TH1F('hReco3', '', nyb, yb)
+      t3.Draw(vnamereco + '>>hReco3', recoCut + "*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+      hReco1.Add(hReco3)
+      del hReco3
+  else:
+    hReco1 = r.TH1F('hReco1', '', nyb, yb)
+    hReco2 = r.TH1F('hReco2', '', nyb, yb)
+    hReco1noF = r.TH1F('hReco1noF', '', nyb, yb)
+    hReco2noF = r.TH1F('hReco2noF', '', nyb, yb)
+
+    specialweight = vl.n_tw/vl.sigma_tw/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
+    t1[0].Draw(vnamereco + '>>hReco1', recoCut + '*' + str(specialweight) + "*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    specialweight = vl.n_tbarw/vl.sigma_tw/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
+    t2[0].Draw(vnamereco + '>>hReco2', recoCut + '*' + str(specialweight) + "*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    specialweight = vl.n_twnohad/vl.sigma_twnohad/(vl.n_tw/vl.sigma_tw + vl.n_twnohad/vl.sigma_twnohad)
+    t1[1].Draw(vnamereco + '>>hReco1noF', recoCut + '*' + str(specialweight) + "*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+    specialweight = vl.n_tbarwnohad/vl.sigma_twnohad/(vl.n_tbarw/vl.sigma_tw + vl.n_tbarwnohad/vl.sigma_twnohad)
+    t2[1].Draw(vnamereco + '>>hReco2noF', recoCut + '*' + str(specialweight) + "*(abs(T{vr}) < 1000)".format(vr = vname.replace("ATLAS", "") if "Fiducial" not in vname else "LeadingLepPt"))
+
+    hReco1.Add(hReco2)
+    hReco1noF.Add(hReco2noF)
+    hReco1.Add(hReco1noF)
+    del hReco2, hReco1noF, hReco2noF
+
+  hGen  = r.TH2F('hGen', '', nxb, xb, nyb, yb)
+
+  for i in range(0, nxb+2):
+    for j in range(0, nyb+2):
+      hGen.SetBinContent(i, j, hGen1.GetBinContent(i))
+      hGen.SetBinError(i, j, hGen1.GetBinError(i))
+
+  print "valor2:", h1.GetBinContent(1,1)/hReco1.GetBinContent(1)
+
+  h1.Divide(hGen)
+  del hGen, hGen1
+
+  print "valor:",  h1.GetBinContent(1, 1)
+
+  ## Fixing the over and underflow bins to one.
+  for i in range(1, 1+1):
+    tmpsum = 0.
+    for j in range(1, 1+1):
+      tmpsum += h1.GetBinContent(i, j)
+    h1.SetBinContent(i, 0, 0.)
+    h1.SetBinContent(i, nyb + 1, 1 - tmpsum)
+    #h1.SetBinContent(i, nyb + 1, 0)
+  for j in range(0, 1+2):
+    h1.SetBinContent(0, j, 0.)
+    h1.SetBinContent(nxb + 1, j, 0.)
+
+  print "valor 1,2:", h1.GetBinContent(1,2)
+  return
+
+
+GetOverlap([treeTW, treeTW_noFully], [treeTbarW, treeTbarW_noFully], VarNames[-1], nxbins[-1], VarBins_X[-1], nybins[-1], VarBins_Y[-1])
+
+
+

@@ -50,8 +50,8 @@ n_twnohad                  = 11345619
 n_tbarw                    = 6933094
 n_tbarwnohad               = 11408144
 
-#nominal_weight = "(TWeight)"
-nominal_weight             = "(TWeight * (TWeight_TopPtUp/TWeight))"
+nominal_weight = "(TWeight)"
+#nominal_weight             = "(TWeight * (TWeight_TopPtUp/TWeight))"
 
 plotlimits   = tuple([float(i) for i in "0.00, 0.25, 1.00, 1.00".split(',')]) # xlow, ylow, xup, yup
 ratiolimits  = tuple([float(i) for i in "0.00, 0.00, 1.00, 0.25".split(',')]) # xlow, ylow, xup, yup
